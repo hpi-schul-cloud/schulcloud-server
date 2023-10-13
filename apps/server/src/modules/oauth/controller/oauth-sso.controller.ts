@@ -21,7 +21,7 @@ import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto';
 import { CookieOptions, Request, Response } from 'express';
-import { OAuthSSOError } from '../error/oauth-sso.error';
+import { OAuthSSOError } from '../loggable/oauth-sso.error';
 import { OAuthTokenDto } from '../interface';
 import { OauthLoginStateMapper } from '../mapper/oauth-login-state.mapper';
 import { UserMigrationMapper } from '../mapper/user-migration.mapper';
