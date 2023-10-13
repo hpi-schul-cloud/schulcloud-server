@@ -1,6 +1,6 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { PreviewFileOptions, PreviewResponseMessage } from './interface';
 import { PreviewGeneratorConsumer } from './preview-generator.consumer';
 import { PreviewGeneratorService } from './preview-generator.service';
@@ -19,8 +19,8 @@ describe('PreviewGeneratorConsumer', () => {
 					useValue: createMock<PreviewGeneratorService>(),
 				},
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();

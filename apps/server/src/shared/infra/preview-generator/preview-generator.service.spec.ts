@@ -1,7 +1,7 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { GetFile, S3ClientAdapter } from '@shared/infra/s3-client';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { Readable } from 'node:stream';
 import { PreviewGeneratorService } from './preview-generator.service';
 
@@ -45,8 +45,8 @@ describe('PreviewGeneratorService', () => {
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();

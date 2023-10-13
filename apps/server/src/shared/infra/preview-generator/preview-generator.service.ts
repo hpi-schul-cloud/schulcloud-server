@@ -1,17 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { GetFile, S3ClientAdapter } from '@shared/infra/s3-client';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { subClass } from 'gm';
 import { PassThrough } from 'stream';
 import { PreviewFileOptions, PreviewOptions, PreviewResponseMessage } from './interface';
+import { PreviewActionsLoggable } from './loggable/preview-actions.loggable';
 
 @Injectable()
 export class PreviewGeneratorService {
-	constructor(private readonly storageClient: S3ClientAdapter, private logger: LegacyLogger) {
+	constructor(private readonly storageClient: S3ClientAdapter, private logger: Logger) {
 		this.logger.setContext(PreviewGeneratorService.name);
 	}
 
 	public async generatePreview(params: PreviewFileOptions): Promise<PreviewResponseMessage> {
+		this.logger.debug(new PreviewActionsLoggable('PreviewGeneratorService.generatePreview:start', params));
 		const { originFilePath, previewFilePath, previewOptions } = params;
 
 		const original = await this.downloadOriginFile(originFilePath);
@@ -19,6 +21,8 @@ export class PreviewGeneratorService {
 
 		const file = { data: preview, mimeType: previewOptions.format };
 		await this.storageClient.create(previewFilePath, file);
+
+		this.logger.debug(new PreviewActionsLoggable('PreviewGeneratorService.generatePreview:end', params));
 
 		return {
 			previewFilePath,

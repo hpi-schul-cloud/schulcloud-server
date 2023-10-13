@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { ErrorMapper, FilesPreviewEvents, FilesPreviewExchange } from '../rabbitmq';
 import { PreviewFileOptions } from './interface';
 import { PreviewProducer } from './preview.producer';
@@ -22,8 +22,8 @@ describe('PreviewProducer', () => {
 			providers: [
 				PreviewProducer,
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 				{
 					provide: AmqpConnection,

@@ -4,7 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq';
 import { S3ClientAdapter, S3ClientModule, S3Config } from '@shared/infra/s3-client';
 import { createConfigModuleOptions } from '@src/config';
-import { LegacyLogger, LoggerModule } from '@src/core/logger';
+import { Logger, LoggerModule } from '@src/core/logger';
 import { PreviewGeneratorConsumer } from './preview-generator.consumer';
 import { PreviewGeneratorService } from './preview-generator.service';
 
@@ -21,9 +21,9 @@ export class PreviewGeneratorConsumerModule {
 		const providers = [
 			{
 				provide: PreviewGeneratorService,
-				useFactory: (logger: LegacyLogger, storageClient: S3ClientAdapter) =>
+				useFactory: (logger: Logger, storageClient: S3ClientAdapter) =>
 					new PreviewGeneratorService(storageClient, logger),
-				inject: [LegacyLogger, s3Config.connectionName],
+				inject: [Logger, s3Config.connectionName],
 			},
 			PreviewGeneratorConsumer,
 		];
