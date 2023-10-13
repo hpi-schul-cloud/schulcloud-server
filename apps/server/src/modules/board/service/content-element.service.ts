@@ -14,13 +14,15 @@ import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
+import { OpenGraphProxyService } from './open-graph-proxy.service';
 
 @Injectable()
 export class ContentElementService {
 	constructor(
 		private readonly boardDoRepo: BoardDoRepo,
 		private readonly boardDoService: BoardDoService,
-		private readonly contentElementFactory: ContentElementFactory
+		private readonly contentElementFactory: ContentElementFactory,
+		private readonly openGraphProxyService: OpenGraphProxyService
 	) {}
 
 	async findById(elementId: EntityId): Promise<AnyContentElementDo> {
@@ -66,13 +68,14 @@ export class ContentElementService {
 		await this.boardDoService.move(element, targetCard, targetPosition);
 	}
 
-	async update(element: AnyContentElementDo, content: AnyElementContentBody): Promise<void> {
-		const updater = new ContentElementUpdateVisitor(content);
-
-		element.accept(updater);
+	async update(element: AnyContentElementDo, content: AnyElementContentBody): Promise<AnyContentElementDo> {
+		const updater = new ContentElementUpdateVisitor(content, this.openGraphProxyService);
+		await element.acceptAsync(updater);
 
 		const parent = await this.boardDoRepo.findParentOfId(element.id);
 
 		await this.boardDoRepo.save(element, parent);
+
+		return element;
 	}
 }

@@ -1,14 +1,7 @@
-import {
-	ForbiddenException,
-	forwardRef,
-	HttpException,
-	HttpStatus,
-	Inject,
-	Injectable,
-	UnprocessableEntityException,
-} from '@nestjs/common';
+import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	AnyBoardDo,
+	AnyContentElementDo,
 	EntityId,
 	isSubmissionContainerElement,
 	isSubmissionItem,
@@ -34,8 +27,12 @@ export class ElementUc {
 		this.logger.setContext(ElementUc.name);
 	}
 
-	async updateElementContent(userId: EntityId, elementId: EntityId, content: AnyElementContentBody) {
-		const element = await this.elementService.findById(elementId);
+	async updateElementContent(
+		userId: EntityId,
+		elementId: EntityId,
+		content: AnyElementContentBody
+	): Promise<AnyContentElementDo> {
+		let element = await this.elementService.findById(elementId);
 
 		const parent = await this.elementService.findParentOfId(elementId);
 
@@ -44,7 +41,9 @@ export class ElementUc {
 		} else {
 			await this.checkPermission(userId, element, Action.write);
 		}
-		await this.elementService.update(element, content);
+
+		element = await this.elementService.update(element, content);
+		return element;
 	}
 
 	async createSubmissionItem(

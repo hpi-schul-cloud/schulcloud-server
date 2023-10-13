@@ -3,6 +3,7 @@ import { InputFormat } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
+import { LinkElement } from './link-element.do';
 import { RichTextElement } from './rich-text-element.do';
 import { SubmissionContainerElement } from './submission-container-element.do';
 import { AnyContentElementDo, ContentElementType } from './types';
@@ -15,6 +16,9 @@ export class ContentElementFactory {
 		switch (type) {
 			case ContentElementType.FILE:
 				element = this.buildFile();
+				break;
+			case ContentElementType.LINK:
+				element = this.buildLink();
 				break;
 			case ContentElementType.RICH_TEXT:
 				element = this.buildRichText();
@@ -49,6 +53,18 @@ export class ContentElementFactory {
 		return element;
 	}
 
+	private buildLink() {
+		const element = new LinkElement({
+			id: new ObjectId().toHexString(),
+			url: '',
+			title: '',
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+
+		return element;
+	}
+
 	private buildRichText() {
 		const element = new RichTextElement({
 			id: new ObjectId().toHexString(),
@@ -65,6 +81,7 @@ export class ContentElementFactory {
 	private buildSubmissionContainer() {
 		const element = new SubmissionContainerElement({
 			id: new ObjectId().toHexString(),
+			dueDate: null,
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
