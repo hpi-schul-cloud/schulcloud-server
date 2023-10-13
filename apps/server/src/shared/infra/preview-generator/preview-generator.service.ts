@@ -6,6 +6,8 @@ import { PassThrough } from 'stream';
 import { PreviewFileOptions, PreviewOptions, PreviewResponseMessage } from './interface';
 import { PreviewActionsLoggable } from './loggable/preview-actions.loggable';
 
+const imageMagick = subClass({ imageMagick: '7+' });
+
 @Injectable()
 export class PreviewGeneratorService {
 	constructor(private readonly storageClient: S3ClientAdapter, private logger: Logger) {
@@ -38,9 +40,8 @@ export class PreviewGeneratorService {
 
 	private resizeAndConvert(original: GetFile, previewParams: PreviewOptions): PassThrough {
 		const { format, width } = previewParams;
-		const im = subClass({ imageMagick: '7+' });
 
-		const preview = im(original.data);
+		const preview = imageMagick(original.data);
 
 		if (width) {
 			preview.resize(width, undefined, '>');
