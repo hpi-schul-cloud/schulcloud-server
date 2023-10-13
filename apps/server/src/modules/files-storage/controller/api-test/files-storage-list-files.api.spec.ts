@@ -13,11 +13,11 @@ import {
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
 import { FileRecordParentType, PreviewStatus } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
+import { FileRecordListResponse, FileRecordResponse } from '../dto';
 import { availableParentTypes } from './mocks';
 
 const baseRouteName = '/file/list';

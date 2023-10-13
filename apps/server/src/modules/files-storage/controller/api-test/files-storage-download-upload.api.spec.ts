@@ -9,15 +9,15 @@ import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FILES_STORAGE_S3_CONNECTION } from '@src/modules/files-storage';
-import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
 import { FileRecord } from '../../entity';
 import { ErrorType } from '../../error';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
+import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { TestHelper } from '../../helper/test-helper';
+import { FileRecordResponse } from '../dto';
 import { availableParentTypes } from './mocks';
 
 jest.mock('file-type-cjs/file-type-cjs-index', () => {

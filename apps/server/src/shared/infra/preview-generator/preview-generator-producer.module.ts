@@ -3,10 +3,9 @@ import { LoggerModule } from '@src/core/logger';
 import { RabbitMQWrapperModule } from '../rabbitmq';
 import { PreviewProducer } from './preview.producer';
 
-const providers = [PreviewProducer];
 @Module({
 	imports: [LoggerModule, RabbitMQWrapperModule],
-	providers,
-	exports: providers,
+	providers: [PreviewProducer],
+	exports: [PreviewProducer],
 })
 export class PreviewGeneratorProducerModule {}

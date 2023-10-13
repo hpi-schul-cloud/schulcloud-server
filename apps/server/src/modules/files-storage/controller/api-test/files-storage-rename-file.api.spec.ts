@@ -13,11 +13,11 @@ import {
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FileRecordResponse, RenameFileParams } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
 import { FileRecord, FileRecordParentType } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
+import { FileRecordResponse, RenameFileParams } from '../dto';
 
 const baseRouteName = '/file/rename/';
 
