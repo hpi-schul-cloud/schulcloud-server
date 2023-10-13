@@ -313,7 +313,7 @@ describe('AbstractLaunchStrategy', () => {
 				};
 			};
 
-			it('should return ToolLaunchData with the card title as parameter value', async () => {
+			it('should return ToolLaunchData with the course name as parameter value', async () => {
 				const { externalTool, schoolExternalTool, contextExternalTool, autoCourseNameCustomParameter, course } =
 					setup();
 
