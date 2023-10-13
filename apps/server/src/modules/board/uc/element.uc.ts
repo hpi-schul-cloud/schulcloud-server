@@ -1,5 +1,12 @@
 import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { AnyBoardDo, EntityId, SubmissionContainerElement, SubmissionItem, UserRoleEnum } from '@shared/domain';
+import {
+	AnyBoardDo,
+	EntityId,
+	isSubmissionContainerElement,
+	isSubmissionItem,
+	SubmissionItem,
+	UserRoleEnum,
+} from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Action } from '@src/modules/authorization/types/action.enum';
@@ -21,11 +28,12 @@ export class ElementUc {
 	}
 
 	async updateElementContent(userId: EntityId, elementId: EntityId, content: AnyElementContentBody) {
-		const element = await this.elementService.findById(elementId);
+		let element = await this.elementService.findById(elementId);
 
 		await this.checkPermission(userId, element, Action.write);
 
-		await this.elementService.update(element, content);
+		element = await this.elementService.update(element, content);
+		return element;
 	}
 
 	async createSubmissionItem(
@@ -33,23 +41,25 @@ export class ElementUc {
 		contentElementId: EntityId,
 		completed: boolean
 	): Promise<SubmissionItem> {
-		const submissionContainer = (await this.elementService.findById(contentElementId)) as SubmissionContainerElement;
+		const submissionContainerElement = await this.elementService.findById(contentElementId);
 
-		if (!(submissionContainer instanceof SubmissionContainerElement))
+		if (!isSubmissionContainerElement(submissionContainerElement)) {
 			throw new HttpException(
 				'Cannot create submission-item for non submission-container-element',
 				HttpStatus.UNPROCESSABLE_ENTITY
 			);
+		}
 
-		if (!submissionContainer.children.every((child) => child instanceof SubmissionItem))
+		if (!submissionContainerElement.children.every((child) => isSubmissionItem(child))) {
 			throw new HttpException(
 				'Children of submission-container-element must be of type submission-item',
 				HttpStatus.UNPROCESSABLE_ENTITY
 			);
+		}
 
-		const userSubmissionExists = submissionContainer.children.find(
-			(item) => (item as SubmissionItem).userId === userId
-		);
+		const userSubmissionExists = submissionContainerElement.children
+			.filter(isSubmissionItem)
+			.find((item) => item.userId === userId);
 		if (userSubmissionExists) {
 			throw new HttpException(
 				'User is not allowed to have multiple submission-items per submission-container-element',
@@ -57,9 +67,9 @@ export class ElementUc {
 			);
 		}
 
-		await this.checkPermission(userId, submissionContainer, Action.read, UserRoleEnum.STUDENT);
+		await this.checkPermission(userId, submissionContainerElement, Action.read, UserRoleEnum.STUDENT);
 
-		const submissionItem = await this.submissionItemService.create(userId, submissionContainer, { completed });
+		const submissionItem = await this.submissionItemService.create(userId, submissionContainerElement, { completed });
 
 		return submissionItem;
 	}
