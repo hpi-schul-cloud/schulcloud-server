@@ -100,7 +100,8 @@ export class H5PEditorUc {
 
 			return result;
 		} catch (err) {
-			throw this.mapH5pError(err);
+			// throw this.mapH5pError(err);
+			throw err;
 		}
 	}
 
@@ -139,7 +140,8 @@ export class H5PEditorUc {
 
 			return result;
 		} catch (err) {
-			throw this.mapH5pError(err);
+			// throw this.mapH5pError(err);
+			throw err;
 		}
 	}
 

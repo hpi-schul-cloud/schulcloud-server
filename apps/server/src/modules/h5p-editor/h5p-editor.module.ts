@@ -47,7 +47,6 @@ const imports = [
 		user: DB_USERNAME,
 		// Needs ALL_ENTITIES for authorization
 		entities: [...ALL_ENTITIES, H5PContent, TemporaryFile, InstalledLibrary],
-		// debug: true, // use it for locally debugging of querys
 	}),
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),
