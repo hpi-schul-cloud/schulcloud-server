@@ -1,0 +1,43 @@
+apiVersion: onepassword.com/v1
+kind: OnePasswordItem
+metadata:
+  name: keda-secret
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: keda
+spec:
+  itemPath: "vaults/{{ ONEPASSWORD_OPERATOR_VAULT }}/items/keda"
+---
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: keda-trigger-auth-rabbitmq-conn
+  namespace: {{ NAMESPACE }}
+spec:
+  secretTargetRef:
+    - parameter: host
+      name: keda-secret
+      key: amqp-url
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: rabbitmq-scaledobject
+  namespace: {{ NAMESPACE }}
+spec:
+  scaleTargetRef:
+    name: preview-generator-deployment
+  pollingInterval:  1
+  cooldownPeriod:   300
+  idleReplicaCount: 0
+  minReplicaCount:  0
+  maxReplicaCount:  1
+  triggers:
+  - type: rabbitmq
+    metadata:
+      protocol: amqp
+      queueName: generate-preview
+      mode: QueueLength
+      value: "1"
+    authenticationRef:
+      name: keda-trigger-auth-rabbitmq-conn
