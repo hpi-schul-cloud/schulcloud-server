@@ -2,14 +2,12 @@ import {
 	BadRequestException,
 	Body,
 	Controller,
-	Delete,
 	ForbiddenException,
 	Get,
 	HttpStatus,
 	InternalServerErrorException,
 	Param,
 	Post,
-	Put,
 	Query,
 	Req,
 	Res,
@@ -63,7 +61,7 @@ export class H5PEditorController {
 	// - getTempFile    			(e.g. GET `/temp/:file(*)`)
 	// - ajax endpoint for h5p 		(e.g. GET/POST `/ajax/*`)
 	// - static files from h5p-core	(e.g. GET `/core/*`)
-	// - static files for editor	(e.g. GET `/editoror/*`)
+	// - static files for editor	(e.g. GET `/editor/*`)
 
 	@Get('libraries/:ubername/:file(*)')
 	async getLibraryFile(@Param() params: LibraryFileUrlParams, @Req() req: Request) {
@@ -149,7 +147,7 @@ export class H5PEditorController {
 		return result;
 	}
 
-	@Delete('/content/:contentId')
+	@Post('/delete/:contentId')
 	async deleteH5pContent(
 		@Param() params: GetH5PContentParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -159,14 +157,14 @@ export class H5PEditorController {
 		return deleteSuccessfull;
 	}
 
-	@Get('/editor/:language')
+	@Get('/edit/:language')
 	@ApiResponse({ status: 200, type: H5PEditorModelResponse })
 	async getNewH5PEditor(@Param() params: GetH5PEditorParamsCreate, @CurrentUser() currentUser: ICurrentUser) {
 		const editorModel = await this.h5pEditorUc.getEmptyH5pEditor(currentUser, params.language);
 		return new H5PEditorModelResponse(editorModel);
 	}
 
-	@Get('/editor/:contentId/:language')
+	@Get('/edit/:contentId/:language')
 	@ApiResponse({ status: 200, type: H5PEditorModelContentResponse })
 	async getH5PEditor(@Param() params: GetH5PEditorParams, @CurrentUser() currentUser: ICurrentUser) {
 		const { editorModel, content } = await this.h5pEditorUc.getH5pEditor(
@@ -177,7 +175,7 @@ export class H5PEditorController {
 		return new H5PEditorModelContentResponse(editorModel, content);
 	}
 
-	@Post('/content')
+	@Post('/edit')
 	@ApiResponse({ status: 201, type: H5PSaveResponse })
 	async createH5pContent(@Body() body: PostH5PContentCreateParams, @CurrentUser() currentUser: ICurrentUser) {
 		const response = await this.h5pEditorUc.createH5pContentGetMetadata(
@@ -193,7 +191,7 @@ export class H5PEditorController {
 		return saveResponse;
 	}
 
-	@Put('/content/:contentId')
+	@Post('/edit/:contentId')
 	@ApiResponse({ status: 201, type: H5PSaveResponse })
 	async saveH5pContent(
 		@Body() body: PostH5PContentCreateParams,
