@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { StringToBoolean } from '@shared/controller';
 import { EntityId } from '@shared/domain';
+import { ScanResult } from '@shared/infra/antivirus';
 import { Allow, IsBoolean, IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { FileRecordParentType } from '../../entity';
 import { PreviewOutputMimeTypes, PreviewWidth } from '../../interface';
@@ -51,7 +52,7 @@ export class DownloadFileParams {
 	fileName!: string;
 }
 
-export class ScanResultParams {
+export class ScanResultParams implements ScanResult {
 	@ApiProperty()
 	@Allow()
 	virus_detected?: boolean;

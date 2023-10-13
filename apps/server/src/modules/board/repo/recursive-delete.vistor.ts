@@ -13,6 +13,7 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain';
+import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 
 @Injectable()
@@ -42,6 +43,12 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 		this.deleteNode(fileElement);
 
 		await this.visitChildrenAsync(fileElement);
+	}
+
+	async visitLinkElementAsync(linkElement: LinkElement): Promise<void> {
+		this.deleteNode(linkElement);
+
+		await this.visitChildrenAsync(linkElement);
 	}
 
 	async visitRichTextElementAsync(richTextElement: RichTextElement): Promise<void> {
