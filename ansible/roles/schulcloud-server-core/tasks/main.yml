@@ -84,8 +84,22 @@
       namespace: "{{ NAMESPACE }}"
       template: amqp-files-deployment.yml.j2
 
-  - name: AMQPFilePreviewDeployment
+  - name: PreviewGeneratorDeployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
-      template: amqp-preview-deployment.yml.j2
+      template: preview-generator-deployment.yml.j2
+
+  - name: PreviewGeneratorConfigmap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: preview-generator-configmap.yml.j2
+      apply: yes
+
+  - name: PreviewGenerator Secret by 1Password
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: preview-generator-onepassword.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool

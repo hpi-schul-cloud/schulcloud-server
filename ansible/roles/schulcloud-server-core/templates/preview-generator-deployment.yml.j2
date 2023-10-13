@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: amqp-file-preview-deployment
+  name: preview-generator-deployment
   namespace: {{ NAMESPACE }}
   labels:
-    app: amqp-file-preview
+    app: preview-generator
 spec:
   replicas: {{ AMQP_FILE_PREVIEW_REPLICAS|default("1", true) }}
   strategy:
@@ -16,11 +16,11 @@ spec:
   paused: false
   selector:
     matchLabels:
-      app: amqp-file-preview
+      app: preview-generator
   template:
     metadata:
       labels:
-        app: amqp-file-preview
+        app: preview-generator
     spec:
       securityContext:
         runAsUser: 1000
@@ -28,14 +28,14 @@ spec:
         fsGroup: 1000
         runAsNonRoot: true
       containers:
-      - name: amqp-file-preview
+      - name: preview-generator
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:file-preview-{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
-            name: api-configmap
+            name: preview-generator-configmap
         - secretRef:
-            name: api-secret
+            name: preview-generator-secret
         command: ['npm', 'run', 'nest:start:preview-generator-amqp:prod']
         resources:
           limits:
