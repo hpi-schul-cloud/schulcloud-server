@@ -1,6 +1,5 @@
 import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
-	AnyBoardDo,
 	AnyContentElementDo,
 	EntityId,
 	isSubmissionContainerElement,
@@ -13,17 +12,19 @@ import { Action, AuthorizationService } from '@src/modules/authorization';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { SubmissionItemService } from '../service/submission-item.service';
+import { BaseUc } from './base.uc';
 
 @Injectable()
-export class ElementUc {
+export class ElementUc extends BaseUc {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService))
-		private readonly authorizationService: AuthorizationService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		protected readonly authorizationService: AuthorizationService,
+		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly elementService: ContentElementService,
 		private readonly submissionItemService: SubmissionItemService,
 		private readonly logger: Logger
 	) {
+		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(ElementUc.name);
 	}
 
@@ -36,8 +37,9 @@ export class ElementUc {
 
 		const parent = await this.elementService.findParentOfId(elementId);
 
+		// TODO refactor
 		if (isSubmissionItem(parent)) {
-			await this.checkSubmissionPermission(userId, element, parent);
+			await this.checkSubmissionItemEditPermission(userId, parent);
 		} else {
 			await this.checkPermission(userId, element, Action.write);
 		}
@@ -77,26 +79,5 @@ export class ElementUc {
 		const submissionItem = await this.submissionItemService.create(userId, submissionContainerElement, { completed });
 
 		return submissionItem;
-	}
-
-	private async checkPermission(
-		userId: EntityId,
-		boardDo: AnyBoardDo,
-		action: Action,
-		requiredUserRole?: UserRoleEnum
-	): Promise<void> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
-		if (requiredUserRole) boardDoAuthorizable.requiredUserRole = requiredUserRole;
-		const context = { action, requiredPermissions: [] };
-
-		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
-	}
-
-	private async checkSubmissionPermission(userId: EntityId, element: AnyBoardDo, parent: SubmissionItem) {
-		if (parent.userId !== userId) {
-			throw new ForbiddenException();
-		}
-		await this.checkPermission(userId, parent, Action.read, UserRoleEnum.STUDENT);
 	}
 }

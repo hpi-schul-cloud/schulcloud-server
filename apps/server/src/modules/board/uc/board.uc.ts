@@ -1,29 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import {
-	AnyBoardDo,
-	BoardExternalReference,
-	Card,
-	Column,
-	ColumnBoard,
-	ContentElementType,
-	EntityId,
-} from '@shared/domain';
+import { BoardExternalReference, Card, Column, ColumnBoard, ContentElementType, EntityId } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Action } from '@src/modules/authorization/types/action.enum';
 import { CardService, ColumnBoardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
+import { BaseUc } from './base.uc';
 
 @Injectable()
-export class BoardUc {
+export class BoardUc extends BaseUc {
 	constructor(
-		private readonly authorizationService: AuthorizationService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		protected readonly authorizationService: AuthorizationService,
+		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly cardService: CardService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnService: ColumnService,
 		private readonly logger: LegacyLogger
 	) {
+		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(BoardUc.name);
 	}
 
@@ -156,13 +150,5 @@ export class BoardUc {
 		await this.checkPermission(userId, card, Action.write);
 
 		await this.cardService.delete(card);
-	}
-
-	private async checkPermission(userId: EntityId, boardDo: AnyBoardDo, action: Action): Promise<void> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
-		const context = { action, requiredPermissions: [] };
-
-		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
 	}
 }

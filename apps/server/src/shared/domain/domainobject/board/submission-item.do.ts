@@ -1,24 +1,8 @@
-import {
-	EntityId,
-	FileElement,
-	isFileElement,
-	isRichTextElement,
-	isSumbmissionItem,
-	RichTextElement,
-} from '@shared/domain';
+import { EntityId, FileElement, isFileElement, isRichTextElement, RichTextElement } from '@shared/domain';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 export class SubmissionItem extends BoardComposite<SubmissionItemProps> {
-	/* get children(): (RichTextElement | FileElement)[] {
-		const { children } = this.props;
-		if (!children) return [];
-
-		const filteredChildren = children.filter(isFileElement || isRichTextElement);
-
-		return filteredChildren;
-	} */
-
 	get completed(): boolean {
 		return this.props.completed;
 	}
@@ -35,10 +19,8 @@ export class SubmissionItem extends BoardComposite<SubmissionItemProps> {
 		this.props.userId = value;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	isAllowedAsChild(child: AnyBoardDo): boolean {
-		// Currently submission-item rejects any children, will open in the future
-		const allowed = child instanceof FileElement || child instanceof RichTextElement;
+		const allowed = isFileElement(child) || isRichTextElement(child);
 
 		return allowed;
 	}
@@ -60,3 +42,6 @@ export interface SubmissionItemProps extends BoardCompositeProps {
 export function isSubmissionItem(reference: unknown): reference is SubmissionItem {
 	return reference instanceof SubmissionItem;
 }
+
+export const isSubmissionItemContent = (element: AnyBoardDo): element is RichTextElement | FileElement =>
+	isRichTextElement(element) || isFileElement(element);

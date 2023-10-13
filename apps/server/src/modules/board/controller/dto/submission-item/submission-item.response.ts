@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TimestampsResponse } from '../timestamps.response';
-import { FileElementResponse, RichTextElementResponse } from '..';
+import { FileElementResponse, RichTextElementResponse } from '../element';
 
 export class SubmissionItemResponse {
 	constructor({ id, timestamps, completed, userId, elements }: SubmissionItemResponse) {

@@ -22,6 +22,3 @@ export const isAnyContentElement = (element: AnyBoardDo): element is AnyContentE
 
 	return result;
 };
-
-export const isContent = (element: AnyBoardDo): element is RichTextElement | FileElement =>
-	element instanceof RichTextElement || element instanceof FileElement;

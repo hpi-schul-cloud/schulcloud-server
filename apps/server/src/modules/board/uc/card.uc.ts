@@ -4,16 +4,18 @@ import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Action } from '@src/modules/authorization/types/action.enum';
 import { BoardDoAuthorizableService, CardService, ContentElementService } from '../service';
+import { BaseUc } from './base.uc';
 
 @Injectable()
-export class CardUc {
+export class CardUc extends BaseUc {
 	constructor(
-		private readonly authorizationService: AuthorizationService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		protected readonly authorizationService: AuthorizationService,
+		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly cardService: CardService,
 		private readonly elementService: ContentElementService,
 		private readonly logger: LegacyLogger
 	) {
+		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(CardUc.name);
 	}
 
@@ -71,14 +73,6 @@ export class CardUc {
 		await this.checkPermission(userId, targetCard, Action.write);
 
 		await this.elementService.move(element, targetCard, targetPosition);
-	}
-
-	private async checkPermission(userId: EntityId, boardDo: AnyBoardDo, action: Action): Promise<void> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
-		const context = { action, requiredPermissions: [] };
-
-		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
 	}
 
 	private async filterAllowed<T extends AnyBoardDo>(userId: EntityId, boardDos: T[], action: Action): Promise<T[]> {

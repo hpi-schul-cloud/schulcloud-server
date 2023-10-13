@@ -134,7 +134,7 @@ export class ElementController {
 			bodyParams.completed
 		);
 		const mapper = SubmissionItemResponseMapper.getInstance();
-		const response = mapper.mapSubmissionsToResponse(submissionItem);
+		const response = mapper.mapSubmissionItemToResponse(submissionItem);
 
 		return response;
 	}

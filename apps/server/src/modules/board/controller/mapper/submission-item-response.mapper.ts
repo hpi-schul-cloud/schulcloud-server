@@ -1,8 +1,8 @@
 import {
 	FileElement,
-	isContent,
 	isFileElement,
 	isRichTextElement,
+	isSubmissionItemContent,
 	RichTextElement,
 	SubmissionItem,
 	UserBoardRoles,
@@ -26,7 +26,7 @@ export class SubmissionItemResponseMapper {
 
 	public mapToResponse(submissionItems: SubmissionItem[], users: UserBoardRoles[]): SubmissionsResponse {
 		const submissionItemsResponse: SubmissionItemResponse[] = submissionItems.map((item) =>
-			this.mapSubmissionsToResponse(item)
+			this.mapSubmissionItemToResponse(item)
 		);
 		const usersResponse: UserDataResponse[] = users.map((user) => this.mapUsersToResponse(user));
 
@@ -35,8 +35,8 @@ export class SubmissionItemResponseMapper {
 		return response;
 	}
 
-	public mapSubmissionsToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
-		const children: (FileElement | RichTextElement)[] = submissionItem.children.filter(isContent);
+	public mapSubmissionItemToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
+		const children: (FileElement | RichTextElement)[] = submissionItem.children.filter(isSubmissionItemContent);
 		const result = new SubmissionItemResponse({
 			completed: submissionItem.completed,
 			id: submissionItem.id,

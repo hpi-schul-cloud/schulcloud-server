@@ -6,6 +6,5 @@ export * from './external-tool-element-response.mapper';
 export * from './file-element-response.mapper';
 export * from './link-element-response.mapper';
 export * from './rich-text-element-response.mapper';
-export * from './file-element-response.mapper';
 export * from './submission-container-element-response.mapper';
 export * from './submission-item-response.mapper';

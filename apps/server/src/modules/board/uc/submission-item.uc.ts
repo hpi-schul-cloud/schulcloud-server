@@ -1,18 +1,10 @@
+import { BadRequestException, forwardRef, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
-	BadRequestException,
-	ForbiddenException,
-	forwardRef,
-	HttpException,
-	HttpStatus,
-	Inject,
-	Injectable,
-	UnprocessableEntityException,
-} from '@nestjs/common';
-import {
-	AnyBoardDo,
 	ContentElementType,
 	EntityId,
 	FileElement,
+	isFileElement,
+	isRichTextElement,
 	isSubmissionContainerElement,
 	isSubmissionItem,
 	RichTextElement,
@@ -20,22 +12,21 @@ import {
 	UserBoardRoles,
 	UserRoleEnum,
 } from '@shared/domain';
-import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Action } from '@src/modules/authorization/types/action.enum';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
+import { BaseUc } from './base.uc';
 
 @Injectable()
-export class SubmissionItemUc {
+export class SubmissionItemUc extends BaseUc {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService))
-		private readonly authorizationService: AuthorizationService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
-		private readonly elementService: ContentElementService,
-		private readonly submissionItemService: SubmissionItemService,
-		private readonly logger: Logger
+		protected readonly authorizationService: AuthorizationService,
+		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		protected readonly elementService: ContentElementService,
+		protected readonly submissionItemService: SubmissionItemService
 	) {
-		this.logger.setContext(SubmissionItemUc.name);
+		super(authorizationService, boardDoAuthorizableService);
 	}
 
 	async findSubmissionItems(
@@ -70,7 +61,7 @@ export class SubmissionItemUc {
 		completed: boolean
 	): Promise<SubmissionItem> {
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
-		await this.checkSubmissionItemPermission(userId, submissionItem);
+		await this.checkSubmissionItemEditPermission(userId, submissionItem);
 		await this.submissionItemService.update(submissionItem, completed);
 
 		return submissionItem;
@@ -87,50 +78,14 @@ export class SubmissionItemUc {
 
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
 
-		// TODO
-		// await this.checkPermission(userId, submissionItem, Action.write);
+		await this.checkSubmissionItemEditPermission(userId, submissionItem);
 
 		const element = await this.elementService.create(submissionItem, type);
-		// TODO
-		return element as FileElement | RichTextElement;
-	}
 
-	private async isAuthorizedStudent(userId: EntityId, boardDo: AnyBoardDo): Promise<boolean> {
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
-		const userRoleEnum = boardDoAuthorizable.users.find((u) => u.userId === userId)?.userRoleEnum;
-
-		if (!userRoleEnum) {
-			throw new ForbiddenException('User not part of this board');
+		if (!isFileElement(element) && !isRichTextElement(element)) {
+			throw new UnprocessableEntityException();
 		}
 
-		// TODO do this with permission instead of role and using authorizable rules
-		if (userRoleEnum === UserRoleEnum.STUDENT) {
-			return true;
-		}
-
-		return false;
-	}
-
-	private async checkSubmissionItemPermission(userId: EntityId, submissionItem: SubmissionItem) {
-		await this.checkPermission(userId, submissionItem, Action.read, UserRoleEnum.STUDENT);
-		if (submissionItem.userId !== userId) {
-			throw new ForbiddenException();
-		}
-	}
-
-	private async checkPermission(
-		userId: EntityId,
-		boardDo: AnyBoardDo,
-		action: Action,
-		requiredUserRole?: UserRoleEnum
-	): Promise<void> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
-		if (requiredUserRole) {
-			boardDoAuthorizable.requiredUserRole = requiredUserRole;
-		}
-		const context = { action, requiredPermissions: [] };
-
-		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
+		return element;
 	}
 }

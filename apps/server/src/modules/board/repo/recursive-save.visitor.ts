@@ -2,7 +2,6 @@ import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import {
 	AnyBoardDo,
-	AnyBoardNode,
 	BoardCompositeVisitor,
 	BoardNode,
 	Card,
@@ -194,9 +193,9 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		this.parentsMap.set(child.id, { boardNode: parentNode, position });
 	}
 
-	private saveRecursive(anyBoardNode: AnyBoardNode, anyBoardDo: AnyBoardDo): void {
-		this.createOrUpdateBoardNode(anyBoardNode);
-		this.visitChildren(anyBoardDo, anyBoardNode);
+	private saveRecursive(boardNode: BoardNode, anyBoardDo: AnyBoardDo): void {
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(anyBoardDo, boardNode);
 	}
 
 	// TODO make private
