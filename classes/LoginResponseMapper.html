@@ -91,7 +91,11 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Static</span>
-                                <a href="#mapLoginDtoToResponse" >mapLoginDtoToResponse</a>
+                                <a href="#mapToLoginResponse" >mapToLoginResponse</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#mapToOauthLoginResponse" >mapToOauthLoginResponse</a>
                             </li>
                         </ul>
                     </td>
@@ -116,18 +120,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapLoginDtoToResponse"></a>
+                    <a name="mapToLoginResponse"></a>
                     <span class="name">
                         <span class="modifier">Static</span>
-                        <span ><b>mapLoginDtoToResponse</b></span>
-                        <a href="#mapLoginDtoToResponse"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapToLoginResponse</b></span>
+                        <a href="#mapToLoginResponse"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapLoginDtoToResponse(loginDto: <a href="../classes/LoginDto.html" target="_self">LoginDto</a>)</code>
+                    <code>mapToLoginResponse(loginDto: <a href="../classes/LoginDto.html" target="_self">LoginDto</a>)</code>
                 </td>
             </tr>
 
@@ -183,6 +187,89 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapToOauthLoginResponse"></a>
+                    <span class="name">
+                        <span class="modifier">Static</span>
+                        <span ><b>mapToOauthLoginResponse</b></span>
+                        <a href="#mapToOauthLoginResponse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToOauthLoginResponse(loginDto: <a href="../classes/LoginDto.html" target="_self">LoginDto</a>, externalIdToken?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="13"
+                            class="link-to-prism">apps/server/src/modules/authentication/controllers/mapper/login-response.mapper.ts:13</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>loginDto</td>
+                                    <td>
+                                                <code><a href="../classes/LoginDto.html" target="_self" >LoginDto</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>externalIdToken</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/OauthLoginResponse.html" target="_self" >OauthLoginResponse</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -193,12 +280,23 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LoginResponse } from &#x27;../dto&#x27;;
-import { LoginDto } from &#x27;../../uc/dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LoginDto } from &#x27;../../uc/dto&#x27;;
+import { LoginResponse, OauthLoginResponse } from &#x27;../dto&#x27;;
 
 export class LoginResponseMapper {
-	static mapLoginDtoToResponse(loginDto: LoginDto): LoginResponse {
-		const response: LoginResponse &#x3D; new LoginResponse({ accessToken: loginDto.accessToken });
+	static mapToLoginResponse(loginDto: LoginDto): LoginResponse {
+		const response: LoginResponse &#x3D; new LoginResponse({
+			accessToken: loginDto.accessToken,
+		});
+
+		return response;
+	}
+
+	static mapToOauthLoginResponse(loginDto: LoginDto, externalIdToken?: string): OauthLoginResponse {
+		const response: OauthLoginResponse &#x3D; new OauthLoginResponse({
+			accessToken: loginDto.accessToken,
+			externalIdToken,
+		});
 
 		return response;
 	}

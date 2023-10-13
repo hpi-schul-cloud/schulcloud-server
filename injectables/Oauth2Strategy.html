@@ -253,7 +253,7 @@ import { OAuthService } from &#x27;@src/modules/oauth/service/oauth.service&#x27
 import { Strategy } from &#x27;passport-custom&#x27;;
 import { Oauth2AuthorizationBodyParams } from &#x27;../controllers/dto&#x27;;
 import { SchoolInMigrationError } from &#x27;../errors/school-in-migration.error&#x27;;
-import { ICurrentUser } from &#x27;../interface&#x27;;
+import { ICurrentUser, OauthCurrentUser } from &#x27;../interface&#x27;;
 import { CurrentUserMapper } from &#x27;../mapper&#x27;;
 
 @Injectable()
@@ -282,7 +282,12 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, &#x27;oauth2&#x27
 			throw new UnauthorizedException(&#x27;no account found&#x27;);
 		}
 
-		const currentUser: ICurrentUser &#x3D; CurrentUserMapper.userDoToICurrentUser(account.id, user, systemId);
+		const currentUser: OauthCurrentUser &#x3D; CurrentUserMapper.mapToOauthCurrentUser(
+			account.id,
+			user,
+			systemId,
+			tokenDto.idToken
+		);
 
 		return currentUser;
 	}

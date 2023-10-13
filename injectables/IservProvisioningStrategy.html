@@ -462,10 +462,10 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { LegacySchoolDo, RoleName, RoleReference, User, UserDO } from &#x27;@shared/domain&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
-import { OAuthSSOError } from &#x27;@src/modules/oauth/error/oauth-sso.error&#x27;;
 import { LegacySchoolService } from &#x27;@src/modules/legacy-school&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
 import jwt, { JwtPayload } from &#x27;jsonwebtoken&#x27;;
+import { OAuthSSOError } from &#x27;@src/modules/oauth/loggable&#x27;;
 import {
 	ExternalSchoolDto,
 	ExternalUserDto,

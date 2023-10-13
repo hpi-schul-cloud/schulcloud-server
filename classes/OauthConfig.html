@@ -119,6 +119,7 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
                                 <a href="#logoutEndpoint" >logoutEndpoint</a>
                             </li>
                             <li>
@@ -468,6 +469,7 @@
                     <a name="logoutEndpoint"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
                         <span ><b>logoutEndpoint</b></span>
                         <a href="#logoutEndpoint"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -484,7 +486,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Property()<br />
+                            @Property({nullable: true})<br />
                         </code>
                     </td>
                 </tr>
@@ -753,8 +755,8 @@ export class OauthConfig {
 	@Property()
 	provider: string;
 
-	@Property()
-	logoutEndpoint: string;
+	@Property({ nullable: true })
+	logoutEndpoint?: string;
 
 	@Property()
 	issuer: string;

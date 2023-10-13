@@ -95,7 +95,11 @@
                             </li>
                             <li>
                                     <span class="modifier">Static</span>
-                                <a href="#userDoToICurrentUser" >userDoToICurrentUser</a>
+                                <a href="#mapCurrentUserToCreateJwtPayload" >mapCurrentUserToCreateJwtPayload</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#mapToOauthCurrentUser" >mapToOauthCurrentUser</a>
                             </li>
                             <li>
                                     <span class="modifier">Static</span>
@@ -142,8 +146,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="33"
-                            class="link-to-prism">apps/server/src/modules/authentication/mapper/current-user.mapper.ts:33</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="50"
+                            class="link-to-prism">apps/server/src/modules/authentication/mapper/current-user.mapper.ts:50</a></div>
                 </td>
             </tr>
 
@@ -195,18 +199,89 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="userDoToICurrentUser"></a>
+                    <a name="mapCurrentUserToCreateJwtPayload"></a>
                     <span class="name">
                         <span class="modifier">Static</span>
-                        <span ><b>userDoToICurrentUser</b></span>
-                        <a href="#userDoToICurrentUser"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapCurrentUserToCreateJwtPayload</b></span>
+                        <a href="#mapCurrentUserToCreateJwtPayload"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>userDoToICurrentUser(accountId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, user: <a href="../classes/UserDO.html" target="_self">UserDO</a>, systemId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>mapCurrentUserToCreateJwtPayload(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/authentication/mapper/current-user.mapper.ts:39</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/CreateJwtPayload.html" target="_self" >CreateJwtPayload</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapToOauthCurrentUser"></a>
+                    <span class="name">
+                        <span class="modifier">Static</span>
+                        <span ><b>mapToOauthCurrentUser</b></span>
+                        <a href="#mapToOauthCurrentUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToOauthCurrentUser(accountId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, user: <a href="../classes/UserDO.html" target="_self">UserDO</a>, systemId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalIdToken?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -270,13 +345,25 @@
 
 
                                 </tr>
+                                <tr>
+                                    <td>externalIdToken</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/OauthCurrentUser.html" target="_self" >OauthCurrentUser</a></code>
 
                     </div>
                     <div class="io-description">
@@ -395,8 +482,8 @@
 import { Role, User } from &#x27;@shared/domain&#x27;;
 import { RoleReference } from &#x27;@shared/domain/domainobject&#x27;;
 import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
-import { ICurrentUser } from &#x27;../interface&#x27;;
-import { JwtPayload } from &#x27;../interface/jwt-payload&#x27;;
+import { ICurrentUser, OauthCurrentUser } from &#x27;../interface&#x27;;
+import { CreateJwtPayload, JwtPayload } from &#x27;../interface/jwt-payload&#x27;;
 
 export class CurrentUserMapper {
 	static userToICurrentUser(accountId: string, user: User, systemId?: string): ICurrentUser {
@@ -409,7 +496,12 @@ export class CurrentUserMapper {
 		};
 	}
 
-	static userDoToICurrentUser(accountId: string, user: UserDO, systemId?: string): ICurrentUser {
+	static mapToOauthCurrentUser(
+		accountId: string,
+		user: UserDO,
+		systemId?: string,
+		externalIdToken?: string
+	): OauthCurrentUser {
 		if (!user.id) {
 			throw new ValidationError(&#x27;user has no ID&#x27;);
 		}
@@ -420,6 +512,18 @@ export class CurrentUserMapper {
 			roles: user.roles.map((roleRef: RoleReference) &#x3D;&gt; roleRef.id),
 			schoolId: user.schoolId,
 			userId: user.id,
+			externalIdToken,
+		};
+	}
+
+	static mapCurrentUserToCreateJwtPayload(currentUser: ICurrentUser): CreateJwtPayload {
+		return {
+			accountId: currentUser.accountId,
+			userId: currentUser.userId,
+			schoolId: currentUser.schoolId,
+			roles: currentUser.roles,
+			systemId: currentUser.systemId,
+			support: currentUser.impersonated,
 		};
 	}
 

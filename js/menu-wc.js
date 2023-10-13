@@ -3751,6 +3751,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/OauthDataStrategyInputDto.html" data-type="entity-link" >OauthDataStrategyInputDto</a>
                             </li>
                             <li class="link">
+                                <a href="classes/OauthLoginResponse.html" data-type="entity-link" >OauthLoginResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/OauthLoginStateDto.html" data-type="entity-link" >OauthLoginStateDto</a>
                             </li>
                             <li class="link">
@@ -5665,6 +5668,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/NextcloudGroups.html" data-type="entity-link" >NextcloudGroups</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/OauthCurrentUser.html" data-type="entity-link" >OauthCurrentUser</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/OauthTokenResponse.html" data-type="entity-link" >OauthTokenResponse</a>

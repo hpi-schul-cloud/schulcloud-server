@@ -115,6 +115,7 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
                                 <a href="#logoutEndpoint" >logoutEndpoint</a>
                             </li>
                             <li>
@@ -428,6 +429,7 @@
                     <a name="logoutEndpoint"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
                         <span ><b>logoutEndpoint</b></span>
                         <a href="#logoutEndpoint"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -444,7 +446,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({description: &#x27;Logout endpoint&#x27;, required: true, nullable: false})<br />
+                            @ApiProperty({description: &#x27;Logout endpoint&#x27;, required: false, nullable: false})<br />
                         </code>
                     </td>
                 </tr>
@@ -717,10 +719,10 @@ export class OauthConfigResponse {
 
 	@ApiProperty({
 		description: &#x27;Logout endpoint&#x27;,
-		required: true,
+		required: false,
 		nullable: false,
 	})
-	logoutEndpoint: string;
+	logoutEndpoint?: string;
 
 	@ApiProperty({
 		description: &#x27;Issuer&#x27;,
@@ -746,7 +748,7 @@ export class OauthConfigResponse {
 		jwksEndpoint: string;
 		authEndpoint: string;
 		scope: string;
-		logoutEndpoint: string;
+		logoutEndpoint?: string;
 		grantType: string;
 		issuer: string;
 	}) {

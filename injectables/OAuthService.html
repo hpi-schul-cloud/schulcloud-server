@@ -1216,7 +1216,7 @@ import { SystemDto } from &#x27;@src/modules/system/service&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
 import { MigrationCheckService, UserMigrationService } from &#x27;@src/modules/user-login-migration&#x27;;
 import jwt, { JwtPayload } from &#x27;jsonwebtoken&#x27;;
-import { OAuthSSOError, SSOErrorCode, UserNotFoundAfterProvisioningLoggableException } from &#x27;../error&#x27;;
+import { OAuthSSOError, SSOErrorCode, UserNotFoundAfterProvisioningLoggableException } from &#x27;../loggable&#x27;;
 import { OAuthTokenDto } from &#x27;../interface&#x27;;
 import { TokenRequestMapper } from &#x27;../mapper/token-request.mapper&#x27;;
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from &#x27;./dto&#x27;;
@@ -1376,7 +1376,7 @@ export class OAuthService {
 		const system: SystemDto &#x3D; await this.systemService.findById(systemId);
 
 		let redirect: string;
-		if (system.oauthConfig?.provider &#x3D;&#x3D;&#x3D; &#x27;iserv&#x27;) {
+		if (system.oauthConfig?.provider &#x3D;&#x3D;&#x3D; &#x27;iserv&#x27; &amp;&amp; system.oauthConfig?.logoutEndpoint) {
 			const iservLogoutUrl: URL &#x3D; new URL(system.oauthConfig.logoutEndpoint);
 			iservLogoutUrl.searchParams.append(&#x27;id_token_hint&#x27;, idToken);
 			iservLogoutUrl.searchParams.append(&#x27;post_logout_redirect_uri&#x27;, postLoginRedirect || dashboardUrl.toString());

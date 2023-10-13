@@ -175,8 +175,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="30"
-                            class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:30</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="31"
+                            class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:31</a></div>
                 </td>
             </tr>
 
@@ -272,8 +272,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="46"
-                            class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:46</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="47"
+                            class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:47</a></div>
                 </td>
             </tr>
 
@@ -355,7 +355,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>loginOauth2(user: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, _: <a href="../classes/Oauth2AuthorizationBodyParams.html" target="_self">Oauth2AuthorizationBodyParams</a>)</code>
+                    <code>loginOauth2(user: <a href="../interfaces/OauthCurrentUser.html" target="_self">OauthCurrentUser</a>, _: <a href="../classes/Oauth2AuthorizationBodyParams.html" target="_self">Oauth2AuthorizationBodyParams</a>)</code>
                 </td>
             </tr>
 
@@ -369,8 +369,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="61"
-                            class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:61</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="62"
+                            class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:62</a></div>
                 </td>
             </tr>
 
@@ -393,7 +393,7 @@
                                 <tr>
                                     <td>user</td>
                                     <td>
-                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                                <code><a href="../interfaces/OauthCurrentUser.html" target="_self" >OauthCurrentUser</a></code>
                                     </td>
 
                                     <td>
@@ -420,7 +420,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;LoginResponse&gt;</code>
+                        <b>Returns : </b>    <code>Promise&lt;OauthLoginResponse&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -439,7 +439,7 @@ import { AuthGuard } from &#x27;@nestjs/passport&#x27;;
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ForbiddenOperationError, ValidationError } from &#x27;@shared/common&#x27;;
 import { CurrentUser } from &#x27;../decorator/auth.decorator&#x27;;
-import type { ICurrentUser } from &#x27;../interface&#x27;;
+import type { ICurrentUser, OauthCurrentUser } from &#x27;../interface&#x27;;
 import { LoginDto } from &#x27;../uc/dto&#x27;;
 import { LoginUc } from &#x27;../uc/login.uc&#x27;;
 import {
@@ -447,6 +447,7 @@ import {
 	LocalAuthorizationBodyParams,
 	LoginResponse,
 	Oauth2AuthorizationBodyParams,
+	OauthLoginResponse,
 } from &#x27;./dto&#x27;;
 import { LoginResponseMapper } from &#x27;./mapper/login-response.mapper&#x27;;
 
@@ -466,7 +467,7 @@ export class LoginController {
 	async loginLdap(@CurrentUser() user: ICurrentUser, @Body() _: LdapAuthorizationBodyParams): Promise&lt;LoginResponse&gt; {
 		const loginDto: LoginDto &#x3D; await this.loginUc.getLoginData(user);
 
-		const mapped: LoginResponse &#x3D; LoginResponseMapper.mapLoginDtoToResponse(loginDto);
+		const mapped: LoginResponse &#x3D; LoginResponseMapper.mapToLoginResponse(loginDto);
 
 		return mapped;
 	}
@@ -482,7 +483,7 @@ export class LoginController {
 	async loginLocal(@CurrentUser() user: ICurrentUser, @Body() _: LocalAuthorizationBodyParams): Promise&lt;LoginResponse&gt; {
 		const loginDto: LoginDto &#x3D; await this.loginUc.getLoginData(user);
 
-		const mapped: LoginResponse &#x3D; LoginResponseMapper.mapLoginDtoToResponse(loginDto);
+		const mapped: LoginResponse &#x3D; LoginResponseMapper.mapToLoginResponse(loginDto);
 
 		return mapped;
 	}
@@ -495,13 +496,13 @@ export class LoginController {
 	@ApiResponse({ status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27; })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: &#x27;Invalid user credentials.&#x27; })
 	async loginOauth2(
-		@CurrentUser() user: ICurrentUser,
+		@CurrentUser() user: OauthCurrentUser,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@Body() _: Oauth2AuthorizationBodyParams
-	): Promise&lt;LoginResponse&gt; {
+	): Promise&lt;OauthLoginResponse&gt; {
 		const loginDto: LoginDto &#x3D; await this.loginUc.getLoginData(user);
 
-		const mapped: LoginResponse &#x3D; LoginResponseMapper.mapLoginDtoToResponse(loginDto);
+		const mapped: OauthLoginResponse &#x3D; LoginResponseMapper.mapToOauthLoginResponse(loginDto, user.externalIdToken);
 
 		return mapped;
 	}

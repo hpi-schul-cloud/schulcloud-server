@@ -115,12 +115,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(httpService: HttpService, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
+<code>constructor(httpService: HttpService)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/oauth/service/oauth-adapter.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/oauth/service/oauth-adapter.service.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -142,18 +142,6 @@
                                                   
                                                         <td>
                                                                     <code>HttpService</code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>logger</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -197,8 +185,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="17"
-                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth-adapter.service.ts:17</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="14"
+                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth-adapter.service.ts:14</a></div>
                 </td>
             </tr>
 
@@ -269,8 +257,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="40"
-                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth-adapter.service.ts:40</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="37"
+                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth-adapter.service.ts:37</a></div>
                 </td>
             </tr>
 
@@ -340,8 +328,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="26"
-                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth-adapter.service.ts:26</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="23"
+                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth-adapter.service.ts:23</a></div>
                 </td>
             </tr>
 
@@ -409,19 +397,16 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpService } from &#x27;@nestjs/axios&#x27;;
 import { Injectable } from &#x27;@nestjs/common/decorators&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { AxiosResponse } from &#x27;axios&#x27;;
 import JwksRsa from &#x27;jwks-rsa&#x27;;
 import QueryString from &#x27;qs&#x27;;
 import { lastValueFrom, Observable } from &#x27;rxjs&#x27;;
-import { OAuthSSOError } from &#x27;../error/oauth-sso.error&#x27;;
+import { OAuthSSOError } from &#x27;../loggable&#x27;;
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from &#x27;./dto&#x27;;
 
 @Injectable()
 export class OauthAdapterService {
-	constructor(private readonly httpService: HttpService, private readonly logger: LegacyLogger) {
-		this.logger.setContext(OauthAdapterService.name);
-	}
+	constructor(private readonly httpService: HttpService) {}
 
 	async getPublicKey(jwksUri: string): Promise&lt;string&gt; {
 		const client: JwksRsa.JwksClient &#x3D; JwksRsa({

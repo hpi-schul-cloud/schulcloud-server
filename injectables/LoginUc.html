@@ -111,7 +111,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/authentication/uc/login.uc.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/authentication/uc/login.uc.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -169,15 +169,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getLoginData(userInfo: <a href="../interfaces/CreateJwtPayload.html" target="_self">CreateJwtPayload</a>)</code>
+                    <code>getLoginData(userInfo: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/modules/authentication/uc/login.uc.ts:10</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="12"
+                            class="link-to-prism">apps/server/src/modules/authentication/uc/login.uc.ts:12</a></div>
                 </td>
             </tr>
 
@@ -200,7 +200,7 @@
                                 <tr>
                                     <td>userInfo</td>
                                     <td>
-                                                <code><a href="../interfaces/CreateJwtPayload.html" target="_self" >CreateJwtPayload</a></code>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
                                     </td>
 
                                     <td>
@@ -232,16 +232,20 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { AuthenticationService } from &#x27;../services/authentication.service&#x27;;
+import { ICurrentUser } from &#x27;../interface&#x27;;
 import { CreateJwtPayload } from &#x27;../interface/jwt-payload&#x27;;
+import { CurrentUserMapper } from &#x27;../mapper&#x27;;
+import { AuthenticationService } from &#x27;../services/authentication.service&#x27;;
 import { LoginDto } from &#x27;./dto&#x27;;
 
 @Injectable()
 export class LoginUc {
 	constructor(private readonly authService: AuthenticationService) {}
 
-	async getLoginData(userInfo: CreateJwtPayload): Promise&lt;LoginDto&gt; {
-		const accessTokenDto: LoginDto &#x3D; await this.authService.generateJwt(userInfo);
+	async getLoginData(userInfo: ICurrentUser): Promise&lt;LoginDto&gt; {
+		const createJwtPayload: CreateJwtPayload &#x3D; CurrentUserMapper.mapCurrentUserToCreateJwtPayload(userInfo);
+
+		const accessTokenDto: LoginDto &#x3D; await this.authService.generateJwt(createJwtPayload);
 
 		const loginDto: LoginDto &#x3D; new LoginDto({
 			accessToken: accessTokenDto.accessToken,
