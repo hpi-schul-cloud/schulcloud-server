@@ -12,3 +12,10 @@
       template: api-h5p-deployment.yml.j2
     when: WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool
     
+  - name: H5p Editor Ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-h5p-ingress.yml.j2
+    when: WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool
+    
