@@ -21,7 +21,7 @@ export class PreviewService {
 		this.logger.setContext(PreviewService.name);
 	}
 
-	public async getPreview(
+	public async download(
 		fileRecord: FileRecord,
 		previewParams: PreviewParams,
 		bytesRange?: string

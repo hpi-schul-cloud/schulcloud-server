@@ -101,7 +101,7 @@ describe('PreviewService', () => {
 		jest.resetAllMocks();
 	});
 
-	describe('getPreview is called', () => {
+	describe('download is called', () => {
 		describe('WHEN preview is possbile', () => {
 			describe('WHEN forceUpdate is true', () => {
 				describe('WHEN first get of preview file is successfull', () => {
@@ -140,7 +140,7 @@ describe('PreviewService', () => {
 					it('calls previewProducer.generate with correct params', async () => {
 						const { fileRecord, previewParams, bytesRange, originPath, previewPath, format } = setup();
 
-						await previewService.getPreview(fileRecord, previewParams, bytesRange);
+						await previewService.download(fileRecord, previewParams, bytesRange);
 
 						expect(previewProducer.generate).toHaveBeenCalledWith({
 							originFilePath: originPath,
@@ -152,7 +152,7 @@ describe('PreviewService', () => {
 					it('calls S3ClientAdapters get method', async () => {
 						const { fileRecord, previewParams, previewPath } = setup();
 
-						await previewService.getPreview(fileRecord, previewParams);
+						await previewService.download(fileRecord, previewParams);
 
 						expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewPath, undefined);
 						expect(s3ClientAdapter.get).toHaveBeenCalledTimes(1);
@@ -161,7 +161,7 @@ describe('PreviewService', () => {
 					it('returns preview file response', async () => {
 						const { fileRecord, previewParams, previewFileResponse } = setup();
 
-						const response = await previewService.getPreview(fileRecord, previewParams);
+						const response = await previewService.download(fileRecord, previewParams);
 
 						expect(response).toEqual(previewFileResponse);
 					});
@@ -206,7 +206,7 @@ describe('PreviewService', () => {
 							const { fileRecord, previewParams, bytesRange, originPath, previewPath, format } =
 								setup(notFoundException);
 
-							await previewService.getPreview(fileRecord, previewParams, bytesRange);
+							await previewService.download(fileRecord, previewParams, bytesRange);
 
 							expect(previewProducer.generate).toHaveBeenCalledWith({
 								originFilePath: originPath,
@@ -220,7 +220,7 @@ describe('PreviewService', () => {
 							const notFoundException = new NotFoundException();
 							const { fileRecord, previewParams, previewPath } = setup(notFoundException);
 
-							await previewService.getPreview(fileRecord, previewParams);
+							await previewService.download(fileRecord, previewParams);
 
 							expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewPath, undefined);
 							expect(s3ClientAdapter.get).toHaveBeenCalledTimes(2);
@@ -232,7 +232,7 @@ describe('PreviewService', () => {
 							const error = new Error('testError');
 							const { fileRecord, previewParams } = setup(error);
 
-							await expect(previewService.getPreview(fileRecord, previewParams)).rejects.toThrow(error);
+							await expect(previewService.download(fileRecord, previewParams)).rejects.toThrow(error);
 						});
 					});
 				});
@@ -274,7 +274,7 @@ describe('PreviewService', () => {
 					it('should pass error', async () => {
 						const { fileRecord, previewParams } = setup();
 
-						await expect(previewService.getPreview(fileRecord, previewParams)).rejects.toThrow();
+						await expect(previewService.download(fileRecord, previewParams)).rejects.toThrow();
 					});
 				});
 			});
@@ -316,7 +316,7 @@ describe('PreviewService', () => {
 					it('calls S3ClientAdapters get method', async () => {
 						const { fileRecord, previewParams, previewPath } = setup();
 
-						await previewService.getPreview(fileRecord, previewParams);
+						await previewService.download(fileRecord, previewParams);
 
 						expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewPath, undefined);
 						expect(s3ClientAdapter.get).toHaveBeenCalledTimes(1);
@@ -325,7 +325,7 @@ describe('PreviewService', () => {
 					it('returns preview file response', async () => {
 						const { fileRecord, previewParams, previewFileResponse } = setup();
 
-						const response = await previewService.getPreview(fileRecord, previewParams);
+						const response = await previewService.download(fileRecord, previewParams);
 
 						expect(response).toEqual(previewFileResponse);
 					});
@@ -333,7 +333,7 @@ describe('PreviewService', () => {
 					it('does not call generate', async () => {
 						const { fileRecord, previewParams, bytesRange } = setup();
 
-						await previewService.getPreview(fileRecord, previewParams, bytesRange);
+						await previewService.download(fileRecord, previewParams, bytesRange);
 
 						expect(previewProducer.generate).toHaveBeenCalledTimes(0);
 					});
@@ -378,7 +378,7 @@ describe('PreviewService', () => {
 							const { fileRecord, previewParams, bytesRange, originPath, previewPath, format } =
 								setup(notFoundException);
 
-							await previewService.getPreview(fileRecord, previewParams, bytesRange);
+							await previewService.download(fileRecord, previewParams, bytesRange);
 
 							expect(previewProducer.generate).toHaveBeenCalledWith({
 								originFilePath: originPath,
@@ -392,7 +392,7 @@ describe('PreviewService', () => {
 							const notFoundException = new NotFoundException();
 							const { fileRecord, previewParams, previewPath } = setup(notFoundException);
 
-							await previewService.getPreview(fileRecord, previewParams);
+							await previewService.download(fileRecord, previewParams);
 
 							expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewPath, undefined);
 							expect(s3ClientAdapter.get).toHaveBeenCalledTimes(2);
@@ -404,7 +404,7 @@ describe('PreviewService', () => {
 							const error = new Error('testError');
 							const { fileRecord, previewParams } = setup(error);
 
-							await expect(previewService.getPreview(fileRecord, previewParams)).rejects.toThrow(error);
+							await expect(previewService.download(fileRecord, previewParams)).rejects.toThrow(error);
 						});
 					});
 				});
@@ -446,7 +446,7 @@ describe('PreviewService', () => {
 					it('should pass error', async () => {
 						const { fileRecord, previewParams } = setup();
 
-						await expect(previewService.getPreview(fileRecord, previewParams)).rejects.toThrow();
+						await expect(previewService.download(fileRecord, previewParams)).rejects.toThrow();
 					});
 				});
 			});
@@ -475,7 +475,7 @@ describe('PreviewService', () => {
 				it('passes error', async () => {
 					const { fileRecord, previewParams, bytesRange, error } = setup();
 
-					await expect(previewService.getPreview(fileRecord, previewParams, bytesRange)).rejects.toThrowError(error);
+					await expect(previewService.download(fileRecord, previewParams, bytesRange)).rejects.toThrowError(error);
 				});
 			});
 
@@ -501,7 +501,7 @@ describe('PreviewService', () => {
 				it('passes error', async () => {
 					const { fileRecord, previewParams, bytesRange, error } = setup();
 
-					await expect(previewService.getPreview(fileRecord, previewParams, bytesRange)).rejects.toThrowError(error);
+					await expect(previewService.download(fileRecord, previewParams, bytesRange)).rejects.toThrowError(error);
 				});
 			});
 
@@ -528,7 +528,7 @@ describe('PreviewService', () => {
 				it('calls download with correct params', async () => {
 					const { fileRecord, previewParams, bytesRange, error } = setup();
 
-					await expect(previewService.getPreview(fileRecord, previewParams, bytesRange)).rejects.toThrowError(error);
+					await expect(previewService.download(fileRecord, previewParams, bytesRange)).rejects.toThrowError(error);
 				});
 			});
 
@@ -554,7 +554,7 @@ describe('PreviewService', () => {
 				it('calls download with correct params', async () => {
 					const { fileRecord, previewParams, bytesRange, error } = setup();
 
-					await expect(previewService.getPreview(fileRecord, previewParams, bytesRange)).rejects.toThrowError(error);
+					await expect(previewService.download(fileRecord, previewParams, bytesRange)).rejects.toThrowError(error);
 				});
 			});
 		});

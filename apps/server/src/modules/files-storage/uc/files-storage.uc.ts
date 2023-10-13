@@ -155,7 +155,7 @@ export class FilesStorageUC {
 
 		this.filesStorageService.checkFileName(fileRecord, params);
 
-		const result = this.previewService.getPreview(fileRecord, previewParams, bytesRange);
+		const result = this.previewService.download(fileRecord, previewParams, bytesRange);
 
 		return result;
 	}
