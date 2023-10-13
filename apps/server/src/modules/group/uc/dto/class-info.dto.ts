@@ -5,6 +5,8 @@ export class ClassInfoDto {
 
 	teachers: string[];
 
+	isUpgradable?: boolean;
+
 	constructor(props: ClassInfoDto) {
 		this.name = props.name;
 		this.externalSourceName = props.externalSourceName;

@@ -23,11 +23,13 @@ export class GroupUcMapper {
 
 	public static mapClassToClassInfoDto(clazz: Class, teachers: UserDO[]): ClassInfoDto {
 		const name = clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name;
+		const isUpgradable = clazz.gradeLevel !== 13 && !clazz.successor;
 
 		const mapped: ClassInfoDto = new ClassInfoDto({
 			name,
 			externalSourceName: clazz.source,
 			teachers: teachers.map((user: UserDO) => user.lastName),
+			isUpgradable,
 		});
 
 		return mapped;

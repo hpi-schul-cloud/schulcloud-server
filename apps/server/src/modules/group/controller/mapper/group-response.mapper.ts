@@ -27,6 +27,7 @@ export class GroupResponseMapper {
 			name: classInfo.name,
 			externalSourceName: classInfo.externalSourceName,
 			teachers: classInfo.teachers,
+			isUpgradable: classInfo.isUpgradable,
 		});
 
 		return mapped;
