@@ -6,7 +6,6 @@ import { PreviewProducer } from '@shared/infra/preview-generator';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { Readable } from 'stream';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
@@ -18,17 +17,6 @@ import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.e
 import { FileResponseBuilder } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
 import { PreviewService } from './preview.service';
-
-const streamMock = jest.fn();
-const resizeMock = jest.fn();
-const imageMagickMock = () => {
-	return { stream: streamMock, resize: resizeMock, data: Readable.from('text') };
-};
-jest.mock('gm', () => {
-	return {
-		subClass: () => imageMagickMock,
-	};
-});
 
 const buildFileRecordWithParams = (mimeType: string, scanStatus?: ScanStatus) => {
 	const parentId = new ObjectId().toHexString();

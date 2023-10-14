@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { PreviewGeneratorConsumerModule } from '@shared/infra/preview-generator';
-import { s3Config } from './files-storage.config';
+import { defaultConfig, s3Config } from './files-storage.config';
 
 @Module({
-	imports: [PreviewGeneratorConsumerModule.register(s3Config)],
+	imports: [PreviewGeneratorConsumerModule.register({ storageConfig: s3Config, serverConfig: defaultConfig })],
 })
 export class PreviewGeneratorAMQPModule {}

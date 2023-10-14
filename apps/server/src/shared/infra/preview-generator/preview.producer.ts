@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { FilesPreviewEvents, FilesPreviewExchange, RpcMessageProducer } from '@shared/infra/rabbitmq';
 import { Logger } from '@src/core/logger';
 import { PreviewFileOptions, PreviewResponseMessage } from './interface';
+import { PreviewModuleConfig } from './interface/preview-consumer-config';
 import { PreviewActionsLoggable } from './loggable/preview-actions.loggable';
 
 @Injectable()
@@ -11,7 +12,7 @@ export class PreviewProducer extends RpcMessageProducer {
 	constructor(
 		protected readonly amqpConnection: AmqpConnection,
 		private readonly logger: Logger,
-		protected readonly configService: ConfigService<any, true>
+		protected readonly configService: ConfigService<PreviewModuleConfig, true>
 	) {
 		const timeout = configService.get<number>('INCOMING_REQUEST_TIMEOUT');
 
