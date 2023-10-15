@@ -18,7 +18,8 @@ import {
 } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
+import { importUserFactory, schoolFactory, userFactory } from '@shared/testing';
+import { federalStateDoFactory } from '@shared/testing/factory/domainobject/federal-state.do.factory';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { LoggerModule } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
@@ -649,8 +650,6 @@ describe('[ImportUserModule]', () => {
 				schoolParams.externalId = 'foo';
 				schoolParams.inMaintenanceSince = currentDate;
 				schoolParams.systems = [system.id];
-				schoolParams.federalState.createdAt = currentDate;
-				schoolParams.federalState.updatedAt = currentDate;
 
 				expect(schoolServiceSaveSpy).toHaveBeenCalledWith(schoolParams);
 			});

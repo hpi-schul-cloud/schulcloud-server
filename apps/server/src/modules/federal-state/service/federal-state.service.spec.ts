@@ -1,12 +1,11 @@
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FederalStateRepo } from '@shared/repo';
 import { federalStateFactory, setupEntities } from '@shared/testing';
-import { FederalStateEntity } from '@shared/domain';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { FederalStateMapper } from '../mapper/federal-state.mapper';
 import { FederalStateService } from './federal-state.service';
-import { FederalStateNames } from '../types/federal-state-names.enum';
 
-describe('FederalStateService', () => {
+describe(FederalStateService.name, () => {
 	let module: TestingModule;
 	let service: FederalStateService;
 	let federalStateRepo: DeepMocked<FederalStateRepo>;
@@ -32,22 +31,26 @@ describe('FederalStateService', () => {
 		await module.close();
 	});
 
-	describe('findFederalStateByName', () => {
+	describe('findAll', () => {
 		const setup = () => {
-			const federalState: FederalStateEntity = federalStateFactory.build({ name: FederalStateNames.NIEDERSACHEN });
-			federalStateRepo.findByName.mockResolvedValue(federalState);
+			const federalStateEntities = federalStateFactory.buildList(5);
+			federalStateRepo.findAll.mockResolvedValue(federalStateEntities);
 
-			return {
-				federalState,
-			};
+			return { federalStateEntities };
 		};
 
-		it('should return a federal state', async () => {
-			const { federalState } = setup();
+		it('should return do objects', async () => {
+			const { federalStateEntities } = setup();
 
-			const result: FederalStateEntity = await service.findFederalStateByName(federalState.name);
+			const federalStateDos = await service.findAll();
+			const toExpect = federalStateEntities.map((e) => FederalStateMapper.mapFederalStateEntityToDO(e));
 
-			expect(result).toBeDefined();
+			expect(federalStateDos.length).toEqual(federalStateEntities.length);
+			expect(federalStateDos).toEqual(toExpect);
 		});
 	});
+
+	// describe('create', () => {});
+
+	// describe('delete', () => {});
 });

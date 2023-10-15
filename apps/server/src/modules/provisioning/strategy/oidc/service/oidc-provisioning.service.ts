@@ -1,11 +1,13 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, ExternalSource, FederalStateEntity, SchoolFeatures, SchoolYearEntity } from '@shared/domain';
+import { EntityId, ExternalSource, SchoolFeatures, SchoolYearEntity } from '@shared/domain';
 import { LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
+import { FederalStateService } from '@src/modules/federal-state';
+import { FederalStateDO } from '@src/modules/federal-state/domainobject';
 import { Group, GroupService, GroupUser } from '@src/modules/group';
-import { FederalStateService, LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
+import { LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
 import { FederalStateNames } from '@src/modules/legacy-school/types';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
@@ -46,7 +48,7 @@ export class OidcProvisioningService {
 			}
 		} else {
 			const schoolYear: SchoolYearEntity = await this.schoolYearService.getCurrentSchoolYear();
-			const federalState: FederalStateEntity = await this.federalStateService.findFederalStateByName(
+			const federalState: FederalStateDO = await this.federalStateService.findFederalStateByName(
 				FederalStateNames.NIEDERSACHEN
 			);
 

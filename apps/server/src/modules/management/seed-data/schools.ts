@@ -1,13 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import {
-	FederalStateEntity,
-	ISchoolProperties,
-	SchoolFeatures,
-	SchoolRoles,
-	SchoolYearEntity,
-	SystemEntity,
-} from '@shared/domain';
+import { ISchoolProperties, SchoolFeatures, SchoolRoles, SchoolYearEntity, SystemEntity } from '@shared/domain';
 import { federalStateFactory, schoolFactory } from '@shared/testing';
+import { FederalStateEntity } from '@src/modules/federal-state/entity';
 import { DeepPartial } from 'fishery';
 import { EFederalState } from './federalstates';
 import { SeedSchoolYearEnum } from './schoolyears';

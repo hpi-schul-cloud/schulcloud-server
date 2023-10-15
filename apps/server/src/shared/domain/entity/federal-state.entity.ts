@@ -1,5 +1,5 @@
 import { Embeddable, Embedded, Entity, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps } from './base.entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 
 export interface IFederalStateProperties {
 	name: string;
@@ -18,11 +18,14 @@ export class County {
 		this.antaresKey = county.antaresKey;
 	}
 
+	@Property()
 	name: string;
 
+	@Property()
 	countyId: number;
 
-	antaresKey: string;
+	@Property()
+	antaresKey?: string;
 }
 
 @Entity({ tableName: 'federalstates' })
@@ -44,6 +47,7 @@ export class FederalStateEntity extends BaseEntityWithTimestamps {
 		this.name = props.name;
 		this.abbreviation = props.abbreviation;
 		this.logoUrl = props.logoUrl;
+		this.counties = props.counties;
 		this.updatedAt = props.updatedAt;
 		this.createdAt = props.createdAt;
 	}

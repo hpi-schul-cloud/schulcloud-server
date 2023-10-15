@@ -5,10 +5,10 @@ import { ExternalSource, LegacySchoolDo, RoleName, RoleReference, SchoolFeatures
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import {
 	externalGroupDtoFactory,
-	federalStateFactory,
+	federalStateDoFactory,
 	groupFactory,
-	roleDtoFactory,
 	legacySchoolDoFactory,
+	roleDtoFactory,
 	schoolYearFactory,
 	userDoFactory,
 	roleFactory,
@@ -16,10 +16,11 @@ import {
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
+import { FederalStateService } from '@src/modules/federal-state';
 import { Group, GroupService } from '@src/modules/group';
+import { LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { FederalStateService, LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -128,7 +129,7 @@ describe('OidcProvisioningService', () => {
 			schoolService.save.mockResolvedValue(savedSchoolDO);
 			schoolService.getSchoolByExternalId.mockResolvedValue(null);
 			schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYearFactory.build());
-			federalStateService.findFederalStateByName.mockResolvedValue(federalStateFactory.build());
+			federalStateService.findFederalStateByName.mockResolvedValue(federalStateDoFactory.build());
 
 			return {
 				systemId,

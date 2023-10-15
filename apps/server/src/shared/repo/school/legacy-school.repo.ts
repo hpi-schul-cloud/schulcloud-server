@@ -3,6 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
 	EntityId,
+	FederalStateEntity,
 	ISchoolProperties,
 	LegacySchoolDo,
 	SchoolEntity,
@@ -10,6 +11,7 @@ import {
 	UserLoginMigrationEntity,
 } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
+import { FederalStateDO } from '@src/modules/federal-state/domainobject/federal-state.do';
 import { BaseDORepo } from '../base.do.repo';
 
 /**
@@ -59,7 +61,14 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity, I
 			schoolYear: entity.schoolYear,
 			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: SystemEntity) => system.id) : [],
 			userLoginMigrationId: entity.userLoginMigration?.id,
-			federalState: entity.federalState,
+			federalState: new FederalStateDO({
+				id: entity.federalState.id,
+				name: entity.federalState.name,
+				abbreviation: entity.federalState.abbreviation,
+				logoUrl: entity.federalState.logoUrl,
+				createdAt: entity.federalState.createdAt,
+				updatedAt: entity.federalState.updatedAt,
+			}),
 		});
 	}
 
@@ -79,7 +88,7 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity, I
 			userLoginMigration: entityDO.userLoginMigrationId
 				? this._em.getReference(UserLoginMigrationEntity, entityDO.userLoginMigrationId)
 				: undefined,
-			federalState: entityDO.federalState,
+			federalState: this._em.getReference(FederalStateEntity, entityDO.federalState.id),
 		};
 	}
 }
