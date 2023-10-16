@@ -103,14 +103,13 @@ describe('ContentStorage', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				ContentStorage,
-				{ provide: 'S3ClientAdapter_Content', useValue: createMock<S3ClientAdapter>() },
 				{ provide: H5PContentRepo, useValue: createMock<H5PContentRepo>() },
 				{ provide: H5P_CONTENT_S3_CONNECTION, useValue: createMock<S3ClientAdapter>() },
 			],
 		}).compile();
 
 		service = module.get(ContentStorage);
-		s3ClientAdapter = module.get('S3ClientAdapter_Content');
+		s3ClientAdapter = module.get(H5P_CONTENT_S3_CONNECTION);
 		contentRepo = module.get(H5PContentRepo);
 	});
 
@@ -798,7 +797,7 @@ describe('ContentStorage', () => {
 		describe('WHEN content does not exist', () => {
 			it('should throw NotFoundException', async () => {
 				const { content, user } = setup();
-				contentRepo.findById.mockRejectedValueOnce(new Error());
+				contentRepo.existsOne.mockRejectedValueOnce(new Error());
 
 				const listPromise = service.listFiles(content.id, user);
 

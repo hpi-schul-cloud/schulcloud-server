@@ -37,16 +37,12 @@ describe('LibraryStorage', () => {
 					provide: LibraryRepo,
 					useValue: createMock<LibraryRepo>(),
 				},
-				{
-					provide: 'S3ClientAdapter_Libraries',
-					useValue: createMock<S3ClientAdapter>(),
-				},
 				{ provide: H5P_LIBRARIES_S3_CONNECTION, useValue: createMock<S3ClientAdapter>() },
 			],
 		}).compile();
 
 		storage = module.get(LibraryStorage);
-		s3ClientAdapter = module.get('S3ClientAdapter_Libraries');
+		s3ClientAdapter = module.get(H5P_LIBRARIES_S3_CONNECTION);
 		repo = module.get(LibraryRepo);
 	});
 
