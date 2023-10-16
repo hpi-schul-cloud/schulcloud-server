@@ -2,12 +2,8 @@ import { Doc } from 'yjs';
 import WebSocket from 'ws';
 import { Awareness, encodeAwarenessUpdate } from 'y-protocols/awareness';
 import { encoding } from 'lib0';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { WSMessageType } from '@src/modules/tldraw/types/connection-enum';
-import { TldrawWsService } from '@src/modules/tldraw/service';
-
-// disable gc when using snapshots!
-const gcEnabled: boolean = Configuration.get('TLDRAW__GC_ENABLED') as boolean;
+import { WSMessageType } from '../types/connection-enum';
+import { TldrawWsService } from '../service';
 
 export class WsSharedDocDo extends Doc {
 	name: string;
@@ -19,8 +15,9 @@ export class WsSharedDocDo extends Doc {
 	/**
 	 * @param {string} name
 	 * @param {TldrawWsService} tldrawService
+	 * @param {boolean} gcEnabled
 	 */
-	constructor(name: string, private tldrawService: TldrawWsService) {
+	constructor(name: string, private tldrawService: TldrawWsService, gcEnabled = true) {
 		super({ gc: gcEnabled });
 		this.name = name;
 		this.conns = new Map();
@@ -35,15 +32,24 @@ export class WsSharedDocDo extends Doc {
 
 	/**
 	 * @param {{ added: Array<number>, updated: Array<number>, removed: Array<number> }} changes
-	 * @param {WebSocket | null} conn Origin is the connection that made the change
+	 * @param {WebSocket | null} wsConnection Origin is the connection that made the change
 	 */
 	public awarenessChangeHandler = (
 		{ added, updated, removed }: { added: Array<number>; updated: Array<number>; removed: Array<number> },
-		conn: WebSocket | null
+		wsConnection: WebSocket | null
 	) => {
+		const changedClients = this.manageClientsConnections({ added, updated, removed }, wsConnection);
+		const buff = this.prepareAwarenessMessage(changedClients);
+		this.sendAwarenessMessage(buff);
+	};
+
+	private manageClientsConnections(
+		{ added, updated, removed }: { added: Array<number>; updated: Array<number>; removed: Array<number> },
+		wsConnection: WebSocket | null
+	) {
 		const changedClients = added.concat(updated, removed);
-		if (conn !== null) {
-			const connControlledIDs = this.conns.get(conn) as Set<number>;
+		if (wsConnection !== null) {
+			const connControlledIDs = this.conns.get(wsConnection);
 			if (connControlledIDs !== undefined) {
 				added.forEach((clientID) => {
 					connControlledIDs.add(clientID);
@@ -53,13 +59,20 @@ export class WsSharedDocDo extends Doc {
 				});
 			}
 		}
-		// broadcast awareness update
+		return changedClients;
+	}
+
+	private prepareAwarenessMessage(changedClients: number[]) {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, WSMessageType.AWARENESS);
 		encoding.writeVarUint8Array(encoder, encodeAwarenessUpdate(this.awareness, changedClients));
-		const buff = encoding.toUint8Array(encoder);
+		const message = encoding.toUint8Array(encoder);
+		return message;
+	}
+
+	private sendAwarenessMessage(buff: Uint8Array) {
 		this.conns.forEach((_, c) => {
 			this.tldrawService.send(this, c, buff);
 		});
-	};
+	}
 }

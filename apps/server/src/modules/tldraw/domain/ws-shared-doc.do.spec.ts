@@ -5,30 +5,22 @@ import { WsAdapter } from '@nestjs/platform-ws';
 import { CoreModule } from '@src/core';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
-import { config } from '@src/modules/tldraw/config';
-import { TldrawBoardRepo } from '@src/modules/tldraw/repo/tldraw-board.repo';
 import { createMock } from '@golevelup/ts-jest';
-import { WsSharedDocDo } from '@src/modules/tldraw/domain/ws-shared-doc.do';
-import { TldrawWsService } from '@src/modules/tldraw/service';
 import * as AwarenessProtocol from 'y-protocols/awareness';
+import { config } from '../config';
+import { TldrawBoardRepo } from '../repo/tldraw-board.repo';
+import { TldrawWsService } from '../service';
+import { WsSharedDocDo } from './ws-shared-doc.do';
 import { TldrawWs } from '../controller';
+import { TestHelper } from '../helper/test-helper';
 
-jest.mock('../utils', () => {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-	return {
-		__esModule: true,
-		...jest.requireActual('../utils'),
-		calculateDiff: jest.fn(),
-	};
-});
-
-describe('TldrawBoardRepo', () => {
+describe('WsSharedDocDo', () => {
 	let app: INestApplication;
 	let ws: WebSocket;
 	let service: TldrawWsService;
 
 	const gatewayPort = 3346;
-	const wsUrl = `ws://localhost:${gatewayPort}`;
+	const wsUrl = TestHelper.getWsUrl(gatewayPort);
 
 	jest.useFakeTimers();
 
@@ -57,20 +49,9 @@ describe('TldrawBoardRepo', () => {
 		await app.close();
 	});
 
-	const setupWs = async (docName?: string) => {
-		if (docName) {
-			ws = new WebSocket(`${wsUrl}/${docName}`);
-		} else {
-			ws = new WebSocket(`${wsUrl}`);
-		}
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
-	};
-
 	describe('when awareness change was called', () => {
 		const setup = async () => {
-			await setupWs();
+			ws = await TestHelper.setupWs(wsUrl);
 
 			class MockAwareness {
 				on = jest.fn();

@@ -100,8 +100,7 @@ export class TldrawWsService {
 	 */
 	getYDoc(docname: string, gc = true) {
 		return map.setIfUndefined(this.docs, docname, () => {
-			const doc = new WsSharedDocDo(docname, this);
-			doc.gc = gc;
+			const doc = new WsSharedDocDo(docname, this, gc);
 			if (this.persistence !== null) {
 				this.persistence.bindState(docname, doc).catch(() => {});
 			}

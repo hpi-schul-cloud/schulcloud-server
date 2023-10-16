@@ -1,9 +1,9 @@
 import { WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection } from '@nestjs/websockets';
 import { Server, WebSocket } from 'ws';
 import { ConfigService } from '@nestjs/config';
-import { TldrawConfig, SOCKET_PORT } from '@src/modules/tldraw/config';
-import { WsCloseCodeEnum } from '@src/modules/tldraw/types/ws-close-code-enum';
-import { TldrawWsService } from '@src/modules/tldraw/service';
+import { TldrawConfig, SOCKET_PORT } from '../config';
+import { WsCloseCodeEnum } from '../types/ws-close-code-enum';
+import { TldrawWsService } from '../service';
 
 @WebSocketGateway(SOCKET_PORT)
 export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
@@ -22,7 +22,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 			this.tldrawWsService.setupWSConnection(client, docName);
 		} else {
 			client.close(
-				WsCloseCodeEnum.WS_CUSTOM_CLIENT_CLOSE_CODE,
+				WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
 				'Document name is mandatory in url or Tldraw Tool is turned off.'
 			);
 		}
@@ -42,6 +42,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	private getDocNameFromRequest(request: Request): string {
-		return request.url.slice(1).split('?')[0].replace('tldraw-server/', '');
+		const urlStripped = request.url.replace('/', '');
+		return urlStripped;
 	}
 }

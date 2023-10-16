@@ -14,6 +14,7 @@ import { encoding } from 'lib0';
 import { TldrawBoardRepo } from '@src/modules/tldraw/repo';
 import { TldrawWs } from '@src/modules/tldraw/controller';
 import { TldrawWsService } from '.';
+import { TestHelper } from '../helper/test-helper';
 
 describe('TldrawWS', () => {
 	let app: INestApplication;
@@ -21,7 +22,7 @@ describe('TldrawWS', () => {
 	let service: TldrawWsService;
 
 	const gatewayPort = 3346;
-	const wsUrl = `ws://localhost:${gatewayPort}`;
+	const wsUrl = TestHelper.getWsUrl(gatewayPort);
 	const testMessage =
 		'AZQBAaCbuLANBIsBeyJpZCI6ImU1YTYwZGVjLTJkMzktNDAxZS0xMDVhLWIwMmM0N2JkYjFhMiIsInRkVXNlciI6eyJp' +
 		'ZCI6ImU1YTYwZGVjLTJkMzktNDAxZS0xMDVhLWIwMmM0N2JkYjFhMiIsImNvbG9yIjoiI0JENTRDNiIsInBvaW50Ijpb' +
@@ -65,17 +66,6 @@ describe('TldrawWS', () => {
 		};
 	};
 
-	const setupWs = async (docName?: string) => {
-		if (docName) {
-			ws = new WebSocket(`${wsUrl}/${docName}`);
-		} else {
-			ws = new WebSocket(`${wsUrl}`);
-		}
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
-	};
-
 	it('should service properties be defined', () => {
 		expect(service).toBeDefined();
 		expect(service.pingTimeout).toBeDefined();
@@ -84,7 +74,7 @@ describe('TldrawWS', () => {
 
 	describe('when client is not connected to WS', () => {
 		const setup = async () => {
-			await setupWs();
+			ws = await TestHelper.setupWs(wsUrl);
 
 			const closeConSpy = jest.spyOn(service, 'closeConn').mockImplementationOnce(() => {});
 			const sendSpy = jest.spyOn(service, 'send');
@@ -146,7 +136,7 @@ describe('TldrawWS', () => {
 
 	describe('when websocket has ready state 0', () => {
 		const setup = async () => {
-			await setupWs();
+			ws = await TestHelper.setupWs(wsUrl);
 
 			const sendSpy = jest.spyOn(service, 'send');
 			const doc: { conns: Map<WebSocket, Set<number>> } = { conns: new Map() };
@@ -178,7 +168,7 @@ describe('TldrawWS', () => {
 
 	describe('when received message of specific type', () => {
 		const setup = async (messageValues: number[]) => {
-			await setupWs('TEST');
+			ws = await TestHelper.setupWs(wsUrl, 'TEST');
 
 			const sendSpy = jest.spyOn(service, 'send');
 			const applyAwarenessUpdateSpy = jest.spyOn(AwarenessProtocol, 'applyAwarenessUpdate');
@@ -235,7 +225,7 @@ describe('TldrawWS', () => {
 
 	describe('when message is sent', () => {
 		const setup = async (messageValues: number[]) => {
-			await setupWs('TEST');
+			ws = await TestHelper.setupWs(wsUrl, 'TEST');
 
 			const messageHandlerSpy = jest.spyOn(service, 'messageHandler');
 			jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementationOnce((dec, enc) => {
@@ -265,7 +255,7 @@ describe('TldrawWS', () => {
 
 	describe('when error is thrown', () => {
 		const setup = async () => {
-			await setupWs();
+			ws = await TestHelper.setupWs(wsUrl);
 
 			const sendSpy = jest.spyOn(service, 'send');
 			jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementationOnce(() => {
@@ -295,7 +285,7 @@ describe('TldrawWS', () => {
 
 	describe('when trying to close already closed connection', () => {
 		const setup = async () => {
-			await setupWs();
+			ws = await TestHelper.setupWs(wsUrl);
 
 			jest.spyOn(ws, 'close').mockImplementationOnce(() => {
 				throw new Error('some error');
@@ -317,7 +307,7 @@ describe('TldrawWS', () => {
 
 	describe('when ping failed', () => {
 		const setup = async () => {
-			await setupWs('TEST');
+			ws = await TestHelper.setupWs(wsUrl, 'TEST');
 
 			const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockImplementationOnce(() => {});
 			const closeConnSpy = jest.spyOn(service, 'closeConn');
@@ -348,7 +338,7 @@ describe('TldrawWS', () => {
 
 	describe('when awareness states size greater then one', () => {
 		const setup = async () => {
-			await setupWs('TEST');
+			ws = await TestHelper.setupWs(wsUrl, 'TEST');
 
 			const doc = new WsSharedDocDo('TEST', service);
 			doc.awareness.states = new Map();

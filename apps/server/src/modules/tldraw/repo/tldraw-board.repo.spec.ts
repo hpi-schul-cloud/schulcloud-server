@@ -5,22 +5,13 @@ import { WsAdapter } from '@nestjs/platform-ws';
 import { CoreModule } from '@src/core';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
-import { config } from '@src/modules/tldraw/config';
-import { TldrawBoardRepo } from '@src/modules/tldraw/repo/tldraw-board.repo';
 import { createMock } from '@golevelup/ts-jest';
-import { WsSharedDocDo } from '@src/modules/tldraw/domain/ws-shared-doc.do';
-import { TldrawWsService } from '@src/modules/tldraw/service';
+import { config } from '../config';
+import { TldrawBoardRepo } from './tldraw-board.repo';
+import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
+import { TldrawWsService } from '../service';
 import { TldrawWs } from '../controller';
-import * as YDocUtils from '../utils';
-
-jest.mock('../utils', () => {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-	return {
-		__esModule: true,
-		...jest.requireActual('../utils'),
-		calculateDiff: jest.fn(),
-	};
-});
+import { TestHelper } from '../helper/test-helper';
 
 describe('TldrawBoardRepo', () => {
 	let app: INestApplication;
@@ -29,7 +20,7 @@ describe('TldrawBoardRepo', () => {
 	let service: TldrawWsService;
 
 	const gatewayPort = 3346;
-	const wsUrl = `ws://localhost:${gatewayPort}`;
+	const wsUrl = TestHelper.getWsUrl(gatewayPort);
 	const testMessage =
 		'AZQBAaCbuLANBIsBeyJpZCI6ImU1YTYwZGVjLTJkMzktNDAxZS0xMDVhLWIwMmM0N2JkYjFhMiIsInRkVXNlciI6eyJp' +
 		'ZCI6ImU1YTYwZGVjLTJkMzktNDAxZS0xMDVhLWIwMmM0N2JkYjFhMiIsImNvbG9yIjoiI0JENTRDNiIsInBvaW50Ijpb' +
@@ -68,17 +59,6 @@ describe('TldrawBoardRepo', () => {
 		await app.close();
 	});
 
-	const setupWs = async (docName?: string) => {
-		if (docName) {
-			ws = new WebSocket(`${wsUrl}/${docName}`);
-		} else {
-			ws = new WebSocket(`${wsUrl}`);
-		}
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
-	};
-
 	it('should repo properties be defined', () => {
 		expect(repo).toBeDefined();
 		expect(repo.mdb).toBeDefined();
@@ -92,7 +72,7 @@ describe('TldrawBoardRepo', () => {
 	describe('when document receive empty update', () => {
 		const setup = async () => {
 			const doc = new WsSharedDocDo('TEST2', service);
-			await setupWs('TEST2');
+			ws = await TestHelper.setupWs(wsUrl, 'TEST2');
 			const wsSet = new Set();
 			wsSet.add(ws);
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -102,24 +82,21 @@ describe('TldrawBoardRepo', () => {
 				.spyOn(repo.mdb, 'getYDoc')
 				.mockImplementation(() => new WsSharedDocDo('TEST', service));
 			const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdate').mockImplementation(() => {});
-			const calculateDiffSpy = jest.spyOn(YDocUtils, 'calculateDiff').mockImplementationOnce(() => 0);
 
 			return {
 				doc,
 				storeUpdateSpy,
 				storeGetYDocSpy,
-				calculateDiffSpy,
 			};
 		};
 
 		it('should not update db with diff', async () => {
-			const { doc, storeUpdateSpy, calculateDiffSpy, storeGetYDocSpy } = await setup();
+			const { doc, storeUpdateSpy, storeGetYDocSpy } = await setup();
 
 			await repo.updateDocument('TEST2', doc);
-			await delay(200);
+			await delay(100);
 			expect(storeUpdateSpy).toHaveBeenCalledTimes(0);
 			storeUpdateSpy.mockRestore();
-			calculateDiffSpy.mockRestore();
 			storeGetYDocSpy.mockRestore();
 			ws.close();
 		});
@@ -128,7 +105,7 @@ describe('TldrawBoardRepo', () => {
 	describe('when document receive update', () => {
 		const setup = async () => {
 			const doc = new WsSharedDocDo('TEST', service);
-			await setupWs('TEST');
+			ws = await TestHelper.setupWs(wsUrl, 'TEST');
 			const wsSet = new Set();
 			wsSet.add(ws);
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -139,27 +116,24 @@ describe('TldrawBoardRepo', () => {
 				.spyOn(repo.mdb, 'getYDoc')
 				.mockImplementation(() => new WsSharedDocDo('TEST', service));
 			const byteArray = new TextEncoder().encode(testMessage);
-			const calculateDiffSpy = jest.spyOn(YDocUtils, 'calculateDiff').mockImplementationOnce(() => 1);
 
 			return {
 				doc,
 				byteArray,
 				storeUpdateSpy,
 				storeGetYDocSpy,
-				calculateDiffSpy,
 			};
 		};
 
 		it('should store on db', async () => {
-			const { doc, byteArray, storeUpdateSpy, storeGetYDocSpy, calculateDiffSpy } = await setup();
+			const { doc, byteArray, storeUpdateSpy, storeGetYDocSpy } = await setup();
 
 			await repo.updateDocument('TEST', doc);
 			doc.emit('update', [byteArray, undefined, doc]);
-			await delay(200);
+			await delay(100);
 			expect(storeUpdateSpy).toHaveBeenCalled();
-			expect(storeUpdateSpy).toHaveBeenCalledTimes(2);
+			expect(storeUpdateSpy).toHaveBeenCalledTimes(1);
 			storeUpdateSpy.mockRestore();
-			calculateDiffSpy.mockRestore();
 			storeGetYDocSpy.mockRestore();
 			ws.close();
 		});

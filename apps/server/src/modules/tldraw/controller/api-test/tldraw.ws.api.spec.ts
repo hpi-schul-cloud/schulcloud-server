@@ -6,10 +6,11 @@ import { INestApplication } from '@nestjs/common';
 import { CoreModule } from '@src/core';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
-import { config } from '@src/modules/tldraw/config';
-import { TldrawWsService } from '@src/modules/tldraw/service';
-import { TldrawBoardRepo } from '@src/modules/tldraw/repo';
+import { config } from '../../config';
+import { TldrawWsService } from '../../service';
+import { TldrawBoardRepo } from '../../repo';
 import { TldrawWs } from '../tldraw.ws';
+import { TestHelper } from '../../helper/test-helper';
 
 describe('WebSocketController (WsAdapter)', () => {
 	let app: INestApplication;
@@ -17,22 +18,11 @@ describe('WebSocketController (WsAdapter)', () => {
 	let ws: WebSocket;
 
 	const gatewayPort = 3346;
-	const wsUrl = `ws://localhost:${gatewayPort}`;
+	const wsUrl = TestHelper.getWsUrl(gatewayPort);
 	const testMessage =
 		'AZQBAaCbuLANBIsBeyJ0ZFVzZXIiOnsiaWQiOiJkNGIxZThmYi0yMWUwLTQ3ZDAtMDI0Y' +
 		'S0zZGEwYjMzNjQ3MjIiLCJjb2xvciI6IiNGMDRGODgiLCJwb2ludCI6WzAsMF0sInNlbGVjdGVkSWRzIjpbXSwiYWN' +
 		'0aXZlU2hhcGVzIjpbXSwic2Vzc2lvbiI6ZmFsc2V9fQ==';
-
-	const setupWs = async (docName?: string) => {
-		if (docName) {
-			ws = new WebSocket(`${wsUrl}/${docName}`);
-		} else {
-			ws = new WebSocket(`${wsUrl}`);
-		}
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
-	};
 
 	const delay = (ms: number) =>
 		new Promise((resolve) => {
@@ -70,7 +60,7 @@ describe('WebSocketController (WsAdapter)', () => {
 			const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
 			jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValueOnce(1);
 
-			await setupWs('TEST');
+			ws = await TestHelper.setupWs(wsUrl, 'TEST');
 
 			const { buffer } = getMessage();
 
@@ -84,7 +74,7 @@ describe('WebSocketController (WsAdapter)', () => {
 			expect(handleConnectionSpy).toHaveBeenCalled();
 			expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
 
-			await delay(2000);
+			await delay(50);
 			ws.close();
 		});
 
@@ -98,7 +88,7 @@ describe('WebSocketController (WsAdapter)', () => {
 				});
 			});
 
-			await delay(200);
+			await delay(50);
 			ws.close();
 		});
 	});
@@ -106,11 +96,8 @@ describe('WebSocketController (WsAdapter)', () => {
 	describe('when tldraw doc has multiple clients', () => {
 		const setup = async () => {
 			const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-			await setupWs('TEST2');
-			const ws2 = new WebSocket(`${wsUrl}/TEST2`);
-			await new Promise((resolve) => {
-				ws2.on('open', resolve);
-			});
+			ws = await TestHelper.setupWs(wsUrl, 'TEST2');
+			const ws2 = await TestHelper.setupWs(wsUrl, 'TEST2');
 
 			const { buffer } = getMessage();
 
@@ -129,17 +116,17 @@ describe('WebSocketController (WsAdapter)', () => {
 			expect(handleConnectionSpy).toHaveBeenCalled();
 			expect(handleConnectionSpy).toHaveBeenCalledTimes(2);
 
-			await delay(200);
+			await delay(50);
 			ws.close();
 			ws2.close();
-		}, 120000);
+		}, 2000);
 	});
 
 	describe('when tldraw is not correctly setup', () => {
 		const setup = async () => {
 			const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
 
-			await setupWs();
+			ws = await TestHelper.setupWs(wsUrl);
 
 			return {
 				handleConnectionSpy,
@@ -156,7 +143,7 @@ describe('WebSocketController (WsAdapter)', () => {
 			expect(handleConnectionSpy).toHaveBeenCalled();
 			expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
 
-			await delay(200);
+			await delay(50);
 			ws.close();
 		});
 	});

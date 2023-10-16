@@ -1,3 +1,3 @@
 export enum WsCloseCodeEnum {
-	WS_CUSTOM_CLIENT_CLOSE_CODE = 4000,
+	WS_CLIENT_BAD_REQUEST_CODE = 4400,
 }

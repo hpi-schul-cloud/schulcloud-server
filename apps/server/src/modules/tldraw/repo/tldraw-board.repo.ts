@@ -3,8 +3,8 @@ import { MongodbPersistence } from 'y-mongodb-provider';
 import { ConfigService } from '@nestjs/config';
 import { TldrawConfig } from '@src/modules/tldraw/config';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
-import { calculateDiff } from '@src/modules/tldraw/utils';
-import { WsSharedDocDo } from '@src/modules/tldraw/types';
+import { calculateDiff } from '../utils';
+import { WsSharedDocDo } from '../types';
 
 @Injectable()
 export class TldrawBoardRepo {
@@ -53,14 +53,10 @@ export class TldrawBoardRepo {
 
 	async updateDocument(docName: string, ydoc: WsSharedDocDo) {
 		const persistedYdoc = await this.getYDocFromMdb(docName);
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		const persistedStateVector = encodeStateVector(persistedYdoc);
 		const diff = encodeStateAsUpdate(ydoc, persistedStateVector);
 		this.updateStoredDocWithDiff(docName, diff);
 
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		applyUpdate(ydoc, encodeStateAsUpdate(persistedYdoc));
 
 		ydoc.on('update', (update) => {
@@ -68,8 +64,6 @@ export class TldrawBoardRepo {
 			this.mdb.storeUpdate(docName, update);
 		});
 
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		persistedYdoc.destroy();
 	}
 
