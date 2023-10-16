@@ -11,5 +11,6 @@ export class ClassInfoDto {
 		this.name = props.name;
 		this.externalSourceName = props.externalSourceName;
 		this.teachers = props.teachers;
+		this.isUpgradable = props.isUpgradable;
 	}
 }

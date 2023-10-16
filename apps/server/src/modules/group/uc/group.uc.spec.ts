@@ -229,6 +229,7 @@ describe('GroupUc', () => {
 								name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 								externalSourceName: clazz.source,
 								teachers: [teacherUser.lastName],
+								isUpgradable: false,
 							},
 							{
 								name: group.name,
@@ -264,6 +265,7 @@ describe('GroupUc', () => {
 								name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 								externalSourceName: clazz.source,
 								teachers: [teacherUser.lastName],
+								isUpgradable: false,
 							},
 							{
 								name: groupWithSystem.name,
