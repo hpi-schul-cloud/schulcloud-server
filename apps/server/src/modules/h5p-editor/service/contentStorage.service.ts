@@ -71,7 +71,7 @@ export class ContentStorage implements IContentStorage {
 		this.checkFilename(filename);
 
 		const contentExists = await this.contentExists(contentId);
-		if (contentExists) {
+		if (!contentExists) {
 			throw new NotFoundException('The content does not exist');
 		}
 
@@ -200,7 +200,7 @@ export class ContentStorage implements IContentStorage {
 
 	public async listFiles(contentId: string, user?: ILumiUser): Promise<string[]> {
 		const contentExists = await this.contentExists(contentId);
-		if (contentExists) {
+		if (!contentExists) {
 			throw new NotFoundException('Content could not be found');
 		}
 

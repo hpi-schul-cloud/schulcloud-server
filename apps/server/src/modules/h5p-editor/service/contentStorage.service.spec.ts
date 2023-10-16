@@ -135,14 +135,14 @@ describe('ContentStorage', () => {
 				canInstallRecommended: false,
 				canUpdateAndInstallLibraries: false,
 				email: 'example@schul-cloud.org',
-				id: '12345',
+				id: new ObjectID().toHexString(),
 				name: 'Example User',
 				type: 'user',
 			};
 			const parentParams: H5PContentParentParams = {
-				schoolId: '',
+				schoolId: new ObjectID().toHexString(),
 				parentType: H5PContentParentType.Lesson,
-				parentId: '',
+				parentId: new ObjectID().toHexString(),
 			};
 			const user = new LumiUserWithContentData(iUser, parentParams);
 
@@ -262,11 +262,12 @@ describe('ContentStorage', () => {
 
 				await service.addFile(contentIDString, filename, stream, user);
 
-				expect(contentRepo.findById).toBeCalledWith(contentIDString);
+				expect(contentRepo.existsOne).toBeCalledWith(contentIDString);
 			});
 
 			it('should call S3ClientAdapter.create', async () => {
 				const { contentIDString, filename, stream, user } = setup();
+				contentRepo.existsOne.mockResolvedValueOnce(true);
 
 				await service.addFile(contentIDString, filename, stream, user);
 
@@ -295,6 +296,7 @@ describe('ContentStorage', () => {
 		describe('WHEN S3ClientAdapter throws error', () => {
 			it('should throw the error', async () => {
 				const { contentIDString, filename, stream, user, fileCreateError } = setup();
+				contentRepo.existsOne.mockResolvedValueOnce(true);
 				s3ClientAdapter.create.mockRejectedValueOnce(fileCreateError);
 
 				const addFilePromise = service.addFile(contentIDString, filename, stream, user);
@@ -318,7 +320,7 @@ describe('ContentStorage', () => {
 		describe('WHEN content does exist', () => {
 			it('should return true', async () => {
 				const content = helpers.buildContent().withID();
-				contentRepo.findById.mockResolvedValueOnce(content);
+				contentRepo.existsOne.mockResolvedValueOnce(true);
 
 				const exists = await service.contentExists(content.id);
 
@@ -328,7 +330,7 @@ describe('ContentStorage', () => {
 
 		describe('WHEN content does not exist', () => {
 			it('should return false', async () => {
-				contentRepo.findById.mockRejectedValueOnce(new Error());
+				contentRepo.existsOne.mockResolvedValueOnce(false);
 
 				const exists = await service.contentExists('');
 
@@ -358,6 +360,7 @@ describe('ContentStorage', () => {
 			it('should call H5PContentRepo.delete', async () => {
 				const { content, user } = setup();
 				contentRepo.findById.mockResolvedValueOnce(content);
+				contentRepo.existsOne.mockResolvedValueOnce(true);
 
 				await service.deleteContent(content.id, user);
 
@@ -366,6 +369,8 @@ describe('ContentStorage', () => {
 
 			it('should call S3ClientAdapter.deleteFile for every file', async () => {
 				const { content, user, files } = setup();
+				contentRepo.findById.mockResolvedValueOnce(content);
+				contentRepo.existsOne.mockResolvedValueOnce(true);
 
 				await service.deleteContent(content.id, user);
 
@@ -784,7 +789,7 @@ describe('ContentStorage', () => {
 		describe('WHEN content exists', () => {
 			it('should return list of filenames', async () => {
 				const { filenames, content, user } = setup();
-				contentRepo.findById.mockResolvedValueOnce(content);
+				contentRepo.existsOne.mockResolvedValueOnce(true);
 				// @ts-expect-error test case
 				s3ClientAdapter.list.mockResolvedValueOnce({ files: filenames });
 
@@ -797,7 +802,7 @@ describe('ContentStorage', () => {
 		describe('WHEN content does not exist', () => {
 			it('should throw NotFoundException', async () => {
 				const { content, user } = setup();
-				contentRepo.existsOne.mockRejectedValueOnce(new Error());
+				contentRepo.existsOne.mockResolvedValueOnce(false);
 
 				const listPromise = service.listFiles(content.id, user);
 
@@ -808,6 +813,7 @@ describe('ContentStorage', () => {
 		describe('WHEN S3ClientAdapter.list throws error', () => {
 			it('should throw the error', async () => {
 				const { content, user, error } = setup();
+				contentRepo.existsOne.mockResolvedValueOnce(true);
 				s3ClientAdapter.list.mockRejectedValueOnce(error);
 
 				const listPromise = service.listFiles(content.id, user);
@@ -887,6 +893,7 @@ describe('ContentStorage', () => {
 		describe('WHEN calling getContentPath with invalid parameters', () => {
 			it('should throw error', async () => {
 				// Test private getContentPath using listFiles
+				contentRepo.existsOne.mockResolvedValueOnce(true);
 				const promise = service.listFiles('');
 				await expect(promise).rejects.toThrow('COULD_NOT_CREATE_PATH');
 			});
