@@ -1,4 +1,3 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId, IFindOptions, LanguageType, User } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
@@ -12,6 +11,7 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { CurrentUserMapper } from '@src/modules/authentication/mapper';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { RoleService } from '@src/modules/role/service/role.service';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { IUserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
@@ -106,5 +106,11 @@ export class UserService {
 		if (!this.configService.get<string[]>('AVAILABLE_LANGUAGES').includes(language)) {
 			throw new BadRequestException('Language is not activated.');
 		}
+	}
+
+	async deleteUser(userId: EntityId): Promise<number> {
+		const deletedUserNumber: Promise<number> = this.userRepo.deleteUser(userId);
+
+		return deletedUserNumber;
 	}
 }
