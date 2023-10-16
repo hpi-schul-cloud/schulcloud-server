@@ -136,7 +136,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, classService: <a href="../injectables/ClassService.html" target="_self">ClassService</a>, systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>)</code>
+<code>constructor(groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, classService: <a href="../injectables/ClassService.html" target="_self">ClassService</a>, systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolYearService: <a href="../injectables/SchoolYearService.html" target="_self">SchoolYearService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -242,6 +242,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>schoolYearService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SchoolYearService.html" target="_self" >SchoolYearService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -278,8 +290,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="145"
-                            class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:145</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="151"
+                            class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:151</a></div>
                 </td>
             </tr>
 
@@ -374,8 +386,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:30</a></div>
                 </td>
             </tr>
 
@@ -521,8 +533,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="66"
-                            class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:66</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="67"
+                            class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:67</a></div>
                 </td>
             </tr>
 
@@ -593,8 +605,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="55"
-                            class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:55</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="56"
+                            class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:56</a></div>
                 </td>
             </tr>
 
@@ -665,8 +677,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="84"
-                            class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:84</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="90"
+                            class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:90</a></div>
                 </td>
             </tr>
 
@@ -737,8 +749,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="107"
-                            class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:107</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="113"
+                            class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:113</a></div>
                 </td>
             </tr>
 
@@ -809,8 +821,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="127"
-                            class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:127</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="133"
+                            class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:133</a></div>
                 </td>
             </tr>
 
@@ -865,11 +877,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, LegacySchoolDo, Page, Permission, SortOrder, User, UserDO } from &#x27;@shared/domain&#x27;;
+import { EntityId, LegacySchoolDo, Page, Permission, SchoolYearEntity, SortOrder, User, UserDO } from &#x27;@shared/domain&#x27;;
 import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { ClassService } from &#x27;@src/modules/class&#x27;;
 import { Class } from &#x27;@src/modules/class/domain&#x27;;
-import { LegacySchoolService } from &#x27;@src/modules/legacy-school&#x27;;
+import { LegacySchoolService, SchoolYearService } from &#x27;@src/modules/legacy-school&#x27;;
 import { RoleService } from &#x27;@src/modules/role&#x27;;
 import { RoleDto } from &#x27;@src/modules/role/service/dto/role.dto&#x27;;
 import { SystemDto, SystemService } from &#x27;@src/modules/system&#x27;;
@@ -889,7 +901,8 @@ export class GroupUc {
 		private readonly userService: UserService,
 		private readonly roleService: RoleService,
 		private readonly schoolService: LegacySchoolService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly schoolYearService: SchoolYearService
 	) {}
 
 	public async findAllClassesForSchool(
@@ -938,7 +951,12 @@ export class GroupUc {
 					clazz.teacherIds.map((teacherId: EntityId) &#x3D;&gt; this.userService.findById(teacherId))
 				);
 
-				const mapped: ClassInfoDto &#x3D; GroupUcMapper.mapClassToClassInfoDto(clazz, teachers);
+				let schoolYear: SchoolYearEntity | undefined;
+				if (clazz.year) {
+					schoolYear &#x3D; await this.schoolYearService.findById(clazz.year);
+				}
+
+				const mapped: ClassInfoDto &#x3D; GroupUcMapper.mapClassToClassInfoDto(clazz, teachers, schoolYear);
 
 				return mapped;
 			})

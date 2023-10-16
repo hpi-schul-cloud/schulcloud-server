@@ -131,15 +131,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapClassToClassInfoDto(clazz: <a href="../classes/Class.html" target="_self">Class</a>, teachers: <a href="../interfaces/User.html" target="_self">UserDO[]</a>)</code>
+                    <code>mapClassToClassInfoDto(clazz: <a href="../classes/Class.html" target="_self">Class</a>, teachers: <a href="../interfaces/User.html" target="_self">UserDO[]</a>, schoolYear?: <a href="../entitys/SchoolYearEntity.html" target="_self">SchoolYearEntity</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="24"
-                            class="link-to-prism">apps/server/src/modules/group/uc/mapper/group-uc.mapper.ts:24</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/modules/group/uc/mapper/group-uc.mapper.ts:27</a></div>
                 </td>
             </tr>
 
@@ -183,6 +183,18 @@
 
 
                                 </tr>
+                                <tr>
+                                    <td>schoolYear</td>
+                                    <td>
+                                                <code><a href="../entitys/SchoolYearEntity.html" target="_self" >SchoolYearEntity</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -221,8 +233,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="8"
-                            class="link-to-prism">apps/server/src/modules/group/uc/mapper/group-uc.mapper.ts:8</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="9"
+                            class="link-to-prism">apps/server/src/modules/group/uc/mapper/group-uc.mapper.ts:9</a></div>
                 </td>
             </tr>
 
@@ -304,11 +316,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { RoleName, UserDO } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { RoleName, SchoolYearEntity, UserDO } from &#x27;@shared/domain&#x27;;
 import { Class } from &#x27;@src/modules/class/domain&#x27;;
 import { SystemDto } from &#x27;@src/modules/system&#x27;;
 import { Group } from &#x27;../../domain&#x27;;
 import { ClassInfoDto, ResolvedGroupUser } from &#x27;../dto&#x27;;
+import { ClassRootType } from &#x27;../dto/class-root-type&#x27;;
 
 export class GroupUcMapper {
 	public static mapGroupToClassInfoDto(
@@ -317,6 +330,8 @@ export class GroupUcMapper {
 		system?: SystemDto
 	): ClassInfoDto {
 		const mapped: ClassInfoDto &#x3D; new ClassInfoDto({
+			id: group.id,
+			type: ClassRootType.GROUP,
 			name: group.name,
 			externalSourceName: system?.displayName,
 			teachers: resolvedUsers
@@ -327,13 +342,16 @@ export class GroupUcMapper {
 		return mapped;
 	}
 
-	public static mapClassToClassInfoDto(clazz: Class, teachers: UserDO[]): ClassInfoDto {
+	public static mapClassToClassInfoDto(clazz: Class, teachers: UserDO[], schoolYear?: SchoolYearEntity): ClassInfoDto {
 		const name &#x3D; clazz.gradeLevel ? &#x60;${clazz.gradeLevel}${clazz.name}&#x60; : clazz.name;
 
 		const mapped: ClassInfoDto &#x3D; new ClassInfoDto({
+			id: clazz.id,
+			type: ClassRootType.CLASS,
 			name,
 			externalSourceName: clazz.source,
 			teachers: teachers.map((user: UserDO) &#x3D;&gt; user.lastName),
+			schoolYear: schoolYear?.name,
 		});
 
 		return mapped;
