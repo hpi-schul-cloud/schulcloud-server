@@ -3,8 +3,8 @@ import WebSocket from 'ws';
 import { Awareness, encodeAwarenessUpdate } from 'y-protocols/awareness';
 import { encoding } from 'lib0';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { WSMessageType } from '@src/modules/tldraw/types/connection-enum';
 import { send, updateHandler } from '@src/modules/tldraw/utils';
+import { WSMessageType } from './connection-enum';
 
 // disable gc when using snapshots!
 const gcEnabled: boolean = Configuration.get('TLDRAW__GC_ENABLED') as boolean;

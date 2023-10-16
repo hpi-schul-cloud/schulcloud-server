@@ -85,7 +85,7 @@ describe('WebSocketController (WsAdapter)', () => {
 			expect(handleConnectionSpy).toHaveBeenCalled();
 			expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
 
-			await delay(2000);
+			await delay(500);
 			ws.close();
 		});
 
@@ -99,7 +99,7 @@ describe('WebSocketController (WsAdapter)', () => {
 				});
 			});
 
-			await delay(200);
+			await delay(50);
 			ws.close();
 		});
 	});
@@ -130,10 +130,10 @@ describe('WebSocketController (WsAdapter)', () => {
 			expect(handleConnectionSpy).toHaveBeenCalled();
 			expect(handleConnectionSpy).toHaveBeenCalledTimes(2);
 
-			await delay(200);
+			await delay(50);
 			ws.close();
 			ws2.close();
-		}, 120000);
+		}, 120);
 	});
 
 	describe('when tldraw is not correctly setup', () => {
@@ -160,7 +160,7 @@ describe('WebSocketController (WsAdapter)', () => {
 			expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
 			expect(utilsSpy).not.toHaveBeenCalled();
 
-			await delay(200);
+			await delay(50);
 			ws.close();
 		});
 	});

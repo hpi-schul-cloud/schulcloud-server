@@ -3,10 +3,10 @@ import { Server, WebSocket } from 'ws';
 import { Request } from 'express';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import { ConfigService } from '@nestjs/config';
-import { TldrawConfig, SOCKET_PORT } from '@src/modules/tldraw/config';
-import { WsCloseCodeEnum } from '@src/modules/tldraw/types/ws-close-code-enum';
 import cookie from 'cookie';
-import { TldrawWsService } from '@src/modules/tldraw/service/tldraw-ws.service';
+import { TldrawConfig, SOCKET_PORT } from '../config';
+import { WsCloseCodeEnum } from '../types/ws-close-code-enum';
+import { TldrawWsService } from '../service/tldraw-ws.service';
 import { setupWSConnection, setPersistence, updateDocument } from '../utils';
 
 @WebSocketGateway(SOCKET_PORT)
@@ -27,18 +27,21 @@ export class TldrawWsController implements OnGatewayInit, OnGatewayConnection {
 		const docName = this.getDocNameFromRequest(request);
 		const cookies = cookie.parse(request.headers.cookie || '');
 		if (!cookies?.jwt) {
-			client.close(4401, 'Unauthorised connection.');
+			client.close(WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE, 'Unauthorised connection.');
 		}
 		try {
 			await this.tldrawWsService.authorizeConnection(docName, cookies.jwt);
 		} catch (e) {
-			client.close(4403, "Unauthorised connection - you don't have permission to this drawing.");
+			client.close(
+				WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
+				"Unauthorised connection - you don't have permission to this drawing."
+			);
 		}
 		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
 			setupWSConnection(client, docName);
 		} else {
 			client.close(
-				WsCloseCodeEnum.WS_CUSTOM_CLIENT_CLOSE_CODE,
+				WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
 				'Document name is mandatory in url or Tldraw Tool is turned off.'
 			);
 		}
@@ -65,6 +68,7 @@ export class TldrawWsController implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	private getDocNameFromRequest(request: Request): string {
-		return request.url.slice(1).split('?')[0].replace('tldraw-server/', '');
+		const urlStripped = request.url.replace('/', '');
+		return urlStripped;
 	}
 }

@@ -409,7 +409,7 @@ describe('TldrawWSController', () => {
 
 			Utils.setupWSConnection(ws);
 
-			await delay(200);
+			await delay(50);
 
 			expect(closeConnSpy).toHaveBeenCalled();
 
@@ -446,7 +446,7 @@ describe('TldrawWSController', () => {
 
 			Utils.setupWSConnection(ws);
 
-			await delay(200);
+			await delay(50);
 
 			expect(sendSpy).toHaveBeenCalledTimes(3);
 
@@ -488,7 +488,7 @@ describe('TldrawWSController', () => {
 
 			await YjsUtils.updateDocument(mdb as MongodbPersistence, 'TEST', doc);
 			doc.emit('update', [byteArray, undefined, doc]);
-			await delay(200);
+			await delay(50);
 			expect(storeUpdateSpy).toHaveBeenCalled();
 			expect(storeUpdateSpy).toHaveBeenCalledTimes(2);
 			storeUpdateSpy.mockRestore();
@@ -524,7 +524,7 @@ describe('TldrawWSController', () => {
 			const { mdb, doc, storeUpdateSpy, calculateDiffSpy } = await setup();
 
 			await YjsUtils.updateDocument(mdb as MongodbPersistence, 'TEST2', doc);
-			await delay(200);
+			await delay(50);
 			expect(storeUpdateSpy).toHaveBeenCalledTimes(0);
 			expect(calculateDiffSpy).toReturnWith(0);
 			storeUpdateSpy.mockRestore();
