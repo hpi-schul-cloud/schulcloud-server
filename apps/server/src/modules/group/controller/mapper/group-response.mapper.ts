@@ -24,9 +24,12 @@ export class GroupResponseMapper {
 
 	private static mapToClassInfoToResponse(classInfo: ClassInfoDto): ClassInfoResponse {
 		const mapped = new ClassInfoResponse({
+			id: classInfo.id,
+			type: classInfo.type,
 			name: classInfo.name,
 			externalSourceName: classInfo.externalSourceName,
 			teachers: classInfo.teachers,
+			schoolYear: classInfo.schoolYear,
 			isUpgradable: classInfo.isUpgradable,
 		});
 

@@ -1,11 +1,12 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, RoleName, SchoolEntity, SortOrder, SystemEntity, User } from '@shared/domain';
+import { Role, RoleName, SchoolEntity, SchoolYearEntity, SortOrder, SystemEntity, User } from '@shared/domain';
 import {
 	groupEntityFactory,
 	roleFactory,
 	schoolFactory,
+	schoolYearFactory,
 	systemFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
@@ -15,6 +16,7 @@ import { ClassEntity } from '@src/modules/class/entity';
 import { classEntityFactory } from '@src/modules/class/entity/testing/factory/class.entity.factory';
 import { ServerTestModule } from '@src/modules/server';
 import { GroupEntity, GroupEntityTypes } from '../../entity';
+import { ClassRootType } from '../../uc/dto/class-root-type';
 import { ClassInfoSearchListResponse, ClassSortBy } from '../dto';
 
 const baseRouteName = '/groups';
@@ -48,11 +50,13 @@ describe('Group (API)', () => {
 				const teacherRole: Role = roleFactory.buildWithId({ name: RoleName.TEACHER });
 				const teacherUser: User = userFactory.buildWithId({ school, roles: [teacherRole] });
 				const system: SystemEntity = systemFactory.buildWithId();
+				const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
 				const clazz: ClassEntity = classEntityFactory.buildWithId({
 					name: 'Group A',
 					schoolId: school._id,
 					teacherIds: [teacherUser._id],
 					source: undefined,
+					year: schoolYear.id,
 				});
 				const group: GroupEntity = groupEntityFactory.buildWithId({
 					name: 'Group B',
@@ -70,7 +74,17 @@ describe('Group (API)', () => {
 					],
 				});
 
-				await em.persistAndFlush([school, adminAccount, adminUser, teacherRole, teacherUser, system, clazz, group]);
+				await em.persistAndFlush([
+					school,
+					adminAccount,
+					adminUser,
+					teacherRole,
+					teacherUser,
+					system,
+					clazz,
+					group,
+					schoolYear,
+				]);
 				em.clear();
 
 				const adminClient = await testApiClient.login(adminAccount);
@@ -82,11 +96,12 @@ describe('Group (API)', () => {
 					system,
 					adminUser,
 					teacherUser,
+					schoolYear,
 				};
 			};
 
 			it('should return the classes of his school', async () => {
-				const { adminClient, group, clazz, system, adminUser, teacherUser } = await setup();
+				const { adminClient, group, clazz, system, adminUser, teacherUser, schoolYear } = await setup();
 
 				const response = await adminClient.get(`/class`).query({
 					skip: 0,
@@ -99,13 +114,18 @@ describe('Group (API)', () => {
 					total: 2,
 					data: [
 						{
+							id: group.id,
+							type: ClassRootType.GROUP,
 							name: group.name,
 							externalSourceName: system.displayName,
 							teachers: [adminUser.lastName],
 						},
 						{
+							id: clazz.id,
+							type: ClassRootType.CLASS,
 							name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 							teachers: [teacherUser.lastName],
+							schoolYear: schoolYear.name,
 							isUpgradable: false,
 						},
 					],
