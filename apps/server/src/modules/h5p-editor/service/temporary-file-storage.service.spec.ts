@@ -31,14 +31,10 @@ describe('TemporaryFileStorage', () => {
 					useValue: createMock<TemporaryFileRepo>(),
 				},
 				{ provide: H5P_CONTENT_S3_CONNECTION, useValue: createMock<S3ClientAdapter>() },
-				{
-					provide: 'S3ClientAdapter_Content',
-					useValue: createMock<S3ClientAdapter>(),
-				},
 			],
 		}).compile();
 		storage = module.get(TemporaryFileStorage);
-		s3clientAdapter = module.get('S3ClientAdapter_Content');
+		s3clientAdapter = module.get(H5P_CONTENT_S3_CONNECTION);
 		repo = module.get(TemporaryFileRepo);
 	});
 
