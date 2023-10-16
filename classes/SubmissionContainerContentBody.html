@@ -140,13 +140,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsDate()<br />@IsOptional()<br />@ApiPropertyOptional({required: false, nullable: true, description: &#x27;The point in time until when a submission can be handed in.&#x27;})<br />
+                            @IsDate()<br />@IsOptional()<br />@ApiPropertyOptional({description: &#x27;The point in time until when a submission can be handed in.&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="76" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:76</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="74" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -236,8 +236,6 @@ export class SubmissionContainerContentBody {
 	@IsDate()
 	@IsOptional()
 	@ApiPropertyOptional({
-		required: false,
-		nullable: true,
 		description: &#x27;The point in time until when a submission can be handed in.&#x27;,
 	})
 	dueDate?: Date;
