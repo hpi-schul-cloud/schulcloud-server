@@ -6,7 +6,6 @@ import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { FileDto } from '@src/modules/files-storage/dto';
 import { GetFileResponse } from '@src/modules/files-storage/interface';
 import { ReadStream } from 'fs';
-import { join } from 'node:path';
 import { Readable } from 'node:stream';
 import { TemporaryFile } from '../entity/temporary-file.entity';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
@@ -101,12 +100,15 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN file exists', () => {
 			it('should delete file', async () => {
 				const { user1, file1 } = setup();
+				const res = [`h5p-tempfiles/${user1.id}/${file1.filename}`];
+				console.log(res);
 				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
 
 				await storage.deleteFile(file1.filename, user1.id);
 
 				expect(repo.delete).toHaveBeenCalled();
-				expect(s3clientAdapter.delete).toHaveBeenCalledWith([join('h5p-tempfiles', user1.id, file1.filename)]);
+				expect(s3clientAdapter.delete).toHaveBeenCalledTimes(1);
+				expect(s3clientAdapter.delete).toHaveBeenCalledWith(res);
 			});
 		});
 		describe('WHEN file does not exist', () => {
