@@ -43,4 +43,30 @@ describe('MailService', () => {
 		const expectedParams = [mailServiceOptions.exchange, mailServiceOptions.routingKey, data, { persistent: true }];
 		expect(amqpConnectionSpy).toHaveBeenCalledWith(...expectedParams);
 	});
+
+	describe('send', () => {
+		describe('when sending email', () => {
+			it('should remove email address that have blacklisted domain', async () => {
+				const data: Mail = {
+					mail: { plainTextContent: 'content', subject: 'Test' },
+					recipients: ['test@schul-cloud.org', 'test@example.com', 'test2@schul-cloud.org', 'test3@schul-cloud.org'],
+					cc: ['test@example1.com', 'test5@schul-cloud.org', 'test6@schul-cloud.org'],
+					bcc: ['test7@schul-cloud.org', 'test@example2.com', 'test8@schul-cloud.org'],
+					replyTo: ['test@example3.com', 'test9@schul-cloud.org', 'test10@schul-cloud.org'],
+				};
+
+				const amqpConnectionSpy = jest.spyOn(amqpConnection, 'publish');
+
+				await service.send(data);
+
+				expect(data.recipients).toEqual(['test@example.com']);
+				expect(data.cc).toEqual(['test@example1.com']);
+				expect(data.bcc).toEqual(['test@example2.com']);
+				expect(data.replyTo).toEqual(['test@example3.com']);
+
+				const expectedParams = [mailServiceOptions.exchange, mailServiceOptions.routingKey, data, { persistent: true }];
+				expect(amqpConnectionSpy).toHaveBeenCalledWith(...expectedParams);
+			});
+		});
+	});
 });
