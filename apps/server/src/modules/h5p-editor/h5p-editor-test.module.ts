@@ -10,6 +10,7 @@ import { AuthenticationModule } from '@src/modules/authentication/authentication
 import { AuthorizationModule } from '@src/modules/authorization';
 import { UserModule } from '..';
 import { H5PEditorController } from './controller';
+import { H5PContent } from './entity';
 import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
 import { H5PEditorModule } from './h5p-editor.module';
 import { H5PContentRepo, LibraryRepo, TemporaryFileRepo } from './repo';
@@ -25,7 +26,7 @@ import { H5PEditorUc } from './uc/h5p.uc';
 
 const imports = [
 	H5PEditorModule,
-	MongoMemoryDatabaseModule.forRoot({ entities: [...ALL_ENTITIES] }),
+	MongoMemoryDatabaseModule.forRoot({ entities: [...ALL_ENTITIES, H5PContent] }),
 	AuthenticationApiModule,
 	AuthorizationModule,
 	AuthenticationModule,
