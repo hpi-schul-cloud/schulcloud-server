@@ -15,7 +15,6 @@ export class SchoolService {
 
 	// TODO: Rename this to getSchools because it has a query and does not return all schools!
 	public async getAllSchools(query: SchoolQuery, pagination: IPagination): Promise<School[]> {
-		// TODO: Is this really the right place to apply the default sort order?
 		const order = { name: SortOrder.asc };
 		const schools = await this.schoolRepo.getAllSchools(query, { pagination, order });
 
