@@ -15,12 +15,12 @@ spec:
   - type: mongodb
     metadata:
       port: "27017"
-      dbName: "namespace"
-      collection: "keda"
-      query: '{"activatedUntil" : {"$lt" : ISODate()}}'
+      dbName: "keda"
+      collection: "namespaces"
+      query: ''{"name" : {{ NAMESPACE }}, "$expr" : {"$gt" : ["$activatedUntil" , "$$NOW"]}}''
       queryValue: "1"
     authenticationRef:
-      name: mongodb-trigger
+      name: mongodb-auth-trigger
 ---
 
 apiVersion: keda.sh/v1alpha1
