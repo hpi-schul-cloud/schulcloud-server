@@ -33,7 +33,7 @@ export class MailService {
 		if (mails === undefined) {
 			return mails;
 		}
-		const domainBlockList = Configuration.get('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS') as string;
+		const domainBlockList = Configuration.get('BLACKLIST_OF_EMAIL_DOMAINS') as string;
 		const domainBlockListArray = domainBlockList.split(',').map((domain) => domain.trim());
 		const notBlacklistedEmailsArray: string[] = [];
 
