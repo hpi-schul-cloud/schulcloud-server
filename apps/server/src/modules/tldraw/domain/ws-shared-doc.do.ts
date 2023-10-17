@@ -43,6 +43,10 @@ export class WsSharedDocDo extends Doc {
 		this.sendAwarenessMessage(buff);
 	};
 
+	/**
+	 * @param {{ added: Array<number>, updated: Array<number>, removed: Array<number> }} changes
+	 * @param {WebSocket | null} wsConnection Origin is the connection that made the change
+	 */
 	private manageClientsConnections(
 		{ added, updated, removed }: { added: Array<number>; updated: Array<number>; removed: Array<number> },
 		wsConnection: WebSocket | null
@@ -62,6 +66,9 @@ export class WsSharedDocDo extends Doc {
 		return changedClients;
 	}
 
+	/**
+	 * @param changedClients array of changed clients
+	 */
 	private prepareAwarenessMessage(changedClients: number[]) {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, WSMessageType.AWARENESS);
@@ -70,6 +77,9 @@ export class WsSharedDocDo extends Doc {
 		return message;
 	}
 
+	/**
+	 * @param {{ Uint8Array }} buff encoded message about changes
+	 */
 	private sendAwarenessMessage(buff: Uint8Array) {
 		this.conns.forEach((_, c) => {
 			this.tldrawService.send(this, c, buff);
