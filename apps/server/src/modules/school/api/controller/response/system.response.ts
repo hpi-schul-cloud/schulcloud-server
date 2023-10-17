@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { LdapConfig, OauthConfig, OidcConfig } from '../../domain';
+import { LdapConfig, OauthConfig, OidcConfig } from '../../../domain';
 
 export class SystemResponse {
 	constructor({

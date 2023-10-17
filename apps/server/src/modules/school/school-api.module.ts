@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { SchoolController } from './controller';
+import { SchoolController } from './api/controller';
 import { SchoolUc } from './domain';
 import { SchoolModule } from './school.module';
 

@@ -2,7 +2,7 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
-import { SchoolUc } from '../domain';
+import { SchoolUc } from '../../domain';
 import { SchoolResponseMapper } from './mapper';
 import { SchoolQueryParams, SchoolUrlParams } from './param';
 import { SchoolListResponse, SchoolResponse } from './response';

@@ -1,5 +1,5 @@
 import { PaginationParams } from '@shared/controller';
-import { County, FederalState, School, SchoolYear, System } from '../../domain';
+import { County, FederalState, School, SchoolYear, System } from '../../../domain';
 import { SchoolListResponse, SchoolResponse } from '../response';
 import { CountyResponse } from '../response/county.response';
 import { FederalStateResponse } from '../response/federal-state.response';
