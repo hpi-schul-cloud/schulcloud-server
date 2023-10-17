@@ -1,39 +1,28 @@
 import { PaginationParams } from '@shared/controller';
-import { SlimSchoolDto } from '@src/modules/school/domain/dto';
-import { County, FederalState, School, SchoolYear, System } from '../../../domain';
-import { SlimSchoolListResponse, SchoolResponse } from '../response';
-import { CountyResponse } from '../response/county.response';
-import { FederalStateResponse } from '../response/federal-state.response';
+import { SchoolDto, SlimSchoolDto } from '@src/modules/school/domain/dto';
+import { SchoolResponse, SlimSchoolListResponse } from '../response';
 import { SlimSchoolResponse } from '../response/school-reduced.response';
-import { SchoolYearResponse } from '../response/school-year.response';
-import { SystemResponse } from '../response/system.response';
+import { FederalStateMapper } from './federal-state.mapper';
+import { SchoolYearMapper } from './school-year.mapper';
+import { SystemMapper } from './system.mapper';
 
 export class SchoolResponseMapper {
-	public static mapToResponse(school: School): SchoolResponse {
-		const schoolProps = school.getProps();
-
-		const federalState = this.mapToFederalStateResponse(schoolProps.federalState);
-		const currentYear = schoolProps.currentYear && this.mapToSchoolYearResponse(schoolProps.currentYear);
-		const features = schoolProps.features && Array.from(schoolProps.features);
-		const systems = schoolProps.systems?.map((system) => this.mapToSystemResponse(system));
+	public static mapToResponse(school: SchoolDto): SchoolResponse {
+		const federalState = FederalStateMapper.mapToResponse(school.federalState);
+		const currentYear = school.currentYear && SchoolYearMapper.mapToResponse(school.currentYear);
+		const features = school.features && Array.from(school.features);
+		const systems = school.systems?.map((system) => SystemMapper.mapToResponse(system));
 
 		// TODO: Do we want to access the props via getProps() here or do we want getters?
 		// I added getters for federalState and schoolYear because there are conditions with them below
 		// and then the code is a easier to read. But I wasn't really sure.
 		// Do we want any fixed criteria for when to add getters?
 		const res = new SchoolResponse({
-			id: school.id,
-			name: schoolProps.name,
-			officialSchoolNumber: schoolProps.officialSchoolNumber,
-			currentYear,
+			...school,
 			federalState,
-			county: schoolProps.county,
-			purpose: schoolProps.purpose,
+			currentYear,
 			features,
 			systems,
-			inMaintenance: school.isInMaintenance(),
-			isExternal: school.isExternal(),
-			logo_dataUrl: schoolProps.logo_dataUrl,
 		});
 
 		return res;
@@ -49,71 +38,6 @@ export class SchoolResponseMapper {
 
 	private static mapToSlimResponse(school: SlimSchoolDto): SlimSchoolResponse {
 		const res = new SlimSchoolResponse(school);
-
-		return res;
-	}
-
-	// TODO: Create own mappers for other DOs!
-	private static mapToFederalStateResponse(federalState: FederalState): FederalStateResponse {
-		const federalStateProps = federalState.getProps();
-
-		const counties = federalStateProps.counties && this.mapToCountyResponses(federalStateProps.counties);
-
-		const res = new FederalStateResponse({
-			id: federalState.id,
-			name: federalStateProps.name,
-			abbreviation: federalStateProps.abbreviation,
-			logoUrl: federalStateProps.logoUrl,
-			counties,
-		});
-
-		return res;
-	}
-
-	private static mapToCountyResponses(counties: County[]): CountyResponse[] {
-		const res = counties.map((county) => this.mapToCountyResponse(county));
-
-		return res;
-	}
-
-	private static mapToCountyResponse(county: County): CountyResponse {
-		const res = new CountyResponse({
-			name: county.name,
-			countyId: county.countyId,
-			antaresKey: county.antaresKey,
-		});
-
-		return res;
-	}
-
-	private static mapToSchoolYearResponse(schoolYear: SchoolYear): SchoolYearResponse {
-		const schoolYearProps = schoolYear.getProps();
-
-		const res = new SchoolYearResponse({
-			id: schoolYear.id,
-			name: schoolYearProps.name,
-			startDate: schoolYearProps.startDate,
-			endDate: schoolYearProps.endDate,
-		});
-
-		return res;
-	}
-
-	private static mapToSystemResponse(system: System) {
-		const systemProps = system.getProps();
-
-		const res = new SystemResponse({
-			id: system.id,
-			type: systemProps.type,
-			url: systemProps.url,
-			alias: systemProps.alias,
-			displayName: systemProps.displayName,
-			oauthConfig: systemProps.oauthConfig,
-			oidcConfig: systemProps.oidcConfig,
-			ldapConfig: systemProps.ldapConfig,
-			provisioningStrategy: systemProps.provisioningStrategy,
-			provisioningUrl: systemProps.provisioningUrl,
-		});
 
 		return res;
 	}

@@ -15,10 +15,11 @@ export class SchoolController {
 
 	// TODO: Do we have a convention for the casing of routes?
 	@Get('/slim-list')
-	public async getAllSchools(
+	public async getSlimSchoolsList(
 		@Query() query: SchoolQueryParams,
 		@Query() pagination: PaginationParams
 	): Promise<SlimSchoolListResponse> {
+		// TODO: Think about consistent naming here: What comes first "Slim" or "List"?
 		const schools = await this.schoolUc.getListOfSlimSchools(query, pagination);
 
 		const res = SchoolResponseMapper.mapToSlimListResponse(schools, pagination);

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, IPagination } from '@shared/domain';
 import { School } from '../do';
+import { SchoolDto } from '../dto';
 import { SlimSchoolDto } from '../dto/slim-school.dto';
 import { SchoolMapper } from '../mapper';
 import { SchoolService } from '../service';
@@ -24,9 +25,11 @@ export class SchoolUc {
 		return schools;
 	}
 
-	public async getSchool(schoolId: EntityId): Promise<School> {
+	public async getSchool(schoolId: EntityId): Promise<SchoolDto> {
 		const school = await this.schoolService.getSchool(schoolId);
 
-		return school;
+		const dto = SchoolMapper.mapToDto(school);
+
+		return dto;
 	}
 }
