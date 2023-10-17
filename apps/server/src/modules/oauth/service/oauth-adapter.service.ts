@@ -1,18 +1,15 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common/decorators';
-import { LegacyLogger } from '@src/core/logger';
 import { AxiosResponse } from 'axios';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
-import { OAuthSSOError } from '../error/oauth-sso.error';
+import { OAuthSSOError } from '../loggable';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 
 @Injectable()
 export class OauthAdapterService {
-	constructor(private readonly httpService: HttpService, private readonly logger: LegacyLogger) {
-		this.logger.setContext(OauthAdapterService.name);
-	}
+	constructor(private readonly httpService: HttpService) {}
 
 	async getPublicKey(jwksUri: string): Promise<string> {
 		const client: JwksRsa.JwksClient = JwksRsa({
