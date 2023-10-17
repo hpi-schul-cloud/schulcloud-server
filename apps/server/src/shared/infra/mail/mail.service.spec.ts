@@ -34,19 +34,23 @@ describe('MailService', () => {
 		expect(service).toBeDefined();
 	});
 
-	it('should send given data to queue', async () => {
-		const data: Mail = { mail: { plainTextContent: 'content', subject: 'Test' }, recipients: ['test@example.com'] };
-		const amqpConnectionSpy = jest.spyOn(amqpConnection, 'publish');
-
-		await service.send(data);
-
-		const expectedParams = [mailServiceOptions.exchange, mailServiceOptions.routingKey, data, { persistent: true }];
-		expect(amqpConnectionSpy).toHaveBeenCalledWith(...expectedParams);
-	});
-
 	describe('send', () => {
+		describe('when recipients array is empty', () => {
+			it('should not send email)', async () => {
+				const data: Mail = {
+					mail: { plainTextContent: 'content', subject: 'Test' },
+					recipients: ['test@schul-cloud.org'],
+				};
+
+				const amqpConnectionSpy = jest.spyOn(amqpConnection, 'publish');
+
+				await service.send(data);
+
+				expect(amqpConnectionSpy).toHaveBeenCalledTimes(0);
+			});
+		});
 		describe('when sending email', () => {
-			it('should remove email address that have blacklisted domain', async () => {
+			it('should remove email address that have blacklisted domain and send given data to queue', async () => {
 				const data: Mail = {
 					mail: { plainTextContent: 'content', subject: 'Test' },
 					recipients: ['test@schul-cloud.org', 'test@example.com', 'test2@schul-cloud.org', 'test3@schul-cloud.org'],

@@ -177,6 +177,7 @@
 		},
 		"ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS": {
 			"type": "string",
+			"default":"schul-cloud.org",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
 		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
@@ -1008,11 +1009,6 @@
 			"type": "string",
 			"default": "mail-drop",
 			"description": "Routing key name for mail sending"
-		},
-		"BLACKLIST_OF_EMAIL_DOMAINS": {
-			"type": "string",
-			"default":"schul-cloud.org",
-			"description": "Add domain to the list of blocked domains (comma separated list)."
 		},
 		"MEMORY_INTERVAL_TIME": {
 			"type": "integer",
