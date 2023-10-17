@@ -1,5 +1,5 @@
 import { SystemEntity } from '@shared/domain';
-import { System } from '../../domain';
+import { System } from '../../../domain';
 
 export class SystemMapper {
 	public static mapToDo(entity: SystemEntity): System {

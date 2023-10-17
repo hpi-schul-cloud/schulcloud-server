@@ -1,5 +1,5 @@
 import { SchoolYearEntity } from '@shared/domain';
-import { SchoolYear } from '../../domain';
+import { SchoolYear } from '../../../domain';
 
 export class SchoolYearMapper {
 	public static mapToDo(entity: SchoolYearEntity) {

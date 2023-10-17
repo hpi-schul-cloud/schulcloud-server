@@ -1,8 +1,7 @@
 import { EntityName, FindOptions } from '@mikro-orm/core';
 import { EntityId, IFindOptions, SchoolEntity, SortOrder } from '@shared/domain';
 import { BaseRepo } from '@shared/repo';
-import { SchoolQuery, SchoolRepo } from '../domain';
-import { School, SchoolProps } from '../domain/do/school';
+import { School, SchoolProps, SchoolQuery, SchoolRepo } from '../../domain';
 import { SchoolMapper } from './mapper/school.mapper';
 import { SchoolScope } from './scope/school.scope';
 

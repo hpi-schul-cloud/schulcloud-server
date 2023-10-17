@@ -1,6 +1,6 @@
 import { SchoolEntity } from '@shared/domain';
 import { MikroOrmRepoUtils } from '@shared/repo/mikro-orm-repo.utils';
-import { School, SchoolFeature } from '../../domain';
+import { School, SchoolFeature } from '../../../domain';
 import { FederalStateMapper } from './federal-state.mapper';
 import { SchoolYearMapper } from './school-year.mapper';
 import { SystemMapper } from './system.mapper';
