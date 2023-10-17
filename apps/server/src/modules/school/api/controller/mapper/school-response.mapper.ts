@@ -1,9 +1,10 @@
 import { PaginationParams } from '@shared/controller';
+import { SlimSchoolDto } from '@src/modules/school/domain/dto';
 import { County, FederalState, School, SchoolYear, System } from '../../../domain';
-import { SchoolListResponse, SchoolResponse } from '../response';
+import { SlimSchoolListResponse, SchoolResponse } from '../response';
 import { CountyResponse } from '../response/county.response';
 import { FederalStateResponse } from '../response/federal-state.response';
-import { SchoolReducedResponse } from '../response/school-reduced.response';
+import { SlimSchoolResponse } from '../response/school-reduced.response';
 import { SchoolYearResponse } from '../response/school-year.response';
 import { SystemResponse } from '../response/system.response';
 
@@ -38,22 +39,16 @@ export class SchoolResponseMapper {
 		return res;
 	}
 
-	public static mapToListResponse(schools: School[], pagination: PaginationParams): SchoolListResponse {
-		const dtos = schools.map((school) => this.mapToReducedResponse(school));
+	public static mapToSlimListResponse(schools: SlimSchoolDto[], pagination: PaginationParams): SlimSchoolListResponse {
+		const dtos = schools.map((school) => this.mapToSlimResponse(school));
 
-		const list = new SchoolListResponse(dtos, dtos.length, pagination.skip, pagination.limit);
+		const list = new SlimSchoolListResponse(dtos, dtos.length, pagination.skip, pagination.limit);
 
 		return list;
 	}
 
-	private static mapToReducedResponse(school: School): SchoolReducedResponse {
-		const schoolProps = school.getProps();
-
-		const res = new SchoolReducedResponse({
-			id: school.id,
-			name: schoolProps.name,
-			purpose: schoolProps.purpose,
-		});
+	private static mapToSlimResponse(school: SlimSchoolDto): SlimSchoolResponse {
+		const res = new SlimSchoolResponse(school);
 
 		return res;
 	}

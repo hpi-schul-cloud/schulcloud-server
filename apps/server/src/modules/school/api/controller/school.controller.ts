@@ -5,7 +5,7 @@ import { Authenticate } from '@src/modules/authentication/decorator/auth.decorat
 import { SchoolUc } from '../../domain';
 import { SchoolResponseMapper } from './mapper';
 import { SchoolQueryParams, SchoolUrlParams } from './param';
-import { SchoolListResponse, SchoolResponse } from './response';
+import { SlimSchoolListResponse, SchoolResponse } from './response';
 
 @ApiTags('School')
 @Authenticate('jwt')
@@ -13,14 +13,15 @@ import { SchoolListResponse, SchoolResponse } from './response';
 export class SchoolController {
 	constructor(private readonly schoolUc: SchoolUc) {}
 
-	@Get('/')
+	// TODO: Do we have a convention for the casing of routes?
+	@Get('/slim-list')
 	public async getAllSchools(
 		@Query() query: SchoolQueryParams,
 		@Query() pagination: PaginationParams
-	): Promise<SchoolListResponse> {
-		const schools = await this.schoolUc.getAllSchools(query, pagination);
+	): Promise<SlimSchoolListResponse> {
+		const schools = await this.schoolUc.getListOfSlimSchools(query, pagination);
 
-		const res = SchoolResponseMapper.mapToListResponse(schools, pagination);
+		const res = SchoolResponseMapper.mapToSlimListResponse(schools, pagination);
 
 		return res;
 	}

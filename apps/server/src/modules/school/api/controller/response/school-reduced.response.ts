@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SchoolPurpose } from '../../../domain';
 
-export class SchoolReducedResponse {
-	constructor({ id, name, purpose }: SchoolReducedResponse) {
+export class SlimSchoolResponse {
+	constructor({ id, name, purpose }: SlimSchoolResponse) {
 		this.id = id;
 		this.name = name;
 		this.purpose = purpose;
