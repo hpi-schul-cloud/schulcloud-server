@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, Page, Permission, SchoolYearEntity, SortOrder, User, UserDO } from '@shared/domain';
 import {
 	groupFactory,
@@ -22,9 +23,9 @@ import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { SystemDto, SystemService } from '@src/modules/system';
 import { UserService } from '@src/modules/user';
-import { Group } from '../domain';
+import { Group, GroupTypes } from '../domain';
 import { GroupService } from '../service';
-import { ClassInfoDto } from './dto';
+import { ClassInfoDto, ResolvedGroupDto } from './dto';
 import { ClassRootType } from './dto/class-root-type';
 import { GroupUc } from './group.uc';
 
@@ -334,6 +335,134 @@ describe('GroupUc', () => {
 						],
 						total: 3,
 					});
+				});
+			});
+		});
+	});
+
+	describe('getGroup', () => {
+		describe('when the user has no permission', () => {
+			const setup = () => {
+				const user: User = userFactory.buildWithId();
+				const error = new ForbiddenException();
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				authorizationService.checkPermission.mockImplementation(() => {
+					throw error;
+				});
+
+				return {
+					user,
+					error,
+				};
+			};
+
+			it('should throw forbidden', async () => {
+				const { user, error } = setup();
+
+				const func = () => uc.getGroup(user.id, 'groupId');
+
+				await expect(func).rejects.toThrow(error);
+			});
+		});
+
+		describe('when the group is not found', () => {
+			const setup = () => {
+				groupService.findById.mockRejectedValue(new NotFoundLoggableException(Group.name, 'id', 'groupId'));
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
+
+				return {
+					teacherId: teacherUser.id,
+				};
+			};
+
+			it('should throw not found', async () => {
+				const { teacherId } = setup();
+
+				const func = () => uc.getGroup(teacherId, 'groupId');
+
+				await expect(func).rejects.toThrow(NotFoundLoggableException);
+			});
+		});
+
+		describe('when the group is found', () => {
+			const setup = () => {
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				const { studentUser } = UserAndAccountTestFactory.buildStudent();
+				const group: Group = groupFactory.build({
+					users: [
+						{ userId: teacherUser.id, roleId: teacherUser.roles[0].id },
+						{ userId: studentUser.id, roleId: studentUser.roles[0].id },
+					],
+				});
+
+				groupService.findById.mockResolvedValueOnce(group);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
+
+				return {
+					teacherId: teacherUser.id,
+					teacherUser,
+					studentUser,
+					group,
+					expectedExternalId: group.externalSource?.externalId as string,
+					expectedSystemId: group.externalSource?.systemId as string,
+				};
+			};
+
+			it('should return the resolved group', async () => {
+				const { teacherId, teacherUser, studentUser, group, expectedExternalId, expectedSystemId } = setup();
+
+				const result: ResolvedGroupDto = await uc.getGroup(teacherId, group.id);
+
+				expect(result).toEqual<ResolvedGroupDto>({
+					id: group.id,
+					name: group.name,
+					type: GroupTypes.CLASS,
+					externalSource: {
+						externalId: expectedExternalId,
+						systemId: expectedSystemId,
+					},
+					users: [
+						{
+							user: {
+								id: teacherUser.id,
+								firstName: teacherUser.firstName,
+								lastName: teacherUser.lastName,
+								roles: [
+									{
+										id: teacherUser.roles[0].id,
+										name: teacherUser.roles[0].name,
+									},
+								],
+								schoolId: teacherUser.school.id,
+								email: teacherUser.email,
+							},
+							role: {
+								id: teacherUser.roles[0].id,
+								name: teacherUser.roles[0].name,
+							},
+						},
+						{
+							user: {
+								id: studentUser.id,
+								firstName: studentUser.firstName,
+								lastName: studentUser.lastName,
+								roles: [
+									{
+										id: studentUser.roles[0].id,
+										name: studentUser.roles[0].name,
+									},
+								],
+								schoolId: studentUser.school.id,
+								email: studentUser.email,
+							},
+							role: {
+								id: studentUser.roles[0].id,
+								name: studentUser.roles[0].name,
+							},
+						},
+					],
 				});
 			});
 		});

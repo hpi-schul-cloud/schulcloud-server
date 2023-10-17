@@ -2,6 +2,7 @@ import { BoardDoRule } from './board-do.rule';
 import { ContextExternalToolRule } from './context-external-tool.rule';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
+import { GroupRule } from './group.rule';
 import { LessonRule } from './lesson.rule';
 import { SchoolExternalToolRule } from './school-external-tool.rule';
 import { LegacySchoolRule } from './legacy-school.rule';
@@ -22,6 +23,7 @@ export * from './task.rule';
 export * from './team.rule';
 export * from './user.rule';
 export * from './context-external-tool.rule';
+export * from './group.rule';
 
 export const ALL_RULES = [
 	LessonRule,
@@ -36,4 +38,5 @@ export const ALL_RULES = [
 	BoardDoRule,
 	ContextExternalToolRule,
 	UserLoginMigrationRule,
+	GroupRule,
 ];

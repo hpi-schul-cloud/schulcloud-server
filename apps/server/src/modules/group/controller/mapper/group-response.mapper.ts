@@ -1,6 +1,18 @@
 import { Page } from '@shared/domain';
-import { ClassInfoDto } from '../../uc/dto';
-import { ClassInfoResponse, ClassInfoSearchListResponse } from '../dto';
+import { GroupTypes } from '../../domain';
+import { ClassInfoDto, ResolvedGroupDto } from '../../uc/dto';
+import {
+	ClassInfoResponse,
+	ClassInfoSearchListResponse,
+	ExternalSourceResponse,
+	GroupResponse,
+	GroupTypeResponse,
+	GroupUserResponse,
+} from '../dto';
+
+const typeMapping: Record<GroupTypes, GroupTypeResponse> = {
+	[GroupTypes.CLASS]: GroupTypeResponse.CLASS,
+};
 
 export class GroupResponseMapper {
 	static mapToClassInfosToListResponse(
@@ -30,6 +42,32 @@ export class GroupResponseMapper {
 			externalSourceName: classInfo.externalSourceName,
 			teachers: classInfo.teachers,
 			schoolYear: classInfo.schoolYear,
+		});
+
+		return mapped;
+	}
+
+	static mapToGroupResponse(resolvedGroup: ResolvedGroupDto): GroupResponse {
+		const mapped: GroupResponse = new GroupResponse({
+			id: resolvedGroup.id,
+			name: resolvedGroup.name,
+			type: typeMapping[resolvedGroup.type],
+			externalSource: resolvedGroup.externalSource
+				? new ExternalSourceResponse({
+						externalId: resolvedGroup.externalSource.externalId,
+						systemId: resolvedGroup.externalSource.systemId,
+				  })
+				: undefined,
+			users: resolvedGroup.users.map(
+				(user) =>
+					new GroupUserResponse({
+						id: user.user.id as string,
+						role: user.role.name,
+						firstName: user.user.firstName,
+						lastName: user.user.lastName,
+					})
+			),
+			organizationId: resolvedGroup.organizationId,
 		});
 
 		return mapped;

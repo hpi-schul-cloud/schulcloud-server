@@ -12,6 +12,7 @@ import {
 	TaskRule,
 	TeamRule,
 	UserRule,
+	GroupRule,
 } from '@shared/domain/rules';
 import { ContextExternalToolRule } from '@shared/domain/rules/context-external-tool.rule';
 import { UserLoginMigrationRule } from '@shared/domain/rules/user-login-migration.rule';
@@ -33,7 +34,8 @@ export class RuleManager {
 		private readonly schoolExternalToolRule: SchoolExternalToolRule,
 		private readonly boardDoRule: BoardDoRule,
 		private readonly contextExternalToolRule: ContextExternalToolRule,
-		private readonly userLoginMigrationRule: UserLoginMigrationRule
+		private readonly userLoginMigrationRule: UserLoginMigrationRule,
+		private readonly groupRule: GroupRule
 	) {
 		this.rules = [
 			this.courseRule,
@@ -48,6 +50,7 @@ export class RuleManager {
 			this.boardDoRule,
 			this.contextExternalToolRule,
 			this.userLoginMigrationRule,
+			this.groupRule,
 		];
 	}
 
