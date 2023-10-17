@@ -2,7 +2,8 @@ export enum SchoolFeature {
 	ROCKET_CHAT = 'rocketChat',
 	VIDEOCONFERENCE = 'videoconference',
 	NEXTCLOUD = 'nextcloud',
-	STUDENTVISIBILITY = 'studentVisibility', // deprecated
+	/** @deprecated */
+	STUDENTVISIBILITY = 'studentVisibility',
 	LDAP_UNIVENTION_MIGRATION = 'ldapUniventionMigrationSchool',
 	OAUTH_PROVISIONING_ENABLED = 'oauthProvisioningEnabled',
 	SHOW_OUTDATED_USERS = 'showOutdatedUsers',
