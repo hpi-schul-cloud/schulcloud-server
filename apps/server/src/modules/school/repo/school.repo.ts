@@ -2,7 +2,7 @@ import { EntityName, FindOptions } from '@mikro-orm/core';
 import { EntityId, IFindOptions, SchoolEntity, SortOrder } from '@shared/domain';
 import { BaseRepo } from '@shared/repo';
 import { SchoolQuery, SchoolRepo } from '../domain';
-import { School } from '../domain/do/school';
+import { School, SchoolProps } from '../domain/do/school';
 import { SchoolMapper } from './mapper/school.mapper';
 import { SchoolScope } from './scope/school.scope';
 
@@ -15,7 +15,7 @@ export class SchoolMikroOrmRepo extends BaseRepo<SchoolEntity> implements School
 		return SchoolEntity;
 	}
 
-	public async getAllSchools(query: SchoolQuery, options?: IFindOptions<SchoolEntity>): Promise<School[]> {
+	public async getAllSchools(query: SchoolQuery, options?: IFindOptions<SchoolProps>): Promise<School[]> {
 		const scope = new SchoolScope();
 		scope.allowEmptyQuery(true);
 		scope.byFederalState(query.federalStateId);
@@ -42,8 +42,8 @@ export class SchoolMikroOrmRepo extends BaseRepo<SchoolEntity> implements School
 	}
 
 	// TODO: This should probably be a common mapper for all repos.
-	private mapToMikroOrmOptions(options?: IFindOptions<SchoolEntity>): FindOptions<SchoolEntity> {
-		const findOptions = {
+	private mapToMikroOrmOptions(options?: IFindOptions<SchoolProps>): FindOptions<SchoolEntity> {
+		const findOptions: FindOptions<SchoolEntity> = {
 			offset: options?.pagination?.skip,
 			limit: options?.pagination?.limit,
 			orderBy: options?.order,

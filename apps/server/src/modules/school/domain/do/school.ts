@@ -26,7 +26,7 @@ export class School extends DomainObject<SchoolProps> {
 	}
 }
 
-interface SchoolProps extends AuthorizableObject {
+export interface SchoolProps extends AuthorizableObject {
 	name: string;
 	officialSchoolNumber?: string;
 	externalId?: string;

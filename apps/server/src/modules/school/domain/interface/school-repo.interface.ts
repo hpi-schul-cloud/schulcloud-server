@@ -1,9 +1,9 @@
-import { EntityId, IFindOptions, SchoolEntity } from '@shared/domain';
-import { School } from '../do/school';
+import { EntityId, IFindOptions } from '@shared/domain';
+import { School, SchoolProps } from '../do/school';
 import { SchoolQuery } from '../type';
 
 export interface SchoolRepo {
-	getAllSchools(query: SchoolQuery, options: IFindOptions<SchoolEntity>): Promise<School[]>;
+	getAllSchools(query: SchoolQuery, options: IFindOptions<SchoolProps>): Promise<School[]>;
 
 	getSchool(schoolId: EntityId): Promise<School>;
 }

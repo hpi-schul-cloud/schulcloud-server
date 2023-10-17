@@ -48,6 +48,7 @@ describe('SchoolMikroOrmRepo', () => {
 		it('should return school', async () => {
 			const entity = schoolFactory.build();
 			await em.persistAndFlush([entity]);
+			em.clear();
 			const school = SchoolMapper.mapToDo(entity);
 
 			const result = await repo.getSchool(entity.id);
