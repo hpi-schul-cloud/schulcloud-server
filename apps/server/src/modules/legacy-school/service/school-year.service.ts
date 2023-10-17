@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SchoolYearEntity } from '@shared/domain';
+import { EntityId, SchoolYearEntity } from '@shared/domain';
 import { SchoolYearRepo } from '../repo';
 
 @Injectable()
@@ -11,5 +11,11 @@ export class SchoolYearService {
 		const current: SchoolYearEntity = await this.schoolYearRepo.findCurrentYear();
 
 		return current;
+	}
+
+	async findById(id: EntityId): Promise<SchoolYearEntity> {
+		const year: SchoolYearEntity = await this.schoolYearRepo.findById(id);
+
+		return year;
 	}
 }

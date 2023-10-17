@@ -1,17 +1,16 @@
 import {
-	FileElement,
-	isFileElement,
-	isRichTextElement,
-	isSubmissionItemContent,
-	RichTextElement,
-	SubmissionItem,
-	UserBoardRoles,
+    FileElement,
+    isFileElement,
+    isRichTextElement,
+    isSubmissionItemContent,
+    RichTextElement,
+    SubmissionItem,
+    UserBoardRoles,
 } from '@shared/domain';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { FileElementResponseMapper } from './file-element-response.mapper';
 import { RichTextElementResponseMapper } from './rich-text-element-response.mapper';
-import { SubmissionsResponse } from '../dto/submission-item/submissions.response';
-import { SubmissionItemResponse, TimestampsResponse, UserDataResponse } from '../dto';
+import { SubmissionItemResponse, SubmissionsResponse, TimestampsResponse, UserDataResponse } from '../dto';
 
 export class SubmissionItemResponseMapper {
 	private static instance: SubmissionItemResponseMapper;
