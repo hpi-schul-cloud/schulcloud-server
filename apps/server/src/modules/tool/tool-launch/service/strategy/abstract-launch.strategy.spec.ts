@@ -2,9 +2,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Card, Course, EntityId, LegacySchoolDo } from '@shared/domain';
+import { Course, EntityId, LegacySchoolDo } from '@shared/domain';
 import {
-	cardFactory,
 	contextExternalToolFactory,
 	courseFactory,
 	customParameterFactory,
@@ -13,7 +12,6 @@ import {
 	schoolExternalToolFactory,
 	setupEntities,
 } from '@shared/testing';
-import { CardService } from '@src/modules/board';
 import { CourseService } from '@src/modules/learnroom/service';
 import { LegacySchoolService } from '@src/modules/legacy-school';
 import { CustomParameterEntry } from '../../../common/domain';
@@ -77,7 +75,6 @@ describe('AbstractLaunchStrategy', () => {
 
 	let schoolService: DeepMocked<LegacySchoolService>;
 	let courseService: DeepMocked<CourseService>;
-	let cardService: DeepMocked<CardService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -93,17 +90,12 @@ describe('AbstractLaunchStrategy', () => {
 					provide: CourseService,
 					useValue: createMock<CourseService>(),
 				},
-				{
-					provide: CardService,
-					useValue: createMock<CardService>(),
-				},
 			],
 		}).compile();
 
 		launchStrategy = module.get(TestLaunchStrategy);
 		schoolService = module.get(LegacySchoolService);
 		courseService = module.get(CourseService);
-		cardService = module.get(CardService);
 	});
 
 	afterAll(async () => {
@@ -385,72 +377,6 @@ describe('AbstractLaunchStrategy', () => {
 						{
 							name: autoContextIdCustomParameter.name,
 							value: contextExternalTool.contextRef.id,
-							location: PropertyLocation.BODY,
-						},
-						{
-							name: concreteConfigParameter.name,
-							value: concreteConfigParameter.value,
-							location: concreteConfigParameter.location,
-						},
-					],
-				});
-			});
-		});
-
-		describe('when launching with context name parameter for the context "board card"', () => {
-			const setup = () => {
-				const autoCardNameCustomParameter = customParameterFactory.build({
-					scope: CustomParameterScope.GLOBAL,
-					location: CustomParameterLocation.BODY,
-					name: 'autoCardNameParam',
-					type: CustomParameterType.AUTO_CONTEXTNAME,
-				});
-
-				const externalTool: ExternalTool = externalToolFactory.build({
-					parameters: [autoCardNameCustomParameter],
-				});
-
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
-					contextRef: {
-						type: ToolContextType.BOARD_CARD,
-					},
-				});
-
-				const card: Card = cardFactory.build({
-					id: contextExternalTool.contextRef.id,
-					title: 'Card Tile 123',
-				});
-
-				cardService.findById.mockResolvedValue(card);
-
-				return {
-					autoCardNameCustomParameter,
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
-					card,
-				};
-			};
-
-			it('should return ToolLaunchData with the card title as parameter value', async () => {
-				const { externalTool, schoolExternalTool, contextExternalTool, autoCardNameCustomParameter, card } = setup();
-
-				const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', {
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
-				});
-
-				expect(result).toEqual<ToolLaunchData>({
-					baseUrl: externalTool.config.baseUrl,
-					type: ToolLaunchDataType.BASIC,
-					openNewTab: false,
-					properties: [
-						{
-							name: autoCardNameCustomParameter.name,
-							value: card.title,
 							location: PropertyLocation.BODY,
 						},
 						{

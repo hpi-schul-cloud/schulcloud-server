@@ -9,7 +9,6 @@ import {
 	userDoFactory,
 } from '@shared/testing';
 import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
-import { CardService } from '@src/modules/board';
 import { CourseService } from '@src/modules/learnroom/service';
 import { LegacySchoolService } from '@src/modules/legacy-school';
 import { PseudonymService } from '@src/modules/pseudonym/service';
@@ -56,10 +55,6 @@ describe('Lti11ToolLaunchStrategy', () => {
 				{
 					provide: CourseService,
 					useValue: createMock<CourseService>(),
-				},
-				{
-					provide: CardService,
-					useValue: createMock<CardService>(),
 				},
 			],
 		}).compile();

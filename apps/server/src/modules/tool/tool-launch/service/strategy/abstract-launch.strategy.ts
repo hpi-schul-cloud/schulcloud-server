@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Card, Course, EntityId, LegacySchoolDo } from '@shared/domain';
-import { CardService } from '@src/modules/board';
+import { Course, EntityId, LegacySchoolDo } from '@shared/domain';
 import { CourseService } from '@src/modules/learnroom/service';
 import { LegacySchoolService } from '@src/modules/legacy-school';
 import { URLSearchParams } from 'url';
@@ -22,11 +21,7 @@ import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
 
 @Injectable()
 export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
-	constructor(
-		private readonly schoolService: LegacySchoolService,
-		private readonly courseService: CourseService,
-		private readonly cardService: CardService
-	) {}
+	constructor(private readonly schoolService: LegacySchoolService, private readonly courseService: CourseService) {}
 
 	public async createLaunchData(userId: EntityId, data: IToolLaunchParams): Promise<ToolLaunchData> {
 		const launchData: ToolLaunchData = this.buildToolLaunchDataFromExternalTool(data.externalTool);
@@ -225,11 +220,6 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 						const course: Course = await this.courseService.findById(contextExternalTool.contextRef.id);
 
 						return course.name;
-					}
-					case ToolContextType.BOARD_CARD: {
-						const boardCard: Card = await this.cardService.findById(contextExternalTool.contextRef.id);
-
-						return boardCard.title;
 					}
 					default: {
 						throw new ParameterTypeNotImplementedLoggableException(

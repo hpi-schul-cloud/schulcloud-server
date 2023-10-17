@@ -1,4 +1,4 @@
 export enum ToolContextType {
 	COURSE = 'course',
-	BOARD_CARD = 'boardCard',
+	BOARD_ELEMENT = 'board-element',
 }

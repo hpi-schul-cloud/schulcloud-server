@@ -3,7 +3,7 @@ import { ToolContextType } from '../enum';
 
 const typeMapping: Record<ToolContextType, AuthorizableReferenceType> = {
 	[ToolContextType.COURSE]: AuthorizableReferenceType.Course,
-	[ToolContextType.BOARD_CARD]: AuthorizableReferenceType.BoardNode,
+	[ToolContextType.BOARD_ELEMENT]: AuthorizableReferenceType.BoardNode,
 };
 
 export class ContextTypeMapper {

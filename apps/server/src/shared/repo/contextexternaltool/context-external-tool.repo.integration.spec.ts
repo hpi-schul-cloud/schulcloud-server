@@ -165,7 +165,7 @@ describe('ContextExternalToolRepo', () => {
 					displayName: 'displayName',
 					contextRef: {
 						id: new ObjectId().toHexString(),
-						type: ToolContextType.BOARD_CARD,
+						type: ToolContextType.BOARD_ELEMENT,
 					},
 					parameters: [new CustomParameterEntry({ name: 'param', value: 'value' })],
 					schoolToolRef: {

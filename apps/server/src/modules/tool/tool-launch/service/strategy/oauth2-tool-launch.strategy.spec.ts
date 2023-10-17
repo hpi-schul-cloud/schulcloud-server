@@ -1,7 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
-import { CardService } from '@src/modules/board';
 import { CourseService } from '@src/modules/learnroom/service';
 import { LegacySchoolService } from '@src/modules/legacy-school';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
@@ -26,10 +25,6 @@ describe('OAuth2ToolLaunchStrategy', () => {
 				{
 					provide: CourseService,
 					useValue: createMock<CourseService>(),
-				},
-				{
-					provide: CardService,
-					useValue: createMock<CardService>(),
 				},
 			],
 		}).compile();

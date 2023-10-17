@@ -15,9 +15,7 @@ export class SchoolExternalToolValidationService {
 	async validate(schoolExternalTool: SchoolExternalTool): Promise<void> {
 		this.commonToolValidationService.checkForDuplicateParameters(schoolExternalTool);
 
-		const loadedExternalTool: ExternalTool = await this.externalToolService.findExternalToolById(
-			schoolExternalTool.toolId
-		);
+		const loadedExternalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
 		this.checkVersionMatch(schoolExternalTool.toolVersion, loadedExternalTool.version);
 

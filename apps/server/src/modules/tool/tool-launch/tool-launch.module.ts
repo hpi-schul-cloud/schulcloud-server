@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { BoardModule } from '@src/modules/board';
 import { LearnroomModule } from '@src/modules/learnroom';
 import { LegacySchoolModule } from '@src/modules/legacy-school';
 import { PseudonymModule } from '@src/modules/pseudonym';
@@ -21,7 +20,6 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		UserModule,
 		PseudonymModule,
 		LearnroomModule,
-		BoardModule,
 	],
 	providers: [
 		ToolLaunchService,
