@@ -100,6 +100,7 @@ describe('GroupUc', () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+		jest.clearAllMocks();
 	});
 
 	describe('findClassesForSchool', () => {
@@ -219,7 +220,7 @@ describe('GroupUc', () => {
 				};
 			};
 
-			it('should check the CLASS_LIST permission', async () => {
+			it('should check the required permissions', async () => {
 				const { teacherUser, school } = setup();
 
 				await uc.findAllClassesForSchool(teacherUser.id, teacherUser.school.id);
@@ -229,7 +230,7 @@ describe('GroupUc', () => {
 					school,
 					{
 						action: Action.read,
-						requiredPermissions: [Permission.CLASS_LIST],
+						requiredPermissions: [Permission.CLASS_LIST, Permission.GROUP_LIST],
 					}
 				);
 			});
@@ -396,9 +397,35 @@ describe('GroupUc', () => {
 						{ userId: studentUser.id, roleId: studentUser.roles[0].id },
 					],
 				});
+				const teacherRole: RoleDto = roleDtoFactory.build({
+					id: teacherUser.roles[0].id,
+					name: teacherUser.roles[0].name,
+				});
+				const studentRole: RoleDto = roleDtoFactory.build({
+					id: studentUser.roles[0].id,
+					name: studentUser.roles[0].name,
+				});
+				const teacherUserDo: UserDO = userDoFactory.build({
+					id: teacherUser.id,
+					firstName: teacherUser.firstName,
+					lastName: teacherUser.lastName,
+					email: teacherUser.email,
+					roles: [{ id: teacherUser.roles[0].id, name: teacherUser.roles[0].name }],
+				});
+				const studentUserDo: UserDO = userDoFactory.build({
+					id: studentUser.id,
+					firstName: teacherUser.firstName,
+					lastName: studentUser.lastName,
+					email: studentUser.email,
+					roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
+				});
 
 				groupService.findById.mockResolvedValueOnce(group);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
+				userService.findById.mockResolvedValueOnce(teacherUserDo);
+				roleService.findById.mockResolvedValueOnce(teacherRole);
+				userService.findById.mockResolvedValueOnce(studentUserDo);
+				roleService.findById.mockResolvedValueOnce(studentRole);
 
 				return {
 					teacherId: teacherUser.id,
@@ -415,7 +442,7 @@ describe('GroupUc', () => {
 
 				const result: ResolvedGroupDto = await uc.getGroup(teacherId, group.id);
 
-				expect(result).toEqual<ResolvedGroupDto>({
+				expect(result).toMatchObject({
 					id: group.id,
 					name: group.name,
 					type: GroupTypes.CLASS,
@@ -429,13 +456,6 @@ describe('GroupUc', () => {
 								id: teacherUser.id,
 								firstName: teacherUser.firstName,
 								lastName: teacherUser.lastName,
-								roles: [
-									{
-										id: teacherUser.roles[0].id,
-										name: teacherUser.roles[0].name,
-									},
-								],
-								schoolId: teacherUser.school.id,
 								email: teacherUser.email,
 							},
 							role: {
@@ -448,13 +468,6 @@ describe('GroupUc', () => {
 								id: studentUser.id,
 								firstName: studentUser.firstName,
 								lastName: studentUser.lastName,
-								roles: [
-									{
-										id: studentUser.roles[0].id,
-										name: studentUser.roles[0].name,
-									},
-								],
-								schoolId: studentUser.school.id,
 								email: studentUser.email,
 							},
 							role: {

@@ -38,7 +38,11 @@ export class GroupUc {
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, school, AuthorizationContextBuilder.read([Permission.CLASS_LIST]));
+		this.authorizationService.checkPermission(
+			user,
+			school,
+			AuthorizationContextBuilder.read([Permission.CLASS_LIST, Permission.GROUP_LIST])
+		);
 
 		const combinedClassInfo: ClassInfoDto[] = await this.findCombinedClassListForSchool(schoolId);
 
@@ -166,12 +170,11 @@ export class GroupUc {
 	}
 
 	private async checkPermission(userId: EntityId, group: Group): Promise<void> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		return this.authorizationService.checkPermission(
 			user,
 			group,
-			// TODO: change permission, adapt rule test and write script
-			AuthorizationContextBuilder.read([Permission.CLASS_LIST])
+			AuthorizationContextBuilder.read([Permission.GROUP_VIEW])
 		);
 	}
 }
