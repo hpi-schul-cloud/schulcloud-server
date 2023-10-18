@@ -1,7 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { TimestampsResponse } from '../timestamps.response';
 import { FileElementResponse, RichTextElementResponse } from '../element';
 
+export type SubmissionContentElementResponse = RichTextElementResponse | FileElementResponse;
+
+@ApiExtraModels(FileElementResponse, RichTextElementResponse)
 export class SubmissionItemResponse {
 	constructor({ id, timestamps, completed, userId, elements }: SubmissionItemResponse) {
 		this.id = id;
@@ -25,7 +28,9 @@ export class SubmissionItemResponse {
 
 	@ApiProperty({
 		type: 'array',
-		// TODO add types
+		items: {
+			oneOf: [{ $ref: getSchemaPath(FileElementResponse) }, { $ref: getSchemaPath(RichTextElementResponse) }],
+		},
 	})
-	elements: (RichTextElementResponse | FileElementResponse)[];
+	elements: SubmissionContentElementResponse[];
 }

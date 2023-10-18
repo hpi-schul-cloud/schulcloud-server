@@ -1,11 +1,11 @@
 import {
-    FileElement,
-    isFileElement,
-    isRichTextElement,
-    isSubmissionItemContent,
-    RichTextElement,
-    SubmissionItem,
-    UserBoardRoles,
+	FileElement,
+	isFileElement,
+	isRichTextElement,
+	isSubmissionItemContent,
+	RichTextElement,
+	SubmissionItem,
+	UserBoardRoles,
 } from '@shared/domain';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { FileElementResponseMapper } from './file-element-response.mapper';

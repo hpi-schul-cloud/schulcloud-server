@@ -1,4 +1,11 @@
-import { BadRequestException, forwardRef, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+	BadRequestException,
+	forwardRef,
+	Inject,
+	Injectable,
+	NotFoundException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import {
 	ContentElementType,
 	EntityId,
@@ -36,7 +43,7 @@ export class SubmissionItemUc extends BaseUc {
 		const submissionContainerElement = await this.elementService.findById(submissionContainerId);
 
 		if (!isSubmissionContainerElement(submissionContainerElement)) {
-			throw new UnprocessableEntityException('Id is not belong to a submission container');
+			throw new NotFoundException('Could not find a submission container with this id');
 		}
 
 		await this.checkPermission(userId, submissionContainerElement, Action.read);

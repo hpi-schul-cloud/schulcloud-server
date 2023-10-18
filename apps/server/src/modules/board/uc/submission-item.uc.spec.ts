@@ -11,6 +11,7 @@ import {
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Action } from '@src/modules/authorization/types/action.enum';
+import { NotFoundException } from '@nestjs/common';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { SubmissionItemUc } from './submission-item.uc';
 
@@ -194,7 +195,9 @@ describe(SubmissionItemUc.name, () => {
 			it('should throw HttpException', async () => {
 				const { teacher, fileEl } = setup();
 
-				await expect(uc.findSubmissionItems(teacher.id, fileEl.id)).rejects.toThrow('Id is not submission container');
+				await expect(uc.findSubmissionItems(teacher.id, fileEl.id)).rejects.toThrow(
+					new NotFoundException('Could not find a submission container with this id')
+				);
 			});
 		});
 	});

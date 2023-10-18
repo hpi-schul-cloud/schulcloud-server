@@ -178,7 +178,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		this.visitChildren(externalToolElement, boardNode);
 	}
 
-	visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {
+	private visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {
 		parent.children.forEach((child) => {
 			this.registerParentData(parent, child, parentNode);
 			child.accept(this);
@@ -198,7 +198,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		this.visitChildren(anyBoardDo, boardNode);
 	}
 
-	// TODO make private
+	// TODO make private (change tests)
 	createOrUpdateBoardNode(boardNode: BoardNode): void {
 		const existing = this.em.getUnitOfWork().getById<BoardNode>(BoardNode.name, boardNode.id);
 		if (existing) {
