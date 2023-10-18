@@ -24,11 +24,6 @@ describe('WebSocketController (WsAdapter)', () => {
 		'S0zZGEwYjMzNjQ3MjIiLCJjb2xvciI6IiNGMDRGODgiLCJwb2ludCI6WzAsMF0sInNlbGVjdGVkSWRzIjpbXSwiYWN' +
 		'0aXZlU2hhcGVzIjpbXSwic2Vzc2lvbiI6ZmFsc2V9fQ==';
 
-	const delay = (ms: number) =>
-		new Promise((resolve) => {
-			setTimeout(resolve, ms);
-		});
-
 	const getMessage = () => new TextEncoder().encode(testMessage);
 
 	beforeAll(async () => {
@@ -71,10 +66,7 @@ describe('WebSocketController (WsAdapter)', () => {
 			const { handleConnectionSpy, buffer } = await setup();
 			ws.send(buffer, () => {});
 
-			expect(handleConnectionSpy).toHaveBeenCalled();
 			expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
-
-			await delay(50);
 			ws.close();
 		});
 
@@ -88,7 +80,6 @@ describe('WebSocketController (WsAdapter)', () => {
 				});
 			});
 
-			await delay(50);
 			ws.close();
 		});
 	});
@@ -116,10 +107,9 @@ describe('WebSocketController (WsAdapter)', () => {
 			expect(handleConnectionSpy).toHaveBeenCalled();
 			expect(handleConnectionSpy).toHaveBeenCalledTimes(2);
 
-			await delay(50);
 			ws.close();
 			ws2.close();
-		}, 2000);
+		});
 	});
 
 	describe('when tldraw is not correctly setup', () => {
@@ -143,7 +133,6 @@ describe('WebSocketController (WsAdapter)', () => {
 			expect(handleConnectionSpy).toHaveBeenCalled();
 			expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
 
-			await delay(50);
 			ws.close();
 		});
 	});
