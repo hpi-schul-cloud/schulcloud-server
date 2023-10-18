@@ -177,7 +177,12 @@
 		},
 		"ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS": {
 			"type": "string",
-			"default":"schul-cloud.org",
+			"default":"",
+			"description": "Add custom domain to the list of blocked domains (comma separated list)."
+		},
+		"BLACKLISTED_EMAIL_DOMAINS": {
+			"type": "string",
+			"default":"onet.eu",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
 		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
