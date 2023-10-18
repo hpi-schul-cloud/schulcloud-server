@@ -1,4 +1,4 @@
-import { ExternalSource, RoleName } from '@shared/domain';
+import { ExternalSource } from '@shared/domain';
 import { Group, GroupProps, GroupTypes } from '@src/modules/group/domain';
 import { ObjectId } from 'bson';
 import { DomainObjectFactory } from '../domain-object.factory';
@@ -12,12 +12,6 @@ export const groupFactory = DomainObjectFactory.define<Group, GroupProps>(Group,
 			{
 				userId: new ObjectId().toHexString(),
 				roleId: new ObjectId().toHexString(),
-				firstName: `firstName-${sequence}`,
-				lastName: `lastName-${sequence}`,
-				roleRef: {
-					id: new ObjectId().toHexString(),
-					name: RoleName.TEACHER,
-				},
 			},
 		],
 		validFrom: new Date(2023, 1),
