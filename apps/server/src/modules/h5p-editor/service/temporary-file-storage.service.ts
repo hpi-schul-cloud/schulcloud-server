@@ -51,15 +51,12 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 	public async getFileStream(
 		filename: string,
 		user: IUser,
-		rangeStart?: number | undefined,
+		rangeStart = 0,
 		rangeEnd?: number | undefined
 	): Promise<Readable> {
 		this.checkFilename(filename);
 		const tempFile = await this.repo.findByUserAndFilename(user.id, filename);
 		const path = this.getFilePath(user.id, filename);
-		if (rangeStart === undefined) {
-			rangeStart = 0;
-		}
 		if (rangeEnd === undefined) {
 			rangeEnd = tempFile.size - 1;
 		}
