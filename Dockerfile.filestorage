@@ -1,4 +1,105 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
-RUN apk add --no-cache imagemagick
+# install base dependencies
+RUN apk add --no-cache \
+  dpkg-dev \
+  g++ \
+  gcc \
+  libc-dev \
+  make \
+  git \
+  libde265-dev \
+  djvulibre-dev \
+  fftw-dev \
+  graphviz-dev \
+  ghostscript-dev \
+  libheif-dev \
+  jpeg-dev \
+  lcms2-dev \
+  xz-dev \
+  openexr-dev \
+  openjpeg-dev \
+  pango-dev \
+  perl-dev \
+  libraw-dev \
+  librsvg-dev \
+  tiff-dev \
+  libwebp-dev \
+  libwmf-dev \
+  libxml2-dev \
+  libzip-dev \
+  zstd-dev \
+  meson \
+  ninja
+
+# install base dependencies (testing repository)
+RUN apk add --no-cache \
+  jbigkit-dev \
+  --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/
+
+# get and build libraqm
+WORKDIR /
+RUN git clone https://github.com/HOST-Oman/libraqm.git
+WORKDIR /libraqm
+RUN meson build
+RUN ninja -C build
+RUN ninja -C build install
+
+# get and build liblqr
+WORKDIR /
+RUN git clone https://github.com/carlobaldassi/liblqr.git
+WORKDIR /liblqr
+RUN ./configure
+RUN make -j 4
+RUN make install
+
+# get and build ImageMagick
+WORKDIR /
+RUN git clone --depth 1 --branch 7.1.0-54 https://github.com/ImageMagick/ImageMagick.git
+WORKDIR /ImageMagick
+RUN ./configure \
+  --with-bzlib=yes \
+  --with-djvu=yes \
+  --with-dps=yes \
+  --with-fftw=yes \
+  --with-flif=yes \
+  --with-fontconfig=yes \
+  --with-fpx=yes \
+  --with-freetype=yes \
+  --with-gslib=yes \
+  --with-gvc=yes \
+  --with-heic=yes \
+  --with-jbig=yes \
+  --with-jpeg=yes \
+  --with-jxl=yes \
+  --with-lcms=yes \
+  --with-lqr=yes \
+  --with-lzma=yes \
+  --with-magick-plus-plus=yes \
+  --with-openexr=yes \
+  --with-openjp2=yes \
+  --with-pango=yes \
+  --with-perl=yes \
+  --with-png=yes \
+  --with-raqm=yes \
+  --with-raw=yes \
+  --with-rsvg=yes \
+  --with-tiff=yes \
+  --with-webp=yes \
+  --with-wmf=yes \
+  --with-x=yes \
+  --with-xml=yes \
+  --with-zip=yes \
+  --with-zlib=yes \
+  --with-zstd=yes \
+  --with-gcc-arch=native
+RUN make -j 4
+RUN make install
+RUN ldconfig /usr/local/lib
+
+# clean up
+WORKDIR /
+RUN rm -rf libraqm
+RUN rm -rf liblqr
+RUN rm -rf ImageMagick
