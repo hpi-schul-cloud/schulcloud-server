@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, Permission, User } from '@shared/domain';
 import { schoolExternalToolFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationContextBuilder } from '@src/modules/authorization';
+import { AuthorizationContextBuilder } from '@modules/authorization';
 import { SchoolExternalToolUc } from './school-external-tool.uc';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { ContextExternalToolService } from '../../context-external-tool/service';

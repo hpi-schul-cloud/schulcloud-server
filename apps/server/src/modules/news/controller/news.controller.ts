@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@modules/authentication';
+import { Authenticate, CurrentUser } from '@modules/authentication/decorator/auth.decorator';
 import { NewsMapper } from '../mapper/news.mapper';
 import { NewsUc } from '../uc/news.uc';
 import {

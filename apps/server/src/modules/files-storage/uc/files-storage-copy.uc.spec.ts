@@ -8,7 +8,7 @@ import { AntivirusService } from '@shared/infra/antivirus';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { Action, AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { CopyFileResponseBuilder } from '../mapper';

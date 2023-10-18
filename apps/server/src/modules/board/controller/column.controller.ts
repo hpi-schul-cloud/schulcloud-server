@@ -12,8 +12,8 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@modules/authentication';
+import { Authenticate, CurrentUser } from '@modules/authentication/decorator/auth.decorator';
 import { BoardUc } from '../uc';
 import { CardResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams } from './dto';
 import { CardResponseMapper } from './mapper';

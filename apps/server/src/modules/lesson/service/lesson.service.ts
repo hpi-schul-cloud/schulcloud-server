@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Counted, EntityId, IComponentProperties, LessonEntity } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 
 @Injectable()
 export class LessonService {

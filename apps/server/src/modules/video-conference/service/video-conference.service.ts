@@ -20,10 +20,10 @@ import {
 	AuthorizableReferenceType,
 	AuthorizationContextBuilder,
 	AuthorizationService,
-} from '@src/modules/authorization';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { UserService } from '@src/modules/user';
+} from '@modules/authorization';
+import { CourseService } from '@modules/learnroom/service';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
 import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';

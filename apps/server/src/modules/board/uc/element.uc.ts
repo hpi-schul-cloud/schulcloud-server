@@ -8,8 +8,8 @@ import {
 	UserRoleEnum,
 } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
-import { Action } from '@src/modules/authorization/types/action.enum';
+import { AuthorizationService } from '@modules/authorization';
+import { Action } from '@modules/authorization/types/action.enum';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { SubmissionItemService } from '../service/submission-item.service';

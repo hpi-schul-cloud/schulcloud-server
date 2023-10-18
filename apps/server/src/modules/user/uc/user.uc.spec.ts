@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType, Permission, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { UserService } from '@src/modules/user/service/user.service';
+import { UserService } from '@modules/user/service/user.service';
 import { UserUc } from './user.uc';
 
 describe('UserUc', () => {

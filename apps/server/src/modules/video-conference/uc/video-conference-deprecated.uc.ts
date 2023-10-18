@@ -17,16 +17,16 @@ import { CalendarService } from '@shared/infra/calendar';
 import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
 import { TeamsRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import {
 	Action,
 	AuthorizableReferenceType,
 	AuthorizationContextBuilder,
 	AuthorizationService,
-} from '@src/modules/authorization';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { UserService } from '@src/modules/user';
+} from '@modules/authorization';
+import { CourseService } from '@modules/learnroom/service';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import {
 	BBBBaseMeetingConfig,
 	BBBBaseResponse,

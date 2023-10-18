@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
-import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
+import { AuthorizationContext, AuthorizationContextBuilder } from '@modules/authorization';
 import { ExternalTool, ToolReference } from '../domain';
 import { ToolConfigurationStatus, ToolContextType } from '../../common/enum';
 import { CommonToolService } from '../../common/service';

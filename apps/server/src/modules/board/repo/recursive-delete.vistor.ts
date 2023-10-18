@@ -14,7 +14,7 @@ import {
 	SubmissionItem,
 } from '@shared/domain';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 
 @Injectable()
 export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {

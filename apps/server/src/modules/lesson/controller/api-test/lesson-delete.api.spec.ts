@@ -10,8 +10,8 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { ServerTestModule } from '@src/modules/server';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { ServerTestModule } from '@modules/server';
 import { ObjectId } from 'bson';
 
 describe('Lesson Controller (API) - delete', () => {

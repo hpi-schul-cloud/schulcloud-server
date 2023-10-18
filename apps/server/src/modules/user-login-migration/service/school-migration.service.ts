@@ -3,8 +3,8 @@ import { ValidationError } from '@shared/common';
 import { Page, LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { UserService } from '@src/modules/user';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { performance } from 'perf_hooks';
 import { OAuthMigrationError } from '../error';
 

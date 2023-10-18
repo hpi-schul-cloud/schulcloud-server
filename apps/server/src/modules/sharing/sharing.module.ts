@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '@src/modules/authorization';
+import { AuthorizationModule } from '@modules/authorization';
 import { ShareTokenController } from './controller/share-token.controller';
 import { ShareTokenUC } from './uc';
 import { ShareTokenService, TokenGenerator } from './service';

@@ -9,12 +9,12 @@ import {
 	userDoFactory,
 } from '@shared/testing';
 import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
-import { PseudonymService } from '@src/modules/pseudonym/service';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { UserService } from '@src/modules/user';
+import { PseudonymService } from '@modules/pseudonym/service';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { ObjectId } from 'bson';
 import { Authorization } from 'oauth-1.0a';
-import { CourseService } from '@src/modules/learnroom/service';
+import { CourseService } from '@modules/learnroom/service';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole, ToolContextType } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { ExternalTool } from '../../../external-tool/domain';

@@ -12,8 +12,8 @@ import {
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common';
 import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@modules/authentication';
+import { Authenticate, CurrentUser } from '@modules/authentication/decorator/auth.decorator';
 import { ContextExternalTool } from '../domain';
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from '../mapper';
 import { ContextExternalToolUc } from '../uc';

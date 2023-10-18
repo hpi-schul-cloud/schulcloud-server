@@ -1,6 +1,6 @@
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Param, Patch } from '@nestjs/common';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser } from '@modules/authentication/decorator/auth.decorator';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '../../authentication/interface/user';
 import { CollaborativeStorageUc } from '../uc/collaborative-storage.uc';

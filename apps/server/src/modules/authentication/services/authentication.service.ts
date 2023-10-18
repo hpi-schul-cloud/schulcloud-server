@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { JwtValidationAdapter } from '@src/modules/authentication/strategy/jwt-validation.adapter';
-import type { IServerConfig } from '@src/modules/server';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountDto } from '@modules/account/services/dto';
+import { JwtValidationAdapter } from '@modules/authentication/strategy/jwt-validation.adapter';
+import type { IServerConfig } from '@modules/server';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';

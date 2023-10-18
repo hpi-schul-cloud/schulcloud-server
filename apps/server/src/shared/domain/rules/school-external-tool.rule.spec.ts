@@ -8,10 +8,10 @@ import {
 	schoolExternalToolFactory,
 } from '@shared/testing';
 
-import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action } from '@src/modules/authorization/types';
-import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
-import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
+import { AuthorizationHelper } from '@modules/authorization/authorization.helper';
+import { Action } from '@modules/authorization/types';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { Role, User } from '../entity';
 import { Permission } from '../interface';
 import { SchoolExternalToolRule } from './school-external-tool.rule';

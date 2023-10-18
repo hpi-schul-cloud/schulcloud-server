@@ -15,8 +15,8 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { BoardDoAuthorizableService } from '@src/modules/board';
-import { ContextExternalToolAuthorizableService } from '@src/modules/tool/context-external-tool/service/context-external-tool-authorizable.service';
+import { BoardDoAuthorizableService } from '@modules/board';
+import { ContextExternalToolAuthorizableService } from '@modules/tool/context-external-tool/service/context-external-tool-authorizable.service';
 import { ReferenceLoader } from './reference.loader';
 import { AuthorizableReferenceType } from './types';
 

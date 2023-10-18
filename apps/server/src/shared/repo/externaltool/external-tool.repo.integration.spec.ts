@@ -6,8 +6,8 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
 import { cleanupCollections, externalToolEntityFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { ExternalToolSearchQuery } from '@src/modules/tool';
-import { CustomParameter } from '@src/modules/tool/common/domain';
+import { ExternalToolSearchQuery } from '@modules/tool';
+import { CustomParameter } from '@modules/tool/common/domain';
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -15,14 +15,14 @@ import {
 	LtiMessageType,
 	LtiPrivacyPermission,
 	ToolConfigType,
-} from '@src/modules/tool/common/enum';
+} from '@modules/tool/common/enum';
 import {
 	BasicToolConfig,
 	ExternalTool,
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
-} from '@src/modules/tool/external-tool/domain';
-import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
+} from '@modules/tool/external-tool/domain';
+import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 
 describe('ExternalToolRepo', () => {
 	let module: TestingModule;

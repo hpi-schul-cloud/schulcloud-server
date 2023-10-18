@@ -6,7 +6,7 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -15,8 +15,8 @@ import {
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@src/modules/server';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@modules/server';
 import { ShareTokenService } from '../../service';
 import { ShareTokenInfoResponse, ShareTokenResponse, ShareTokenUrlParams } from '../dto';
 import { ShareTokenContext, ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';

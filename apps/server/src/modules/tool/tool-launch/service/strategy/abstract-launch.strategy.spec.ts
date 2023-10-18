@@ -12,8 +12,8 @@ import {
 	schoolExternalToolFactory,
 	setupEntities,
 } from '@shared/testing';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LegacySchoolService } from '@src/modules/legacy-school';
+import { CourseService } from '@modules/learnroom/service';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { CustomParameterEntry } from '../../../common/domain';
 import {
 	CustomParameterLocation,

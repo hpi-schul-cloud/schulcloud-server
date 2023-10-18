@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationContext, AuthorizationService } from '@modules/authorization';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
 import { Request } from 'express';

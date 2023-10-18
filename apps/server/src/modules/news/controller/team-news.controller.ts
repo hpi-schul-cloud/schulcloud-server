@@ -1,9 +1,9 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 
 import { PaginationParams } from '@shared/controller';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser } from '@modules/authentication/decorator/auth.decorator';
 
 import { NewsMapper } from '../mapper/news.mapper';
 import { NewsUc } from '../uc';

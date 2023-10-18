@@ -3,10 +3,10 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO } from '@shared/domain';
 import { externalToolFactory, ltiToolDOFactory, setupEntities } from '@shared/testing';
-import { LtiToolService } from '@src/modules/lti-tool';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { ExternalToolService } from '@src/modules/tool/external-tool/service';
-import { IToolFeatures, ToolFeatures } from '@src/modules/tool/tool-config';
+import { LtiToolService } from '@modules/lti-tool';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { ExternalToolService } from '@modules/tool/external-tool/service';
+import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 
 describe('OauthProviderLoginFlowService', () => {

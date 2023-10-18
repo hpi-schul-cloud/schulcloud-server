@@ -8,10 +8,10 @@ import {
 	AuthorizableReferenceType,
 	AuthorizationContextBuilder,
 	AuthorizationService,
-} from '@src/modules/authorization';
-import { CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
-import { LessonCopyParentParams } from '@src/modules/lesson';
-import { LessonCopyService } from '@src/modules/lesson/service';
+} from '@modules/authorization';
+import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
+import { LessonCopyParentParams } from '@modules/lesson';
+import { LessonCopyService } from '@modules/lesson/service';
 
 @Injectable()
 export class LessonCopyUC {

@@ -10,7 +10,7 @@ import {
 	schoolExternalToolFactory,
 	setupEntities,
 } from '@shared/testing';
-import { AuthorizationContextBuilder } from '@src/modules/authorization';
+import { AuthorizationContextBuilder } from '@modules/authorization';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ContextExternalToolService } from '../../context-external-tool/service';

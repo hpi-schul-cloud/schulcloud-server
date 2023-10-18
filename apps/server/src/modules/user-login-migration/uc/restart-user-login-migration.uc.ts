@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { Permission, LegacySchoolDo, User, UserLoginMigrationDO } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school';
+import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { LegacySchoolService } from '@modules/legacy-school';
 import {
 	UserLoginMigrationGracePeriodExpiredLoggableException,
 	UserLoginMigrationNotFoundLoggableException,
