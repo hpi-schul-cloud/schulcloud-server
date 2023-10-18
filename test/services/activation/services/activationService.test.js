@@ -20,7 +20,7 @@ const { customErrorMessages } = util;
 
 const mockData = {
 	keyword: customUtils.KEYWORDS.E_MAIL_ADDRESS,
-	email: 'testmail@example.com',
+	email: 'testmail@schul-cloud.org123',
 };
 
 const createEntry = async () => {

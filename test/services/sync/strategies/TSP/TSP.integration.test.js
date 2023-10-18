@@ -62,9 +62,7 @@ describe('TSP API integration tests', () => {
 		});
 	});
 
-	// TODO due to implementation of BC-4895 domain need to be changed in later ticket (result of refinement);S
-
-	/* describe('#createUserAndAccount', () => {
+	describe('#createUserAndAccount', () => {
 		it('should create an activated user and account based on the given details', async () => {
 			const school = await testObjects.createTestSchool();
 			const userDetails = {
@@ -86,5 +84,5 @@ describe('TSP API integration tests', () => {
 			expect(createdAccount.username).to.equal('tsp/2345');
 			expect(createdAccount.activated).to.equal(true);
 		});
-	}); */
+	});
 });

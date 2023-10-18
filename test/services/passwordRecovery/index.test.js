@@ -14,7 +14,7 @@ describe('passwordRecovery service', () => {
 	let server;
 	let savedUser;
 	let savedAccount;
-	const recoveryUsername = 'recoveryuser@example.com';
+	const recoveryUsername = 'recoveryuser@schul-cloud.org';
 
 	const newAccount = {
 		username: recoveryUsername,
@@ -42,7 +42,7 @@ describe('passwordRecovery service', () => {
 	it.skip('should work for existing email addresses', async () => {
 		// TODO throws NOT_FOUND
 		const res = await passwordRecoveryService.create({
-			username: 'schueler@example.com',
+			username: 'schueler@schul-cloud.org',
 		});
 		assert.ok(res);
 	});

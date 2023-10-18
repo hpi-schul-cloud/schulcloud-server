@@ -29,7 +29,7 @@ describe('registrationPin Service', () => {
 	});
 
 	let pin = null;
-	const email = 'test.adresse@example.com';
+	const email = 'test.adresse@schul-cloud.org';
 	it('registered the registrationPin Service', () => {
 		assert.ok(registrationPinService);
 	});
