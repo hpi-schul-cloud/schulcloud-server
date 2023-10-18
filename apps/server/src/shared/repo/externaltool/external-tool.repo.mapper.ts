@@ -2,12 +2,7 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { CustomParameter, CustomParameterEntry } from '@modules/tool/common/domain';
 import { CustomParameterEntryEntity } from '@modules/tool/common/entity';
 import { ToolConfigType } from '@modules/tool/common/enum';
-import {
-	BasicToolConfig,
-	ExternalTool,
-	Lti11ToolConfig,
-	Oauth2ToolConfig,
-} from '@modules/tool/external-tool/domain';
+import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
 import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,

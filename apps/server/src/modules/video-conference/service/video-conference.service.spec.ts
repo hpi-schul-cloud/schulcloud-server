@@ -14,11 +14,7 @@ import {
 } from '@shared/domain';
 import { CalendarEventDto, CalendarService } from '@shared/infra/calendar';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import {
-	AuthorizableReferenceType,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@modules/authorization';
+import { AuthorizableReferenceType, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
 import { courseFactory, roleFactory, setupEntities, userDoFactory } from '@shared/testing';

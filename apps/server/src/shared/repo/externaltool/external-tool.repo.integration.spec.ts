@@ -16,12 +16,7 @@ import {
 	LtiPrivacyPermission,
 	ToolConfigType,
 } from '@modules/tool/common/enum';
-import {
-	BasicToolConfig,
-	ExternalTool,
-	Lti11ToolConfig,
-	Oauth2ToolConfig,
-} from '@modules/tool/external-tool/domain';
+import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 
 describe('ExternalToolRepo', () => {
