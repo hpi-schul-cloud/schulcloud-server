@@ -44,7 +44,7 @@ module.exports = {
 		}
 
 		const groupListPermission = await Roles.updateMany(
-			{ name: { $in: ['teacher', 'administrator'] } },
+			{ name: { $in: ['teacher', 'administrator', 'superhero'] } },
 			{
 				$addToSet: {
 					permissions: {
@@ -83,7 +83,7 @@ module.exports = {
 		}
 
 		const groupListRollback = await Roles.updateMany(
-			{ name: { $in: ['teacher', 'administrator'] } },
+			{ name: { $in: ['teacher', 'administrator', 'superhero'] } },
 			{
 				$pull: {
 					permissions: 'GROUP_LIST',

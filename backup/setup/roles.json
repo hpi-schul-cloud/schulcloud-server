@@ -6,7 +6,7 @@
 		"name": "user",
 		"roles": [],
 		"updatedAt": {
-			"$date": "2023-10-17T14:55:00.555Z"
+			"$date": "2023-10-18T05:58:52.716Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -69,7 +69,7 @@
 		},
 		"name": "administrator",
 		"updatedAt": {
-			"$date": "2023-10-17T14:55:00.569Z"
+			"$date": "2023-10-18T05:58:52.729Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -144,7 +144,7 @@
 		},
 		"name": "superhero",
 		"updatedAt": {
-			"$date": "2022-09-22T13:14:23.839Z"
+			"$date": "2023-10-18T05:58:52.729Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -190,7 +190,8 @@
 			"TEAM_EDIT",
 			"TOOL_CREATE",
 			"TOOL_EDIT",
-			"YEARS_EDIT"
+			"YEARS_EDIT",
+			"GROUP_LIST"
 		],
 		"__v": 2
 	},
@@ -200,7 +201,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2023-10-17T14:55:00.569Z"
+			"$date": "2023-10-18T05:59:16.621Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
