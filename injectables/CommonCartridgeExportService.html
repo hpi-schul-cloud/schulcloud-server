@@ -616,8 +616,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="130"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:130</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="140"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:140</a></div>
                 </td>
             </tr>
 
@@ -690,8 +690,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="138"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:138</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="148"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:148</a></div>
                 </td>
             </tr>
 
@@ -874,8 +874,18 @@ export class CommonCartridgeExportService {
 
 		if (content.component &#x3D;&#x3D;&#x3D; ComponentType.ETHERPAD) {
 			return version &#x3D;&#x3D;&#x3D; CommonCartridgeVersion.V_1_3_0
-				? { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V3, url: content.content.url }
-				: { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V1, url: content.content.url };
+				? {
+						...commonProps,
+						type: CommonCartridgeResourceType.WEB_LINK_V3,
+						url: content.content.url,
+						title: content.content.description,
+				  }
+				: {
+						...commonProps,
+						type: CommonCartridgeResourceType.WEB_LINK_V1,
+						url: content.content.url,
+						title: content.content.description,
+				  };
 		}
 
 		return undefined;
