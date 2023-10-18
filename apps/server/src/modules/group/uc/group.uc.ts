@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, Page, Permission, SortOrder, User, UserDO } from '@shared/domain';
+import { EntityId, LegacySchoolDo, Page, Permission, SchoolYearEntity, SortOrder, User, UserDO } from '@shared/domain';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { ClassService } from '@src/modules/class';
 import { Class } from '@src/modules/class/domain';
-import { LegacySchoolService } from '@src/modules/legacy-school';
+import { LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { SystemDto, SystemService } from '@src/modules/system';
@@ -23,7 +23,8 @@ export class GroupUc {
 		private readonly userService: UserService,
 		private readonly roleService: RoleService,
 		private readonly schoolService: LegacySchoolService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly schoolYearService: SchoolYearService
 	) {}
 
 	public async findAllClassesForSchool(
@@ -72,7 +73,12 @@ export class GroupUc {
 					clazz.teacherIds.map((teacherId: EntityId) => this.userService.findById(teacherId))
 				);
 
-				const mapped: ClassInfoDto = GroupUcMapper.mapClassToClassInfoDto(clazz, teachers);
+				let schoolYear: SchoolYearEntity | undefined;
+				if (clazz.year) {
+					schoolYear = await this.schoolYearService.findById(clazz.year);
+				}
+
+				const mapped: ClassInfoDto = GroupUcMapper.mapClassToClassInfoDto(clazz, teachers, schoolYear);
 
 				return mapped;
 			})
