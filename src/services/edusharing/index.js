@@ -35,7 +35,7 @@ class EduSharingPlayer {
 			throw new MethodNotAllowed('This feature is disabled on this instance');
 		}
 		const esPlayer = EduSharingConnectorV7.getPlayerForNode(uuid);
-
+		
 		return esPlayer;
 	}
 }
@@ -52,22 +52,21 @@ module.exports = (app) => {
 	const merlinRoute = '/edu-sharing/merlinToken';
 	const docRoute = '/edu-sharing/api';
 
-	// The secondary routes must load before the main route! (BC-5566)
+	app.use(eduSharingRoute, new EduSharing());
+	const eduSharingService = app.service(eduSharingRoute);
+	eduSharingService.hooks(hooks);
+
+	app.use(eduSharingPlayerRoute, new EduSharingPlayer(), (req, res) => {
+		res.send(res.data);
+	});
+	const eduSharingPlayerService = app.service(eduSharingPlayerRoute);
+	eduSharingPlayerService.hooks(playerHooks);
+
 	app.use(merlinRoute, new MerlinToken(), (req, res) => {
 		res.send(res.data);
 	});
 	const merlinService = app.service(merlinRoute);
 	merlinService.hooks(merlinHooks);
-
-	const eduSharingPlayerService = app.service(eduSharingPlayerRoute);
-	app.use(eduSharingPlayerRoute, new EduSharingPlayer(), (req, res) => {
-		res.send(res.data);
-	});
-	eduSharingPlayerService.hooks(playerHooks);
-
-	app.use(eduSharingRoute, new EduSharing());
-	const eduSharingService = app.service(eduSharingRoute);
-	eduSharingService.hooks(hooks);
 
 	app.use(docRoute, staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 };
