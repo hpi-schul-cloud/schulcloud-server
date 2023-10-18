@@ -42,6 +42,6 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 		UserLoginMigrationRule,
 		LegacySchoolRule,
 	],
-	exports: [FeathersAuthorizationService, AuthorizationService, AuthorizationHelper],
+	exports: [FeathersAuthorizationService, AuthorizationService],
 })
 export class AuthorizationModule {}
