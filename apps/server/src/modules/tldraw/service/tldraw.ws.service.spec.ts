@@ -16,7 +16,22 @@ import { TldrawWs } from '@src/modules/tldraw/controller';
 import { TldrawWsService } from '.';
 import { TestHelper } from '../helper/test-helper';
 
-describe('TldrawWS', () => {
+jest.mock('y-protocols/awareness', () => {
+	const moduleMock: unknown = {
+		__esModule: true,
+		...jest.requireActual('y-protocols/awareness'),
+	};
+	return moduleMock;
+});
+jest.mock('y-protocols/sync', () => {
+	const moduleMock: unknown = {
+		__esModule: true,
+		...jest.requireActual('y-protocols/sync'),
+	};
+	return moduleMock;
+});
+
+describe('TldrawWSService', () => {
 	let app: INestApplication;
 	let ws: WebSocket;
 	let service: TldrawWsService;
@@ -172,7 +187,7 @@ describe('TldrawWS', () => {
 
 			const sendSpy = jest.spyOn(service, 'send');
 			const applyAwarenessUpdateSpy = jest.spyOn(AwarenessProtocol, 'applyAwarenessUpdate');
-			jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementationOnce((dec, enc) => {
+			const syncProtocolUpdateSpy = jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementationOnce((dec, enc) => {
 				enc.bufs = [new Uint8Array(2), new Uint8Array(2)];
 				return 1;
 			});
@@ -182,13 +197,14 @@ describe('TldrawWS', () => {
 			return {
 				sendSpy,
 				applyAwarenessUpdateSpy,
+				syncProtocolUpdateSpy,
 				doc,
 				msg,
 			};
 		};
 
 		it('should call send method when received message of type SYNC', async () => {
-			const { sendSpy, doc, msg } = await setup([0, 1]);
+			const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([0, 1]);
 
 			service.messageHandler(ws, doc, msg);
 
@@ -196,10 +212,12 @@ describe('TldrawWS', () => {
 
 			ws.close();
 			sendSpy.mockRestore();
+			applyAwarenessUpdateSpy.mockRestore();
+			syncProtocolUpdateSpy.mockRestore();
 		});
 
 		it('should not call send method when received message of type AWARENESS', async () => {
-			const { sendSpy, applyAwarenessUpdateSpy, doc, msg } = await setup([1, 1, 0]);
+			const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([1, 1, 0]);
 			service.messageHandler(ws, doc, msg);
 
 			expect(sendSpy).toHaveBeenCalledTimes(0);
@@ -208,10 +226,11 @@ describe('TldrawWS', () => {
 			ws.close();
 			sendSpy.mockRestore();
 			applyAwarenessUpdateSpy.mockRestore();
+			syncProtocolUpdateSpy.mockRestore();
 		});
 
 		it('should do nothing when received message unknown type', async () => {
-			const { sendSpy, applyAwarenessUpdateSpy, doc, msg } = await setup([2]);
+			const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([2]);
 			service.messageHandler(ws, doc, msg);
 
 			expect(sendSpy).toHaveBeenCalledTimes(0);
@@ -220,6 +239,7 @@ describe('TldrawWS', () => {
 			ws.close();
 			sendSpy.mockRestore();
 			applyAwarenessUpdateSpy.mockRestore();
+			syncProtocolUpdateSpy.mockRestore();
 		});
 	});
 
@@ -228,7 +248,7 @@ describe('TldrawWS', () => {
 			ws = await TestHelper.setupWs(wsUrl, 'TEST');
 
 			const messageHandlerSpy = jest.spyOn(service, 'messageHandler');
-			jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementationOnce((dec, enc) => {
+			const readSyncMessageSpy = jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementationOnce((dec, enc) => {
 				enc.bufs = [new Uint8Array(2), new Uint8Array(2)];
 				return 1;
 			});
@@ -237,11 +257,12 @@ describe('TldrawWS', () => {
 			return {
 				messageHandlerSpy,
 				msg,
+				readSyncMessageSpy,
 			};
 		};
 
 		it('should handle message', async () => {
-			const { messageHandlerSpy, msg } = await setup([0, 1]);
+			const { messageHandlerSpy, msg, readSyncMessageSpy } = await setup([0, 1]);
 
 			service.setupWSConnection(ws);
 			ws.emit('message', msg);
@@ -250,6 +271,7 @@ describe('TldrawWS', () => {
 
 			ws.close();
 			messageHandlerSpy.mockRestore();
+			readSyncMessageSpy.mockRestore();
 		});
 	});
 
@@ -262,7 +284,7 @@ describe('TldrawWS', () => {
 				throw new Error('error');
 			});
 			const doc = new WsSharedDocDo('TEST', service);
-			const { msg } = createMessage([0, 1]);
+			const { msg } = createMessage([0]);
 
 			return {
 				sendSpy,
@@ -348,7 +370,7 @@ describe('TldrawWS', () => {
 			const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockImplementationOnce(() => {});
 			const sendSpy = jest.spyOn(service, 'send');
 			const getYDocSpy = jest.spyOn(service, 'getYDoc').mockImplementationOnce(() => doc);
-			const { msg } = createMessage([0, 1]);
+			const { msg } = createMessage([0]);
 			jest.spyOn(AwarenessProtocol, 'encodeAwarenessUpdate').mockImplementationOnce(() => msg);
 
 			return {
@@ -365,7 +387,7 @@ describe('TldrawWS', () => {
 
 			await delay(200);
 
-			expect(sendSpy).toHaveBeenCalledTimes(3);
+			expect(sendSpy).toHaveBeenCalledTimes(2);
 
 			ws.close();
 			messageHandlerSpy.mockRestore();

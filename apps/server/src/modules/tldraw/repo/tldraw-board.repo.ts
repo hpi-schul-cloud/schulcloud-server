@@ -46,8 +46,7 @@ export class TldrawBoardRepo {
 	updateStoredDocWithDiff(docName: string, diff: Uint8Array) {
 		const clac = calculateDiff(diff);
 		if (clac > 0) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-			this.mdb.storeUpdate(docName, diff);
+			void this.mdb.storeUpdate(docName, diff);
 		}
 	}
 
@@ -59,15 +58,14 @@ export class TldrawBoardRepo {
 
 		applyUpdate(ydoc, encodeStateAsUpdate(persistedYdoc));
 
-		ydoc.on('update', (update) => {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-			this.mdb.storeUpdate(docName, update);
+		ydoc.on('update', (update: Uint8Array) => {
+			void this.mdb.storeUpdate(docName, update);
 		});
 
 		persistedYdoc.destroy();
 	}
 
-	async flushDocument(docName) {
+	async flushDocument(docName: string) {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 		await this.mdb.flushDocument(docName);
 	}

@@ -80,8 +80,8 @@ describe('TldrawBoardRepo', () => {
 			doc.conns.set(ws, wsSet);
 			const storeGetYDocSpy = jest
 				.spyOn(repo.mdb, 'getYDoc')
-				.mockImplementation(() => new WsSharedDocDo('TEST', service));
-			const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdate').mockImplementation(() => {});
+				.mockImplementation(() => Promise.resolve(new WsSharedDocDo('TEST', service)));
+			const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdate').mockImplementation(() => Promise.resolve(1));
 
 			return {
 				doc,
@@ -111,10 +111,10 @@ describe('TldrawBoardRepo', () => {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			doc.conns.set(ws, wsSet);
-			const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdate').mockImplementation(() => {});
+			const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdate').mockImplementation(() => Promise.resolve(1));
 			const storeGetYDocSpy = jest
 				.spyOn(repo.mdb, 'getYDoc')
-				.mockImplementation(() => new WsSharedDocDo('TEST', service));
+				.mockImplementation(() => Promise.resolve(new WsSharedDocDo('TEST', service)));
 			const byteArray = new TextEncoder().encode(testMessage);
 
 			return {
