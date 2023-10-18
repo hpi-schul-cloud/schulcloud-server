@@ -100,7 +100,6 @@ describe('GroupUc', () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
-		jest.clearAllMocks();
 	});
 
 	describe('findClassesForSchool', () => {

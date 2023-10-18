@@ -42,7 +42,7 @@ describe('Group (API)', () => {
 		await app.close();
 	});
 
-	describe('findClassesForSchool', () => {
+	describe('[GET] /groups/class', () => {
 		describe('when an admin requests a list of classes', () => {
 			const setup = async () => {
 				const school: SchoolEntity = schoolFactory.buildWithId();
@@ -159,8 +159,8 @@ describe('Group (API)', () => {
 		});
 	});
 
-	describe('getGroup', () => {
-		describe('when user with the required permission requests a group', () => {
+	describe('[GET] /groups/:groupId', () => {
+		describe('when authorized user requests a group', () => {
 			describe('when group exists', () => {
 				const setup = async () => {
 					const school: SchoolEntity = schoolFactory.buildWithId();
@@ -173,6 +173,7 @@ describe('Group (API)', () => {
 								role: teacherUser.roles[0],
 							},
 						],
+						organization: school,
 					});
 
 					await em.persistAndFlush([teacherAccount, teacherUser, group]);
@@ -243,7 +244,7 @@ describe('Group (API)', () => {
 			});
 		});
 
-		describe('when user without the required permission requests a group', () => {
+		describe('when unauthorized user requests a group', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -252,25 +253,22 @@ describe('Group (API)', () => {
 				await em.persistAndFlush([studentAccount, studentUser, group]);
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
-
 				return {
-					loggedInClient,
 					groupId: group.id,
 				};
 			};
 
-			it('should return forbidden', async () => {
-				const { loggedInClient, groupId } = await setup();
+			it('should return unauthorized', async () => {
+				const { groupId } = await setup();
 
-				const response = await loggedInClient.get(`${groupId}`);
+				const response = await testApiClient.get(`${groupId}`);
 
-				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
-					code: HttpStatus.FORBIDDEN,
-					message: 'Forbidden',
-					title: 'Forbidden',
-					type: 'FORBIDDEN',
+					code: HttpStatus.UNAUTHORIZED,
+					message: 'Unauthorized',
+					title: 'Unauthorized',
+					type: 'UNAUTHORIZED',
 				});
 			});
 		});

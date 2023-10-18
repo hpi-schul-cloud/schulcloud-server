@@ -158,7 +158,7 @@ export class GroupUc {
 		return page;
 	}
 
-	public async getGroup(userId: EntityId, groupId: string): Promise<ResolvedGroupDto> {
+	public async getGroup(userId: EntityId, groupId: EntityId): Promise<ResolvedGroupDto> {
 		const group: Group = await this.groupService.findById(groupId);
 
 		await this.checkPermission(userId, group);

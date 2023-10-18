@@ -10,7 +10,7 @@ export class GroupResponse {
 	@ApiProperty()
 	name: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: GroupTypeResponse })
 	type: GroupTypeResponse;
 
 	@ApiProperty({ type: [GroupUserResponse] })

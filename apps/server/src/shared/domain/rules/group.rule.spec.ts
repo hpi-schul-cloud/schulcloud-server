@@ -36,6 +36,10 @@ describe('GroupRule', () => {
 		await module.close();
 	});
 
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	describe('isApplicable', () => {
 		describe('when the entity is applicable', () => {
 			const setup = () => {
