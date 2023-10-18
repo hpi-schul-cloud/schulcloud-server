@@ -11,9 +11,8 @@ import {
 	mapUserToCurrentUser,
 	userFactory,
 } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@src/modules/server/server.module';
+import { ICurrentUser, JwtAuthGuard } from '@modules/authentication';
+import { ServerTestModule } from '@modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 import { BoardResponse } from '../dto';
