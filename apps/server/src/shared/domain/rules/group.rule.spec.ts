@@ -1,10 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { groupFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { groupFactory, roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { Action, AuthorizationContext } from '@src/modules/authorization';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { Group } from '@src/modules/group';
-import { Role, User } from '../entity';
+import { ObjectId } from 'bson';
+import { Role, SchoolEntity, User } from '../entity';
 import { Permission } from '../interface';
 import { GroupRule } from './group.rule';
 
@@ -85,10 +86,11 @@ describe('GroupRule', () => {
 	});
 
 	describe('hasPermission', () => {
-		describe('when the user has all required permissions', () => {
+		describe('when the user has all required permissions and is at the same school then the group', () => {
 			const setup = () => {
 				const role: Role = roleFactory.buildWithId();
-				const user: User = userFactory.buildWithId({ roles: [role] });
+				const school: SchoolEntity = schoolFactory.buildWithId();
+				const user: User = userFactory.buildWithId({ school, roles: [role] });
 				const group: Group = groupFactory.build({
 					users: [
 						{
@@ -96,10 +98,11 @@ describe('GroupRule', () => {
 							roleId: user.roles[0].id,
 						},
 					],
+					organizationId: user.school.id,
 				});
 				const context: AuthorizationContext = {
 					action: Action.write,
-					requiredPermissions: [Permission.CLASS_LIST],
+					requiredPermissions: [Permission.GROUP_VIEW],
 				};
 
 				authorizationHelper.hasAllPermissions.mockReturnValue(true);
@@ -131,7 +134,8 @@ describe('GroupRule', () => {
 		describe('when the user has not the required permission', () => {
 			const setup = () => {
 				const role: Role = roleFactory.buildWithId({ permissions: [] });
-				const user: User = userFactory.buildWithId({ roles: [role] });
+				const school: SchoolEntity = schoolFactory.buildWithId();
+				const user: User = userFactory.buildWithId({ school, roles: [role] });
 				const group: Group = groupFactory.build({
 					users: [
 						{
@@ -139,13 +143,51 @@ describe('GroupRule', () => {
 							roleId: user.roles[0].id,
 						},
 					],
+					organizationId: user.school.id,
 				});
 				const context: AuthorizationContext = {
 					action: Action.write,
-					requiredPermissions: [Permission.CLASS_LIST],
+					requiredPermissions: [Permission.GROUP_VIEW],
 				};
 
 				authorizationHelper.hasAllPermissions.mockReturnValue(false);
+
+				return {
+					user,
+					group,
+					context,
+				};
+			};
+
+			it('should return false', () => {
+				const { user, group, context } = setup();
+
+				const result = rule.hasPermission(user, group, context);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when the user is at another school then the group', () => {
+			const setup = () => {
+				const role: Role = roleFactory.buildWithId({ permissions: [] });
+				const school: SchoolEntity = schoolFactory.buildWithId();
+				const user: User = userFactory.buildWithId({ school, roles: [role] });
+				const group: Group = groupFactory.build({
+					users: [
+						{
+							userId: user.id,
+							roleId: user.roles[0].id,
+						},
+					],
+					organizationId: new ObjectId().toHexString(),
+				});
+				const context: AuthorizationContext = {
+					action: Action.write,
+					requiredPermissions: [Permission.GROUP_VIEW],
+				};
+
+				authorizationHelper.hasAllPermissions.mockReturnValue(true);
 
 				return {
 					user,
