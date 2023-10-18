@@ -123,6 +123,7 @@ export class H5PEditorController {
 	@Get('ajax')
 	async getAjax(@Query() query: AjaxGetQueryParams, @CurrentUser() currentUser: ICurrentUser) {
 		const response = this.h5pEditorUc.getAjax(query, currentUser);
+
 		return response;
 	}
 
@@ -161,6 +162,7 @@ export class H5PEditorController {
 	@ApiResponse({ status: 200, type: H5PEditorModelResponse })
 	async getNewH5PEditor(@Param() params: GetH5PEditorParamsCreate, @CurrentUser() currentUser: ICurrentUser) {
 		const editorModel = await this.h5pEditorUc.getEmptyH5pEditor(currentUser, params.language);
+
 		return new H5PEditorModelResponse(editorModel);
 	}
 
@@ -172,6 +174,7 @@ export class H5PEditorController {
 			params.contentId,
 			params.language
 		);
+
 		return new H5PEditorModelContentResponse(editorModel, content);
 	}
 
@@ -188,6 +191,7 @@ export class H5PEditorController {
 		);
 
 		const saveResponse = new H5PSaveResponse(response.id, response.metadata);
+
 		return saveResponse;
 	}
 
@@ -209,6 +213,7 @@ export class H5PEditorController {
 		);
 
 		const saveResponse = new H5PSaveResponse(response.id, response.metadata);
+
 		return saveResponse;
 	}
 
