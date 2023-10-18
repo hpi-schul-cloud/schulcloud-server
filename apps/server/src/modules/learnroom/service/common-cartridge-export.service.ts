@@ -115,8 +115,18 @@ export class CommonCartridgeExportService {
 
 		if (content.component === ComponentType.ETHERPAD) {
 			return version === CommonCartridgeVersion.V_1_3_0
-				? { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V3, url: content.content.url }
-				: { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V1, url: content.content.url };
+				? {
+						...commonProps,
+						type: CommonCartridgeResourceType.WEB_LINK_V3,
+						url: content.content.url,
+						title: content.content.description,
+				  }
+				: {
+						...commonProps,
+						type: CommonCartridgeResourceType.WEB_LINK_V1,
+						url: content.content.url,
+						title: content.content.description,
+				  };
 		}
 
 		return undefined;
