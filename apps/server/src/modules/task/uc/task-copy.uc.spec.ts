@@ -12,9 +12,6 @@ import { TaskCopyService } from '../service';
 import { TaskCopyUC } from './task-copy.uc';
 import { TaskCopyParentParams } from '../types';
 
-// this.courseRepo.findById(courseId); do not use findOrFail it is possible to pass courseIds in parentParams they do not exists
-// no test for it exists and maybe code can not handle it.
-
 describe('task copy uc', () => {
 	let uc: TaskCopyUC;
 	let userRepo: DeepMocked<UserRepo>;
