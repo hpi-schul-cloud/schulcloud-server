@@ -115,12 +115,11 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 				birthtime: new Date(),
 				size: dataStream.bytesRead,
 			});
-			await this.repo.save(tempFile);
 		} else {
 			tempFile.expiresAt = expirationTime;
 			tempFile.size = dataStream.bytesRead;
-			await this.repo.save(tempFile);
 		}
+		await this.repo.save(tempFile);
 
 		return tempFile;
 	}
@@ -131,6 +130,7 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		}
 
 		const path = `h5p-tempfiles/${userId}/${filename}`;
+
 		return path;
 	}
 }
