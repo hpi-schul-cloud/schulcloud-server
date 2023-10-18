@@ -16,7 +16,7 @@ const customUtils = require('../../../../../src/services/activation/utils/custom
 
 const mockData = {
 	keyword: customUtils.KEYWORDS.E_MAIL_ADDRESS,
-	email: 'testmail@example.com',
+	email: 'testmail@schul-cloud.org123',
 };
 
 describe('activation/services/eMailAddress EMailAdresseActivationService', () => {
