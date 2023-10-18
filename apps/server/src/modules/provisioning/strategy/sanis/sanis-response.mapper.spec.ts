@@ -166,15 +166,11 @@ describe('SanisResponseMapper', () => {
 				expect(result![0]).toEqual<ExternalGroupDto>({
 					name: group.gruppe.bezeichnung,
 					type: GroupTypes.CLASS,
-					externalOrganizationId: group.gruppe.orgid,
+					externalOrganizationId: personenkontext.organisation.id,
 					from: group.gruppe.laufzeit.von,
 					until: group.gruppe.laufzeit.bis,
 					externalId: group.gruppe.id,
 					users: [
-						{
-							externalUserId: group.sonstige_gruppenzugehoerige![0].ktid,
-							roleName: RoleName.STUDENT,
-						},
 						{
 							externalUserId: personenkontext.id,
 							roleName: RoleName.TEACHER,
@@ -206,9 +202,7 @@ describe('SanisResponseMapper', () => {
 		describe('when a group role mapping is missing', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0]!.sonstige_gruppenzugehoerige![0].rollen = [
-					SanisGroupRole.SCHOOL_SUPPORT,
-				];
+				sanisResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit.rollen = [SanisGroupRole.SCHOOL_SUPPORT];
 
 				return {
 					sanisResponse,
@@ -220,7 +214,7 @@ describe('SanisResponseMapper', () => {
 
 				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
 
-				expect(result![0].users).toHaveLength(1);
+				expect(result![0].users).toHaveLength(0);
 			});
 		});
 

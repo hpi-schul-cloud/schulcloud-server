@@ -39,6 +39,51 @@ describe(FilesService.name, () => {
 		await module.close();
 	});
 
+	describe('findFilesAccessibleByUser', () => {
+		describe('when called with a userId of a user that', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const accessibleFiles: FileEntity[] = [];
+
+				for (let i = 0; i < 5; i += 1) {
+					accessibleFiles.push(
+						fileEntityFactory.build({
+							permissions: [filePermissionEntityFactory.build({ refId: userId })],
+						})
+					);
+				}
+
+				return { userId, accessibleFiles };
+			};
+
+			describe("doesn't have an access to any files", () => {
+				it('should return an empty array', async () => {
+					const { userId } = setup();
+
+					repo.findByPermissionRefId.mockResolvedValueOnce([]);
+
+					const result = await service.findFilesAccessibleByUser(userId);
+
+					expect(repo.findByPermissionRefId).toBeCalledWith(userId);
+					expect(result).toEqual([]);
+				});
+			});
+
+			describe('does have an access to some files', () => {
+				it('should return an array containing proper file entities', async () => {
+					const { userId, accessibleFiles } = setup();
+
+					repo.findByPermissionRefId.mockResolvedValueOnce(accessibleFiles);
+
+					const result = await service.findFilesAccessibleByUser(userId);
+
+					expect(repo.findByPermissionRefId).toBeCalledWith(userId);
+					expect(result).toEqual(accessibleFiles);
+				});
+			});
+		});
+	});
+
 	describe('removeUserPermissionsToAnyFiles', () => {
 		it('should not modify any files if there are none that user has permission to access', async () => {
 			const userId = new ObjectId().toHexString();
@@ -106,6 +151,53 @@ describe(FilesService.name, () => {
 
 				expect(repo.findByPermissionRefId).toBeCalledWith(userId);
 				expect(repo.save).toBeCalledWith(entities);
+			});
+		});
+	});
+
+	describe('findFilesOwnedByUser', () => {
+		describe('when called with a userId of a user that', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const ownedFiles: FileEntity[] = [];
+
+				for (let i = 0; i < 5; i += 1) {
+					ownedFiles.push(
+						fileEntityFactory.build({
+							ownerId: userId,
+							creatorId: userId,
+							permissions: [filePermissionEntityFactory.build({ refId: userId })],
+						})
+					);
+				}
+
+				return { userId, ownedFiles };
+			};
+
+			describe("doesn't own any files", () => {
+				it('should return an empty array', async () => {
+					const { userId } = setup();
+
+					repo.findByOwnerUserId.mockResolvedValueOnce([]);
+
+					const result = await service.findFilesOwnedByUser(userId);
+
+					expect(repo.findByOwnerUserId).toBeCalledWith(userId);
+					expect(result).toEqual([]);
+				});
+			});
+
+			describe('does own some files', () => {
+				it('should return an array containing proper file entities', async () => {
+					const { userId, ownedFiles } = setup();
+
+					repo.findByOwnerUserId.mockResolvedValueOnce(ownedFiles);
+
+					const result = await service.findFilesOwnedByUser(userId);
+
+					expect(repo.findByOwnerUserId).toBeCalledWith(userId);
+					expect(result).toEqual(ownedFiles);
+				});
 			});
 		});
 	});

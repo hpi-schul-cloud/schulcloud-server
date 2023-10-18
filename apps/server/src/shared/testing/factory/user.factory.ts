@@ -22,7 +22,7 @@ class UserFactory extends BaseFactory<User, IUserProperties> {
 
 	asStudent(additionalPermissions: Permission[] = []): this {
 		const permissions = _.union(userPermissions, studentPermissions, additionalPermissions);
-		const role = roleFactory.buildWithId({ permissions });
+		const role = roleFactory.buildWithId({ permissions, name: RoleName.STUDENT });
 
 		const params: DeepPartial<IUserProperties> = { roles: [role] };
 
@@ -31,7 +31,7 @@ class UserFactory extends BaseFactory<User, IUserProperties> {
 
 	asTeacher(additionalPermissions: Permission[] = []): this {
 		const permissions = _.union(userPermissions, teacherPermissions, additionalPermissions);
-		const role = roleFactory.buildWithId({ permissions });
+		const role = roleFactory.buildWithId({ permissions, name: RoleName.TEACHER });
 
 		const params: DeepPartial<IUserProperties> = { roles: [role] };
 
@@ -40,7 +40,7 @@ class UserFactory extends BaseFactory<User, IUserProperties> {
 
 	asAdmin(additionalPermissions: Permission[] = []): this {
 		const permissions = _.union(userPermissions, adminPermissions, additionalPermissions);
-		const role = roleFactory.buildWithId({ permissions });
+		const role = roleFactory.buildWithId({ permissions, name: RoleName.ADMINISTRATOR });
 
 		const params: DeepPartial<IUserProperties> = { roles: [role] };
 

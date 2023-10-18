@@ -1,21 +1,23 @@
+import { ClassEntity } from '@src/modules/class/entity';
 import { GroupEntity } from '@src/modules/group/entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@src/modules/pseudonym/entity';
 import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
 import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
-import { ClassEntity } from '@src/modules/class/entity';
 import { Account } from './account.entity';
 import {
+	BoardNode,
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	ExternalToolElementNodeEntity,
 	FileElementNode,
+	LinkElementNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 } from './boardnode';
-import { BoardNode } from './boardnode/boardnode.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
@@ -57,9 +59,11 @@ export const ALL_ENTITIES = [
 	ColumnNode,
 	ClassEntity,
 	FileElementNode,
+	LinkElementNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
+	ExternalToolElementNodeEntity,
 	ContextExternalToolEntity,
 	CountyEmbeddable,
 	Course,

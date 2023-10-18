@@ -17,7 +17,7 @@ import { SystemService } from '@src/modules/system/service/system.service';
 import { UserService } from '@src/modules/user';
 import { MigrationCheckService, UserMigrationService } from '@src/modules/user-login-migration';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthSSOError, UserNotFoundAfterProvisioningLoggableException } from '../error';
+import { OAuthSSOError, UserNotFoundAfterProvisioningLoggableException } from '../loggable';
 import { OAuthTokenDto } from '../interface';
 import { OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';

@@ -1,5 +1,6 @@
-import { SubmissionItemResponse, UserDataResponse } from '@src/modules/board/controller/dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { UserDataResponse } from '../user-data.response';
+import { SubmissionItemResponse } from './submission-item.response';
 
 export class SubmissionsResponse {
 	constructor(submissionItemsResponse: SubmissionItemResponse[], users: UserDataResponse[]) {

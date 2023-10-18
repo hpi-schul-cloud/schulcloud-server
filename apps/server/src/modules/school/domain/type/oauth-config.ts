@@ -9,7 +9,7 @@ export interface OauthConfig {
 	responseType: string;
 	scope: string;
 	provider: string;
-	logoutEndpoint: string;
+	logoutEndpoint?: string;
 	issuer: string;
 	jwksEndpoint: string;
 }

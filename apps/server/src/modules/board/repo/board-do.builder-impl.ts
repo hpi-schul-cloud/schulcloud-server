@@ -5,7 +5,9 @@ import type {
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	ExternalToolElementNodeEntity,
 	FileElementNode,
+	LinkElementNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
@@ -16,7 +18,9 @@ import {
 	Card,
 	Column,
 	ColumnBoard,
+	ExternalToolElement,
 	FileElement,
+	LinkElement,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
@@ -71,11 +75,15 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 	public buildCard(boardNode: CardNode): Card {
 		this.ensureBoardNodeType(this.getChildren(boardNode), [
 			BoardNodeType.FILE_ELEMENT,
+			BoardNodeType.LINK_ELEMENT,
 			BoardNodeType.RICH_TEXT_ELEMENT,
 			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
+			BoardNodeType.EXTERNAL_TOOL,
 		]);
 
-		const elements = this.buildChildren<RichTextElement | SubmissionContainerElement>(boardNode);
+		const elements = this.buildChildren<
+			ExternalToolElement | FileElement | LinkElement | RichTextElement | SubmissionContainerElement
+		>(boardNode);
 
 		const card = new Card({
 			id: boardNode.id,
@@ -95,6 +103,21 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			id: boardNode.id,
 			caption: boardNode.caption,
 			alternativeText: boardNode.alternativeText,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+		});
+		return element;
+	}
+
+	public buildLinkElement(boardNode: LinkElementNode): LinkElement {
+		this.ensureLeafNode(boardNode);
+
+		const element = new LinkElement({
+			id: boardNode.id,
+			url: boardNode.url,
+			title: boardNode.title,
+			imageUrl: boardNode.imageUrl,
 			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
@@ -122,11 +145,12 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 
 		const element = new SubmissionContainerElement({
 			id: boardNode.id,
-			dueDate: boardNode.dueDate,
 			children: elements,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
+			dueDate: boardNode.dueDate,
 		});
+
 		return element;
 	}
 
@@ -141,6 +165,20 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			userId: boardNode.userId,
 			children: [],
 		});
+		return element;
+	}
+
+	buildExternalToolElement(boardNode: ExternalToolElementNodeEntity): ExternalToolElement {
+		this.ensureLeafNode(boardNode);
+
+		const element: ExternalToolElement = new ExternalToolElement({
+			id: boardNode.id,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+			contextExternalToolId: boardNode.contextExternalTool?.id,
+		});
+
 		return element;
 	}
 
