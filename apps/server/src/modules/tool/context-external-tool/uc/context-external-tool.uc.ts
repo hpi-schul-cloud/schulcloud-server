@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, Permission, User } from '@shared/domain';
-import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { LegacyLogger } from '@src/core/logger';
-import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
-import { ContextExternalToolDto } from './dto/context-external-tool.types';
-import { ContextExternalTool, ContextRef } from '../domain';
+import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
+import { ContextExternalTool, ContextRef } from '../domain';
+import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
+import { ContextExternalToolDto } from './dto/context-external-tool.types';
 
 @Injectable()
 export class ContextExternalToolUc {
@@ -62,9 +62,7 @@ export class ContextExternalToolUc {
 	}
 
 	async deleteContextExternalTool(userId: EntityId, contextExternalToolId: EntityId): Promise<void> {
-		const tool: ContextExternalTool = await this.contextExternalToolService.getContextExternalToolById(
-			contextExternalToolId
-		);
+		const tool: ContextExternalTool = await this.contextExternalToolService.findById(contextExternalToolId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
 
 		await this.toolPermissionHelper.ensureContextPermissions(userId, tool, context);
@@ -85,7 +83,7 @@ export class ContextExternalToolUc {
 	}
 
 	async getContextExternalTool(userId: EntityId, contextToolId: EntityId) {
-		const tool: ContextExternalTool = await this.contextExternalToolService.getContextExternalToolById(contextToolId);
+		const tool: ContextExternalTool = await this.contextExternalToolService.findById(contextToolId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 
 		await this.toolPermissionHelper.ensureContextPermissions(userId, tool, context);

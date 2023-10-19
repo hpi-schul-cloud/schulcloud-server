@@ -2,13 +2,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DatabaseObjectNotFoundException } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Course, Pseudonym, RoleName, LegacySchoolDo, UserDO, SchoolEntity } from '@shared/domain';
+import { Course, LegacySchoolDo, Pseudonym, RoleName, SchoolEntity, UserDO } from '@shared/domain';
 import {
 	contextExternalToolFactory,
 	courseFactory,
 	externalToolFactory,
-	pseudonymFactory,
 	legacySchoolDoFactory,
+	pseudonymFactory,
 	schoolExternalToolFactory,
 	schoolFactory,
 	setupEntities,
@@ -249,10 +249,10 @@ describe('FeathersRosterService', () => {
 				]);
 				contextExternalToolService.findAllByContext.mockResolvedValueOnce([otherContextExternalTool]);
 				contextExternalToolService.findAllByContext.mockResolvedValueOnce([]);
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(otherSchoolExternalTool);
-				externalToolService.findExternalToolById.mockResolvedValueOnce(externalTool);
-				externalToolService.findExternalToolById.mockResolvedValueOnce(otherExternalTool);
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				schoolExternalToolService.findById.mockResolvedValueOnce(otherSchoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
+				externalToolService.findById.mockResolvedValueOnce(otherExternalTool);
 
 				return {
 					pseudonym,
@@ -299,7 +299,7 @@ describe('FeathersRosterService', () => {
 
 				await service.getUserGroups(pseudonym.pseudonym, clientId);
 
-				expect(schoolExternalToolService.getSchoolExternalToolById.mock.calls).toEqual([
+				expect(schoolExternalToolService.findById.mock.calls).toEqual([
 					[schoolExternalTool.id],
 					[otherSchoolExternalTool.id],
 				]);
@@ -310,7 +310,7 @@ describe('FeathersRosterService', () => {
 
 				await service.getUserGroups(pseudonym.pseudonym, clientId);
 
-				expect(externalToolService.findExternalToolById.mock.calls).toEqual([[externalToolId], [otherExternalTool.id]]);
+				expect(externalToolService.findById.mock.calls).toEqual([[externalToolId], [otherExternalTool.id]]);
 			});
 
 			it('should return a group for each course where the tool of the users pseudonym is used', async () => {
@@ -424,6 +424,8 @@ describe('FeathersRosterService', () => {
 					students: [studentUser, studentUser2],
 					teachers: [teacherUser],
 					substitutionTeachers: [substitutionTeacherUser],
+					classes: [],
+					groups: [],
 				});
 
 				courseService.findById.mockResolvedValue(courseA);

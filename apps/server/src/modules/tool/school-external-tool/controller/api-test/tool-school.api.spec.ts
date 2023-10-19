@@ -12,6 +12,9 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
+import { ToolConfigurationStatusResponse } from '../../../context-external-tool/controller/dto/tool-configuration-status.response';
+import { ExternalToolEntity } from '../../../external-tool/entity';
+import { SchoolExternalToolEntity } from '../../entity';
 import {
 	CustomParameterEntryParam,
 	SchoolExternalToolPostParams,
@@ -19,9 +22,6 @@ import {
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
 } from '../dto';
-import { ToolConfigurationStatusResponse } from '../../../external-tool/controller/dto';
-import { SchoolExternalToolEntity } from '../../entity';
-import { ExternalToolEntity } from '../../../external-tool/entity';
 
 describe('ToolSchoolController (API)', () => {
 	let app: INestApplication;

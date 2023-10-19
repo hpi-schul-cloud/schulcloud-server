@@ -5,7 +5,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { AuthorizationParams } from '../controller/dto';
-import { OAuthSSOError } from '../error/oauth-sso.error';
+import { OAuthSSOError } from '../loggable/oauth-sso.error';
 import { OAuthTokenDto } from '../interface';
 import { HydraSsoService } from '../service/hydra.service';
 import { OAuthService } from '../service/oauth.service';

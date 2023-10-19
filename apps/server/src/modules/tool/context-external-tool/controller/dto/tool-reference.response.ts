@@ -20,6 +20,7 @@ export class ToolReferenceResponse {
 
 	@ApiProperty({
 		enum: ToolConfigurationStatusResponse,
+		enumName: 'ToolConfigurationStatusResponse',
 		nullable: false,
 		required: true,
 		description: 'The status of the tool',
