@@ -2,7 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AuthorizationService } from '@src/modules/authorization';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/legacy-school';
+import { LoggerModule } from '@src/core/logger';
+import { ConfigModule } from '@nestjs/config';
 import { UserImportUc } from '../uc/user-import.uc';
 import { ImportUserController } from './import-user.controller';
 
@@ -16,6 +18,7 @@ describe('ImportUserController', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
+			imports: [LoggerModule, ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true, ignoreEnvVars: true })],
 			providers: [
 				UserImportUc,
 				{
@@ -31,7 +34,7 @@ describe('ImportUserController', () => {
 					useValue: {},
 				},
 				{
-					provide: SchoolService,
+					provide: LegacySchoolService,
 					useValue: {},
 				},
 				{

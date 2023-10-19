@@ -1,10 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalToolDO, LtiToolDO } from '@shared/domain';
-import { externalToolDOFactory, ltiToolDOFactory, setupEntities } from '@shared/testing';
+import { LtiToolDO } from '@shared/domain';
+import { externalToolFactory, ltiToolDOFactory, setupEntities } from '@shared/testing';
 import { LtiToolService } from '@src/modules/lti-tool';
-import { ExternalToolService } from '@src/modules/tool';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain';
+import { ExternalToolService } from '@src/modules/tool/external-tool/service';
+import { IToolFeatures, ToolFeatures } from '@src/modules/tool/tool-config';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 
 describe('OauthProviderLoginFlowService', () => {
@@ -13,6 +15,7 @@ describe('OauthProviderLoginFlowService', () => {
 
 	let ltiToolService: DeepMocked<LtiToolService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
+	let toolFeatures: IToolFeatures;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -26,12 +29,19 @@ describe('OauthProviderLoginFlowService', () => {
 					provide: ExternalToolService,
 					useValue: createMock<ExternalToolService>(),
 				},
+				{
+					provide: ToolFeatures,
+					useValue: {
+						ctlToolsTabEnabled: false,
+					},
+				},
 			],
 		}).compile();
 
 		service = module.get(OauthProviderLoginFlowService);
 		ltiToolService = module.get(LtiToolService);
 		externalToolService = module.get(ExternalToolService);
+		toolFeatures = module.get(ToolFeatures);
 
 		await setupEntities();
 	});
@@ -40,10 +50,16 @@ describe('OauthProviderLoginFlowService', () => {
 		await module.close();
 	});
 
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
+
 	describe('findToolByClientId', () => {
-		describe('when it finds a ctl tool', () => {
+		describe('when it finds a ctl tool and the ctl feature is active', () => {
 			const setup = () => {
-				const tool: ExternalToolDO = externalToolDOFactory.buildWithId({ name: 'SchulcloudNextcloud' });
+				toolFeatures.ctlToolsTabEnabled = true;
+
+				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'SchulcloudNextcloud' });
 
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(tool);
 				ltiToolService.findByClientIdAndIsLocal.mockResolvedValue(null);
@@ -56,14 +72,46 @@ describe('OauthProviderLoginFlowService', () => {
 			it('should return a ctl tool', async () => {
 				const { tool } = setup();
 
-				const result: ExternalToolDO | LtiToolDO = await service.findToolByClientId('clientId');
+				const result: ExternalTool | LtiToolDO = await service.findToolByClientId('clientId');
 
 				expect(result).toEqual(tool);
 			});
 		});
 
-		describe('when it finds a lti tool', () => {
+		describe('when a lti tool exists and the ctl feature is deactivated', () => {
 			const setup = () => {
+				toolFeatures.ctlToolsTabEnabled = false;
+
+				const tool: LtiToolDO = ltiToolDOFactory.buildWithId({ name: 'SchulcloudNextcloud' });
+
+				ltiToolService.findByClientIdAndIsLocal.mockResolvedValue(tool);
+
+				return {
+					tool,
+				};
+			};
+
+			it('should not search for ctl tools', async () => {
+				setup();
+
+				await service.findToolByClientId('clientId');
+
+				expect(externalToolService.findExternalToolByOAuth2ConfigClientId).not.toHaveBeenCalled();
+			});
+
+			it('should find a lti tool', async () => {
+				const { tool } = setup();
+
+				const result = await service.findToolByClientId('clientId');
+
+				expect(result).toEqual(tool);
+			});
+		});
+
+		describe('when a lti tool exists and the ctl feature is active and no ctl tool exists', () => {
+			const setup = () => {
+				toolFeatures.ctlToolsTabEnabled = true;
+
 				const tool: LtiToolDO = ltiToolDOFactory.buildWithId({ name: 'SchulcloudNextcloud' });
 
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(null);
@@ -74,17 +122,27 @@ describe('OauthProviderLoginFlowService', () => {
 				};
 			};
 
+			it('should search for the ctl tool', async () => {
+				setup();
+
+				await service.findToolByClientId('clientId');
+
+				expect(externalToolService.findExternalToolByOAuth2ConfigClientId).toHaveBeenCalled();
+			});
+
 			it('should return a lti tool', async () => {
 				const { tool } = setup();
 
-				const result: ExternalToolDO | LtiToolDO = await service.findToolByClientId('clientId');
+				const result: ExternalTool | LtiToolDO = await service.findToolByClientId('clientId');
 
 				expect(result).toEqual(tool);
 			});
 		});
 
-		describe('when no tool was found', () => {
+		describe('when no lti or ctl tool was found', () => {
 			const setup = () => {
+				toolFeatures.ctlToolsTabEnabled = true;
+
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(null);
 				ltiToolService.findByClientIdAndIsLocal.mockResolvedValue(null);
 			};
@@ -104,7 +162,7 @@ describe('OauthProviderLoginFlowService', () => {
 	describe('isNextcloudTool', () => {
 		describe('when it is Nextcloud', () => {
 			const setup = () => {
-				const tool: ExternalToolDO = externalToolDOFactory.buildWithId({ name: 'SchulcloudNextcloud' });
+				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'SchulcloudNextcloud' });
 
 				return {
 					tool,
@@ -122,7 +180,7 @@ describe('OauthProviderLoginFlowService', () => {
 
 		describe('when it is not Nextcloud', () => {
 			const setup = () => {
-				const tool: ExternalToolDO = externalToolDOFactory.buildWithId({ name: 'NotSchulcloudNextcloud' });
+				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'NotSchulcloudNextcloud' });
 
 				return {
 					tool,

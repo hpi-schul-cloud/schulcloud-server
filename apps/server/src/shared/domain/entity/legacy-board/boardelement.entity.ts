@@ -1,11 +1,11 @@
 import { Entity, Enum } from '@mikro-orm/core';
 import { EntityId } from '../../types';
 import { BaseEntityWithTimestamps } from '../base.entity';
-import { Lesson } from '../lesson.entity';
+import { LessonEntity } from '../lesson.entity';
 import { Task } from '../task.entity';
 import { ColumnBoardTarget } from './column-board-target.entity';
 
-export type BoardElementReference = Task | Lesson | ColumnBoardTarget;
+export type BoardElementReference = Task | LessonEntity | ColumnBoardTarget;
 
 export enum BoardElementType {
 	'Task' = 'task',

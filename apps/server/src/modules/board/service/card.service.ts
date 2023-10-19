@@ -14,16 +14,16 @@ export class CardService {
 	) {}
 
 	async findById(cardId: EntityId): Promise<Card> {
-		const card = await this.boardDoRepo.findByClassAndId(Card, cardId);
-		return card;
+		return this.boardDoRepo.findByClassAndId(Card, cardId);
 	}
 
 	async findByIds(cardIds: EntityId[]): Promise<Card[]> {
 		const cards = await this.boardDoRepo.findByIds(cardIds);
-		if (cards.every((card) => card instanceof Card)) {
-			return cards as Card[];
+		if (cards.some((card) => !(card instanceof Card))) {
+			throw new NotFoundException('some ids do not belong to a card');
 		}
-		throw new NotFoundException('some ids do not belong to a card');
+
+		return cards as Card[];
 	}
 
 	async create(parent: Column, requiredEmptyElements?: ContentElementType[]): Promise<Card> {

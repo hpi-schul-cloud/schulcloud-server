@@ -4,7 +4,6 @@ import { CommonCartridgeFileBuilder, ICommonCartridgeFileBuilderOptions } from '
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from './common-cartridge-enums';
 import { ICommonCartridgeOrganizationProps } from './common-cartridge-organization-item-element';
 import { ICommonCartridgeResourceProps } from './common-cartridge-resource-item-element';
-import { CommonCartridgeAssignmentResourceItemElement } from './common-cartridge-assignment-resource-item-element';
 
 describe('CommonCartridgeFileBuilder', () => {
 	let archive: AdmZip;
@@ -101,21 +100,6 @@ describe('CommonCartridgeFileBuilder', () => {
 				const manifest = getFileContentAsString('imsmanifest.xml');
 				await expect(parseStringPromise(manifest as string)).resolves.not.toThrow();
 			});
-		});
-	});
-
-	describe('some tests for coverage reasons', () => {
-		// it('throw if resource type is unknown', () => {
-		// 	expect(() => new CommonCartridgeResourceItemElement({} as ICommonCartridgeResourceProps, {})).toThrow();
-		// });
-
-		it('should cover CommonCartridgeResourceItemElement', () => {
-			const element = new CommonCartridgeAssignmentResourceItemElement({
-				href: 'href',
-				identifier: 'identifier',
-				type: 'type',
-			});
-			expect(() => element.transform()).not.toThrow();
 		});
 	});
 });

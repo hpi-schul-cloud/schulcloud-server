@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { Permission, SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
+import { Permission, LegacySchoolDo, User, UserLoginMigrationDO } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import {
 	UserLoginMigrationGracePeriodExpiredLoggableException,
 	UserLoginMigrationNotFoundLoggableException,
@@ -15,7 +15,7 @@ export class RestartUserLoginMigrationUc {
 	constructor(
 		private readonly userLoginMigrationService: UserLoginMigrationService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(RestartUserLoginMigrationUc.name);
@@ -38,9 +38,7 @@ export class RestartUserLoginMigrationUc {
 		} else if (userLoginMigration.closedAt) {
 			userLoginMigration = await this.userLoginMigrationService.restartMigration(schoolId);
 
-			this.logger.log(new UserLoginMigrationStartLoggable(userId, schoolId));
-		} else {
-			// Do nothing, if migration is already started but not stopped.
+			this.logger.info(new UserLoginMigrationStartLoggable(userId, schoolId));
 		}
 
 		return userLoginMigration;
@@ -48,7 +46,7 @@ export class RestartUserLoginMigrationUc {
 
 	async checkPermission(userId: string, schoolId: string): Promise<void> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
 
 		const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.USER_LOGIN_MIGRATION_ADMIN]);
 		this.authorizationService.checkPermission(user, school, context);

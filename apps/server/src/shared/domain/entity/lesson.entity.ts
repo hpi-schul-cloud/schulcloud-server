@@ -8,7 +8,6 @@ import { CourseGroup } from './coursegroup.entity';
 import { Material } from './materials.entity';
 import { Task } from './task.entity';
 import type { ITaskParent } from './task.entity';
-import { User } from './user.entity';
 
 export interface ILessonProperties {
 	name: string;
@@ -68,7 +67,7 @@ export type IComponentProperties = {
 	_id?: string;
 	title: string;
 	hidden: boolean;
-	user?: User;
+	user?: EntityId;
 } & (
 	| { component: ComponentType.TEXT; content: IComponentTextProperties }
 	| { component: ComponentType.ETHERPAD; content: IComponentEtherpadProperties }
@@ -83,7 +82,7 @@ export interface ILessonParent {
 }
 
 @Entity({ tableName: 'lessons' })
-export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElement, ITaskParent {
+export class LessonEntity extends BaseEntityWithTimestamps implements ILearnroomElement, ITaskParent {
 	@Property()
 	name: string;
 
@@ -194,6 +193,6 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 	}
 }
 
-export function isLesson(reference: unknown): reference is Lesson {
-	return reference instanceof Lesson;
+export function isLesson(reference: unknown): reference is LessonEntity {
+	return reference instanceof LessonEntity;
 }

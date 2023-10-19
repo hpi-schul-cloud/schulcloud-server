@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName, Team } from '@shared/domain';
+import { RoleName, TeamEntity } from '@shared/domain';
 import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage';
 import { TeamsRepo } from '@shared/repo';
 import { setupEntities } from '@shared/testing';
@@ -26,7 +26,7 @@ describe('Collaborative Storage Service', () => {
 
 	let mockId: string;
 	let roleDto: RoleDto;
-	let team: Team;
+	let team: TeamEntity;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({

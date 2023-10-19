@@ -1,4 +1,3 @@
-export * from './common-cartridge-assignment-resource-item-element';
 export * from './common-cartridge-element.interface';
 export * from './common-cartridge-enums';
 export * from './common-cartridge-file-builder';

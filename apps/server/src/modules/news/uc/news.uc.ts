@@ -52,7 +52,7 @@ export class NewsUc {
 		});
 		await this.newsRepo.save(news);
 
-		this.logger.log(new NewsCrudOperationLoggable(CrudOperation.CREATE, userId, news));
+		this.logger.info(new NewsCrudOperationLoggable(CrudOperation.CREATE, userId, news));
 
 		return news;
 	}
@@ -134,7 +134,7 @@ export class NewsUc {
 
 		await this.newsRepo.save(news);
 
-		this.logger.log(new NewsCrudOperationLoggable(CrudOperation.UPDATE, userId, news));
+		this.logger.info(new NewsCrudOperationLoggable(CrudOperation.UPDATE, userId, news));
 
 		return news;
 	}
@@ -151,7 +151,7 @@ export class NewsUc {
 
 		await this.newsRepo.delete(news);
 
-		this.logger.log(new NewsCrudOperationLoggable(CrudOperation.DELETE, userId, news));
+		this.logger.info(new NewsCrudOperationLoggable(CrudOperation.DELETE, userId, news));
 
 		return id;
 	}

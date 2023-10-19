@@ -3,16 +3,17 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { AntivirusService } from '@shared/infra/antivirus';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
-import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams, SingleFileParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
+import { PreviewService } from '../service/preview.service';
 import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {
@@ -82,6 +83,10 @@ describe('FilesStorageUC', () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: PreviewService,
+					useValue: createMock<PreviewService>(),
 				},
 			],
 		}).compile();

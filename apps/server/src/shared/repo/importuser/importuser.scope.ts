@@ -2,12 +2,12 @@
 import { FilterQuery } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { StringValidator } from '@shared/common';
-import { ImportUser, MatchCreatorScope, RoleName, School, User } from '@shared/domain';
+import { ImportUser, MatchCreatorScope, RoleName, SchoolEntity, User } from '@shared/domain';
 import { MongoPatterns } from '../mongo.patterns';
 import { Scope } from '../scope';
 
 export class ImportUserScope extends Scope<ImportUser> {
-	bySchool(school: School): ImportUserScope {
+	bySchool(school: SchoolEntity): ImportUserScope {
 		const schoolId = school._id;
 		if (!ObjectId.isValid(schoolId)) throw new Error('invalid school id');
 		this.addQuery({ school });

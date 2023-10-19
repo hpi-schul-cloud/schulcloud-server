@@ -1,4 +1,4 @@
-FROM docker.io/node:18 as git
+FROM docker.io/node:18 AS git
 
 RUN mkdir /app && chown -R node:node /app
 WORKDIR /app

@@ -1,7 +1,9 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, Page, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { EntityId, Page, Permission, LegacySchoolDo, User, UserLoginMigrationDO } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
+import { Action, AuthorizationService } from '@src/modules/authorization';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@src/modules/provisioning';
@@ -10,7 +12,7 @@ import { OAuthMigrationError, SchoolMigrationError, UserLoginMigrationError } fr
 import { PageTypes } from '../interface/page-types.enum';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { MigrationDto, PageContentDto } from '../service/dto';
-import { UserLoginMigrationQuery } from './dto/user-login-migration-query';
+import { UserLoginMigrationQuery } from './dto';
 
 @Injectable()
 export class UserLoginMigrationUc {
@@ -21,6 +23,7 @@ export class UserLoginMigrationUc {
 		private readonly provisioningService: ProvisioningService,
 		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly authenticationService: AuthenticationService,
+		private readonly authorizationService: AuthorizationService,
 		private readonly logger: LegacyLogger
 	) {}
 
@@ -54,6 +57,24 @@ export class UserLoginMigrationUc {
 		return page;
 	}
 
+	async findUserLoginMigrationBySchool(userId: EntityId, schoolId: EntityId): Promise<UserLoginMigrationDO> {
+		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
+			schoolId
+		);
+
+		if (!userLoginMigration) {
+			throw new NotFoundLoggableException('UserLoginMigration', 'schoolId', schoolId);
+		}
+
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(user, userLoginMigration, {
+			requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+			action: Action.read,
+		});
+
+		return userLoginMigration;
+	}
+
 	async migrate(
 		userJwt: string,
 		currentUserId: string,
@@ -74,7 +95,7 @@ export class UserLoginMigrationUc {
 		this.logMigrationInformation(currentUserId, undefined, data, targetSystemId);
 
 		if (data.externalSchool) {
-			let schoolToMigrate: SchoolDO | null;
+			let schoolToMigrate: LegacySchoolDo | null;
 			// TODO: N21-820 after fully switching to the new client login flow, try/catch will be obsolete and schoolToMigrate should throw correct errors
 			try {
 				schoolToMigrate = await this.schoolMigrationService.schoolToMigrate(
@@ -136,7 +157,7 @@ export class UserLoginMigrationUc {
 		text?: string,
 		oauthData?: OauthDataDto,
 		targetSystemId?: string,
-		school?: SchoolDO
+		school?: LegacySchoolDo
 	) {
 		let message = `MIGRATION (userId: ${userId}): ${text ?? ''}`;
 		if (!school && oauthData) {

@@ -4,11 +4,11 @@ import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { LoggerModule } from '@src/core/logger';
 import { AccountModule } from '@src/modules/account';
 import { RoleModule } from '@src/modules/role/role.module';
-import { SchoolModule } from '@src/modules/school/school.module';
+import { LegacySchoolModule } from '@src/modules/legacy-school';
 import { UserService } from './service/user.service';
 
 @Module({
-	imports: [SchoolModule, RoleModule, AccountModule, LoggerModule],
+	imports: [LegacySchoolModule, RoleModule, AccountModule, LoggerModule],
 	providers: [UserRepo, UserDORepo, UserService],
 	exports: [UserService, UserRepo],
 })

@@ -5,9 +5,12 @@ import type {
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	ExternalToolElementNodeEntity,
 	FileElementNode,
+	LinkElementNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
+	SubmissionItemNode,
 } from '@shared/domain';
 import {
 	AnyBoardDo,
@@ -15,9 +18,12 @@ import {
 	Card,
 	Column,
 	ColumnBoard,
+	ExternalToolElement,
 	FileElement,
+	LinkElement,
 	RichTextElement,
 	SubmissionContainerElement,
+	SubmissionItem,
 } from '@shared/domain';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
@@ -69,11 +75,15 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 	public buildCard(boardNode: CardNode): Card {
 		this.ensureBoardNodeType(this.getChildren(boardNode), [
 			BoardNodeType.FILE_ELEMENT,
+			BoardNodeType.LINK_ELEMENT,
 			BoardNodeType.RICH_TEXT_ELEMENT,
 			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
+			BoardNodeType.EXTERNAL_TOOL,
 		]);
 
-		const elements = this.buildChildren<RichTextElement | SubmissionContainerElement>(boardNode);
+		const elements = this.buildChildren<
+			ExternalToolElement | FileElement | LinkElement | RichTextElement | SubmissionContainerElement
+		>(boardNode);
 
 		const card = new Card({
 			id: boardNode.id,
@@ -92,6 +102,22 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		const element = new FileElement({
 			id: boardNode.id,
 			caption: boardNode.caption,
+			alternativeText: boardNode.alternativeText,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+		});
+		return element;
+	}
+
+	public buildLinkElement(boardNode: LinkElementNode): LinkElement {
+		this.ensureLeafNode(boardNode);
+
+		const element = new LinkElement({
+			id: boardNode.id,
+			url: boardNode.url,
+			title: boardNode.title,
+			imageUrl: boardNode.imageUrl,
 			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
@@ -114,15 +140,45 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 	}
 
 	public buildSubmissionContainerElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement {
-		this.ensureLeafNode(boardNode);
+		this.ensureBoardNodeType(this.getChildren(boardNode), [BoardNodeType.SUBMISSION_ITEM]);
+		const elements = this.buildChildren<SubmissionItem>(boardNode);
 
 		const element = new SubmissionContainerElement({
 			id: boardNode.id,
+			children: elements,
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
 			dueDate: boardNode.dueDate,
+		});
+
+		return element;
+	}
+
+	public buildSubmissionItem(boardNode: SubmissionItemNode): SubmissionItem {
+		this.ensureLeafNode(boardNode);
+
+		const element = new SubmissionItem({
+			id: boardNode.id,
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+			completed: boardNode.completed,
+			userId: boardNode.userId,
+			children: [],
+		});
+		return element;
+	}
+
+	buildExternalToolElement(boardNode: ExternalToolElementNodeEntity): ExternalToolElement {
+		this.ensureLeafNode(boardNode);
+
+		const element: ExternalToolElement = new ExternalToolElement({
+			id: boardNode.id,
 			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
+			contextExternalToolId: boardNode.contextExternalTool?.id,
 		});
+
 		return element;
 	}
 

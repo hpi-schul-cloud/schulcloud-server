@@ -14,7 +14,7 @@ describe(SubmissionContainerElementNode.name, () => {
 			return { elementProps, builder };
 		};
 
-		it('should create a FileElementNode', () => {
+		it('should create a SubmissionContainerElement', () => {
 			const { elementProps } = setup();
 
 			const element = new SubmissionContainerElementNode(elementProps);
@@ -33,14 +33,6 @@ describe(SubmissionContainerElementNode.name, () => {
 
 			return { element, builder, elementDo };
 		};
-
-		it('should call the specific builder method', () => {
-			const { element, builder } = setup();
-
-			element.useDoBuilder(builder);
-
-			expect(builder.buildSubmissionContainerElement).toHaveBeenCalledWith(element);
-		});
 
 		it('should call the specific builder method', () => {
 			const { element, builder } = setup();

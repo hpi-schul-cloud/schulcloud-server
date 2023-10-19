@@ -20,7 +20,6 @@ export class TaskRepo extends BaseRepo<Task> {
 			'lesson.courseGroup',
 			'submissions',
 			'submissions.courseGroup',
-			'users',
 		]);
 	}
 
@@ -43,9 +42,6 @@ export class TaskRepo extends BaseRepo<Task> {
 			lessonIdsOfOpenCourses: EntityId[];
 			finishedCourseIds: EntityId[];
 			lessonIdsOfFinishedCourses: EntityId[];
-		},
-		filters?: {
-			userId?: EntityId;
 		},
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
@@ -91,20 +87,7 @@ export class TaskRepo extends BaseRepo<Task> {
 		scope.addQuery(allForFinishedCoursesAndLessons.query);
 		scope.addQuery(allForCreator.query);
 
-		let { query } = scope;
-
-		if (filters?.userId) {
-			const forAssignedUser = new TaskScope();
-			forAssignedUser.byAssignedUser(filters.userId);
-
-			const filtersScope = new TaskScope('$and');
-			filtersScope.addQuery(forAssignedUser.query);
-			filtersScope.addQuery(scope.query);
-
-			({ query } = filtersScope);
-		}
-
-		const countedTaskList = await this.findTasksAndCount(query, options);
+		const countedTaskList = await this.findTasksAndCount(scope.query, options);
 
 		return countedTaskList;
 	}
@@ -130,7 +113,6 @@ export class TaskRepo extends BaseRepo<Task> {
 			afterDueDateOrNone?: Date;
 			finished?: { userId: EntityId; value: boolean };
 			availableOn?: Date;
-			userId?: EntityId;
 		},
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
@@ -151,10 +133,6 @@ export class TaskRepo extends BaseRepo<Task> {
 		}
 
 		scope.addQuery(parentIdScope.query);
-
-		if (filters?.userId) {
-			scope.byAssignedUser(filters.userId);
-		}
 
 		if (filters?.finished) {
 			scope.byFinished(filters.finished.userId, filters.finished.value);
@@ -186,7 +164,7 @@ export class TaskRepo extends BaseRepo<Task> {
 	async findBySingleParent(
 		creatorId: EntityId,
 		courseId: EntityId,
-		filters?: { draft?: boolean; noFutureAvailableDate?: boolean; userId?: EntityId },
+		filters?: { draft?: boolean; noFutureAvailableDate?: boolean },
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		const scope = new TaskScope();
@@ -202,10 +180,6 @@ export class TaskRepo extends BaseRepo<Task> {
 
 		if (filters?.noFutureAvailableDate !== undefined) {
 			scope.noFutureAvailableDate();
-		}
-
-		if (filters?.userId) {
-			scope.byAssignedUser(filters.userId);
 		}
 
 		const countedTaskList = await this.findTasksAndCount(scope.query, options);

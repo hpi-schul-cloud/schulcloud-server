@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Course, CourseGroup, Lesson, User } from '@shared/domain/entity';
+import { Course, CourseGroup, LessonEntity, User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { Action, AuthorizationContext, Rule } from '@src/modules/authorization/types';
 import { CourseGroupRule } from './course-group.rule';
@@ -13,13 +13,13 @@ export class LessonRule implements Rule {
 		private readonly courseGroupRule: CourseGroupRule
 	) {}
 
-	public isApplicable(user: User, entity: Lesson): boolean {
-		const isMatched = entity instanceof Lesson;
+	public isApplicable(user: User, entity: LessonEntity): boolean {
+		const isMatched = entity instanceof LessonEntity;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: Lesson, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, entity: LessonEntity, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } = context;
 		let hasLessonPermission = false;
 
@@ -35,7 +35,7 @@ export class LessonRule implements Rule {
 		return result;
 	}
 
-	private lessonReadPermission(user: User, entity: Lesson): boolean {
+	private lessonReadPermission(user: User, entity: LessonEntity): boolean {
 		const isVisible = !entity.hidden;
 		let hasParentReadPermission = false;
 
@@ -48,13 +48,13 @@ export class LessonRule implements Rule {
 		return hasParentReadPermission;
 	}
 
-	private lessonWritePermission(user: User, entity: Lesson): boolean {
+	private lessonWritePermission(user: User, entity: LessonEntity): boolean {
 		const hasParentWritePermission = this.parentPermission(user, entity, Action.write);
 
 		return hasParentWritePermission;
 	}
 
-	private parentPermission(user: User, entity: Lesson, action: Action): boolean {
+	private parentPermission(user: User, entity: LessonEntity, action: Action): boolean {
 		let result = false;
 
 		if (entity.courseGroup) {
