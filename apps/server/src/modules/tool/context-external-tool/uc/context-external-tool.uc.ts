@@ -61,18 +61,20 @@ export class ContextExternalToolUc {
 		return saved;
 	}
 
-	async deleteContextExternalTool(userId: EntityId, contextExternalToolId: EntityId): Promise<void> {
+	public async deleteContextExternalTool(userId: EntityId, contextExternalToolId: EntityId): Promise<void> {
 		const tool: ContextExternalTool = await this.contextExternalToolService.findById(contextExternalToolId);
-		const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
 
+		const context = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
 		await this.toolPermissionHelper.ensureContextPermissions(userId, tool, context);
 
-		const promise: Promise<void> = this.contextExternalToolService.deleteContextExternalTool(tool);
-
-		return promise;
+		await this.contextExternalToolService.deleteContextExternalTool(tool);
 	}
 
-	async getContextExternalToolsForContext(userId: EntityId, contextType: ToolContextType, contextId: string) {
+	public async getContextExternalToolsForContext(
+		userId: EntityId,
+		contextType: ToolContextType,
+		contextId: string
+	): Promise<ContextExternalTool[]> {
 		const tools: ContextExternalTool[] = await this.contextExternalToolService.findAllByContext(
 			new ContextRef({ id: contextId, type: contextType })
 		);
