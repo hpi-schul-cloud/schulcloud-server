@@ -30,7 +30,7 @@ export class MailService {
 	}
 
 	private removeEmailAddressesThatHaveBlockedDomain(mails: string[] | undefined): string[] | undefined {
-		if (mails === undefined) {
+		if (mails === undefined || mails === null) {
 			return mails;
 		}
 		const domainBlockList = Configuration.get('BLACKLISTED_EMAIL_DOMAINS') as string;
