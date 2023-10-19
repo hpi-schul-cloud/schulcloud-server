@@ -8,10 +8,10 @@ import { LegacyLogger } from '@src/core/logger';
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { ForbiddenLoggableException } from '@src/modules/authorization/errors/forbidden.loggable-exception';
 import { ToolContextType } from '../../common/enum';
+import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../domain';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
 import { ContextExternalToolUc } from './context-external-tool.uc';
-import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
 describe('ContextExternalToolUc', () => {
 	let module: TestingModule;
@@ -339,7 +339,7 @@ describe('ContextExternalToolUc', () => {
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
 
 				toolPermissionHelper.ensureContextPermissions.mockResolvedValue();
-				contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
+				contextExternalToolService.findById.mockResolvedValue(contextExternalTool);
 
 				return {
 					contextExternalTool,
@@ -496,7 +496,7 @@ describe('ContextExternalToolUc', () => {
 					},
 				});
 
-				contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
+				contextExternalToolService.findById.mockResolvedValue(contextExternalTool);
 				toolPermissionHelper.ensureContextPermissions.mockResolvedValue(Promise.resolve());
 
 				return {
@@ -524,7 +524,7 @@ describe('ContextExternalToolUc', () => {
 
 				await uc.getContextExternalTool(userId, contextExternalTool.id as string);
 
-				expect(contextExternalToolService.getContextExternalToolById).toHaveBeenCalledWith(contextExternalTool.id);
+				expect(contextExternalToolService.findById).toHaveBeenCalledWith(contextExternalTool.id);
 			});
 		});
 
@@ -542,7 +542,7 @@ describe('ContextExternalToolUc', () => {
 					},
 				});
 
-				contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
+				contextExternalToolService.findById.mockResolvedValue(contextExternalTool);
 				toolPermissionHelper.ensureContextPermissions.mockRejectedValue(
 					new ForbiddenLoggableException(
 						userId,
