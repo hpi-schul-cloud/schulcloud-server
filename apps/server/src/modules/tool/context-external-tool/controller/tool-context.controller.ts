@@ -58,6 +58,7 @@ export class ToolContextController {
 			ContextExternalToolResponseMapper.mapContextExternalToolResponse(createdTool);
 
 		this.logger.debug(`ContextExternalTool with id ${response.id} was created by user with id ${currentUser.userId}`);
+
 		return response;
 	}
 

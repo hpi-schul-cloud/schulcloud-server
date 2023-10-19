@@ -18,14 +18,10 @@ import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto'
 import { TeamsRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { ICurrentUser } from '@src/modules/authentication';
-import {
-	Action,
-	AuthorizableReferenceType,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@src/modules/authorization';
-import { CourseService } from '@src/modules/learnroom/service';
+import { Action, AuthorizationContextBuilder } from '@src/modules/authorization';
+import { AuthorizationReferenceService, AuthorizableReferenceType } from '@src/modules/authorization/domain';
 import { LegacySchoolService } from '@src/modules/legacy-school';
+import { CourseService } from '@src/modules/learnroom';
 import { UserService } from '@src/modules/user';
 import {
 	BBBBaseMeetingConfig,
@@ -62,7 +58,7 @@ export class VideoConferenceDeprecatedUc {
 
 	constructor(
 		private readonly bbbService: BBBService,
-		private readonly authorizationService: AuthorizationService,
+		private readonly authorizationReferenceService: AuthorizationReferenceService,
 		private readonly videoConferenceRepo: VideoConferenceRepo,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly courseService: CourseService,
@@ -413,7 +409,7 @@ export class VideoConferenceDeprecatedUc {
 		permissions.forEach((perm) => {
 			const context =
 				action === Action.read ? AuthorizationContextBuilder.read([perm]) : AuthorizationContextBuilder.write([perm]);
-			const ret = this.authorizationService.hasPermissionByReferences(userId, entityName, entityId, context);
+			const ret = this.authorizationReferenceService.hasPermissionByReferences(userId, entityName, entityId, context);
 			returnMap.set(perm, ret);
 		});
 		return returnMap;

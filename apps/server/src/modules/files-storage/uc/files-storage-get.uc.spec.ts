@@ -6,7 +6,7 @@ import { AntivirusService } from '@shared/infra/antivirus';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
@@ -37,7 +37,7 @@ describe('FilesStorageUC', () => {
 	let module: TestingModule;
 	let filesStorageUC: FilesStorageUC;
 	let filesStorageService: DeepMocked<FilesStorageService>;
-	let authorizationService: DeepMocked<AuthorizationService>;
+	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
 
 	beforeAll(async () => {
 		await setupEntities([FileRecord]);
@@ -62,8 +62,8 @@ describe('FilesStorageUC', () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
-					provide: AuthorizationService,
-					useValue: createMock<AuthorizationService>(),
+					provide: AuthorizationReferenceService,
+					useValue: createMock<AuthorizationReferenceService>(),
 				},
 				{
 					provide: HttpService,
@@ -77,7 +77,7 @@ describe('FilesStorageUC', () => {
 		}).compile();
 
 		filesStorageUC = module.get(FilesStorageUC);
-		authorizationService = module.get(AuthorizationService);
+		authorizationReferenceService = module.get(AuthorizationReferenceService);
 		filesStorageService = module.get(FilesStorageService);
 	});
 
@@ -100,7 +100,7 @@ describe('FilesStorageUC', () => {
 				const { fileRecords, params } = buildFileRecordsWithParams();
 
 				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
 
 				return { userId, params, fileRecords };
 			};
@@ -110,7 +110,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.getFileRecordsOfParent(userId, params);
 
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
 					userId,
 					params.parentType,
 					params.parentId,
@@ -141,7 +141,7 @@ describe('FilesStorageUC', () => {
 				const { fileRecords, params } = buildFileRecordsWithParams();
 
 				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new Error('Bla'));
+				authorizationReferenceService.checkPermissionByReferences.mockRejectedValueOnce(new Error('Bla'));
 
 				return { userId, params, fileRecords };
 			};
@@ -160,7 +160,7 @@ describe('FilesStorageUC', () => {
 				const fileRecords = [];
 
 				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
 
 				return { userId, params, fileRecords };
 			};
