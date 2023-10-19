@@ -266,6 +266,13 @@ export class LessonCopyService {
 	}
 
 	private copyLernStore(element: IComponentProperties): IComponentProperties {
+		const lernstore: IComponentProperties = {
+			title: element.title,
+			hidden: element.hidden,
+			component: ComponentType.LERNSTORE,
+			user: element.user, // TODO should be params.user - but that made the server crash, but property is normally undefined
+		};
+
 		if (element.content) {
 			const resources = ((element.content as IComponentLernstoreProperties).resources ?? []).map(
 				({ client, description, merlinReference, title, url }) => {
@@ -280,27 +287,11 @@ export class LessonCopyService {
 				}
 			);
 
-			const lernstoreWithContent: IComponentProperties = {
-				title: element.title,
-				hidden: element.hidden,
-				component: ComponentType.LERNSTORE,
-				user: element.user, // TODO should be params.user - but that made the server crash, but property is normally undefined
-				content: {
-					resources,
-				},
-			};
-
-			return lernstoreWithContent;
+			const lernstoreContent: IComponentLernstoreProperties = { resources };
+			lernstore.content = lernstoreContent;
 		}
 
-		const lernstoreWithoutContent = {
-			title: element.title,
-			hidden: element.hidden,
-			component: ComponentType.LERNSTORE,
-			user: element.user, // TODO should be params.user - but that made the server crash, but property is normally undefined
-		};
-
-		return lernstoreWithoutContent as IComponentProperties;
+		return lernstore;
 	}
 
 	private static copyGeogebra(originalElement: IComponentProperties): IComponentProperties {
