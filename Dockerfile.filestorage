@@ -103,3 +103,6 @@ WORKDIR /
 RUN rm -rf libraqm
 RUN rm -rf liblqr
 RUN rm -rf ImageMagick
+
+# change back to original work directory
+WORKDIR /schulcloud-server
