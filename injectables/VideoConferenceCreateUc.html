@@ -405,8 +405,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-create.uc.ts:61</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="67"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-create.uc.ts:67</a></div>
                         </td>
                     </tr>
 
@@ -498,8 +498,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="86"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-create.uc.ts:86</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-create.uc.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -580,8 +580,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-create.uc.ts:82</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-create.uc.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -673,6 +673,12 @@ export class VideoConferenceCreateUc {
 	}
 
 	private async create(currentUserId: EntityId, scope: ScopeRef, options: VideoConferenceOptions): Promise&lt;void&gt; {
+		/* need to be replace with
+		const [authorizableUser, scopeRessource]: [User, TeamEntity | Course] &#x3D; await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.videoConferenceService.loadScopeRessources(scopeId, scope),
+		]);
+		*/
 		const user: UserDO &#x3D; await this.userService.findById(currentUserId);
 
 		await this.verifyFeaturesEnabled(user.schoolId);

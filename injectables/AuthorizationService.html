@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/authorization/authorization.service.ts</code>
+            <code>apps/server/src/modules/authorization/domain/service/authorization.service.ts</code>
         </p>
 
 
@@ -99,11 +99,6 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#checkPermissionByReferences" class="deprecated-name">checkPermissionByReferences</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
                                 <a href="#getUserWithPermissions" >getUserWithPermissions</a>
                             </li>
                             <li>
@@ -117,11 +112,6 @@
                             <li>
                                     <span class="modifier">Public</span>
                                 <a href="#hasPermission" >hasPermission</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#hasPermissionByReferences" class="deprecated-name">hasPermissionByReferences</a>
                             </li>
                         </ul>
                     </td>
@@ -141,12 +131,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(ruleManager: <a href="../injectables/RuleManager.html" target="_self">RuleManager</a>, loader: <a href="../injectables/ReferenceLoader.html" target="_self">ReferenceLoader</a>, authorizationHelper: <a href="../injectables/AuthorizationHelper.html" target="_self">AuthorizationHelper</a>)</code>
+<code>constructor(ruleManager: <a href="../injectables/RuleManager.html" target="_self">RuleManager</a>, authorizationHelper: <a href="../injectables/AuthorizationHelper.html" target="_self">AuthorizationHelper</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/authorization/domain/service/authorization.service.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -176,10 +166,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>loader</td>
+                                                        <td>authorizationHelper</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/ReferenceLoader.html" target="_self" >ReferenceLoader</a></code>
+                                                                        <code><a href="../injectables/AuthorizationHelper.html" target="_self" >AuthorizationHelper</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -188,10 +178,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>authorizationHelper</td>
+                                                        <td>userRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/AuthorizationHelper.html" target="_self" >AuthorizationHelper</a></code>
+                                                                        <code><a href="../injectables/UserRepo.html" target="_self" >UserRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -235,8 +225,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/authorization.service.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -316,8 +306,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="84"
-                                    class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:84</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/authorization.service.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -397,8 +387,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/authorization.service.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -472,117 +462,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="checkPermissionByReferences"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span class="deprecated-name"><b>checkPermissionByReferences</b></span>
-                        <a href="#checkPermissionByReferences"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4 deprecated">
-                    
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkPermissionByReferences(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, entityName: <a href="../undefineds/AuthorizableReferenceType.html" target="_self">AuthorizableReferenceType</a>, entityId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="35"
-                                    class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:35</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>entityName</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#AuthorizableReferenceType" target="_self" >AuthorizableReferenceType</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>entityId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>context</td>
-                                            <td>
-                                                            <code><a href="../interfaces/AuthorizationContext.html" target="_self" >AuthorizationContext</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="getUserWithPermissions"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -602,8 +481,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="95"
-                                    class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:95</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/authorization.service.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -671,8 +550,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="80"
-                                    class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:80</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/authorization.service.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -752,8 +631,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="91"
-                                    class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:91</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/authorization.service.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -833,8 +712,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/authorization.service.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -904,139 +783,27 @@
             </tr>
         </tbody>
     </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="hasPermissionByReferences"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span class="deprecated-name"><b>hasPermissionByReferences</b></span>
-                        <a href="#hasPermissionByReferences"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4 deprecated">
-                    
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermissionByReferences(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, entityName: <a href="../undefineds/AuthorizableReferenceType.html" target="_self">AuthorizableReferenceType</a>, entityId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="49"
-                                    class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:49</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>entityName</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#AuthorizableReferenceType" target="_self" >AuthorizableReferenceType</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>entityId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>context</td>
-                                            <td>
-                                                            <code><a href="../interfaces/AuthorizationContext.html" target="_self" >AuthorizationContext</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 </section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ForbiddenException, Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { BaseDO, EntityId, User } from &#x27;@shared/domain&#x27;;
 import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;;
-import { ErrorUtils } from &#x27;@src/core/error/utils&#x27;;
+import { UserRepo } from &#x27;@shared/repo&#x27;;
 import { AuthorizationHelper } from &#x27;./authorization.helper&#x27;;
-import { ForbiddenLoggableException } from &#x27;./errors/forbidden.loggable-exception&#x27;;
-import { ReferenceLoader } from &#x27;./reference.loader&#x27;;
+import { ForbiddenLoggableException } from &#x27;../error&#x27;;
 import { RuleManager } from &#x27;./rule-manager&#x27;;
-import { AuthorizableReferenceType, AuthorizationContext } from &#x27;./types&#x27;;
+import { AuthorizationContext } from &#x27;../type&#x27;;
 
 @Injectable()
 export class AuthorizationService {
 	constructor(
 		private readonly ruleManager: RuleManager,
-		private readonly loader: ReferenceLoader,
-		private readonly authorizationHelper: AuthorizationHelper
+		private readonly authorizationHelper: AuthorizationHelper,
+		private readonly userRepo: UserRepo
 	) {}
 
 	public checkPermission(user: User, object: AuthorizableObject | BaseDO, context: AuthorizationContext): void {
@@ -1052,50 +819,9 @@ export class AuthorizationService {
 		return hasPermission;
 	}
 
-	/**
-	 * @deprecated
-	 */
-	public async checkPermissionByReferences(
-		userId: EntityId,
-		entityName: AuthorizableReferenceType,
-		entityId: EntityId,
-		context: AuthorizationContext
-	): Promise&lt;void&gt; {
-		if (!(await this.hasPermissionByReferences(userId, entityName, entityId, context))) {
-			throw new ForbiddenLoggableException(userId, entityName, context);
-		}
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public async hasPermissionByReferences(
-		userId: EntityId,
-		entityName: AuthorizableReferenceType,
-		entityId: EntityId,
-		context: AuthorizationContext
-	): Promise&lt;boolean&gt; {
-		// TODO: This try-catch-block should be removed. See ticket: https://ticketsystem.dbildungscloud.de/browse/BC-4023
-		try {
-			const [user, object] &#x3D; await Promise.all([
-				this.getUserWithPermissions(userId),
-				this.loader.loadAuthorizableObject(entityName, entityId),
-			]);
-			const rule &#x3D; this.ruleManager.selectRule(user, object, context);
-			const hasPermission &#x3D; rule.hasPermission(user, object, context);
-
-			return hasPermission;
-		} catch (error) {
-			throw new ForbiddenException(
-				null,
-				ErrorUtils.createHttpExceptionOptions(error, &#x27;AuthorizationService:hasPermissionByReferences&#x27;)
-			);
-		}
-	}
-
 	public checkAllPermissions(user: User, requiredPermissions: string[]): void {
 		if (!this.authorizationHelper.hasAllPermissions(user, requiredPermissions)) {
-			// TODO: Should be ForbiddenException
+			// TODO: Should be ForbiddenLoggableException
 			throw new UnauthorizedException();
 		}
 	}
@@ -1106,7 +832,7 @@ export class AuthorizationService {
 
 	public checkOneOfPermissions(user: User, requiredPermissions: string[]): void {
 		if (!this.authorizationHelper.hasOneOfPermissions(user, requiredPermissions)) {
-			// TODO: Should be ForbiddenException
+			// TODO: Should be ForbiddenLoggableException
 			throw new UnauthorizedException();
 		}
 	}
@@ -1116,9 +842,10 @@ export class AuthorizationService {
 	}
 
 	public async getUserWithPermissions(userId: EntityId): Promise&lt;User&gt; {
-		const userWithPermissions &#x3D; await this.loader.getUserWithPermissions(userId);
+		// replace with service method getUserWithPermissions BC-5069
+		const userWithPopulatedRoles &#x3D; await this.userRepo.findById(userId, true);
 
-		return userWithPermissions;
+		return userWithPopulatedRoles;
 	}
 }
 </code></pre>

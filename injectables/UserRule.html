@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/rules/user.rule.ts</code>
+            <code>apps/server/src/modules/authorization/domain/rules/user.rule.ts</code>
         </p>
 
 
@@ -115,7 +115,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/shared/domain/rules/user.rule.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/authorization/domain/rules/user.rule.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -181,7 +181,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/shared/domain/rules/user.rule.ts:16</a></div>
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/user.rule.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -274,7 +274,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/shared/domain/rules/user.rule.ts:10</a></div>
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/user.rule.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -340,8 +340,8 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { User } from &#x27;@shared/domain/entity&#x27;;
-import { AuthorizationHelper } from &#x27;@src/modules/authorization/authorization.helper&#x27;;
-import { AuthorizationContext, Rule } from &#x27;@src/modules/authorization/types&#x27;;
+import { AuthorizationContext, Rule } from &#x27;../type&#x27;;
+import { AuthorizationHelper } from &#x27;../service/authorization.helper&#x27;;
 
 @Injectable()
 export class UserRule implements Rule {

@@ -110,12 +110,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(authorization: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, courseCopyService: <a href="../injectables/CourseCopyService.html" target="_self">CourseCopyService</a>)</code>
+<code>constructor(authorization: <a href="../injectables/AuthorizationReferenceService.html" target="_self">AuthorizationReferenceService</a>, courseCopyService: <a href="../injectables/CourseCopyService.html" target="_self">CourseCopyService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/learnroom/uc/course-copy.uc.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/learnroom/uc/course-copy.uc.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -136,7 +136,7 @@
                                                         <td>authorization</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
+                                                                        <code><a href="../injectables/AuthorizationReferenceService.html" target="_self" >AuthorizationReferenceService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -192,8 +192,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/course-copy.uc.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/course-copy.uc.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -231,8 +231,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/course-copy.uc.ts:15</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="16"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/course-copy.uc.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -299,24 +299,23 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
 import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { EntityId, Permission } from &#x27;@shared/domain&#x27;;
-import { Action, AuthorizableReferenceType, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
+import { AuthorizationContextBuilder } from &#x27;@src/modules/authorization&#x27;;
+import { AuthorizationReferenceService, AuthorizableReferenceType } from &#x27;@src/modules/authorization/domain&#x27;;
 import { CopyStatus } from &#x27;@src/modules/copy-helper&#x27;;
 import { CourseCopyService } from &#x27;../service&#x27;;
 
 @Injectable()
 export class CourseCopyUC {
 	constructor(
-		private readonly authorization: AuthorizationService,
+		private readonly authorization: AuthorizationReferenceService,
 		private readonly courseCopyService: CourseCopyService
 	) {}
 
 	async copyCourse(userId: EntityId, courseId: EntityId): Promise&lt;CopyStatus&gt; {
 		this.checkFeatureEnabled();
 
-		await this.authorization.checkPermissionByReferences(userId, AuthorizableReferenceType.Course, courseId, {
-			action: Action.write,
-			requiredPermissions: [Permission.COURSE_CREATE],
-		});
+		const context &#x3D; AuthorizationContextBuilder.write([Permission.COURSE_CREATE]);
+		await this.authorization.checkPermissionByReferences(userId, AuthorizableReferenceType.Course, courseId, context);
 
 		const result &#x3D; await this.courseCopyService.copyCourse({ userId, courseId });
 
@@ -324,6 +323,7 @@ export class CourseCopyUC {
 	}
 
 	private checkFeatureEnabled() {
+		// @hpi-schul-cloud/commons is deprecated way to get envirements
 		const enabled &#x3D; Configuration.get(&#x27;FEATURE_COPY_SERVICE_ENABLED&#x27;) as boolean;
 		if (!enabled) {
 			throw new InternalServerErrorException(&#x27;Copy Feature not enabled&#x27;);

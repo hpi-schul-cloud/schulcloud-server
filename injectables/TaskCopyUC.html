@@ -85,12 +85,24 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#copyTask" >copyTask</a>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkDestinationCourseAuthorisation" >checkDestinationCourseAuthorisation</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#featureEnabled" >featureEnabled</a>
+                                <a href="#checkDestinationLessonAuthorization" >checkDestinationLessonAuthorization</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkFeatureEnabled" >checkFeatureEnabled</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkOriginalTaskAuthorization" >checkOriginalTaskAuthorization</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#copyTask" >copyTask</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -130,7 +142,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -237,6 +249,288 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="checkDestinationCourseAuthorisation"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>checkDestinationCourseAuthorisation</b></span>
+                        <a href="#checkDestinationCourseAuthorisation"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkDestinationCourseAuthorisation(authorizableUser: <a href="../interfaces/User.html" target="_self">User</a>, destinationCourse: <a href="../entitys/Course.html" target="_self">Course</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:69</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>authorizableUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>destinationCourse</td>
+                                            <td>
+                                                            <code><a href="../entitys/Course.html" target="_self" >Course</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkDestinationLessonAuthorization"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>checkDestinationLessonAuthorization</b></span>
+                        <a href="#checkDestinationLessonAuthorization"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkDestinationLessonAuthorization(authorizableUser: <a href="../interfaces/User.html" target="_self">User</a>, destinationLesson: <a href="../entitys/LessonEntity.html" target="_self">LessonEntity</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:74</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>authorizableUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>destinationLesson</td>
+                                            <td>
+                                                            <code><a href="../entitys/LessonEntity.html" target="_self" >LessonEntity</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkFeatureEnabled"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>checkFeatureEnabled</b></span>
+                        <a href="#checkFeatureEnabled"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkFeatureEnabled()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="112"
+                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:112</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkOriginalTaskAuthorization"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>checkOriginalTaskAuthorization</b></span>
+                        <a href="#checkOriginalTaskAuthorization"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkOriginalTaskAuthorization(authorizableUser: <a href="../interfaces/User.html" target="_self">User</a>, originalTask: <a href="../classes/Task.html" target="_self">Task</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:61</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>authorizableUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>originalTask</td>
+                                            <td>
+                                                            <code><a href="../classes/Task.html" target="_self" >Task</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="copyTask"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -255,8 +549,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="21"
+                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -330,45 +624,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="featureEnabled"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>featureEnabled</b></span>
-                        <a href="#featureEnabled"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>featureEnabled()</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="92"
-                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:92</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                        </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="getCopyName"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -388,8 +643,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:61</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -470,8 +725,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="70"
-                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:70</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -533,15 +788,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getDestinationLesson(lessonId: string | undefined, user: <a href="../interfaces/User.html" target="_self">User</a>)</code>
+                    <code>getDestinationLesson(lessonId: string | undefined)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="80"
-                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:80</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:102</a></div>
                         </td>
                     </tr>
 
@@ -573,18 +828,6 @@
 
 
                                         </tr>
-                                        <tr>
-                                                <td>user</td>
-                                            <td>
-                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -607,14 +850,9 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { Course, EntityId, LessonEntity, User } from &#x27;@shared/domain&#x27;;
+import { Course, EntityId, Task, LessonEntity, User } from &#x27;@shared/domain&#x27;;
 import { CourseRepo, LessonRepo, TaskRepo } from &#x27;@shared/repo&#x27;;
-import {
-	Action,
-	AuthorizableReferenceType,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from &#x27;@src/modules/authorization&#x27;;
+import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { CopyHelperService, CopyStatus } from &#x27;@src/modules/copy-helper&#x27;;
 import { TaskCopyService } from &#x27;../service&#x27;;
 import { TaskCopyParentParams } from &#x27;../types&#x27;;
@@ -631,46 +869,73 @@ export class TaskCopyUC {
 	) {}
 
 	async copyTask(userId: EntityId, taskId: EntityId, parentParams: TaskCopyParentParams): Promise&lt;CopyStatus&gt; {
-		this.featureEnabled();
-		const user &#x3D; await this.authorisation.getUserWithPermissions(userId);
-		const originalTask &#x3D; await this.taskRepo.findById(taskId);
-		if (!this.authorisation.hasPermission(user, originalTask, AuthorizationContextBuilder.read([]))) {
-			throw new NotFoundException(&#x27;could not find task to copy&#x27;);
+		this.checkFeatureEnabled();
+
+		// i put it to promise all, it do not look like any more information can be expose over errors if it is called between the authorizations
+		// TODO: Add try catch around it with throw BadRequest invalid data
+		const [authorizableUser, originalTask, destinationCourse]: [User, Task, Course | undefined] &#x3D; await Promise.all([
+			this.authorisation.getUserWithPermissions(userId),
+			this.taskRepo.findById(taskId),
+			this.getDestinationCourse(parentParams.courseId),
+		]);
+
+		this.checkOriginalTaskAuthorization(authorizableUser, originalTask);
+
+		if (destinationCourse) {
+			this.checkDestinationCourseAuthorisation(authorizableUser, destinationCourse);
 		}
 
-		const destinationCourse &#x3D; await this.getDestinationCourse(parentParams.courseId);
-		if (parentParams.courseId) {
-			await this.authorisation.checkPermissionByReferences(
-				userId,
-				AuthorizableReferenceType.Course,
-				parentParams.courseId,
-				{
-					action: Action.write,
-					requiredPermissions: [],
-				}
-			);
-		}
+		// i think getDestinationLesson can also to a promise.all on top
+		// then getCopyName can be put into if (destinationCourse) {
+		// but then the test need to cleanup
+		const [destinationLesson, copyName]: [LessonEntity | undefined, string | undefined] &#x3D; await Promise.all([
+			this.getDestinationLesson(parentParams.lessonId),
+			this.getCopyName(originalTask.name, parentParams.courseId),
+		]);
 
-		const destinationLesson &#x3D; await this.getDestinationLesson(parentParams.lessonId, user);
-		const copyName &#x3D; await this.getCopyName(originalTask.name, parentParams.courseId);
+		if (destinationLesson) {
+			this.checkDestinationLessonAuthorization(authorizableUser, destinationLesson);
+		}
 
 		const status &#x3D; await this.taskCopyService.copyTask({
 			originalTaskId: originalTask.id,
 			destinationCourse,
 			destinationLesson,
-			user,
+			user: authorizableUser,
 			copyName,
 		});
 
 		return status;
 	}
 
+	private checkOriginalTaskAuthorization(authorizableUser: User, originalTask: Task): void {
+		const context &#x3D; AuthorizationContextBuilder.read([]);
+		if (!this.authorisation.hasPermission(authorizableUser, originalTask, context)) {
+			// error message and erorr type are not correct
+			throw new NotFoundException(&#x27;could not find task to copy&#x27;);
+		}
+	}
+
+	private checkDestinationCourseAuthorisation(authorizableUser: User, destinationCourse: Course): void {
+		const context &#x3D; AuthorizationContextBuilder.write([]);
+		this.authorisation.checkPermission(authorizableUser, destinationCourse, context);
+	}
+
+	private checkDestinationLessonAuthorization(authorizableUser: User, destinationLesson: LessonEntity): void {
+		const context &#x3D; AuthorizationContextBuilder.write([]);
+		if (!this.authorisation.hasPermission(authorizableUser, destinationLesson, context)) {
+			throw new ForbiddenException(&#x27;you dont have permission to add to this lesson&#x27;);
+		}
+	}
+
 	private async getCopyName(originalTaskName: string, parentCourseId: EntityId | undefined) {
 		let existingNames: string[] &#x3D; [];
 		if (parentCourseId) {
+			// It should really get an task where the creatorId &#x3D;&#x3D;&#x3D; &#x27;&#x27; ?
 			const [existingTasks] &#x3D; await this.taskRepo.findBySingleParent(&#x27;&#x27;, parentCourseId);
 			existingNames &#x3D; existingTasks.map((t) &#x3D;&gt; t.name);
 		}
+
 		return this.copyHelperService.deriveCopyName(originalTaskName, existingNames);
 	}
 
@@ -684,19 +949,18 @@ export class TaskCopyUC {
 		return destinationCourse;
 	}
 
-	private async getDestinationLesson(lessonId: string | undefined, user: User): Promise&lt;LessonEntity | undefined&gt; {
+	private async getDestinationLesson(lessonId: string | undefined): Promise&lt;LessonEntity | undefined&gt; {
 		if (lessonId &#x3D;&#x3D;&#x3D; undefined) {
 			return undefined;
 		}
 
 		const destinationLesson &#x3D; await this.lessonRepo.findById(lessonId);
-		if (!this.authorisation.hasPermission(user, destinationLesson, AuthorizationContextBuilder.write([]))) {
-			throw new ForbiddenException(&#x27;you dont have permission to add to this lesson&#x27;);
-		}
+
 		return destinationLesson;
 	}
 
-	private featureEnabled() {
+	private checkFeatureEnabled() {
+		// This is the deprecated way to read envirement variables
 		const enabled &#x3D; Configuration.get(&#x27;FEATURE_COPY_SERVICE_ENABLED&#x27;) as boolean;
 		if (!enabled) {
 			throw new InternalServerErrorException(&#x27;Copy Feature not enabled&#x27;);

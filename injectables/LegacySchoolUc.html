@@ -93,6 +93,10 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkSchoolAuthorization" >checkSchoolAuthorization</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#getMigration" >getMigration</a>
                             </li>
@@ -214,6 +218,87 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkSchoolAuthorization"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>checkSchoolAuthorization</b></span>
+                        <a href="#checkSchoolAuthorization"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkSchoolAuthorization(authorizableUser: <a href="../interfaces/User.html" target="_self">User</a>, school: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="101"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/uc/legacy-school.uc.ts:101</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>authorizableUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>school</td>
+                                            <td>
+                                                            <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -419,8 +504,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Permission, LegacySchoolDo, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
-import { Action, AuthorizableReferenceType, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
+import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
+import { Permission, LegacySchoolDo, UserLoginMigrationDO, User } from &#x27;@shared/domain&#x27;;
 import {
 	SchoolMigrationService,
 	UserLoginMigrationRevertService,
@@ -450,10 +535,12 @@ export class LegacySchoolUc {
 		oauthMigrationFinished: boolean,
 		userId: string
 	): Promise&lt;OauthMigrationDto&gt; {
-		await this.authService.checkPermissionByReferences(userId, AuthorizableReferenceType.School, schoolId, {
-			action: Action.read,
-			requiredPermissions: [Permission.SCHOOL_EDIT],
-		});
+		const [authorizableUser, school]: [User, LegacySchoolDo] &#x3D; await Promise.all([
+			this.authService.getUserWithPermissions(userId),
+			this.schoolService.getSchoolById(schoolId),
+		]);
+
+		this.checkSchoolAuthorization(authorizableUser, school);
 
 		const existingUserLoginMigration: UserLoginMigrationDO | null &#x3D;
 			await this.userLoginMigrationService.findMigrationBySchool(schoolId);
@@ -481,8 +568,6 @@ export class LegacySchoolUc {
 			await this.schoolMigrationService.unmarkOutdatedUsers(schoolId);
 		}
 
-		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(schoolId);
-
 		const migrationDto: OauthMigrationDto &#x3D; new OauthMigrationDto({
 			oauthMigrationPossible: !updatedUserLoginMigration.closedAt ? updatedUserLoginMigration.startedAt : undefined,
 			oauthMigrationMandatory: updatedUserLoginMigration.mandatorySince,
@@ -495,16 +580,16 @@ export class LegacySchoolUc {
 	}
 
 	async getMigration(schoolId: string, userId: string): Promise&lt;OauthMigrationDto&gt; {
-		await this.authService.checkPermissionByReferences(userId, AuthorizableReferenceType.School, schoolId, {
-			action: Action.read,
-			requiredPermissions: [Permission.SCHOOL_EDIT],
-		});
+		const [authorizableUser, school]: [User, LegacySchoolDo] &#x3D; await Promise.all([
+			this.authService.getUserWithPermissions(userId),
+			this.schoolService.getSchoolById(schoolId),
+		]);
+
+		this.checkSchoolAuthorization(authorizableUser, school);
 
 		const userLoginMigration: UserLoginMigrationDO | null &#x3D; await this.userLoginMigrationService.findMigrationBySchool(
 			schoolId
 		);
-
-		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(schoolId);
 
 		const migrationDto: OauthMigrationDto &#x3D; new OauthMigrationDto({
 			oauthMigrationPossible:
@@ -516,6 +601,11 @@ export class LegacySchoolUc {
 		});
 
 		return migrationDto;
+	}
+
+	private checkSchoolAuthorization(authorizableUser: User, school: LegacySchoolDo): void {
+		const context &#x3D; AuthorizationContextBuilder.read([Permission.SCHOOL_EDIT]);
+		this.authService.checkPermission(authorizableUser, school, context);
 	}
 }
 </code></pre>

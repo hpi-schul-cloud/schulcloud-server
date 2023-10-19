@@ -68,7 +68,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/authorization/authorization-context.builder.ts</code>
+            <code>apps/server/src/modules/authorization/domain/mapper/authorization-context.builder.ts</code>
         </p>
 
 
@@ -145,7 +145,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="5"
-                                    class="link-to-prism">apps/server/src/modules/authorization/authorization-context.builder.ts:5</a></div>
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/mapper/authorization-context.builder.ts:5</a></div>
                         </td>
                     </tr>
 
@@ -226,7 +226,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/authorization/authorization-context.builder.ts:17</a></div>
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/mapper/authorization-context.builder.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -295,7 +295,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="11"
-                                    class="link-to-prism">apps/server/src/modules/authorization/authorization-context.builder.ts:11</a></div>
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/mapper/authorization-context.builder.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -352,7 +352,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Permission } from &#x27;@shared/domain&#x27;;
-import { AuthorizationContext, Action } from &#x27;./types&#x27;;
+import { AuthorizationContext, Action } from &#x27;../type&#x27;;
 
 export class AuthorizationContextBuilder {
 	private static build(requiredPermissions: Permission[], action: Action): AuthorizationContext {

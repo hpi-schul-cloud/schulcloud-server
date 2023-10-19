@@ -71,7 +71,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/authorization/reference.loader.ts</code>
+            <code>apps/server/src/modules/authorization/domain/service/reference.loader.ts</code>
         </p>
 
 
@@ -190,7 +190,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotImplementedException } from &#x27;@nestjs/common&#x27;;
-import { BaseDO, EntityId, User } from &#x27;@shared/domain&#x27;;
+import { BaseDO, EntityId } from &#x27;@shared/domain&#x27;;
 import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;;
 import {
 	CourseGroupRepo,
@@ -203,11 +203,10 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from &#x27;@shared/repo&#x27;;
-import { BoardDoAuthorizableService } from &#x27;@src/modules/board/service&#x27;;
+import { BoardDoAuthorizableService } from &#x27;@src/modules/board&#x27;;
 import { ContextExternalToolAuthorizableService } from &#x27;@src/modules/tool/context-external-tool/service&#x27;;
-import { AuthorizableReferenceType } from &#x27;./types&#x27;;
+import { AuthorizableReferenceType } from &#x27;../type&#x27;;
 
-// replace later with general &quot;base&quot; do-repo
 type RepoType &#x3D;
 	| TaskRepo
 	| CourseRepo
@@ -246,7 +245,7 @@ export class ReferenceLoader {
 		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
 		this.repos.set(AuthorizableReferenceType.Course, { repo: this.courseRepo });
 		this.repos.set(AuthorizableReferenceType.CourseGroup, { repo: this.courseGroupRepo });
-		this.repos.set(AuthorizableReferenceType.User, { repo: this.userRepo, populate: true });
+		this.repos.set(AuthorizableReferenceType.User, { repo: this.userRepo });
 		this.repos.set(AuthorizableReferenceType.School, { repo: this.schoolRepo });
 		this.repos.set(AuthorizableReferenceType.Lesson, { repo: this.lessonRepo });
 		this.repos.set(AuthorizableReferenceType.Team, { repo: this.teamsRepo, populate: true });
@@ -280,12 +279,6 @@ export class ReferenceLoader {
 		}
 
 		return object;
-	}
-
-	async getUserWithPermissions(userId: EntityId): Promise&lt;User&gt; {
-		const user &#x3D; await this.userRepo.findById(userId, true);
-
-		return user;
 	}
 }
 </code></pre>

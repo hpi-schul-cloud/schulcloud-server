@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/authorization/reference.loader.ts</code>
+            <code>apps/server/src/modules/authorization/domain/service/reference.loader.ts</code>
         </p>
 
 
@@ -101,10 +101,6 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#getUserWithPermissions" >getUserWithPermissions</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
                                 <a href="#loadAuthorizableObject" >loadAuthorizableObject</a>
                             </li>
                             <li>
@@ -134,7 +130,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">apps/server/src/modules/authorization/reference.loader.ts:40</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">apps/server/src/modules/authorization/domain/service/reference.loader.ts:39</a></div>
                             </td>
                         </tr>
 
@@ -301,75 +297,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getUserWithPermissions"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>getUserWithPermissions</b></span>
-                        <a href="#getUserWithPermissions"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getUserWithPermissions(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="94"
-                                    class="link-to-prism">apps/server/src/modules/authorization/reference.loader.ts:94</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;User&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="loadAuthorizableObject"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -388,8 +315,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="78"
-                                    class="link-to-prism">apps/server/src/modules/authorization/reference.loader.ts:78</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="77"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/reference.loader.ts:77</a></div>
                         </td>
                     </tr>
 
@@ -469,8 +396,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="70"
-                                    class="link-to-prism">apps/server/src/modules/authorization/reference.loader.ts:70</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/reference.loader.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -547,7 +474,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">apps/server/src/modules/authorization/reference.loader.ts:40</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">apps/server/src/modules/authorization/domain/service/reference.loader.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -561,7 +488,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotImplementedException } from &#x27;@nestjs/common&#x27;;
-import { BaseDO, EntityId, User } from &#x27;@shared/domain&#x27;;
+import { BaseDO, EntityId } from &#x27;@shared/domain&#x27;;
 import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;;
 import {
 	CourseGroupRepo,
@@ -574,11 +501,10 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from &#x27;@shared/repo&#x27;;
-import { BoardDoAuthorizableService } from &#x27;@src/modules/board/service&#x27;;
+import { BoardDoAuthorizableService } from &#x27;@src/modules/board&#x27;;
 import { ContextExternalToolAuthorizableService } from &#x27;@src/modules/tool/context-external-tool/service&#x27;;
-import { AuthorizableReferenceType } from &#x27;./types&#x27;;
+import { AuthorizableReferenceType } from &#x27;../type&#x27;;
 
-// replace later with general &quot;base&quot; do-repo
 type RepoType &#x3D;
 	| TaskRepo
 	| CourseRepo
@@ -617,7 +543,7 @@ export class ReferenceLoader {
 		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
 		this.repos.set(AuthorizableReferenceType.Course, { repo: this.courseRepo });
 		this.repos.set(AuthorizableReferenceType.CourseGroup, { repo: this.courseGroupRepo });
-		this.repos.set(AuthorizableReferenceType.User, { repo: this.userRepo, populate: true });
+		this.repos.set(AuthorizableReferenceType.User, { repo: this.userRepo });
 		this.repos.set(AuthorizableReferenceType.School, { repo: this.schoolRepo });
 		this.repos.set(AuthorizableReferenceType.Lesson, { repo: this.lessonRepo });
 		this.repos.set(AuthorizableReferenceType.Team, { repo: this.teamsRepo, populate: true });
@@ -651,12 +577,6 @@ export class ReferenceLoader {
 		}
 
 		return object;
-	}
-
-	async getUserWithPermissions(userId: EntityId): Promise&lt;User&gt; {
-		const user &#x3D; await this.userRepo.findById(userId, true);
-
-		return user;
 	}
 }
 </code></pre>

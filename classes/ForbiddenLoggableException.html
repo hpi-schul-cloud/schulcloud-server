@@ -68,7 +68,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/authorization/errors/forbidden.loggable-exception.ts</code>
+            <code>apps/server/src/modules/authorization/domain/error/forbidden.loggable-exception.ts</code>
         </p>
 
 
@@ -127,7 +127,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/authorization/errors/forbidden.loggable-exception.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/authorization/domain/error/forbidden.loggable-exception.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -216,7 +216,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/authorization/errors/forbidden.loggable-exception.ts:16</a></div>
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/error/forbidden.loggable-exception.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -246,7 +246,7 @@
 import { EntityId } from &#x27;@shared/domain&#x27;;
 import { Loggable } from &#x27;@src/core/logger/interfaces&#x27;;
 import { ErrorLogMessage } from &#x27;@src/core/logger/types&#x27;;
-import { AuthorizationContext } from &#x27;../types&#x27;;
+import { AuthorizationContext } from &#x27;../type&#x27;;
 
 export class ForbiddenLoggableException extends ForbiddenException implements Loggable {
 	constructor(

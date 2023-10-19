@@ -106,12 +106,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseExportService: <a href="../injectables/CommonCartridgeExportService.html" target="_self">CommonCartridgeExportService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>)</code>
+<code>constructor(courseExportService: <a href="../injectables/CommonCartridgeExportService.html" target="_self">CommonCartridgeExportService</a>, authorizationService: <a href="../injectables/AuthorizationReferenceService.html" target="_self">AuthorizationReferenceService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -144,7 +144,7 @@
                                                         <td>authorizationService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
+                                                                        <code><a href="../injectables/AuthorizationReferenceService.html" target="_self" >AuthorizationReferenceService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -188,8 +188,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="14"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:14</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -267,7 +267,8 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId, Permission } from &#x27;@shared/domain&#x27;;
-import { Action, AuthorizableReferenceType, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
+import { AuthorizationContextBuilder } from &#x27;@src/modules/authorization&#x27;;
+import { AuthorizationReferenceService, AuthorizableReferenceType } from &#x27;@src/modules/authorization/domain&#x27;;
 import { CommonCartridgeVersion } from &#x27;../common-cartridge&#x27;;
 import { CommonCartridgeExportService } from &#x27;../service/common-cartridge-export.service&#x27;;
 
@@ -275,14 +276,18 @@ import { CommonCartridgeExportService } from &#x27;../service/common-cartridge-e
 export class CourseExportUc {
 	constructor(
 		private readonly courseExportService: CommonCartridgeExportService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationReferenceService
 	) {}
 
 	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise&lt;Buffer&gt; {
-		await this.authorizationService.checkPermissionByReferences(userId, AuthorizableReferenceType.Course, courseId, {
-			action: Action.read,
-			requiredPermissions: [Permission.COURSE_EDIT],
-		});
+		const context &#x3D; AuthorizationContextBuilder.read([Permission.COURSE_EDIT]);
+		await this.authorizationService.checkPermissionByReferences(
+			userId,
+			AuthorizableReferenceType.Course,
+			courseId,
+			context
+		);
+
 		return this.courseExportService.exportCourse(courseId, userId, version);
 	}
 }

@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/rules/submission.rule.ts</code>
+            <code>apps/server/src/modules/authorization/domain/rules/submission.rule.ts</code>
         </p>
 
 
@@ -135,7 +135,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/authorization/domain/rules/submission.rule.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -213,7 +213,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:27</a></div>
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/submission.rule.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -305,8 +305,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/submission.rule.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -386,8 +386,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="59"
-                                    class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:59</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/submission.rule.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -468,7 +468,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:17</a></div>
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/submission.rule.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -560,8 +560,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/submission.rule.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -641,8 +641,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/submission.rule.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -723,7 +723,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="11"
-                                    class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:11</a></div>
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/submission.rule.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -787,10 +787,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotImplementedException } from &#x27;@nestjs/common&#x27;;
 import { Submission, User } from &#x27;@shared/domain/entity&#x27;;
-import { AuthorizationHelper } from &#x27;@src/modules/authorization/authorization.helper&#x27;;
-import { Action, AuthorizationContext, Rule } from &#x27;@src/modules/authorization/types&#x27;;
+import { Action, AuthorizationContext, Rule } from &#x27;../type&#x27;;
+import { AuthorizationHelper } from &#x27;../service/authorization.helper&#x27;;
 import { TaskRule } from &#x27;./task.rule&#x27;;
 
 @Injectable()
@@ -820,6 +820,8 @@ export class SubmissionRule implements Rule {
 			hasAccessToSubmission &#x3D; this.hasWriteAccess(user, submission);
 		} else if (action &#x3D;&#x3D;&#x3D; Action.read) {
 			hasAccessToSubmission &#x3D; this.hasReadAccess(user, submission);
+		} else {
+			throw new NotImplementedException(&#x27;Action is not supported.&#x27;);
 		}
 
 		return hasAccessToSubmission;

@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/authorization/rule-manager.ts</code>
+            <code>apps/server/src/modules/authorization/domain/service/rule-manager.ts</code>
         </p>
 
 
@@ -131,7 +131,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/authorization/domain/service/rule-manager.ts:22</a></div>
                             </td>
                         </tr>
 
@@ -329,7 +329,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:61</a></div>
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/rule-manager.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -398,7 +398,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="54"
-                                    class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:54</a></div>
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/rule-manager.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -495,7 +495,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/authorization/domain/service/rule-manager.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -511,21 +511,21 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, InternalServerErrorException, NotImplementedException } from &#x27;@nestjs/common&#x27;;
 import { BaseDO, User } from &#x27;@shared/domain&#x27;;
 import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;; // fix import when it is avaible
+import type { AuthorizationContext, Rule } from &#x27;../type&#x27;;
 import {
 	BoardDoRule,
+	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
+	LegacySchoolRule,
 	LessonRule,
 	SchoolExternalToolRule,
-	LegacySchoolRule,
 	SubmissionRule,
 	TaskRule,
 	TeamRule,
+	UserLoginMigrationRule,
 	UserRule,
-} from &#x27;@shared/domain/rules&#x27;;
-import { ContextExternalToolRule } from &#x27;@shared/domain/rules/context-external-tool.rule&#x27;;
-import { UserLoginMigrationRule } from &#x27;@shared/domain/rules/user-login-migration.rule&#x27;;
-import { AuthorizationContext, Rule } from &#x27;./types&#x27;;
+} from &#x27;../rules&#x27;;
 
 @Injectable()
 export class RuleManager {

@@ -286,6 +286,10 @@ export class TestApiClient {
 	}
 
 	private getJwtFromResponse(response: Response): string {
+		if (response.error) {
+			const error &#x3D; JSON.stringify(response.error);
+			throw new Error(error);
+		}
 		if (!this.isAuthenticationResponse(response.body)) {
 			const body &#x3D; JSON.stringify(response.body);
 			throw new Error(&#x60;${testReqestConst.errorMessage} ${body}&#x60;);

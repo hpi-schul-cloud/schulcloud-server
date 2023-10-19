@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/rules/lesson.rule.ts</code>
+            <code>apps/server/src/modules/authorization/domain/rules/lesson.rule.ts</code>
         </p>
 
 
@@ -135,7 +135,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/authorization/domain/rules/lesson.rule.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -224,8 +224,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="75"
-                                    class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:75</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="79"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/lesson.rule.ts:79</a></div>
                         </td>
                     </tr>
 
@@ -317,8 +317,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="69"
-                                    class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:69</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/lesson.rule.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -411,7 +411,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:22</a></div>
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/lesson.rule.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -504,7 +504,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:16</a></div>
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/lesson.rule.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -584,8 +584,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="38"
-                                    class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:38</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/lesson.rule.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -665,8 +665,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:51</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/lesson.rule.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -746,8 +746,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="57"
-                                    class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:57</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/lesson.rule.ts:59</a></div>
                         </td>
                     </tr>
 
@@ -823,10 +823,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotImplementedException } from &#x27;@nestjs/common&#x27;;
 import { Course, CourseGroup, LessonEntity, User } from &#x27;@shared/domain/entity&#x27;;
-import { AuthorizationHelper } from &#x27;@src/modules/authorization/authorization.helper&#x27;;
-import { Action, AuthorizationContext, Rule } from &#x27;@src/modules/authorization/types&#x27;;
+import { Action, AuthorizationContext, Rule } from &#x27;../type&#x27;;
+import { AuthorizationHelper } from &#x27;../service/authorization.helper&#x27;;
 import { CourseGroupRule } from &#x27;./course-group.rule&#x27;;
 import { CourseRule } from &#x27;./course.rule&#x27;;
 
@@ -852,6 +852,8 @@ export class LessonRule implements Rule {
 			hasLessonPermission &#x3D; this.lessonReadPermission(user, entity);
 		} else if (action &#x3D;&#x3D;&#x3D; Action.write) {
 			hasLessonPermission &#x3D; this.lessonWritePermission(user, entity);
+		} else {
+			throw new NotImplementedException(&#x27;Action is not supported.&#x27;);
 		}
 
 		const hasUserPermission &#x3D; this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
@@ -880,12 +882,14 @@ export class LessonRule implements Rule {
 	}
 
 	private parentPermission(user: User, entity: LessonEntity, action: Action): boolean {
-		let result &#x3D; false;
+		let result: boolean;
 
 		if (entity.courseGroup) {
 			result &#x3D; this.courseGroupPermission(user, entity.courseGroup, action);
 		} else if (entity.course) {
 			result &#x3D; this.coursePermission(user, entity.course, action); // ask course for student &#x3D; read || teacher, sub-teacher &#x3D; write
+		} else {
+			result &#x3D; false;
 		}
 
 		return result;

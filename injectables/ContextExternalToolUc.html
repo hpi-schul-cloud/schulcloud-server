@@ -89,6 +89,7 @@
                                 <a href="#createContextExternalTool" >createContextExternalTool</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteContextExternalTool" >deleteContextExternalTool</a>
                             </li>
@@ -102,6 +103,7 @@
                                 <a href="#getContextExternalTool" >getContextExternalTool</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getContextExternalToolsForContext" >getContextExternalToolsForContext</a>
                             </li>
@@ -310,6 +312,7 @@
                 <td class="col-md-4">
                     <a name="deleteContextExternalTool"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>deleteContextExternalTool</b></span>
                         <a href="#deleteContextExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -408,8 +411,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="94"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:94</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="96"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:96</a></div>
                         </td>
                     </tr>
 
@@ -489,8 +492,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="85"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:85</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="87"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:87</a></div>
                         </td>
                     </tr>
 
@@ -554,6 +557,7 @@
                 <td class="col-md-4">
                     <a name="getContextExternalToolsForContext"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>getContextExternalToolsForContext</b></span>
                         <a href="#getContextExternalToolsForContext"><span class="icon ion-ios-link"></span></a>
@@ -570,8 +574,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="75"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:75</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -631,7 +635,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>unknown</code>
+                            <b>Returns : </b>    <code>Promise&lt;ContextExternalTool[]&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -803,18 +807,20 @@ export class ContextExternalToolUc {
 		return saved;
 	}
 
-	async deleteContextExternalTool(userId: EntityId, contextExternalToolId: EntityId): Promise&lt;void&gt; {
+	public async deleteContextExternalTool(userId: EntityId, contextExternalToolId: EntityId): Promise&lt;void&gt; {
 		const tool: ContextExternalTool &#x3D; await this.contextExternalToolService.findById(contextExternalToolId);
-		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
 
+		const context &#x3D; AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
 		await this.toolPermissionHelper.ensureContextPermissions(userId, tool, context);
 
-		const promise: Promise&lt;void&gt; &#x3D; this.contextExternalToolService.deleteContextExternalTool(tool);
-
-		return promise;
+		await this.contextExternalToolService.deleteContextExternalTool(tool);
 	}
 
-	async getContextExternalToolsForContext(userId: EntityId, contextType: ToolContextType, contextId: string) {
+	public async getContextExternalToolsForContext(
+		userId: EntityId,
+		contextType: ToolContextType,
+		contextId: string
+	): Promise&lt;ContextExternalTool[]&gt; {
 		const tools: ContextExternalTool[] &#x3D; await this.contextExternalToolService.findAllByContext(
 			new ContextRef({ id: contextId, type: contextType })
 		);

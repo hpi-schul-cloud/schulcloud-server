@@ -928,8 +928,8 @@ export class ExternalToolConfigurationUc {
 		const contextExternalTool: ContextExternalTool &#x3D; await this.contextExternalToolService.findById(
 			contextExternalToolId
 		);
-		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 
+		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, context);
 
 		const schoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolService.findById(

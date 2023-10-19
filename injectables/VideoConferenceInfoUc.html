@@ -287,8 +287,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-info.uc.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-info.uc.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -359,6 +359,12 @@ export class VideoConferenceInfoUc {
 	) {}
 
 	async getMeetingInfo(currentUserId: EntityId, scope: ScopeRef): Promise&lt;VideoConferenceInfo&gt; {
+		/* need to be replace with
+		const [authorizableUser, scopeRessource]: [User, TeamEntity | Course] &#x3D; await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.videoConferenceService.loadScopeRessources(scopeId, scope),
+		]);
+		*/
 		const user: UserDO &#x3D; await this.userService.findById(currentUserId);
 
 		await this.videoConferenceService.throwOnFeaturesDisabled(user.schoolId);
