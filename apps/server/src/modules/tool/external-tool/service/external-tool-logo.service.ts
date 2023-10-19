@@ -1,19 +1,19 @@
+import { HttpService } from '@nestjs/axios';
 import { HttpException, Inject } from '@nestjs/common';
+import { EntityId } from '@shared/domain';
+import { Logger } from '@src/core/logger';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
-import { Logger } from '@src/core/logger';
-import { EntityId } from '@shared/domain';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
+import { ExternalToolLogo } from '../domain/external-tool-logo';
 import {
 	ExternalToolLogoFetchedLoggable,
+	ExternalToolLogoFetchFailedLoggableException,
 	ExternalToolLogoNotFoundLoggableException,
 	ExternalToolLogoSizeExceededLoggableException,
 	ExternalToolLogoWrongFileTypeLoggableException,
-	ExternalToolLogoFetchFailedLoggableException,
 } from '../loggable';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
-import { ExternalToolLogo } from '../domain/external-tool-logo';
 import { ExternalToolService } from './external-tool.service';
 
 const contentTypeDetector: Record<string, string> = {
@@ -95,7 +95,7 @@ export class ExternalToolLogoService {
 	}
 
 	async getExternalToolBinaryLogo(toolId: EntityId): Promise<ExternalToolLogo> {
-		const tool: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
+		const tool: ExternalTool = await this.externalToolService.findById(toolId);
 
 		if (!tool.logo) {
 			throw new ExternalToolLogoNotFoundLoggableException(toolId);

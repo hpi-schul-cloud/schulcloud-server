@@ -2,9 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
+import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 import { ExternalToolService } from './external-tool.service';
-import { ExternalToolLogoService } from './external-tool-logo.service';
 
 @Injectable()
 export class ExternalToolValidationService {
@@ -32,7 +32,7 @@ export class ExternalToolValidationService {
 
 		await this.externalToolParameterValidationService.validateCommon(externalTool);
 
-		const loadedTool: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
+		const loadedTool: ExternalTool = await this.externalToolService.findById(toolId);
 		if (
 			ExternalTool.isOauth2Config(loadedTool.config) &&
 			externalTool.config &&
