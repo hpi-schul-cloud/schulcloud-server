@@ -8,6 +8,12 @@ export class ContextExternalToolContextParams {
 	contextId!: string;
 
 	@IsEnum(ToolContextType)
-	@ApiProperty({ nullable: false, required: true, example: ToolContextType.COURSE })
+	@ApiProperty({
+		enum: ToolContextType,
+		enumName: 'ToolContextType',
+		nullable: false,
+		required: true,
+		example: ToolContextType.COURSE,
+	})
 	contextType!: ToolContextType;
 }

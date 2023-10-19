@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ValidationError } from '@mikro-orm/core';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { contextExternalToolFactory, externalToolFactory } from '@shared/testing';
-import { ValidationError } from '@mikro-orm/core';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
@@ -62,7 +62,7 @@ describe('ContextExternalToolValidationService', () => {
 		describe('when no tool with the name exists in the context', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
-				externalToolService.findExternalToolById.mockResolvedValue(externalTool);
+				externalToolService.findById.mockResolvedValue(externalTool);
 
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Tool 1',
@@ -93,9 +93,7 @@ describe('ContextExternalToolValidationService', () => {
 
 				await service.validate(contextExternalTool);
 
-				expect(schoolExternalToolService.getSchoolExternalToolById).toBeCalledWith(
-					contextExternalTool.schoolToolRef.schoolToolId
-				);
+				expect(schoolExternalToolService.findById).toBeCalledWith(contextExternalTool.schoolToolRef.schoolToolId);
 			});
 
 			it('should call commonToolValidationService.checkCustomParameterEntries', async () => {
