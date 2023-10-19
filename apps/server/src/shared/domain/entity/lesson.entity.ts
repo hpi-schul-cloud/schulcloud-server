@@ -73,7 +73,7 @@ export type IComponentProperties = {
 	| { component: ComponentType.ETHERPAD; content: IComponentEtherpadProperties }
 	| { component: ComponentType.GEOGEBRA; content: IComponentGeogebraProperties }
 	| { component: ComponentType.INTERNAL; content: IComponentInternalProperties }
-	| { component: ComponentType.LERNSTORE; content: IComponentLernstoreProperties }
+	| { component: ComponentType.LERNSTORE; content?: IComponentLernstoreProperties }
 	| { component: ComponentType.NEXBOARD; content: IComponentNexboardProperties }
 );
 
