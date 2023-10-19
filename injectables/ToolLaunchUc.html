@@ -184,7 +184,7 @@
                 <td class="col-md-4">
                     <a name="getToolLaunchRequest"></a>
                     <span class="name">
-                        <span class="modifier">Async</span>
+                            <span class="modifier">Async</span>
                         <span ><b>getToolLaunchRequest</b></span>
                         <a href="#getToolLaunchRequest"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -192,71 +192,69 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
                     <code>getToolLaunchRequest(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="18"
-                            class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:18</a></div>
-                </td>
-            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:18</a></div>
+                        </td>
+                    </tr>
 
 
             <tr>
                 <td class="col-md-4">
 
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>userId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>contextExternalToolId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/ToolLaunchRequest.html" target="_self" >Promise&lt;ToolLaunchRequest&gt;</a></code>
+                                        </tr>
+                                        <tr>
+                                                <td>contextExternalToolId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
 
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/ToolLaunchRequest.html" target="_self" >Promise&lt;ToolLaunchRequest&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -270,11 +268,11 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId, Permission } from &#x27;@shared/domain&#x27;;
 import { AuthorizationContext, AuthorizationContextBuilder } from &#x27;@src/modules/authorization&#x27;;
+import { ToolPermissionHelper } from &#x27;../../common/uc/tool-permission-helper&#x27;;
+import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
+import { ContextExternalToolService } from &#x27;../../context-external-tool/service&#x27;;
 import { ToolLaunchService } from &#x27;../service&#x27;;
 import { ToolLaunchData, ToolLaunchRequest } from &#x27;../types&#x27;;
-import { ContextExternalToolService } from &#x27;../../context-external-tool/service&#x27;;
-import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
-import { ToolPermissionHelper } from &#x27;../../common/uc/tool-permission-helper&#x27;;
 
 @Injectable()
 export class ToolLaunchUc {
@@ -285,7 +283,7 @@ export class ToolLaunchUc {
 	) {}
 
 	async getToolLaunchRequest(userId: EntityId, contextExternalToolId: EntityId): Promise&lt;ToolLaunchRequest&gt; {
-		const contextExternalTool: ContextExternalTool &#x3D; await this.contextExternalToolService.getContextExternalToolById(
+		const contextExternalTool: ContextExternalTool &#x3D; await this.contextExternalToolService.findById(
 			contextExternalToolId
 		);
 		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);

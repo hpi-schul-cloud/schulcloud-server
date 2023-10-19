@@ -140,7 +140,7 @@ These principles apply to all layers of our software, from lines of code and met
 These modules define what code is available where, and ensure a clean dependency graph.</p>
 <p>All Code written should be part of exactly one module. Each module contains any services, typedefinitions, interfaces, repositories, mappers, and other files it needs internally to function.</p>
 <p>When something is needed in more than one module, it needs to be explicitly exported by the module, to be part of its public interface. It can then be imported by other modules. Services are exported published via the dependency injection mechanism provided by Nestjs.</p>
-<div><pre class="line-numbers"><code class="language-js">&#64;Module({
+<b>Example :</b><div><pre class="line-numbers"><code class="language-js">&#64;Module({
   providers: [InternalRepo, InternalService, PublicService],
   exports: [PublicService],
 })
@@ -155,7 +155,7 @@ export class OtherModule {}</code></pre></div><p>Notice that in the above exampl
 <p>Code that needs to be shared across many modules can either be put into their own seperate module, if there is a clearly defined seperate concern covered by it, or into the shared module if not.</p>
 <h3>Api Modules</h3>
 <p>The controllers and the corresponding usecases, along with the api tests for these routes, are seperated into api modules</p>
-<div><pre class="line-numbers"><code class="language-js">&#64;Module({
+<b>Example :</b><div><pre class="line-numbers"><code class="language-js">&#64;Module({
   imports: [ExampleModule]
   providers: [ExampleUc],
   controllers: [ExampleController],

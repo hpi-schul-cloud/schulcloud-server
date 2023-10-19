@@ -24,10 +24,6 @@
 <title>cluster_NewsModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 533,-268 533,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_NewsModule_exports</title>
-<polygon fill="none" stroke="black" points="237,-208 237,-260 321,-260 321,-208 237,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_NewsModule_providers</title>
 <polygon fill="none" stroke="black" points="296,-78 296,-130 525,-130 525,-78 296,-78"/>
@@ -35,6 +31,10 @@
 <g id="clust3" class="cluster">
 <title>cluster_NewsModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 288,-130 288,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_NewsModule_exports</title>
+<polygon fill="none" stroke="black" points="237,-208 237,-260 321,-260 321,-208 237,-208"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node1" class="node">

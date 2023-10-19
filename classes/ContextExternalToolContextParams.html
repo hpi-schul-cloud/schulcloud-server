@@ -178,13 +178,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsEnum(ToolContextType)<br />@ApiProperty({nullable: false, required: true, example: undefined})<br />
+                            @IsEnum(ToolContextType)<br />@ApiProperty({enum: ToolContextType, enumName: &#x27;ToolContextType&#x27;, nullable: false, required: true, example: undefined})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/dto/context-external-tool-context.params.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/dto/context-external-tool-context.params.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -213,7 +213,13 @@ export class ContextExternalToolContextParams {
 	contextId!: string;
 
 	@IsEnum(ToolContextType)
-	@ApiProperty({ nullable: false, required: true, example: ToolContextType.COURSE })
+	@ApiProperty({
+		enum: ToolContextType,
+		enumName: &#x27;ToolContextType&#x27;,
+		nullable: false,
+		required: true,
+		example: ToolContextType.COURSE,
+	})
 	contextType!: ToolContextType;
 }
 </code></pre>

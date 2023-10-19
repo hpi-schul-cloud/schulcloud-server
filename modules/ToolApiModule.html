@@ -413,6 +413,9 @@
                             <a href="../controllers/ToolContextController.html">ToolContextController</a>
                         </li>
                         <li class="list-group-item">
+                            <a href="../controllers/ToolReferenceController.html">ToolReferenceController</a>
+                        </li>
+                        <li class="list-group-item">
                             <a href="../controllers/ToolController.html">ToolController</a>
                         </li>
                     </ul>
@@ -459,11 +462,14 @@ import { LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { AuthorizationModule } from &#x27;@src/modules/authorization&#x27;;
 import { LegacySchoolModule } from &#x27;@src/modules/legacy-school&#x27;;
 import { UserModule } from &#x27;@src/modules/user&#x27;;
+import { CommonToolModule } from &#x27;./common&#x27;;
 import { ToolContextController } from &#x27;./context-external-tool/controller&#x27;;
-import { ContextExternalToolUc } from &#x27;./context-external-tool/uc&#x27;;
+import { ToolReferenceController } from &#x27;./context-external-tool/controller/tool-reference.controller&#x27;;
+import { ContextExternalToolUc, ToolReferenceUc } from &#x27;./context-external-tool/uc&#x27;;
 import { ToolConfigurationController, ToolController } from &#x27;./external-tool/controller&#x27;;
 import { ExternalToolRequestMapper, ExternalToolResponseMapper } from &#x27;./external-tool/mapper&#x27;;
-import { ExternalToolConfigurationUc, ExternalToolUc, ToolReferenceUc } from &#x27;./external-tool/uc&#x27;;
+import { ExternalToolConfigurationService } from &#x27;./external-tool/service&#x27;;
+import { ExternalToolConfigurationUc, ExternalToolUc } from &#x27;./external-tool/uc&#x27;;
 import { ToolSchoolController } from &#x27;./school-external-tool/controller&#x27;;
 import { SchoolExternalToolRequestMapper, SchoolExternalToolResponseMapper } from &#x27;./school-external-tool/mapper&#x27;;
 import { SchoolExternalToolUc } from &#x27;./school-external-tool/uc&#x27;;
@@ -471,8 +477,6 @@ import { ToolConfigModule } from &#x27;./tool-config.module&#x27;;
 import { ToolLaunchController } from &#x27;./tool-launch/controller/tool-launch.controller&#x27;;
 import { ToolLaunchUc } from &#x27;./tool-launch/uc&#x27;;
 import { ToolModule } from &#x27;./tool.module&#x27;;
-import { ExternalToolConfigurationService } from &#x27;./external-tool/service&#x27;;
-import { CommonToolModule } from &#x27;./common&#x27;;
 
 @Module({
 	imports: [
@@ -489,6 +493,7 @@ import { CommonToolModule } from &#x27;./common&#x27;;
 		ToolConfigurationController,
 		ToolSchoolController,
 		ToolContextController,
+		ToolReferenceController,
 		ToolController,
 	],
 	providers: [

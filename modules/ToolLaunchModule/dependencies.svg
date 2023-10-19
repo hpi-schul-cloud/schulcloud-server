@@ -24,13 +24,13 @@
 <title>cluster_ToolLaunchModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 2429,-268 2429,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_ToolLaunchModule_exports</title>
-<polygon fill="none" stroke="black" points="1309,-208 1309,-260 1455,-260 1455,-208 1309,-208"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_ToolLaunchModule_imports</title>
 <polygon fill="none" stroke="black" points="1184,-78 1184,-130 2421,-130 2421,-78 1184,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_ToolLaunchModule_exports</title>
+<polygon fill="none" stroke="black" points="1309,-208 1309,-260 1455,-260 1455,-208 1309,-208"/>
 </g>
 <g id="clust6" class="cluster">
 <title>cluster_ToolLaunchModule_providers</title>

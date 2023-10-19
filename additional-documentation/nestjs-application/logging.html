@@ -55,7 +55,7 @@
 <p>For logging use the Logger, exported by the logger module. It encapsulates a <a href="https://github.com/winstonjs/winston">Winston</a> logger. Its <a href="https://docs.nestjs.com/fundamentals/injection-scopes">injection scope</a> is transient, so you can set a context when you inject it.</p>
 <p>For better privacy protection and searchability of logs, the logger cannot log arbitrary strings but only so called <strong>loggables</strong>. If you want to log something you have to use or create a loggable that implements the <code>Loggable</code> interface.</p>
 <p>The message should be fixed in each loggable. If you want to log further data, put in the data field of the <code>LogMessage</code>, like in the example below.</p>
-<div><pre class="line-numbers"><code class="language-TypeScript">export class YourLoggable implements Loggable {
+<b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">export class YourLoggable implements Loggable {
     constructor(private readonly userId: EntityId) {}
 
     getLogMessage(): LogMessage {
@@ -65,7 +65,7 @@
         };
     }
 }
-</code></pre></div><div><pre class="line-numbers"><code class="language-TypeScript">import { Logger } from &#39;&#64;src/core/logger&#39;;
+</code></pre></div><b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">import { Logger } from &#39;&#64;src/core/logger&#39;;
 
 export class YourUc {
     constructor(private logger: Logger) {
@@ -76,7 +76,7 @@ export class YourUc {
         this.logger.log(new YourLoggable(userId: user.id));
     }
 }</code></pre></div><p>This produces a logging output like</p>
-<div><pre class="line-numbers"><code class="language-none">[NestWinston] Info - 2023-05-31 15:20:30.888   [YourUc] {  message: &#39;I am a log message.&#39;,  data: {   userId: &#39;0000d231816abba584714c9e&#39;  }}</code></pre></div><h2>Log levels and error logging</h2>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-none">[NestWinston] Info - 2023-05-31 15:20:30.888   [YourUc] {  message: &#39;I am a log message.&#39;,  data: {   userId: &#39;0000d231816abba584714c9e&#39;  }}</code></pre></div><h2>Log levels and error logging</h2>
 <p>The logger exposes the methods <code>log</code>, <code>warn</code>, <code>debug</code> and <code>verbose</code>. It does not expose an <code>error</code> method because we don&#39;t want errors to be logged manually. All errors are logged in the exception filter.</p>
 <h2>Legacy logger</h2>
 <p>While transitioning to the new logger for loggables, the old logger for strings is still available as <code>LegacyLogger</code>.</p>

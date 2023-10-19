@@ -55,7 +55,7 @@
 <p><img src="../../assets/exception-hierarchy.svg" alt="" class="img-responsive"></p>
 <p>We separate our business exceptions from technical exceptions. While for technical exceptions, we use the predefined HTTPExceptions from NestJS, business exceptions inherit from abstract BusinessException.</p>
 <p>By default, implementations of BusinessException must define</p>
-<div><pre class="line-numbers"><code class="language-JSON">    code: 500
+<b>Example :</b><div><pre class="line-numbers"><code class="language-JSON">    code: 500
     type: &quot;CUSTOM_ERROR_TYPE&quot;,
     title: &quot;Custom Error Type&quot;,
     message: &quot;Human readable details&quot;,
@@ -68,7 +68,7 @@
 <p>Pipes can be used as input validation. To get errors reported in the correct format, they can define a custom exception factory when they should produce api validation error or other exceptions, handled by clients.</p>
 <h2>Chaining errors with the <code>cause</code> property</h2>
 <p>If you catch an error and throw a new one, put the original error in the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause"><code>cause</code> property</a> of the new error. See example:</p>
-<div><pre class="line-numbers"><code class="language-typescript">try {
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">try {
     someMethod();
 } catch(error) {
     throw new ForbiddenException(&#39;some message&#39;, { cause: error });
@@ -76,7 +76,7 @@
 <p>If you want the error log to contain more information than just the exception message, use or create an exception which implements the <code>Loggable</code> interface. Don&#39;t put data directly in the exception message!</p>
 <p>A loggable exception should extend the respective <a href="https://docs.nestjs.com/exception-filters#built-in-http-exceptions">Built-in HTTP exception</a> from NestJS. For the name just put in &quot;Loggable&quot; before the word &quot;Exception&quot;, e.g. &quot;BadRequestLoggableException&quot;. Except for logging a loggable exception behaves like any other exception, specifically the error response is not affected by this.</p>
 <p>See example below.</p>
-<div><pre class="line-numbers"><code class="language-TypeScript">export class UnauthorizedLoggableException extends UnauthorizedException implements Loggable {
+<b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">export class UnauthorizedLoggableException extends UnauthorizedException implements Loggable {
     constructor(private readonly username: string, private readonly systemId?: string) {
         super();
     }
@@ -93,7 +93,7 @@
 
         return message;
     }
-}</code></pre></div><div><pre class="line-numbers"><code class="language-TypeScript">export class YourService {
+}</code></pre></div><b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">export class YourService {
     public sampleServiceMethod(username, systemId) {
         throw new UnauthorizedLoggableException(username, systemId);
     }

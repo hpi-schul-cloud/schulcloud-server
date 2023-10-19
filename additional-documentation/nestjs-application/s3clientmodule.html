@@ -56,7 +56,7 @@
 <h2>how to use</h2>
 <p>You need to create a unique connection token and set it as the connection name in S3 configuration. And you must use this token, when injecting the S3 client into your service. This is <strong>very important</strong>, because multiple modules could potentially use the S3 client with different configurations.</p>
 <p>The S3ClientModule.register method awaits an array of S3 configurations. Also you can create many connections to different S3 providers and buckets.</p>
-<div><pre class="line-numbers"><code class="language-ts">// your.config.ts
+<b>Example :</b><div><pre class="line-numbers"><code class="language-ts">// your.config.ts
 export const YOUR_S3_UNIQ_CONNECTION_TOKEN = &quot;YOUR_S3_UNIQ_CONNECTION_TOKEN&quot;;
 
 const s3Config: S3Config = {

@@ -54,7 +54,7 @@
 <h1>Domain Object Validation</h1>
 <p>If you need to validate a domain object, please write an independent class, so that the domain object itself, its repo and services can reuse it.</p>
 <p>Eric Evans suggests using the specification pattern.<br>A specification fulfills the following interface:</p>
-<div><pre class="line-numbers"><code class="language-typescript">public interface Specification&lt;T&gt; {
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">public interface Specification&lt;T&gt; {
     boolean isSatisfiedBy(T t);
 }</code></pre></div><p>A specification checks if a domain object fulfills the conditions of the specification.</p>
 <p>A specification can simply specify that a domain object is valid. E.g. a <code>Task</code> has an owner and a description.<br>A specification can specify more complex and specialized conditions. E.g. <code>Task</code> where every student assigned to the task&#39;s course has handed in a submission.  </p>

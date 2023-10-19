@@ -153,19 +153,19 @@ When calling other internal micro service for already authorized operations plea
 We set empty array as required for passing permissions to make it visible that no string base permission is needed.</p>
 </blockquote>
 <h3>Example 1 - Execute a Single Operation</h3>
-<div><pre class="line-numbers"><code class="language-javascript">   this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([])
+<b>Example :</b><div><pre class="line-numbers"><code class="language-javascript">   this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([])
    // or
    this.authorizationService.hasPermission(user, course, AuthorizationContextBuilder.write([])
    // next orchestration steps</code></pre></div><h3>Example 2 - Execute a Single Operation with Loading Resources</h3>
-<div><pre class="line-numbers"><code class="language-javascript">// If you don&#39;t have an entity but an entity type and id, you can check permission by reference
+<b>Example :</b><div><pre class="line-numbers"><code class="language-javascript">// If you don&#39;t have an entity but an entity type and id, you can check permission by reference
 await this.authorizationService.checkPermissionByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
 // or
 await this.authorizationService.hasPermissionByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
 // next orchestration steps</code></pre></div><h3>Example 3 - Set Permission(s) of User as Required</h3>
-<div><pre class="line-numbers"><code class="language-javascript">// Multiple permissions can be added. For a successful authorization, the user need all of them.
+<b>Example :</b><div><pre class="line-numbers"><code class="language-javascript">// Multiple permissions can be added. For a successful authorization, the user need all of them.
 await this.authorizationService.hasPermission(userId, course, AuthorizationContextBuilder.read([Permissions.COURSE_VIEW]));
 // next orchestration steps</code></pre></div><h3>Example 4 - Define Context for Multiple Places</h3>
-<div><pre class="line-numbers"><code class="language-javascript">/** const **/
+<b>Example :</b><div><pre class="line-numbers"><code class="language-javascript">/** const **/
 export const FileStorageAuthorizationContext = {
    create: AuthorizationContextBuilder.write([Permission.FILESTORAGE_CREATE]),
    read: AuthorizationContextBuilder.read([Permission.FILESTORAGE_VIEW]),
@@ -177,7 +177,7 @@ export const FileStorageAuthorizationContext = {
 this.authorizationService.hasPermission(userId, course, PermissionContexts.create);
 // do other orchestration steps</code></pre></div><h2>How to use in our use cases</h2>
 <h3>Example - Create a school by <strong>superhero</strong></h3>
-<div><pre class="line-numbers"><code class="language-ts">async createSchoolBySuperhero(userId: EntityId, params: { name: string }) {
+<b>Example :</b><div><pre class="line-numbers"><code class="language-ts">async createSchoolBySuperhero(userId: EntityId, params: { name: string }) {
 
     const user = this.authorizationService.getUserWithPermissions(userId);
     this.authorizationService.hasAllPermissions(user, [Permission.SCHOOL_CREATE]);
@@ -189,7 +189,7 @@ this.authorizationService.hasPermission(userId, course, PermissionContexts.creat
     return true;
 }
 </code></pre></div><h3>Example - Create user by <strong>admin</strong></h3>
-<div><pre class="line-numbers"><code class="language-ts">
+<b>Example :</b><div><pre class="line-numbers"><code class="language-ts">
 async createUserByAdmin(userId: EntityId, params: { email: string, firstName: string, lastName: string, schoolId: EntityId }) {
 
     const user = this.authorizationService.getUserWithPermissions(userId);
@@ -203,7 +203,7 @@ async createUserByAdmin(userId: EntityId, params: { email: string, firstName: st
     return true;
 }
 </code></pre></div><h3>Example - Edit course by <strong>admin</strong></h3>
-<div><pre class="line-numbers"><code class="language-ts">// admin
+<b>Example :</b><div><pre class="line-numbers"><code class="language-ts">// admin
 async editCourseByAdmin(userId: EntityId, params: { courseId: EntityId, description: string }) {
 
     const course = this.courseService.getCourse(params.courseId);
@@ -220,7 +220,7 @@ async editCourseByAdmin(userId: EntityId, params: { courseId: EntityId, descript
     return true;
 }
 </code></pre></div><h3>Example - Create a Course</h3>
-<div><pre class="line-numbers"><code class="language-ts">// User can create a course in scope a school, you need to check if he can it by school
+<b>Example :</b><div><pre class="line-numbers"><code class="language-ts">// User can create a course in scope a school, you need to check if he can it by school
 async createCourse(userId: EntityId, params: { schoolId: EntityId }) {
    const user = this.authorizationService.getUserWithPermissions(userId);
    const school = this.schoolService.getSchool(params.schoolId);
@@ -239,7 +239,7 @@ async createCourse(userId: EntityId, params: { schoolId: EntityId }) {
     return course;
 }
 </code></pre></div><h3>Example - Create a Lesson</h3>
-<div><pre class="line-numbers"><code class="language-ts">// User can create a lesson to course, so you have a courseId
+<b>Example :</b><div><pre class="line-numbers"><code class="language-ts">// User can create a lesson to course, so you have a courseId
 async createLesson(userId: EntityId, params: { courseId: EntityId }) {
     const course = this.courseService.getCourse(params.courseId);
     const user = this.authorizationService.getUserWithPermissions(userId);
@@ -261,7 +261,7 @@ async createLesson(userId: EntityId, params: { courseId: EntityId }) {
 <blockquote>
 <p>Attention: The target model must be populated</p>
 </blockquote>
-<div><pre class="line-numbers"><code class="language-ts">&#64;Injectable()
+<b>Example :</b><div><pre class="line-numbers"><code class="language-ts">&#64;Injectable()
 export class NewsRule extends BasePermission&lt;News&gt; {
    constructor(private readonly authorizationHelper: AuthorizationHelper, private readonly schoolRule: SchoolRule, private readonly courseRule: CourseRule) {
          super();

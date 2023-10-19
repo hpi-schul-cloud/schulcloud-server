@@ -312,7 +312,7 @@
                 <td class="col-md-4">
                     <a name="canGuestJoin"></a>
                     <span class="name">
-                        <span class="modifier">Protected</span>
+                            <span class="modifier">Protected</span>
                         <span ><b>canGuestJoin</b></span>
                         <a href="#canGuestJoin"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -320,23 +320,23 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
                     <code>canGuestJoin(isGuest: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, state: <a href="../undefineds/VideoConferenceState.html" target="_self">VideoConferenceState</a>, waitingRoomEnabled: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
                 </td>
             </tr>
 
 
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="266"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:266</a></div>
-                </td>
-            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="266"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:266</a></div>
+                        </td>
+                    </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-description"><p>Checks whether a guest can join a conference.
+                        <div class="io-description"><p>Checks whether a guest can join a conference.
 They only can join a conference:</p>
 <ul>
     <li>when the user has the role as a guest</li>
@@ -345,77 +345,75 @@ They only can join a conference:</p>
 </ul>
 </div>
 
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                    <td>Description</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>isGuest</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
-                                    </td>
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>isGuest</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                    <td>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>state</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceState" target="_self" >VideoConferenceState</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                    <td>
-                                        <p>, information about the video conference</p>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>state</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#VideoConferenceState" target="_self" >VideoConferenceState</a></code>
+                                            </td>
 
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>waitingRoomEnabled</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                    <td>
-                                        <p>, is a waiting room opened up</p>
+                                            <td>
+                                                    <p>, information about the video conference</p>
 
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>waitingRoomEnabled</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
 
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>, is a waiting room opened up</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -426,8 +424,8 @@ They only can join a conference:</p>
                 <td class="col-md-4">
                     <a name="checkPermission"></a>
                     <span class="name">
-                        <span class="modifier">Protected</span>
-                        <span class="modifier">Async</span>
+                            <span class="modifier">Protected</span>
+                            <span class="modifier">Async</span>
                         <span ><b>checkPermission</b></span>
                         <a href="#checkPermission"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -435,85 +433,83 @@ They only can join a conference:</p>
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
                     <code>checkPermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, conferenceScope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>, entityId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="383"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:383</a></div>
-                </td>
-            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="383"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:383</a></div>
+                        </td>
+                    </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-description"><p>Checks if the user has the required permissions and returns their associated role in BBB.</p>
+                        <div class="io-description"><p>Checks if the user has the required permissions and returns their associated role in BBB.</p>
 </div>
 
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>userId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>conferenceScope</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                </tr>
-                                <tr>
-                                    <td>entityId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
+                                        </tr>
+                                        <tr>
+                                                <td>conferenceScope</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Role.html" target="_self" >Promise&lt;BBBRole&gt;</a></code>
+                                        </tr>
+                                        <tr>
+                                                <td>entityId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
 
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/Role.html" target="_self" >Promise&lt;BBBRole&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -524,7 +520,7 @@ They only can join a conference:</p>
                 <td class="col-md-4">
                     <a name="create"></a>
                     <span class="name">
-                        <span class="modifier">Async</span>
+                            <span class="modifier">Async</span>
                         <span ><b>create</b></span>
                         <a href="#create"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -532,108 +528,106 @@ They only can join a conference:</p>
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
                     <code>create(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, conferenceScope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>, refId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, options: <a href="../interfaces/VideoConferenceOptions.html" target="_self">VideoConferenceOptions</a>)</code>
                 </td>
             </tr>
 
 
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="84"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:84</a></div>
-                </td>
-            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:84</a></div>
+                        </td>
+                    </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-description"><p>Creates a new video conference.</p>
+                        <div class="io-description"><p>Creates a new video conference.</p>
 </div>
 
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                    <td>Description</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>currentUser</td>
-                                    <td>
-                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
-                                    </td>
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                    <td>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>conferenceScope</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                    <td>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>refId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>conferenceScope</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                    <td>
-                                        <p>eventId or courseId, depending on scope.</p>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>options</td>
-                                    <td>
-                                                <code><a href="../interfaces/VideoConferenceOptions.html" target="_self" >VideoConferenceOptions</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                    <td>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/BBBCreateResponse.html" target="_self" >Promise&lt;VideoConference&lt;BBBCreateResponse&gt;&gt;</a></code>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>refId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
 
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>eventId or courseId, depending on scope.</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="../interfaces/VideoConferenceOptions.html" target="_self" >VideoConferenceOptions</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/BBBCreateResponse.html" target="_self" >Promise&lt;VideoConference&lt;BBBCreateResponse&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -644,7 +638,7 @@ They only can join a conference:</p>
                 <td class="col-md-4">
                     <a name="end"></a>
                     <span class="name">
-                        <span class="modifier">Async</span>
+                            <span class="modifier">Async</span>
                         <span ><b>end</b></span>
                         <a href="#end"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -652,94 +646,92 @@ They only can join a conference:</p>
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
                     <code>end(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, conferenceScope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>, refId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="280"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:280</a></div>
-                </td>
-            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="280"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:280</a></div>
+                        </td>
+                    </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-description"><p>Ends a video conference.</p>
+                        <div class="io-description"><p>Ends a video conference.</p>
 </div>
 
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                    <td>Description</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>currentUser</td>
-                                    <td>
-                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
-                                    </td>
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                    <td>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>conferenceScope</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                    <td>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>refId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>conferenceScope</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                    <td>
-                                        <p>eventId or courseId, depending on scope.</p>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>refId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
 
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/BBBBaseResponse.html" target="_self" >Promise&lt;VideoConference&lt;BBBBaseResponse&gt;&gt;</a></code>
+                                            <td>
+                                                    No
+                                            </td>
 
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
+
+                                            <td>
+                                                    <p>eventId or courseId, depending on scope.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/BBBBaseResponse.html" target="_self" >Promise&lt;VideoConference&lt;BBBBaseResponse&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -750,7 +742,7 @@ They only can join a conference:</p>
                 <td class="col-md-4">
                     <a name="getMeetingInfo"></a>
                     <span class="name">
-                        <span class="modifier">Async</span>
+                            <span class="modifier">Async</span>
                         <span ><b>getMeetingInfo</b></span>
                         <a href="#getMeetingInfo"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -758,94 +750,92 @@ They only can join a conference:</p>
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
                     <code>getMeetingInfo(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, conferenceScope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>, refId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="203"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:203</a></div>
-                </td>
-            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="203"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:203</a></div>
+                        </td>
+                    </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-description"><p>Retrieves information about a video conference.</p>
+                        <div class="io-description"><p>Retrieves information about a video conference.</p>
 </div>
 
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                    <td>Description</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>currentUser</td>
-                                    <td>
-                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
-                                    </td>
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                    <td>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>conferenceScope</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                    <td>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>refId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>conferenceScope</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                    <td>
-                                        <p>eventId or courseId, depending on scope.</p>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>refId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
 
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/VideoConference.html" target="_self" >Promise&lt;VideoConferenceInfo&gt;</a></code>
+                                            <td>
+                                                    No
+                                            </td>
 
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
+
+                                            <td>
+                                                    <p>eventId or courseId, depending on scope.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/VideoConference.html" target="_self" >Promise&lt;VideoConferenceInfo&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -856,8 +846,8 @@ They only can join a conference:</p>
                 <td class="col-md-4">
                     <a name="getScopeInfo"></a>
                     <span class="name">
-                        <span class="modifier">Protected</span>
-                        <span class="modifier">Async</span>
+                            <span class="modifier">Protected</span>
+                            <span class="modifier">Async</span>
                         <span ><b>getScopeInfo</b></span>
                         <a href="#getScopeInfo"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -865,94 +855,92 @@ They only can join a conference:</p>
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
                     <code>getScopeInfo(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, conferenceScope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>, refId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="346"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:346</a></div>
-                </td>
-            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="346"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:346</a></div>
+                        </td>
+                    </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-description"><p>Retrieves information about the permission scope based on the scope of the video conference.</p>
+                        <div class="io-description"><p>Retrieves information about the permission scope based on the scope of the video conference.</p>
 </div>
 
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                    <td>Description</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>userId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                    <td>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>conferenceScope</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                    <td>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>refId</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>conferenceScope</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                    <td>
-                                        <p>eventId or courseId, depending on scope.</p>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>refId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
 
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/IScopeInfo.html" target="_self" >Promise&lt;IScopeInfo&gt;</a></code>
+                                            <td>
+                                                    No
+                                            </td>
 
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
+
+                                            <td>
+                                                    <p>eventId or courseId, depending on scope.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/IScopeInfo.html" target="_self" >Promise&lt;IScopeInfo&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -963,7 +951,7 @@ They only can join a conference:</p>
                 <td class="col-md-4">
                     <a name="hasPermissions"></a>
                     <span class="name">
-                        <span class="modifier">Private</span>
+                            <span class="modifier">Private</span>
                         <span ><b>hasPermissions</b></span>
                         <a href="#hasPermissions"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -971,107 +959,105 @@ They only can join a conference:</p>
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
                     <code>hasPermissions(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, entityName: <a href="../undefineds/AuthorizableReferenceType.html" target="_self">AuthorizableReferenceType</a>, entityId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, permissions: <a href="../undefineds/Permission.html" target="_self">Permission[]</a>, action: <a href="../undefineds/Action.html" target="_self">Action</a>)</code>
                 </td>
             </tr>
 
 
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="405"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:405</a></div>
-                </td>
-            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="405"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:405</a></div>
+                        </td>
+                    </tr>
 
 
             <tr>
                 <td class="col-md-4">
 
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>userId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>entityName</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/enumerations.html#AuthorizableReferenceType" target="_self" >AuthorizableReferenceType</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                </tr>
-                                <tr>
-                                    <td>entityId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
+                                        </tr>
+                                        <tr>
+                                                <td>entityName</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#AuthorizableReferenceType" target="_self" >AuthorizableReferenceType</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>permissions</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/enumerations.html#Permission" target="_self" >Permission[]</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                </tr>
-                                <tr>
-                                    <td>action</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/enumerations.html#Action" target="_self" >Action</a></code>
-                                    </td>
+                                        </tr>
+                                        <tr>
+                                                <td>entityId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#Permission" target="_self" >Map&lt;Permission, Promise&lt;boolean&gt;&gt;</a></code>
+                                        </tr>
+                                        <tr>
+                                                <td>permissions</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#Permission" target="_self" >Permission[]</a></code>
+                                            </td>
 
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>action</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#Action" target="_self" >Action</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#Permission" target="_self" >Map&lt;Permission, Promise&lt;boolean&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -1082,8 +1068,8 @@ They only can join a conference:</p>
                 <td class="col-md-4">
                     <a name="isExpert"></a>
                     <span class="name">
-                        <span class="modifier">Protected</span>
-                        <span class="modifier">Async</span>
+                            <span class="modifier">Protected</span>
+                            <span class="modifier">Async</span>
                         <span ><b>isExpert</b></span>
                         <a href="#isExpert"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -1091,83 +1077,81 @@ They only can join a conference:</p>
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
                     <code>isExpert(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, conferenceScope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>, scopeId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="310"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:310</a></div>
-                </td>
-            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="310"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:310</a></div>
+                        </td>
+                    </tr>
 
 
             <tr>
                 <td class="col-md-4">
 
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>currentUser</td>
-                                    <td>
-                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
-                                    </td>
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>conferenceScope</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                </tr>
-                                <tr>
-                                    <td>scopeId</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
+                                        </tr>
+                                        <tr>
+                                                <td>conferenceScope</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+                                        </tr>
+                                        <tr>
+                                                <td>scopeId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
 
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -1178,7 +1162,7 @@ They only can join a conference:</p>
                 <td class="col-md-4">
                     <a name="join"></a>
                     <span class="name">
-                        <span class="modifier">Async</span>
+                            <span class="modifier">Async</span>
                         <span ><b>join</b></span>
                         <a href="#join"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -1186,94 +1170,92 @@ They only can join a conference:</p>
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
                     <code>join(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, conferenceScope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>, refId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="148"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:148</a></div>
-                </td>
-            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="148"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:148</a></div>
+                        </td>
+                    </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-description"><p>Generates a join link for a video conference.</p>
+                        <div class="io-description"><p>Generates a join link for a video conference.</p>
 </div>
 
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                    <td>Description</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>currentUser</td>
-                                    <td>
-                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
-                                    </td>
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                    <td>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>conferenceScope</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                    <td>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>refId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>conferenceScope</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                    <td>
-                                        <p>eventId or courseId, depending on scope.</p>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>refId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
 
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/VideoConference.html" target="_self" >Promise&lt;VideoConferenceJoin&gt;</a></code>
+                                            <td>
+                                                    No
+                                            </td>
 
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
+
+                                            <td>
+                                                    <p>eventId or courseId, depending on scope.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/VideoConference.html" target="_self" >Promise&lt;VideoConferenceJoin&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -1284,8 +1266,8 @@ They only can join a conference:</p>
                 <td class="col-md-4">
                     <a name="sanitizeString"></a>
                     <span class="name">
-                        <span class="modifier">Private</span>
-                        <span class="modifier">Static</span>
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Static</span>
                         <span ><b>sanitizeString</b></span>
                         <a href="#sanitizeString"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -1293,59 +1275,57 @@ They only can join a conference:</p>
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
                     <code>sanitizeString(text: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="442"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:442</a></div>
-                </td>
-            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="442"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:442</a></div>
+                        </td>
+                    </tr>
 
 
             <tr>
                 <td class="col-md-4">
 
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>text</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>text</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -1356,8 +1336,8 @@ They only can join a conference:</p>
                 <td class="col-md-4">
                     <a name="throwOnFeaturesDisabled"></a>
                     <span class="name">
-                        <span class="modifier">Protected</span>
-                        <span class="modifier">Async</span>
+                            <span class="modifier">Protected</span>
+                            <span class="modifier">Async</span>
                         <span ><b>throwOnFeaturesDisabled</b></span>
                         <a href="#throwOnFeaturesDisabled"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -1365,61 +1345,59 @@ They only can join a conference:</p>
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
                     <code>throwOnFeaturesDisabled(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="427"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:427</a></div>
-                </td>
-            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="427"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:427</a></div>
+                        </td>
+                    </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-description"><p>Throws an error if the feature is disabled for the school or for the entire instance.</p>
+                        <div class="io-description"><p>Throws an error if the feature is disabled for the school or for the entire instance.</p>
 </div>
 
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>schoolId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>schoolId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>

@@ -63,14 +63,14 @@ here <a href="http://localhost:8080">http://localhost:8080</a>. If you don&#39;t
 in the background. Execute these commands in the repository root or the data seeding will fail, and you can not log into
 Keycloak with any user.</p>
 <p><strong>Bash:</strong></p>
-<div><pre class="line-numbers"><code class="language-bash">docker run \
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">docker run \
   --name erwinidm \
   -p 8080:8080 \
   -p 8443:8443 \
   -v &quot;$PWD/backup/idm/keycloak:/tmp/realms&quot; \
   ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest \
   &quot;&amp;&amp; /opt/keycloak/bin/kc.sh import --dir /tmp/realms&quot;</code></pre></div><p><strong>PowerShell:</strong></p>
-<div><pre class="line-numbers"><code class="language-pwsh">docker run `
+<b>Example :</b><div><pre class="line-numbers"><code class="language-pwsh">docker run `
   --name erwinidm `
   -p 8080:8080 `
   -p 8443:8443 `
@@ -84,7 +84,7 @@ Keycloak with any user.</p>
 <li>re-trigger <code>npm run setup:db</code> and <code>npm run setup:idm</code> to reset and apply seed data.</li>
 <li>start the &#39;oidc-server-mock&#39; as follows:</li>
 </ul>
-<div><pre class="line-numbers"><code class="language-bash">docker run \
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">docker run \
   --name oidc-server-mock \
   -p 4011:80 \
   -e ASPNETCORE_ENVIRONMENT=&#39;Development&#39; \
@@ -93,7 +93,7 @@ Keycloak with any user.</p>
   -e CLIENTS_CONFIGURATION_PATH=&#39;/tmp/config/clients-config.json&#39; \
   -v &quot;$PWD/backup/idm/oidcmock:/tmp/config&quot; \
   ghcr.io/soluto/oidc-server-mock:0.6.0</code></pre></div><p><strong>PowerShell:</strong></p>
-<div><pre class="line-numbers"><code class="language-pwsh">docker run `
+<b>Example :</b><div><pre class="line-numbers"><code class="language-pwsh">docker run `
   --name oidc-server-mock `
   -p 4011:80 `
   -e ASPNETCORE_ENVIRONMENT=&#39;Development&#39; `
@@ -103,23 +103,23 @@ Keycloak with any user.</p>
   -v &quot;$PWD/backup/idm/oidcmock:/tmp/config&quot; `
   ghcr.io/soluto/oidc-server-mock:0.6.0</code></pre></div><h3>Setup OpenID Connect Identity Provider mock for ErWIn-IDM brokering with LDAP provisioning</h3>
 <p>The broker feature can be setup in conjunction with LDAP provisioning for local testing purpose. Therefore, run the sc-openldap-single container:</p>
-<div><pre class="line-numbers"><code class="language-bash">docker run \
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">docker run \
   --name sc-openldap-single \
   -p 389:389 \
-  ghcr.io/hpi-schul-cloud/sc-openldap-single:latest</code></pre></div><div><pre class="line-numbers"><code class="language-pwsh">docker run `
+  ghcr.io/hpi-schul-cloud/sc-openldap-single:latest</code></pre></div><b>Example :</b><div><pre class="line-numbers"><code class="language-pwsh">docker run `
   --name sc-openldap-single `
   -p 389:389 `
   ghcr.io/hpi-schul-cloud/sc-openldap-single:latest</code></pre></div><p>The LDAP provisioning is trigger as follows:</p>
-<div><pre class="line-numbers"><code class="language-bash">curl -X POST \
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">curl -X POST \
   &#39;http://localhost:3030/api/v1/sync?target=ldap&#39; \
   --header &#39;Accept: */*&#39; \
-  --header &#39;X-API-KEY: example&#39;</code></pre></div><div><pre class="line-numbers"><code class="language-pwsh">Invoke-RestMethod `
+  --header &#39;X-API-KEY: example&#39;</code></pre></div><b>Example :</b><div><pre class="line-numbers"><code class="language-pwsh">Invoke-RestMethod `
  -Uri &#39;http://localhost:3030/api/v1/sync?target=ldap&#39; `
  -Method Post `
  -Headers &#64;{ &quot;Accept&quot; = &quot;*/*&quot;; &quot;X-API-KEY&quot; = &quot;example&quot; }</code></pre></div><p>See &#39;/tmp/config/users-config.json&#39; for the users details.</p>
 <h2>Test local environment</h2>
 <p>You may test your local setup executing &#39;keycloak-identity-management.integration.spec.ts&#39;:</p>
-<div><pre class="line-numbers"><code class="language-pwsh">npx jest apps/server/src/shared/infra/identity-management/keycloak/service/keycloak-identity-management.service.integration.spec.ts</code></pre></div><h2>Seeding Data</h2>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-pwsh">npx jest apps/server/src/shared/infra/identity-management/keycloak/service/keycloak-identity-management.service.integration.spec.ts</code></pre></div><h2>Seeding Data</h2>
 <p>During container startup Keycloak will always create the Master realm with the admin user. After startup, we use the
 Keycloak-CLI to import the dBildungscloud realm, which contains some seed users, groups and permissions for development
 and testing. In the table below you can see the username and password combinations for the Keycloak login.</p>

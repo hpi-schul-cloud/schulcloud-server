@@ -73,7 +73,7 @@ Thus, your describe structure and testcase names should be designed to enable a 
 <li>the expected outcome</li>
 </ul>
 <p>To facilitate this, your tests should be wrapped in at least two describe levels.</p>
-<div><pre class="line-numbers"><code class="language-TypeScript">// Name of the unit under test
+<b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">// Name of the unit under test
 describe(&quot;Course Service&quot;, (() =&gt; {
     // method that is called
     describe(&#39;createCourse&#39;, () =&gt; {
@@ -107,7 +107,7 @@ The test coverage report already enforces scenarios that test every possible if/
 </ul>
 <p>We use different levels of describe blocks to structure the tests in a way, that the tested scenarios could easily be recognized. The outer describe would be the function call itself. Every scenario is added as another describe inside the outer describe. </p>
 <p>All of the data and mock preparation should happen in a setup function. Every describe scenario only contains one setup function and is called in every test. No further data or mock preparation should be added to the test. Often there will be only one test in every describe scenario, this is perfectly fine with our desired structure.</p>
-<div><pre class="line-numbers"><code class="language-TypeScript">describe(&#39;[method]&#39;, () =&gt; {
+<b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">describe(&#39;[method]&#39;, () =&gt; {
     describe(&#39;when [senario description that is prepared in setup]&#39;, () =&gt; {
         const setup = () =&gt; {
             // prepare the data and mocks for this scenario
@@ -134,7 +134,7 @@ The test coverage report already enforces scenarios that test every possible if/
 });</code></pre></div><h2>Testing Samples</h2>
 <h3>Handling of function return values</h3>
 <p>When assigning a value to an expect, separate the function call from the expectation to simplify debugging. This later helps when you not know about the return value type or if it&#39;s an promise or not. This is good style not only for tests.</p>
-<div><pre class="line-numbers"><code class="language-TypeScript">    // doSomethingCrazy : retValue
+<b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">    // doSomethingCrazy : retValue
     it(&#39;bad sample&#39;, () =&gt; {
         expect(doSomethingCrazy(x,y,z)).to...
     })
@@ -149,7 +149,7 @@ The test coverage report already enforces scenarios that test every possible if/
 <li>Use await instead of (long) promise chains</li>
 <li>never manually set a timeout</li>
 </ul>
-<div><pre class="line-numbers"><code class="language-TypeScript">    // doSomethingCrazy : Promise&lt;retValue&gt;
+<b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">    // doSomethingCrazy : Promise&lt;retValue&gt;
     it(&#39;bad async sample&#39;, async function (done) =&gt; {
         this.timeout(10000);
         return doSomethingCrazy(x,y,z).then(result=&gt;{
@@ -169,7 +169,7 @@ The test coverage report already enforces scenarios that test every possible if/
 </blockquote>
 <h3>Expecting errors in tests</h3>
 <p>When expecting an error, you might take values from an error, test for the error type thrown and must care of promises.</p>
-<div><pre class="line-numbers"><code class="language-TypeScript">    // doSomethingCrazy : Promise&lt;retValue&gt;
+<b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">    // doSomethingCrazy : Promise&lt;retValue&gt;
     it(&#39;bad async sample expecting an error&#39;, () =&gt; {
         expect(doSomethingCrazy(x,y,z)).to...
     })
@@ -194,7 +194,7 @@ hooks that can help to manage class instances, including mocking and overriding.
 <p>The method <code>Test.createTestingModule()</code> takes module metadata as argument it returns <code>TestingModule</code> instance.
 The <code>TestingModule</code> instance provides method <code>compile()</code> which bootstraps a module with its dependencies.
 Every provider can be overwritten with custom provider implementation for testing purposes.</p>
-<div><pre class="line-numbers"><code class="language-Typescript">  beforeAll(async () =&gt; {
+<b>Example :</b><div><pre class="line-numbers"><code class="language-Typescript">  beforeAll(async () =&gt; {
       const moduleRef = await Test.createTestingModule({
           controllers: [SampleController],
           providers: [SampleService],
@@ -205,7 +205,7 @@ Every provider can be overwritten with custom provider implementation for testin
     });</code></pre></div><h2>Mocking</h2>
 <p>Using the utilities provided by NestJs, we can easily inject mocks into our testing module. The mocks themselves, we create using a <a href="https://www.npmjs.com/package/@golevelup/ts-jest">library</a> by @golevelup.</p>
 <p>You can create a mock using <code>createMock&lt;Class&gt;()</code>. As result you will recieved a <code>DeepMocked&lt;Class&gt;</code></p>
-<div><pre class="line-numbers"><code class="language-Typescript">let fut: FeatureUnderTest;
+<b>Example :</b><div><pre class="line-numbers"><code class="language-Typescript">let fut: FeatureUnderTest;
 let mockService: DeepMocked&lt;MockService&gt;;
 
 beforeAll(async () =&gt; {
@@ -232,7 +232,7 @@ afterEach(() =&gt; {
 })</code></pre></div><p>The resulting mock has all the functions of the original <code>Class</code>, replaced with jest spies. This gives you code completion and type safety, combined with all the features of spies.</p>
 <p><code>createTestingModule</code> should only be calld in <code>beforeAll</code> and not in <code>beforeEach</code> to keep the setup and teardown for each test as simple as possible. Therefore <code>module.close</code> should only be called in <code>afterAll</code> and not in <code>afterEach</code>.</p>
 <p>To generally reset specific mock implementation after each test <code>jest.resetAllMocks</code> can be used in afterEach. <code>jest.restoreAllMocks</code> should not be used, because in some cases it will not properly restore mocks created by ts-jest.</p>
-<div><pre class="line-numbers"><code class="language-Typescript">describe(&#39;somefunction&#39;, () =&gt; {
+<b>Example :</b><div><pre class="line-numbers"><code class="language-Typescript">describe(&#39;somefunction&#39;, () =&gt; {
     describe(&#39;when service returns user&#39;, () =&gt; {
         const setup = () =&gt; {
             const resultUser = userFactory.buildWithId();
@@ -286,7 +286,7 @@ Therefore, the <code>*.repo.integration.spec.js</code> should be used.</p>
 1.2 provide the repo which should be tested</li>
 <li>Get repo, orm and entityManager from testing module</li>
 </ol>
-<div><pre class="line-numbers"><code class="language-TypeScript">    import { MongoMemoryDatabaseModule } from &#39;&#64;src/modules/database&#39;;
+<b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">    import { MongoMemoryDatabaseModule } from &#39;&#64;src/modules/database&#39;;
 
     let repo: NewsRepo;
     let em: EntityManager;
@@ -306,7 +306,7 @@ Therefore, the <code>*.repo.integration.spec.js</code> should be used.</p>
       em = testModule.get(EntityManager);
     })</code></pre></div><h4>Post conditions (afterAll), Teardown</h4>
 <p>After all tests are executed close the app and orm to release the resources by closing the test module.</p>
-<div><pre class="line-numbers"><code class="language-TypeScript">    afterAll(async () =&gt; {
+<b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">    afterAll(async () =&gt; {
         await testModule.close();
     });</code></pre></div><blockquote>
 <p>When Jest reports open handles that not have been closed, ensure all Promises are awaited and all application parts started are correctly closed.</p>

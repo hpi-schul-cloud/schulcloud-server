@@ -72,7 +72,7 @@
 <p>Based on <a href="https://nodejs.org/en/">Node.js</a> and <a href="https://feathersjs.com/">Feathers</a></p>
 <h2>Application seperation</h2>
 <p>In order to seperate NestJS and Feathers each application runs in its own express instance. These express instances are then mounted on seperate paths under a common root express instance.</p>
-<div><pre class="line-numbers"><code class="language-none">Root-Express-App 
+<b>Example :</b><div><pre class="line-numbers"><code class="language-none">Root-Express-App 
 ├─ api/v1/       --&gt; Feathers-App
 ├─ api/v3/       --&gt; NestJS-App</code></pre></div><p>This ensures that each application can run its own middleware stack for authentication, error handling, logging etc.</p>
 <p>The mount paths don&#39;t have any impact on the routes inside of the applications, e.g. the path <code>/api/v3/news</code> will translate to the inner path <code>/news</code>. That means that in terms of route matching each child application doesn&#39;t have to take any measures regarding the path prefix. It simply works as it was mounted to <code>/</code>.</p>

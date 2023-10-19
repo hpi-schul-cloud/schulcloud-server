@@ -68,7 +68,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/external-tool/mapper/tool-reference.mapper.ts</code>
+            <code>apps/server/src/modules/tool/context-external-tool/mapper/tool-reference.mapper.ts</code>
         </p>
 
 
@@ -118,7 +118,7 @@
                 <td class="col-md-4">
                     <a name="mapToToolReference"></a>
                     <span class="name">
-                        <span class="modifier">Static</span>
+                            <span class="modifier">Static</span>
                         <span ><b>mapToToolReference</b></span>
                         <a href="#mapToToolReference"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -126,83 +126,81 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
                     <code>mapToToolReference(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>, status: <a href="../undefineds/ToolConfigurationStatus.html" target="_self">ToolConfigurationStatus</a>)</code>
                 </td>
             </tr>
 
 
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="6"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/tool-reference.mapper.ts:6</a></div>
-                </td>
-            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="6"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/mapper/tool-reference.mapper.ts:6</a></div>
+                        </td>
+                    </tr>
 
 
             <tr>
                 <td class="col-md-4">
 
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>externalTool</td>
-                                    <td>
-                                                <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool</a></code>
-                                    </td>
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>externalTool</td>
+                                            <td>
+                                                            <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>contextExternalTool</td>
-                                    <td>
-                                                <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                </tr>
-                                <tr>
-                                    <td>status</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/enumerations.html#ToolConfigurationStatus" target="_self" >ToolConfigurationStatus</a></code>
-                                    </td>
+                                        </tr>
+                                        <tr>
+                                                <td>contextExternalTool</td>
+                                            <td>
+                                                            <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
+                                            </td>
 
-                                    <td>
-                                        No
-                                    </td>
+                                            <td>
+                                                    No
+                                            </td>
 
 
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/ToolReference.html" target="_self" >ToolReference</a></code>
+                                        </tr>
+                                        <tr>
+                                                <td>status</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#ToolConfigurationStatus" target="_self" >ToolConfigurationStatus</a></code>
+                                            </td>
 
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/ToolReference.html" target="_self" >ToolReference</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -217,9 +215,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ExternalTool, ToolReference } from &#x27;../domain&#x27;;
-import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
-import { ToolConfigurationStatus } from &#x27;../../common/enum&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ToolConfigurationStatus } from &#x27;../../common/enum&#x27;;
+import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
+import { ContextExternalTool, ToolReference } from &#x27;../domain&#x27;;
 
 export class ToolReferenceMapper {
 	static mapToToolReference(

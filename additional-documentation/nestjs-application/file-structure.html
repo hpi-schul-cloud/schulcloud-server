@@ -55,7 +55,7 @@
 <h2>Conventions</h2>
 <h3>File structure</h3>
 <p>The server app located in <code>/apps/server</code> is structured like. Beside each ts-file, a test file _.spec.ts has to be added for unit tests (hidden for simplification). Use index.ts files that combine a folders content and export all files from within of the folder using <code>export _ from &#39;./file&#39;</code> where this makes sense. When there are naming conflicts, use more specific names and correct concepts. Think about not to create sub-folders, when only one concept exist.</p>
-<div><pre class="line-numbers"><code class="language-js">src/ // sourcecode &amp; unit tests
+<b>Example :</b><div><pre class="line-numbers"><code class="language-js">src/ // sourcecode &amp; unit tests
     - config/  // for global definitions
     - modules/ // for your NestJS modules
         - [module] // where [module] could be like user, homework, school
@@ -139,7 +139,7 @@ test/ // contains globalSetup and globalTeardown for MongoMemoryServer for tests
 <p>Components are defined as NestJS <a href="https://docs.nestjs.com/modules">Modules</a>. </p>
 <h3>Communication between components</h3>
 <p>To access other modules services, it can be injected anywhere. The usage is allowed only, when the module which owns that service has exported it in the modules definition.</p>
-<div><pre class="line-numbers"><code class="language-TypeScript">// modules/feathers/feathers-service.provider.ts
+<b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">// modules/feathers/feathers-service.provider.ts
 // modules/feathers/feathers.module.ts
 &#64;Module({
     providers: [FeathersServiceProvider],
@@ -147,7 +147,7 @@ test/ // contains globalSetup and globalTeardown for MongoMemoryServer for tests
 })
 export class FeathersModule {}
 </code></pre></div><p>The feathers module is used to handle how the application is using legacy services, when access them, inject the <code>FeathersServiceProvider</code> but in your module definition, import the <code>FeathersModule</code>.</p>
-<div><pre class="line-numbers"><code class="language-TypeScript">// your module, here modules/authorization/authorization.module.ts
+<b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">// your module, here modules/authorization/authorization.module.ts
 &#64;Module({
     imports: [FeathersModule], // here import the services module
     // providers: [AuthorizationService, FeathersAuthProvider],
@@ -178,7 +178,7 @@ export class FeathersAuthProvider {
 <h3>Access NestJS injectable from Feathers</h3>
 <p>To access a NestJS service from a legacy Feathers service you need to make the NestJS service known to the Feathers service-collection in <code>main.ts</code>. <br>
 This possibility should not be used for new features in Feathers, but it can help if you want to refactor a Feathers service to NestJs although other Feathers services depend on it.</p>
-<div><pre class="line-numbers"><code class="language-TypeScript">    // main.ts
+<b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">    // main.ts
     async function bootstrap() {
         // (...)
         feathersExpress.services[&#39;nest-rocket-chat&#39;] = nestApp.get(RocketChatService);
@@ -196,7 +196,7 @@ This possibility should not be used for new features in Feathers, but it can hel
 <h3>Controller</h3>
 <p>A modules api layer is defined within of <a href="https://docs.nestjs.com/controllers">controllers</a>.</p>
 <p>The main responsibilities of a controller is to define the REST API interface as openAPI specification and map DTO&#39;s to match the logic layers interfaces.</p>
-<div><pre class="line-numbers"><code class="language-TypeScript">    &#64;Post()
+<b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">    &#64;Post()
     async create(&#64;CurrentUser() currentUser: ICurrentUser, &#64;Body() params: CreateNewsParams): Promise&lt;NewsResponse&gt; {
         const news = await this.newsUc.create(
             currentUser.userId,
