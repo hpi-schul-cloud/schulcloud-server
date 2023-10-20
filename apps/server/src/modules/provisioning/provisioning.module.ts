@@ -1,12 +1,12 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { AccountModule } from '@src/modules/account/account.module';
-import { RoleModule } from '@src/modules/role';
-import { LegacySchoolModule } from '@src/modules/legacy-school';
-import { SystemModule } from '@src/modules/system/system.module';
-import { UserModule } from '@src/modules/user';
-import { GroupModule } from '@src/modules/group';
+import { AccountModule } from '@modules/account/account.module';
+import { RoleModule } from '@modules/role';
+import { LegacySchoolModule } from '@modules/legacy-school';
+import { SystemModule } from '@modules/system/system.module';
+import { UserModule } from '@modules/user';
+import { GroupModule } from '@modules/group';
 import { ProvisioningService } from './service/provisioning.service';
 import { IservProvisioningStrategy, OidcMockProvisioningStrategy, SanisProvisioningStrategy } from './strategy';
 import { OidcProvisioningService } from './strategy/oidc/service/oidc-provisioning.service';

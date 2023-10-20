@@ -10,7 +10,7 @@ import {
 	AuthorizationContextBuilder,
 	AuthorizationService,
 	ForbiddenLoggableException,
-} from '@src/modules/authorization';
+} from '@modules/authorization';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../domain';

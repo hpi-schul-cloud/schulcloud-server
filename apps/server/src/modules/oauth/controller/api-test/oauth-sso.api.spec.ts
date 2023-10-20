@@ -16,10 +16,10 @@ import {
 } from '@shared/testing';
 import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
 import { userLoginMigrationFactory } from '@shared/testing/factory/user-login-migration.factory';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/response';
-import { ServerTestModule } from '@src/modules/server';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { SanisResponse, SanisRole } from '@modules/provisioning/strategy/sanis/response';
+import { ServerTestModule } from '@modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { UUID } from 'bson';

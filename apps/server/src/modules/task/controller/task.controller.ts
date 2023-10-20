@@ -2,10 +2,10 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller/';
-import { Authenticate, CurrentUser, ICurrentUser } from '@src/modules/authentication';
-import { CopyApiResponse, CopyMapper } from '@src/modules/copy-helper';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 // invalid import can produce dependency cycles
-import { serverConfig } from '@src/modules/server/server.config';
+import { serverConfig } from '@modules/server/server.config';
 import { TaskMapper } from '../mapper';
 import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskUC } from '../uc/task.uc';

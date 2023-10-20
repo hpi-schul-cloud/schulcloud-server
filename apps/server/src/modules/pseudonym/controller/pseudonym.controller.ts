@@ -7,7 +7,7 @@ import {
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Pseudonym } from '@shared/domain';
-import { Authenticate, CurrentUser, ICurrentUser } from '@src/modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { PseudonymMapper } from '../mapper/pseudonym.mapper';
 import { PseudonymUc } from '../uc';
 import { PseudonymResponse } from './dto';

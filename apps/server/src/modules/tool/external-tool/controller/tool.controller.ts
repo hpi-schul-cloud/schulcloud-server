@@ -14,7 +14,7 @@ import { ValidationError } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { IFindOptions, Page } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { Authenticate, CurrentUser, ICurrentUser } from '@src/modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Response } from 'express';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalTool } from '../domain';

@@ -2,13 +2,13 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
-import { CopyStatus } from '@src/modules/copy-helper';
-import { CourseCopyService } from '@src/modules/learnroom';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LessonCopyService } from '@src/modules/lesson/service';
-import { TaskCopyService } from '@src/modules/task/service';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { AuthorizationReferenceService } from '@modules/authorization/domain';
+import { CopyStatus } from '@modules/copy-helper';
+import { CourseCopyService } from '@modules/learnroom';
+import { CourseService } from '@modules/learnroom/service';
+import { LessonCopyService } from '@modules/lesson/service';
+import { TaskCopyService } from '@modules/task/service';
 import {
 	ShareTokenContext,
 	ShareTokenContextType,

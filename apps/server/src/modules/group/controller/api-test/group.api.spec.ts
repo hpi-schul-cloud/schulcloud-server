@@ -12,9 +12,9 @@ import {
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { ClassEntity } from '@src/modules/class/entity';
-import { classEntityFactory } from '@src/modules/class/entity/testing/factory/class.entity.factory';
-import { ServerTestModule } from '@src/modules/server';
+import { ClassEntity } from '@modules/class/entity';
+import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
+import { ServerTestModule } from '@modules/server';
 import { ObjectId } from 'bson';
 import { GroupEntity, GroupEntityTypes } from '../../entity';
 import { ClassRootType } from '../../uc/dto/class-root-type';

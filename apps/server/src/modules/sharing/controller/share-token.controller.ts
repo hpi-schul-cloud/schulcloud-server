@@ -11,10 +11,10 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError, RequestTimeout } from '@shared/common';
-import { Authenticate, CurrentUser, ICurrentUser } from '@src/modules/authentication';
-import { CopyApiResponse, CopyMapper } from '@src/modules/copy-helper';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 // invalid import can produce dependency cycles
-import { serverConfig } from '@src/modules/server/server.config';
+import { serverConfig } from '@modules/server/server.config';
 import { ShareTokenInfoResponseMapper, ShareTokenResponseMapper } from '../mapper';
 import { ShareTokenUC } from '../uc';
 import {

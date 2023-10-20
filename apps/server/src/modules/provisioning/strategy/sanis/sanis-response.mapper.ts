@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { GroupTypes } from '@src/modules/group';
+import { GroupTypes } from '@modules/group';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
 import { GroupRoleUnknownLoggable } from '../../loggable';
 import {
