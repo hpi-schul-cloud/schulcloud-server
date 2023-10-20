@@ -98,6 +98,10 @@
                                     <span class="modifier">Static</span>
                                 <a href="#mapToClassInfoToResponse" >mapToClassInfoToResponse</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#mapToGroupResponse" >mapToGroupResponse</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -139,8 +143,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="6"
-                                    class="link-to-prism">apps/server/src/modules/group/controller/mapper/group-response.mapper.ts:6</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">apps/server/src/modules/group/controller/mapper/group-response.mapper.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -233,8 +237,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/group/controller/mapper/group-response.mapper.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/modules/group/controller/mapper/group-response.mapper.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -280,6 +284,75 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapToGroupResponse"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                        <span ><b>mapToGroupResponse</b></span>
+                        <a href="#mapToGroupResponse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToGroupResponse(resolvedGroup: <a href="../classes/ResolvedGroupDto.html" target="_self">ResolvedGroupDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/modules/group/controller/mapper/group-response.mapper.ts:51</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>resolvedGroup</td>
+                                            <td>
+                                                            <code><a href="../classes/ResolvedGroupDto.html" target="_self" >ResolvedGroupDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/GroupResponse.html" target="_self" >GroupResponse</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -291,8 +364,20 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Page } from &#x27;@shared/domain&#x27;;
-import { ClassInfoDto } from &#x27;../../uc/dto&#x27;;
-import { ClassInfoResponse, ClassInfoSearchListResponse } from &#x27;../dto&#x27;;
+import { GroupTypes } from &#x27;../../domain&#x27;;
+import { ClassInfoDto, ResolvedGroupDto } from &#x27;../../uc/dto&#x27;;
+import {
+	ClassInfoResponse,
+	ClassInfoSearchListResponse,
+	ExternalSourceResponse,
+	GroupResponse,
+	GroupTypeResponse,
+	GroupUserResponse,
+} from &#x27;../dto&#x27;;
+
+const typeMapping: Record&lt;GroupTypes, GroupTypeResponse&gt; &#x3D; {
+	[GroupTypes.CLASS]: GroupTypeResponse.CLASS,
+};
 
 export class GroupResponseMapper {
 	static mapToClassInfosToListResponse(
@@ -323,6 +408,32 @@ export class GroupResponseMapper {
 			teachers: classInfo.teachers,
 			schoolYear: classInfo.schoolYear,
 			isUpgradable: classInfo.isUpgradable,
+		});
+
+		return mapped;
+	}
+
+	static mapToGroupResponse(resolvedGroup: ResolvedGroupDto): GroupResponse {
+		const mapped: GroupResponse &#x3D; new GroupResponse({
+			id: resolvedGroup.id,
+			name: resolvedGroup.name,
+			type: typeMapping[resolvedGroup.type],
+			externalSource: resolvedGroup.externalSource
+				? new ExternalSourceResponse({
+						externalId: resolvedGroup.externalSource.externalId,
+						systemId: resolvedGroup.externalSource.systemId,
+				  })
+				: undefined,
+			users: resolvedGroup.users.map(
+				(user) &#x3D;&gt;
+					new GroupUserResponse({
+						id: user.user.id as string,
+						role: user.role.name,
+						firstName: user.user.firstName,
+						lastName: user.user.lastName,
+					})
+			),
+			organizationId: resolvedGroup.organizationId,
 		});
 
 		return mapped;

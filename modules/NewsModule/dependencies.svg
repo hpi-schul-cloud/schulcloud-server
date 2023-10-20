@@ -24,83 +24,83 @@
 <title>cluster_NewsModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 533,-268 533,-70 8,-70"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_NewsModule_imports</title>
-<polygon fill="none" stroke="black" points="253,-78 253,-130 525,-130 525,-78 253,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_NewsModule_exports</title>
-<polygon fill="none" stroke="black" points="205,-208 205,-260 289,-260 289,-208 205,-208"/>
+<polygon fill="none" stroke="black" points="237,-208 237,-260 321,-260 321,-208 237,-208"/>
 </g>
 <g id="clust6" class="cluster">
 <title>cluster_NewsModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 245,-130 245,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="296,-78 296,-130 525,-130 525,-78 296,-78"/>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_NewsModule_imports</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 288,-130 288,-78 16,-78"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node1" class="node">
 <title>AuthorizationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="516.81,-122 513.81,-126 492.81,-126 489.81,-122 379.19,-122 379.19,-86 516.81,-86 516.81,-122"/>
-<text text-anchor="middle" x="448" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="279.81,-122 276.81,-126 255.81,-126 252.81,-122 142.19,-122 142.19,-86 279.81,-86 279.81,-122"/>
+<text text-anchor="middle" x="211" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
 </g>
 <!-- NewsModule -->
 <g id="node3" class="node">
 <title>NewsModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="292.92,-187 289.92,-191 268.92,-191 265.92,-187 201.08,-187 201.08,-151 292.92,-151 292.92,-187"/>
-<text text-anchor="middle" x="247" y="-164.8" font-family="Times,serif" font-size="14.00">NewsModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="324.92,-187 321.92,-191 300.92,-191 297.92,-187 233.08,-187 233.08,-151 324.92,-151 324.92,-187"/>
+<text text-anchor="middle" x="279" y="-164.8" font-family="Times,serif" font-size="14.00">NewsModule</text>
 </g>
 <!-- AuthorizationModule&#45;&gt;NewsModule -->
 <g id="edge1" class="edge">
 <title>AuthorizationModule&#45;&gt;NewsModule</title>
-<path fill="none" stroke="black" d="M448,-122.11C448,-141.34 448,-169 448,-169 448,-169 302.86,-169 302.86,-169"/>
-<polygon fill="black" stroke="black" points="302.86,-165.5 292.86,-169 302.86,-172.5 302.86,-165.5"/>
+<path fill="none" stroke="black" d="M256.47,-122.11C256.47,-122.11 256.47,-140.99 256.47,-140.99"/>
+<polygon fill="black" stroke="black" points="252.97,-140.99 256.47,-150.99 259.97,-140.99 252.97,-140.99"/>
 </g>
 <!-- LoggerModule -->
 <g id="node2" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="360.98,-122 357.98,-126 336.98,-126 333.98,-122 261.02,-122 261.02,-86 360.98,-86 360.98,-122"/>
-<text text-anchor="middle" x="311" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="123.98,-122 120.98,-126 99.98,-126 96.98,-122 24.02,-122 24.02,-86 123.98,-86 123.98,-122"/>
+<text text-anchor="middle" x="74" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;NewsModule -->
 <g id="edge2" class="edge">
 <title>LoggerModule&#45;&gt;NewsModule</title>
-<path fill="none" stroke="black" d="M276.86,-122.11C276.86,-122.11 276.86,-140.99 276.86,-140.99"/>
-<polygon fill="black" stroke="black" points="273.36,-140.99 276.86,-150.99 280.36,-140.99 273.36,-140.99"/>
+<path fill="none" stroke="black" d="M74,-122.11C74,-141.34 74,-169 74,-169 74,-169 223.25,-169 223.25,-169"/>
+<polygon fill="black" stroke="black" points="223.25,-172.5 233.25,-169 223.25,-165.5 223.25,-172.5"/>
 </g>
 <!-- NewsUc  -->
 <g id="node4" class="node">
 <title>NewsUc </title>
-<polygon fill="#fb8072" stroke="black" points="280.69,-252 213.31,-252 213.31,-216 280.69,-216 280.69,-252"/>
-<text text-anchor="middle" x="247" y="-229.8" font-family="Times,serif" font-size="14.00">NewsUc </text>
+<polygon fill="#fb8072" stroke="black" points="312.69,-252 245.31,-252 245.31,-216 312.69,-216 312.69,-252"/>
+<text text-anchor="middle" x="279" y="-229.8" font-family="Times,serif" font-size="14.00">NewsUc </text>
 </g>
 <!-- NewsModule&#45;&gt;NewsUc  -->
 <g id="edge3" class="edge">
 <title>NewsModule&#45;&gt;NewsUc </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M247,-187.11C247,-187.11 247,-205.99 247,-205.99"/>
-<polygon fill="black" stroke="black" points="243.5,-205.99 247,-215.99 250.5,-205.99 243.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M279,-187.11C279,-187.11 279,-205.99 279,-205.99"/>
+<polygon fill="black" stroke="black" points="275.5,-205.99 279,-215.99 282.5,-205.99 275.5,-205.99"/>
 </g>
 <!-- NewsRepo -->
 <g id="node5" class="node">
 <title>NewsRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="184" cy="-104" rx="53.31" ry="18"/>
-<text text-anchor="middle" x="184" y="-99.8" font-family="Times,serif" font-size="14.00">NewsRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="464" cy="-104" rx="53.31" ry="18"/>
+<text text-anchor="middle" x="464" y="-99.8" font-family="Times,serif" font-size="14.00">NewsRepo</text>
 </g>
 <!-- NewsRepo&#45;&gt;NewsModule -->
 <g id="edge4" class="edge">
 <title>NewsRepo&#45;&gt;NewsModule</title>
-<path fill="none" stroke="black" d="M219.35,-117.78C219.35,-117.78 219.35,-140.55 219.35,-140.55"/>
-<polygon fill="black" stroke="black" points="215.85,-140.55 219.35,-150.55 222.85,-140.55 215.85,-140.55"/>
+<path fill="none" stroke="black" d="M464,-122.11C464,-141.34 464,-169 464,-169 464,-169 334.73,-169 334.73,-169"/>
+<polygon fill="black" stroke="black" points="334.73,-165.5 324.73,-169 334.73,-172.5 334.73,-165.5"/>
 </g>
 <!-- NewsUc -->
 <g id="node6" class="node">
 <title>NewsUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="68" cy="-104" rx="44.06" ry="18"/>
-<text text-anchor="middle" x="68" y="-99.8" font-family="Times,serif" font-size="14.00">NewsUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="348" cy="-104" rx="44.06" ry="18"/>
+<text text-anchor="middle" x="348" y="-99.8" font-family="Times,serif" font-size="14.00">NewsUc</text>
 </g>
 <!-- NewsUc&#45;&gt;NewsModule -->
 <g id="edge5" class="edge">
 <title>NewsUc&#45;&gt;NewsModule</title>
-<path fill="none" stroke="black" d="M68,-122.11C68,-141.34 68,-169 68,-169 68,-169 190.9,-169 190.9,-169"/>
-<polygon fill="black" stroke="black" points="190.9,-172.5 200.9,-169 190.9,-165.5 190.9,-172.5"/>
+<path fill="none" stroke="black" d="M314.22,-115.92C314.22,-115.92 314.22,-140.77 314.22,-140.77"/>
+<polygon fill="black" stroke="black" points="310.72,-140.77 314.22,-150.77 317.72,-140.77 310.72,-140.77"/>
 </g>
 </g>
 </svg>

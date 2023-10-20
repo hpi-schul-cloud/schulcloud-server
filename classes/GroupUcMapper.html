@@ -97,6 +97,10 @@
                                     <span class="modifier">Static</span>
                                 <a href="#mapGroupToClassInfoDto" >mapGroupToClassInfoDto</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#mapToResolvedGroupDto" >mapToResolvedGroupDto</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -302,6 +306,87 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapToResolvedGroupDto"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                        <span ><b>mapToResolvedGroupDto</b></span>
+                        <a href="#mapToResolvedGroupDto"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToResolvedGroupDto(group: <a href="../interfaces/Group.html" target="_self">Group</a>, resolvedGroupUsers: <a href="../entitys/User.html" target="_self">ResolvedGroupUser[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/mapper/group-uc.mapper.ts:44</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>group</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Group.html" target="_self" >Group</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>resolvedGroupUsers</td>
+                                            <td>
+                                                            <code><a href="../entitys/User.html" target="_self" >ResolvedGroupUser[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/ResolvedGroupDto.html" target="_self" >ResolvedGroupDto</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -316,7 +401,7 @@
 import { Class } from &#x27;@modules/class/domain&#x27;;
 import { SystemDto } from &#x27;@modules/system&#x27;;
 import { Group } from &#x27;../../domain&#x27;;
-import { ClassInfoDto, ResolvedGroupUser } from &#x27;../dto&#x27;;
+import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from &#x27;../dto&#x27;;
 import { ClassRootType } from &#x27;../dto/class-root-type&#x27;;
 
 export class GroupUcMapper {
@@ -350,6 +435,18 @@ export class GroupUcMapper {
 			teachers: teachers.map((user: UserDO) &#x3D;&gt; user.lastName),
 			schoolYear: schoolYear?.name,
 			isUpgradable,
+		});
+
+		return mapped;
+	}
+
+	public static mapToResolvedGroupDto(group: Group, resolvedGroupUsers: ResolvedGroupUser[]): ResolvedGroupDto {
+		const mapped: ResolvedGroupDto &#x3D; new ResolvedGroupDto({
+			id: group.id,
+			name: group.name,
+			type: group.type,
+			externalSource: group.externalSource,
+			users: resolvedGroupUsers,
 		});
 
 		return mapped;

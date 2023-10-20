@@ -487,6 +487,10 @@ export class Group extends DomainObject&lt;GroupProps&gt; {
 		return this.props.organizationId;
 	}
 
+	get type(): GroupTypes {
+		return this.props.type;
+	}
+
 	removeUser(user: UserDO): void {
 		this.props.users &#x3D; this.props.users.filter((groupUser: GroupUser): boolean &#x3D;&gt; groupUser.userId !&#x3D;&#x3D; user.id);
 	}

@@ -151,6 +151,9 @@
                                 <li>
                                     <a href="#organizationId" >organizationId</a>
                                 </li>
+                                <li>
+                                    <a href="#type" >type</a>
+                                </li>
                             </ul>
                         </td>
                     </tr>
@@ -225,8 +228,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="49"
-                                    class="link-to-prism">apps/server/src/modules/group/domain/group.ts:49</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">apps/server/src/modules/group/domain/group.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -292,8 +295,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/group/domain/group.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/modules/group/domain/group.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -329,8 +332,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="41"
-                                    class="link-to-prism">apps/server/src/modules/group/domain/group.ts:41</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/group/domain/group.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -519,6 +522,28 @@
 
             </tbody>
         </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="type"></a>
+                        <span class="name"><b>type</b><a href="#type"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>type()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">apps/server/src/modules/group/domain/group.ts:41</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
 </section>
     </div>
 
@@ -562,6 +587,10 @@ export class Group extends DomainObject&lt;GroupProps&gt; {
 
 	get organizationId(): string | undefined {
 		return this.props.organizationId;
+	}
+
+	get type(): GroupTypes {
+		return this.props.type;
 	}
 
 	removeUser(user: UserDO): void {

@@ -730,6 +730,9 @@
                             <a href="#toolLaunchDataTypeToToolConfigTypeMapping" title="apps/server/src/modules/tool/tool-launch/mapper/tool-launch.mapper.ts" ><b>toolLaunchDataTypeToToolConfigTypeMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../tool-launch.mapper.ts)</a>
                         </li>
                         <li>
+                            <a href="#typeMapping" title="apps/server/src/modules/group/controller/mapper/group-response.mapper.ts" ><b>typeMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../group-response.mapper.ts)</a>
+                        </li>
+                        <li>
                             <a href="#typeMapping" title="apps/server/src/modules/tool/common/mapper/context-type.mapper.ts" ><b>typeMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../context-type.mapper.ts)</a>
                         </li>
                         <li>
@@ -1089,6 +1092,7 @@
 	Permission.COURSE_CREATE,
 	Permission.COURSE_EDIT,
 	Permission.COURSE_REMOVE,
+	Permission.GROUP_LIST,
 	Permission.NEWS_CREATE,
 	Permission.NEWS_EDIT,
 	Permission.STUDENT_SKIP_REGISTRATION,
@@ -1231,6 +1235,7 @@
 	Permission.CLASS_VIEW,
 	Permission.COURSE_VIEW,
 	Permission.LERNSTORE_VIEW,
+	Permission.GROUP_VIEW,
 ] as Permission[]</code>
                     </td>
                 </tr>
@@ -9211,6 +9216,37 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>Symbol(&#x27;ToolFeatures&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/group/controller/mapper/group-response.mapper.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="typeMapping"></a>
+                    <span class="name">
+                        <span ><b>typeMapping</b></span>
+                        <a href="#typeMapping"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Group.html" target="_self" >Record&lt;GroupTypes, GroupTypeResponse&gt;</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+	[GroupTypes.CLASS]: GroupTypeResponse.CLASS,
+}</code>
                     </td>
                 </tr>
 
