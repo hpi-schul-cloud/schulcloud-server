@@ -72,4 +72,12 @@ describe('LegacyLogger', () => {
 			expect(winstonLogger.debug).toBeCalled();
 		});
 	});
+
+	describe('WHEN verbose logging', () => {
+		it('should call winstonLogger.verbose', () => {
+			const error = new Error('custom error');
+			service.verbose(error.message, error.stack);
+			expect(winstonLogger.verbose).toBeCalled();
+		});
+	});
 });

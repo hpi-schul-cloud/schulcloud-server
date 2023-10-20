@@ -1,16 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	ComponentType,
-	Course,
-	IComponentProperties,
-	IComponentTextProperties,
-	LessonEntity,
-	Task,
-} from '@shared/domain';
+import { ComponentType, Course, IComponentProperties, IComponentTextProperties, Lesson, Task } from '@shared/domain';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import { CommonCartridgeExportService } from '@src/modules/learnroom/service/common-cartridge-export.service';
-import { CourseService } from '@src/modules/learnroom/service';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { LessonService } from '@src/modules/lesson/service';
 import { TaskService } from '@src/modules/task/service/task.service';
 import AdmZip from 'adm-zip';
@@ -24,7 +17,7 @@ describe('CommonCartridgeExportService', () => {
 	let taskServiceMock: DeepMocked<TaskService>;
 
 	let course: Course;
-	let lessons: LessonEntity[];
+	let lessons: Lesson[];
 	let tasks: Task[];
 
 	beforeAll(async () => {
@@ -77,7 +70,7 @@ describe('CommonCartridgeExportService', () => {
 				{} as IComponentProperties,
 			],
 		});
-		tasks = taskFactory.buildListWithId(5);
+		tasks = taskFactory.buildList(5);
 	});
 
 	afterAll(async () => {
@@ -139,14 +132,13 @@ describe('CommonCartridgeExportService', () => {
 				expect(manifest).toContain(course.teachers[1].lastName);
 				expect(manifest).toContain(course.createdAt.getFullYear().toString());
 			});
-
-			it('should add tasks as assignments', () => {
-				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
-				tasks.forEach((task) => {
-					expect(manifest).toContain(`<title>${task.name}</title>`);
-					expect(manifest).toContain(`identifier="i${task.id}" type="webcontent" intendeduse="unspecified"`);
-				});
-			});
+			// TODO: will be done in EW-526: https://ticketsystem.dbildungscloud.de/browse/EW-526
+			// it('should add tasks as assignments', () => {
+			// 	const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+			// 	tasks.forEach((task) => {
+			// 		expect(manifest).toContain(`i${task.id}`);
+			// 	});
+			// });
 
 			it('should add version 1 information to manifest file', () => {
 				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
@@ -188,14 +180,6 @@ describe('CommonCartridgeExportService', () => {
 				expect(manifest).toContain(course.teachers[1].firstName);
 				expect(manifest).toContain(course.teachers[1].lastName);
 				expect(manifest).toContain(course.createdAt.getFullYear().toString());
-			});
-
-			it('should add tasks as assignments', () => {
-				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
-				tasks.forEach((task) => {
-					expect(manifest).toContain(`<title>${task.name}</title>`);
-					expect(manifest).toContain(`identifier="i${task.id}" type="webcontent" intendeduse="assignment"`);
-				});
 			});
 
 			it('should add version 3 information to manifest file', () => {

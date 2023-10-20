@@ -11,8 +11,6 @@ describe('AntivirusModule', () => {
 		filesServiceBaseUrl: 'http://localhost',
 		exchange: 'exchange',
 		routingKey: 'routingKey',
-		hostname: 'localhost',
-		port: 3311,
 	};
 
 	beforeAll(async () => {

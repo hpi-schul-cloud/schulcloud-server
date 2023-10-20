@@ -1,12 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AccountResponse {
-	constructor({ id, username, userId, activated, updatedAt }: AccountResponse) {
+	constructor({ id, username, userId, activated }: AccountResponse) {
 		this.id = id;
 		this.username = username;
 		this.userId = userId;
 		this.activated = activated;
-		this.updatedAt = updatedAt;
 	}
 
 	@ApiProperty()
@@ -20,7 +19,4 @@ export class AccountResponse {
 
 	@ApiProperty()
 	activated?: boolean;
-
-	@ApiProperty()
-	updatedAt?: Date;
 }

@@ -75,13 +75,7 @@ describe('rooms controller', () => {
 			const setup = () => {
 				const currentUser = { userId: 'userId' } as ICurrentUser;
 
-				const ucResult = {
-					roomId: 'id',
-					title: 'title',
-					displayColor: '#FFFFFF',
-					elements: [],
-					isArchived: false,
-				} as RoomBoardDTO;
+				const ucResult = { roomId: 'id', title: 'title', displayColor: '#FFFFFF', elements: [] } as RoomBoardDTO;
 				const ucSpy = jest.spyOn(uc, 'getBoard').mockImplementation(() => Promise.resolve(ucResult));
 
 				const mapperResult = new SingleColumnBoardResponse({
@@ -89,7 +83,6 @@ describe('rooms controller', () => {
 					title: 'title',
 					displayColor: '#FFFFFF',
 					elements: [],
-					isArchived: false,
 				});
 				const mapperSpy = jest.spyOn(mapper, 'mapToResponse').mockImplementation(() => mapperResult);
 				return { currentUser, ucResult, ucSpy, mapperResult, mapperSpy };

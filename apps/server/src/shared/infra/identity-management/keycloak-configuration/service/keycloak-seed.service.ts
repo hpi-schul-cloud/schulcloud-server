@@ -1,6 +1,5 @@
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { Inject } from '@nestjs/common';
-import { LegacyLogger } from '@src/core/logger';
 import fs from 'node:fs/promises';
 import { IJsonAccount } from '../interface/json-account.interface';
 import { IJsonUser } from '../interface/json-user.interface';
@@ -13,7 +12,6 @@ import {
 export class KeycloakSeedService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
-		private readonly logger: LegacyLogger,
 		@Inject(KeycloakConfigurationInputFiles) private readonly inputFiles: IKeycloakConfigurationInputFiles
 	) {}
 
@@ -32,29 +30,23 @@ export class KeycloakSeedService {
 		return userCount;
 	}
 
-	public async clean(pageSize = 100): Promise<number> {
-		let foundUsers = 1;
-		let deletedUsers = 0;
-		const adminUser = this.kcAdmin.getAdminUser();
+	public async clean(): Promise<number> {
 		let kc = await this.kcAdmin.callKcAdminClient();
-		this.logger.log(`Starting to delete users...`);
-		while (foundUsers > 0) {
+		const adminUser = this.kcAdmin.getAdminUser();
+		const users = (await kc.users.find()).filter((user) => user.username !== adminUser);
+
+		// eslint-disable-next-line no-restricted-syntax
+		for (const user of users) {
+			// needs to be called once per minute. To be save we call it in the loop. Ineffcient but ok, since only used to locally revert seeding
 			// eslint-disable-next-line no-await-in-loop
 			kc = await this.kcAdmin.callKcAdminClient();
 			// eslint-disable-next-line no-await-in-loop
-			const users = (await kc.users.find({ max: pageSize })).filter((user) => user.username !== adminUser);
-			foundUsers = users.length;
-			this.logger.log(`Amount of found Users: ${foundUsers}`);
-			for (const user of users) {
-				// eslint-disable-next-line no-await-in-loop
-				await kc.users.del({
-					id: user.id ?? '',
-				});
-			}
-			deletedUsers += foundUsers;
-			this.logger.log(`...deleted ${deletedUsers} users so far.`);
+			await kc.users.del({
+				// can not be undefined, see filter above
+				id: user.id ?? '',
+			});
 		}
-		return deletedUsers;
+		return users.length;
 	}
 
 	private async createOrUpdateIdmAccount(account: IJsonAccount, user: IJsonUser): Promise<boolean> {
@@ -72,9 +64,9 @@ export class KeycloakSeedService {
 				},
 			],
 			attributes: {
-				dbcAccountId: account._id.$oid,
-				dbcUserId: account.userId.$oid,
-				dbcSystemId: account.systemId,
+				refTechnicalId: account._id.$oid,
+				refFunctionalIntId: account.userId.$oid,
+				refFunctionalExtId: account.systemId,
 			},
 		};
 		const kc = await this.kcAdmin.callKcAdminClient();

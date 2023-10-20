@@ -1,11 +1,14 @@
 import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, UserDO } from '@shared/domain';
+import { EntityId } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { ISession } from '@shared/domain/types/session';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
+import { SchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserService } from '@src/modules/user';
@@ -29,6 +32,7 @@ export class OauthUc {
 		private readonly authenticationService: AuthenticationService,
 		private readonly systemService: SystemService,
 		private readonly provisioningService: ProvisioningService,
+		private readonly schoolService: SchoolService,
 		private readonly userService: UserService,
 		private readonly userMigrationService: UserMigrationService,
 		private readonly schoolMigrationService: SchoolMigrationService,
@@ -118,7 +122,7 @@ export class OauthUc {
 		const data: OauthDataDto = await this.provisioningService.getData(systemId, tokenDto.idToken, tokenDto.accessToken);
 
 		if (data.externalSchool) {
-			const schoolToMigrate: LegacySchoolDo | null = await this.schoolMigrationService.schoolToMigrate(
+			const schoolToMigrate: SchoolDO | null = await this.schoolMigrationService.schoolToMigrate(
 				currentUserId,
 				data.externalSchool.externalId,
 				data.externalSchool.officialSchoolNumber

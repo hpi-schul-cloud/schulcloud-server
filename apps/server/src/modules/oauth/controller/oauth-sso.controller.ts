@@ -21,7 +21,7 @@ import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto';
 import { CookieOptions, Request, Response } from 'express';
-import { OAuthSSOError } from '../loggable/oauth-sso.error';
+import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthTokenDto } from '../interface';
 import { OauthLoginStateMapper } from '../mapper/oauth-login-state.mapper';
 import { UserMigrationMapper } from '../mapper/user-migration.mapper';
@@ -63,7 +63,13 @@ export class OauthSSOController {
 		res.redirect(errorRedirect.toString());
 	}
 
-	private migrationErrorHandler(error: unknown, session: ISession, res: Response) {
+	private migrationErrorHandler(
+		error: unknown,
+		session: ISession,
+		res: Response,
+		sourceSystemId: string,
+		targetSystemId: string
+	) {
 		const migrationError: OAuthMigrationError =
 			error instanceof OAuthMigrationError ? error : new OAuthMigrationError();
 
@@ -72,6 +78,9 @@ export class OauthSSOController {
 		});
 
 		const errorRedirect: URL = new URL('/migration/error', this.clientUrl);
+
+		errorRedirect.searchParams.append('sourceSystem', sourceSystemId);
+		errorRedirect.searchParams.append('targetSystem', targetSystemId);
 
 		if (migrationError.officialSchoolNumberFromSource && migrationError.officialSchoolNumberFromTarget) {
 			errorRedirect.searchParams.append('sourceSchoolNumber', migrationError.officialSchoolNumberFromSource);
@@ -199,7 +208,7 @@ export class OauthSSOController {
 			const response: UserMigrationResponse = UserMigrationMapper.mapDtoToResponse(migration);
 			res.redirect(response.redirect);
 		} catch (error) {
-			this.migrationErrorHandler(error, session, res);
+			this.migrationErrorHandler(error, session, res, currentUser.systemId, oauthLoginState.systemId);
 		}
 	}
 }

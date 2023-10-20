@@ -1,19 +1,17 @@
-import { Body, Controller, Get, HttpStatus, Param, Put, Req } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
+import { Body, Controller, Get, HttpStatus, Param, Put } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { Request } from 'express';
-import { InvalidOriginForLogoutUrlLoggableException } from '../error';
-import { VideoConferenceOptions } from '../interface';
-import { VideoConferenceMapper } from '../mapper/video-conference.mapper';
-import { VideoConferenceCreateUc, VideoConferenceEndUc, VideoConferenceInfoUc, VideoConferenceJoinUc } from '../uc';
-import { ScopeRef, VideoConferenceInfo, VideoConferenceJoin } from '../uc/dto';
+import { ICurrentUser } from '@src/modules/authentication';
 import {
 	VideoConferenceCreateParams,
 	VideoConferenceInfoResponse,
 	VideoConferenceJoinResponse,
 	VideoConferenceScopeParams,
 } from './dto';
+import { VideoConferenceCreateUc, VideoConferenceEndUc, VideoConferenceInfoUc, VideoConferenceJoinUc } from '../uc';
+import { ScopeRef, VideoConferenceInfo, VideoConferenceJoin } from '../uc/dto';
+import { VideoConferenceMapper } from '../mapper/video-conference.mapper';
+import { VideoConferenceOptions } from '../interface';
 
 @ApiTags('VideoConference')
 @Authenticate('jwt')
@@ -43,15 +41,10 @@ export class VideoConferenceController {
 	})
 	@ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Unable to fetch required data.' })
 	async start(
-		@Req() req: Request,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() scopeParams: VideoConferenceScopeParams,
 		@Body() params: VideoConferenceCreateParams
 	): Promise<void> {
-		if (params.logoutUrl && new URL(params.logoutUrl).origin !== req.headers.origin) {
-			throw new InvalidOriginForLogoutUrlLoggableException(params.logoutUrl, req.headers.origin);
-		}
-
 		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
 		const videoConferenceOptions: VideoConferenceOptions = VideoConferenceMapper.toVideoConferenceOptions(params);
 

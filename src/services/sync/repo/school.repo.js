@@ -29,7 +29,6 @@ const findSchoolByPreviousExternalIdAndSystem = async (previousExternalId, syste
 			previousExternalId,
 			systems: { $in: systems },
 		})
-		.populate('userLoginMigration')
 		.lean({ virtuals: true })
 		.exec();
 

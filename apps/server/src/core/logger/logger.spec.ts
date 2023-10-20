@@ -45,7 +45,7 @@ describe('Logger', () => {
 		await module.close();
 	});
 
-	describe('info', () => {
+	describe('log', () => {
 		it('should call info method of WinstonLogger with appropriate message', () => {
 			const loggable = new SampleLoggable();
 			service.setContext('test context');
@@ -56,7 +56,7 @@ describe('Logger', () => {
 				context: 'test context',
 			});
 
-			service.info(loggable);
+			service.log(loggable);
 
 			expect(winstonLogger.info).toBeCalledWith(expectedMessage);
 		});
@@ -73,7 +73,7 @@ describe('Logger', () => {
 				context: 'test context',
 			});
 
-			service.warning(loggable);
+			service.warn(loggable);
 
 			expect(winstonLogger.warning).toBeCalledWith(expectedMessage);
 		});
@@ -96,17 +96,8 @@ describe('Logger', () => {
 		});
 	});
 
-	describe('setContext', () => {
-		it('should set the context', () => {
-			service.setContext('test');
-
-			// eslint-disable-next-line @typescript-eslint/dot-notation
-			expect(service['context']).toEqual('test');
-		});
-	});
-
-	describe('notice', () => {
-		it('should call notice method of WinstonLogger with appropriate message', () => {
+	describe('verbose', () => {
+		it('should call verbose method of WinstonLogger with appropriate message', () => {
 			const loggable = new SampleLoggable();
 			service.setContext('test context');
 
@@ -116,9 +107,18 @@ describe('Logger', () => {
 				context: 'test context',
 			});
 
-			service.notice(loggable);
+			service.verbose(loggable);
 
-			expect(winstonLogger.notice).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.verbose).toBeCalledWith(expectedMessage);
+		});
+	});
+
+	describe('setContext', () => {
+		it('should set the context', () => {
+			service.setContext('test');
+
+			// eslint-disable-next-line @typescript-eslint/dot-notation
+			expect(service['context']).toEqual('test');
 		});
 	});
 });

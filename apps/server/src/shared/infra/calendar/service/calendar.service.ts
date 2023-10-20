@@ -1,13 +1,12 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
-import { CalendarMapper } from '@shared/infra/calendar/mapper/calendar.mapper';
-import { ErrorUtils } from '@src/core/error/utils';
+import { firstValueFrom, Observable } from 'rxjs';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { URL, URLSearchParams } from 'url';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { CalendarMapper } from '@shared/infra/calendar/mapper/calendar.mapper';
+import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
 import { ICalendarEvent } from '../interface/calendar-event.interface';
 
 @Injectable()
@@ -36,10 +35,7 @@ export class CalendarService {
 		)
 			.then((resp: AxiosResponse<ICalendarEvent>) => this.calendarMapper.mapToDto(resp.data))
 			.catch((error) => {
-				throw new InternalServerErrorException(
-					null,
-					ErrorUtils.createHttpExceptionOptions(error, 'CalendarService:findEvent')
-				);
+				throw new InternalServerErrorException(error);
 			});
 	}
 

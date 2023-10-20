@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { IdmAccount } from '@shared/domain';
+import { IAccount } from '@shared/domain';
 import { AccountDto } from '../services/dto';
 import { AccountIdmToDtoMapper } from './account-idm-to-dto.mapper.abstract';
 import { AccountIdmToDtoMapperIdm } from './account-idm-to-dto.mapper.idm';
@@ -30,52 +30,39 @@ describe('AccountIdmToDtoMapperIdm', () => {
 		await module.close();
 	});
 
-	describe('mapToDto', () => {
-		describe('when mapping from entity to dto', () => {
-			const setup = () => {
-				const testIdmEntity: IdmAccount = {
-					id: 'id',
-					username: 'username',
-					email: 'email',
-					firstName: 'firstName',
-					lastName: 'lastName',
-					createdDate: new Date(),
-					attDbcAccountId: 'attDbcAccountId',
-					attDbcUserId: 'attDbcUserId',
-					attDbcSystemId: 'attDbcSystemId',
-				};
-				return testIdmEntity;
+	describe('when mapping from entity to dto', () => {
+		it('should map all fields', () => {
+			const testIdmEntity: IAccount = {
+				id: 'id',
+				username: 'username',
+				email: 'email',
+				firstName: 'firstName',
+				lastName: 'lastName',
+				createdDate: new Date(),
+				attRefTechnicalId: 'attRefTechnicalId',
+				attRefFunctionalIntId: 'attRefFunctionalIntId',
+				attRefFunctionalExtId: 'attRefFunctionalExtId',
 			};
+			const ret = mapper.mapToDto(testIdmEntity);
 
-			it('should map all fields', () => {
-				const testIdmEntity = setup();
-
-				const ret = mapper.mapToDto(testIdmEntity);
-
-				expect(ret).toEqual(
-					expect.objectContaining<Partial<AccountDto>>({
-						id: testIdmEntity.id,
-						idmReferenceId: undefined,
-						userId: testIdmEntity.attDbcUserId,
-						systemId: testIdmEntity.attDbcSystemId,
-						createdAt: testIdmEntity.createdDate,
-						updatedAt: testIdmEntity.createdDate,
-						username: testIdmEntity.username,
-					})
-				);
-			});
+			expect(ret).toEqual(
+				expect.objectContaining<Partial<AccountDto>>({
+					id: testIdmEntity.id,
+					idmReferenceId: undefined,
+					userId: testIdmEntity.attRefFunctionalIntId,
+					systemId: testIdmEntity.attRefFunctionalExtId,
+					createdAt: testIdmEntity.createdDate,
+					updatedAt: testIdmEntity.createdDate,
+					username: testIdmEntity.username,
+				})
+			);
 		});
+
 		describe('when date is undefined', () => {
-			const setup = () => {
-				const testIdmEntity: IdmAccount = {
+			it('should use actual date', () => {
+				const testIdmEntity: IAccount = {
 					id: 'id',
 				};
-				return testIdmEntity;
-			};
-
-			it('should use actual date', () => {
-				const testIdmEntity = setup();
-
 				const ret = mapper.mapToDto(testIdmEntity);
 
 				expect(ret.createdAt).toEqual(now);
@@ -84,16 +71,10 @@ describe('AccountIdmToDtoMapperIdm', () => {
 		});
 
 		describe('when a fields value is missing', () => {
-			const setup = () => {
-				const testIdmEntity: IdmAccount = {
+			it('should fill with empty string', () => {
+				const testIdmEntity: IAccount = {
 					id: 'id',
 				};
-				return testIdmEntity;
-			};
-
-			it('should fill with empty string', () => {
-				const testIdmEntity = setup();
-
 				const ret = mapper.mapToDto(testIdmEntity);
 
 				expect(ret.username).toBe('');

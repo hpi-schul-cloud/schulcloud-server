@@ -1,19 +1,18 @@
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
-import { SubmissionItem } from './submission-item.do';
-import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
+import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
+// todo: to be renamed
 export class SubmissionContainerElement extends BoardComposite<SubmissionContainerElementProps> {
-	get dueDate(): Date | null {
+	get dueDate(): Date {
 		return this.props.dueDate;
 	}
 
-	set dueDate(value: Date | null) {
+	set dueDate(value: Date) {
 		this.props.dueDate = value;
 	}
 
-	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
-		const allowed = domainObject instanceof SubmissionItem;
-		return allowed;
+	isAllowedAsChild(): boolean {
+		return false;
 	}
 
 	accept(visitor: BoardCompositeVisitor): void {
@@ -26,9 +25,5 @@ export class SubmissionContainerElement extends BoardComposite<SubmissionContain
 }
 
 export interface SubmissionContainerElementProps extends BoardCompositeProps {
-	dueDate: Date | null;
-}
-
-export function isSubmissionContainerElement(reference: unknown): reference is SubmissionContainerElement {
-	return reference instanceof SubmissionContainerElement;
+	dueDate: Date;
 }

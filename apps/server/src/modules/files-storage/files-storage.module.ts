@@ -1,3 +1,4 @@
+import { S3Client } from '@aws-sdk/client-s3';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
@@ -6,14 +7,14 @@ import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
 import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
 import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq/rabbitmq.module';
-import { S3ClientModule } from '@shared/infra/s3-client';
-import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
+import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
-import { FileRecord, FileRecordSecurityCheck } from './entity';
+import { S3ClientAdapter } from './client/s3-client.adapter';
+import { FileRecord, FileSecurityCheck } from './entity';
 import { config, s3Config } from './files-storage.config';
+import { S3Config } from './interface/config';
 import { FileRecordRepo } from './repo';
 import { FilesStorageService } from './service/files-storage.service';
-import { PreviewService } from './service/preview.service';
 
 const imports = [
 	LoggerModule,
@@ -23,12 +24,32 @@ const imports = [
 		filesServiceBaseUrl: Configuration.get('FILES_STORAGE__SERVICE_BASE_URL') as string,
 		exchange: Configuration.get('ANTIVIRUS_EXCHANGE') as string,
 		routingKey: Configuration.get('ANTIVIRUS_ROUTING_KEY') as string,
-		hostname: Configuration.get('CLAMAV__SERVICE_HOSTNAME') as string,
-		port: Configuration.get('CLAMAV__SERVICE_PORT') as number,
 	}),
-	S3ClientModule.register([s3Config]),
 ];
-const providers = [FilesStorageService, PreviewService, FileRecordRepo];
+const providers = [
+	FilesStorageService,
+	{
+		provide: 'S3_Client',
+		useFactory: (configProvider: S3Config) =>
+			new S3Client({
+				region: configProvider.region,
+				credentials: {
+					accessKeyId: configProvider.accessKeyId,
+					secretAccessKey: configProvider.secretAccessKey,
+				},
+				endpoint: configProvider.endpoint,
+				forcePathStyle: true,
+				tls: true,
+			}),
+		inject: ['S3_Config'],
+	},
+	{
+		provide: 'S3_Config',
+		useValue: s3Config,
+	},
+	S3ClientAdapter,
+	FileRecordRepo,
+];
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -47,12 +68,12 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [...ALL_ENTITIES, FileRecord, FileRecordSecurityCheck],
+			entities: [...ALL_ENTITIES, FileRecord, FileSecurityCheck],
 
 			// debug: true, // use it for locally debugging of querys
 		}),
 	],
 	providers,
-	exports: [FilesStorageService, PreviewService],
+	exports: [FilesStorageService],
 })
 export class FilesStorageModule {}

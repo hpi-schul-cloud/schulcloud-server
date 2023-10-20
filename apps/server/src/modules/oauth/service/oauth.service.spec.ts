@@ -1,22 +1,25 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, OauthConfig, SchoolFeatures, SystemEntity } from '@shared/domain';
+import { OauthConfig, SchoolFeatures, System } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { legacySchoolDoFactory, setupEntities, systemFactory, userDoFactory } from '@shared/testing';
+import { setupEntities, userDoFactory } from '@shared/testing';
+import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
+import { systemFactory } from '@shared/testing/factory/system.factory';
 import { LegacyLogger } from '@src/core/logger';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
-import { LegacySchoolService } from '@src/modules/legacy-school';
+import { SchoolService } from '@src/modules/school';
 import { OauthConfigDto } from '@src/modules/system/service';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { UserService } from '@src/modules/user';
 import { MigrationCheckService, UserMigrationService } from '@src/modules/user-login-migration';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthSSOError, UserNotFoundAfterProvisioningLoggableException } from '../loggable';
+import { OAuthSSOError, UserNotFoundAfterProvisioningLoggableException } from '../error';
 import { OAuthTokenDto } from '../interface';
 import { OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
@@ -48,9 +51,9 @@ describe('OAuthService', () => {
 	let userMigrationService: DeepMocked<UserMigrationService>;
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
 	let migrationCheckService: DeepMocked<MigrationCheckService>;
-	let schoolService: DeepMocked<LegacySchoolService>;
+	let schoolService: DeepMocked<SchoolService>;
 
-	let testSystem: SystemEntity;
+	let testSystem: System;
 	let testOauthConfig: OauthConfig;
 
 	const hostUri = 'https://mock.de';
@@ -66,8 +69,8 @@ describe('OAuthService', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: LegacySchoolService,
-					useValue: createMock<LegacySchoolService>(),
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 				{
 					provide: DefaultEncryptionService,
@@ -108,7 +111,7 @@ describe('OAuthService', () => {
 		userMigrationService = module.get(UserMigrationService);
 		oauthAdapterService = module.get(OauthAdapterService);
 		migrationCheckService = module.get(MigrationCheckService);
-		schoolService = module.get(LegacySchoolService);
+		schoolService = module.get(SchoolService);
 	});
 
 	afterAll(async () => {
@@ -424,9 +427,7 @@ describe('OAuthService', () => {
 						officialSchoolNumber: 'officialSchoolNumber',
 					}),
 				});
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
-					features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
-				});
+				const school: SchoolDO = schoolDOFactory.buildWithId({ features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED] });
 
 				provisioningService.getData.mockResolvedValue(oauthData);
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
@@ -466,7 +467,7 @@ describe('OAuthService', () => {
 						officialSchoolNumber: 'officialSchoolNumber',
 					}),
 				});
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ features: [] });
+				const school: SchoolDO = schoolDOFactory.buildWithId({ features: [] });
 
 				provisioningService.getData.mockResolvedValue(oauthData);
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
@@ -512,7 +513,7 @@ describe('OAuthService', () => {
 						officialSchoolNumber: 'officialSchoolNumber',
 					}),
 				});
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ features: [] });
+				const school: SchoolDO = schoolDOFactory.buildWithId({ features: [] });
 
 				provisioningService.getData.mockResolvedValue(oauthData);
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);

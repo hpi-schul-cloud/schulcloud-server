@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { StorageProviderEntity, SystemEntity } from '@shared/domain';
+import { StorageProvider, System } from '@shared/domain';
 import { DatabaseManagementService } from '@shared/infra/database';
 import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from '@shared/infra/encryption';
 import { FileSystemAdapter } from '@shared/infra/file-system';
@@ -167,7 +167,7 @@ export class DatabaseManagementUc {
 			})
 			.map(async ({ collectionName, data }) => {
 				if (collectionName === systemsCollectionName) {
-					this.encryptSecretsInSystems(data as SystemEntity[]);
+					this.encryptSecretsInSystems(data as System[]);
 				}
 				await this.dropCollectionIfExists(collectionName);
 
@@ -348,11 +348,11 @@ export class DatabaseManagementUc {
 
 	private encryptSecrets(collectionName: string, jsonDocuments: unknown[]) {
 		if (collectionName === systemsCollectionName) {
-			this.encryptSecretsInSystems(jsonDocuments as SystemEntity[]);
+			this.encryptSecretsInSystems(jsonDocuments as System[]);
 		}
 	}
 
-	private encryptSecretsInSystems(systems: SystemEntity[]) {
+	private encryptSecretsInSystems(systems: System[]) {
 		systems.forEach((system) => {
 			if (system.oauthConfig) {
 				system.oauthConfig.clientSecret = this.defaultEncryptionService.encrypt(system.oauthConfig.clientSecret);
@@ -376,21 +376,21 @@ export class DatabaseManagementUc {
 	 */
 	private removeSecrets(collectionName: string, jsonDocuments: unknown[]) {
 		if (collectionName === systemsCollectionName) {
-			this.removeSecretsFromSystems(jsonDocuments as SystemEntity[]);
+			this.removeSecretsFromSystems(jsonDocuments as System[]);
 		}
 		if (collectionName === storageprovidersCollectionName) {
-			this.removeSecretsFromStorageproviders(jsonDocuments as StorageProviderEntity[]);
+			this.removeSecretsFromStorageproviders(jsonDocuments as StorageProvider[]);
 		}
 	}
 
-	private removeSecretsFromStorageproviders(storageProviders: StorageProviderEntity[]) {
+	private removeSecretsFromStorageproviders(storageProviders: StorageProvider[]) {
 		storageProviders.forEach((storageProvider) => {
 			storageProvider.accessKeyId = defaultSecretReplacementHintText;
 			storageProvider.secretAccessKey = defaultSecretReplacementHintText;
 		});
 	}
 
-	private removeSecretsFromSystems(systems: SystemEntity[]) {
+	private removeSecretsFromSystems(systems: System[]) {
 		systems.forEach((system) => {
 			if (system.oauthConfig) {
 				system.oauthConfig.clientSecret = defaultSecretReplacementHintText;

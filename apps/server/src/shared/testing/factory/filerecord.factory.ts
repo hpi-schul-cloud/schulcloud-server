@@ -1,5 +1,9 @@
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
-import { FileRecord, FileRecordSecurityCheck, IFileRecordProperties } from '@src/modules/files-storage/entity';
+import {
+	FileRecord,
+	FileSecurityCheck,
+	IFileRecordProperties,
+} from '@src/modules/files-storage/entity/filerecord.entity';
 import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
@@ -18,7 +22,7 @@ export const fileRecordFactory = FileRecordFactory.define(FileRecord, ({ sequenc
 		size: Math.round(Math.random() * 100000),
 		name: `file-record #${sequence}`,
 		mimeType: 'application/octet-stream',
-		securityCheck: new FileRecordSecurityCheck({}),
+		securityCheck: new FileSecurityCheck({}),
 		parentType: FileRecordParentType.Course,
 		parentId: new ObjectId().toHexString(),
 		creatorId: new ObjectId().toHexString(),

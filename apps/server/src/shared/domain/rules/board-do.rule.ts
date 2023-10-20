@@ -20,22 +20,18 @@ export class BoardDoRule implements Rule {
 			return false;
 		}
 
-		const userBoardRole = boardDoAuthorizable.users.find(({ userId }) => userId === user.id);
-		if (!userBoardRole) {
+		const result = boardDoAuthorizable.users.find(({ userId }) => userId === user.id);
+		if (!result) {
 			return false;
 		}
 
-		if (boardDoAuthorizable.requiredUserRole && boardDoAuthorizable.requiredUserRole !== userBoardRole.userRoleEnum) {
-			return false;
-		}
-
-		if (context.action === Action.write && userBoardRole.roles.includes(BoardRoles.EDITOR)) {
+		if (context.action === Action.write && result.roles.includes(BoardRoles.EDITOR)) {
 			return true;
 		}
 
 		if (
 			context.action === Action.read &&
-			(userBoardRole.roles.includes(BoardRoles.EDITOR) || userBoardRole.roles.includes(BoardRoles.READER))
+			(result.roles.includes(BoardRoles.EDITOR) || result.roles.includes(BoardRoles.READER))
 		) {
 			return true;
 		}

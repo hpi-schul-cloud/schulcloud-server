@@ -165,6 +165,8 @@ const ignorePathsList = [
 	/|(.*\/schools\/[0-9a-f]{24}\/maintenance($|\/$))/,
 	/|(.*\/schoolGroup($|\/$))/,
 	/|(.*\/schoolGroup\/[0-9a-f]{24}($|\/$))/,
+	/|(.*\/years($|\/$))/,
+	/|(.*\/years\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/gradeLevels($|\/$))/,
 	/|(.*\/gradeLevels\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/school\/teacher\/studentvisibility($|\/$))/,

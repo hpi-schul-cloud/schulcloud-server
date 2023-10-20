@@ -4,7 +4,7 @@ import {
 	CommonCartridgeWebContentResource,
 } from './common-cartridge-web-content-resource';
 
-describe('CommonCartridgeWebContentResource', () => {
+describe('ICommonCartridgeWebContentResource', () => {
 	const props: ICommonCartridgeWebContentResourceProps = {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		version: CommonCartridgeVersion.V_1_3_0,
@@ -33,7 +33,6 @@ describe('CommonCartridgeWebContentResource', () => {
 				$: {
 					identifier: props.identifier,
 					type: props.type,
-					intendeduse: 'unspecified',
 				},
 				file: {
 					$: {

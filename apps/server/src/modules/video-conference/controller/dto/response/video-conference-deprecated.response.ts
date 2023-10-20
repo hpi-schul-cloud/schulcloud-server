@@ -1,4 +1,5 @@
 import { Permission } from '@shared/domain';
+import { VideoConferenceOptions } from '../../../interface';
 import { VideoConferenceStateResponse } from './video-conference-state.response';
 
 /**
@@ -21,10 +22,10 @@ export class VideoConferenceBaseResponse {
 /**
  * @deprecated Please use new video conference response classes
  */
-export class DeprecatedVideoConferenceJoinResponse extends VideoConferenceBaseResponse {
+export class VideoConferenceJoinResponse extends VideoConferenceBaseResponse {
 	url?: string;
 
-	constructor(resp: DeprecatedVideoConferenceJoinResponse) {
+	constructor(resp: VideoConferenceJoinResponse) {
 		super(resp);
 		this.url = resp.url;
 	}
@@ -33,16 +34,10 @@ export class DeprecatedVideoConferenceJoinResponse extends VideoConferenceBaseRe
 /**
  * @deprecated Please use new video conference response classes
  */
-export class DeprecatedVideoConferenceInfoResponse extends VideoConferenceBaseResponse {
-	options?: {
-		everyAttendeeJoinsMuted: boolean;
+export class VideoConferenceInfoResponse extends VideoConferenceBaseResponse {
+	options?: VideoConferenceOptions;
 
-		everybodyJoinsAsModerator: boolean;
-
-		moderatorMustApproveJoinRequests: boolean;
-	};
-
-	constructor(resp: DeprecatedVideoConferenceInfoResponse) {
+	constructor(resp: VideoConferenceInfoResponse) {
 		super(resp);
 		this.options = resp.options;
 	}

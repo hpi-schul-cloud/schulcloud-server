@@ -1,14 +1,12 @@
-import { BoardNodeType, ExternalToolElement, LinkElement } from '@shared/domain';
+import { BoardNodeType } from '@shared/domain';
 import {
 	cardNodeFactory,
 	columnBoardNodeFactory,
 	columnNodeFactory,
-	externalToolElementNodeFactory,
 	fileElementNodeFactory,
-	linkElementNodeFactory,
 	richTextElementNodeFactory,
-	setupEntities,
 	submissionContainerElementNodeFactory,
+	setupEntities,
 } from '@shared/testing';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
 
@@ -183,44 +181,6 @@ describe(BoardDoBuilderImpl.name, () => {
 
 			expect(() => {
 				new BoardDoBuilderImpl([columnNode]).buildSubmissionContainerElement(submissionContainerElementNode);
-			}).toThrowError();
-		});
-	});
-
-	describe('when building a external tool element', () => {
-		it('should work without descendants', () => {
-			const externalToolElementNode = externalToolElementNodeFactory.build();
-
-			const domainObject = new BoardDoBuilderImpl().buildExternalToolElement(externalToolElementNode);
-
-			expect(domainObject.constructor.name).toBe(ExternalToolElement.name);
-		});
-
-		it('should throw error if externalToolElement is not a leaf', () => {
-			const externalToolElementNode = externalToolElementNodeFactory.buildWithId();
-			const columnNode = columnNodeFactory.buildWithId({ parent: externalToolElementNode });
-
-			expect(() => {
-				new BoardDoBuilderImpl([columnNode]).buildExternalToolElement(externalToolElementNode);
-			}).toThrowError();
-		});
-	});
-
-	describe('when building a link element', () => {
-		it('should work without descendants', () => {
-			const linkElementNode = linkElementNodeFactory.buildWithId();
-
-			const domainObject = new BoardDoBuilderImpl().buildLinkElement(linkElementNode);
-
-			expect(domainObject.constructor.name).toBe(LinkElement.name);
-		});
-
-		it('should throw error if linkElement is not a leaf', () => {
-			const linkElementNode = linkElementNodeFactory.buildWithId();
-			const columnNode = columnNodeFactory.buildWithId({ parent: linkElementNode });
-
-			expect(() => {
-				new BoardDoBuilderImpl([columnNode]).buildLinkElement(linkElementNode);
 			}).toThrowError();
 		});
 	});

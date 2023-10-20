@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Course, EntityId, User } from '@shared/domain';
-import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
+import { BoardRepo, CourseRepo } from '@shared/repo';
+import { AuthorizationService } from '@src/modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { BoardCopyService } from './board-copy.service';
 import { RoomsService } from './rooms.service';
@@ -19,7 +20,7 @@ export class CourseCopyService {
 		private readonly roomsService: RoomsService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
-		private readonly userRepo: UserRepo
+		private readonly authorizationService: AuthorizationService
 	) {}
 
 	async copyCourse({
@@ -31,7 +32,7 @@ export class CourseCopyService {
 		courseId: EntityId;
 		newName?: string | undefined;
 	}): Promise<CopyStatus> {
-		const user: User = await this.userRepo.findById(userId, true);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		// fetch original course and board
 		const originalCourse = await this.courseRepo.findById(courseId);

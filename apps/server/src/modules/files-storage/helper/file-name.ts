@@ -1,7 +1,4 @@
-import { EntityId } from '@shared/domain';
-import crypto from 'crypto';
 import path from 'path';
-import { PreviewParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 
 export function hasDuplicateName(fileRecords: FileRecord[], name: string): FileRecord | undefined {
@@ -21,13 +18,4 @@ export function resolveFileNameDuplicates(filename: string, fileRecords: FileRec
 	}
 
 	return newFilename;
-}
-
-export function createPreviewNameHash(fileRecordId: EntityId, previewParams: PreviewParams): string {
-	const width = previewParams.width ?? '';
-	const format = previewParams.outputFormat ?? '';
-	const fileParamsString = `${fileRecordId}${width}${format}`;
-	const hash = crypto.createHash('md5').update(fileParamsString).digest('hex');
-
-	return hash;
 }

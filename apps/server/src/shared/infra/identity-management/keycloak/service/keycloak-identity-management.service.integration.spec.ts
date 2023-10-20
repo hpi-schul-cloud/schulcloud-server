@@ -3,7 +3,7 @@ import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRep
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpModule } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IdmAccount, IdmAccountUpdate } from '@shared/domain';
+import { IAccount, IAccountUpdate } from '@shared/domain';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
 import { ServerModule } from '@src/modules/server';
@@ -19,13 +19,13 @@ describe('KeycloakIdentityManagementService Integration', () => {
 	let isKeycloakReachable: boolean;
 
 	const testRealm = `test-realm-${v1().toString()}`;
-	const testAccount: IdmAccount = {
+	const testAccount: IAccount = {
 		id: new ObjectId().toString(),
 		email: 'john.doe@mail.tld',
 		username: 'john.doe@mail.tld',
 		firstName: 'John',
 		lastName: 'Doe',
-		attDbcAccountId: new ObjectId().toString(),
+		attRefTechnicalId: new ObjectId().toString(),
 	};
 	const createAccount = async (attributeName?: string, attributeValue?: unknown): Promise<string> => {
 		const { id } = await keycloak.users.create({
@@ -33,9 +33,9 @@ describe('KeycloakIdentityManagementService Integration', () => {
 			firstName: testAccount.firstName,
 			lastName: testAccount.lastName,
 			attributes: {
-				dbcAccountId: testAccount.attDbcAccountId,
-				dbcUserId: undefined,
-				dbcSystemId: undefined,
+				refTechnicalId: testAccount.attRefTechnicalId,
+				refFunctionalIntId: undefined,
+				refFunctionalExtId: undefined,
 				attributeName: attributeValue,
 			},
 		});
@@ -85,7 +85,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 					firstName: testAccount.firstName,
 					lastName: testAccount.lastName,
 					attributes: {
-						dbcAccountId: [testAccount.attDbcAccountId],
+						refTechnicalId: [testAccount.attRefTechnicalId],
 					},
 				}),
 			])
@@ -94,7 +94,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 
 	it('should update an account', async () => {
 		if (!isKeycloakReachable) return;
-		const newAccount: IdmAccountUpdate = {
+		const newAccount: IAccountUpdate = {
 			email: 'jane.doe@mail.tld',
 			username: 'jane.doe@mail.tld',
 			firstName: 'Jane',
@@ -140,7 +140,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		const account = await idmService.findAccountById(idmId);
 
 		expect(account).toEqual(
-			expect.objectContaining<IdmAccount>({
+			expect.objectContaining<IAccount>({
 				id: idmId,
 				username: testAccount.username,
 				firstName: testAccount.firstName,
@@ -156,7 +156,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 
 		expect(account).toEqual(
 			expect.arrayContaining([
-				expect.objectContaining<Omit<IdmAccount, 'id'>>({
+				expect.objectContaining<Omit<IAccount, 'id'>>({
 					username: testAccount.username,
 					firstName: testAccount.firstName,
 					lastName: testAccount.lastName,

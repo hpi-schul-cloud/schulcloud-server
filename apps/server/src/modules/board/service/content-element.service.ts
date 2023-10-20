@@ -7,19 +7,17 @@ import {
 	EntityId,
 	isAnyContentElement,
 } from '@shared/domain';
-import { AnyElementContentBody } from '../controller/dto';
+import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
-import { OpenGraphProxyService } from './open-graph-proxy.service';
 
 @Injectable()
 export class ContentElementService {
 	constructor(
 		private readonly boardDoRepo: BoardDoRepo,
 		private readonly boardDoService: BoardDoService,
-		private readonly contentElementFactory: ContentElementFactory,
-		private readonly openGraphProxyService: OpenGraphProxyService
+		private readonly contentElementFactory: ContentElementFactory
 	) {}
 
 	async findById(elementId: EntityId): Promise<AnyContentElementDo> {
@@ -47,14 +45,13 @@ export class ContentElementService {
 		await this.boardDoService.move(element, targetCard, targetPosition);
 	}
 
-	async update(element: AnyContentElementDo, content: AnyElementContentBody): Promise<AnyContentElementDo> {
-		const updater = new ContentElementUpdateVisitor(content, this.openGraphProxyService);
-		await element.acceptAsync(updater);
-
+	async update(
+		element: AnyContentElementDo,
+		content: FileContentBody | RichTextContentBody | SubmissionContainerContentBody
+	): Promise<void> {
+		const updater = new ContentElementUpdateVisitor(content);
+		element.accept(updater);
 		const parent = await this.boardDoRepo.findParentOfId(element.id);
-
 		await this.boardDoRepo.save(element, parent);
-
-		return element;
 	}
 }

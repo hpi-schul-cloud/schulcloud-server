@@ -1,20 +1,20 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { StorageProviderEntity } from '@shared/domain';
+import { StorageProvider } from '@shared/domain';
 import { BaseRepo } from '../base.repo';
 
 @Injectable()
-export class StorageProviderRepo extends BaseRepo<StorageProviderEntity> {
+export class StorageProviderRepo extends BaseRepo<StorageProvider> {
 	constructor(protected readonly _em: EntityManager) {
 		super(_em);
 	}
 
 	get entityName() {
-		return StorageProviderEntity;
+		return StorageProvider;
 	}
 
-	async findAll(): Promise<StorageProviderEntity[]> {
-		const providers = this._em.find(StorageProviderEntity, {});
+	async findAll(): Promise<StorageProvider[]> {
+		const providers = this._em.find(StorageProvider, {});
 
 		return providers;
 	}

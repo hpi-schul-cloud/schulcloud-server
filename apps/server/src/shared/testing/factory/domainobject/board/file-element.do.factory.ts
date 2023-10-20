@@ -8,7 +8,6 @@ export const fileElementFactory = BaseFactory.define<FileElement, FileElementPro
 		id: new ObjectId().toHexString(),
 		children: [],
 		caption: `<p>caption #${sequence}</p>`,
-		alternativeText: `alternativeText #${sequence}`,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};

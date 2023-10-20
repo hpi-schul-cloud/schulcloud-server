@@ -3,15 +3,10 @@ import {
 	Board,
 	BoardElement,
 	BoardElementType,
-	BoardExternalReferenceType,
-	ColumnBoard,
-	ColumnboardBoardElement,
-	ColumnBoardTarget,
 	Course,
-	isColumnBoardTarget,
 	isLesson,
 	isTask,
-	LessonEntity,
+	Lesson,
 	LessonBoardElement,
 	Task,
 	TaskBoardElement,
@@ -19,11 +14,10 @@ import {
 } from '@shared/domain';
 import { BoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ColumnBoardCopyService } from '@src/modules/board/service/column-board-copy.service';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
+import { CopyElementType, CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
 import { getResolvedValues } from '@src/modules/files-storage/helper';
 import { LessonCopyService } from '@src/modules/lesson/service';
-import { TaskCopyService } from '@src/modules/task/service';
+import { TaskCopyService } from '@src/modules/task';
 import { sortBy } from 'lodash';
 
 type BoardCopyParams = {
@@ -39,7 +33,6 @@ export class BoardCopyService {
 		private readonly boardRepo: BoardRepo,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly lessonCopyService: LessonCopyService,
-		private readonly columnBoardCopyService: ColumnBoardCopyService,
 		private readonly copyHelperService: CopyHelperService
 	) {}
 
@@ -64,13 +57,7 @@ export class BoardCopyService {
 		if (status.copyEntity) {
 			boardCopy = status.copyEntity as Board;
 		}
-
-		try {
-			await this.boardRepo.save(boardCopy);
-		} catch (err) {
-			this.logger.warn(err);
-			status.status = CopyStatusEnum.FAIL;
-		}
+		await this.boardRepo.save(boardCopy);
 
 		return status;
 	}
@@ -93,10 +80,6 @@ export class BoardCopyService {
 				return this.copyLesson(element.target, user, destinationCourse).then((status) => [pos, status]);
 			}
 
-			if (element.boardElementType === BoardElementType.ColumnBoard && isColumnBoardTarget(element.target)) {
-				return this.copyColumnBoard(element.target, user, destinationCourse).then((status) => [pos, status]);
-			}
-
 			/* istanbul ignore next */
 			this.logger.warn(`BoardCopyService unable to handle boardElementType.`);
 			/* istanbul ignore next */
@@ -109,7 +92,7 @@ export class BoardCopyService {
 		return statuses;
 	}
 
-	private async copyLesson(originalLesson: LessonEntity, user: User, destinationCourse: Course): Promise<CopyStatus> {
+	private async copyLesson(originalLesson: Lesson, user: User, destinationCourse: Course): Promise<CopyStatus> {
 		return this.lessonCopyService.copyLesson({
 			originalLessonId: originalLesson.id,
 			user,
@@ -125,21 +108,6 @@ export class BoardCopyService {
 		});
 	}
 
-	private async copyColumnBoard(
-		columnBoardTarget: ColumnBoardTarget,
-		user: User,
-		destinationCourse: Course
-	): Promise<CopyStatus> {
-		return this.columnBoardCopyService.copyColumnBoard({
-			originalColumnBoardId: columnBoardTarget.columnBoardId,
-			userId: user.id,
-			destinationExternalReference: {
-				id: destinationCourse.id,
-				type: BoardExternalReferenceType.Course,
-			},
-		});
-	}
-
 	private extractReferences(statuses: CopyStatus[]): BoardElement[] {
 		const references: BoardElement[] = [];
 		statuses.forEach((status) => {
@@ -147,15 +115,9 @@ export class BoardCopyService {
 				const taskElement = new TaskBoardElement({ target: status.copyEntity });
 				references.push(taskElement);
 			}
-			if (status.copyEntity instanceof LessonEntity) {
+			if (status.copyEntity instanceof Lesson) {
 				const lessonElement = new LessonBoardElement({ target: status.copyEntity });
 				references.push(lessonElement);
-			}
-			if (status.copyEntity instanceof ColumnBoard) {
-				const columnBoardElement = new ColumnboardBoardElement({
-					target: new ColumnBoardTarget({ columnBoardId: status.copyEntity.id, title: status.copyEntity.title }),
-				});
-				references.push(columnBoardElement);
 			}
 		});
 		return references;

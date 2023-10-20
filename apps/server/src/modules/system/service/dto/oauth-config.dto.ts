@@ -19,10 +19,7 @@ export class OauthConfigDto {
 
 	provider: string;
 
-	/**
-	 * If this is set it will be used to redirect the user after login to the logout endpoint of the identity provider.
-	 */
-	logoutEndpoint?: string;
+	logoutEndpoint: string;
 
 	issuer: string;
 

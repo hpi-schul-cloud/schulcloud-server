@@ -1,10 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { S3Config } from '@shared/infra/s3-client';
-
-export const FWU_CONTENT_S3_CONNECTION = 'FWU_CONTENT_S3_CONNECTION';
+import { S3Config } from './interface/config';
 
 export const s3Config: S3Config = {
-	connectionName: FWU_CONTENT_S3_CONNECTION,
 	endpoint: Configuration.get('FWU_CONTENT__S3_ENDPOINT') as string,
 	region: Configuration.get('FWU_CONTENT__S3_REGION') as string,
 	bucket: Configuration.get('FWU_CONTENT__S3_BUCKET') as string,

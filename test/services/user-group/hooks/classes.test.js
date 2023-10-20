@@ -68,7 +68,6 @@ describe('class hooks', () => {
 			configBefore = Configuration.toObject({});
 			app = await appPromise();
 			Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', 'false');
-			Configuration.set('FEATURE_GROUPS_IN_COURSE_ENABLED', 'false');
 			server = await app.listen(0);
 			nestServices = await setupNestServices(app);
 		});

@@ -1,17 +1,16 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { HttpService } from '@nestjs/axios';
-import { NotFoundException, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
-import { axiosResponseFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
 import { Observable, of } from 'rxjs';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { LegacyLogger } from '@src/core/logger';
+import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
+import { NotFoundException, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
+import { ObjectId } from '@mikro-orm/mongodb';
 import {
-	GroupUsers,
 	GroupfoldersCreated,
 	GroupfoldersFolder,
+	GroupUsers,
 	Meta,
 	NextcloudGroups,
 	OcsResponse,
@@ -43,10 +42,15 @@ function createOcsResponse<T = unknown>(data: T, meta: Meta = defaultMetadata): 
 	};
 }
 
-const createAxiosResponse = (data: unknown) =>
-	axiosResponseFactory.build({
+function createAxiosResponse<T = unknown>(data: T): AxiosResponse<T> {
+	return {
 		data,
-	});
+		status: 0,
+		statusText: '',
+		headers: {},
+		config: {},
+	};
+}
 
 function createObservable<T = unknown>(data: T): Observable<AxiosResponse<T>> {
 	return of(createAxiosResponse(data));

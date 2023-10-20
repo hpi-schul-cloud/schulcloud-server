@@ -57,14 +57,13 @@ class ConsentVersionService {
 	}
 
 	createBase64File(consentDocumentData) {
-		const { schoolId, consentData, consentTypes } = consentDocumentData;
+		const { schoolId, consentData } = consentDocumentData;
 		if (consentData) {
-			const fileName = consentTypes[0].includes('terms') ? 'Terms of Use' : 'Privacy Policy';
 			return this.app.service('base64Files').create({
 				schoolId,
 				data: consentDocumentData.consentData,
 				filetype: 'pdf',
-				filename: fileName,
+				filename: 'Privacy Policy',
 			});
 		}
 		return Promise.resolve({});

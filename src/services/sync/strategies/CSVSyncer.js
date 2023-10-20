@@ -6,7 +6,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const Syncer = require('./Syncer');
 const ClassImporter = require('./mixins/ClassImporter');
-const { SC_TITLE } = require('../../../../config/globals');
+const { SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
 const { equal } = require('../../../helper/compare').ObjectId;
 
 const ATTRIBUTES = [
@@ -138,14 +138,11 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 
 	async determineSchoolYear() {
 		try {
-			const school = await this.app.service('schools').get(this.options.schoolId);
-			let schoolYear = school.currentYear;
 			if (this.options.schoolYear) {
-				schoolYear = school.years.schoolYears.find(
-					(year) => year._id.toString() === this.options.schoolYear.toString()
-				);
+				return this.app.service('years').get(this.options.schoolYear);
 			}
-			return schoolYear;
+			const school = await this.app.service('schools').get(this.options.schoolId);
+			return this.app.service('years').get(school.currentYear);
 		} catch (err) {
 			this.logError('Cannot determine school year to import from params', {
 				paramSchoolYear: this.options.schoolYear,
@@ -382,7 +379,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 							'bitte vervollständige deine Registrierung unter folgendem Link: ' +
 							`${user.shortLink}\n\n` +
 							'Viel Spaß und einen guten Start wünscht dir dein ' +
-							`${SC_TITLE}-Team`,
+							`${SC_SHORT_TITLE}-Team`,
 					},
 				});
 				this.stats.invitations.successful += 1;

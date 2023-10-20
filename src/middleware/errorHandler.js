@@ -125,7 +125,6 @@ const secretDataKeys = (() =>
 		'gradeComment',
 		'_csrf',
 		'searchUserPassword',
-		'authorization',
 	].map((k) => k.toLocaleLowerCase()))();
 
 const filterSecretValue = (key, value) => {
@@ -175,7 +174,6 @@ const filterSecrets = (error, req, res, next) => {
 	if (error) {
 		// req.url = filterQuery(req.url);
 		req.originalUrl = filterQuery(req.originalUrl);
-		req.headers = filter(req.headers);
 		req.body = filter(req.body);
 		error.data = filter(error.data);
 		error.options = filter(error.options);

@@ -1,1 +1,1 @@
-export * from './legacy-school.repo';
+export * from './school.repo';

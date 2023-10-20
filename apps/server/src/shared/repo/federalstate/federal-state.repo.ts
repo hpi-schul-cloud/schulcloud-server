@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { FederalStateEntity } from '@shared/domain';
+import { FederalState } from '@shared/domain';
 import { EntityName } from '@mikro-orm/core';
 import { BaseRepo } from '../base.repo';
 
 @Injectable()
-export class FederalStateRepo extends BaseRepo<FederalStateEntity> {
-	get entityName(): EntityName<FederalStateEntity> {
-		return FederalStateEntity;
+export class FederalStateRepo extends BaseRepo<FederalState> {
+	get entityName(): EntityName<FederalState> {
+		return FederalState;
 	}
 
-	findByName(name: string): Promise<FederalStateEntity> {
-		return this._em.findOneOrFail(FederalStateEntity, { name });
+	findByName(name: string): Promise<FederalState> {
+		return this._em.findOneOrFail(FederalState, { name });
 	}
 }

@@ -22,12 +22,7 @@ const registrationConsentServiceHooks = {
 };
 
 class RegistrationConsentService {
-	async get(importHash, params) {
-		const consentType = params.query.consentType || 'privacy';
-		if (consentType !== 'privacy' && consentType !== 'termsOfUse') {
-			throw new BadRequest('Invalid Consent Type!');
-		}
-
+	async get(importHash) {
 		const user = await this.importUserLinkService.get(importHash);
 		if (!user.userId) {
 			throw new BadRequest('Invalid Import Hash!');
@@ -35,7 +30,7 @@ class RegistrationConsentService {
 
 		const baseQuery = {
 			$limit: 1,
-			consentTypes: [consentType],
+			consentTypes: 'privacy',
 			$sort: {
 				updatedAt: -1,
 			},

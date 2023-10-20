@@ -3,18 +3,17 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AntivirusService } from '@shared/infra/antivirus';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
+import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { SingleFileParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
-import { GetFileResponse } from '../interface';
+import { IGetFileResponse } from '../interface/storage-client';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
-import { PreviewService } from '../service/preview.service';
 import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordWithParams = () => {
@@ -66,10 +65,6 @@ describe('FilesStorageUC', () => {
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
 				},
-				{
-					provide: PreviewService,
-					useValue: createMock<PreviewService>(),
-				},
 			],
 		}).compile();
 
@@ -96,7 +91,7 @@ describe('FilesStorageUC', () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
 				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 
-				const fileResponse = createMock<GetFileResponse>();
+				const fileResponse = createMock<IGetFileResponse>();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
 				authorizationService.checkPermissionByReferences.mockResolvedValue();
@@ -209,7 +204,7 @@ describe('FilesStorageUC', () => {
 			const setup = () => {
 				const { fileRecord } = buildFileRecordWithParams();
 				const token = 'token';
-				const fileResponse = createMock<GetFileResponse>();
+				const fileResponse = createMock<IGetFileResponse>();
 
 				filesStorageService.getFileRecordBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
 				filesStorageService.downloadFile.mockResolvedValueOnce(fileResponse);
@@ -230,7 +225,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.downloadBySecurityToken(token);
 
-				expect(filesStorageService.downloadFile).toHaveBeenCalledWith(fileRecord);
+				expect(filesStorageService.downloadFile).toHaveBeenCalledWith(fileRecord.schoolId, fileRecord.id);
 			});
 
 			it('should return correct response', async () => {

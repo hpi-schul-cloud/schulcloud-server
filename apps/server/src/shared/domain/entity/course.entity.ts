@@ -1,20 +1,19 @@
 import { Collection, Entity, Enum, Index, ManyToMany, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
 import { IEntityWithSchool, ILearnroom } from '@shared/domain/interface';
-import { ClassEntity } from '@src/modules/class/entity/class.entity';
-import { GroupEntity } from '@src/modules/group/entity/group.entity';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CourseGroup } from './coursegroup.entity';
 import type { ILessonParent } from './lesson.entity';
-import { SchoolEntity } from './school.entity';
+import type { School } from './school.entity';
 import type { ITaskParent } from './task.entity';
+import { UsersList } from './task.entity';
 import type { User } from './user.entity';
 
 export interface ICourseProperties {
 	name?: string;
 	description?: string;
-	school: SchoolEntity;
+	school: School;
 	students?: User[];
 	teachers?: User[];
 	substitutionTeachers?: User[];
@@ -24,8 +23,6 @@ export interface ICourseProperties {
 	untilDate?: Date;
 	copyingSince?: Date;
 	features?: CourseFeatures[];
-	classes?: ClassEntity[];
-	groups?: GroupEntity[];
 }
 
 // that is really really shit default handling :D constructor, getter, js default, em default...what the hell
@@ -40,14 +37,6 @@ const enum CourseFeatures {
 	VIDEOCONFERENCE = 'videoconference',
 }
 
-export class UsersList {
-	id!: string;
-
-	firstName!: string;
-
-	lastName!: string;
-}
-
 @Entity({ tableName: 'courses' })
 export class Course
 	extends BaseEntityWithTimestamps
@@ -60,8 +49,8 @@ export class Course
 	description: string = DEFAULT.description;
 
 	@Index()
-	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
-	school: SchoolEntity;
+	@ManyToOne('School', { fieldName: 'schoolId' })
+	school: School;
 
 	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'userIds' })
@@ -99,12 +88,6 @@ export class Course
 	@Enum({ nullable: true, array: true })
 	features?: CourseFeatures[];
 
-	@ManyToMany(() => ClassEntity, undefined, { fieldName: 'classIds' })
-	classes = new Collection<ClassEntity>(this);
-
-	@ManyToMany(() => GroupEntity, undefined, { fieldName: 'groupIds' })
-	groups = new Collection<GroupEntity>(this);
-
 	constructor(props: ICourseProperties) {
 		super();
 		if (props.name) this.name = props.name;
@@ -118,26 +101,24 @@ export class Course
 		if (props.startDate) this.startDate = props.startDate;
 		if (props.copyingSince) this.copyingSince = props.copyingSince;
 		if (props.features) this.features = props.features;
-		this.classes.set(props.classes || []);
-		this.groups.set(props.groups || []);
 	}
 
 	public getStudentIds(): EntityId[] {
-		const studentIds = Course.extractIds(this.students);
+		const studentIds = this.extractIds(this.students);
 		return studentIds;
 	}
 
 	public getTeacherIds(): EntityId[] {
-		const teacherIds = Course.extractIds(this.teachers);
+		const teacherIds = this.extractIds(this.teachers);
 		return teacherIds;
 	}
 
 	public getSubstitutionTeacherIds(): EntityId[] {
-		const substitutionTeacherIds = Course.extractIds(this.substitutionTeachers);
+		const substitutionTeacherIds = this.extractIds(this.substitutionTeachers);
 		return substitutionTeacherIds;
 	}
 
-	private static extractIds(users: Collection<User>): EntityId[] {
+	private extractIds(users: Collection<User>): EntityId[] {
 		if (!users) {
 			throw new InternalServerErrorException(
 				`Students, teachers or stubstitution is undefined. The course needs to be populated`
@@ -153,39 +134,17 @@ export class Course
 	public getStudentsList(): UsersList[] {
 		const users = this.students.getItems();
 		if (users.length) {
-			const usersList = Course.extractUserList(users);
+			const usersList: UsersList[] = users.map((user) => {
+				return {
+					id: user.id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+				};
+			});
 			return usersList;
 		}
-		return [];
-	}
 
-	public getTeachersList(): UsersList[] {
-		const users = this.teachers.getItems();
-		if (users.length) {
-			const usersList = Course.extractUserList(users);
-			return usersList;
-		}
 		return [];
-	}
-
-	public getSubstitutionTeachersList(): UsersList[] {
-		const users = this.substitutionTeachers.getItems();
-		if (users.length) {
-			const usersList = Course.extractUserList(users);
-			return usersList;
-		}
-		return [];
-	}
-
-	private static extractUserList(users: User[]): UsersList[] {
-		const usersList: UsersList[] = users.map((user) => {
-			return {
-				id: user.id,
-				firstName: user.firstName,
-				lastName: user.lastName,
-			};
-		});
-		return usersList;
 	}
 
 	public isUserSubstitutionTeacher(user: User): boolean {
@@ -235,23 +194,5 @@ export class Course
 		const isFinished = this.untilDate < new Date();
 
 		return isFinished;
-	}
-
-	public removeUser(userId: EntityId): void {
-		this.removeStudent(userId);
-		this.removeTeacher(userId);
-		this.removeSubstitutionTeacher(userId);
-	}
-
-	private removeStudent(userId: EntityId): void {
-		this.students.remove((u) => u.id === userId);
-	}
-
-	private removeTeacher(userId: EntityId): void {
-		this.teachers.remove((u) => u.id === userId);
-	}
-
-	private removeSubstitutionTeacher(userId: EntityId): void {
-		this.substitutionTeachers.remove((u) => u.id === userId);
 	}
 }

@@ -8,12 +8,11 @@ import { LtiPrivacyPermission, LtiRoleType, OauthConfig } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { LtiToolRepo } from '@shared/repo';
-import { axiosResponseFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
 import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
-import { AxiosResponse } from 'axios';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
 
@@ -29,10 +28,15 @@ jest.mock('nanoid', () => {
 	};
 });
 
-const createAxiosResponse = <T>(data: T) =>
-	axiosResponseFactory.build({
+const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => {
+	return {
 		data,
-	});
+		status: 0,
+		statusText: '',
+		headers: {},
+		config: {},
+	};
+};
 
 describe('HydraService', () => {
 	let module: TestingModule;
@@ -129,7 +133,8 @@ describe('HydraService', () => {
 		const expectedAuthParams: StatelessAuthorizationParams = {
 			code: 'defaultAuthCode',
 		};
-		const axiosConfig = {
+		const axiosConfig: AxiosRequestConfig = {
+			headers: {},
 			withCredentials: true,
 			maxRedirects: 0,
 			validateStatus: jest.fn().mockImplementationOnce(() => true),
@@ -140,7 +145,7 @@ describe('HydraService', () => {
 		let responseDto2: HydraRedirectDto;
 
 		it('should process a local request', async () => {
-			axiosResponse1 = axiosResponseFactory.build({
+			axiosResponse1 = {
 				data: expectedAuthParams,
 				status: 302,
 				statusText: '',
@@ -149,7 +154,7 @@ describe('HydraService', () => {
 					Referer: 'hydra',
 				},
 				config: axiosConfig,
-			});
+			};
 			responseDto1 = {
 				axiosConfig,
 				cookies: { localCookies: [], hydraCookies: [] },
@@ -164,14 +169,11 @@ describe('HydraService', () => {
 			const resDto: HydraRedirectDto = await service.processRedirect(responseDto1);
 
 			// Assert
-			expect(httpService.get).toHaveBeenCalledWith(
-				`${apiHost}${axiosResponse1.headers.location as string}`,
-				axiosConfig
-			);
+			expect(httpService.get).toHaveBeenCalledWith(`${apiHost}${axiosResponse1.headers.location}`, axiosConfig);
 			expect(resDto.response.data).toEqual(expectedAuthParams);
 		});
 		it('should process a hydra request', async () => {
-			axiosResponse2 = axiosResponseFactory.build({
+			axiosResponse2 = {
 				data: expectedAuthParams,
 				status: 200,
 				statusText: '',
@@ -180,7 +182,7 @@ describe('HydraService', () => {
 					Referer: 'hydra',
 				},
 				config: axiosConfig,
-			});
+			};
 			responseDto2 = {
 				axiosConfig,
 				cookies: { localCookies: [], hydraCookies: [] },
@@ -194,7 +196,7 @@ describe('HydraService', () => {
 			const resDto: HydraRedirectDto = await service.processRedirect(responseDto2);
 
 			// Assert
-			expect(httpService.get).toHaveBeenCalledWith(`${axiosResponse2.headers.location as string}`, axiosConfig);
+			expect(httpService.get).toHaveBeenCalledWith(`${axiosResponse2.headers.location}`, axiosConfig);
 			expect(resDto.response.data).toEqual(expectedAuthParams);
 		});
 	});

@@ -17,7 +17,7 @@ import { FilesStorageTestModule } from '@src/modules/files-storage';
 import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
-import { FileRecordParentType, PreviewStatus } from '../../entity';
+import { FileRecordParentType } from '../../entity';
 import { availableParentTypes } from './mocks';
 
 const baseRouteName = '/file/list';
@@ -188,7 +188,6 @@ describe(`${baseRouteName} (api)`, () => {
 				mimeType: 'application/octet-stream',
 				securityCheckStatus: 'pending',
 				size: expect.any(Number),
-				previewStatus: PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE,
 			});
 		});
 

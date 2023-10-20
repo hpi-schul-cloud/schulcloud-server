@@ -4,8 +4,10 @@ import {
 	Course,
 	EntityId,
 	IPagination,
+	ITaskCreate,
 	ITaskStatus,
-	LessonEntity,
+	ITaskUpdate,
+	Lesson,
 	Permission,
 	SortOrder,
 	TaskWithStatusVo,
@@ -41,6 +43,11 @@ export class TaskUC {
 		const lessonIdsOfOpenCourses = lessons.filter((l) => !l.course.isFinished()).map((l) => l.id);
 		const lessonIdsOfFinishedCourses = lessons.filter((l) => l.course.isFinished()).map((l) => l.id);
 
+		let filters = {};
+		if (!this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])) {
+			filters = { userId: user.id };
+		}
+
 		const [tasks, total] = await this.taskRepo.findAllFinishedByParentIds(
 			{
 				creatorId: userId,
@@ -49,6 +56,7 @@ export class TaskUC {
 				lessonIdsOfOpenCourses,
 				lessonIdsOfFinishedCourses,
 			},
+			filters,
 			{ pagination, order: { dueDate: SortOrder.desc } }
 		);
 
@@ -137,7 +145,7 @@ export class TaskUC {
 				courseIds: openCourses.map((c) => c.id),
 				lessonIds: lessons.map((l) => l.id),
 			},
-			{ afterDueDateOrNone: dueDate, finished: notFinished, availableOn: new Date() },
+			{ afterDueDateOrNone: dueDate, finished: notFinished, availableOn: new Date(), userId: user.id },
 			{
 				pagination,
 				order: { dueDate: SortOrder.asc },
@@ -194,7 +202,7 @@ export class TaskUC {
 		return permittedCourses;
 	}
 
-	private async getPermittedLessons(user: User, courses: Course[]): Promise<LessonEntity[]> {
+	private async getPermittedLessons(user: User, courses: Course[]): Promise<Lesson[]> {
 		const writeCourses = courses.filter((c) =>
 			this.authorizationService.hasPermission(user, c, AuthorizationContextBuilder.write([]))
 		);
@@ -231,5 +239,17 @@ export class TaskUC {
 		await this.taskService.delete(task);
 
 		return true;
+	}
+
+	async create(userId: EntityId, params: ITaskCreate): Promise<TaskWithStatusVo> {
+		return this.taskService.create(userId, params);
+	}
+
+	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
+		return this.taskService.update(userId, taskId, params, true);
+	}
+
+	async find(userId: EntityId, taskId: EntityId) {
+		return this.taskService.find(userId, taskId);
 	}
 }

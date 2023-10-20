@@ -8,7 +8,7 @@ import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { Strategy } from 'passport-custom';
 import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
 import { SchoolInMigrationError } from '../errors/school-in-migration.error';
-import { ICurrentUser, OauthCurrentUser } from '../interface';
+import { ICurrentUser } from '../interface';
 import { CurrentUserMapper } from '../mapper';
 
 @Injectable()
@@ -37,12 +37,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 			throw new UnauthorizedException('no account found');
 		}
 
-		const currentUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
-			account.id,
-			user,
-			systemId,
-			tokenDto.idToken
-		);
+		const currentUser: ICurrentUser = CurrentUserMapper.userDoToICurrentUser(account.id, user, systemId);
 
 		return currentUser;
 	}

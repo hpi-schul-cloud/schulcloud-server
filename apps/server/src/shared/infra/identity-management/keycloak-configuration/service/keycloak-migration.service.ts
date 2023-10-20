@@ -57,9 +57,9 @@ export class KeycloakMigrationService {
 				},
 			],
 			attributes: {
-				dbcAccountId: account.id,
-				dbcUserId: account.userId,
-				dbcSystemId: account.systemId,
+				refTechnicalId: account.id,
+				refFunctionalIntId: account.userId,
+				refFunctionalExtId: account.systemId,
 			},
 		};
 		const kc = await this.kcAdmin.callKcAdminClient();

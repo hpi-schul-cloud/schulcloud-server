@@ -1,10 +1,10 @@
-import { IsString } from 'class-validator';
+import { IsMongoId } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AccountByIdParams {
-	@IsString()
+	@IsMongoId()
 	@ApiProperty({
-		description: 'The id for the account.',
+		description: 'The id for the account as MongoDB id.',
 		required: true,
 		nullable: false,
 	})

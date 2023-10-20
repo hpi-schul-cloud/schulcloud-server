@@ -8,6 +8,7 @@ const compress = require('compression');
 const cors = require('cors');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
+const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
 const { RequestContext } = require('@mikro-orm/core');
@@ -15,6 +16,7 @@ const { BODYPARSER_JSON_LIMIT, LEAD_TIME } = require('../config/globals');
 
 const middleware = require('./middleware');
 const setupConfiguration = require('./configuration');
+const sockets = require('./sockets');
 const services = require('./services');
 const components = require('./components');
 
@@ -24,6 +26,7 @@ const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
 const errorHandler = require('./middleware/errorHandler');
 const rabbitMq = require('./utils/rabbitmq');
+const prometheus = require('./utils/prometheus');
 
 const { setupFacadeLocator } = require('./utils/facadeLocator');
 const setupSwagger = require('./swagger');
@@ -45,6 +48,8 @@ const setupApp = async (orm) => {
 			next();
 		});
 	}
+
+	app.configure(prometheus);
 
 	setupFacadeLocator(app);
 	setupSwagger(app);
@@ -75,6 +80,7 @@ const setupApp = async (orm) => {
 			res.send({ message: 'pong', timestamp: new Date().getTime() });
 		})
 		.configure(rest(handleResponseType))
+		.configure(socketio())
 		.use((req, res, next) => {
 			// pass header into hooks.params
 			// todo: To create a fake requestId on this place is a temporary solution
@@ -93,7 +99,13 @@ const setupApp = async (orm) => {
 			next();
 		});
 	}
-	app.configure(services).configure(components).configure(middleware).configure(setupAppHooks).configure(errorHandler);
+	app
+		.configure(services)
+		.configure(components)
+		.configure(sockets)
+		.configure(middleware)
+		.configure(setupAppHooks)
+		.configure(errorHandler);
 
 	return app;
 };

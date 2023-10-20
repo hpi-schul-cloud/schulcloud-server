@@ -8,7 +8,7 @@ import {
 	FileRecordResponse,
 	SingleFileParams,
 } from '../controller/dto';
-import { FileRecord, FileRecordParentType, PreviewStatus } from '../entity';
+import { FileRecord, FileRecordParentType } from '../entity';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {
@@ -115,7 +115,6 @@ describe('FilesStorageMapper', () => {
 				mimeType: fileRecord.mimeType,
 				parentType: fileRecord.parentType,
 				deletedSince: fileRecord.deletedSince,
-				previewStatus: PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE,
 			};
 
 			expect(result).toEqual(expectedFileRecordResponse);

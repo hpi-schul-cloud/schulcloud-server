@@ -7,7 +7,6 @@ export const fileElementNodeFactory = BaseFactory.define<FileElementNode, FileEl
 	({ sequence }) => {
 		return {
 			caption: `caption #${sequence}`,
-			alternativeText: `alternativeText #${sequence}`,
 		};
 	}
 );

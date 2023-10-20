@@ -1,38 +1,42 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import {
+	ContextExternalTool,
+	ContextExternalToolDO,
+	ContextRef,
+	IContextExternalToolProperties,
+	SchoolExternalTool,
+} from '@shared/domain';
+import { ContextExternalToolType } from '@shared/domain/entity/tools/course-external-tool/context-external-tool-type.enum';
 import { BaseDORepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ToolContextType } from '@src/modules/tool/common/enum/tool-context-type.enum';
-import { ContextExternalTool, ContextRef } from '@src/modules/tool/context-external-tool/domain';
-import {
-	ContextExternalToolEntity,
-	ContextExternalToolType,
-	IContextExternalToolProperties,
-} from '@src/modules/tool/context-external-tool/entity';
-import { ContextExternalToolQuery } from '@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types';
-import { SchoolExternalToolRefDO } from '@src/modules/tool/school-external-tool/domain';
-import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
-import { EntityId } from '../../domain';
+import { ToolContextType } from '@src/modules/tool/interface';
+import { ContextExternalToolQuery } from '@src/modules/tool/uc/dto';
+import { SchoolExternalToolRefDO } from '../../domain';
 import { ExternalToolRepoMapper } from '../externaltool';
 import { ContextExternalToolScope } from './context-external-tool.scope';
 
 @Injectable()
 export class ContextExternalToolRepo extends BaseDORepo<
+	ContextExternalToolDO,
 	ContextExternalTool,
-	ContextExternalToolEntity,
 	IContextExternalToolProperties
 > {
-	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
+	constructor(
+		private readonly externalToolRepoMapper: ExternalToolRepoMapper,
+		protected readonly _em: EntityManager,
+		protected readonly logger: LegacyLogger
+	) {
 		super(_em, logger);
 	}
 
-	get entityName(): EntityName<ContextExternalToolEntity> {
-		return ContextExternalToolEntity;
+	get entityName(): EntityName<ContextExternalTool> {
+		return ContextExternalTool;
 	}
 
-	entityFactory(props: IContextExternalToolProperties): ContextExternalToolEntity {
-		return new ContextExternalToolEntity(props);
+	entityFactory(props: IContextExternalToolProperties): ContextExternalTool {
+		return new ContextExternalTool(props);
 	}
 
 	async deleteBySchoolExternalToolIds(schoolExternalToolIds: string[]): Promise<number> {
@@ -42,29 +46,15 @@ export class ContextExternalToolRepo extends BaseDORepo<
 		return count;
 	}
 
-	async find(query: ContextExternalToolQuery): Promise<ContextExternalTool[]> {
+	async find(query: ContextExternalToolQuery): Promise<ContextExternalToolDO[]> {
 		const scope: ContextExternalToolScope = this.buildScope(query);
 
-		const entities: ContextExternalToolEntity[] = await this._em.find(this.entityName, scope.query, {
+		const entities: ContextExternalTool[] = await this._em.find(this.entityName, scope.query, {
 			populate: ['schoolTool.school'],
 		});
 
-		const dos: ContextExternalTool[] = entities.map((entity: ContextExternalToolEntity) => this.mapEntityToDO(entity));
+		const dos: ContextExternalToolDO[] = entities.map((entity: ContextExternalTool) => this.mapEntityToDO(entity));
 		return dos;
-	}
-
-	public override async findById(id: EntityId): Promise<ContextExternalTool> {
-		const entity: ContextExternalToolEntity = await this._em.findOneOrFail(
-			this.entityName,
-			{ id },
-			{
-				populate: ['schoolTool.school'],
-			}
-		);
-
-		const mapped: ContextExternalTool = this.mapEntityToDO(entity);
-
-		return mapped;
 	}
 
 	private buildScope(query: ContextExternalToolQuery): ContextExternalToolScope {
@@ -79,7 +69,7 @@ export class ContextExternalToolRepo extends BaseDORepo<
 		return scope;
 	}
 
-	mapEntityToDO(entity: ContextExternalToolEntity): ContextExternalTool {
+	mapEntityToDO(entity: ContextExternalTool): ContextExternalToolDO {
 		const schoolToolRef: SchoolExternalToolRefDO = new SchoolExternalToolRefDO({
 			schoolId: entity.schoolTool.school?.id,
 			schoolToolId: entity.schoolTool.id,
@@ -90,24 +80,24 @@ export class ContextExternalToolRepo extends BaseDORepo<
 			type: this.mapContextTypeToDoType(entity.contextType),
 		});
 
-		return new ContextExternalTool({
+		return new ContextExternalToolDO({
 			id: entity.id,
 			schoolToolRef,
 			contextRef,
 			displayName: entity.displayName,
 			toolVersion: entity.toolVersion,
-			parameters: ExternalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.parameters),
+			parameters: this.externalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.parameters),
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: ContextExternalTool): IContextExternalToolProperties {
+	mapDOToEntityProperties(entityDO: ContextExternalToolDO): IContextExternalToolProperties {
 		return {
 			contextId: entityDO.contextRef.id,
 			contextType: this.mapContextTypeToEntityType(entityDO.contextRef.type),
 			displayName: entityDO.displayName,
-			schoolTool: this._em.getReference(SchoolExternalToolEntity, entityDO.schoolToolRef.schoolToolId),
+			schoolTool: this._em.getReference(SchoolExternalTool, entityDO.schoolToolRef.schoolToolId),
 			toolVersion: entityDO.toolVersion,
-			parameters: ExternalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
+			parameters: this.externalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
 		};
 	}
 
@@ -115,8 +105,6 @@ export class ContextExternalToolRepo extends BaseDORepo<
 		switch (type) {
 			case ToolContextType.COURSE:
 				return ContextExternalToolType.COURSE;
-			case ToolContextType.BOARD_ELEMENT:
-				return ContextExternalToolType.BOARD_ELEMENT;
 			default:
 				throw new Error('Unknown ToolContextType');
 		}
@@ -126,8 +114,6 @@ export class ContextExternalToolRepo extends BaseDORepo<
 		switch (type) {
 			case ContextExternalToolType.COURSE:
 				return ToolContextType.COURSE;
-			case ContextExternalToolType.BOARD_ELEMENT:
-				return ToolContextType.BOARD_ELEMENT;
 			default:
 				throw new Error('Unknown ContextExternalToolType');
 		}

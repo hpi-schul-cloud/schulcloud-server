@@ -1,6 +1,6 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo, UserDO } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { OauthDataDto, ProvisioningDto } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
 import { OidcProvisioningService } from './service/oidc-provisioning.service';
@@ -12,7 +12,7 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	override async apply(data: OauthDataDto): Promise<ProvisioningDto> {
-		let school: LegacySchoolDo | undefined;
+		let school: SchoolDO | undefined;
 		if (data.externalSchool) {
 			school = await this.oidcProvisioningService.provisionExternalSchool(data.externalSchool, data.system.systemId);
 		}
@@ -22,21 +22,6 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 			data.system.systemId,
 			school?.id
 		);
-
-		if (Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED') && data.externalGroups) {
-			await this.oidcProvisioningService.removeExternalGroupsAndAffiliation(
-				data.externalUser.externalId,
-				data.externalGroups,
-				data.system.systemId
-			);
-
-			await Promise.all(
-				data.externalGroups.map((externalGroup) =>
-					this.oidcProvisioningService.provisionExternalGroup(externalGroup, data.system.systemId)
-				)
-			);
-		}
-
 		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
 	}
 }

@@ -183,9 +183,10 @@ describe('AuthorizationHelper', () => {
 		describe('when several props are given', () => {
 			it('should return true if the user is referenced in at least one prop', () => {
 				const user = userFactory.build();
-				const task = taskFactory.build({ creator: user });
+				const user2 = userFactory.build();
+				const task = taskFactory.build({ creator: user, users: [user2] });
 
-				const permissions = service.hasAccessToEntity(user, task, ['creator']);
+				const permissions = service.hasAccessToEntity(user, task, ['creator', 'users']);
 
 				expect(permissions).toEqual(true);
 			});
@@ -193,9 +194,10 @@ describe('AuthorizationHelper', () => {
 			it('should return false if the user is referenced in none of the props', () => {
 				const user = userFactory.build();
 				const user2 = userFactory.build();
-				const task = taskFactory.build({ creator: user });
+				const user3 = userFactory.build();
+				const task = taskFactory.build({ creator: user, users: [user2] });
 
-				const permissions = service.hasAccessToEntity(user2, task, ['creator']);
+				const permissions = service.hasAccessToEntity(user3, task, ['creator', 'users']);
 
 				expect(permissions).toEqual(false);
 			});

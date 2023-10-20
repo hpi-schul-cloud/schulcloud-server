@@ -5,6 +5,9 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: api-files
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '4444'
 spec:
   type: ClusterIP
   ports:

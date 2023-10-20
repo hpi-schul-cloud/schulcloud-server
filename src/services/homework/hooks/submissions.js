@@ -1,5 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { iff, isProvider } = require('feathers-hooks-common');
+const { iff, isProvider, disallow } = require('feathers-hooks-common');
 
 const { Forbidden, BadRequest, GeneralError, Conflict } = require('../../../errors');
 
@@ -376,10 +376,40 @@ const hasEditPermission = (context) => {
 	return Promise.reject(new Forbidden());
 };
 
-const hasDeletePermission = (context) => {
-	if (context.data.isTeamMember) {
-		return Promise.resolve(context);
+const isAssigned = (homework, userId) => {
+	// teachers can access
+	if (equalIds(homework.teacherId, userId)) {
+		return true;
 	}
+	// task has no assignment
+	if (!homework.userIds || homework.userIds.length === 0) {
+		return true;
+	}
+	// user is assigned
+	if ((homework.userIds || []).map((s) => s.toString()).includes(userId)) {
+		return true;
+	}
+
+	return false;
+};
+
+const hasTaskAssignment = async (context) => {
+	const currentUserId = context.params.account.userId;
+
+	let homeworkId = '';
+	if (context.result && context.result.homeworkId) {
+		homeworkId = context.result.homeworkId.toString();
+	} else if (context.data) {
+		homeworkId = context.data.homeworkId || (context.data.submission || {}).homeworkId;
+	}
+
+	const homeworkService = context.app.service('/homework');
+	const homework = await homeworkService.get(homeworkId);
+	const checkHomeworkAssigment = isAssigned(homework, currentUserId);
+	if (checkHomeworkAssigment) {
+		return context;
+	}
+
 	return Promise.reject(new Forbidden());
 };
 
@@ -463,6 +493,7 @@ exports.before = () => ({
 		globalHooks.hasPermission('SUBMISSIONS_CREATE'),
 		insertHomeworkData,
 		insertSubmissionsData,
+		hasTaskAssignment,
 		setTeamMembers,
 		noSubmissionBefore,
 		noDuplicateSubmissionForTeamMembers,
@@ -474,6 +505,7 @@ exports.before = () => ({
 		globalHooks.hasPermission('SUBMISSIONS_EDIT'),
 		insertSubmissionData,
 		insertHomeworkData,
+		hasTaskAssignment,
 		insertSubmissionsData,
 		hasEditPermission,
 		preventNoTeamMember,
@@ -487,6 +519,7 @@ exports.before = () => ({
 		globalHooks.hasPermission('SUBMISSIONS_EDIT'),
 		insertSubmissionData,
 		insertHomeworkData,
+		hasTaskAssignment,
 		insertSubmissionsData,
 		hasEditPermission,
 		preventNoTeamMember,
@@ -497,22 +530,15 @@ exports.before = () => ({
 		globalHooks.permitGroupOperation,
 		canGrade,
 	],
-	remove: [
-		globalHooks.hasPermission('SUBMISSIONS_CREATE'),
-		insertSubmissionData,
-		insertHomeworkData,
-		insertSubmissionsData,
-		globalHooks.permitGroupOperation,
-		hasDeletePermission,
-	],
+	remove: [disallow()],
 });
 
 exports.after = {
 	all: [],
 	find: [],
-	get: [checkGetSubmissionViewPermission],
+	get: [checkGetSubmissionViewPermission, hasTaskAssignment],
 	create: [],
 	update: [],
 	patch: [],
-	remove: [],
+	remove: [disallow()],
 };

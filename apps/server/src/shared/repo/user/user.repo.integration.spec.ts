@@ -1,7 +1,7 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MatchCreator, SortOrder, SystemEntity, User } from '@shared/domain';
+import { MatchCreator, SortOrder, System, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, importUserFactory, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
@@ -119,7 +119,7 @@ describe('user repo', () => {
 	});
 
 	describe('findByExternalIdorFail', () => {
-		let sys: SystemEntity;
+		let sys: System;
 		let userA: User;
 		let userB: User;
 		beforeEach(async () => {
@@ -397,47 +397,6 @@ describe('user repo', () => {
 			await repo.flush();
 
 			expect(user.id).not.toBeNull();
-		});
-	});
-
-	describe('delete', () => {
-		const setup = async () => {
-			const user1: User = userFactory.buildWithId();
-			const user2: User = userFactory.buildWithId();
-			const user3: User = userFactory.buildWithId();
-			await em.persistAndFlush([user1, user2, user3]);
-
-			return {
-				user1,
-				user2,
-				user3,
-			};
-		};
-		it('should delete user', async () => {
-			const { user1, user2, user3 } = await setup();
-			const deleteResult = await repo.deleteUser(user1.id);
-			expect(deleteResult).toEqual(1);
-
-			const result1 = await em.find(User, { id: user1.id });
-			expect(result1).toHaveLength(0);
-
-			const result2 = await repo.findById(user2.id);
-			expect(result2).toMatchObject({
-				firstName: user2.firstName,
-				lastName: user2.lastName,
-				email: user2.email,
-				roles: user2.roles,
-				school: user2.school,
-			});
-
-			const result3 = await repo.findById(user3.id);
-			expect(result3).toMatchObject({
-				firstName: user3.firstName,
-				lastName: user3.lastName,
-				email: user3.email,
-				roles: user3.roles,
-				school: user3.school,
-			});
 		});
 	});
 });

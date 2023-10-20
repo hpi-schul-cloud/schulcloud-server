@@ -3,7 +3,7 @@ import { v1 } from 'uuid';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IdmAccount } from '@shared/domain';
+import { IAccount } from '@shared/domain';
 import { IdentityManagementService } from '@shared/infra/identity-management';
 import { AccountLookupService } from './account-lookup.service';
 
@@ -16,9 +16,9 @@ describe('AccountLookupService', () => {
 	const internalId = new ObjectId().toHexString();
 	const internalIdAsObjectId = new ObjectId(internalId);
 	const externalId = v1();
-	const accountMock: IdmAccount = {
+	const accountMock: IAccount = {
 		id: externalId,
-		attDbcAccountId: internalId,
+		attRefTechnicalId: internalId,
 	};
 
 	beforeAll(async () => {
@@ -74,7 +74,7 @@ describe('AccountLookupService', () => {
 				setup();
 				const result = await accountLookupService.getInternalId(accountMock.id);
 				expect(result).toBeInstanceOf(ObjectId);
-				expect(result?.toHexString()).toBe(accountMock.attDbcAccountId);
+				expect(result?.toHexString()).toBe(accountMock.attRefTechnicalId);
 			});
 		});
 
@@ -102,7 +102,7 @@ describe('AccountLookupService', () => {
 		describe('when id is an internal id and FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED is enabled', () => {
 			const setup = () => {
 				configServiceMock.get.mockReturnValue(true);
-				idmServiceMock.findAccountByDbcAccountId.mockResolvedValue(accountMock);
+				idmServiceMock.findAccountByTecRefId.mockResolvedValue(accountMock);
 			};
 
 			it('should return the external id', async () => {

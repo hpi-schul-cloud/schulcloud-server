@@ -1,38 +1,39 @@
 import { S3Client } from '@aws-sdk/client-s3';
-import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ObjectId } from 'bson';
-import { StorageProviderRepo } from '@shared/repo/storageprovider';
+import { File, StorageProvider } from '@shared/domain/entity';
+import { FilesRepo } from '@shared/repo';
+import { StorageProviderRepo } from '@shared/repo/storageprovider/storageprovider.repo';
 import { storageProviderFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { DeleteFilesUc } from './delete-files.uc';
-import { FilesRepo } from '../repo';
-import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
 
-describe(DeleteFilesUc.name, () => {
+describe('DeleteFileUC', () => {
 	let service: DeleteFilesUc;
 	let filesRepo: DeepMocked<FilesRepo>;
 	let storageProviderRepo: DeepMocked<StorageProviderRepo>;
 	let s3Mock: AwsClientStub<S3Client>;
 	let logger: DeepMocked<LegacyLogger>;
 
-	const userId = new ObjectId().toHexString();
-
-	const storageProvider = storageProviderFactory.build();
+	const exampleStorageProvider = new StorageProvider({
+		endpointUrl: 'endpointUrl',
+		accessKeyId: 'accessKey',
+		secretAccessKey: 'secret',
+	});
 
 	const exampleFiles = [
-		fileEntityFactory.build({
-			storageProvider,
-			ownerId: userId,
-			creatorId: userId,
-			permissions: [filePermissionEntityFactory.build({ refId: userId })],
+		new File({
+			storageProvider: exampleStorageProvider,
+			storageFileName: 'file1',
+			bucket: 'bucket',
+			name: 'filename1',
 		}),
-		fileEntityFactory.build({
-			storageProvider,
-			ownerId: userId,
-			creatorId: userId,
-			permissions: [filePermissionEntityFactory.build({ refId: userId })],
+		new File({
+			storageProvider: exampleStorageProvider,
+			storageFileName: 'file2',
+			bucket: 'bucket',
+			name: 'filename2',
 		}),
 	];
 
@@ -81,9 +82,10 @@ describe(DeleteFilesUc.name, () => {
 			const setup = () => {
 				const thresholdDate = new Date();
 				const batchSize = 3;
-				filesRepo.findForCleanup.mockResolvedValueOnce(exampleFiles);
-				filesRepo.findForCleanup.mockResolvedValueOnce([]);
+				filesRepo.findFilesForCleanup.mockResolvedValueOnce(exampleFiles);
+				filesRepo.findFilesForCleanup.mockResolvedValueOnce([]);
 
+				const storageProvider = storageProviderFactory.build();
 				storageProviderRepo.findAll.mockResolvedValueOnce([storageProvider]);
 
 				return { thresholdDate, batchSize };
@@ -114,9 +116,10 @@ describe(DeleteFilesUc.name, () => {
 				const batchSize = 3;
 				const error = new Error();
 
-				filesRepo.findForCleanup.mockResolvedValueOnce(exampleFiles);
-				filesRepo.findForCleanup.mockResolvedValueOnce([]);
+				filesRepo.findFilesForCleanup.mockResolvedValueOnce(exampleFiles);
+				filesRepo.findFilesForCleanup.mockResolvedValueOnce([]);
 
+				const storageProvider = storageProviderFactory.build();
 				storageProviderRepo.findAll.mockResolvedValueOnce([storageProvider]);
 
 				const spy = jest.spyOn(DeleteFilesUc.prototype as any, 'deleteFileInStorage');

@@ -12,7 +12,9 @@
 		"strictPropertyInitialization": true,
 		"noImplicitAny": false,
 		"target": "es2017",
-		"lib": ["es2019.array", "DOM"],
+		"lib": [
+			"es2019.array"
+		],
 		"sourceMap": true,
 		"outDir": "./dist",
 		"baseUrl": "./",
@@ -20,6 +22,6 @@
 		"paths": {
 			"@shared/*": ["apps/server/src/shared/*"],
 			"@src/*": ["apps/server/src/*"]
-		},
+		}
 	}
 }

@@ -1,7 +1,7 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SystemEntity, SystemTypeEnum } from '@shared/domain';
+import { System, SystemTypeEnum } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { SystemRepo } from '@shared/repo';
 import { systemFactory } from '@shared/testing/factory/system.factory';
@@ -30,12 +30,12 @@ describe('system repo', () => {
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(SystemEntity);
+		expect(repo.entityName).toBe(System);
 	});
 
 	describe('findById', () => {
 		afterEach(async () => {
-			await em.nativeDelete(SystemEntity, {});
+			await em.nativeDelete(System, {});
 		});
 
 		it('should return right keys', async () => {
@@ -76,7 +76,7 @@ describe('system repo', () => {
 
 	describe('findAll', () => {
 		afterEach(async () => {
-			await em.nativeDelete(SystemEntity, {});
+			await em.nativeDelete(System, {});
 		});
 
 		it('should return all systems', async () => {
@@ -100,7 +100,7 @@ describe('system repo', () => {
 		});
 
 		afterAll(async () => {
-			await em.nativeDelete(SystemEntity, {});
+			await em.nativeDelete(System, {});
 		});
 
 		describe('when searching for a system type', () => {

@@ -1,21 +1,21 @@
 import { Entity, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
-import { SchoolEntity } from '@shared/domain/entity/school.entity';
-import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { School } from '@shared/domain/entity/school.entity';
+import { System } from '@shared/domain/entity/system.entity';
 import { BaseEntityWithTimestamps } from './base.entity';
 
-export type IUserLoginMigration = Readonly<Omit<UserLoginMigrationEntity, keyof BaseEntityWithTimestamps>>;
+export type IUserLoginMigration = Readonly<Omit<UserLoginMigration, keyof BaseEntityWithTimestamps>>;
 
 @Entity({ tableName: 'user_login_migrations' })
-export class UserLoginMigrationEntity extends BaseEntityWithTimestamps {
-	@OneToOne(() => SchoolEntity, undefined, { nullable: false })
-	school: SchoolEntity;
+export class UserLoginMigration extends BaseEntityWithTimestamps {
+	@OneToOne(() => School, undefined, { nullable: false })
+	school: School;
 
 	// undefined, if migrating from 'local'
-	@ManyToOne(() => SystemEntity, { nullable: true })
-	sourceSystem?: SystemEntity;
+	@ManyToOne(() => System, { nullable: true })
+	sourceSystem?: System;
 
-	@ManyToOne(() => SystemEntity)
-	targetSystem: SystemEntity;
+	@ManyToOne(() => System)
+	targetSystem: System;
 
 	@Property({ nullable: true })
 	mandatorySince?: Date;

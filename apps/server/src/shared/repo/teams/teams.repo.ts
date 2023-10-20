@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Role, TeamEntity, TeamUserEntity } from '@shared/domain';
+import { EntityId, Role, Team, TeamUser } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseRepo } from '../base.repo';
 
 @Injectable()
-export class TeamsRepo extends BaseRepo<TeamEntity> {
+export class TeamsRepo extends BaseRepo<Team> {
 	get entityName() {
-		return TeamEntity;
+		return Team;
 	}
 
 	cacheExpiration = 60000;
 
-	async findById(id: EntityId, populate = false): Promise<TeamEntity> {
-		const team = await this._em.findOneOrFail(TeamEntity, { id }, { cache: this.cacheExpiration });
+	async findById(id: EntityId, populate = false): Promise<Team> {
+		const team = await this._em.findOneOrFail(Team, { id }, { cache: this.cacheExpiration });
 
 		if (populate) {
 			await Promise.all<void>(
-				team.teamUsers.map(async (teamUser: TeamUserEntity): Promise<void> => {
+				team.teamUsers.map(async (teamUser: TeamUser): Promise<void> => {
 					await this._em.populate(teamUser, ['role']);
 					await this.populateRoles([teamUser.role]);
 				})
@@ -32,10 +32,8 @@ export class TeamsRepo extends BaseRepo<TeamEntity> {
 	 * @param userId
 	 * @return Array of teams
 	 */
-	async findByUserId(userId: EntityId): Promise<TeamEntity[]> {
-		const teams: TeamEntity[] = await this._em.find<TeamEntity>(TeamEntity, {
-			userIds: { userId: new ObjectId(userId) },
-		});
+	async findByUserId(userId: EntityId): Promise<Team[]> {
+		const teams: Team[] = await this._em.find<Team>(Team, { userIds: { userId: new ObjectId(userId) } });
 		return teams;
 	}
 

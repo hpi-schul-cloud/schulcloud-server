@@ -1,29 +1,25 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Injectable } from '@nestjs/common';
 import {
+	BaseEntity,
 	ComponentType,
+	EntityId,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
 	IComponentLernstoreProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,
 	IComponentTextProperties,
-	LessonEntity,
+	Lesson,
 	Material,
 } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
-import {
-	CopyDictionary,
-	CopyElementType,
-	CopyHelperService,
-	CopyStatus,
-	CopyStatusEnum,
-} from '@src/modules/copy-helper';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CopyFilesService } from '@src/modules/files-storage-client';
 import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
-import { TaskCopyService } from '@src/modules/task/service/task-copy.service';
+import { TaskCopyService } from '@src/modules/task';
 import { randomBytes } from 'crypto';
-import { LessonCopyParams } from '../types';
+import { LessonCopyParams } from '../types/lesson-copy.params';
 import { EtherpadService } from './etherpad.service';
 import { NexboardService } from './nexboard.service';
 
@@ -39,11 +35,11 @@ export class LessonCopyService {
 	) {}
 
 	async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
-		const lesson: LessonEntity = await this.lessonRepo.findById(params.originalLessonId);
+		const lesson: Lesson = await this.lessonRepo.findById(params.originalLessonId);
 		const { copiedContent, contentStatus } = await this.copyLessonContent(lesson.contents, params);
 		const { copiedMaterials, materialsStatus } = this.copyLinkedMaterials(lesson);
 
-		const lessonCopy = new LessonEntity({
+		const lessonCopy = new Lesson({
 			course: params.destinationCourse,
 			hidden: true,
 			name: params.copyName ?? lesson.name,
@@ -87,8 +83,8 @@ export class LessonCopyService {
 		contentStatus: CopyStatus[],
 		materialsStatus: CopyStatus[],
 		copiedTasksStatus: CopyStatus[],
-		lessonCopy: LessonEntity,
-		originalLesson: LessonEntity
+		lessonCopy: Lesson,
+		originalLesson: Lesson
 	) {
 		const elements: CopyStatus[] = [
 			...LessonCopyService.lessonStatusMetadata(),
@@ -108,8 +104,8 @@ export class LessonCopyService {
 		return { status, elements };
 	}
 
-	updateCopiedEmbeddedTasks(lessonStatus: CopyStatus, copyDict: CopyDictionary): CopyStatus {
-		const copiedLesson = lessonStatus.copyEntity as LessonEntity;
+	updateCopiedEmbeddedTasks(lessonStatus: CopyStatus, copyDict: Map<EntityId, BaseEntity>): CopyStatus {
+		const copiedLesson = lessonStatus.copyEntity as Lesson;
 
 		if (copiedLesson?.contents === undefined) {
 			return lessonStatus;
@@ -126,7 +122,7 @@ export class LessonCopyService {
 
 	private updateCopiedEmbeddedTaskId = (
 		value: IComponentProperties,
-		copyDict: CopyDictionary
+		copyDict: Map<EntityId, BaseEntity>
 	): IComponentProperties => {
 		if (value.component !== ComponentType.INTERNAL || value.content === undefined || value.content.url === undefined) {
 			return value;
@@ -339,7 +335,7 @@ export class LessonCopyService {
 		return false;
 	}
 
-	private async copyLinkedTasks(destinationLesson: LessonEntity, lesson: LessonEntity, params: LessonCopyParams) {
+	private async copyLinkedTasks(destinationLesson: Lesson, lesson: Lesson, params: LessonCopyParams) {
 		const linkedTasks = lesson.getLessonLinkedTasks();
 		if (linkedTasks.length > 0) {
 			const copiedTasksStatus = await Promise.all(
@@ -362,7 +358,7 @@ export class LessonCopyService {
 		return [];
 	}
 
-	private copyLinkedMaterials(originalLesson: LessonEntity): {
+	private copyLinkedMaterials(originalLesson: Lesson): {
 		copiedMaterials: Material[];
 		materialsStatus: CopyStatus[];
 	} {

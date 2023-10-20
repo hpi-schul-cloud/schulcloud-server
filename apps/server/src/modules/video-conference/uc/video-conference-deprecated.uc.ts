@@ -6,8 +6,8 @@ import {
 	Permission,
 	RoleName,
 	SchoolFeatures,
-	TeamEntity,
-	TeamUserEntity,
+	Team,
+	TeamUser,
 	UserDO,
 	VideoConferenceDO,
 	VideoConferenceOptionsDO,
@@ -24,9 +24,10 @@ import {
 	AuthorizationContextBuilder,
 	AuthorizationService,
 } from '@src/modules/authorization';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LegacySchoolService } from '@src/modules/legacy-school';
+import { SchoolService } from '@src/modules/school/service/school.service';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { UserService } from '@src/modules/user';
+import { IScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
 import {
 	BBBBaseMeetingConfig,
 	BBBBaseResponse,
@@ -39,9 +40,8 @@ import {
 	BBBService,
 	GuestPolicy,
 } from '../bbb';
-import { ErrorStatus } from '../error/error-status.enum';
 import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
-import { IScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
+import { ErrorStatus } from '../error/error-status.enum';
 
 const PermissionMapping = {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,
@@ -68,7 +68,7 @@ export class VideoConferenceDeprecatedUc {
 		private readonly courseService: CourseService,
 		private readonly userService: UserService,
 		private readonly calendarService: CalendarService,
-		private readonly schoolService: LegacySchoolService
+		private readonly schoolService: SchoolService
 	) {
 		this.hostURL = Configuration.get('HOST') as string;
 	}
@@ -319,9 +319,9 @@ export class VideoConferenceDeprecatedUc {
 				return roles.includes(RoleName.EXPERT);
 			}
 			case VideoConferenceScope.EVENT: {
-				const team: TeamEntity = await this.teamsRepo.findById(scopeId);
-				const teamUser: TeamUserEntity | undefined = team.teamUsers.find(
-					(userInTeam: TeamUserEntity) => userInTeam.user.id === currentUser.userId
+				const team: Team = await this.teamsRepo.findById(scopeId);
+				const teamUser: TeamUser | undefined = team.teamUsers.find(
+					(userInTeam: TeamUser) => userInTeam.user.id === currentUser.userId
 				);
 
 				if (teamUser === undefined) {

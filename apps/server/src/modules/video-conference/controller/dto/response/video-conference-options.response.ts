@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { VideoConferenceOptions } from '../../../interface';
 
-export class VideoConferenceOptionsResponse {
+export class VideoConferenceOptionsResponse implements VideoConferenceOptions {
 	@ApiProperty({
 		description: 'Every attendee joins muted',
 		example: false,

@@ -7,34 +7,21 @@ import {
 	NotFoundException,
 	Param,
 	Patch,
-	Post,
 	Put,
 } from '@nestjs/common';
-import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
+import { ContentElementUrlParams, MoveContentElementBody } from './dto';
 import {
-	AnyContentElementResponse,
-	ContentElementUrlParams,
-	CreateSubmissionItemBodyParams,
-	ExternalToolElementContentBody,
-	ExternalToolElementResponse,
-	FileElementContentBody,
-	FileElementResponse,
-	LinkElementContentBody,
-	LinkElementResponse,
-	MoveContentElementBody,
-	RichTextElementContentBody,
-	RichTextElementResponse,
-	SubmissionContainerElementContentBody,
-	SubmissionContainerElementResponse,
-	SubmissionItemResponse,
 	UpdateElementContentBodyParams,
-} from './dto';
-import { ContentElementResponseFactory, SubmissionItemResponseMapper } from './mapper';
+	FileElementContentBody,
+	RichTextElementContentBody,
+	SubmissionContainerElementContentBody,
+} from './dto/element/update-element-content.body.params';
 
 @ApiTags('Board Element')
 @Authenticate('jwt')
@@ -63,42 +50,19 @@ export class ElementController {
 	}
 
 	@ApiOperation({ summary: 'Update a single content element.' })
-	@ApiExtraModels(
-		FileElementContentBody,
-		RichTextElementContentBody,
-		SubmissionContainerElementContentBody,
-		ExternalToolElementContentBody,
-		LinkElementContentBody
-	)
-	@ApiResponse({
-		status: 201,
-		schema: {
-			oneOf: [
-				{ $ref: getSchemaPath(ExternalToolElementResponse) },
-				{ $ref: getSchemaPath(FileElementResponse) },
-				{ $ref: getSchemaPath(LinkElementResponse) },
-				{ $ref: getSchemaPath(RichTextElementResponse) },
-				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
-			],
-		},
-	})
+	@ApiExtraModels(FileElementContentBody, RichTextElementContentBody, SubmissionContainerElementContentBody)
+	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@HttpCode(201)
+	@HttpCode(204)
 	@Patch(':contentElementId/content')
 	async updateElement(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: UpdateElementContentBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<AnyContentElementResponse> {
-		const element = await this.elementUc.updateElementContent(
-			currentUser.userId,
-			urlParams.contentElementId,
-			bodyParams.data.content
-		);
-		const response = ContentElementResponseFactory.mapToResponse(element);
-		return response;
+	): Promise<void> {
+		await this.elementUc.updateElementContent(currentUser.userId, urlParams.contentElementId, bodyParams.data.content);
 	}
 
 	@ApiOperation({ summary: 'Delete a single content element.' })
@@ -113,29 +77,5 @@ export class ElementController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.cardUc.deleteElement(currentUser.userId, urlParams.contentElementId);
-	}
-
-	@ApiOperation({ summary: 'Create a new submission item having parent a submission container element.' })
-	@ApiExtraModels(SubmissionItemResponse)
-	@ApiResponse({ status: 201, type: SubmissionItemResponse })
-	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 403, type: ForbiddenException })
-	@ApiResponse({ status: 404, type: NotFoundException })
-	@ApiBody({ required: true, type: CreateSubmissionItemBodyParams })
-	@Post(':contentElementId/submissions')
-	async createSubmissionItem(
-		@Param() urlParams: ContentElementUrlParams,
-		@Body() bodyParams: CreateSubmissionItemBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<SubmissionItemResponse> {
-		const submissionItem = await this.elementUc.createSubmissionItem(
-			currentUser.userId,
-			urlParams.contentElementId,
-			bodyParams.completed
-		);
-		const mapper = SubmissionItemResponseMapper.getInstance();
-		const response = mapper.mapSubmissionsToResponse(submissionItem);
-
-		return response;
 	}
 }

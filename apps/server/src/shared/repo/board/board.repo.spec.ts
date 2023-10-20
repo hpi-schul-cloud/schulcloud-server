@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, LessonEntity, Task } from '@shared/domain';
+import { Board, Lesson, Task } from '@shared/domain';
 import {
 	courseFactory,
 	boardFactory,
@@ -115,7 +115,7 @@ describe('BoardRepo', () => {
 		em.clear();
 
 		const result = await repo.findById(board.id);
-		const resultLesson = result.references.getItems()[0].target as LessonEntity;
+		const resultLesson = result.references.getItems()[0].target as Lesson;
 		expect(resultLesson.hidden).toBeDefined();
 	});
 

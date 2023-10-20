@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { createMock } from '@golevelup/ts-jest';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, IdmAccount } from '@shared/domain';
+import { Account, IAccount } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
@@ -56,9 +55,9 @@ describe('AccountService Integration', () => {
 		const idmId = await identityManagementService.createAccount(
 			{
 				username: testAccount.username,
-				attDbcUserId: testAccount.userId,
-				attDbcSystemId: testAccount.systemId,
-				attDbcAccountId: refId,
+				attRefFunctionalIntId: testAccount.userId,
+				attRefFunctionalExtId: testAccount.systemId,
+				attRefTechnicalId: refId,
 			},
 			testAccount.password
 		);
@@ -138,12 +137,12 @@ describe('AccountService Integration', () => {
 	const compareIdmAccount = async (idmId: string, createdAccount: AccountDto): Promise<void> => {
 		const foundAccount = await identityManagementService.findAccountById(idmId);
 		expect(foundAccount).toEqual(
-			expect.objectContaining<IdmAccount>({
+			expect.objectContaining<IAccount>({
 				id: createdAccount.idmReferenceId ?? '',
 				username: createdAccount.username,
-				attDbcAccountId: createdAccount.id,
-				attDbcUserId: createdAccount.userId,
-				attDbcSystemId: createdAccount.systemId,
+				attRefTechnicalId: createdAccount.id,
+				attRefFunctionalIntId: createdAccount.userId,
+				attRefFunctionalExtId: createdAccount.systemId,
 			})
 		);
 	};
@@ -159,151 +158,95 @@ describe('AccountService Integration', () => {
 		);
 	};
 
-	describe('save', () => {
-		describe('when account not exists', () => {
-			it('should create a new account', async () => {
-				if (!isIdmReachable) return;
-				const account = await accountService.save(testAccount);
-				await compareDbAccount(account.id, account);
-				await compareIdmAccount(account.idmReferenceId ?? '', account);
-			});
-		});
-
-		describe('when account exists', () => {
-			const setup = async () => {
-				const newUsername = 'jane.doe@mail.tld';
-				const [dbId, idmId] = await createAccount();
-				const originalAccount = await accountService.findById(dbId);
-				return { newUsername, dbId, idmId, originalAccount };
-			};
-			it('save should update existing account', async () => {
-				if (!isIdmReachable) return;
-				const { newUsername, dbId, idmId, originalAccount } = await setup();
-				const updatedAccount = await accountService.save({
-					...originalAccount,
-					username: newUsername,
-				});
-				await compareDbAccount(dbId, updatedAccount);
-				await compareIdmAccount(idmId, updatedAccount);
-			});
-		});
-
-		describe('when only db account exists', () => {
-			const setup = async () => {
-				const newUsername = 'jane.doe@mail.tld';
-				const dbId = await createDbAccount();
-				const originalAccount = await accountService.findById(dbId);
-				return { newUsername, dbId, originalAccount };
-			};
-			it('should create idm account for existing db account', async () => {
-				if (!isIdmReachable) return;
-				const { newUsername, dbId, originalAccount } = await setup();
-
-				const updatedAccount = await accountService.save({
-					...originalAccount,
-					username: newUsername,
-				});
-				await compareDbAccount(dbId, updatedAccount);
-				await compareIdmAccount(updatedAccount.idmReferenceId ?? '', updatedAccount);
-			});
-		});
+	it('save should create a new account', async () => {
+		if (!isIdmReachable) return;
+		const account = await accountService.save(testAccount);
+		await compareDbAccount(account.id, account);
+		await compareIdmAccount(account.idmReferenceId ?? '', account);
 	});
 
-	describe('updateUsername', () => {
-		describe('when updating Username', () => {
-			const setup = async () => {
-				const newUsername = 'jane.doe@mail.tld';
-				const [dbId, idmId] = await createAccount();
-
-				return { newUsername, dbId, idmId };
-			};
-			it('should update username', async () => {
-				if (!isIdmReachable) return;
-				const { newUsername, dbId, idmId } = await setup();
-
-				await accountService.updateUsername(dbId, newUsername);
-				const foundAccount = await identityManagementService.findAccountById(idmId);
-				const foundDbAccount = await accountRepo.findById(dbId);
-
-				expect(foundAccount).toEqual(
-					expect.objectContaining<Partial<IdmAccount>>({
-						username: newUsername,
-					})
-				);
-				expect(foundDbAccount).toEqual(
-					expect.objectContaining<Partial<Account>>({
-						username: newUsername,
-					})
-				);
-			});
+	it('save should update existing account', async () => {
+		if (!isIdmReachable) return;
+		const newUsername = 'jane.doe@mail.tld';
+		const [dbId, idmId] = await createAccount();
+		const originalAccount = await accountService.findById(dbId);
+		const updatedAccount = await accountService.save({
+			...originalAccount,
+			username: newUsername,
 		});
+		await compareDbAccount(dbId, updatedAccount);
+		await compareIdmAccount(idmId, updatedAccount);
 	});
 
-	describe('updatePassword', () => {
-		describe('when updating password', () => {
-			const setup = async () => {
-				const [dbId] = await createAccount();
-
-				const foundDbAccountBefore = await accountRepo.findById(dbId);
-				const previousPasswordHash = foundDbAccountBefore.password;
-				const foundDbAccountAfter = await accountRepo.findById(dbId);
-
-				return { dbId, previousPasswordHash, foundDbAccountAfter };
-			};
-			it('should update password', async () => {
-				if (!isIdmReachable) return;
-				const { dbId, previousPasswordHash, foundDbAccountAfter } = await setup();
-
-				await expect(accountService.updatePassword(dbId, 'newPassword')).resolves.not.toThrow();
-
-				expect(foundDbAccountAfter.password).not.toEqual(previousPasswordHash);
-			});
+	it('save should create idm account for existing db account', async () => {
+		if (!isIdmReachable) return;
+		const newUsername = 'jane.doe@mail.tld';
+		const dbId = await createDbAccount();
+		const originalAccount = await accountService.findById(dbId);
+		const updatedAccount = await accountService.save({
+			...originalAccount,
+			username: newUsername,
 		});
+		await compareDbAccount(dbId, updatedAccount);
+		await compareIdmAccount(updatedAccount.idmReferenceId ?? '', updatedAccount);
 	});
 
-	describe('delete', () => {
-		describe('when delete an account', () => {
-			const setup = async () => {
-				const [dbId, idmId] = await createAccount();
-				const foundIdmAccount = await identityManagementService.findAccountById(idmId);
-				const foundDbAccount = await accountRepo.findById(dbId);
+	it('updateUsername should update username', async () => {
+		if (!isIdmReachable) return;
+		const newUserName = 'jane.doe@mail.tld';
+		const [dbId, idmId] = await createAccount();
+		await accountService.updateUsername(dbId, newUserName);
 
-				return { dbId, idmId, foundIdmAccount, foundDbAccount };
-			};
-			it('should remove account', async () => {
-				if (!isIdmReachable) return;
-				const { dbId, idmId, foundIdmAccount, foundDbAccount } = await setup();
-
-				expect(foundIdmAccount).toBeDefined();
-				expect(foundDbAccount).toBeDefined();
-
-				await accountService.delete(dbId);
-				await expect(identityManagementService.findAccountById(idmId)).rejects.toThrow();
-				await expect(accountRepo.findById(dbId)).rejects.toThrow();
-			});
-		});
+		const foundAccount = await identityManagementService.findAccountById(idmId);
+		expect(foundAccount).toEqual(
+			expect.objectContaining<Partial<IAccount>>({
+				username: newUserName,
+			})
+		);
+		const foundDbAccount = await accountRepo.findById(dbId);
+		expect(foundDbAccount).toEqual(
+			expect.objectContaining<Partial<Account>>({
+				username: newUserName,
+			})
+		);
 	});
 
-	describe('deleteByUserId', () => {
-		describe('when delete an account by User Id', () => {
-			const setup = async () => {
-				const [dbId, idmId] = await createAccount();
-				const foundIdmAccount = await identityManagementService.findAccountById(idmId);
-				const foundDbAccount = await accountRepo.findById(dbId);
+	it('updatePassword should update password', async () => {
+		if (!isIdmReachable) return;
+		const [dbId] = await createAccount();
 
-				return { dbId, idmId, foundIdmAccount, foundDbAccount };
-			};
-			it('should remove account', async () => {
-				if (!isIdmReachable) return;
-				const { dbId, idmId, foundIdmAccount, foundDbAccount } = await setup();
+		const foundDbAccountBefore = await accountRepo.findById(dbId);
+		const previousPasswordHash = foundDbAccountBefore.password;
 
-				expect(foundIdmAccount).toBeDefined();
-				expect(foundDbAccount).toBeDefined();
+		await expect(accountService.updatePassword(dbId, 'newPassword')).resolves.not.toThrow();
 
-				await accountService.deleteByUserId(testAccount.userId ?? '');
-				await expect(identityManagementService.findAccountById(idmId)).rejects.toThrow();
-				await expect(accountRepo.findById(dbId)).rejects.toThrow();
-			});
-		});
+		const foundDbAccountAfter = await accountRepo.findById(dbId);
+		expect(foundDbAccountAfter.password).not.toEqual(previousPasswordHash);
+	});
+
+	it('delete should remove account', async () => {
+		if (!isIdmReachable) return;
+		const [dbId, idmId] = await createAccount();
+		const foundIdmAccount = await identityManagementService.findAccountById(idmId);
+		expect(foundIdmAccount).toBeDefined();
+		const foundDbAccount = await accountRepo.findById(dbId);
+		expect(foundDbAccount).toBeDefined();
+
+		await accountService.delete(dbId);
+		await expect(identityManagementService.findAccountById(idmId)).rejects.toThrow();
+		await expect(accountRepo.findById(dbId)).rejects.toThrow();
+	});
+
+	it('deleteByUserId should remove account', async () => {
+		if (!isIdmReachable) return;
+		const [dbId, idmId] = await createAccount();
+		const foundAccount = await identityManagementService.findAccountById(idmId);
+		expect(foundAccount).toBeDefined();
+		const foundDbAccount = await accountRepo.findById(dbId);
+		expect(foundDbAccount).toBeDefined();
+
+		await accountService.deleteByUserId(testAccount.userId ?? '');
+		await expect(identityManagementService.findAccountById(idmId)).rejects.toThrow();
+		await expect(accountRepo.findById(dbId)).rejects.toThrow();
 	});
 });

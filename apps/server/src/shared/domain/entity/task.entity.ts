@@ -1,6 +1,6 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
-import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { School } from '@shared/domain/entity/school.entity';
 import { InputFormat } from '@shared/domain/types/input-format.types';
 import type { IEntityWithSchool } from '../interface';
 import type { ILearnroomElement } from '../interface/learnroom';
@@ -8,7 +8,7 @@ import type { EntityId } from '../types/entity-id';
 import type { ITaskProperties, ITaskStatus } from '../types/task.types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
-import type { LessonEntity } from './lesson.entity';
+import type { Lesson } from './lesson.entity';
 import type { Submission } from './submission.entity';
 import { User } from './user.entity';
 
@@ -33,6 +33,14 @@ export type TaskParentDescriptions = {
 
 export interface ITaskParent {
 	getStudentIds(): EntityId[];
+}
+
+export class UsersList {
+	id!: string;
+
+	firstName!: string;
+
+	lastName!: string;
 }
 
 @Entity({ tableName: 'homeworks' })
@@ -66,6 +74,9 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	@Property({ nullable: true })
 	teamSubmissions?: boolean;
 
+	@Property({ nullable: true })
+	taskCard?: string;
+
 	@Index()
 	@ManyToOne('User', { fieldName: 'teacherId' })
 	creator: User;
@@ -75,15 +86,19 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	course?: Course;
 
 	@Index()
-	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
-	school: SchoolEntity;
+	@ManyToOne('School', { fieldName: 'schoolId' })
+	school: School;
 
 	@Index()
-	@ManyToOne('LessonEntity', { fieldName: 'lessonId', nullable: true })
-	lesson?: LessonEntity; // In database exist also null, but it can not set.
+	@ManyToOne('Lesson', { fieldName: 'lessonId', nullable: true })
+	lesson?: Lesson; // In database exist also null, but it can not set.
 
 	@OneToMany('Submission', 'task')
 	submissions = new Collection<Submission>(this);
+
+	@Index()
+	@ManyToMany('User', undefined, { fieldName: 'userIds' })
+	users = new Collection<User>(this);
 
 	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'archived' })
@@ -103,6 +118,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.school = props.school;
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
+		if (props.users) this.users.set(props.users);
 		this.finished.set(props.finished || []);
 		this.publicSubmissions = props.publicSubmissions || false;
 		this.teamSubmissions = props.teamSubmissions || false;
@@ -126,6 +142,22 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		const finishedIds = finishedObjectIds.map((id): string => id.toString());
 
 		return finishedIds;
+	}
+
+	public getUsersList(): UsersList[] {
+		const users = this.users.getItems();
+		if (users.length) {
+			const usersList: UsersList[] = users.map((user) => {
+				return {
+					id: user.id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+				};
+			});
+			return usersList;
+		}
+
+		return [];
 	}
 
 	private getParent(): ITaskParent | User {

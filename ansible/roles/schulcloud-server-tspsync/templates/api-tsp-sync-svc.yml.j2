@@ -5,6 +5,9 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: api-tsp-sync
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '3030'
 spec:
   type: ClusterIP
   ports:

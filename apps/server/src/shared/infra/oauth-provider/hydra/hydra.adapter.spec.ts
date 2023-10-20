@@ -1,7 +1,8 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
+import { HydraAdapter } from '@shared/infra/oauth-provider/hydra/hydra.adapter';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { HttpService } from '@nestjs/axios';
+import { AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
@@ -12,11 +13,9 @@ import {
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '@shared/infra/oauth-provider/dto';
-import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
-import { HydraAdapter } from '@shared/infra/oauth-provider/hydra/hydra.adapter';
-import { axiosResponseFactory } from '@shared/testing';
-import { AxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'axios';
 import { of } from 'rxjs';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 import resetAllMocks = jest.resetAllMocks;
 
 class HydraAdapterSpec extends HydraAdapter {
@@ -24,16 +23,21 @@ class HydraAdapterSpec extends HydraAdapter {
 		method: Method,
 		url: string,
 		data?: unknown,
-		additionalHeaders?: RawAxiosRequestHeaders
+		additionalHeaders: AxiosRequestHeaders = {}
 	): Promise<T> {
 		return super.request(method, url, data, additionalHeaders);
 	}
 }
 
-const createAxiosResponse = <T>(data: T) =>
-	axiosResponseFactory.build({
+const createAxiosResponse = <T>(data: T): AxiosResponse<T> => {
+	return {
 		data,
-	});
+		status: 200,
+		statusText: '',
+		headers: {},
+		config: {},
+	};
+};
 
 describe('HydraService', () => {
 	let module: TestingModule;

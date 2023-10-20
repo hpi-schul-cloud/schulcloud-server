@@ -4,12 +4,11 @@ import { AuthenticationModule } from '@src/modules/authentication/authentication
 import { AuthorizationModule } from '@src/modules/authorization';
 import { OauthModule } from '@src/modules/oauth';
 import { ProvisioningModule } from '@src/modules/provisioning';
-import { LegacySchoolModule } from '@src/modules/legacy-school';
+import { SchoolModule } from '@src/modules/school';
 import { UserLoginMigrationController } from './controller/user-login-migration.controller';
 import { UserMigrationController } from './controller/user-migration.controller';
 import { PageContentMapper } from './mapper';
 import {
-	CloseUserLoginMigrationUc,
 	RestartUserLoginMigrationUc,
 	StartUserLoginMigrationUc,
 	ToggleUserLoginMigrationUc,
@@ -25,14 +24,13 @@ import { UserLoginMigrationModule } from './user-login-migration.module';
 		AuthenticationModule,
 		AuthorizationModule,
 		LoggerModule,
-		LegacySchoolModule,
+		SchoolModule,
 	],
 	providers: [
 		UserLoginMigrationUc,
 		StartUserLoginMigrationUc,
 		RestartUserLoginMigrationUc,
 		ToggleUserLoginMigrationUc,
-		CloseUserLoginMigrationUc,
 		PageContentMapper,
 	],
 	controllers: [UserMigrationController, UserLoginMigrationController],

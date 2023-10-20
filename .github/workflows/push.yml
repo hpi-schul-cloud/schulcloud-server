@@ -6,7 +6,7 @@ on:
     branches-ignore:
       - dependabot/**
   pull_request:
-    types: [labeled]
+    types: [ labeled ]
 
 permissions:
   contents: read
@@ -32,6 +32,14 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Docker meta Service Name
+        id: docker_meta_img
+        uses: crazy-max/ghaction-docker-meta@v4
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=ref,event=branch,enable=false,priority=600
+            type=sha,enable=true,priority=600,prefix=
 
       - name: Login to registry
         uses: docker/login-action@v2
@@ -40,17 +48,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Docker meta Service Name
-        id: docker_meta_img
-        uses: docker/metadata-action@v4
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=ref,event=branch,enable=false,priority=600
-            type=sha,enable=true,priority=600,prefix=
-
       - name: test image exists
         run: |
+          mkdir -p ~/.docker 
+          echo '{"experimental": "enabled"}' >> ~/.docker/config.json
           echo "IMAGE_EXISTS=$(docker manifest inspect ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }} > /dev/null && echo 1 || echo 0)" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
@@ -67,49 +68,6 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}
           labels: ${{ steps.docker_meta_img.outputs.labels }}
-
-      - name: Docker meta Service Name (file storage)
-        id: docker_meta_img_file_storage
-        uses: docker/metadata-action@v4
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=ref,event=branch,enable=false,priority=600,prefix=file-storage-
-            type=sha,enable=true,priority=600,prefix=file-storage-
-          labels: |
-            org.opencontainers.image.title=schulcloud-file-storage
-
-      - name: test image exists (file storage)
-        run: |
-          echo "IMAGE_EXISTS=$(docker manifest inspect ghcr.io/${{ github.repository }}:file-storage-${{ needs.branch_meta.outputs.sha }} > /dev/null && echo 1 || echo 0)" >> $GITHUB_ENV
-
-      - name: Set up Docker Buildx (file storage)
-        if: ${{ env.IMAGE_EXISTS == 0 }}
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build and push ${{ github.repository }} (file storage)
-        if: ${{ env.IMAGE_EXISTS == 0 }}
-        uses: docker/build-push-action@v4
-        with:
-          build-args: |
-            BASE_IMAGE=ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}
-          context: .
-          file: ./Dockerfile.filestorage
-          platforms: linux/amd64
-          push: true
-          tags: ghcr.io/${{ github.repository }}:file-storage-${{ needs.branch_meta.outputs.sha }}
-          labels: |
-            ${{ steps.docker_meta_img_file_storage.outputs.labels }}
-
-      - name: Send Notification to Rocket Chat if docker image build failed
-        if: ${{ failure() && github.ref == 'refs/heads/main' }}
-        uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
-        with:
-          type: ${{ job.status }}
-          job_name: 'docker image build from ${{ github.repository }} triggered from branch ${{ github.ref_name }}:'
-          url: ${{ secrets.RC_MAIN_BROKEN_TOKEN }}
-          channel: '#softwaredevelopment-teams-and-groups'
-          username: Autodeployment Info
 
   branch_meta:
     runs-on: ubuntu-latest
@@ -129,6 +87,7 @@ jobs:
             echo "sha=${{ github.sha }}" >> $GITHUB_OUTPUT
           fi
 
+
   deploy:
     needs:
       - build_and_push
@@ -140,7 +99,6 @@ jobs:
       token: ${{ secrets.GITHUB_TOKEN }}
       DEV_VAULT: ${{ secrets.DEV_VAULT }}
       DEV_KUBE_CONFIG: ${{ secrets.DEV_KUBE_CONFIG }}
-      BINGO_REPO_TOKEN: ${{ secrets.BINGO_REPO_TOKEN }}
 
   deploy-successful:
     needs:
@@ -188,12 +146,12 @@ jobs:
     uses: hpi-schul-cloud/e2e-system-tests/.github/workflows/remote-trigger.yml@main
     with:
       ref: ${{ needs.branch_meta.outputs.branch }}
-    secrets:
-      service-account-token: ${{ secrets.CYPRESS_ONEPWD_SERVICE_ACCOUNT_TOKEN }}
-
+    secrets: inherit
+    
   test-successful:
     runs-on: ubuntu-latest
     needs:
       - end-to-end-tests
     steps:
       - run: echo "Test was successful"
+

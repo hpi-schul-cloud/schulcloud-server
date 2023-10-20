@@ -23,15 +23,12 @@ import {
 	CardListResponse,
 	CardUrlParams,
 	CreateContentElementBodyParams,
-	ExternalToolElementResponse,
 	FileElementResponse,
-	LinkElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
-	RichTextElementResponse,
-	SubmissionContainerElementResponse,
 } from './dto';
 import { SetHeightBodyParams } from './dto/board/set-height.body.params';
+import { RichTextElementResponse } from './dto/element/rich-text-element.response';
 import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
 
 @ApiTags('Board Card')
@@ -116,23 +113,11 @@ export class CardController {
 	}
 
 	@ApiOperation({ summary: 'Create a new element on a card.' })
-	@ApiExtraModels(
-		ExternalToolElementResponse,
-		FileElementResponse,
-		LinkElementResponse,
-		RichTextElementResponse,
-		SubmissionContainerElementResponse
-	)
+	@ApiExtraModels(RichTextElementResponse, FileElementResponse)
 	@ApiResponse({
 		status: 201,
 		schema: {
-			oneOf: [
-				{ $ref: getSchemaPath(ExternalToolElementResponse) },
-				{ $ref: getSchemaPath(FileElementResponse) },
-				{ $ref: getSchemaPath(LinkElementResponse) },
-				{ $ref: getSchemaPath(RichTextElementResponse) },
-				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
-			],
+			oneOf: [{ $ref: getSchemaPath(RichTextElementResponse) }, { $ref: getSchemaPath(FileElementResponse) }],
 		},
 	})
 	@ApiResponse({ status: 400, type: ApiValidationError })
@@ -140,7 +125,7 @@ export class CardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':cardId/elements')
 	async createElement(
-		@Param() urlParams: CardUrlParams,
+		@Param() urlParams: CardUrlParams, // TODO add type-property ?
 		@Body() bodyParams: CreateContentElementBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<AnyContentElementResponse> {

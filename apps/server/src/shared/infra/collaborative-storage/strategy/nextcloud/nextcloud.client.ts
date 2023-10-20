@@ -1,5 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { HttpService } from '@nestjs/axios';
 import {
 	Inject,
 	Injectable,
@@ -7,20 +5,21 @@ import {
 	NotImplementedException,
 	UnprocessableEntityException,
 } from '@nestjs/common';
+import { firstValueFrom, Observable } from 'rxjs';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { parseInt } from 'lodash';
+import { LegacyLogger } from '@src/core/logger';
+import { HttpService } from '@nestjs/axios';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import {
-	GroupUsers,
 	GroupfoldersCreated,
 	GroupfoldersFolder,
+	GroupUsers,
 	Meta,
 	NextcloudGroups,
 	OcsResponse,
 	SuccessfulRes,
 } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.interface';
-import { ErrorUtils } from '@src/core/error/utils';
-import { LegacyLogger } from '@src/core/logger';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { parseInt } from 'lodash';
-import { Observable, firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class NextcloudClient {
@@ -56,10 +55,7 @@ export class NextcloudClient {
 			request,
 			(data: NextcloudGroups) => data.groups[0],
 			(error) => {
-				throw new NotFoundException(
-					`Group ${groupName} not found in Nextcloud!`,
-					ErrorUtils.createHttpExceptionOptions(error, 'NextcloudClient:findGroupId')
-				);
+				throw new NotFoundException(error, `Group ${groupName} not found in Nextcloud!`);
 			}
 		);
 	}
@@ -82,10 +78,7 @@ export class NextcloudClient {
 				throw Error();
 			},
 			(error) => {
-				throw new NotFoundException(
-					`Group with TeamId of ${teamId} not found in Nextcloud!`,
-					ErrorUtils.createHttpExceptionOptions(error, 'NextcloudClient:findGroupIdByTeamId')
-				);
+				throw new NotFoundException(error, `Group with TeamId of ${teamId} not found in Nextcloud!`);
 			}
 		);
 	}
@@ -106,10 +99,7 @@ export class NextcloudClient {
 			request,
 			() => this.logger.log(`Successfully created group with group id: ${groupId} in Nextcloud`),
 			(error) => {
-				throw new UnprocessableEntityException(
-					`Group "${groupId}" could not be created in Nextcloud!`,
-					ErrorUtils.createHttpExceptionOptions(error, 'NextcloudClient:createGroup')
-				);
+				throw new UnprocessableEntityException(error, `Group "${groupId}" could not be created in Nextcloud!`);
 			}
 		);
 	}
@@ -126,10 +116,7 @@ export class NextcloudClient {
 			request,
 			() => this.logger.log(`Successfully removed group with group id: ${groupId} in Nextcloud`),
 			(error) => {
-				throw new UnprocessableEntityException(
-					`Group "${groupId}" could not be deleted in Nextcloud!`,
-					ErrorUtils.createHttpExceptionOptions(error, 'NextcloudClient:deleteGroup')
-				);
+				throw new UnprocessableEntityException(error, `Group "${groupId}" could not be deleted in Nextcloud!`);
 			}
 		);
 	}
@@ -150,10 +137,7 @@ export class NextcloudClient {
 			request,
 			() => this.logger.log(`Successfully renamed group with group id: ${groupId} in Nextcloud`),
 			(error) => {
-				throw new UnprocessableEntityException(
-					`Group "${groupId}" could not be renamed in Nextcloud!`,
-					ErrorUtils.createHttpExceptionOptions(error, 'NextcloudClient:renameGroup')
-				);
+				throw new UnprocessableEntityException(error, `Group "${groupId}" could not be renamed in Nextcloud!`);
 			}
 		);
 	}
@@ -176,10 +160,7 @@ export class NextcloudClient {
 				throw new NotImplementedException();
 			},
 			(error) => {
-				throw new NotImplementedException(
-					null,
-					ErrorUtils.createHttpExceptionOptions(error, 'NextcloudClient:setGroupPermission')
-				);
+				throw new NotImplementedException(error);
 			}
 		);
 	}
@@ -199,10 +180,7 @@ export class NextcloudClient {
 			request,
 			(data: GroupfoldersFolder[]) => data[0].folder_id,
 			(error) => {
-				throw new NotFoundException(
-					`Folder for ${groupId} not found in Nextcloud!`,
-					ErrorUtils.createHttpExceptionOptions(error, 'NextcloudClient:findGroupFolderIdForGroupId')
-				);
+				throw new NotFoundException(error, `Folder for ${groupId} not found in Nextcloud!`);
 			}
 		);
 	}
@@ -224,10 +202,7 @@ export class NextcloudClient {
 				throw Error();
 			},
 			(error) => {
-				throw new NotFoundException(
-					`Folder could not be deleted in Nextcloud!`,
-					ErrorUtils.createHttpExceptionOptions(error, 'NextcloudClient:deleteGroupFolder')
-				);
+				throw new NotFoundException(error, `Folder could not be deleted in Nextcloud!`);
 			}
 		);
 	}
@@ -251,10 +226,7 @@ export class NextcloudClient {
 				return folderId;
 			},
 			(error) => {
-				throw new UnprocessableEntityException(
-					`Groupfolder wit name "${folderName}" could not be created!`,
-					ErrorUtils.createHttpExceptionOptions(error, 'NextcloudClient:createGroupFolder')
-				);
+				throw new UnprocessableEntityException(error, `Groupfolder wit name "${folderName}" could not be created!`);
 			}
 		);
 	}
@@ -276,10 +248,7 @@ export class NextcloudClient {
 				this.logger.log(`Successfully added group: ${groupId} to folder with folder id: ${folderId} in Nextcloud`);
 			},
 			(error) => {
-				throw new UnprocessableEntityException(
-					`Group "${groupId}" could not be deleted in Nextcloud!`,
-					ErrorUtils.createHttpExceptionOptions(error, 'NextcloudClient:addAccessToGroupFolder')
-				);
+				throw new UnprocessableEntityException(error, `Group "${groupId}" could not be deleted in Nextcloud!`);
 			}
 		);
 	}
@@ -300,10 +269,7 @@ export class NextcloudClient {
 				return data.users;
 			},
 			(error) => {
-				throw new UnprocessableEntityException(
-					`Could not fetch users in group: ${groupId} in Nextcloud!`,
-					ErrorUtils.createHttpExceptionOptions(error, 'NextcloudClient:getGroupUsers')
-				);
+				throw new UnprocessableEntityException(error, `Could not fetch users in group: ${groupId} in Nextcloud!`);
 			}
 		);
 	}
@@ -326,8 +292,8 @@ export class NextcloudClient {
 			},
 			(error) => {
 				throw new UnprocessableEntityException(
-					`User: "${userId}" could not be added to group: ${groupId} in Nextcloud!`,
-					ErrorUtils.createHttpExceptionOptions(error, 'NextcloudClient:addUserToGroup')
+					error,
+					`User: "${userId}" could not be added to group: ${groupId} in Nextcloud!`
 				);
 			}
 		);
@@ -350,8 +316,8 @@ export class NextcloudClient {
 			},
 			(error) => {
 				throw new UnprocessableEntityException(
-					`User: "${userId}" could not be removed from group: ${groupId} in Nextcloud!`,
-					ErrorUtils.createHttpExceptionOptions(error, 'NextcloudClient:removeUserFromGroup')
+					error,
+					`User: "${userId}" could not be removed from group: ${groupId} in Nextcloud!`
 				);
 			}
 		);
@@ -374,10 +340,7 @@ export class NextcloudClient {
 				this.logger.log(`Successfully renamed folder with folder id: ${folderId} in Nextcloud`);
 			},
 			(error) => {
-				throw new UnprocessableEntityException(
-					`Groupfolder "${folderId}" could not be renamed in Nextcloud!`,
-					ErrorUtils.createHttpExceptionOptions(error, 'NextcloudClient:changeGroupFolderName')
-				);
+				throw new UnprocessableEntityException(error, `Groupfolder "${folderId}" could not be renamed in Nextcloud!`);
 			}
 		);
 	}

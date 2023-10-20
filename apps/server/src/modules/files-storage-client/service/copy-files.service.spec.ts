@@ -1,13 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType, IComponentProperties } from '@shared/domain';
-import {
-	courseFactory,
-	lessonFactory,
-	schoolFactory,
-	legacyFileEntityMockFactory,
-	setupEntities,
-} from '@shared/testing';
+import { courseFactory, fileFactory, lessonFactory, schoolFactory, setupEntities } from '@shared/testing';
 import { CopyElementType, CopyHelperService } from '@src/modules/copy-helper';
 import { CopyFilesService } from './copy-files.service';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
@@ -58,16 +52,16 @@ describe('copy files service', () => {
 	describe('copy files of entity', () => {
 		const setup = () => {
 			const school = schoolFactory.build();
-			const file1 = legacyFileEntityMockFactory.build();
-			const file2 = legacyFileEntityMockFactory.build();
+			const file1 = fileFactory.buildWithId({ name: 'file.jpg' });
+			const file2 = fileFactory.buildWithId({ name: 'file.jpg' });
 			const imageHTML1 = getImageHTML(file1.id, file1.name);
 			const imageHTML2 = getImageHTML(file2.id, file2.name);
-			return { school, imageHTML1, imageHTML2 };
+			return { file1, file2, school, imageHTML1, imageHTML2 };
 		};
 
 		describe('copy files of lesson', () => {
 			const lessonSetup = () => {
-				const { school, imageHTML1, imageHTML2 } = setup();
+				const { file1, file2, school, imageHTML1, imageHTML2 } = setup();
 				const originalCourse = courseFactory.build({ school });
 				const textContent: IComponentProperties = {
 					title: '',
@@ -92,7 +86,7 @@ describe('copy files service', () => {
 				const mockedFileDto = { id: 'mockedFileId', sourceId: 'mockedSourceId', name: 'mockedName' };
 
 				filesStorageClientAdapterService.copyFilesOfParent.mockResolvedValue([mockedFileDto]);
-				return { originalLesson, copyLesson, schoolId: school.id, userId, mockedFileDto };
+				return { originalLesson, copyLesson, file1, file2, schoolId: school.id, userId, mockedFileDto };
 			};
 
 			it('should return fileUrlReplacements', async () => {

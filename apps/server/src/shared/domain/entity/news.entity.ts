@@ -1,8 +1,8 @@
 import { Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
-import { SchoolEntity } from './school.entity';
-import type { TeamEntity } from './team.entity';
+import type { School } from './school.entity';
+import type { Team } from './team.entity';
 import type { User } from './user.entity';
 import { NewsTarget, NewsTargetModel } from '../types/news.types';
 import { EntityId } from '../types';
@@ -11,7 +11,7 @@ export interface INewsProperties {
 	title: string;
 	content: string;
 	displayAt: Date;
-	school: EntityId | SchoolEntity;
+	school: EntityId | School;
 	creator: EntityId | User;
 	target: EntityId | NewsTarget;
 
@@ -58,8 +58,8 @@ export abstract class News extends BaseEntityWithTimestamps {
 	@Enum()
 	targetModel!: NewsTargetModel;
 
-	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
-	school!: SchoolEntity;
+	@ManyToOne('School', { fieldName: 'schoolId' })
+	school!: School;
 
 	@ManyToOne('User', { fieldName: 'creatorId' })
 	creator!: User;
@@ -98,8 +98,8 @@ export abstract class News extends BaseEntityWithTimestamps {
 
 @Entity({ discriminatorValue: NewsTargetModel.School })
 export class SchoolNews extends News {
-	@ManyToOne(() => SchoolEntity)
-	target!: SchoolEntity;
+	@ManyToOne('School')
+	target!: School;
 
 	constructor(props: INewsProperties) {
 		super(props);
@@ -123,8 +123,8 @@ export class CourseNews extends News {
 
 @Entity({ discriminatorValue: NewsTargetModel.Team })
 export class TeamNews extends News {
-	@ManyToOne('TeamEntity')
-	target!: TeamEntity;
+	@ManyToOne('Team')
+	target!: Team;
 
 	constructor(props: INewsProperties) {
 		super(props);

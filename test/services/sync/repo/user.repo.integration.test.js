@@ -188,72 +188,23 @@ describe('user repo', () => {
 	});
 
 	describe('findByLdapDnsAndSchool', () => {
-		const setup = async () => {
-			const ldapDn = 'TEST_LDAP_DN';
-			const ldapDn2 = 'TEST_LDAP_DN2';
-			const previousLdapDn = 'PREVIOUS_LDAP_DN';
-			const notExistingLdapDn = 'NOT_EXISTING_LDAP_DN';
-			const ldapDns = [ldapDn, ldapDn2];
-
-			const school = await testObjects.createTestSchool();
-
-			const migratedUser = await testObjects.createTestUser({
-				previousExternalId: previousLdapDn,
-				schoolId: school._id,
-				ldapDn: 'NEW_ID',
-			});
-			const createdUsers = [
-				await testObjects.createTestUser({ ldapDn, schoolId: school._id }),
-				await testObjects.createTestUser({ ldapDn2, schoolId: school._id }),
-			];
-
-			return {
-				ldapDns,
-				notExistingLdapDn,
-				previousLdapDn,
-				migratedUser,
-				createdUsers,
-				school,
-			};
-		};
-
-		it('should return empty list if user with ldapDn does not exist', async () => {
-			const { school, notExistingLdapDn } = await setup();
-
-			const res = await UserRepo.findByLdapDnsAndSchool([notExistingLdapDn], school._id);
-
-			expect(res).to.eql([]);
-		});
-
-		it('should return empty list if ldapDns are empty', async () => {
-			const { school } = await setup();
-
-			const res = await UserRepo.findByLdapDnsAndSchool([], school._id);
-
+		it('should return empty list if not found', async () => {
+			const testSchool = await testObjects.createTestSchool();
+			const res = await UserRepo.findByLdapDnsAndSchool('Not existed dn', testSchool._id);
 			expect(res).to.eql([]);
 		});
 
 		it('should find user by ldap dn and school', async () => {
-			const { school, ldapDns, createdUsers } = await setup();
-
+			const ldapDns = ['TEST_LDAP_DN', 'TEST_LDAP_DN2'];
+			const school = await testObjects.createTestSchool();
+			const createdUsers = await Promise.all(
+				ldapDns.map((ldapDn) => testObjects.createTestUser({ ldapDn, schoolId: school._id }))
+			);
 			const res = await UserRepo.findByLdapDnsAndSchool(ldapDns, school._id);
-
 			const user1 = res.filter((user) => createdUsers[0]._id.toString() === user._id.toString());
 			const user2 = res.filter((user) => createdUsers[1]._id.toString() === user._id.toString());
-
 			expect(user1).not.to.be.undefined;
 			expect(user2).not.to.be.undefined;
-		});
-
-		describe('when the user has migrated', () => {
-			it('should find the user by its old ldap dn and school', async () => {
-				const { previousLdapDn, school, migratedUser } = await setup();
-
-				const res = await UserRepo.findByLdapDnsAndSchool([previousLdapDn], school._id);
-
-				expect(res.length).to.equal(1);
-				expect(res[0]._id.toString()).to.equal(migratedUser._id.toString());
-			});
 		});
 	});
 

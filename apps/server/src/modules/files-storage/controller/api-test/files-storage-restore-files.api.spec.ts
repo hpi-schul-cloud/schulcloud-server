@@ -4,8 +4,7 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { EntityId, Permission } from '@shared/domain';
-import { AntivirusService } from '@shared/infra/antivirus';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import {
 	cleanupCollections,
 	fileRecordFactory,
@@ -16,21 +15,15 @@ import {
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FILES_STORAGE_S3_CONNECTION, FilesStorageTestModule } from '@src/modules/files-storage';
+import { FilesStorageTestModule } from '@src/modules/files-storage';
 import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
-import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
-import { FileRecordParentType, PreviewStatus } from '../../entity';
+import { S3ClientAdapter } from '../../client/s3-client.adapter';
+import { FileRecordParentType } from '../../entity';
 import { availableParentTypes } from './mocks';
 
 const baseRouteName = '/file/restore';
-
-jest.mock('file-type-cjs/file-type-cjs-index', () => {
-	return {
-		fileTypeStream: jest.fn(),
-	};
-});
 
 class API {
 	app: INestApplication;
@@ -116,7 +109,7 @@ describe(`${baseRouteName} (api)`, () => {
 		})
 			.overrideProvider(AntivirusService)
 			.useValue(createMock<AntivirusService>())
-			.overrideProvider(FILES_STORAGE_S3_CONNECTION)
+			.overrideProvider(S3ClientAdapter)
 			.useValue(createMock<S3ClientAdapter>())
 			.overrideGuard(JwtAuthGuard)
 			.useValue({
@@ -205,8 +198,6 @@ describe(`${baseRouteName} (api)`, () => {
 
 				currentUser = mapUserToCurrentUser(user);
 				validId = user.school.id;
-
-				jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
 			});
 
 			it('should return status 200 for successful request', async () => {
@@ -236,7 +227,6 @@ describe(`${baseRouteName} (api)`, () => {
 					mimeType: 'text/plain',
 					securityCheckStatus: 'pending',
 					size: expect.any(Number),
-					previewStatus: PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE,
 				});
 			});
 
@@ -308,8 +298,6 @@ describe(`${baseRouteName} (api)`, () => {
 				const { result } = await api.postUploadFile(`/file/upload/${school.id}/schools/${school.id}`, 'test1.txt');
 
 				fileRecordId = result.id;
-
-				jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
 			});
 
 			it('should return status 200 for successful request', async () => {
@@ -333,7 +321,6 @@ describe(`${baseRouteName} (api)`, () => {
 					mimeType: 'text/plain',
 					securityCheckStatus: 'pending',
 					size: expect.any(Number),
-					previewStatus: PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE,
 				});
 			});
 

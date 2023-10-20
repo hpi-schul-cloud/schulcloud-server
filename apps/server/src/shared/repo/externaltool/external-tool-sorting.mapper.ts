@@ -1,11 +1,11 @@
 import { QueryOrderMap } from '@mikro-orm/core';
-import { SortOrderMap } from '@shared/domain';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
+import { Injectable } from '@nestjs/common';
+import { ExternalTool, SortOrderMap, ExternalToolDO } from '@shared/domain';
 
+@Injectable()
 export class ExternalToolSortingMapper {
-	static mapDOSortOrderToQueryOrder(sort: SortOrderMap<ExternalTool>): QueryOrderMap<ExternalToolEntity> {
-		const queryOrderMap: QueryOrderMap<ExternalToolEntity> = {
+	mapDOSortOrderToQueryOrder(sort: SortOrderMap<ExternalToolDO>): QueryOrderMap<ExternalTool> {
+		const queryOrderMap: QueryOrderMap<ExternalTool> = {
 			_id: sort.id,
 			name: sort.name,
 		};

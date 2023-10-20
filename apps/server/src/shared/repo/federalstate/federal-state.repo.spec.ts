@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { FederalStateEntity } from '@shared/domain';
+import { FederalState } from '@shared/domain';
 import { cleanupCollections, federalStateFactory } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { FederalStateRepo } from './federal-state.repo';
@@ -25,16 +25,16 @@ describe('FederalStateRepo', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
-		await em.nativeDelete(FederalStateEntity, {});
+		await em.nativeDelete(FederalState, {});
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(FederalStateEntity);
+		expect(repo.entityName).toBe(FederalState);
 	});
 
 	describe('findByName', () => {
 		const setup = async () => {
-			const federalState: FederalStateEntity = federalStateFactory.build();
+			const federalState: FederalState = federalStateFactory.build();
 			await em.persistAndFlush(federalState);
 			em.clear();
 

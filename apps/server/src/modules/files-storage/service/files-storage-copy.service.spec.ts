@@ -2,14 +2,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AntivirusService } from '@shared/infra/antivirus';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
-import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
-import { createCopyFiles } from '../helper';
+import { createICopyFiles } from '../helper';
 import { CopyFileResponseBuilder } from '../mapper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
@@ -47,7 +46,7 @@ describe('FilesStorageService copy methods', () => {
 			providers: [
 				FilesStorageService,
 				{
-					provide: FILES_STORAGE_S3_CONNECTION,
+					provide: S3ClientAdapter,
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
@@ -70,7 +69,7 @@ describe('FilesStorageService copy methods', () => {
 		}).compile();
 
 		service = module.get(FilesStorageService);
-		storageClient = module.get(FILES_STORAGE_S3_CONNECTION);
+		storageClient = module.get(S3ClientAdapter);
 		fileRecordRepo = module.get(FileRecordRepo);
 		antivirusService = module.get(AntivirusService);
 	});
@@ -214,7 +213,7 @@ describe('FilesStorageService copy methods', () => {
 
 				await service.copy(userId, [sourceFile], params);
 
-				const expectedParams = createCopyFiles(sourceFile, targetFile);
+				const expectedParams = createICopyFiles(sourceFile, targetFile);
 
 				expect(storageClient.copy).toBeCalledWith([expectedParams]);
 			});
@@ -366,7 +365,9 @@ describe('FilesStorageService copy methods', () => {
 				const expectedResponse = [{ sourceId: sourceFile.id, name: sourceFile.name }];
 				const error = new Error('test');
 
-				antivirusService.send.mockRejectedValueOnce(error);
+				antivirusService.send.mockImplementation(() => {
+					throw error;
+				});
 
 				return { sourceFile, targetFile, userId, params, error, expectedResponse };
 			};

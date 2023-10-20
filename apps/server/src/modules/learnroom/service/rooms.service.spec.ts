@@ -29,6 +29,7 @@ describe('rooms service', () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		await setupEntities();
 		module = await Test.createTestingModule({
+			imports: [],
 			providers: [
 				RoomsService,
 				{
@@ -172,7 +173,7 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.createWelcomeColumnBoard).toBeCalledWith<BoardExternalReference[]>({
+						expect(columnBoardService.create).toBeCalledWith<BoardExternalReference[]>({
 							type: BoardExternalReferenceType.Course,
 							id: board.course.id,
 						});
@@ -185,9 +186,7 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.createWelcomeColumnBoard).not.toBeCalledWith(
-							expect.objectContaining({ id: board.course.id })
-						);
+						expect(columnBoardService.create).not.toBeCalledWith(expect.objectContaining({ id: board.course.id }));
 					});
 				});
 
@@ -214,7 +213,7 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.createWelcomeColumnBoard).toBeCalledWith<BoardExternalReference[]>({
+						expect(columnBoardService.create).toBeCalledWith<BoardExternalReference[]>({
 							type: BoardExternalReferenceType.Course,
 							id: board.course.id,
 						});
@@ -236,7 +235,7 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.createWelcomeColumnBoard).toBeCalledWith<BoardExternalReference[]>({
+						expect(columnBoardService.create).toBeCalledWith<BoardExternalReference[]>({
 							type: BoardExternalReferenceType.Course,
 							id: board.course.id,
 						});
@@ -257,7 +256,7 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.createWelcomeColumnBoard).not.toBeCalled();
+						expect(columnBoardService.create).not.toBeCalled();
 					});
 				});
 

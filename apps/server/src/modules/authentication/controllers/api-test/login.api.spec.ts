@@ -1,9 +1,9 @@
 import { EntityManager } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, RoleName, SchoolEntity, SystemEntity, User } from '@shared/domain';
+import { Account, RoleName, School, System, User } from '@shared/domain';
 import { accountFactory, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
-import { SSOErrorCode } from '@src/modules/oauth/loggable';
+import { SSOErrorCode } from '@src/modules/oauth/error/sso-error-code.enum';
 import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import axios from 'axios';
@@ -11,7 +11,7 @@ import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
-import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, OauthLoginResponse } from '../dto';
+import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams } from '../dto';
 
 const ldapAccountUserName = 'ldapAccountUserName';
 const mockUserLdapDN = 'mockUserLdapDN';
@@ -129,7 +129,6 @@ describe('Login Controller (api)', () => {
 				expect(decodedToken).toHaveProperty('accountId');
 				expect(decodedToken).toHaveProperty('schoolId');
 				expect(decodedToken).toHaveProperty('roles');
-				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});
 
@@ -147,8 +146,8 @@ describe('Login Controller (api)', () => {
 	describe('loginLdap', () => {
 		let account: Account;
 		let user: User;
-		let school: SchoolEntity;
-		let system: SystemEntity;
+		let school: School;
+		let system: System;
 
 		beforeAll(async () => {
 			const schoolExternalId = 'mockSchoolExternalId';
@@ -194,7 +193,6 @@ describe('Login Controller (api)', () => {
 				expect(decodedToken).toHaveProperty('accountId');
 				expect(decodedToken).toHaveProperty('schoolId');
 				expect(decodedToken).toHaveProperty('roles');
-				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});
 
@@ -255,30 +253,10 @@ describe('Login Controller (api)', () => {
 
 				return {
 					system,
-					idToken,
 				};
 			};
 
-			it('should return oauth login response', async () => {
-				const { system, idToken } = await setup();
-
-				const response: Response = await request(app.getHttpServer())
-					.post(`${basePath}/oauth2`)
-					.send({
-						redirectUri: 'redirectUri',
-						code: 'code',
-						systemId: system.id,
-					})
-					.expect(HttpStatus.OK);
-
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				expect(response.body).toEqual<OauthLoginResponse>({
-					accessToken: expect.any(String),
-					externalIdToken: idToken,
-				});
-			});
-
-			it('should return a valid jwt as access token', async () => {
+			it('should return jwt', async () => {
 				const { system } = await setup();
 
 				const response: Response = await request(app.getHttpServer())
@@ -290,15 +268,8 @@ describe('Login Controller (api)', () => {
 					})
 					.expect(HttpStatus.OK);
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
-				const decodedToken = jwt.decode(response.body.accessToken);
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				expect(response.body.accessToken).toBeDefined();
-				expect(decodedToken).toHaveProperty('userId');
-				expect(decodedToken).toHaveProperty('accountId');
-				expect(decodedToken).toHaveProperty('schoolId');
-				expect(decodedToken).toHaveProperty('roles');
-				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});
 

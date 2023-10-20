@@ -3,16 +3,12 @@ import { ContentElementType } from '@shared/domain';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class FileElementContent {
-	constructor({ caption, alternativeText }: FileElementContent) {
+	constructor({ caption }: FileElementContent) {
 		this.caption = caption;
-		this.alternativeText = alternativeText;
 	}
 
 	@ApiProperty()
 	caption: string;
-
-	@ApiProperty()
-	alternativeText: string;
 }
 
 export class FileElementResponse {

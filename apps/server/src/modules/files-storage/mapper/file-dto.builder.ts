@@ -4,7 +4,7 @@ import { Readable } from 'stream';
 import { FileDto } from '../dto/file.dto';
 
 export class FileDtoBuilder {
-	public static build(name: string, data: Readable, mimeType: string): FileDto {
+	private static build(name: string, data: Readable, mimeType: string): FileDto {
 		const file = new FileDto({ name, data, mimeType });
 
 		return file;
@@ -17,7 +17,7 @@ export class FileDtoBuilder {
 	}
 
 	public static buildFromAxiosResponse(name: string, response: AxiosResponse<Readable>): FileDto {
-		const mimeType = response.headers['Content-Type']?.toString() || 'application/octet-stream';
+		const mimeType = response.headers['content-type'];
 		const file = FileDtoBuilder.build(name, response.data, mimeType);
 
 		return file;

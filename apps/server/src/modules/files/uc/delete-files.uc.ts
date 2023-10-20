@@ -1,11 +1,10 @@
 /* eslint-disable no-await-in-loop */
 import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
-import { StorageProviderEntity } from '@shared/domain';
-import { StorageProviderRepo } from '@shared/repo/storageprovider';
-import { LegacyLogger } from '@src/core/logger';
-import { FilesRepo } from '../repo';
-import { FileEntity } from '../entity';
+import { File, StorageProvider } from '@shared/domain';
+import { FilesRepo } from '@shared/repo';
+import { StorageProviderRepo } from '@shared/repo/storageprovider/storageprovider.repo';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 
 @Injectable()
 export class DeleteFilesUc {
@@ -29,7 +28,7 @@ export class DeleteFilesUc {
 
 		do {
 			const offset = failingFileIds.length;
-			const files = await this.filesRepo.findForCleanup(thresholdDate, batchSize, offset);
+			const files = await this.filesRepo.findFilesForCleanup(thresholdDate, batchSize, offset);
 
 			const promises = files.map((file) => this.deleteFile(file));
 			const results = await Promise.all(promises);
@@ -73,7 +72,7 @@ export class DeleteFilesUc {
 		this.logger.log(`Initialized s3ClientMap with ${this.s3ClientMap.size} clients.`);
 	}
 
-	private createClient(storageProvider: StorageProviderEntity): S3Client {
+	private createClient(storageProvider: StorageProvider): S3Client {
 		const client = new S3Client({
 			endpoint: storageProvider.endpointUrl,
 			forcePathStyle: true,
@@ -88,7 +87,7 @@ export class DeleteFilesUc {
 		return client;
 	}
 
-	private async deleteFile(file: FileEntity): Promise<{ fileId: string; success: boolean }> {
+	private async deleteFile(file: File): Promise<{ fileId: string; success: boolean }> {
 		try {
 			if (!file.isDirectory) {
 				await this.deleteFileInStorage(file);
@@ -103,12 +102,12 @@ export class DeleteFilesUc {
 		}
 	}
 
-	private async deleteFileInStorage(file: FileEntity) {
+	private async deleteFileInStorage(file: File) {
 		const bucket = file.bucket as string;
 		const storageFileName = file.storageFileName as string;
 		const deletionCommand = new DeleteObjectCommand({ Bucket: bucket, Key: storageFileName });
 
-		const storageProvider = file.storageProvider as StorageProviderEntity;
+		const storageProvider = file.storageProvider as StorageProvider;
 		const client = this.s3ClientMap.get(storageProvider.id) as S3Client;
 
 		await client.send(deletionCommand);

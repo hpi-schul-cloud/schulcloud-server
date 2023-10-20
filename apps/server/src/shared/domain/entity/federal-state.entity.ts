@@ -26,7 +26,7 @@ export class County {
 }
 
 @Entity({ tableName: 'federalstates' })
-export class FederalStateEntity extends BaseEntityWithTimestamps {
+export class FederalState extends BaseEntityWithTimestamps {
 	@Property({ nullable: false })
 	name: string;
 

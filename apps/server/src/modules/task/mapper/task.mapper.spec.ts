@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InputFormat, ITaskStatus, ITaskUpdate, Task, TaskParentDescriptions } from '@shared/domain';
+import { InputFormat, ITaskStatus, ITaskUpdate, Task, TaskParentDescriptions, UsersList } from '@shared/domain';
 import { setupEntities, taskFactory } from '@shared/testing';
 import { TaskCreateParams, TaskResponse, TaskStatusResponse, TaskUpdateParams } from '../controller/dto';
 import { TaskMapper } from './task.mapper';
@@ -7,7 +7,8 @@ import { TaskMapper } from './task.mapper';
 const createExpectedResponse = (
 	task: Task,
 	status: ITaskStatus,
-	descriptions: TaskParentDescriptions
+	descriptions: TaskParentDescriptions,
+	usersList: UsersList[]
 ): TaskResponse => {
 	const expectedStatus = Object.create(TaskStatusResponse.prototype) as TaskStatusResponse;
 	expectedStatus.graded = status.graded;
@@ -28,6 +29,9 @@ const createExpectedResponse = (
 			type: task.descriptionInputFormat || InputFormat.RICH_TEXT_CK4,
 		};
 	}
+	if (task.taskCard) {
+		expected.taskCardId = task.taskCard;
+	}
 	expected.dueDate = task.dueDate;
 	expected.updatedAt = task.updatedAt;
 	expected.status = expectedStatus;
@@ -37,6 +41,7 @@ const createExpectedResponse = (
 	expected.displayColor = descriptions.color;
 	expected.lessonName = descriptions.lessonName;
 	expected.lessonHidden = descriptions.lessonHidden;
+	expected.users = usersList;
 
 	return expected;
 };
@@ -47,8 +52,9 @@ describe('task.mapper', () => {
 	});
 
 	describe('mapToResponse', () => {
-		it('should map task with status and description values', () => {
+		it('should map task with status, task card and description values', () => {
 			const task = taskFactory.buildWithId({ availableDate: new Date(), dueDate: new Date() });
+			task.taskCard = 'task card ID #1';
 
 			const descriptions: TaskParentDescriptions = {
 				courseName: 'course #1',
@@ -60,6 +66,20 @@ describe('task.mapper', () => {
 
 			const spyParent = jest.spyOn(task, 'getParentData').mockReturnValue(descriptions);
 
+			const usersList: UsersList[] = [
+				{
+					id: 'user ID #1',
+					firstName: 'user',
+					lastName: 'name #1',
+				},
+				{
+					id: 'user ID #2',
+					firstName: 'user',
+					lastName: 'name #2',
+				},
+			];
+			const spyUsers = jest.spyOn(task, 'getUsersList').mockReturnValue(usersList);
+
 			const status = {
 				graded: 0,
 				maxSubmissions: 0,
@@ -70,9 +90,10 @@ describe('task.mapper', () => {
 			};
 
 			const result = TaskMapper.mapToResponse({ task, status });
-			const expected = createExpectedResponse(task, status, descriptions);
+			const expected = createExpectedResponse(task, status, descriptions, usersList);
 
 			expect(spyParent).toHaveBeenCalled();
+			expect(spyUsers).toHaveBeenCalled();
 			expect(result).toStrictEqual(expected);
 		});
 	});
@@ -85,6 +106,7 @@ describe('task.mapper', () => {
 				description: 'test',
 				dueDate: new Date('2023-05-28T08:00:00.000+00:00'),
 				availableDate: new Date('2022-05-28T08:00:00.000+00:00'),
+				usersIds: [new ObjectId().toHexString()],
 			};
 			const result = TaskMapper.mapTaskUpdateToDomain(params);
 
@@ -96,6 +118,7 @@ describe('task.mapper', () => {
 				descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
 				dueDate: params.dueDate,
 				availableDate: params.availableDate,
+				usersIds: params.usersIds,
 			};
 			expect(result).toStrictEqual(expected);
 		});
@@ -109,6 +132,7 @@ describe('task.mapper', () => {
 				description: 'test',
 				dueDate: new Date('2023-05-28T08:00:00.000+00:00'),
 				availableDate: new Date('2022-05-28T08:00:00.000+00:00'),
+				usersIds: [new ObjectId().toHexString()],
 			};
 			const result = TaskMapper.mapTaskCreateToDomain(params);
 
@@ -120,6 +144,7 @@ describe('task.mapper', () => {
 				descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
 				dueDate: params.dueDate,
 				availableDate: params.availableDate,
+				usersIds: params.usersIds,
 			};
 			expect(result).toStrictEqual(expected);
 		});

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthorizationModule } from '@src/modules/authorization';
+import { AuthorizationModule } from '../authorization';
 import { LessonController } from './controller';
 import { LessonModule } from './lesson.module';
 import { LessonUC } from './uc';

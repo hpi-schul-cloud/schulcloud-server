@@ -2,8 +2,8 @@ import { ValidationError } from '@shared/common';
 import { Permission, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { roleFactory, schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { ICurrentUser, OauthCurrentUser } from '../interface';
-import { CreateJwtPayload, JwtPayload } from '../interface/jwt-payload';
+import { ICurrentUser } from '../interface';
+import { JwtPayload } from '../interface/jwt-payload';
 import { CurrentUserMapper } from './current-user.mapper';
 
 describe('CurrentUserMapper', () => {
@@ -56,89 +56,40 @@ describe('CurrentUserMapper', () => {
 		});
 	});
 
-	describe('OauthCurrentUser', () => {
-		const userIdMock = 'mockUserId';
+	describe('userDoToICurrentUser', () => {
+		const userId = 'mockUserId';
 		describe('when userDO has no ID', () => {
 			it('should throw error', () => {
 				const user: UserDO = userDoFactory.build({ createdAt: new Date(), updatedAt: new Date() });
-				expect(() => CurrentUserMapper.mapToOauthCurrentUser(accountId, user, undefined, 'idToken')).toThrow(
-					ValidationError
-				);
+				expect(() => CurrentUserMapper.userDoToICurrentUser(accountId, user)).toThrow(ValidationError);
 			});
 		});
 
 		describe('when userDO is valid', () => {
-			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId({
-					id: userIdMock,
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				});
-				const idToken = 'idToken';
-
-				return {
-					user,
-					userId: user.id as string,
-					idToken,
-				};
-			};
-
-			it('should return valid oauth current user instance', () => {
-				const { user, userId, idToken } = setup();
-
-				const currentUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
-					accountId,
-					user,
-					undefined,
-					idToken
-				);
-
-				expect(currentUser).toMatchObject<OauthCurrentUser>({
+			it('should return valid ICurrentUser instance', () => {
+				const user: UserDO = userDoFactory.buildWithId({ id: userId, createdAt: new Date(), updatedAt: new Date() });
+				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user);
+				expect(currentUser).toMatchObject({
 					accountId,
 					systemId: undefined,
 					roles: [],
 					schoolId: user.schoolId,
-					userId,
-					externalIdToken: idToken,
+					userId: user.id,
 				});
 			});
 		});
 
 		describe('when userDO is valid and a systemId is provided', () => {
-			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId({
-					id: userIdMock,
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				});
-				const systemId = 'mockSystemId';
-				const idToken = 'idToken';
-
-				return {
-					user,
-					userId: user.id as string,
-					idToken,
-					systemId,
-				};
-			};
-
 			it('should return valid ICurrentUser instance with systemId', () => {
-				const { user, userId, systemId, idToken } = setup();
-
-				const currentUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
-					accountId,
-					user,
-					systemId,
-					idToken
-				);
-
-				expect(currentUser).toMatchObject<OauthCurrentUser>({
+				const user: UserDO = userDoFactory.buildWithId({ id: userId, createdAt: new Date(), updatedAt: new Date() });
+				const systemId = 'mockSystemId';
+				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, systemId);
+				expect(currentUser).toMatchObject({
 					accountId,
 					systemId,
 					roles: [],
 					schoolId: user.schoolId,
-					userId,
-					externalIdToken: idToken,
+					userId: user.id,
 				});
 			});
 		});
@@ -153,7 +104,7 @@ describe('CurrentUserMapper', () => {
 						},
 					])
 					.buildWithId({
-						id: userIdMock,
+						id: userId,
 						createdAt: new Date(),
 						updatedAt: new Date(),
 					});
@@ -166,7 +117,7 @@ describe('CurrentUserMapper', () => {
 			it('should return valid ICurrentUser instance without systemId', () => {
 				const { user } = setup();
 
-				const currentUser = CurrentUserMapper.mapToOauthCurrentUser(accountId, user, undefined, 'idToken');
+				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user);
 
 				expect(currentUser).toMatchObject({
 					accountId,
@@ -207,7 +158,6 @@ describe('CurrentUserMapper', () => {
 				});
 			});
 		});
-
 		describe('when JWT is provided without optional claims', () => {
 			it('should return current user', () => {
 				const jwtPayload: JwtPayload = {
@@ -229,30 +179,6 @@ describe('CurrentUserMapper', () => {
 					schoolId: jwtPayload.schoolId,
 					userId: jwtPayload.userId,
 				});
-			});
-		});
-	});
-
-	describe('mapCurrentUserToCreateJwtPayload', () => {
-		it('should map current user to create jwt payload', () => {
-			const currentUser: ICurrentUser = {
-				accountId: 'dummyAccountId',
-				systemId: 'dummySystemId',
-				roles: ['mockRoleId'],
-				schoolId: 'dummySchoolId',
-				userId: 'dummyUserId',
-				impersonated: true,
-			};
-
-			const createJwtPayload: CreateJwtPayload = CurrentUserMapper.mapCurrentUserToCreateJwtPayload(currentUser);
-
-			expect(createJwtPayload).toMatchObject<CreateJwtPayload>({
-				accountId: currentUser.accountId,
-				systemId: currentUser.systemId,
-				roles: currentUser.roles,
-				schoolId: currentUser.schoolId,
-				userId: currentUser.userId,
-				support: currentUser.impersonated,
 			});
 		});
 	});

@@ -45,7 +45,6 @@ const timeSchema = new Schema({
 const courseSchema = getUserGroupSchema({
 	description: { type: String },
 	classIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'class' }],
-	groupIds: [{ type: Schema.Types.ObjectId }],
 	teacherIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
 	substitutionIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
 	ltiToolIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],

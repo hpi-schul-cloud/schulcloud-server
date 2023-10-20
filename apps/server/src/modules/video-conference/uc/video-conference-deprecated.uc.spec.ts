@@ -9,7 +9,7 @@ import {
 	Role,
 	RoleName,
 	RoleReference,
-	TeamEntity,
+	Team,
 	UserDO,
 	VideoConferenceDO,
 } from '@shared/domain';
@@ -19,9 +19,9 @@ import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto'
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
-import { AuthorizationService, LegacySchoolService, UserService } from '@src/modules';
+import { AuthorizationService, SchoolService, UserService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
-import { CourseService } from '@src/modules/learnroom/service';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { IScopeInfo, VideoConference, VideoConferenceJoin, VideoConferenceState } from './dto';
 import { VideoConferenceDeprecatedUc } from './video-conference-deprecated.uc';
 import {
@@ -69,7 +69,7 @@ describe('VideoConferenceUc', () => {
 	let courseService: DeepMocked<CourseService>;
 	let userService: DeepMocked<UserService>;
 	let calendarService: DeepMocked<CalendarService>;
-	let schoolService: DeepMocked<LegacySchoolService>;
+	let schoolService: DeepMocked<SchoolService>;
 
 	const hostUrl = 'https://localhost:4000';
 	const course: Course = { id: 'courseId', name: 'courseName' } as Course;
@@ -83,7 +83,7 @@ describe('VideoConferenceUc', () => {
 	let defaultOptions: VideoConferenceOptions;
 	const userPermissions: Map<Permission, Promise<boolean>> = new Map<Permission, Promise<boolean>>();
 
-	let team: TeamEntity;
+	let team: Team;
 	let user: UserDO;
 
 	let defaultRole: Role;
@@ -142,13 +142,13 @@ describe('VideoConferenceUc', () => {
 					useValue: createMock<CalendarService>(),
 				},
 				{
-					provide: LegacySchoolService,
-					useValue: createMock<LegacySchoolService>(),
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 			],
 		}).compile();
 		useCase = module.get(VideoConferenceDeprecatedUcSpec);
-		schoolService = module.get(LegacySchoolService);
+		schoolService = module.get(SchoolService);
 		authorizationService = module.get(AuthorizationService);
 		courseService = module.get(CourseService);
 		calendarService = module.get(CalendarService);

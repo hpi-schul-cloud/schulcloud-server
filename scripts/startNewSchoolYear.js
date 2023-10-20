@@ -7,13 +7,11 @@ const federalStateModel = require('../src/services/federalState/model');
 
 const exceptFederalStateNames = [''];
 
-const CURRENT_SCHOOL_YEAR = '2022/23';
-const NEXT_SCHOOL_YEAR = '2023/24';
-const MAINTENANCE_START_DATE = new Date('2023-08-01');
+const NEXT_SCHOOL_YEAR = '2022/23';
+const MAINTENANCE_START_DATE = new Date('2022-08-01');
 
 appPromise
 	.then(async () => {
-		const currentSchoolYearId = await yearModel.findOne({ name: CURRENT_SCHOOL_YEAR }).select('_id').lean().exec();
 		const nextSchoolYearId = await yearModel.findOne({ name: NEXT_SCHOOL_YEAR }).select('_id').lean().exec();
 
 		const federalStates = await federalStateModel
@@ -32,8 +30,6 @@ appPromise
 				{
 					federalState: { $in: federalStateIds },
 					ldapSchoolIdentifier: { $exists: true },
-					inMaintenanceSince: { $exists: false },
-					currentYear: currentSchoolYearId._id,
 				},
 				{ inMaintenanceSince: MAINTENANCE_START_DATE }
 			)
@@ -44,7 +40,7 @@ appPromise
 			.updateMany(
 				{
 					federalState: { $in: federalStateIds },
-					$or: [{ ldapSchoolIdentifier: { $exists: false } }, { ldapSchoolIdentifier: '' }],
+					ldapSchoolIdentifier: { $exists: false },
 					currentYear: { $exists: true },
 				},
 				{ currentYear: nextSchoolYearId._id }

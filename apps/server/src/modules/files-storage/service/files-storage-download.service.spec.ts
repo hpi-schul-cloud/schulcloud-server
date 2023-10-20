@@ -3,16 +3,15 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AntivirusService } from '@shared/infra/antivirus';
-import { GetFile, S3ClientAdapter } from '@shared/infra/s3-client';
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
-import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createPath } from '../helper';
-import { FileResponseBuilder } from '../mapper';
+import { IGetFileResponse } from '../interface';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
@@ -47,7 +46,7 @@ describe('FilesStorageService download methods', () => {
 			providers: [
 				FilesStorageService,
 				{
-					provide: FILES_STORAGE_S3_CONNECTION,
+					provide: S3ClientAdapter,
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
@@ -70,7 +69,7 @@ describe('FilesStorageService download methods', () => {
 		}).compile();
 
 		service = module.get(FilesStorageService);
-		storageClient = module.get(FILES_STORAGE_S3_CONNECTION);
+		storageClient = module.get(S3ClientAdapter);
 	});
 
 	beforeEach(() => {
@@ -101,8 +100,7 @@ describe('FilesStorageService download methods', () => {
 					fileName: fileRecord.name,
 				};
 
-				const fileResponse = createMock<GetFile>();
-				const expectedResponse = FileResponseBuilder.build(fileResponse, fileRecord.getName());
+				const expectedResponse = createMock<IGetFileResponse>();
 
 				spy = jest.spyOn(service, 'downloadFile').mockResolvedValueOnce(expectedResponse);
 
@@ -114,7 +112,7 @@ describe('FilesStorageService download methods', () => {
 
 				await service.download(fileRecord, params);
 
-				expect(service.downloadFile).toHaveBeenCalledWith(fileRecord, undefined);
+				expect(service.downloadFile).toHaveBeenCalledWith(fileRecord.schoolId, fileRecord.id, undefined);
 			});
 
 			it('returns correct response', async () => {
@@ -204,10 +202,9 @@ describe('FilesStorageService download methods', () => {
 				const { fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 
-				const fileResponse = createMock<GetFile>();
+				const expectedResponse = createMock<IGetFileResponse>();
 
-				storageClient.get.mockResolvedValueOnce(fileResponse);
-				const expectedResponse = FileResponseBuilder.build(fileResponse, fileRecord.getName());
+				storageClient.get.mockResolvedValueOnce(expectedResponse);
 
 				return { fileRecord, expectedResponse };
 			};
@@ -217,7 +214,7 @@ describe('FilesStorageService download methods', () => {
 
 				const path = createPath(fileRecord.schoolId, fileRecord.id);
 
-				await service.downloadFile(fileRecord);
+				await service.downloadFile(fileRecord.schoolId, fileRecord.id);
 
 				expect(storageClient.get).toHaveBeenCalledWith(path, undefined);
 			});
@@ -225,7 +222,7 @@ describe('FilesStorageService download methods', () => {
 			it('returns correct response', async () => {
 				const { fileRecord, expectedResponse } = setup();
 
-				const response = await service.downloadFile(fileRecord);
+				const response = await service.downloadFile(fileRecord.schoolId, fileRecord.id);
 
 				expect(response).toEqual(expectedResponse);
 			});
@@ -245,7 +242,7 @@ describe('FilesStorageService download methods', () => {
 			it('passes error', async () => {
 				const { fileRecord, error } = setup();
 
-				await expect(service.downloadFile(fileRecord)).rejects.toThrowError(error);
+				await expect(service.downloadFile(fileRecord.schoolId, fileRecord.id)).rejects.toThrowError(error);
 			});
 		});
 	});

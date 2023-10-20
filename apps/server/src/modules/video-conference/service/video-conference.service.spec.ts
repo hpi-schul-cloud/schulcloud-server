@@ -7,7 +7,7 @@ import {
 	Permission,
 	RoleName,
 	SchoolFeatures,
-	TeamUserEntity,
+	TeamUser,
 	UserDO,
 	VideoConferenceDO,
 	VideoConferenceScope,
@@ -19,7 +19,7 @@ import {
 	AuthorizationContextBuilder,
 	AuthorizationService,
 } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school';
+import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { courseFactory, roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
@@ -27,9 +27,9 @@ import { ObjectId } from 'bson';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
-import { CourseService } from '@src/modules/learnroom/service';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { VideoConferenceService } from './video-conference.service';
-import { ErrorStatus } from '../error';
+import { ErrorStatus } from '../error/error-status.enum';
 import { BBBRole } from '../bbb';
 import { IScopeInfo, ScopeRef, VideoConferenceState } from '../uc/dto';
 import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
@@ -39,7 +39,7 @@ describe('VideoConferenceService', () => {
 	let courseService: DeepMocked<CourseService>;
 	let calendarService: DeepMocked<CalendarService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let schoolService: DeepMocked<LegacySchoolService>;
+	let schoolService: DeepMocked<SchoolService>;
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
@@ -68,8 +68,8 @@ describe('VideoConferenceService', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: LegacySchoolService,
-					useValue: createMock<LegacySchoolService>(),
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 				{
 					provide: TeamsRepo,
@@ -90,7 +90,7 @@ describe('VideoConferenceService', () => {
 		courseService = module.get(CourseService);
 		calendarService = module.get(CalendarService);
 		authorizationService = module.get(AuthorizationService);
-		schoolService = module.get(LegacySchoolService);
+		schoolService = module.get(SchoolService);
 		teamsRepo = module.get(TeamsRepo);
 		userService = module.get(UserService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
@@ -193,42 +193,6 @@ describe('VideoConferenceService', () => {
 				};
 			};
 
-			it('should call the user service to find the user by id', async () => {
-				const { userId, scopeId } = setup();
-
-				await service.hasExpertRole(userId, VideoConferenceScope.COURSE, scopeId);
-
-				expect(userService.findById).toHaveBeenCalledWith(userId);
-			});
-
-			it('should return false', async () => {
-				const { userId, scopeId } = setup();
-
-				const result = await service.hasExpertRole(userId, VideoConferenceScope.COURSE, scopeId);
-
-				expect(result).toBe(false);
-			});
-		});
-
-		describe('when user has the EXPERT role and an additional role for a course conference', () => {
-			const setup = () => {
-				const user: UserDO = userDoFactory
-					.withRoles([
-						{ id: new ObjectId().toHexString(), name: RoleName.STUDENT },
-						{ id: new ObjectId().toHexString(), name: RoleName.EXPERT },
-					])
-					.buildWithId();
-				const userId = user.id as EntityId;
-				const scopeId = new ObjectId().toHexString();
-
-				userService.findById.mockResolvedValue(user);
-
-				return {
-					userId,
-					scopeId,
-				};
-			};
-
 			it('should return false', async () => {
 				const { userId, scopeId } = setup();
 
@@ -272,9 +236,9 @@ describe('VideoConferenceService', () => {
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
-				const teamUser: TeamUserEntity = teamUserFactory.withRoleAndUserId(roleFactory.buildWithId(), userId).build();
+				const teamUser: TeamUser = teamUserFactory.withRoleAndUserId(roleFactory.buildWithId(), userId).build();
 				const team = teamFactory
-					.withTeamUser([teamUser])
+					.withTeamUser(teamUser)
 					.withRoleAndUserId(roleFactory.buildWithId({ name: RoleName.TEAMEXPERT }), userId)
 					.build();
 				teamsRepo.findById.mockResolvedValue(team);

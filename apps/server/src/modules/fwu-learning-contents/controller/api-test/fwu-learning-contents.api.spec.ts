@@ -2,12 +2,11 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { INestApplication, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { Readable } from 'stream';
 import request from 'supertest';
 import { FwuLearningContentsTestModule } from '../../fwu-learning-contents-test.module';
-import { FWU_CONTENT_S3_CONNECTION } from '../../fwu-learning-contents.config';
 
 class API {
 	constructor(private app: INestApplication) {
@@ -38,13 +37,13 @@ describe('FwuLearningContents Controller (api)', () => {
 					return true;
 				},
 			})
-			.overrideProvider(FWU_CONTENT_S3_CONNECTION)
+			.overrideProvider(S3ClientAdapter)
 			.useValue(createMock<S3ClientAdapter>())
 			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
-		s3ClientAdapter = module.get(FWU_CONTENT_S3_CONNECTION);
+		s3ClientAdapter = module.get(S3ClientAdapter);
 
 		api = new API(app);
 	});

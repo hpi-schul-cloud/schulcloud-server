@@ -1,106 +1,63 @@
-import { Injectable } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller';
 import {
 	AnyBoardDo,
-	BoardCompositeVisitorAsync,
+	BoardCompositeVisitor,
 	Card,
 	Column,
 	ColumnBoard,
-	ExternalToolElement,
 	FileElement,
-	InputFormat,
 	RichTextElement,
 	SubmissionContainerElement,
-	SubmissionItem,
 } from '@shared/domain';
-import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
-import {
-	AnyElementContentBody,
-	ExternalToolContentBody,
-	FileContentBody,
-	LinkContentBody,
-	RichTextContentBody,
-	SubmissionContainerContentBody,
-} from '../controller/dto';
-import { OpenGraphProxyService } from './open-graph-proxy.service';
+import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
 
-@Injectable()
-export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
-	private readonly content: AnyElementContentBody;
+type ContentType = FileContentBody | RichTextContentBody | SubmissionContainerContentBody;
 
-	constructor(content: AnyElementContentBody, private readonly openGraphProxyService: OpenGraphProxyService) {
+export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
+	private readonly content: ContentType;
+
+	constructor(content: ContentType) {
 		this.content = content;
 	}
 
-	async visitColumnBoardAsync(columnBoard: ColumnBoard): Promise<void> {
-		return this.rejectNotHandled(columnBoard);
+	visitColumnBoard(columnBoard: ColumnBoard): void {
+		this.throwNotHandled(columnBoard);
 	}
 
-	async visitColumnAsync(column: Column): Promise<void> {
-		return this.rejectNotHandled(column);
+	visitColumn(column: Column): void {
+		this.throwNotHandled(column);
 	}
 
-	async visitCardAsync(card: Card): Promise<void> {
-		return this.rejectNotHandled(card);
+	visitCard(card: Card): void {
+		this.throwNotHandled(card);
 	}
 
-	async visitFileElementAsync(fileElement: FileElement): Promise<void> {
+	visitFileElement(fileElement: FileElement): void {
 		if (this.content instanceof FileContentBody) {
-			fileElement.caption = sanitizeRichText(this.content.caption, InputFormat.PLAIN_TEXT);
-			fileElement.alternativeText = sanitizeRichText(this.content.alternativeText, InputFormat.PLAIN_TEXT);
-			return Promise.resolve();
+			fileElement.caption = this.content.caption;
+		} else {
+			this.throwNotHandled(fileElement);
 		}
-		return this.rejectNotHandled(fileElement);
 	}
 
-	async visitLinkElementAsync(linkElement: LinkElement): Promise<void> {
-		if (this.content instanceof LinkContentBody) {
-			const urlWithProtocol = /:\/\//.test(this.content.url) ? this.content.url : `https://${this.content.url}`;
-			linkElement.url = new URL(urlWithProtocol).toString();
-			const openGraphData = await this.openGraphProxyService.fetchOpenGraphData(linkElement.url);
-			linkElement.title = openGraphData.title;
-			linkElement.description = openGraphData.description;
-			if (openGraphData.image) {
-				linkElement.imageUrl = openGraphData.image.url;
-			}
-			return Promise.resolve();
-		}
-		return this.rejectNotHandled(linkElement);
-	}
-
-	async visitRichTextElementAsync(richTextElement: RichTextElement): Promise<void> {
+	visitRichTextElement(richTextElement: RichTextElement): void {
 		if (this.content instanceof RichTextContentBody) {
 			richTextElement.text = sanitizeRichText(this.content.text, this.content.inputFormat);
 			richTextElement.inputFormat = this.content.inputFormat;
-			return Promise.resolve();
+		} else {
+			this.throwNotHandled(richTextElement);
 		}
-		return this.rejectNotHandled(richTextElement);
 	}
 
-	async visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void> {
+	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {
 		if (this.content instanceof SubmissionContainerContentBody) {
-			if (this.content.dueDate !== undefined) {
-				submissionContainerElement.dueDate = this.content.dueDate;
-			}
-			return Promise.resolve();
+			submissionContainerElement.dueDate = this.content.dueDate;
+		} else {
+			this.throwNotHandled(submissionContainerElement);
 		}
-		return this.rejectNotHandled(submissionContainerElement);
 	}
 
-	async visitSubmissionItemAsync(submission: SubmissionItem): Promise<void> {
-		return this.rejectNotHandled(submission);
-	}
-
-	async visitExternalToolElementAsync(externalToolElement: ExternalToolElement): Promise<void> {
-		if (this.content instanceof ExternalToolContentBody && this.content.contextExternalToolId !== undefined) {
-			// Updates should not remove an existing reference to a tool, to prevent orphan tool instances
-			externalToolElement.contextExternalToolId = this.content.contextExternalToolId;
-			return Promise.resolve();
-		}
-		return this.rejectNotHandled(externalToolElement);
-	}
-
-	private rejectNotHandled(component: AnyBoardDo): Promise<void> {
-		return Promise.reject(new Error(`Cannot update element of type: '${component.constructor.name}'`));
+	private throwNotHandled(component: AnyBoardDo) {
+		throw new Error(`Cannot update element of type: '${component.constructor.name}'`);
 	}
 }

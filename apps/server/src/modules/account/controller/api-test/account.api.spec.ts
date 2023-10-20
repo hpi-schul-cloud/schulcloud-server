@@ -1,15 +1,8 @@
-import { EntityManager } from '@mikro-orm/mongodb';
-import { INestApplication } from '@nestjs/common';
+import { EntityManager } from '@mikro-orm/core';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, Permission, RoleName, User } from '@shared/domain';
-import {
-	accountFactory,
-	roleFactory,
-	schoolFactory,
-	userFactory,
-	TestApiClient,
-	cleanupCollections,
-} from '@shared/testing';
+import { accountFactory, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import {
 	AccountByIdBodyParams,
 	AccountSearchQueryParams,
@@ -17,626 +10,324 @@ import {
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
 } from '@src/modules/account/controller/dto';
+import { ICurrentUser } from '@src/modules/authentication';
+// HINT: general todo to not get JwtAuthGuard from within the module
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
+import { Request } from 'express';
+import request from 'supertest';
 
 describe('Account Controller (API)', () => {
 	const basePath = '/account';
 
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
+
+	let adminAccount: Account;
+	let teacherAccount: Account;
+	let studentAccount: Account;
+	let superheroAccount: Account;
+
+	let adminUser: User;
+	let teacherUser: User;
+	let studentUser: User;
+	let superheroUser: User;
+
+	let currentUser: ICurrentUser;
 
 	const defaultPassword = 'DummyPasswd!1';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 
-	const mapUserToAccount = (user: User): Account =>
-		accountFactory.buildWithId({
-			userId: user.id,
-			username: user.email,
-			password: defaultPasswordHash,
+	const setup = async () => {
+		// TODO: revisit test structure. setup for each functional situation, return values instead of global variables
+		const school = schoolFactory.buildWithId();
+
+		const adminRoles = roleFactory.build({
+			name: RoleName.ADMINISTRATOR,
+			permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT],
 		});
+		const teacherRoles = roleFactory.build({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] });
+		const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
+		const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
+
+		adminUser = userFactory.buildWithId({ school, roles: [adminRoles] });
+		teacherUser = userFactory.buildWithId({ school, roles: [teacherRoles] });
+		studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
+		superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
+
+		const mapUserToAccount = (user: User): Account =>
+			accountFactory.buildWithId({
+				userId: user.id,
+				username: user.email,
+				password: defaultPasswordHash,
+			});
+		adminAccount = mapUserToAccount(adminUser);
+		teacherAccount = mapUserToAccount(teacherUser);
+		studentAccount = mapUserToAccount(studentUser);
+		superheroAccount = mapUserToAccount(superheroUser);
+
+		em.persist(school);
+		em.persist([adminRoles, teacherRoles, studentRoles, superheroRoles]);
+		em.persist([adminUser, teacherUser, studentUser, superheroUser]);
+		em.persist([adminAccount, teacherAccount, studentAccount, superheroAccount]);
+		await em.flush();
+
+		// TODO: return {adminAccount, teacherAccount, ...}
+	};
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		}).compile();
+		})
+			// TODO: We need to remove this old hack, use the new api helper insteads
+			.overrideGuard(JwtAuthGuard)
+			.useValue({
+				canActivate(context: ExecutionContext) {
+					const req: Request = context.switchToHttp().getRequest();
+					req.user = currentUser;
+					return true;
+				},
+			})
+			.compile();
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		testApiClient = new TestApiClient(app, basePath);
 	});
 
 	beforeEach(async () => {
-		await cleanupCollections(em);
+		await setup();
 	});
 
 	afterAll(async () => {
-		await cleanupCollections(em);
+		// await cleanupCollections(em);
 		await app.close();
 	});
 
 	describe('[PATCH] me/password', () => {
-		describe('When patching with a valid password', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const studentAccount = mapUserToAccount(studentUser);
-
-				em.persist([school, studentRoles, studentUser, studentAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
-
-				const passwordPatchParams: PatchMyPasswordParams = {
-					password: 'Valid12$',
-					confirmPassword: 'Valid12$',
-				};
-
-				return { passwordPatchParams, loggedInClient, studentAccount };
+		it(`should update the current user's (temporary) password`, async () => {
+			currentUser = mapUserToCurrentUser(studentUser, studentAccount);
+			const params: PatchMyPasswordParams = {
+				password: 'Valid12$',
+				confirmPassword: 'Valid12$',
 			};
+			await request(app.getHttpServer()) //
+				.patch(`${basePath}/me/password`)
+				.send(params)
+				.expect(200);
 
-			it(`should update the current user's (temporary) password`, async () => {
-				const { passwordPatchParams, loggedInClient, studentAccount } = await setup();
-
-				await loggedInClient.patch('/me/password', passwordPatchParams).expect(200);
-
-				const updatedAccount = await em.findOneOrFail(Account, studentAccount.id);
-				expect(updatedAccount.password).not.toEqual(defaultPasswordHash);
-			});
+			const updatedAccount = await em.findOneOrFail(Account, studentAccount.id);
+			expect(updatedAccount.password).not.toEqual(defaultPasswordHash);
 		});
-
-		describe('When using a weak password', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const studentAccount = mapUserToAccount(studentUser);
-
-				em.persist([school, studentRoles, studentUser, studentAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
-
-				const passwordPatchParams: PatchMyPasswordParams = {
-					password: 'weak',
-					confirmPassword: 'weak',
-				};
-
-				return { passwordPatchParams, loggedInClient };
+		it('should reject if new password is weak', async () => {
+			currentUser = mapUserToCurrentUser(studentUser, studentAccount);
+			const params: PatchMyPasswordParams = {
+				password: 'weak',
+				confirmPassword: 'weak',
 			};
-
-			it('should reject the password change', async () => {
-				const { passwordPatchParams, loggedInClient } = await setup();
-
-				await loggedInClient.patch('/me/password', passwordPatchParams).expect(400);
-			});
+			await request(app.getHttpServer()) //
+				.patch(`${basePath}/me/password`)
+				.send(params)
+				.expect(400);
 		});
 	});
 
 	describe('[PATCH] me', () => {
-		describe('When patching the account with account info', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const studentAccount = mapUserToAccount(studentUser);
-
-				em.persist([school, studentRoles, studentUser, studentAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
-
-				const newEmailValue = 'new@mail.com';
-
-				const patchMyAccountParams: PatchMyAccountParams = {
-					passwordOld: defaultPassword,
-					email: newEmailValue,
-				};
-				return { newEmailValue, patchMyAccountParams, loggedInClient, studentAccount };
+		it(`should update a users account`, async () => {
+			const newEmailValue = 'new@mail.com';
+			currentUser = mapUserToCurrentUser(studentUser, studentAccount);
+			const params: PatchMyAccountParams = {
+				passwordOld: defaultPassword,
+				email: newEmailValue,
 			};
-			it(`should update a users account`, async () => {
-				const { newEmailValue, patchMyAccountParams, loggedInClient, studentAccount } = await setup();
-
-				await loggedInClient.patch('/me', patchMyAccountParams).expect(200);
-
-				const updatedAccount = await em.findOneOrFail(Account, studentAccount.id);
-				expect(updatedAccount.username).toEqual(newEmailValue);
-			});
+			await request(app.getHttpServer()) //
+				.patch(`${basePath}/me`)
+				.send(params)
+				.expect(200);
+			const updatedAccount = await em.findOneOrFail(Account, studentAccount.id);
+			expect(updatedAccount.username).toEqual(newEmailValue);
 		});
 
-		describe('When patching with a not valid email', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const studentAccount = mapUserToAccount(studentUser);
-
-				em.persist([school, studentRoles, studentUser, studentAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
-
-				const newEmailValue = 'new@mail.com';
-
-				const patchMyAccountParams: PatchMyAccountParams = {
-					passwordOld: defaultPassword,
-					email: 'invalid',
-				};
-				return { newEmailValue, patchMyAccountParams, loggedInClient };
+		it('should reject if new email is not valid', async () => {
+			currentUser = mapUserToCurrentUser(studentUser, studentAccount);
+			const params: PatchMyAccountParams = {
+				passwordOld: defaultPassword,
+				email: 'invalid',
 			};
-
-			it('should reject patch request', async () => {
-				const { patchMyAccountParams, loggedInClient } = await setup();
-
-				await loggedInClient.patch('/me', patchMyAccountParams).expect(400);
-			});
+			await request(app.getHttpServer()) //
+				.patch(`${basePath}/me`)
+				.send(params)
+				.expect(400);
 		});
 	});
 
 	describe('[GET]', () => {
-		describe('When searching with a superhero user', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
-
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
-
-				const studentAccount = mapUserToAccount(studentUser);
-				const superheroAccount = mapUserToAccount(superheroUser);
-
-				em.persist(school);
-				em.persist([studentRoles, superheroRoles]);
-				em.persist([studentUser, superheroUser]);
-				em.persist([studentAccount, superheroAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(superheroAccount);
-
-				const query: AccountSearchQueryParams = {
-					type: AccountSearchType.USER_ID,
-					value: studentUser.id,
-					skip: 5,
-					limit: 5,
-				};
-
-				return { query, loggedInClient };
+		it('should search for user id', async () => {
+			currentUser = mapUserToCurrentUser(superheroUser, superheroAccount);
+			const query: AccountSearchQueryParams = {
+				type: AccountSearchType.USER_ID,
+				value: studentUser.id,
+				skip: 5,
+				limit: 5,
 			};
-			it('should successfully search for user id', async () => {
-				const { query, loggedInClient } = await setup();
-
-				await loggedInClient.get().query(query).send().expect(200);
-			});
+			await request(app.getHttpServer()) //
+				.get(`${basePath}`)
+				.query(query)
+				.send()
+				.expect(200);
 		});
-
 		// If skip is too big, just return an empty list.
 		// We testing it here, because we are mocking the database in the use case unit tests
 		// and for realistic behavior we need database.
-		describe('When searching with a superhero user with large skip', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
-
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
-
-				const studentAccount = mapUserToAccount(studentUser);
-				const superheroAccount = mapUserToAccount(superheroUser);
-
-				em.persist(school);
-				em.persist([studentRoles, superheroRoles]);
-				em.persist([studentUser, superheroUser]);
-				em.persist([studentAccount, superheroAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(superheroAccount);
-
-				const query: AccountSearchQueryParams = {
-					type: AccountSearchType.USER_ID,
-					value: studentUser.id,
-					skip: 50000,
-					limit: 5,
-				};
-
-				return { query, loggedInClient };
+		it('should search for user id with large skip', async () => {
+			currentUser = mapUserToCurrentUser(superheroUser);
+			const query: AccountSearchQueryParams = {
+				type: AccountSearchType.USER_ID,
+				value: studentUser.id,
+				skip: 50000,
+				limit: 5,
 			};
-			it('should search for user id', async () => {
-				const { query, loggedInClient } = await setup();
-
-				await loggedInClient.get().query(query).send().expect(200);
-			});
+			await request(app.getHttpServer()) //
+				.get(`${basePath}`)
+				.query(query)
+				.send()
+				.expect(200);
 		});
-
-		describe('When searching with a superhero user', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
-
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
-
-				const studentAccount = mapUserToAccount(studentUser);
-				const superheroAccount = mapUserToAccount(superheroUser);
-
-				em.persist(school);
-				em.persist([studentRoles, superheroRoles]);
-				em.persist([studentUser, superheroUser]);
-				em.persist([studentAccount, superheroAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(superheroAccount);
-
-				const query: AccountSearchQueryParams = {
-					type: AccountSearchType.USERNAME,
-					value: '',
-					skip: 5,
-					limit: 5,
-				};
-
-				return { query, loggedInClient };
+		it('should search for user name', async () => {
+			currentUser = mapUserToCurrentUser(superheroUser, superheroAccount);
+			const query: AccountSearchQueryParams = {
+				type: AccountSearchType.USERNAME,
+				value: '',
+				skip: 5,
+				limit: 5,
 			};
-			it('should search for username', async () => {
-				const { query, loggedInClient } = await setup();
-
-				await loggedInClient.get().query(query).send().expect(200);
-			});
+			await request(app.getHttpServer()) //
+				.get(`${basePath}`)
+				.query(query)
+				.send()
+				.expect(200);
 		});
-
-		describe('When searching with a superhero user', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
-
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
-
-				const studentAccount = mapUserToAccount(studentUser);
-				const superheroAccount = mapUserToAccount(superheroUser);
-
-				em.persist(school);
-				em.persist([studentRoles, superheroRoles]);
-				em.persist([studentUser, superheroUser]);
-				em.persist([studentAccount, superheroAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(superheroAccount);
-
-				const query: AccountSearchQueryParams = {
-					type: '' as AccountSearchType,
-					value: '',
-					skip: 5,
-					limit: 5,
-				};
-
-				return { query, loggedInClient };
+		it('should reject if type is unknown', async () => {
+			currentUser = mapUserToCurrentUser(superheroUser, superheroAccount);
+			const query: AccountSearchQueryParams = {
+				type: '' as AccountSearchType,
+				value: '',
+				skip: 5,
+				limit: 5,
 			};
-
-			it('should reject if type is unknown', async () => {
-				const { query, loggedInClient } = await setup();
-
-				await loggedInClient.get().query(query).send().expect(400);
-			});
+			await request(app.getHttpServer()) //
+				.get(`${basePath}`)
+				.query(query)
+				.send()
+				.expect(400);
 		});
-		describe('When searching with an admin user (not authorized)', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-
-				const adminRoles = roleFactory.build({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT],
-				});
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-
-				const adminUser = userFactory.buildWithId({ school, roles: [adminRoles] });
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-
-				const adminAccount = mapUserToAccount(adminUser);
-				const studentAccount = mapUserToAccount(studentUser);
-
-				em.persist(school);
-				em.persist([adminRoles, studentRoles]);
-				em.persist([adminUser, studentUser]);
-				em.persist([adminAccount, studentAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(adminAccount);
-
-				const query: AccountSearchQueryParams = {
-					type: AccountSearchType.USERNAME,
-					value: '',
-					skip: 5,
-					limit: 5,
-				};
-
-				return { query, loggedInClient, studentAccount };
+		it('should reject if user is not authorized', async () => {
+			currentUser = mapUserToCurrentUser(adminUser, adminAccount);
+			const query: AccountSearchQueryParams = {
+				type: AccountSearchType.USERNAME,
+				value: '',
+				skip: 5,
+				limit: 5,
 			};
-
-			it('should reject search for user', async () => {
-				const { query, loggedInClient } = await setup();
-
-				await loggedInClient.get().query(query).send().expect(403);
-			});
+			await request(app.getHttpServer()) //
+				.get(`${basePath}`)
+				.query(query)
+				.send()
+				.expect(403);
 		});
 	});
 
 	describe('[GET] :id', () => {
-		describe('When searching with a superhero user', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
-
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
-
-				const studentAccount = mapUserToAccount(studentUser);
-				const superheroAccount = mapUserToAccount(superheroUser);
-
-				em.persist(school);
-				em.persist([studentRoles, superheroRoles]);
-				em.persist([studentUser, superheroUser]);
-				em.persist([studentAccount, superheroAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(superheroAccount);
-
-				return { loggedInClient, studentAccount };
-			};
-			it('should return account for account id', async () => {
-				const { loggedInClient, studentAccount } = await setup();
-				await loggedInClient.get(`/${studentAccount.id}`).expect(200);
-			});
+		it('should return account for account id', async () => {
+			currentUser = mapUserToCurrentUser(superheroUser, superheroAccount);
+			await request(app.getHttpServer()) //
+				.get(`${basePath}/${studentAccount.id}`)
+				.expect(200);
 		});
-
-		describe('When searching with a not authorized user', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-
-				const adminRoles = roleFactory.build({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT],
-				});
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-
-				const adminUser = userFactory.buildWithId({ school, roles: [adminRoles] });
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-
-				const adminAccount = mapUserToAccount(adminUser);
-				const studentAccount = mapUserToAccount(studentUser);
-
-				em.persist(school);
-				em.persist([adminRoles, studentRoles]);
-				em.persist([adminUser, studentUser]);
-				em.persist([adminAccount, studentAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(adminAccount);
-
-				return { loggedInClient, studentAccount };
-			};
-			it('should reject request', async () => {
-				const { loggedInClient, studentAccount } = await setup();
-				await loggedInClient.get(`/${studentAccount.id}`).expect(403);
-			});
+		it('should reject if id has invalid format', async () => {
+			currentUser = mapUserToCurrentUser(superheroUser, superheroAccount);
+			await request(app.getHttpServer()) //
+				.get(`${basePath}/qwerty`)
+				.send()
+				.expect(400);
 		});
-
-		describe('When searching with a superhero user', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
-				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
-				const superheroAccount = mapUserToAccount(superheroUser);
-
-				em.persist([school, superheroRoles, superheroUser, superheroAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(superheroAccount);
-
-				return { loggedInClient };
-			};
-
-			it('should reject not existing account id', async () => {
-				const { loggedInClient } = await setup();
-				await loggedInClient.get(`/000000000000000000000000`).expect(404);
-			});
+		it('should reject if user is not a authorized', async () => {
+			currentUser = mapUserToCurrentUser(adminUser, adminAccount);
+			await request(app.getHttpServer()) //
+				.get(`${basePath}/${studentAccount.id}`)
+				.expect(403);
+		});
+		it('should reject not existing account id', async () => {
+			currentUser = mapUserToCurrentUser(superheroUser, superheroAccount);
+			await request(app.getHttpServer()) //
+				.get(`${basePath}/000000000000000000000000`)
+				.expect(404);
 		});
 	});
 
 	describe('[PATCH] :id', () => {
-		describe('When using a superhero user', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
-
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
-
-				const studentAccount = mapUserToAccount(studentUser);
-				const superheroAccount = mapUserToAccount(superheroUser);
-
-				em.persist(school);
-				em.persist([studentRoles, superheroRoles]);
-				em.persist([studentUser, superheroUser]);
-				em.persist([studentAccount, superheroAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(superheroAccount);
-
-				const body: AccountByIdBodyParams = {
-					password: defaultPassword,
-					username: studentAccount.username,
-					activated: true,
-				};
-
-				return { body, loggedInClient, studentAccount };
+		it('should update account', async () => {
+			currentUser = mapUserToCurrentUser(superheroUser, superheroAccount);
+			const body: AccountByIdBodyParams = {
+				password: defaultPassword,
+				username: studentAccount.username,
+				activated: true,
 			};
-
-			it('should update account', async () => {
-				const { body, loggedInClient, studentAccount } = await setup();
-
-				await loggedInClient.patch(`/${studentAccount.id}`, body).expect(200);
-			});
+			await request(app.getHttpServer()) //
+				.patch(`${basePath}/${studentAccount.id}`)
+				.send(body)
+				.expect(200);
 		});
-
-		describe('When the user is not authorized', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const studentAccount = mapUserToAccount(studentUser);
-
-				em.persist([school, studentRoles, studentUser, studentAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
-
-				const body: AccountByIdBodyParams = {
-					password: defaultPassword,
-					username: studentAccount.username,
-					activated: true,
-				};
-
-				return { body, loggedInClient, studentAccount };
+		it('should reject if user is not authorized', async () => {
+			currentUser = mapUserToCurrentUser(studentUser, studentAccount);
+			const body: AccountByIdBodyParams = {
+				password: defaultPassword,
+				username: studentAccount.username,
+				activated: true,
 			};
-			it('should reject update request', async () => {
-				const { body, loggedInClient, studentAccount } = await setup();
-
-				await loggedInClient.patch(`/${studentAccount.id}`, body).expect(403);
-			});
+			await request(app.getHttpServer()) //
+				.patch(`${basePath}/${studentAccount.id}`)
+				.send(body)
+				.expect(403);
 		});
-
-		describe('When updating with a superhero user', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
-
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
-
-				const studentAccount = mapUserToAccount(studentUser);
-				const superheroAccount = mapUserToAccount(superheroUser);
-
-				em.persist(school);
-				em.persist([studentRoles, superheroRoles]);
-				em.persist([studentUser, superheroUser]);
-				em.persist([studentAccount, superheroAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(superheroAccount);
-
-				const body: AccountByIdBodyParams = {
-					password: defaultPassword,
-					username: studentAccount.username,
-					activated: true,
-				};
-
-				return { body, loggedInClient };
+		it('should reject not existing account id', async () => {
+			currentUser = mapUserToCurrentUser(superheroUser, studentAccount);
+			const body: AccountByIdBodyParams = {
+				password: defaultPassword,
+				username: studentAccount.username,
+				activated: true,
 			};
-			it('should reject not existing account id', async () => {
-				const { body, loggedInClient } = await setup();
-				await loggedInClient.patch('/000000000000000000000000', body).expect(404);
-			});
+			await request(app.getHttpServer()) //
+				.patch(`${basePath}/000000000000000000000000`)
+				.send(body)
+				.expect(404);
 		});
 	});
 
 	describe('[DELETE] :id', () => {
-		describe('When using a superhero user', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
-
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
-
-				const studentAccount = mapUserToAccount(studentUser);
-				const superheroAccount = mapUserToAccount(superheroUser);
-
-				em.persist(school);
-				em.persist([studentRoles, superheroRoles]);
-				em.persist([studentUser, superheroUser]);
-				em.persist([studentAccount, superheroAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(superheroAccount);
-
-				return { loggedInClient, studentAccount };
-			};
-			it('should delete account', async () => {
-				const { loggedInClient, studentAccount } = await setup();
-				await loggedInClient.delete(`/${studentAccount.id}`).expect(200);
-			});
+		it('should delete account', async () => {
+			currentUser = mapUserToCurrentUser(superheroUser, studentAccount);
+			await request(app.getHttpServer()) //
+				.delete(`${basePath}/${studentAccount.id}`)
+				.expect(200);
 		});
-
-		describe('When using a not authorized (admin) user', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-
-				const adminRoles = roleFactory.build({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT],
-				});
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-
-				const adminUser = userFactory.buildWithId({ school, roles: [adminRoles] });
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-
-				const adminAccount = mapUserToAccount(adminUser);
-				const studentAccount = mapUserToAccount(studentUser);
-
-				em.persist(school);
-				em.persist([adminRoles, studentRoles]);
-				em.persist([adminUser, studentUser]);
-				em.persist([adminAccount, studentAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(adminAccount);
-
-				return { loggedInClient, studentAccount };
-			};
-
-			it('should reject delete request', async () => {
-				const { loggedInClient, studentAccount } = await setup();
-				await loggedInClient.delete(`/${studentAccount.id}`).expect(403);
-			});
+		it('should reject invalid account id format', async () => {
+			currentUser = mapUserToCurrentUser(superheroUser, studentAccount);
+			await request(app.getHttpServer()) //
+				.delete(`${basePath}/qwerty`)
+				.expect(400);
 		});
-
-		describe('When using a superhero user', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
-				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
-				const superheroAccount = mapUserToAccount(superheroUser);
-
-				em.persist([school, superheroRoles, superheroUser, superheroAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(superheroAccount);
-
-				return { loggedInClient };
-			};
-
-			it('should reject not existing account id', async () => {
-				const { loggedInClient } = await setup();
-				await loggedInClient.delete('/000000000000000000000000').expect(404);
-			});
+		it('should reject if user is not a authorized', async () => {
+			currentUser = mapUserToCurrentUser(adminUser, adminAccount);
+			await request(app.getHttpServer()) //
+				.delete(`${basePath}/${studentAccount.id}`)
+				.expect(403);
+		});
+		it('should reject not existing account id', async () => {
+			currentUser = mapUserToCurrentUser(superheroUser, studentAccount);
+			await request(app.getHttpServer()) //
+				.delete(`${basePath}/000000000000000000000000`)
+				.expect(404);
 		});
 	});
 });

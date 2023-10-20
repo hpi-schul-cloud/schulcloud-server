@@ -31,9 +31,9 @@ describe('KeycloakConfigurationService Integration', () => {
 			firstName: undefined,
 			lastName: undefined,
 			attributes: {
-				dbcAccountId: account._id,
-				dbcUserId: undefined,
-				dbcSystemId: account.systemId,
+				refTechnicalId: account._id,
+				refFunctionalIntId: undefined,
+				refFunctionalExtId: account.systemId,
 			},
 		});
 		await keycloak.users.resetPassword({

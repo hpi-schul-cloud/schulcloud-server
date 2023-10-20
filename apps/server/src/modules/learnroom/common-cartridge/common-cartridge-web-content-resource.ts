@@ -1,10 +1,6 @@
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 import { ICommonCartridgeFile } from './common-cartridge-file.interface';
-import {
-	CommonCartridgeIntendedUseType,
-	CommonCartridgeResourceType,
-	CommonCartridgeVersion,
-} from './common-cartridge-enums';
+import { CommonCartridgeResourceType, CommonCartridgeVersion } from './common-cartridge-enums';
 
 export type ICommonCartridgeWebContentResourceProps = {
 	type: CommonCartridgeResourceType.WEB_CONTENT;
@@ -13,7 +9,6 @@ export type ICommonCartridgeWebContentResourceProps = {
 	href: string;
 	title: string;
 	html: string;
-	intendedUse?: CommonCartridgeIntendedUseType;
 };
 
 export class CommonCartridgeWebContentResource implements ICommonCartridgeElement, ICommonCartridgeFile {
@@ -32,7 +27,6 @@ export class CommonCartridgeWebContentResource implements ICommonCartridgeElemen
 			$: {
 				identifier: this.props.identifier,
 				type: this.props.type,
-				intendeduse: this.props.intendedUse ?? CommonCartridgeIntendedUseType.UNSPECIFIED,
 			},
 			file: {
 				$: {

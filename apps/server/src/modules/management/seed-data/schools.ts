@@ -1,12 +1,5 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import {
-	FederalStateEntity,
-	ISchoolProperties,
-	SchoolFeatures,
-	SchoolRoles,
-	SchoolYearEntity,
-	SystemEntity,
-} from '@shared/domain';
+import { FederalState, ISchoolProperties, SchoolFeatures, SchoolRoles, SchoolYear, System } from '@shared/domain';
 import { federalStateFactory, schoolFactory } from '@shared/testing';
 import { DeepPartial } from 'fishery';
 import { EFederalState } from './federalstates';
@@ -34,7 +27,6 @@ type SeedSchoolProperties = Omit<ISchoolProperties, 'systems' | 'federalState'> 
 	timezone?: string;
 	language?: string;
 	logo_dataUrl?: string;
-	logo_name?: string;
 	enableStudentTeamCreation?: boolean;
 };
 
@@ -181,7 +173,6 @@ const seedSchools: SeedSchoolProperties[] = [
 		pilot: false,
 		language: 'de',
 		logo_dataUrl: '',
-		logo_name: '',
 		officialSchoolNumber: '',
 	},
 	{
@@ -206,7 +197,6 @@ const seedSchools: SeedSchoolProperties[] = [
 		timezone: 'America/Belem',
 		language: 'en',
 		logo_dataUrl: '',
-		logo_name: '',
 		officialSchoolNumber: '',
 	},
 	{
@@ -274,15 +264,15 @@ const seedSchools: SeedSchoolProperties[] = [
 ];
 
 export function generateSchools(entities: {
-	systems: SystemEntity[];
-	schoolYears: SchoolYearEntity[];
-	federalStates: FederalStateEntity[];
+	systems: System[];
+	schoolYears: SchoolYear[];
+	federalStates: FederalState[];
 }) {
 	return seedSchools.map((partial) => {
 		const schoolYear = entities.schoolYears.find((sy) => partial.currentYear && sy.name === partial.currentYear);
 		const systems = partial.systems
 			?.map((systemId) => entities.systems.find((s) => s.id === systemId))
-			.filter((s) => s) as SystemEntity[] | undefined;
+			.filter((s) => s) as System[] | undefined;
 
 		const federalState =
 			entities.federalStates.find((fs) => partial.federalState && fs.name === partial.federalState) ??
@@ -314,7 +304,6 @@ export function generateSchools(entities: {
 		schoolEntity['timezone'] = partial.timezone;
 		schoolEntity['language'] = partial.language;
 		schoolEntity['logo_dataUrl'] = partial.logo_dataUrl;
-		schoolEntity['logo_name'] = partial.logo_name;
 		schoolEntity['enableStudentTeamCreation'] = partial.enableStudentTeamCreation;
 
 		return schoolEntity;

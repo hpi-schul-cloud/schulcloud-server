@@ -82,9 +82,7 @@ const restrictToUsersOwnTools = async (context) => {
 		},
 	});
 	if (
-		coursesOfUser.data.some(
-			(course) => course.ltiToolIds && course.ltiToolIds.map((id) => id.toString()).includes(context.id.toString())
-		)
+		coursesOfUser.data.some((course) => course.ltiToolIds.map((id) => id.toString()).includes(context.id.toString()))
 	) {
 		return context;
 	}

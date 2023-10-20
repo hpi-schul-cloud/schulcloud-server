@@ -7,13 +7,10 @@ import {
 	Card,
 	Column,
 	ColumnBoard,
-	ExternalToolElement,
 	FileElement,
 	RichTextElement,
 	SubmissionContainerElement,
-	SubmissionItem,
 } from '@shared/domain';
-import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 
 @Injectable()
@@ -45,12 +42,6 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 		await this.visitChildrenAsync(fileElement);
 	}
 
-	async visitLinkElementAsync(linkElement: LinkElement): Promise<void> {
-		this.deleteNode(linkElement);
-
-		await this.visitChildrenAsync(linkElement);
-	}
-
 	async visitRichTextElementAsync(richTextElement: RichTextElement): Promise<void> {
 		this.deleteNode(richTextElement);
 		await this.visitChildrenAsync(richTextElement);
@@ -59,18 +50,6 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 	async visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void> {
 		this.deleteNode(submissionContainerElement);
 		await this.visitChildrenAsync(submissionContainerElement);
-	}
-
-	async visitSubmissionItemAsync(submission: SubmissionItem): Promise<void> {
-		this.deleteNode(submission);
-		await this.visitChildrenAsync(submission);
-	}
-
-	async visitExternalToolElementAsync(externalToolElement: ExternalToolElement): Promise<void> {
-		// TODO N21-1296: Delete linked ContextExternalTool
-		this.deleteNode(externalToolElement);
-
-		await this.visitChildrenAsync(externalToolElement);
 	}
 
 	deleteNode(domainObject: AnyBoardDo): void {

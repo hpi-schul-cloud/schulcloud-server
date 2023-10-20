@@ -15,6 +15,18 @@ export class TaskUpdateParams implements ITaskUpdate {
 	})
 	courseId?: string;
 
+	@IsString({ each: true })
+	@IsMongoId({ each: true })
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'List of users ids, which belong to course. This restricts access to the task.',
+		required: false,
+		nullable: true,
+		pattern: '[a-f0-9]{24}',
+		type: [String],
+	})
+	usersIds?: string[];
+
 	@IsString()
 	@IsMongoId()
 	@IsOptional()

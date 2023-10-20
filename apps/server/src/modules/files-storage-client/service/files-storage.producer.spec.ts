@@ -1,6 +1,7 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileRecordParentType, FilesStorageEvents, FilesStorageExchange } from '@shared/infra/rabbitmq';
@@ -48,183 +49,103 @@ describe('FilesStorageProducer', () => {
 	});
 
 	describe('copyFilesOfParent', () => {
-		describe('when amqpConnection return with error in response', () => {
-			const setup = () => {
-				const params = {
-					userId: new ObjectId().toHexString(),
-					source: {
-						parentType: FileRecordParentType.Task,
-						schoolId: '633d59e1c7a36834ad61e525',
-						parentId: '633d59e1c7a36834ad61e526',
-					},
-					target: {
-						parentType: FileRecordParentType.Task,
-						schoolId: '633d59e1c7a36834ad61e525',
-						parentId: '633d59e1c7a36834ad61e527',
-					},
-				};
+		const params = {
+			userId: new ObjectId().toHexString(),
+			source: {
+				parentType: FileRecordParentType.Task,
+				schoolId: '633d59e1c7a36834ad61e525',
+				parentId: '633d59e1c7a36834ad61e526',
+			},
+			target: {
+				parentType: FileRecordParentType.Task,
+				schoolId: '633d59e1c7a36834ad61e525',
+				parentId: '633d59e1c7a36834ad61e527',
+			},
+		};
 
-				amqpConnection.request.mockResolvedValueOnce({ error: new Error() });
-				const spy = jest.spyOn(ErrorMapper, 'mapRpcErrorResponseToDomainError');
+		it('should call all steps.', async () => {
+			amqpConnection.request.mockResolvedValue({ message: [] });
 
-				return { params, spy };
+			const res = await service.copyFilesOfParent(params);
+
+			const expectedParams = {
+				exchange: FilesStorageExchange,
+				routingKey: FilesStorageEvents.COPY_FILES_OF_PARENT,
+				payload: params,
+				timeout,
 			};
 
-			it('should call error mapper and throw with error', async () => {
-				const { params, spy } = setup();
-
-				await expect(service.copyFilesOfParent(params)).rejects.toThrowError();
-				expect(spy).toBeCalled();
-			});
+			expect(amqpConnection.request).toHaveBeenCalledWith(expectedParams);
+			expect(res).toEqual([]);
 		});
 
-		describe('when valid params are passed and amqp connection return with a message', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-				const schoolId = new ObjectId().toHexString();
-				const parentIdSource = new ObjectId().toHexString();
-				const parentIdTarget = new ObjectId().toHexString();
+		it('should call error mapper if throw an error.', async () => {
+			amqpConnection.request.mockResolvedValue({ message: [] });
 
-				const params = {
-					userId,
-					source: {
-						parentType: FileRecordParentType.Task,
-						schoolId,
-						parentId: parentIdSource,
-					},
-					target: {
-						parentType: FileRecordParentType.Task,
-						schoolId,
-						parentId: parentIdTarget,
-					},
-				};
+			await service.copyFilesOfParent(params);
 
-				const message = [];
-				amqpConnection.request.mockResolvedValueOnce({ message });
+			const spy = jest
+				.spyOn(ErrorMapper, 'mapErrorToDomainError')
+				.mockImplementation(() => new InternalServerErrorException());
 
-				const expectedParams = {
-					exchange: FilesStorageExchange,
-					routingKey: FilesStorageEvents.COPY_FILES_OF_PARENT,
-					payload: params,
-					timeout,
-				};
+			amqpConnection.request.mockResolvedValue({ error: new Error() });
 
-				return { params, expectedParams, message };
-			};
-
-			it('should call the ampqConnection.', async () => {
-				const { params, expectedParams } = setup();
-
-				await service.copyFilesOfParent(params);
-
-				expect(amqpConnection.request).toHaveBeenCalledWith(expectedParams);
-			});
-
-			it('should return the response message.', async () => {
-				const { params, message } = setup();
-
-				const res = await service.copyFilesOfParent(params);
-
-				expect(res).toEqual(message);
-			});
+			await expect(service.copyFilesOfParent(params)).rejects.toThrowError();
+			expect(spy).toBeCalled();
+			spy.mockRestore();
 		});
 	});
 
 	describe('listFilesOfParent', () => {
-		describe('when valid parameter passed and amqpConnection return with error in response', () => {
-			const setup = () => {
-				const schoolId = new ObjectId().toHexString();
-				const parentId = new ObjectId().toHexString();
+		const param = {
+			parentType: FileRecordParentType.Task,
+			schoolId: 'school123',
+			parentId: '633d5acdda646580679dc448',
+		};
 
-				const param = {
-					parentType: FileRecordParentType.Task,
-					schoolId,
-					parentId,
-				};
+		it('should call all steps.', async () => {
+			amqpConnection.request.mockResolvedValue({ message: [] });
 
-				amqpConnection.request.mockResolvedValue({ error: new Error() });
+			const res = await service.listFilesOfParent(param);
 
-				const spy = jest.spyOn(ErrorMapper, 'mapRpcErrorResponseToDomainError');
-
-				return { param, spy };
+			const expectedParams = {
+				exchange: FilesStorageExchange,
+				routingKey: FilesStorageEvents.LIST_FILES_OF_PARENT,
+				payload: param,
+				timeout,
 			};
 
-			it('should call error mapper and throw with error', async () => {
-				const { param, spy } = setup();
-
-				await expect(service.listFilesOfParent(param)).rejects.toThrowError();
-				expect(spy).toBeCalled();
-			});
+			expect(amqpConnection.request).toHaveBeenCalledWith(expectedParams);
+			expect(res).toEqual([]);
 		});
 
-		describe('when valid params are passed and ampq do return with message', () => {
-			const setup = () => {
-				const schoolId = new ObjectId().toHexString();
-				const parentId = new ObjectId().toHexString();
+		it('should call error mapper if throw an error.', async () => {
+			const spy = jest
+				.spyOn(ErrorMapper, 'mapErrorToDomainError')
+				.mockImplementation(() => new InternalServerErrorException());
 
-				const param = {
-					parentType: FileRecordParentType.Task,
-					schoolId,
-					parentId,
-				};
+			amqpConnection.request.mockResolvedValue({ error: new Error() });
 
-				const expectedParams = {
-					exchange: FilesStorageExchange,
-					routingKey: FilesStorageEvents.LIST_FILES_OF_PARENT,
-					payload: param,
-					timeout,
-				};
+			await expect(service.listFilesOfParent(param)).rejects.toThrowError();
+			expect(spy).toBeCalled();
 
-				const message = [];
-
-				amqpConnection.request.mockResolvedValue({ message });
-
-				return { param, expectedParams, message };
-			};
-
-			it('should call the ampqConnection.', async () => {
-				const { param, expectedParams } = setup();
-
-				await service.listFilesOfParent(param);
-
-				expect(amqpConnection.request).toHaveBeenCalledWith(expectedParams);
-			});
-
-			it('should return the response message.', async () => {
-				const { param, message } = setup();
-
-				const res = await service.listFilesOfParent(param);
-
-				expect(res).toEqual(message);
-			});
+			spy.mockRestore();
 		});
 	});
 
 	describe('deleteFilesOfParent', () => {
-		describe('when valid parameter passed and amqpConnection return with error in response', () => {
+		describe('when files are deleted successfully', () => {
 			const setup = () => {
 				const parentId = new ObjectId().toHexString();
+				amqpConnection.request.mockResolvedValue({ message: [] });
 
-				amqpConnection.request.mockResolvedValue({ error: new Error() });
-				const spy = jest.spyOn(ErrorMapper, 'mapRpcErrorResponseToDomainError');
-
-				return { parentId, spy };
+				return { parentId };
 			};
 
-			it('should call error mapper and throw with error', async () => {
-				const { parentId, spy } = setup();
+			it('should call all steps.', async () => {
+				const { parentId } = setup();
 
-				await expect(service.deleteFilesOfParent(parentId)).rejects.toThrowError();
-				expect(spy).toBeCalled();
-			});
-		});
-
-		describe('when valid parameter passed and amqpConnection return with message', () => {
-			const setup = () => {
-				const parentId = new ObjectId().toHexString();
-
-				const message = [];
-				amqpConnection.request.mockResolvedValue({ message });
+				const res = await service.deleteFilesOfParent(parentId);
 
 				const expectedParams = {
 					exchange: FilesStorageExchange,
@@ -233,23 +154,31 @@ describe('FilesStorageProducer', () => {
 					timeout,
 				};
 
-				return { parentId, message, expectedParams };
+				expect(amqpConnection.request).toHaveBeenCalledWith(expectedParams);
+				expect(res).toEqual([]);
+			});
+		});
+
+		describe('when error is thrown', () => {
+			const setup = () => {
+				const parentId = new ObjectId().toHexString();
+
+				const spy = jest
+					.spyOn(ErrorMapper, 'mapErrorToDomainError')
+					.mockImplementation(() => new InternalServerErrorException());
+
+				amqpConnection.request.mockResolvedValue({ error: new Error() });
+
+				return { parentId, spy };
 			};
 
-			it('should call the ampqConnection.', async () => {
-				const { parentId, expectedParams } = setup();
+			it('should call error mapper if throw an error.', async () => {
+				const { parentId, spy } = setup();
 
-				await service.deleteFilesOfParent(parentId);
+				await expect(service.deleteFilesOfParent(parentId)).rejects.toThrowError();
+				expect(spy).toBeCalled();
 
-				expect(amqpConnection.request).toHaveBeenCalledWith(expectedParams);
-			});
-
-			it('should return the response message.', async () => {
-				const { parentId, message } = setup();
-
-				const res = await service.deleteFilesOfParent(parentId);
-
-				expect(res).toEqual(message);
+				spy.mockRestore();
 			});
 		});
 	});

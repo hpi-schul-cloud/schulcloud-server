@@ -114,9 +114,7 @@ class EduSharingConnector {
 			if (err.statusCode === 404) {
 				return null;
 			}
-			// eslint-disable-next-line no-unused-vars
-			const { headers, ...logOptions } = options;
-			logger.error(`Edu-Sharing failed request with error ${err.statusCode} ${err.message}`, logOptions);
+			logger.error(`Edu-Sharing failed request with error ${err.statusCode} ${err.message}`, options);
 			if (retried === true) {
 				throw new GeneralError('Edu-Sharing Request failed');
 			} else {

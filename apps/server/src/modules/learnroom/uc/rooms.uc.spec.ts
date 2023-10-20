@@ -83,12 +83,11 @@ describe('rooms usecase', () => {
 			const tasks = taskFactory.buildList(3, { course: room });
 			const lessons = lessonFactory.buildList(3, { course: room });
 			const board = boardFactory.buildWithId({ course: room });
-			const roomBoardDTO = {
+			const dto = {
 				roomId: room.id,
 				displayColor: room.color,
 				title: room.name,
 				elements: [],
-				isArchived: room.isFinished(),
 			};
 
 			board.syncBoardElementReferences([...lessons, ...tasks]);
@@ -99,7 +98,7 @@ describe('rooms usecase', () => {
 			const tasksSpy = taskRepo.findBySingleParent.mockResolvedValue([tasks, 3]);
 			const lessonsSpy = lessonRepo.findAllByCourseIds.mockResolvedValue([lessons, 3]);
 			const syncBoardElementReferencesSpy = jest.spyOn(board, 'syncBoardElementReferences');
-			const mapperSpy = factory.createDTO.mockReturnValue(roomBoardDTO);
+			const mapperSpy = factory.createDTO.mockReturnValue(dto);
 			const saveSpy = boardRepo.save.mockResolvedValue();
 			roomsService.updateBoard.mockResolvedValue(board);
 
@@ -109,7 +108,7 @@ describe('rooms usecase', () => {
 				room,
 				tasks,
 				lessons,
-				roomBoardDTO,
+				dto,
 				userSpy,
 				roomSpy,
 				boardSpy,
@@ -146,9 +145,9 @@ describe('rooms usecase', () => {
 		});
 
 		it('should return result dto', async () => {
-			const { room, user, roomBoardDTO } = setup();
+			const { room, user, dto } = setup();
 			const result = await uc.getBoard(room.id, user.id);
-			expect(result).toEqual(roomBoardDTO);
+			expect(result).toEqual(dto);
 		});
 
 		it('should ensure course has uptodate board', async () => {

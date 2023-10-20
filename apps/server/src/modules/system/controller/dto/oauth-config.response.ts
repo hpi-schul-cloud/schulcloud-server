@@ -66,10 +66,10 @@ export class OauthConfigResponse {
 
 	@ApiProperty({
 		description: 'Logout endpoint',
-		required: false,
+		required: true,
 		nullable: false,
 	})
-	logoutEndpoint?: string;
+	logoutEndpoint: string;
 
 	@ApiProperty({
 		description: 'Issuer',
@@ -95,7 +95,7 @@ export class OauthConfigResponse {
 		jwksEndpoint: string;
 		authEndpoint: string;
 		scope: string;
-		logoutEndpoint?: string;
+		logoutEndpoint: string;
 		grantType: string;
 		issuer: string;
 	}) {

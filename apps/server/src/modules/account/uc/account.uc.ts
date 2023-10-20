@@ -6,7 +6,7 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
-import { Account, EntityId, Permission, PermissionService, Role, RoleName, SchoolEntity, User } from '@shared/domain';
+import { Account, EntityId, Permission, PermissionService, Role, RoleName, School, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 // TODO: module internals should be imported with relative paths
 import { AccountService } from '@src/modules/account/services/account.service';
@@ -425,7 +425,7 @@ export class AccountUc {
 		);
 	}
 
-	private schoolPermissionExists(roles: string[], school: SchoolEntity, permissions: string[]): boolean {
+	private schoolPermissionExists(roles: string[], school: School, permissions: string[]): boolean {
 		if (
 			roles.find((role) => role === RoleName.TEACHER) &&
 			permissions.find((permission) => permission === Permission.STUDENT_LIST)

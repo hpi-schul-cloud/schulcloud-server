@@ -1,18 +1,16 @@
 import {
 	BadRequestException,
 	ConflictException,
-	Inject,
 	Injectable,
+	InternalServerErrorException,
 	NotAcceptableException,
 	NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain';
-import { AntivirusService } from '@shared/infra/antivirus';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { LegacyLogger } from '@src/core/logger';
-import FileType from 'file-type-cjs/file-type-cjs-index';
-import { PassThrough, Readable } from 'stream';
+import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
 	CopyFileResponse,
 	CopyFilesOfParentParams,
@@ -23,27 +21,27 @@ import {
 	SingleFileParams,
 } from '../controller/dto';
 import { FileDto } from '../dto';
-import { FileRecord, ScanStatus } from '../entity';
+import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
-import { FILES_STORAGE_S3_CONNECTION, IFileStorageConfig } from '../files-storage.config';
+import { IFileStorageConfig } from '../files-storage.config';
 import {
-	createCopyFiles,
 	createFileRecord,
+	createICopyFiles,
 	createPath,
 	getPaths,
 	markForDelete,
 	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from '../helper';
-import { GetFileResponse } from '../interface';
-import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../mapper';
+import { IGetFileResponse } from '../interface';
+import { CopyFileResponseBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 
 @Injectable()
 export class FilesStorageService {
 	constructor(
 		private readonly fileRecordRepo: FileRecordRepo,
-		@Inject(FILES_STORAGE_S3_CONNECTION) private readonly storageClient: S3ClientAdapter,
+		private readonly storageClient: S3ClientAdapter,
 		private readonly antivirusService: AntivirusService,
 		private readonly configService: ConfigService<IFileStorageConfig, true>,
 		private logger: LegacyLogger
@@ -78,9 +76,7 @@ export class FilesStorageService {
 
 	// upload
 	public async uploadFile(userId: EntityId, params: FileRecordParams, file: FileDto): Promise<FileRecord> {
-		const { fileRecord, stream } = await this.createFileRecord(file, params, userId);
-		// MimeType Detection consumes part of the stream, so the restored stream is passed on
-		file.data = stream;
+		const fileRecord = await this.createFileRecord(file, params, userId);
 		await this.fileRecordRepo.save(fileRecord);
 
 		await this.createFileInStorageAndRollbackOnError(fileRecord, params, file);
@@ -88,51 +84,13 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	private async createFileRecord(
-		file: FileDto,
-		params: FileRecordParams,
-		userId: EntityId
-	): Promise<{ fileRecord: FileRecord; stream: Readable }> {
+	private async createFileRecord(file: FileDto, params: FileRecordParams, userId: EntityId): Promise<FileRecord> {
 		const fileName = await this.resolveFileName(file, params);
-		const { mimeType, stream } = await this.detectMimeType(file);
 
 		// Create fileRecord with 0 as initial file size, because it is overwritten later anyway.
-		const fileRecord = createFileRecord(fileName, 0, mimeType, params, userId);
+		const fileRecord = createFileRecord(fileName, 0, file.mimeType, params, userId);
 
-		return { fileRecord, stream };
-	}
-
-	private async detectMimeType(file: FileDto): Promise<{ mimeType: string; stream: Readable }> {
-		if (this.isStreamMimeTypeDetectionPossible(file.mimeType)) {
-			const source = file.data.pipe(new PassThrough());
-			const { stream, mime: detectedMimeType } = await this.detectMimeTypeByStream(source);
-
-			const mimeType = detectedMimeType ?? file.mimeType;
-
-			return { mimeType, stream };
-		}
-
-		return { mimeType: file.mimeType, stream: file.data };
-	}
-
-	private isStreamMimeTypeDetectionPossible(mimeType: string) {
-		const mimTypes = [
-			'text/csv',
-			'image/svg+xml',
-			'application/msword',
-			'application/vnd.ms-powerpoint',
-			'application/vnd.ms-excel',
-		];
-
-		const result = !mimTypes.includes(mimeType);
-
-		return result;
-	}
-
-	private async detectMimeTypeByStream(file: Readable): Promise<{ mime?: string; stream: Readable }> {
-		const stream = await FileType.fileTypeStream(file);
-
-		return { mime: stream.fileType?.mime, stream };
+		return fileRecord;
 	}
 
 	private async resolveFileName(file: FileDto, params: FileRecordParams): Promise<string> {
@@ -152,32 +110,18 @@ export class FilesStorageService {
 		file: FileDto
 	): Promise<void> {
 		const filePath = createPath(params.schoolId, fileRecord.id);
-		const useStreamToAntivirus = this.configService.get<boolean>('USE_STREAM_TO_ANTIVIRUS');
 
 		try {
 			const fileSizePromise = this.countFileSize(file);
 
-			if (useStreamToAntivirus && fileRecord.isPreviewPossible()) {
-				const streamToAntivirus = file.data.pipe(new PassThrough());
-
-				const [, antivirusClientResponse] = await Promise.all([
-					this.storageClient.create(filePath, file),
-					this.antivirusService.checkStream(streamToAntivirus),
-				]);
-				const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(antivirusClientResponse);
-				fileRecord.updateSecurityCheckStatus(status, reason);
-			} else {
-				await this.storageClient.create(filePath, file);
-			}
+			await this.storageClient.create(filePath, file);
 
 			// The actual file size is set here because it is known only after the whole file is streamed.
 			fileRecord.size = await fileSizePromise;
 			this.throwErrorIfFileIsTooBig(fileRecord.size);
 			await this.fileRecordRepo.save(fileRecord);
 
-			if (!useStreamToAntivirus || !fileRecord.isPreviewPossible()) {
-				await this.sendToAntivirus(fileRecord);
-			}
+			this.antivirusService.send(fileRecord.getSecurityToken());
 		} catch (error) {
 			await this.storageClient.delete([filePath]);
 			await this.fileRecordRepo.delete(fileRecord);
@@ -197,17 +141,6 @@ export class FilesStorageService {
 		});
 
 		return promise;
-	}
-
-	private async sendToAntivirus(fileRecord: FileRecord): Promise<void> {
-		const maxSecurityCheckFileSize = this.configService.get<number>('MAX_SECURITY_CHECK_FILE_SIZE');
-
-		if (fileRecord.size > maxSecurityCheckFileSize) {
-			fileRecord.updateSecurityCheckStatus(ScanStatus.WONT_CHECK, 'File is too big');
-			await this.fileRecordRepo.save(fileRecord);
-		} else {
-			await this.antivirusService.send(fileRecord.getSecurityToken());
-		}
 	}
 
 	private throwErrorIfFileIsTooBig(fileSize: number): void {
@@ -258,10 +191,13 @@ export class FilesStorageService {
 		}
 	}
 
-	public async downloadFile(fileRecord: FileRecord, bytesRange?: string): Promise<GetFileResponse> {
-		const pathToFile = createPath(fileRecord.schoolId, fileRecord.id);
-		const file = await this.storageClient.get(pathToFile, bytesRange);
-		const response = FileResponseBuilder.build(file, fileRecord.getName());
+	public async downloadFile(
+		schoolId: EntityId,
+		fileRecordId: EntityId,
+		bytesRange?: string
+	): Promise<IGetFileResponse> {
+		const pathToFile = createPath(schoolId, fileRecordId);
+		const response = await this.storageClient.get(pathToFile, bytesRange);
 
 		return response;
 	}
@@ -270,11 +206,11 @@ export class FilesStorageService {
 		fileRecord: FileRecord,
 		params: DownloadFileParams,
 		bytesRange?: string
-	): Promise<GetFileResponse> {
+	): Promise<IGetFileResponse> {
 		this.checkFileName(fileRecord, params);
 		this.checkScanStatus(fileRecord);
 
-		const response = await this.downloadFile(fileRecord, bytesRange);
+		const response = await this.downloadFile(fileRecord.getSchoolId(), fileRecord.id, bytesRange);
 
 		return response;
 	}
@@ -291,7 +227,7 @@ export class FilesStorageService {
 			await this.deleteFilesInFilesStorageClient(fileRecords);
 		} catch (error) {
 			await this.fileRecordRepo.save(fileRecords);
-			throw error;
+			throw new InternalServerErrorException(error, `${FilesStorageService.name}:delete`);
 		}
 	}
 
@@ -327,7 +263,7 @@ export class FilesStorageService {
 		} catch (err) {
 			markForDelete(fileRecords);
 			await this.fileRecordRepo.save(fileRecords);
-			throw err;
+			throw new InternalServerErrorException(err, `${FilesStorageService.name}:restore`);
 		}
 	}
 
@@ -380,9 +316,9 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	private async sendToAntiVirusService(fileRecord: FileRecord) {
+	private sendToAntiVirusService(fileRecord: FileRecord) {
 		if (fileRecord.isPending()) {
-			await this.antivirusService.send(fileRecord.getSecurityToken());
+			this.antivirusService.send(fileRecord.getSecurityToken());
 		}
 	}
 
@@ -391,10 +327,10 @@ export class FilesStorageService {
 		targetFile: FileRecord
 	): Promise<CopyFileResponse> {
 		try {
-			const paths = createCopyFiles(sourceFile, targetFile);
+			const paths = createICopyFiles(sourceFile, targetFile);
 
 			await this.storageClient.copy([paths]);
-			await this.sendToAntiVirusService(targetFile);
+			this.sendToAntiVirusService(targetFile);
 			const copyFileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.getName());
 
 			return copyFileResponse;

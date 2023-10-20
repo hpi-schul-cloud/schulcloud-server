@@ -5,6 +5,9 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: management-deployment
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '3333'
 spec:
   type: ClusterIP
   ports:

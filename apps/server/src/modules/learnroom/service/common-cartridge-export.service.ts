@@ -1,18 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { Course, EntityId, IComponentProperties, Task } from '@shared/domain';
+import { EntityId, Lesson, IComponentProperties, Course } from '@shared/domain';
 import { LessonService } from '@src/modules/lesson/service';
+import { TaskService } from '@src/modules/task/service/task.service';
 import { ComponentType } from '@src/shared/domain/entity/lesson.entity';
-import { TaskService } from '@src/modules/task/service';
+import { CourseService } from './course.service';
 import {
+	ICommonCartridgeOrganizationProps,
+	ICommonCartridgeResourceProps,
 	CommonCartridgeFileBuilder,
-	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
-	ICommonCartridgeResourceProps,
-	ICommonCartridgeWebContentResourceProps,
 } from '../common-cartridge';
-import { CourseService } from './course.service';
-import { createIdentifier } from '../common-cartridge/utils';
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -24,35 +22,16 @@ export class CommonCartridgeExportService {
 
 	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
+		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
 		const builder = new CommonCartridgeFileBuilder({
-			identifier: createIdentifier(courseId),
+			identifier: `i${course.id}`,
 			title: course.name,
 			version,
 			copyrightOwners: this.mapCourseTeachersToCopyrightOwners(course),
 			creationYear: course.createdAt.getFullYear().toString(),
 		});
-
-		await this.addLessons(builder, version, courseId);
-		await this.addTasks(builder, version, courseId, userId);
-
-		return builder.build();
-	}
-
-	private async addLessons(
-		builder: CommonCartridgeFileBuilder,
-		version: CommonCartridgeVersion,
-		courseId: EntityId
-	): Promise<void> {
-		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
-
 		lessons.forEach((lesson) => {
-			const organizationBuilder = builder.addOrganization({
-				version,
-				identifier: createIdentifier(lesson.id),
-				title: lesson.name,
-				resources: [],
-			});
-
+			const organizationBuilder = builder.addOrganization(this.mapLessonToOrganization(lesson, version));
 			lesson.contents.forEach((content) => {
 				const resourceProps = this.mapContentToResource(lesson.id, content, version);
 				if (resourceProps) {
@@ -60,26 +39,27 @@ export class CommonCartridgeExportService {
 				}
 			});
 		});
+
+		// TODO: add tasks as assignments, will be done in EW-526: https://ticketsystem.dbildungscloud.de/browse/EW-526
+		// const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
+		// const builder = new CommonCartridgeFileBuilder({
+		// 	identifier: `i${course.id}`,
+		// 	title: course.name,
+		// })
+		// 	.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
+		// 	.addAssignments(this.mapTasksToAssignments(tasks));
+		// return builder.build();
+
+		return builder.build();
 	}
 
-	private async addTasks(
-		builder: CommonCartridgeFileBuilder,
-		version: CommonCartridgeVersion,
-		courseId: EntityId,
-		userId: EntityId
-	): Promise<void> {
-		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
-		const organizationBuilder = builder.addOrganization({
+	private mapLessonToOrganization(lesson: Lesson, version: CommonCartridgeVersion): ICommonCartridgeOrganizationProps {
+		return {
+			identifier: `i${lesson.id}`,
 			version,
-			identifier: createIdentifier(),
-			// FIXME: change the title for tasks organization
-			title: '',
+			title: lesson.name,
 			resources: [],
-		});
-
-		tasks.forEach((task) => {
-			organizationBuilder.addResourceToOrganization(this.mapTaskToWebContentResource(task, version));
-		});
+		};
 	}
 
 	private mapContentToResource(
@@ -89,19 +69,18 @@ export class CommonCartridgeExportService {
 	): ICommonCartridgeResourceProps | undefined {
 		const commonProps = {
 			version,
-			identifier: createIdentifier(content._id),
-			href: `${createIdentifier(lessonId)}/${createIdentifier(content._id)}.html`,
+			identifier: `i${content._id as string}`,
+			href: `i${lessonId}/i${content._id as string}.xml`,
 			title: content.title,
 		};
 
 		if (content.component === ComponentType.TEXT) {
 			return {
 				version,
-				identifier: createIdentifier(content._id),
-				href: `${createIdentifier(lessonId)}/${createIdentifier(content._id)}.html`,
+				identifier: `i${content._id as string}`,
+				href: `i${lessonId}/i${content._id as string}.html`,
 				title: content.title,
 				type: CommonCartridgeResourceType.WEB_CONTENT,
-				intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				html: `<h1>${content.title}</h1><p>${content.content.text}</p>`,
 			};
 		}
@@ -115,18 +94,8 @@ export class CommonCartridgeExportService {
 
 		if (content.component === ComponentType.ETHERPAD) {
 			return version === CommonCartridgeVersion.V_1_3_0
-				? {
-						...commonProps,
-						type: CommonCartridgeResourceType.WEB_LINK_V3,
-						url: content.content.url,
-						title: content.content.description,
-				  }
-				: {
-						...commonProps,
-						type: CommonCartridgeResourceType.WEB_LINK_V1,
-						url: content.content.url,
-						title: content.content.description,
-				  };
+				? { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V3, url: content.content.url }
+				: { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V1, url: content.content.url };
 		}
 
 		return undefined;
@@ -143,24 +112,5 @@ export class CommonCartridgeExportService {
 			.map((teacher) => `${teacher.firstName} ${teacher.lastName}`)
 			.reduce((previousTeachers, currentTeacher) => `${previousTeachers}, ${currentTeacher}`);
 		return result;
-	}
-
-	private mapTaskToWebContentResource(
-		task: Task,
-		version: CommonCartridgeVersion
-	): ICommonCartridgeWebContentResourceProps {
-		const taskIdentifier = createIdentifier(task.id);
-		return {
-			version,
-			identifier: taskIdentifier,
-			href: `${taskIdentifier}/${taskIdentifier}.html`,
-			title: task.name,
-			type: CommonCartridgeResourceType.WEB_CONTENT,
-			html: `<h1>${task.name}</h1><p>${task.description}</p>`,
-			intendedUse:
-				version === CommonCartridgeVersion.V_1_1_0
-					? CommonCartridgeIntendedUseType.UNSPECIFIED
-					: CommonCartridgeIntendedUseType.ASSIGNMENT,
-		};
 	}
 }

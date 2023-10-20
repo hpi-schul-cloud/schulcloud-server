@@ -9,11 +9,11 @@ import {
 	OneToOne,
 	Property,
 } from '@mikro-orm/core';
-import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
+import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
 import { BaseEntity } from './base.entity';
-import { SchoolYearEntity } from './schoolyear.entity';
-import { SystemEntity } from './system.entity';
-import { FederalStateEntity } from './federal-state.entity';
+import { SchoolYear } from './schoolyear.entity';
+import { System } from './system.entity';
+import { FederalState } from './federal-state.entity';
 
 export enum SchoolFeatures {
 	ROCKET_CHAT = 'rocketChat',
@@ -22,8 +22,6 @@ export enum SchoolFeatures {
 	STUDENTVISIBILITY = 'studentVisibility', // deprecated
 	LDAP_UNIVENTION_MIGRATION = 'ldapUniventionMigrationSchool',
 	OAUTH_PROVISIONING_ENABLED = 'oauthProvisioningEnabled',
-	SHOW_OUTDATED_USERS = 'showOutdatedUsers',
-	ENABLE_LDAP_SYNC_DURING_MIGRATION = 'enableLdapSyncDuringMigration',
 }
 
 export interface ISchoolProperties {
@@ -34,11 +32,11 @@ export interface ISchoolProperties {
 	previousExternalId?: string;
 	name: string;
 	officialSchoolNumber?: string;
-	systems?: SystemEntity[];
+	systems?: System[];
 	features?: SchoolFeatures[];
-	schoolYear?: SchoolYearEntity;
-	userLoginMigration?: UserLoginMigrationEntity;
-	federalState: FederalStateEntity;
+	schoolYear?: SchoolYear;
+	userLoginMigration?: UserLoginMigration;
+	federalState: FederalState;
 }
 
 @Embeddable()
@@ -61,7 +59,7 @@ export class SchoolRoles {
 
 @Entity({ tableName: 'schools' })
 @Index({ properties: ['externalId', 'systems'] })
-export class SchoolEntity extends BaseEntity {
+export class School extends BaseEntity {
 	@Property({ nullable: true })
 	features?: SchoolFeatures[];
 
@@ -83,28 +81,24 @@ export class SchoolEntity extends BaseEntity {
 	@Property({ nullable: true })
 	officialSchoolNumber?: string;
 
-	@ManyToMany(() => SystemEntity, undefined, { fieldName: 'systems' })
-	systems = new Collection<SystemEntity>(this);
+	@ManyToMany('System', undefined, { fieldName: 'systems' })
+	systems = new Collection<System>(this);
 
 	@Embedded(() => SchoolRoles, { object: true, nullable: true, prefix: false })
 	permissions?: SchoolRoles;
 
-	@ManyToOne(() => SchoolYearEntity, { fieldName: 'currentYear', nullable: true })
-	schoolYear?: SchoolYearEntity;
+	@ManyToOne('SchoolYear', { fieldName: 'currentYear', nullable: true })
+	schoolYear?: SchoolYear;
 
-	@OneToOne(
-		() => UserLoginMigrationEntity,
-		(userLoginMigration: UserLoginMigrationEntity) => userLoginMigration.school,
-		{
-			orphanRemoval: true,
-			nullable: true,
-			fieldName: 'userLoginMigrationId',
-		}
-	)
-	userLoginMigration?: UserLoginMigrationEntity;
+	@OneToOne(() => UserLoginMigration, (userLoginMigration: UserLoginMigration) => userLoginMigration.school, {
+		orphanRemoval: true,
+		nullable: true,
+		fieldName: 'userLoginMigrationId',
+	})
+	userLoginMigration?: UserLoginMigration;
 
-	@ManyToOne(() => FederalStateEntity, { fieldName: 'federalState', nullable: false })
-	federalState: FederalStateEntity;
+	@ManyToOne(() => FederalState, { fieldName: 'federalState', nullable: false })
+	federalState: FederalState;
 
 	constructor(props: ISchoolProperties) {
 		super();

@@ -1,9 +1,9 @@
-import { OauthConfig, SystemEntity } from '@shared/domain';
+import { OauthConfig, System } from '@shared/domain';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 
 export class SystemMapper {
-	static mapFromEntityToDto(entity: SystemEntity): SystemDto {
+	static mapFromEntityToDto(entity: System): SystemDto {
 		return new SystemDto({
 			id: entity.id,
 			type: entity.type,
@@ -36,7 +36,7 @@ export class SystemMapper {
 		});
 	}
 
-	static mapFromEntitiesToDtos(entities: SystemEntity[]): SystemDto[] {
+	static mapFromEntitiesToDtos(entities: System[]): SystemDto[] {
 		return entities.map((entity) => this.mapFromEntityToDto(entity));
 	}
 }

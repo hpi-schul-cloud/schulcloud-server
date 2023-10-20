@@ -2,7 +2,7 @@ import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mik
 import { IEntityWithSchool } from '../interface';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { Role } from './role.entity';
-import { SchoolEntity } from './school.entity';
+import type { School } from './school.entity';
 
 export enum LanguageType {
 	DE = 'de',
@@ -15,7 +15,7 @@ export interface IUserProperties {
 	email: string;
 	firstName: string;
 	lastName: string;
-	school: SchoolEntity;
+	school: School;
 	roles: Role[];
 	ldapDn?: string;
 	externalId?: string;
@@ -51,8 +51,8 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 	roles = new Collection<Role>(this);
 
 	@Index()
-	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
-	school: SchoolEntity;
+	@ManyToOne('School', { fieldName: 'schoolId' })
+	school: School;
 
 	@Property({ nullable: true })
 	@Index()

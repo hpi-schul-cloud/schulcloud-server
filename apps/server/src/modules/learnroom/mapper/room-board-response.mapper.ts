@@ -20,7 +20,6 @@ export class RoomBoardResponseMapper {
 			title: board.title,
 			displayColor: board.displayColor,
 			elements,
-			isArchived: board.isArchived,
 		});
 
 		return mapped;
@@ -56,6 +55,10 @@ export class RoomBoardResponseMapper {
 			updatedAt: boardTask.updatedAt,
 			status: boardTaskStatus,
 		});
+
+		if (boardTask.taskCard) {
+			mappedTask.taskCardId = boardTask.taskCard;
+		}
 
 		const taskCourse = boardTask.course as Course;
 		mappedTask.courseName = taskCourse.name;
