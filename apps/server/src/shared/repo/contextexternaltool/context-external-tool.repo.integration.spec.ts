@@ -12,12 +12,12 @@ import {
 	schoolFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { CustomParameterEntry } from '@src/modules/tool/common/domain';
-import { ToolContextType } from '@src/modules/tool/common/enum';
-import { ContextExternalTool, ContextExternalToolProps } from '@src/modules/tool/context-external-tool/domain';
-import { ContextExternalToolEntity, ContextExternalToolType } from '@src/modules/tool/context-external-tool/entity';
-import { ContextExternalToolQuery } from '@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types';
-import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
+import { CustomParameterEntry } from '@modules/tool/common/domain';
+import { ToolContextType } from '@modules/tool/common/enum';
+import { ContextExternalTool, ContextExternalToolProps } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/entity';
+import { ContextExternalToolQuery } from '@modules/tool/context-external-tool/uc/dto/context-external-tool.types';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
 
 describe('ContextExternalToolRepo', () => {

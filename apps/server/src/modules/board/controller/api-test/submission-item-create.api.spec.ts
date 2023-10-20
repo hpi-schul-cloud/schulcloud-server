@@ -13,7 +13,7 @@ import {
 	submissionContainerElementNodeFactory,
 	userFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
+import { ServerTestModule } from '@modules/server';
 import { SubmissionItemResponse } from '../dto';
 
 const baseRouteName = '/elements';

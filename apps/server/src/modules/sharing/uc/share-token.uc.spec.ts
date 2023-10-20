@@ -15,13 +15,13 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { Action, AuthorizationService } from '@src/modules/authorization';
-import { AuthorizableReferenceType, AuthorizationReferenceService } from '@src/modules/authorization/domain';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
-import { CourseCopyService } from '@src/modules/learnroom';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LessonCopyService } from '@src/modules/lesson/service';
-import { TaskCopyService } from '@src/modules/task/service';
+import { Action, AuthorizationService } from '@modules/authorization';
+import { AuthorizableReferenceType, AuthorizationReferenceService } from '@modules/authorization/domain';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseCopyService } from '@modules/learnroom';
+import { CourseService } from '@modules/learnroom/service';
+import { LessonCopyService } from '@modules/lesson/service';
+import { TaskCopyService } from '@modules/task/service';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenUC } from './share-token.uc';

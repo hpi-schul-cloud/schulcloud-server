@@ -9,11 +9,11 @@ import {
 import { Account, EntityId, Permission, PermissionService, Role, RoleName, SchoolEntity, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 // TODO: module internals should be imported with relative paths
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto/account.dto';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountDto } from '@modules/account/services/dto/account.dto';
 
 import { BruteForcePrevention } from '@src/imports-from-feathers';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { ObjectId } from 'bson';
 import { IAccountConfig } from '../account-config';
 import {

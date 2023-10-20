@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, UserDO } from '@shared/domain';
-import { UserService } from '@src/modules/user';
+import { UserService } from '@modules/user';
 import {
 	BBBBaseMeetingConfig,
 	BBBCreateConfigBuilder,

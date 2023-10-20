@@ -3,7 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller';
 import { Page } from '@shared/domain';
 import { ErrorResponse } from '@src/core/error/dto';
-import { ICurrentUser, Authenticate, CurrentUser } from '@src/modules/authentication';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { GroupUc } from '../uc';
 import { ClassInfoDto } from '../uc/dto';
 import { ClassInfoSearchListResponse, ClassSortParams } from './dto';

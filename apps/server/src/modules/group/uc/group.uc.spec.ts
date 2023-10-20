@@ -13,15 +13,15 @@ import {
 	userDoFactory,
 	userFactory,
 } from '@shared/testing';
-import { Action, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
-import { ClassService } from '@src/modules/class';
-import { Class } from '@src/modules/class/domain';
-import { classFactory } from '@src/modules/class/domain/testing/factory/class.factory';
-import { LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
-import { RoleService } from '@src/modules/role';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { SystemDto, SystemService } from '@src/modules/system';
-import { UserService } from '@src/modules/user';
+import { Action, AuthorizationContext, AuthorizationService } from '@modules/authorization';
+import { ClassService } from '@modules/class';
+import { Class } from '@modules/class/domain';
+import { classFactory } from '@modules/class/domain/testing/factory/class.factory';
+import { LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
+import { RoleService } from '@modules/role';
+import { RoleDto } from '@modules/role/service/dto/role.dto';
+import { SystemDto, SystemService } from '@modules/system';
+import { UserService } from '@modules/user';
 import { Group } from '../domain';
 import { GroupService } from '../service';
 import { ClassInfoDto } from './dto';

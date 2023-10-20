@@ -1,4 +1,4 @@
-import { IdToken } from '@src/modules/oauth-provider/interface/id-token';
+import { IdToken } from '@modules/oauth-provider/interface/id-token';
 
 export interface AcceptConsentRequestBody {
 	grant_access_token_audience?: string[];
