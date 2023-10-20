@@ -248,6 +248,7 @@ describe('GroupUc', () => {
 								externalSourceName: clazz.source,
 								teachers: [teacherUser.lastName],
 								schoolYear: schoolYear.name,
+								isUpgradable: false,
 							},
 							{
 								id: group.id,
@@ -290,6 +291,7 @@ describe('GroupUc', () => {
 								externalSourceName: clazz.source,
 								teachers: [teacherUser.lastName],
 								schoolYear: schoolYear.name,
+								isUpgradable: false,
 							},
 							{
 								id: groupWithSystem.id,
