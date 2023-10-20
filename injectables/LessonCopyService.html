@@ -312,8 +312,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="395"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:395</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="398"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:398</a></div>
                         </td>
                     </tr>
 
@@ -382,8 +382,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="301"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:301</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="304"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:304</a></div>
                         </td>
                     </tr>
 
@@ -464,8 +464,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="294"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:294</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="297"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:297</a></div>
                         </td>
                     </tr>
 
@@ -753,8 +753,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="365"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:365</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="368"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:368</a></div>
                         </td>
                     </tr>
 
@@ -823,8 +823,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="342"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:342</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="345"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:345</a></div>
                         </td>
                     </tr>
 
@@ -917,8 +917,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="324"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:324</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="327"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:327</a></div>
                         </td>
                     </tr>
 
@@ -1184,8 +1184,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="410"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:410</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="413"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:413</a></div>
                         </td>
                     </tr>
 
@@ -1254,8 +1254,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="401"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:401</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="404"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:404</a></div>
                         </td>
                     </tr>
 
@@ -1737,29 +1737,32 @@ export class LessonCopyService {
 	}
 
 	private copyLernStore(element: IComponentProperties): IComponentProperties {
-		const resources &#x3D; ((element.content as IComponentLernstoreProperties).resources ?? []).map(
-			({ client, description, merlinReference, title, url }) &#x3D;&gt; {
-				const result &#x3D; {
-					client,
-					description,
-					merlinReference,
-					title,
-					url,
-				};
-				return result;
-			}
-		);
-
-		const lernstore &#x3D; {
+		const lernstore: IComponentProperties &#x3D; {
 			title: element.title,
 			hidden: element.hidden,
 			component: ComponentType.LERNSTORE,
 			user: element.user, // TODO should be params.user - but that made the server crash, but property is normally undefined
-			content: {
-				resources,
-			},
 		};
-		return lernstore as IComponentProperties;
+
+		if (element.content) {
+			const resources &#x3D; ((element.content as IComponentLernstoreProperties).resources ?? []).map(
+				({ client, description, merlinReference, title, url }) &#x3D;&gt; {
+					const result &#x3D; {
+						client,
+						description,
+						merlinReference,
+						title,
+						url,
+					};
+					return result;
+				}
+			);
+
+			const lernstoreContent: IComponentLernstoreProperties &#x3D; { resources };
+			lernstore.content &#x3D; lernstoreContent;
+		}
+
+		return lernstore;
 	}
 
 	private static copyGeogebra(originalElement: IComponentProperties): IComponentProperties {
