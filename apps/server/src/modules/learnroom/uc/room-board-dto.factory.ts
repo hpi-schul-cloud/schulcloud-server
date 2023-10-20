@@ -14,8 +14,7 @@ import {
 	TaskWithStatusVo,
 	User,
 } from '@shared/domain';
-import { AuthorizationService } from '@modules/authorization/authorization.service';
-import { Action } from '@modules/authorization/types/action.enum';
+import { AuthorizationService, Action } from '@modules/authorization';
 import {
 	ColumnBoardMetaData,
 	LessonMetaData,

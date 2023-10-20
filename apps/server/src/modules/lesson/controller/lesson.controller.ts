@@ -1,7 +1,6 @@
 import { Controller, Delete, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@modules/authentication';
-import { Authenticate, CurrentUser } from '@modules/authentication/decorator/auth.decorator';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { LessonUC } from '../uc';
 import { LessonUrlParams } from './dto';
 

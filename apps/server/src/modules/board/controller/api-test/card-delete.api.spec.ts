@@ -15,7 +15,7 @@ import {
 } from '@shared/testing';
 import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server';
 import { Request } from 'express';
 import request from 'supertest';
 

@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
 import { AuthorizationContext, AuthorizationContextBuilder } from '@modules/authorization';
-import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
-import { ContextExternalToolService } from '../../context-external-tool/service';
-import { SchoolExternalToolDto, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
-import { SchoolExternalTool } from '../domain';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
+import { ContextExternalToolService } from '../../context-external-tool/service';
+import { SchoolExternalTool } from '../domain';
+import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
+import { SchoolExternalToolDto, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 
 @Injectable()
 export class SchoolExternalToolUc {
@@ -57,9 +57,7 @@ export class SchoolExternalToolUc {
 	}
 
 	async deleteSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {
-		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(
-			schoolExternalToolId
-		);
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
 		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
@@ -71,9 +69,7 @@ export class SchoolExternalToolUc {
 	}
 
 	async getSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise<SchoolExternalTool> {
-		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(
-			schoolExternalToolId
-		);
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
 		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);

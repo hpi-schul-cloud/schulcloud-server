@@ -1,8 +1,7 @@
 import { Controller, Get, NotFoundException, Param, Query, Res, StreamableFile } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Authenticate, CurrentUser } from '@modules/authentication/decorator/auth.decorator';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { PaginationParams } from '@shared/controller/';
-import { ICurrentUser } from '@modules/authentication';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { CourseUc } from '../uc/course.uc';

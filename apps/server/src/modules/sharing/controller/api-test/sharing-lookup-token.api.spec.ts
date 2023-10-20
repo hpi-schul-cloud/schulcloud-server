@@ -1,167 +1,210 @@
-import { Request } from 'express';
-import request from 'supertest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
 import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@modules/authentication';
-import {
-	cleanupCollections,
-	courseFactory,
-	mapUserToCurrentUser,
-	roleFactory,
-	schoolFactory,
-	userFactory,
-} from '@shared/testing';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { TestApiClient, UserAndAccountTestFactory, courseFactory, schoolFactory } from '@shared/testing';
 import { ServerTestModule } from '@modules/server';
 import { ShareTokenService } from '../../service';
-import { ShareTokenInfoResponse, ShareTokenResponse, ShareTokenUrlParams } from '../dto';
-import { ShareTokenContext, ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';
-
-const baseRouteName = '/sharetoken';
-
-class API {
-	app: INestApplication;
-
-	constructor(app: INestApplication) {
-		this.app = app;
-	}
-
-	async get(urlParams: ShareTokenUrlParams) {
-		const response = await request(this.app.getHttpServer())
-			.get(`${baseRouteName}/${urlParams.token}`)
-			.set('Accept', 'application/json');
-
-		return {
-			result: response.body as ShareTokenResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-}
+import { ShareTokenInfoResponse } from '../dto';
+import { ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';
 
 describe(`share token lookup (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
 	let shareTokenService: ShareTokenService;
-	let api: API;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
 		shareTokenService = module.get(ShareTokenService);
 
-		api = new API(app);
+		testApiClient = new TestApiClient(app, 'sharetoken');
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
 
-	beforeEach(() => {
-		Configuration.set('FEATURE_COURSE_SHARE_NEW', true);
-	});
-
-	const setup = async (context?: ShareTokenContext) => {
-		await cleanupCollections(em);
-		const school = schoolFactory.build();
-		const roles = roleFactory.buildList(1, {
-			permissions: [Permission.COURSE_CREATE],
-		});
-		const user = userFactory.build({ school, roles });
-		const course = courseFactory.build({ teachers: [user] });
-		await em.persistAndFlush([user, course]);
-
-		const shareToken = await shareTokenService.createToken(
-			{
-				parentType: ShareTokenParentType.Course,
-				parentId: course.id,
-			},
-			{ context }
-		);
-
-		em.clear();
-
-		currentUser = mapUserToCurrentUser(user);
-
-		return {
-			parentType: ShareTokenParentType.Course,
-			parentName: course.getMetadata().title,
-			token: shareToken.token,
-		};
-	};
-
 	describe('with the feature disabled', () => {
-		it('should return status 500', async () => {
+		const setup = async () => {
 			Configuration.set('FEATURE_COURSE_SHARE_NEW', false);
-			const { token } = await setup();
 
-			const response = await api.get({ token });
+			const parentType = ShareTokenParentType.Course;
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
+			const course = courseFactory.build({ teachers: [teacherUser] });
 
-			expect(response.status).toEqual(500);
+			await em.persistAndFlush([course, teacherAccount, teacherUser]);
+			em.clear();
+
+			const shareToken = await shareTokenService.createToken(
+				{
+					parentType,
+					parentId: course.id,
+				},
+				undefined
+			);
+
+			const loggedInClient = await testApiClient.login(teacherAccount);
+
+			return {
+				token: shareToken.token,
+				loggedInClient,
+			};
+		};
+
+		it('should return status 500', async () => {
+			const { token, loggedInClient } = await setup();
+
+			const response = await loggedInClient.get(token);
+
+			expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+			expect(response.body).toEqual({
+				code: 500,
+				message: 'Import Course Feature not enabled',
+				title: 'Internal Server Error',
+				type: 'INTERNAL_SERVER_ERROR',
+			});
 		});
 	});
+
+	// test and setup for other feature flags are missed
 
 	describe('with a valid token', () => {
-		it('should return status 200', async () => {
-			const { token } = await setup();
-			const response = await api.get({ token });
+		const setup = async () => {
+			Configuration.set('FEATURE_COURSE_SHARE_NEW', true);
 
-			expect(response.status).toEqual(200);
-		});
+			const parentType = ShareTokenParentType.Course;
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
+			const course = courseFactory.build({ teachers: [teacherUser] });
 
-		it('should return a valid result', async () => {
-			const { parentType, parentName, token } = await setup();
-			const response = await api.get({ token });
+			await em.persistAndFlush([course, teacherAccount, teacherUser]);
+			em.clear();
+
+			const shareToken = await shareTokenService.createToken(
+				{
+					parentType,
+					parentId: course.id,
+				},
+				undefined
+			);
+
+			const loggedInClient = await testApiClient.login(teacherAccount);
 
 			const expectedResult: ShareTokenInfoResponse = {
-				token,
+				token: shareToken.token,
 				parentType,
-				parentName,
+				parentName: course.getMetadata().title,
 			};
 
-			expect(response.result).toEqual(expectedResult);
+			return {
+				expectedResult,
+				token: shareToken.token,
+				loggedInClient,
+			};
+		};
+
+		it('should return status 200 with correct formated body', async () => {
+			const { token, loggedInClient, expectedResult } = await setup();
+
+			const response = await loggedInClient.get(token);
+
+			expect(response.status).toEqual(HttpStatus.OK);
+			expect(response.body).toEqual(expectedResult);
 		});
 	});
 
 	describe('with invalid token', () => {
+		const setup = async () => {
+			Configuration.set('FEATURE_COURSE_SHARE_NEW', true);
+
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
+			const course = courseFactory.build({ teachers: [teacherUser] });
+
+			await em.persistAndFlush([course, teacherAccount, teacherUser]);
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(teacherAccount);
+
+			return {
+				invalidToken: 'invalid_token',
+				loggedInClient,
+			};
+		};
+
 		it('should return status 404', async () => {
-			await setup();
-			const response = await api.get({ token: 'invalid_token' });
-			expect(response.status).toEqual(404);
+			const { invalidToken, loggedInClient } = await setup();
+
+			const response = await loggedInClient.get(invalidToken);
+
+			expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+			expect(response.body).toEqual({
+				code: 404,
+				message: 'The requested ShareToken: [object Object] has not been found.',
+				title: 'Not Found',
+				type: 'NOT_FOUND',
+			});
 		});
 	});
 
 	describe('with invalid context', () => {
-		it('should return status 403', async () => {
+		const setup = async () => {
+			Configuration.set('FEATURE_COURSE_SHARE_NEW', true);
+
+			const parentType = ShareTokenParentType.Course;
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
 			const otherSchool = schoolFactory.build();
-			await em.persistAndFlush(otherSchool);
+			const course = courseFactory.build({ teachers: [teacherUser] });
+
+			await em.persistAndFlush([course, teacherAccount, teacherUser, otherSchool]);
 			em.clear();
 
-			const { token } = await setup({
+			const context = {
 				contextType: ShareTokenContextType.School,
 				contextId: otherSchool.id,
+			};
+
+			const shareToken = await shareTokenService.createToken(
+				{
+					parentType,
+					parentId: course.id,
+				},
+				{ context }
+			);
+
+			const loggedInClient = await testApiClient.login(teacherAccount);
+
+			const expectedResult: ShareTokenInfoResponse = {
+				token: shareToken.token,
+				parentType,
+				parentName: course.getMetadata().title,
+			};
+
+			return {
+				expectedResult,
+				token: shareToken.token,
+				loggedInClient,
+			};
+		};
+
+		it('should return status 403', async () => {
+			const { token, loggedInClient } = await setup();
+
+			const response = await loggedInClient.get(token);
+
+			expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+			expect(response.body).toEqual({
+				code: 403,
+				message: 'Forbidden',
+				title: 'Forbidden',
+				type: 'FORBIDDEN',
 			});
-			const response = await api.get({ token });
-			expect(response.status).toEqual(403);
 		});
 	});
 });

@@ -14,8 +14,7 @@ import {
 } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser } from '@modules/authentication';
-import { Authenticate, CurrentUser } from '@modules/authentication/decorator/auth.decorator';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { BoardUc, CardUc } from '../uc';
 import {
 	AnyContentElementResponse,

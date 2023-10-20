@@ -531,6 +531,55 @@ describe('lesson copy service', () => {
 		});
 	});
 
+	describe('when lesson contains LernStore content element without set resource', () => {
+		const setup = () => {
+			const lernStoreContent: IComponentProperties = {
+				title: 'text component 1',
+				hidden: false,
+				component: ComponentType.LERNSTORE,
+			};
+			const user = userFactory.build();
+			const originalCourse = courseFactory.build({ school: user.school });
+			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const originalLesson = lessonFactory.build({
+				course: originalCourse,
+				contents: [lernStoreContent],
+			});
+			lessonRepo.findById.mockResolvedValueOnce(originalLesson);
+
+			return { user, originalCourse, destinationCourse, originalLesson, lernStoreContent };
+		};
+
+		it('the content should be fully copied', async () => {
+			const { user, destinationCourse, originalLesson, lernStoreContent } = setup();
+
+			const status = await copyService.copyLesson({
+				originalLessonId: originalLesson.id,
+				destinationCourse,
+				user,
+			});
+
+			const copiedLessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
+			expect(copiedLessonContents[0]).toEqual(lernStoreContent);
+		});
+
+		it('should set content type to LESSON_CONTENT_LERNSTORE', async () => {
+			const { user, destinationCourse, originalLesson } = setup();
+
+			const status = await copyService.copyLesson({
+				originalLessonId: originalLesson.id,
+				destinationCourse,
+				user,
+			});
+			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
+			expect(contentsStatus).toBeDefined();
+			if (contentsStatus?.elements) {
+				expect(contentsStatus.elements[0].type).toEqual(CopyElementType.LESSON_CONTENT_LERNSTORE);
+				expect(contentsStatus.elements[0].status).toEqual(CopyStatusEnum.SUCCESS);
+			}
+		});
+	});
+
 	describe('when lesson contains geoGebra content element', () => {
 		const setup = () => {
 			const geoGebraContent: IComponentProperties = {

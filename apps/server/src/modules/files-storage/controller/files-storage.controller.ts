@@ -24,8 +24,7 @@ import {
 import { ApiConsumes, ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
-import { ICurrentUser } from '@modules/authentication';
-import { Authenticate, CurrentUser } from '@modules/authentication/decorator/auth.decorator';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { Request, Response } from 'express';
 import { GetFileResponse } from '../interface';
 import { FilesStorageMapper } from '../mapper';

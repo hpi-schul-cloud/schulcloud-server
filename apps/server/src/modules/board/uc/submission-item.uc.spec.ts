@@ -9,8 +9,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AuthorizationService } from '@modules/authorization';
-import { Action } from '@modules/authorization/types/action.enum';
+import { AuthorizationService, Action } from '@modules/authorization';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { SubmissionItemUc } from './submission-item.uc';
 

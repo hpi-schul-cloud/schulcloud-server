@@ -6,8 +6,7 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { ICurrentUser } from '@modules/authentication';
-import { Authenticate, CurrentUser } from '@modules/authentication/decorator/auth.decorator';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { MigrationMapper } from '../mapper/migration.mapper';
 import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
 import { LegacySchoolUc } from '../uc';

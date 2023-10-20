@@ -179,12 +179,10 @@ export class FeathersRosterService {
 				);
 
 				for await (const contextExternalTool of contextExternalTools) {
-					const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(
+					const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
 						contextExternalTool.schoolToolRef.schoolToolId
 					);
-					const externalTool: ExternalTool = await this.externalToolService.findExternalToolById(
-						schoolExternalTool.toolId
-					);
+					const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 					const isRequiredTool: boolean = externalTool.id === externalToolId;
 
 					if (isRequiredTool) {

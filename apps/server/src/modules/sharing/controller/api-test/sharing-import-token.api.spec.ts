@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { Permission } from '@shared/domain';
@@ -118,16 +118,17 @@ describe(`share token import (api)`, () => {
 
 			const response = await api.post({ token }, { newName: 'NewName' });
 
-			expect(response.status).toEqual(500);
+			expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
 		});
 	});
 
 	describe('with a valid token', () => {
 		it('should return status 201', async () => {
 			const { token } = await setup();
+
 			const response = await api.post({ token }, { newName: 'NewName' });
 
-			expect(response.status).toEqual(201);
+			expect(response.status).toEqual(HttpStatus.CREATED);
 		});
 
 		it('should return a valid result', async () => {
@@ -149,23 +150,53 @@ describe(`share token import (api)`, () => {
 	describe('with invalid token', () => {
 		it('should return status 404', async () => {
 			await setup();
+
 			const response = await api.post({ token: 'invalid_token' }, { newName: 'NewName' });
-			expect(response.status).toEqual(404);
+
+			expect(response.status).toEqual(HttpStatus.NOT_FOUND);
 		});
 	});
 
 	describe('with invalid context', () => {
-		it('should return status 403', async () => {
+		const setup2 = async () => {
+			const school = schoolFactory.build();
 			const otherSchool = schoolFactory.build();
-			await em.persistAndFlush(otherSchool);
-			em.clear();
+			const roles = roleFactory.buildList(1, {
+				permissions: [Permission.COURSE_CREATE],
+			});
 
-			const { token } = await setup({
+			const user = userFactory.build({ school, roles });
+			const course = courseFactory.build({ teachers: [user] });
+			await em.persistAndFlush([user, course, otherSchool]);
+
+			const context = {
 				contextType: ShareTokenContextType.School,
 				contextId: otherSchool.id,
-			});
-			const response = await api.post({ token }, { newName: 'NewName' });
-			expect(response.status).toEqual(403);
+			};
+
+			const shareToken = await shareTokenService.createToken(
+				{
+					parentType: ShareTokenParentType.Course,
+					parentId: course.id,
+				},
+				{ context }
+			);
+
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			return {
+				shareTokenFromDifferentCourse: shareToken.token,
+			};
+		};
+
+		it('should return status 403', async () => {
+			const { shareTokenFromDifferentCourse } = await setup2();
+
+			const response = await api.post({ token: shareTokenFromDifferentCourse }, { newName: 'NewName' });
+
+			expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 		});
 	});
 
@@ -175,7 +206,7 @@ describe(`share token import (api)`, () => {
 			// @ts-expect-error invalid new name
 			const response = await api.post({ token }, { newName: 42 });
 
-			expect(response.status).toEqual(501);
+			expect(response.status).toEqual(HttpStatus.NOT_IMPLEMENTED);
 		});
 	});
 });

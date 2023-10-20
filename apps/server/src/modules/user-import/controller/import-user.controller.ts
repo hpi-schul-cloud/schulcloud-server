@@ -1,11 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-
 import { PaginationParams } from '@shared/controller';
 import { IFindOptions, ImportUser, User } from '@shared/domain';
-import { Authenticate, CurrentUser } from '@modules/authentication/decorator/auth.decorator';
-import { ICurrentUser } from '@modules/authentication';
-
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { ImportUserMapper } from '../mapper/import-user.mapper';
 import { UserMatchMapper } from '../mapper/user-match.mapper';
 import { UserImportUc } from '../uc/user-import.uc';

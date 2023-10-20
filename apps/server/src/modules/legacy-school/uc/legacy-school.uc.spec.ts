@@ -66,6 +66,9 @@ describe('LegacySchoolUc', () => {
 		jest.resetAllMocks();
 	});
 
+	// Tests with case of authService.checkPermission.mockImplementation(() => throw new ForbiddenException());
+	// are missed for both methodes
+
 	describe('setMigration is called', () => {
 		describe('when first starting the migration', () => {
 			const setup = () => {
@@ -77,7 +80,7 @@ describe('LegacySchoolUc', () => {
 				});
 
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(null);
-				authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+				authService.checkPermission.mockReturnValueOnce();
 				schoolService.getSchoolById.mockResolvedValue(school);
 				userLoginMigrationService.setMigration.mockResolvedValue(userLoginMigration);
 			};
@@ -107,7 +110,7 @@ describe('LegacySchoolUc', () => {
 					});
 
 					userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
-					authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+					authService.checkPermission.mockReturnValueOnce();
 					schoolService.getSchoolById.mockResolvedValue(school);
 					userLoginMigrationService.setMigration.mockResolvedValue(updatedUserLoginMigration);
 					schoolMigrationService.hasSchoolMigratedUser.mockResolvedValue(true);
@@ -138,7 +141,7 @@ describe('LegacySchoolUc', () => {
 					});
 
 					userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
-					authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+					authService.checkPermission.mockReturnValueOnce();
 					schoolService.getSchoolById.mockResolvedValue(school);
 					userLoginMigrationService.setMigration.mockResolvedValue(updatedUserLoginMigration);
 					schoolMigrationService.hasSchoolMigratedUser.mockResolvedValue(false);
@@ -177,7 +180,7 @@ describe('LegacySchoolUc', () => {
 				});
 
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
-				authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+				authService.checkPermission.mockReturnValueOnce();
 				schoolService.getSchoolById.mockResolvedValue(school);
 				userLoginMigrationService.setMigration.mockResolvedValue(updatedUserLoginMigration);
 			};
@@ -208,7 +211,7 @@ describe('LegacySchoolUc', () => {
 				});
 
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
-				authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+				authService.checkPermission.mockReturnValueOnce();
 				schoolService.getSchoolById.mockResolvedValue(school);
 				userLoginMigrationService.setMigration.mockResolvedValue(updatedUserLoginMigration);
 				schoolMigrationService.validateGracePeriod.mockImplementation(() => {
@@ -241,7 +244,7 @@ describe('LegacySchoolUc', () => {
 
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
 				schoolService.getSchoolById.mockResolvedValue(school);
-				authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+				authService.checkPermission.mockReturnValueOnce();
 			};
 
 			it('should return a migration', async () => {
@@ -265,7 +268,7 @@ describe('LegacySchoolUc', () => {
 
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(null);
 				schoolService.getSchoolById.mockResolvedValue(school);
-				authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+				authService.checkPermission.mockReturnValueOnce();
 			};
 
 			it('should return no migration information', async () => {

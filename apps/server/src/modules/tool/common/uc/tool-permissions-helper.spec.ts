@@ -2,13 +2,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
 	contextExternalToolFactory,
+	courseFactory,
 	legacySchoolDoFactory,
 	schoolExternalToolFactory,
 	setupEntities,
+	userFactory,
 } from '@shared/testing';
 import { Permission, LegacySchoolDo } from '@shared/domain';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { ForbiddenException } from '@nestjs/common';
+import { CourseService } from '@modules/learnroom';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ToolPermissionHelper } from './tool-permission-helper';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -18,6 +22,7 @@ describe('ToolPermissionHelper', () => {
 	let helper: ToolPermissionHelper;
 
 	let authorizationService: DeepMocked<AuthorizationService>;
+	let courseService: DeepMocked<CourseService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
 
 	beforeAll(async () => {
@@ -30,6 +35,10 @@ describe('ToolPermissionHelper', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
+				},
+				{
 					provide: LegacySchoolService,
 					useValue: createMock<LegacySchoolService>(),
 				},
@@ -38,6 +47,7 @@ describe('ToolPermissionHelper', () => {
 
 		helper = module.get(ToolPermissionHelper);
 		authorizationService = module.get(AuthorizationService);
+		courseService = module.get(CourseService);
 		schoolService = module.get(LegacySchoolService);
 	});
 
@@ -50,29 +60,98 @@ describe('ToolPermissionHelper', () => {
 	});
 
 	describe('ensureContextPermissions', () => {
-		describe('when context external tool is given', () => {
+		describe('when context external tool with id is given', () => {
 			const setup = () => {
-				const userId = 'userId';
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
+				const user = userFactory.buildWithId();
+				const course = courseFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
 				const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
 
+				courseService.findById.mockResolvedValueOnce(course);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.checkPermission.mockReturnValueOnce().mockReturnValueOnce();
+
 				return {
-					userId,
+					user,
+					course,
 					contextExternalTool,
 					context,
 				};
 			};
 
 			it('should check permission for context external tool', async () => {
-				const { userId, contextExternalTool, context } = setup();
+				const { user, course, contextExternalTool, context } = setup();
 
-				await helper.ensureContextPermissions(userId, contextExternalTool, context);
+				await helper.ensureContextPermissions(user.id, contextExternalTool, context);
 
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
-					userId,
-					'courses',
-					contextExternalTool.contextRef.id,
-					context
+				expect(authorizationService.checkPermission).toHaveBeenCalledTimes(2);
+				expect(authorizationService.checkPermission).toHaveBeenNthCalledWith(1, user, contextExternalTool, context);
+				expect(authorizationService.checkPermission).toHaveBeenNthCalledWith(2, user, course, context);
+			});
+
+			it('should return undefined', async () => {
+				const { user, contextExternalTool, context } = setup();
+
+				const result = await helper.ensureContextPermissions(user.id, contextExternalTool, context);
+
+				expect(result).toBeUndefined();
+			});
+		});
+
+		describe('when context external tool without id is given', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const course = courseFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
+				const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
+
+				courseService.findById.mockResolvedValueOnce(course);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				return {
+					user,
+					course,
+					contextExternalTool,
+					context,
+				};
+			};
+
+			it('should check permission for context external tool', async () => {
+				const { user, course, contextExternalTool, context } = setup();
+
+				await helper.ensureContextPermissions(user.id, contextExternalTool, context);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledTimes(1);
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, course, context);
+			});
+		});
+
+		describe('when user is unauthorized', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const course = courseFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
+				const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
+
+				courseService.findById.mockResolvedValueOnce(course);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.checkPermission.mockImplementationOnce(() => {
+					throw new ForbiddenException();
+				});
+
+				return {
+					user,
+					course,
+					contextExternalTool,
+					context,
+				};
+			};
+
+			it('should check permission for context external tool', async () => {
+				const { user, contextExternalTool, context } = setup();
+
+				await expect(helper.ensureContextPermissions(user.id, contextExternalTool, context)).rejects.toThrowError(
+					new ForbiddenException()
 				);
 			});
 		});
@@ -81,15 +160,16 @@ describe('ToolPermissionHelper', () => {
 	describe('ensureSchoolPermissions', () => {
 		describe('when school external tool is given', () => {
 			const setup = () => {
-				const userId = 'userId';
+				const user = userFactory.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: schoolExternalTool.schoolId });
 
 				schoolService.getSchoolById.mockResolvedValue(school);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				return {
-					userId,
+					user,
 					schoolExternalTool,
 					school,
 					context,
@@ -97,11 +177,20 @@ describe('ToolPermissionHelper', () => {
 			};
 
 			it('should check permission for school external tool', async () => {
-				const { userId, schoolExternalTool, context, school } = setup();
+				const { user, schoolExternalTool, context, school } = setup();
 
-				await helper.ensureSchoolPermissions(userId, schoolExternalTool, context);
+				await helper.ensureSchoolPermissions(user.id, schoolExternalTool, context);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(userId, school, context);
+				expect(authorizationService.checkPermission).toHaveBeenCalledTimes(1);
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, school, context);
+			});
+
+			it('should return undefined', async () => {
+				const { user, schoolExternalTool, context } = setup();
+
+				const result = await helper.ensureSchoolPermissions(user.id, schoolExternalTool, context);
+
+				expect(result).toBeUndefined();
 			});
 		});
 	});

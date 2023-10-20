@@ -1,8 +1,9 @@
-import { AuthorizableReferenceType } from '@modules/authorization/types';
+import { AuthorizableReferenceType } from '@modules/authorization/domain/';
 import { ToolContextType } from '../enum';
 
 const typeMapping: Record<ToolContextType, AuthorizableReferenceType> = {
 	[ToolContextType.COURSE]: AuthorizableReferenceType.Course,
+	[ToolContextType.BOARD_ELEMENT]: AuthorizableReferenceType.BoardNode,
 };
 
 export class ContextTypeMapper {

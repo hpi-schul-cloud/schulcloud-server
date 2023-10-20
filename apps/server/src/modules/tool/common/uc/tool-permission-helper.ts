@@ -1,16 +1,21 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, User } from '@shared/domain';
-import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from '@modules/authorization';
+import { Course, EntityId, LegacySchoolDo, User } from '@shared/domain';
+import { AuthorizationContext, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { CourseService } from '@modules/learnroom';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ContextTypeMapper } from '../mapper';
+// import { ContextTypeMapper } from '../mapper';
 
 @Injectable()
 export class ToolPermissionHelper {
 	constructor(
-		@Inject(forwardRef(() => AuthorizationService)) private authorizationService: AuthorizationService,
-		private readonly schoolService: LegacySchoolService
+		@Inject(forwardRef(() => AuthorizationService)) private readonly authorizationService: AuthorizationService,
+		private readonly schoolService: LegacySchoolService,
+		// invalid dependency on this place it is in UC layer in a other module
+		// loading of ressources should be part of service layer
+		// if it must resolve different loadings based on the request it can be added in own service and use in UC
+		private readonly courseService: CourseService
 	) {}
 
 	// TODO build interface to get contextDO by contextType
@@ -19,21 +24,19 @@ export class ToolPermissionHelper {
 		contextExternalTool: ContextExternalTool,
 		context: AuthorizationContext
 	): Promise<void> {
+		// loading of ressources should be part of the UC -> unnessasary awaits
+		const [authorizableUser, course]: [User, Course] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.courseService.findById(contextExternalTool.contextRef.id),
+		]);
+
 		if (contextExternalTool.id) {
-			await this.authorizationService.checkPermissionByReferences(
-				userId,
-				AuthorizableReferenceType.ContextExternalToolEntity,
-				contextExternalTool.id,
-				context
-			);
+			this.authorizationService.checkPermission(authorizableUser, contextExternalTool, context);
 		}
 
-		await this.authorizationService.checkPermissionByReferences(
-			userId,
-			ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextExternalTool.contextRef.type),
-			contextExternalTool.contextRef.id,
-			context
-		);
+		// const type = ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextExternalTool.contextRef.type);
+		// no different types possible until it is fixed.
+		this.authorizationService.checkPermission(authorizableUser, course, context);
 	}
 
 	public async ensureSchoolPermissions(
@@ -41,8 +44,12 @@ export class ToolPermissionHelper {
 		schoolExternalTool: SchoolExternalTool,
 		context: AuthorizationContext
 	): Promise<void> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+		// loading of ressources should be part of the UC  -> unnessasary awaits
+		const [user, school]: [User, LegacySchoolDo] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.schoolService.getSchoolById(schoolExternalTool.schoolId),
+		]);
+
 		this.authorizationService.checkPermission(user, school, context);
 	}
 }

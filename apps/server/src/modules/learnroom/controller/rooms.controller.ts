@@ -1,8 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
-import { ICurrentUser } from '@modules/authentication';
-import { Authenticate, CurrentUser } from '@modules/authentication/decorator/auth.decorator';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import { serverConfig } from '@modules/server/server.config';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';

@@ -215,15 +215,18 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 				return contextExternalTool.contextRef.id;
 			}
 			case CustomParameterType.AUTO_CONTEXTNAME: {
-				if (contextExternalTool.contextRef.type === ToolContextType.COURSE) {
-					const course: Course = await this.courseService.findById(contextExternalTool.contextRef.id);
+				switch (contextExternalTool.contextRef.type) {
+					case ToolContextType.COURSE: {
+						const course: Course = await this.courseService.findById(contextExternalTool.contextRef.id);
 
-					return course.name;
+						return course.name;
+					}
+					default: {
+						throw new ParameterTypeNotImplementedLoggableException(
+							`${customParameter.type}/${contextExternalTool.contextRef.type as string}`
+						);
+					}
 				}
-
-				throw new ParameterTypeNotImplementedLoggableException(
-					`${customParameter.type}/${contextExternalTool.contextRef.type as string}`
-				);
 			}
 			case CustomParameterType.AUTO_SCHOOLNUMBER: {
 				const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);

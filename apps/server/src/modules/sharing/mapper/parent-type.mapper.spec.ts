@@ -1,5 +1,5 @@
 import { NotImplementedException } from '@nestjs/common';
-import { AuthorizableReferenceType } from '@modules/authorization';
+import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenParentTypeMapper } from './parent-type.mapper';
 

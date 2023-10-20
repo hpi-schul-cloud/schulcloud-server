@@ -12,8 +12,7 @@ import {
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common';
 import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser } from '@modules/authentication';
-import { Authenticate, CurrentUser } from '@modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { ContextExternalTool } from '../domain';
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from '../mapper';
 import { ContextExternalToolUc } from '../uc';
@@ -58,6 +57,7 @@ export class ToolContextController {
 			ContextExternalToolResponseMapper.mapContextExternalToolResponse(createdTool);
 
 		this.logger.debug(`ContextExternalTool with id ${response.id} was created by user with id ${currentUser.userId}`);
+
 		return response;
 	}
 

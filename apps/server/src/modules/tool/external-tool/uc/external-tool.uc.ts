@@ -35,7 +35,7 @@ export class ExternalToolUc {
 
 		await this.toolValidationService.validateUpdate(toolId, externalTool);
 
-		const loaded: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
+		const loaded: ExternalTool = await this.externalToolService.findById(toolId);
 		const configToUpdate: ExternalToolConfig = { ...loaded.config, ...externalTool.config };
 		const toUpdate: ExternalTool = new ExternalTool({
 			...loaded,
@@ -63,7 +63,7 @@ export class ExternalToolUc {
 	async getExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		const tool: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
+		const tool: ExternalTool = await this.externalToolService.findById(toolId);
 		return tool;
 	}
 

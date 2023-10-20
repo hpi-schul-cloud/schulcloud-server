@@ -301,7 +301,7 @@ describe('ExternalToolUc', () => {
 		it('should fetch a tool', async () => {
 			const { currentUser } = setupAuthorization();
 			const { externalTool, toolId } = setup();
-			externalToolService.findExternalToolById.mockResolvedValue(externalTool);
+			externalToolService.findById.mockResolvedValue(externalTool);
 
 			const result: ExternalTool = await uc.getExternalTool(currentUser.userId, toolId);
 
@@ -327,7 +327,7 @@ describe('ExternalToolUc', () => {
 			});
 
 			externalToolService.updateExternalTool.mockResolvedValue(updatedExternalToolDO);
-			externalToolService.findExternalToolById.mockResolvedValue(new ExternalTool(externalToolDOtoUpdate));
+			externalToolService.findById.mockResolvedValue(new ExternalTool(externalToolDOtoUpdate));
 
 			return {
 				externalTool,
