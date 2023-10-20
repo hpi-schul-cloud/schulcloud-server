@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { ContentElementType, InputFormat } from '@shared/domain';
 import { Type } from 'class-transformer';
-import { IsDate, IsEnum, IsMongoId, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsDate, IsEnum, IsMongoId, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
 
 export abstract class ElementContentBody {
 	@ApiProperty({
@@ -31,10 +31,26 @@ export class FileElementContentBody extends ElementContentBody {
 	@ApiProperty()
 	content!: FileContentBody;
 }
+
 export class LinkContentBody {
-	@IsString()
+	@IsUrl()
 	@ApiProperty({})
 	url!: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiProperty({})
+	title?: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiProperty({})
+	description?: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiProperty({})
+	imageUrl?: string;
 }
 
 export class LinkElementContentBody extends ElementContentBody {

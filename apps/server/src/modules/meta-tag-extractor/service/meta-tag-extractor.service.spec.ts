@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { ImageObject } from 'open-graph-scraper/dist/lib/types';
-import { OpenGraphProxyService } from './open-graph-proxy.service';
+import { MetaTagExtractorService } from './meta-tag-extractor.service';
 
 let ogsResponseMock = {};
 jest.mock(
@@ -15,16 +15,16 @@ jest.mock(
 		})
 );
 
-describe(OpenGraphProxyService.name, () => {
+describe(MetaTagExtractorService.name, () => {
 	let module: TestingModule;
-	let service: OpenGraphProxyService;
+	let service: MetaTagExtractorService;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [OpenGraphProxyService],
+			providers: [MetaTagExtractorService],
 		}).compile();
 
-		service = module.get(OpenGraphProxyService);
+		service = module.get(MetaTagExtractorService);
 
 		await setupEntities();
 	});
@@ -41,7 +41,7 @@ describe(OpenGraphProxyService.name, () => {
 		it('should return also the original url', async () => {
 			const url = 'https://de.wikipedia.org';
 
-			const result = await service.fetchOpenGraphData(url);
+			const result = await service.fetchMetaData(url);
 
 			expect(result).toEqual(expect.objectContaining({ url }));
 		});
@@ -49,7 +49,7 @@ describe(OpenGraphProxyService.name, () => {
 		it('should thrown an error if url is an empty string', async () => {
 			const url = '';
 
-			await expect(service.fetchOpenGraphData(url)).rejects.toThrow();
+			await expect(service.fetchMetaData(url)).rejects.toThrow();
 		});
 
 		it('should return ogTitle as title', async () => {
@@ -57,7 +57,7 @@ describe(OpenGraphProxyService.name, () => {
 			const url = 'https://de.wikipedia.org';
 			ogsResponseMock = { ogTitle };
 
-			const result = await service.fetchOpenGraphData(url);
+			const result = await service.fetchMetaData(url);
 
 			expect(result).toEqual(expect.objectContaining({ title: ogTitle }));
 		});
@@ -83,7 +83,7 @@ describe(OpenGraphProxyService.name, () => {
 			const url = 'https://de.wikipedia.org';
 			ogsResponseMock = { ogImage };
 
-			const result = await service.fetchOpenGraphData(url);
+			const result = await service.fetchMetaData(url);
 
 			expect(result).toEqual(expect.objectContaining({ image: ogImage[1] }));
 		});

@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+// import fetch from 'node-fetch';
 import ogs from 'open-graph-scraper';
 import { ImageObject } from 'open-graph-scraper/dist/lib/types';
 
-type OpenGraphData = {
+export type MetaData = {
 	title: string;
 	description: string;
 	url: string;
@@ -10,18 +11,18 @@ type OpenGraphData = {
 };
 
 @Injectable()
-export class OpenGraphProxyService {
-	async fetchOpenGraphData(url: string): Promise<OpenGraphData> {
+export class MetaTagExtractorService {
+	// WIP: add nice debug logging for available open GraphData?!?
+	async fetchMetaData(url: string): Promise<MetaData> {
 		if (url.length === 0) {
-			throw new Error(`OpenGraphProxyService requires a valid URL. Given URL: ${url}`);
+			throw new Error(`MetaTagExtractorService requires a valid URL. Given URL: ${url}`);
 		}
 
-		const data = await ogs({ url });
-		// WIP: add nice debug logging for available openGraphData?!?
+		const data = await ogs({ url, fetchOptions: { headers: { 'User-Agent': 'Open Graph Scraper' } } });
 
-		const title = data.result.ogTitle ?? '';
-		const description = data.result.ogDescription ?? '';
-		const image = data.result.ogImage ? this.pickImage(data.result.ogImage) : undefined;
+		const title = data.result?.ogTitle ?? '';
+		const description = data?.result?.ogDescription ?? '';
+		const image = data?.result?.ogImage ? this.pickImage(data?.result?.ogImage) : undefined;
 
 		return {
 			title,

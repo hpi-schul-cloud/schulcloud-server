@@ -14,7 +14,6 @@ import {
 	ColumnBoardService,
 	ColumnService,
 	ContentElementService,
-	OpenGraphProxyService,
 	SubmissionItemService,
 } from './service';
 import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './service/board-do-copy-service';
@@ -38,7 +37,6 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		BoardDoCopyService,
 		ColumnBoardCopyService,
 		SchoolSpecificFileCopyServiceFactory,
-		OpenGraphProxyService,
 	],
 	exports: [
 		BoardDoAuthorizableService,

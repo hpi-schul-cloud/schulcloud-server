@@ -13,7 +13,6 @@ import {
 } from '@shared/testing';
 import { ExternalToolContentBody, FileContentBody, RichTextContentBody } from '../controller/dto';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
-import { OpenGraphProxyService } from './open-graph-proxy.service';
 
 describe(ContentElementUpdateVisitor.name, () => {
 	describe('when visiting an unsupported component', () => {
@@ -25,8 +24,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
 			const submissionItem = submissionItemFactory.build();
-			const openGraphProxyService = new OpenGraphProxyService();
-			const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
+			const updater = new ContentElementUpdateVisitor(content);
 
 			return { board, column, card, submissionItem, updater };
 		};
@@ -66,8 +64,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const content = new RichTextContentBody();
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
-			const openGraphProxyService = new OpenGraphProxyService();
-			const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
+			const updater = new ContentElementUpdateVisitor(content);
 
 			return { fileElement, updater };
 		};
@@ -84,8 +81,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const linkElement = linkElementFactory.build();
 			const content = new FileContentBody();
 			content.caption = 'a caption';
-			const openGraphProxyService = new OpenGraphProxyService();
-			const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
+			const updater = new ContentElementUpdateVisitor(content);
 
 			return { linkElement, updater };
 		};
@@ -102,8 +98,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const richTextElement = richTextElementFactory.build();
 			const content = new FileContentBody();
 			content.caption = 'a caption';
-			const openGraphProxyService = new OpenGraphProxyService();
-			const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
+			const updater = new ContentElementUpdateVisitor(content);
 
 			return { richTextElement, updater };
 		};
@@ -121,8 +116,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const content = new RichTextContentBody();
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
-			const openGraphProxyService = new OpenGraphProxyService();
-			const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
+			const updater = new ContentElementUpdateVisitor(content);
 
 			return { submissionContainerElement, updater };
 		};
@@ -140,8 +134,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 				const externalToolElement = externalToolElementFactory.build({ contextExternalToolId: undefined });
 				const content = new ExternalToolContentBody();
 				content.contextExternalToolId = new ObjectId().toHexString();
-				const openGraphProxyService = new OpenGraphProxyService();
-				const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
+				const updater = new ContentElementUpdateVisitor(content);
 
 				return { externalToolElement, updater, content };
 			};
@@ -161,8 +154,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 				const content = new RichTextContentBody();
 				content.text = 'a text';
 				content.inputFormat = InputFormat.RICH_TEXT_CK5;
-				const openGraphProxyService = new OpenGraphProxyService();
-				const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
+				const updater = new ContentElementUpdateVisitor(content);
 
 				return { externalToolElement, updater };
 			};
@@ -178,8 +170,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const setup = () => {
 				const externalToolElement = externalToolElementFactory.build();
 				const content = new ExternalToolContentBody();
-				const openGraphProxyService = new OpenGraphProxyService();
-				const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
+				const updater = new ContentElementUpdateVisitor(content);
 
 				return { externalToolElement, updater };
 			};
