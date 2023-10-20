@@ -127,6 +127,7 @@ describe('Group (API)', () => {
 							name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 							teachers: [teacherUser.lastName],
 							schoolYear: schoolYear.name,
+							isUpgradable: false,
 						},
 					],
 					skip: 0,
