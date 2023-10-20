@@ -23,7 +23,7 @@ import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { SystemDto, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
-import { Group } from '../domain';
+import { Group, GroupTypes } from '../domain';
 import { GroupService } from '../service';
 import { ClassInfoDto, ResolvedGroupDto } from './dto';
 import { ClassRootType } from './dto/class-root-type';
