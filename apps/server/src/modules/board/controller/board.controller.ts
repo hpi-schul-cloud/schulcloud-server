@@ -12,8 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser, Authenticate, CurrentUser } from '@src/modules/authentication';
 import { BoardUc } from '../uc';
 import { BoardResponse, BoardUrlParams, ColumnResponse, RenameBodyParams } from './dto';
 import { BoardContextResponse } from './dto/board/board-context.reponse';
