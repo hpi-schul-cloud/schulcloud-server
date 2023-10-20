@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { VideoConferenceScope } from '@shared/domain/interface';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { BBBBaseResponse, BBBCreateResponse } from '../bbb';
 import { defaultVideoConferenceOptions } from '../interface';
 import { VideoConferenceDeprecatedUc } from '../uc';

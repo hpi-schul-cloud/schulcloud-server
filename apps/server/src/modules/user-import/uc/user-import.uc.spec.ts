@@ -21,9 +21,9 @@ import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { LoggerModule } from '@src/core/logger';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school';
+import { AccountService } from '@modules/account/services/account.service';
+import { AuthorizationService } from '@modules/authorization';
+import { LegacySchoolService } from '@modules/legacy-school';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,

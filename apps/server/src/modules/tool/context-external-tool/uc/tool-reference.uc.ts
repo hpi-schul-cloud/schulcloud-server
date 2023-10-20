@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
-import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
+import { AuthorizationContext, AuthorizationContextBuilder } from '@modules/authorization';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool, ContextRef, ToolReference } from '../domain';

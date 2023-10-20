@@ -9,7 +9,7 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
+import { ServerTestModule } from '@modules/server';
 
 const createStudent = () => {
 	const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({}, [

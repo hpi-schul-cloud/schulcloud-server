@@ -5,8 +5,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, Permission, User } from '@shared/domain';
 import { contextExternalToolFactory, setupEntities, userFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { Action, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { ForbiddenLoggableException } from '@src/modules/authorization/errors/forbidden.loggable-exception';
+import {
+	Action,
+	AuthorizationContextBuilder,
+	AuthorizationService,
+	ForbiddenLoggableException,
+} from '@modules/authorization';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../domain';

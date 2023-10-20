@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { INestApplication, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { Readable } from 'stream';
 import request from 'supertest';
 import { FwuLearningContentsTestModule } from '../../fwu-learning-contents-test.module';

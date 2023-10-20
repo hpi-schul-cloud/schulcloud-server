@@ -12,9 +12,9 @@ import {
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { ClassEntity } from '@src/modules/class/entity';
-import { classEntityFactory } from '@src/modules/class/entity/testing/factory/class.entity.factory';
-import { ServerTestModule } from '@src/modules/server';
+import { ClassEntity } from '@modules/class/entity';
+import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
+import { ServerTestModule } from '@modules/server';
 import { GroupEntity, GroupEntityTypes } from '../../entity';
 import { ClassRootType } from '../../uc/dto/class-root-type';
 import { ClassInfoSearchListResponse, ClassSortBy } from '../dto';
@@ -126,6 +126,7 @@ describe('Group (API)', () => {
 							name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 							teachers: [teacherUser.lastName],
 							schoolYear: schoolYear.name,
+							isUpgradable: false,
 						},
 					],
 					skip: 0,

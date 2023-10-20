@@ -25,7 +25,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
-import { ServerTestModule } from '@src/modules/server';
+import { ServerTestModule } from '@modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';

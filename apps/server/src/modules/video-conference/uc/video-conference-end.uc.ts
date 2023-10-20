@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, UserDO } from '@shared/domain';
-import { ErrorStatus } from '@src/modules/video-conference/error/error-status.enum';
-import { UserService } from '@src/modules/user';
+import { ErrorStatus } from '@modules/video-conference/error/error-status.enum';
+import { UserService } from '@modules/user';
 import { BBBBaseMeetingConfig, BBBBaseResponse, BBBResponse, BBBRole, BBBService } from '../bbb';
 import { IScopeInfo, ScopeRef, VideoConference, VideoConferenceState } from './dto';
 import { VideoConferenceService } from '../service';
@@ -16,6 +16,12 @@ export class VideoConferenceEndUc {
 	) {}
 
 	async end(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConference<BBBBaseResponse>> {
+		/* need to be replace with
+		const [authorizableUser, scopeRessource]: [User, TeamEntity | Course] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.videoConferenceService.loadScopeRessources(scopeId, scope),
+		]);
+		*/
 		const user: UserDO = await this.userService.findById(currentUserId);
 		const userId: string = user.id as string;
 
