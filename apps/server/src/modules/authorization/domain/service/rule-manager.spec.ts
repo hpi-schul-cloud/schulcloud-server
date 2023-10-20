@@ -16,6 +16,7 @@ import {
 	TeamRule,
 	UserRule,
 	UserLoginMigrationRule,
+	GroupRule,
 } from '../rules';
 import { RuleManager } from './rule-manager';
 
