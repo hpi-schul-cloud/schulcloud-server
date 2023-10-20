@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { AccountService } from '@src/modules/account/services/account.service';
+import { AccountService } from '@src/modules/account';
+// invalid import
 import { AccountDto } from '@src/modules/account/services/dto';
-import { JwtValidationAdapter } from '@src/modules/authentication/strategy/jwt-validation.adapter';
+// invalid import, can produce dependency cycles
 import type { IServerConfig } from '@src/modules/server';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { BruteForceError } from '../errors/brute-force.error';
-import { UnauthorizedLoggableException } from '../errors/unauthorized.loggable-exception';
+import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
+import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { CreateJwtPayload } from '../interface/jwt-payload';
 import { LoginDto } from '../uc/dto';
 

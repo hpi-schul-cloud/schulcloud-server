@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { ContentElementType } from '@shared/domain';
 import { TimestampsResponse } from '../timestamps.response';
 
@@ -7,8 +7,8 @@ export class ExternalToolElementContent {
 		this.contextExternalToolId = props.contextExternalToolId;
 	}
 
-	@ApiPropertyOptional()
-	contextExternalToolId?: string;
+	@ApiProperty({ type: String, required: true, nullable: true })
+	contextExternalToolId: string | null;
 }
 
 export class ExternalToolElementResponse {

@@ -14,27 +14,23 @@ import { ValidationError } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { IFindOptions, Page } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser, ICurrentUser } from '@src/modules/authentication';
 import { Response } from 'express';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { ContextExternalToolContextParams } from '../../context-external-tool/controller/dto';
-import { ExternalTool, ToolReference } from '../domain';
+import { ExternalTool } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
 import { ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
-import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate, ToolReferenceUc } from '../uc';
+import { ExternalToolLogoService } from '../service';
+import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate } from '../uc';
 import {
 	ExternalToolCreateParams,
+	ExternalToolIdParams,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
 	ExternalToolSearchParams,
 	ExternalToolUpdateParams,
 	SortExternalToolParams,
-	ExternalToolIdParams,
-	ToolReferenceListResponse,
-	ToolReferenceResponse,
 } from './dto';
-import { ExternalToolLogoService } from '../service';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -43,7 +39,6 @@ export class ToolController {
 	constructor(
 		private readonly externalToolUc: ExternalToolUc,
 		private readonly externalToolDOMapper: ExternalToolRequestMapper,
-		private readonly toolReferenceUc: ToolReferenceUc,
 		private readonly logger: LegacyLogger,
 		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
@@ -154,32 +149,6 @@ export class ToolController {
 		);
 
 		return promise;
-	}
-
-	@Get('/:contextType/:contextId/references')
-	@ApiOperation({ summary: 'Get ExternalTool References for a given context' })
-	@ApiOkResponse({
-		description: 'The Tool References has been successfully fetched.',
-		type: ToolReferenceListResponse,
-	})
-	@ApiForbiddenResponse({ description: 'User is not allowed to access this resource.' })
-	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
-	async getToolReferences(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ContextExternalToolContextParams
-	): Promise<ToolReferenceListResponse> {
-		const toolReferences: ToolReference[] = await this.toolReferenceUc.getToolReferences(
-			currentUser.userId,
-			params.contextType,
-			params.contextId,
-			'/v3/tools/external-tools/{id}/logo'
-		);
-
-		const toolReferenceResponses: ToolReferenceResponse[] =
-			ExternalToolResponseMapper.mapToToolReferenceResponses(toolReferences);
-		const toolReferenceListResponse = new ToolReferenceListResponse(toolReferenceResponses);
-
-		return toolReferenceListResponse;
 	}
 
 	@Get('/:externalToolId/logo')

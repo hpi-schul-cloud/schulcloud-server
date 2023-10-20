@@ -4,14 +4,14 @@ import { EntityId, Permission } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
+import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalTool } from '../domain';
-import { ExternalToolLogoService, ExternalToolService, ExternalToolConfigurationService } from '../service';
+import { ExternalToolConfigurationService, ExternalToolLogoService, ExternalToolService } from '../service';
 import { ContextExternalToolTemplateInfo } from './dto';
-import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
 @Injectable()
 export class ExternalToolConfigurationUc {
@@ -117,14 +117,12 @@ export class ExternalToolConfigurationUc {
 		userId: EntityId,
 		schoolExternalToolId: EntityId
 	): Promise<ExternalTool> {
-		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(
-			schoolExternalToolId
-		);
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
 		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
 
-		const externalTool: ExternalTool = await this.externalToolService.findExternalToolById(schoolExternalTool.toolId);
+		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
 		if (externalTool.isHidden) {
 			throw new NotFoundException('Could not find the Tool Template');
@@ -139,18 +137,18 @@ export class ExternalToolConfigurationUc {
 		userId: EntityId,
 		contextExternalToolId: EntityId
 	): Promise<ContextExternalToolTemplateInfo> {
-		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.getContextExternalToolById(
+		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findById(
 			contextExternalToolId
 		);
-		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 
+		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, context);
 
-		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
 			contextExternalTool.schoolToolRef.schoolToolId
 		);
 
-		const externalTool: ExternalTool = await this.externalToolService.findExternalToolById(schoolExternalTool.toolId);
+		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
 		if (externalTool.isHidden) {
 			throw new NotFoundException('Could not find the Tool Template');
