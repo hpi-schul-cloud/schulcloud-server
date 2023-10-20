@@ -1,29 +1,5 @@
 import { EntityId } from '@shared/domain';
 
-export interface IRole {
-	name: string;
-
-	id: string;
-}
-
-export interface IResolvedUser {
-	firstName: string;
-
-	lastName: string;
-
-	id: string;
-
-	createdAt: Date;
-
-	updatedAt: Date;
-
-	roles: IRole[];
-
-	permissions: string[];
-
-	schoolId: string;
-}
-
 export interface ICurrentUser {
 	/** authenticated users id */
 	userId: EntityId;
