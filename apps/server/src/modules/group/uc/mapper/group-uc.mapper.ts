@@ -2,7 +2,7 @@ import { RoleName, SchoolYearEntity, UserDO } from '@shared/domain';
 import { Class } from '@modules/class/domain';
 import { SystemDto } from '@modules/system';
 import { Group } from '../../domain';
-import { ClassInfoDto, ResolvedGroupUser } from '../dto';
+import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../dto';
 import { ClassRootType } from '../dto/class-root-type';
 
 export class GroupUcMapper {
@@ -36,6 +36,18 @@ export class GroupUcMapper {
 			teachers: teachers.map((user: UserDO) => user.lastName),
 			schoolYear: schoolYear?.name,
 			isUpgradable,
+		});
+
+		return mapped;
+	}
+
+	public static mapToResolvedGroupDto(group: Group, resolvedGroupUsers: ResolvedGroupUser[]): ResolvedGroupDto {
+		const mapped: ResolvedGroupDto = new ResolvedGroupDto({
+			id: group.id,
+			name: group.name,
+			type: group.type,
+			externalSource: group.externalSource,
+			users: resolvedGroupUsers,
 		});
 
 		return mapped;

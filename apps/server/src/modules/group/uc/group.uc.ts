@@ -11,7 +11,7 @@ import { UserService } from '@modules/user';
 import { Group, GroupUser } from '../domain';
 import { GroupService } from '../service';
 import { SortHelper } from '../util';
-import { ClassInfoDto, ResolvedGroupUser } from './dto';
+import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from './dto';
 import { GroupUcMapper } from './mapper/group-uc.mapper';
 
 @Injectable()
@@ -38,7 +38,11 @@ export class GroupUc {
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, school, AuthorizationContextBuilder.read([Permission.CLASS_LIST]));
+		this.authorizationService.checkPermission(
+			user,
+			school,
+			AuthorizationContextBuilder.read([Permission.CLASS_LIST, Permission.GROUP_LIST])
+		);
 
 		const combinedClassInfo: ClassInfoDto[] = await this.findCombinedClassListForSchool(schoolId);
 
@@ -152,5 +156,25 @@ export class GroupUc {
 		const page: ClassInfoDto[] = combinedClassInfo.slice(skip, limit ? skip + limit : combinedClassInfo.length);
 
 		return page;
+	}
+
+	public async getGroup(userId: EntityId, groupId: EntityId): Promise<ResolvedGroupDto> {
+		const group: Group = await this.groupService.findById(groupId);
+
+		await this.checkPermission(userId, group);
+
+		const resolvedUsers: ResolvedGroupUser[] = await this.findUsersForGroup(group);
+		const resolvedGroup: ResolvedGroupDto = GroupUcMapper.mapToResolvedGroupDto(group, resolvedUsers);
+
+		return resolvedGroup;
+	}
+
+	private async checkPermission(userId: EntityId, group: Group): Promise<void> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		return this.authorizationService.checkPermission(
+			user,
+			group,
+			AuthorizationContextBuilder.read([Permission.GROUP_VIEW])
+		);
 	}
 }
