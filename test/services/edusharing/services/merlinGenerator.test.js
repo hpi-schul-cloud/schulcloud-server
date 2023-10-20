@@ -17,7 +17,7 @@ describe('Merlin Token Generator', () => {
 
 	before(async () => {
 		app = await appPromise();
-		MerlinTokenGeneratorService = app.service('edu-sharing/merlinToken');
+		MerlinTokenGeneratorService = app.service('edu-sharing-merlinToken');
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 	});
