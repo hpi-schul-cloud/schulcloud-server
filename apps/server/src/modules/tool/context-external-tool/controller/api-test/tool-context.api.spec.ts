@@ -15,7 +15,7 @@ import {
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
+import { ServerTestModule } from '@modules/server';
 import { ObjectId } from 'bson';
 import { CustomParameterScope, ToolContextType } from '../../../common/enum';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';

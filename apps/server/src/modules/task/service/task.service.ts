@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Counted, EntityId, IFindOptions, Task } from '@shared/domain';
 import { TaskRepo } from '@shared/repo';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { SubmissionService } from './submission.service';
 
 @Injectable()

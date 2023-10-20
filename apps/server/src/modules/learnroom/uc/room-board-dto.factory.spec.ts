@@ -13,7 +13,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { LessonMetaData } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';

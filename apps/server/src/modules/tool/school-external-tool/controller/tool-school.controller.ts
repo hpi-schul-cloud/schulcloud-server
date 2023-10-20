@@ -12,9 +12,8 @@ import {
 } from '@nestjs/swagger';
 import { Body, Controller, Delete, Get, Param, Post, Query, Put, HttpCode, HttpStatus } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
 import { LegacyLogger } from '@src/core/logger';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { SchoolExternalToolRequestMapper, SchoolExternalToolResponseMapper } from '../mapper';
 import { ExternalToolSearchListResponse } from '../../external-tool/controller/dto';
 import {

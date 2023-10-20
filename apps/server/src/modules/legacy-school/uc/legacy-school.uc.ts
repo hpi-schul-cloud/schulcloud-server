@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Permission, LegacySchoolDo, UserLoginMigrationDO, User } from '@shared/domain';
 import {
 	SchoolMigrationService,
 	UserLoginMigrationRevertService,
 	UserLoginMigrationService,
-} from '@src/modules/user-login-migration';
+} from '@modules/user-login-migration';
 import { LegacySchoolService } from '../service';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
 

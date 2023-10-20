@@ -9,7 +9,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { LegacyLogger } from '@src/core/logger';
-import { FwuLearningContentsModule } from '@src/modules/fwu-learning-contents';
+import { FwuLearningContentsModule } from '@modules/fwu-learning-contents';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 
 async function bootstrap() {

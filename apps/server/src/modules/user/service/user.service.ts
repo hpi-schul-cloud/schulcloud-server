@@ -1,16 +1,15 @@
 import { ConfigService } from '@nestjs/config';
 import { EntityId, IFindOptions, LanguageType, User } from '@shared/domain';
-import { RoleReference } from '@shared/domain/domainobject';
-import { Page } from '@shared/domain/domainobject/page';
-import { UserDO } from '@shared/domain/domainobject/user.do';
+import { RoleReference, Page, UserDO } from '@shared/domain/domainobject';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { ICurrentUser } from '@src/modules/authentication';
-import { CurrentUserMapper } from '@src/modules/authentication/mapper';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { RoleService } from '@src/modules/role/service/role.service';
+import { AccountService } from '@modules/account';
+import { AccountDto } from '@modules/account/services/dto';
+import { ICurrentUser } from '@modules/authentication';
+// invalid import
+import { CurrentUserMapper } from '@modules/authentication/mapper';
+import { RoleDto } from '@modules/role/service/dto/role.dto';
+import { RoleService } from '@modules/role/service/role.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { IUserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
@@ -40,6 +39,7 @@ export class UserService {
 	async getUser(id: string): Promise<UserDto> {
 		const userEntity = await this.userRepo.findById(id, true);
 		const userDto = UserMapper.mapFromEntityToDto(userEntity);
+
 		return userDto;
 	}
 
@@ -48,36 +48,43 @@ export class UserService {
 		const account: AccountDto = await this.accountService.findByUserIdOrFail(userId);
 
 		const resolvedUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(account.id, user, account.systemId);
+
 		return resolvedUser;
 	}
 
 	async findById(id: string): Promise<UserDO> {
 		const userDO = await this.userDORepo.findById(id, true);
+
 		return userDO;
 	}
 
 	async save(user: UserDO): Promise<UserDO> {
 		const savedUser: Promise<UserDO> = this.userDORepo.save(user);
+
 		return savedUser;
 	}
 
 	async saveAll(users: UserDO[]): Promise<UserDO[]> {
 		const savedUsers: Promise<UserDO[]> = this.userDORepo.saveAll(users);
+
 		return savedUsers;
 	}
 
 	async findUsers(query: UserQuery, options?: IFindOptions<UserDO>): Promise<Page<UserDO>> {
 		const users: Page<UserDO> = await this.userDORepo.find(query, options);
+
 		return users;
 	}
 
 	async findByExternalId(externalId: string, systemId: EntityId): Promise<UserDO | null> {
 		const user: Promise<UserDO | null> = this.userDORepo.findByExternalId(externalId, systemId);
+
 		return user;
 	}
 
 	async findByEmail(email: string): Promise<User[]> {
 		const user: Promise<User[]> = this.userRepo.findByEmail(email);
+
 		return user;
 	}
 

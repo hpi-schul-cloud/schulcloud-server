@@ -1,4 +1,4 @@
-import { AuthorizableReferenceType } from '@src/modules/authorization/domain';
+import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { ToolContextType } from '../enum';
 import { ContextTypeMapper } from './context-type.mapper';
 

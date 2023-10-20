@@ -1,5 +1,5 @@
 import { ExternalSourceEntity, RoleName } from '@shared/domain';
-import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupValidPeriodEntity } from '@src/modules/group/entity';
+import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupValidPeriodEntity } from '@modules/group/entity';
 import { BaseFactory } from './base.factory';
 import { roleFactory } from './role.factory';
 import { schoolFactory } from './school.factory';

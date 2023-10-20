@@ -1,8 +1,8 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { LearnroomModule } from '@src/modules/learnroom';
-import { LegacySchoolModule } from '@src/modules/legacy-school';
-import { PseudonymModule } from '@src/modules/pseudonym';
-import { UserModule } from '@src/modules/user';
+import { LearnroomModule } from '@modules/learnroom';
+import { LegacySchoolModule } from '@modules/legacy-school';
+import { PseudonymModule } from '@modules/pseudonym';
+import { UserModule } from '@modules/user';
 import { CommonToolModule } from '../common';
 import { ContextExternalToolModule } from '../context-external-tool';
 import { ExternalToolModule } from '../external-tool';

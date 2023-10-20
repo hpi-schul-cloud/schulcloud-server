@@ -2,8 +2,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { SystemService } from '@src/modules/system/service/system.service';
+import { SystemDto } from '@modules/system/service/dto/system.dto';
+import { SystemService } from '@modules/system/service/system.service';
 import {
 	ExternalUserDto,
 	OauthDataDto,
