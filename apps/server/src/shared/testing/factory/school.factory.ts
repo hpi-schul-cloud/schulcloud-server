@@ -6,7 +6,7 @@ import { federalStateFactory } from './federal-state.factory';
 export const schoolFactory = BaseFactory.define<SchoolEntity, ISchoolProperties>(SchoolEntity, ({ sequence }) => {
 	return {
 		name: `school #${sequence}`,
-		schoolYear: schoolYearFactory.build(),
+		currentYear: schoolYearFactory.build(),
 		federalState: federalStateFactory.build(),
 	};
 });

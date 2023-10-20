@@ -26,7 +26,7 @@ export interface ISchoolProperties {
 	officialSchoolNumber?: string;
 	systems?: SystemEntity[];
 	features?: SchoolFeature[];
-	schoolYear?: SchoolYearEntity;
+	currentYear?: SchoolYearEntity;
 	userLoginMigration?: UserLoginMigrationEntity;
 	federalState: FederalStateEntity;
 	county?: CountyEmbeddable;
@@ -134,8 +134,8 @@ export class SchoolEntity extends BaseEntity {
 		if (props.features) {
 			this.features = props.features;
 		}
-		if (props.schoolYear) {
-			this.currentYear = props.schoolYear;
+		if (props.currentYear) {
+			this.currentYear = props.currentYear;
 		}
 		if (props.userLoginMigration) {
 			this.userLoginMigration = props.userLoginMigration;

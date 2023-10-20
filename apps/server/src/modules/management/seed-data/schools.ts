@@ -6,7 +6,7 @@ import { DeepPartial } from 'fishery';
 import { EFederalState } from './federalstates';
 import { SeedSchoolYearEnum } from './schoolyears';
 
-type SeedSchoolProperties = Omit<ISchoolProperties, 'systems' | 'federalState'> & {
+type SeedSchoolProperties = Omit<ISchoolProperties, 'systems' | 'federalState' | 'currentYear'> & {
 	id: string;
 	updatedAt?: string;
 	createdAt?: string;
@@ -273,7 +273,7 @@ export function generateSchools(entities: {
 	federalStates: FederalStateEntity[];
 }) {
 	return seedSchools.map((partial) => {
-		const schoolYear = entities.schoolYears.find((sy) => partial.currentYear && sy.name === partial.currentYear);
+		const currentYear = entities.schoolYears.find((sy) => partial.currentYear && sy.name === partial.currentYear);
 		const systems = partial.systems
 			?.map((systemId) => entities.systems.find((s) => s.id === systemId))
 			.filter((s) => s) as SystemEntity[] | undefined;
@@ -291,7 +291,7 @@ export function generateSchools(entities: {
 			officialSchoolNumber: partial.officialSchoolNumber,
 			previousExternalId: partial.previousExternalId,
 			userLoginMigration: partial.userLoginMigration,
-			schoolYear,
+			currentYear,
 			systems,
 			federalState,
 		};
