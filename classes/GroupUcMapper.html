@@ -340,6 +340,7 @@ export class GroupUcMapper {
 
 	public static mapClassToClassInfoDto(clazz: Class, teachers: UserDO[], schoolYear?: SchoolYearEntity): ClassInfoDto {
 		const name &#x3D; clazz.gradeLevel ? &#x60;${clazz.gradeLevel}${clazz.name}&#x60; : clazz.name;
+		const isUpgradable &#x3D; clazz.gradeLevel !&#x3D;&#x3D; 13 &amp;&amp; !clazz.successor;
 
 		const mapped: ClassInfoDto &#x3D; new ClassInfoDto({
 			id: clazz.id,
@@ -348,6 +349,7 @@ export class GroupUcMapper {
 			externalSourceName: clazz.source,
 			teachers: teachers.map((user: UserDO) &#x3D;&gt; user.lastName),
 			schoolYear: schoolYear?.name,
+			isUpgradable,
 		});
 
 		return mapped;

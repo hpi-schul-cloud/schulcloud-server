@@ -24,179 +24,179 @@
 <title>cluster_CommonToolModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 1633,-268 1633,-70 8,-70"/>
 </g>
+<g id="clust3" class="cluster">
+<title>cluster_CommonToolModule_imports</title>
+<polygon fill="none" stroke="black" points="1211,-78 1211,-130 1625,-130 1625,-78 1211,-78"/>
+</g>
 <g id="clust4" class="cluster">
 <title>cluster_CommonToolModule_exports</title>
-<polygon fill="none" stroke="black" points="221,-208 221,-260 1124,-260 1124,-208 221,-208"/>
+<polygon fill="none" stroke="black" points="541,-208 541,-260 1444,-260 1444,-208 541,-208"/>
 </g>
 <g id="clust6" class="cluster">
 <title>cluster_CommonToolModule_providers</title>
-<polygon fill="none" stroke="black" points="438,-78 438,-130 1625,-130 1625,-78 438,-78"/>
-</g>
-<g id="clust3" class="cluster">
-<title>cluster_CommonToolModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 430,-130 430,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 1203,-130 1203,-78 16,-78"/>
 </g>
 <!-- LearnroomModule -->
 <g id="node1" class="node">
 <title>LearnroomModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="421.74,-122 418.74,-126 397.74,-126 394.74,-122 300.26,-122 300.26,-86 421.74,-86 421.74,-122"/>
-<text text-anchor="middle" x="361" y="-99.8" font-family="Times,serif" font-size="14.00">LearnroomModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1616.74,-122 1613.74,-126 1592.74,-126 1589.74,-122 1495.26,-122 1495.26,-86 1616.74,-86 1616.74,-122"/>
+<text text-anchor="middle" x="1556" y="-99.8" font-family="Times,serif" font-size="14.00">LearnroomModule</text>
 </g>
 <!-- CommonToolModule -->
 <g id="node4" class="node">
 <title>CommonToolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="726.11,-187 723.11,-191 702.11,-191 699.11,-187 587.89,-187 587.89,-151 726.11,-151 726.11,-187"/>
-<text text-anchor="middle" x="657" y="-164.8" font-family="Times,serif" font-size="14.00">CommonToolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1046.11,-187 1043.11,-191 1022.11,-191 1019.11,-187 907.89,-187 907.89,-151 1046.11,-151 1046.11,-187"/>
+<text text-anchor="middle" x="977" y="-164.8" font-family="Times,serif" font-size="14.00">CommonToolModule</text>
 </g>
 <!-- LearnroomModule&#45;&gt;CommonToolModule -->
 <g id="edge1" class="edge">
 <title>LearnroomModule&#45;&gt;CommonToolModule</title>
-<path fill="none" stroke="black" d="M407.48,-122.24C407.48,-137.57 407.48,-157 407.48,-157 407.48,-157 577.83,-157 577.83,-157"/>
-<polygon fill="black" stroke="black" points="577.83,-160.5 587.83,-157 577.83,-153.5 577.83,-160.5"/>
+<path fill="none" stroke="black" d="M1556,-122.11C1556,-141.34 1556,-169 1556,-169 1556,-169 1056.27,-169 1056.27,-169"/>
+<polygon fill="black" stroke="black" points="1056.27,-165.5 1046.27,-169 1056.27,-172.5 1056.27,-165.5"/>
 </g>
 <!-- LegacySchoolModule -->
 <g id="node2" class="node">
 <title>LegacySchoolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="281.63,-122 278.63,-126 257.63,-126 254.63,-122 142.37,-122 142.37,-86 281.63,-86 281.63,-122"/>
-<text text-anchor="middle" x="212" y="-99.8" font-family="Times,serif" font-size="14.00">LegacySchoolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1476.63,-122 1473.63,-126 1452.63,-126 1449.63,-122 1337.37,-122 1337.37,-86 1476.63,-86 1476.63,-122"/>
+<text text-anchor="middle" x="1407" y="-99.8" font-family="Times,serif" font-size="14.00">LegacySchoolModule</text>
 </g>
 <!-- LegacySchoolModule&#45;&gt;CommonToolModule -->
 <g id="edge2" class="edge">
 <title>LegacySchoolModule&#45;&gt;CommonToolModule</title>
-<path fill="none" stroke="black" d="M255.35,-122.02C255.35,-139.37 255.35,-163 255.35,-163 255.35,-163 577.5,-163 577.5,-163"/>
-<polygon fill="black" stroke="black" points="577.5,-166.5 587.5,-163 577.5,-159.5 577.5,-166.5"/>
+<path fill="none" stroke="black" d="M1386.6,-122.02C1386.6,-139.37 1386.6,-163 1386.6,-163 1386.6,-163 1056.48,-163 1056.48,-163"/>
+<polygon fill="black" stroke="black" points="1056.48,-159.5 1046.48,-163 1056.48,-166.5 1056.48,-159.5"/>
 </g>
 <!-- LoggerModule -->
 <g id="node3" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="123.98,-122 120.98,-126 99.98,-126 96.98,-122 24.02,-122 24.02,-86 123.98,-86 123.98,-122"/>
-<text text-anchor="middle" x="74" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1318.98,-122 1315.98,-126 1294.98,-126 1291.98,-122 1219.02,-122 1219.02,-86 1318.98,-86 1318.98,-122"/>
+<text text-anchor="middle" x="1269" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;CommonToolModule -->
 <g id="edge3" class="edge">
 <title>LoggerModule&#45;&gt;CommonToolModule</title>
-<path fill="none" stroke="black" d="M74,-122.11C74,-141.34 74,-169 74,-169 74,-169 577.83,-169 577.83,-169"/>
-<polygon fill="black" stroke="black" points="577.83,-172.5 587.83,-169 577.83,-165.5 577.83,-172.5"/>
+<path fill="none" stroke="black" d="M1248.29,-122.24C1248.29,-137.57 1248.29,-157 1248.29,-157 1248.29,-157 1056.16,-157 1056.16,-157"/>
+<polygon fill="black" stroke="black" points="1056.16,-153.5 1046.16,-157 1056.16,-160.5 1056.16,-153.5"/>
 </g>
 <!-- CommonToolService  -->
 <g id="node5" class="node">
 <title>CommonToolService </title>
-<polygon fill="#fb8072" stroke="black" points="1116.04,-252 975.96,-252 975.96,-216 1116.04,-216 1116.04,-252"/>
-<text text-anchor="middle" x="1046" y="-229.8" font-family="Times,serif" font-size="14.00">CommonToolService </text>
+<polygon fill="#fb8072" stroke="black" points="1436.04,-252 1295.96,-252 1295.96,-216 1436.04,-216 1436.04,-252"/>
+<text text-anchor="middle" x="1366" y="-229.8" font-family="Times,serif" font-size="14.00">CommonToolService </text>
 </g>
 <!-- CommonToolModule&#45;&gt;CommonToolService  -->
 <g id="edge4" class="edge">
 <title>CommonToolModule&#45;&gt;CommonToolService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M726.1,-175C837.88,-175 1046,-175 1046,-175 1046,-175 1046,-205.98 1046,-205.98"/>
-<polygon fill="black" stroke="black" points="1042.5,-205.98 1046,-215.98 1049.5,-205.98 1042.5,-205.98"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1046.28,-175C1143.19,-175 1307.48,-175 1307.48,-175 1307.48,-175 1307.48,-205.98 1307.48,-205.98"/>
+<polygon fill="black" stroke="black" points="1303.98,-205.98 1307.48,-215.98 1310.98,-205.98 1303.98,-205.98"/>
 </g>
 <!-- CommonToolValidationService  -->
 <g id="node6" class="node">
 <title>CommonToolValidationService </title>
-<polygon fill="#fb8072" stroke="black" points="957.64,-252 758.36,-252 758.36,-216 957.64,-216 957.64,-252"/>
-<text text-anchor="middle" x="858" y="-229.8" font-family="Times,serif" font-size="14.00">CommonToolValidationService </text>
+<polygon fill="#fb8072" stroke="black" points="1277.64,-252 1078.36,-252 1078.36,-216 1277.64,-216 1277.64,-252"/>
+<text text-anchor="middle" x="1178" y="-229.8" font-family="Times,serif" font-size="14.00">CommonToolValidationService </text>
 </g>
 <!-- CommonToolModule&#45;&gt;CommonToolValidationService  -->
 <g id="edge5" class="edge">
 <title>CommonToolModule&#45;&gt;CommonToolValidationService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M726.09,-181C770.07,-181 818.81,-181 818.81,-181 818.81,-181 818.81,-205.76 818.81,-205.76"/>
-<polygon fill="black" stroke="black" points="815.31,-205.76 818.81,-215.76 822.31,-205.76 815.31,-205.76"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1046.16,-181C1089.35,-181 1136.81,-181 1136.81,-181 1136.81,-181 1136.81,-205.76 1136.81,-205.76"/>
+<polygon fill="black" stroke="black" points="1133.31,-205.76 1136.81,-215.76 1140.31,-205.76 1133.31,-205.76"/>
 </g>
 <!-- ContextExternalToolRepo  -->
 <g id="node7" class="node">
 <title>ContextExternalToolRepo </title>
-<polygon fill="#fb8072" stroke="black" points="740.75,-252 573.25,-252 573.25,-216 740.75,-216 740.75,-252"/>
-<text text-anchor="middle" x="657" y="-229.8" font-family="Times,serif" font-size="14.00">ContextExternalToolRepo </text>
+<polygon fill="#fb8072" stroke="black" points="1060.75,-252 893.25,-252 893.25,-216 1060.75,-216 1060.75,-252"/>
+<text text-anchor="middle" x="977" y="-229.8" font-family="Times,serif" font-size="14.00">ContextExternalToolRepo </text>
 </g>
 <!-- CommonToolModule&#45;&gt;ContextExternalToolRepo  -->
 <g id="edge6" class="edge">
 <title>CommonToolModule&#45;&gt;ContextExternalToolRepo </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M657,-187.11C657,-187.11 657,-205.99 657,-205.99"/>
-<polygon fill="black" stroke="black" points="653.5,-205.99 657,-215.99 660.5,-205.99 653.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M977,-187.11C977,-187.11 977,-205.99 977,-205.99"/>
+<polygon fill="black" stroke="black" points="973.5,-205.99 977,-215.99 980.5,-205.99 973.5,-205.99"/>
 </g>
 <!-- SchoolExternalToolRepo  -->
 <g id="node8" class="node">
 <title>SchoolExternalToolRepo </title>
-<polygon fill="#fb8072" stroke="black" points="554.81,-252 393.19,-252 393.19,-216 554.81,-216 554.81,-252"/>
-<text text-anchor="middle" x="474" y="-229.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolRepo </text>
+<polygon fill="#fb8072" stroke="black" points="874.81,-252 713.19,-252 713.19,-216 874.81,-216 874.81,-252"/>
+<text text-anchor="middle" x="794" y="-229.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolRepo </text>
 </g>
 <!-- CommonToolModule&#45;&gt;SchoolExternalToolRepo  -->
 <g id="edge7" class="edge">
 <title>CommonToolModule&#45;&gt;SchoolExternalToolRepo </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M587.78,-181C545.78,-181 500.22,-181 500.22,-181 500.22,-181 500.22,-205.76 500.22,-205.76"/>
-<polygon fill="black" stroke="black" points="496.72,-205.76 500.22,-215.76 503.72,-205.76 496.72,-205.76"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M907.91,-181C857.15,-181 796.98,-181 796.98,-181 796.98,-181 796.98,-205.76 796.98,-205.76"/>
+<polygon fill="black" stroke="black" points="793.48,-205.76 796.98,-215.76 800.48,-205.76 793.48,-205.76"/>
 </g>
 <!-- ToolPermissionHelper  -->
 <g id="node9" class="node">
 <title>ToolPermissionHelper </title>
-<polygon fill="#fb8072" stroke="black" points="375.25,-252 228.75,-252 228.75,-216 375.25,-216 375.25,-252"/>
-<text text-anchor="middle" x="302" y="-229.8" font-family="Times,serif" font-size="14.00">ToolPermissionHelper </text>
+<polygon fill="#fb8072" stroke="black" points="695.25,-252 548.75,-252 548.75,-216 695.25,-216 695.25,-252"/>
+<text text-anchor="middle" x="622" y="-229.8" font-family="Times,serif" font-size="14.00">ToolPermissionHelper </text>
 </g>
 <!-- CommonToolModule&#45;&gt;ToolPermissionHelper  -->
 <g id="edge8" class="edge">
 <title>CommonToolModule&#45;&gt;ToolPermissionHelper </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M587.7,-175C493.77,-175 337.63,-175 337.63,-175 337.63,-175 337.63,-205.98 337.63,-205.98"/>
-<polygon fill="black" stroke="black" points="334.13,-205.98 337.63,-215.98 341.13,-205.98 334.13,-205.98"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M907.69,-175C810.74,-175 646.37,-175 646.37,-175 646.37,-175 646.37,-205.98 646.37,-205.98"/>
+<polygon fill="black" stroke="black" points="642.87,-205.98 646.37,-215.98 649.87,-205.98 642.87,-205.98"/>
 </g>
 <!-- CommonToolService -->
 <g id="node10" class="node">
 <title>CommonToolService</title>
-<ellipse fill="#fdb462" stroke="black" cx="1523" cy="-104" rx="94.36" ry="18"/>
-<text text-anchor="middle" x="1523" y="-99.8" font-family="Times,serif" font-size="14.00">CommonToolService</text>
+<ellipse fill="#fdb462" stroke="black" cx="1101" cy="-104" rx="94.36" ry="18"/>
+<text text-anchor="middle" x="1101" y="-99.8" font-family="Times,serif" font-size="14.00">CommonToolService</text>
 </g>
 <!-- CommonToolService&#45;&gt;CommonToolModule -->
 <g id="edge9" class="edge">
 <title>CommonToolService&#45;&gt;CommonToolModule</title>
-<path fill="none" stroke="black" d="M1523,-122.11C1523,-141.34 1523,-169 1523,-169 1523,-169 736.4,-169 736.4,-169"/>
-<polygon fill="black" stroke="black" points="736.4,-165.5 726.4,-169 736.4,-172.5 736.4,-165.5"/>
+<path fill="none" stroke="black" d="M1026.44,-115.03C1026.44,-115.03 1026.44,-140.78 1026.44,-140.78"/>
+<polygon fill="black" stroke="black" points="1022.94,-140.78 1026.44,-150.78 1029.94,-140.78 1022.94,-140.78"/>
 </g>
 <!-- CommonToolValidationService -->
 <g id="node11" class="node">
 <title>CommonToolValidationService</title>
-<ellipse fill="#fdb462" stroke="black" cx="1276" cy="-104" rx="134.89" ry="18"/>
-<text text-anchor="middle" x="1276" y="-99.8" font-family="Times,serif" font-size="14.00">CommonToolValidationService</text>
+<ellipse fill="#fdb462" stroke="black" cx="854" cy="-104" rx="134.89" ry="18"/>
+<text text-anchor="middle" x="854" y="-99.8" font-family="Times,serif" font-size="14.00">CommonToolValidationService</text>
 </g>
 <!-- CommonToolValidationService&#45;&gt;CommonToolModule -->
 <g id="edge10" class="edge">
 <title>CommonToolValidationService&#45;&gt;CommonToolModule</title>
-<path fill="none" stroke="black" d="M1276,-122.02C1276,-139.37 1276,-163 1276,-163 1276,-163 736.21,-163 736.21,-163"/>
-<polygon fill="black" stroke="black" points="736.21,-159.5 726.21,-163 736.21,-166.5 736.21,-159.5"/>
+<path fill="none" stroke="black" d="M948.45,-117.15C948.45,-117.15 948.45,-140.69 948.45,-140.69"/>
+<polygon fill="black" stroke="black" points="944.95,-140.69 948.45,-150.69 951.95,-140.69 944.95,-140.69"/>
 </g>
 <!-- ContextExternalToolRepo -->
 <g id="node12" class="node">
 <title>ContextExternalToolRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1010" cy="-104" rx="112.9" ry="18"/>
-<text text-anchor="middle" x="1010" y="-99.8" font-family="Times,serif" font-size="14.00">ContextExternalToolRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="588" cy="-104" rx="112.9" ry="18"/>
+<text text-anchor="middle" x="588" y="-99.8" font-family="Times,serif" font-size="14.00">ContextExternalToolRepo</text>
 </g>
 <!-- ContextExternalToolRepo&#45;&gt;CommonToolModule -->
 <g id="edge11" class="edge">
 <title>ContextExternalToolRepo&#45;&gt;CommonToolModule</title>
-<path fill="none" stroke="black" d="M927.31,-116.29C927.31,-131.95 927.31,-157 927.31,-157 927.31,-157 736.26,-157 736.26,-157"/>
-<polygon fill="black" stroke="black" points="736.26,-153.5 726.26,-157 736.26,-160.5 736.26,-153.5"/>
+<path fill="none" stroke="black" d="M597.63,-121.94C597.63,-137.32 597.63,-157 597.63,-157 597.63,-157 897.86,-157 897.86,-157"/>
+<polygon fill="black" stroke="black" points="897.86,-160.5 907.86,-157 897.86,-153.5 897.86,-160.5"/>
 </g>
 <!-- SchoolExternalToolRepo -->
 <g id="node13" class="node">
 <title>SchoolExternalToolRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="770" cy="-104" rx="109.39" ry="18"/>
-<text text-anchor="middle" x="770" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="348" cy="-104" rx="109.39" ry="18"/>
+<text text-anchor="middle" x="348" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolRepo</text>
 </g>
 <!-- SchoolExternalToolRepo&#45;&gt;CommonToolModule -->
 <g id="edge12" class="edge">
 <title>SchoolExternalToolRepo&#45;&gt;CommonToolModule</title>
-<path fill="none" stroke="black" d="M693.43,-116.84C693.43,-116.84 693.43,-140.52 693.43,-140.52"/>
-<polygon fill="black" stroke="black" points="689.93,-140.52 693.43,-150.52 696.93,-140.52 689.93,-140.52"/>
+<path fill="none" stroke="black" d="M348,-122.02C348,-139.37 348,-163 348,-163 348,-163 897.89,-163 897.89,-163"/>
+<polygon fill="black" stroke="black" points="897.89,-166.5 907.89,-163 897.89,-159.5 897.89,-166.5"/>
 </g>
 <!-- ToolPermissionHelper -->
 <g id="node14" class="node">
 <title>ToolPermissionHelper</title>
-<ellipse fill="#fdb462" stroke="black" cx="544" cy="-104" rx="98.43" ry="18"/>
-<text text-anchor="middle" x="544" y="-99.8" font-family="Times,serif" font-size="14.00">ToolPermissionHelper</text>
+<ellipse fill="#fdb462" stroke="black" cx="122" cy="-104" rx="98.43" ry="18"/>
+<text text-anchor="middle" x="122" y="-99.8" font-family="Times,serif" font-size="14.00">ToolPermissionHelper</text>
 </g>
 <!-- ToolPermissionHelper&#45;&gt;CommonToolModule -->
 <g id="edge13" class="edge">
 <title>ToolPermissionHelper&#45;&gt;CommonToolModule</title>
-<path fill="none" stroke="black" d="M615.21,-116.53C615.21,-116.53 615.21,-140.85 615.21,-140.85"/>
-<polygon fill="black" stroke="black" points="611.71,-140.85 615.21,-150.85 618.71,-140.85 611.71,-140.85"/>
+<path fill="none" stroke="black" d="M122,-122.11C122,-141.34 122,-169 122,-169 122,-169 897.76,-169 897.76,-169"/>
+<polygon fill="black" stroke="black" points="897.76,-172.5 907.76,-169 897.76,-165.5 897.76,-172.5"/>
 </g>
 </g>
 </svg>
