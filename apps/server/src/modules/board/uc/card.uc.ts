@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AnyBoardDo, AnyContentElementDo, Card, ContentElementType, EntityId } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization/authorization.service';
-import { Action } from '@src/modules/authorization/types/action.enum';
+import { AuthorizationService, Action } from '@src/modules/authorization';
 import { BoardDoAuthorizableService, CardService, ContentElementService } from '../service';
 
 @Injectable()

@@ -3,6 +3,7 @@ import { HttpModule } from '@nestjs/axios';
 import { CalendarModule } from '@shared/infra/calendar';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { AuthorizationModule } from '@src/modules/authorization';
+import { AuthorizationReferenceModule } from '@src/modules/authorization/authorization-reference.module';
 import { TeamsRepo } from '@shared/repo';
 import { LegacySchoolModule } from '@src/modules/legacy-school';
 import { LoggerModule } from '@src/core/logger';
@@ -19,6 +20,7 @@ import { LearnroomModule } from '../learnroom';
 @Module({
 	imports: [
 		AuthorizationModule,
+		AuthorizationReferenceModule, // can be removed wenn video-conference-deprecated is removed
 		CalendarModule,
 		HttpModule,
 		LegacySchoolModule,

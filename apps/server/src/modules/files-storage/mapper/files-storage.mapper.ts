@@ -1,5 +1,5 @@
 import { NotImplementedException, StreamableFile } from '@nestjs/common';
-import { AuthorizableReferenceType } from '@src/modules/authorization';
+import { AuthorizableReferenceType } from '@src/modules/authorization/domain';
 import { plainToClass } from 'class-transformer';
 import {
 	DownloadFileParams,
