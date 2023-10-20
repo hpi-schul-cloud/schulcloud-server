@@ -1,6 +1,6 @@
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from '@shared/testing/factory/base.factory';
-import { ClassEntity, ClassSourceOptionsEntity, IClassEntityProps } from '@src/modules/class/entity';
+import { ClassEntity, ClassSourceOptionsEntity, IClassEntityProps } from '@modules/class/entity';
 import { ObjectId } from 'bson';
 
 class ClassEntityFactory extends BaseFactory<ClassEntity, IClassEntityProps> {

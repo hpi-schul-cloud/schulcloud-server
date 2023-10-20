@@ -11,7 +11,7 @@ import {
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Page, UserLoginMigrationDO } from '@shared/domain';
-import { Authenticate, CurrentUser, ICurrentUser, JWT } from '@src/modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser, JWT } from '@modules/authentication';
 import {
 	SchoolNumberMissingLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,

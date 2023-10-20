@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpStatus, Param, Put, Req } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Authenticate, CurrentUser, ICurrentUser } from '@src/modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Request } from 'express';
 import { InvalidOriginForLogoutUrlLoggableException } from '../error';
 import { VideoConferenceOptions } from '../interface';

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser, Authenticate, CurrentUser } from '@src/modules/authentication';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { DashboardMapper } from '../mapper/dashboard.mapper';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardResponse, DashboardUrlParams, MoveElementParams, PatchGroupParams } from './dto';

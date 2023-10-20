@@ -4,7 +4,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { classEntityFactory } from '@src/modules/class/entity/testing/factory/class.entity.factory';
+import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
 import { Class } from '../domain';
 import { classFactory } from '../domain/testing/factory/class.factory';
 import { ClassesRepo } from '../repo';

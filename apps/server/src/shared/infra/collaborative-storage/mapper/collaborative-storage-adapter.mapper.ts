@@ -1,7 +1,7 @@
-import { TeamPermissionsDto } from '@src/modules/collaborative-storage/services/dto/team-permissions.dto';
-import { TeamDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
+import { TeamPermissionsDto } from '@modules/collaborative-storage/services/dto/team-permissions.dto';
+import { TeamDto } from '@modules/collaborative-storage/services/dto/team.dto';
 import { Injectable } from '@nestjs/common';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
+import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { TeamRolePermissionsDto } from '../dto/team-role-permissions.dto';
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { Controller, Get, NotFoundException, Param, Query, Res, StreamableFile } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser, Authenticate, CurrentUser } from '@src/modules/authentication';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { PaginationParams } from '@shared/controller/';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';

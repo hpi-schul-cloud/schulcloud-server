@@ -1,7 +1,7 @@
 import { Body, Controller, ForbiddenException, Get, HttpCode, NotFoundException, Param, Patch } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser, Authenticate, CurrentUser } from '@src/modules/authentication';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { SubmissionsResponse } from './dto/submission-item/submissions.response';
 import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';

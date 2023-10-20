@@ -14,12 +14,12 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { CopyApiResponse } from '@src/modules/copy-helper';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { SingleColumnBoardResponse } from '@src/modules/learnroom/controller/dto';
-import { ServerTestModule } from '@src/modules/server/server.module';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { CopyApiResponse } from '@modules/copy-helper';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { SingleColumnBoardResponse } from '@modules/learnroom/controller/dto';
+import { ServerTestModule } from '@modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 

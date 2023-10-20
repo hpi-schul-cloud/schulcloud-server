@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { AccountModule } from '@src/modules/account';
-import { LegacySchoolModule } from '@src/modules/legacy-school';
-import { SystemModule } from '@src/modules/system';
-import { UserModule } from '@src/modules/user';
+import { AccountModule } from '@modules/account';
+import { LegacySchoolModule } from '@modules/legacy-school';
+import { SystemModule } from '@modules/system';
+import { UserModule } from '@modules/user';
 import {
 	MigrationCheckService,
 	SchoolMigrationService,

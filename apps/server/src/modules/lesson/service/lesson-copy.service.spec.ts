@@ -24,9 +24,9 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
-import { CopyFilesService } from '@src/modules/files-storage-client';
-import { TaskCopyService } from '@src/modules/task/service';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyFilesService } from '@modules/files-storage-client';
+import { TaskCopyService } from '@modules/task/service';
 import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
 import { NexboardService } from './nexboard.service';

@@ -7,7 +7,7 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Authenticate, CurrentUser, ICurrentUser } from '@src/modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { ToolLaunchUc } from '../uc';
 import { ToolLaunchParams, ToolLaunchRequestResponse } from './dto';
 import { ToolLaunchMapper } from '../mapper';

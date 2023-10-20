@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
-import { ICurrentUser, Authenticate, CurrentUser } from '@src/modules/authentication';
-import { CopyApiResponse, CopyMapper } from '@src/modules/copy-helper';
-import { serverConfig } from '@src/modules/server/server.config';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
+import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
+import { serverConfig } from '@modules/server/server.config';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { CourseCopyUC } from '../uc/course-copy.uc';
 import { LessonCopyUC } from '../uc/lesson-copy.uc';

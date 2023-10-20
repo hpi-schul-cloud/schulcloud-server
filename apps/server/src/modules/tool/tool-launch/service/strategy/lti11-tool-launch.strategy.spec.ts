@@ -9,10 +9,10 @@ import {
 	userDoFactory,
 } from '@shared/testing';
 import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { PseudonymService } from '@src/modules/pseudonym/service';
-import { UserService } from '@src/modules/user';
+import { CourseService } from '@modules/learnroom/service';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { PseudonymService } from '@modules/pseudonym/service';
+import { UserService } from '@modules/user';
 import { ObjectId } from 'bson';
 import { Authorization } from 'oauth-1.0a';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole, ToolContextType } from '../../../common/enum';

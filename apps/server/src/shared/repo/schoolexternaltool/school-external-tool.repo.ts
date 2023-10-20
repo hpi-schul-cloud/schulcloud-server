@@ -4,10 +4,10 @@ import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { SchoolEntity } from '@shared/domain';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { LegacyLogger } from '@src/core/logger';
-import { SchoolExternalToolQuery } from '@src/modules/tool/school-external-tool/uc/dto/school-external-tool.types';
-import { ISchoolExternalToolProperties, SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
-import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
-import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
+import { SchoolExternalToolQuery } from '@modules/tool/school-external-tool/uc/dto/school-external-tool.types';
+import { ISchoolExternalToolProperties, SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolScope } from './school-external-tool.scope';
 import { ExternalToolRepoMapper } from '../externaltool';
 

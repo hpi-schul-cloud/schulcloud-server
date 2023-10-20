@@ -1,8 +1,8 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Course, EntityId, LegacySchoolDo, User } from '@shared/domain';
-import { AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { CourseService } from '@src/modules/learnroom';
+import { AuthorizationContext, AuthorizationService } from '@modules/authorization';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { CourseService } from '@modules/learnroom';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 // import { ContextTypeMapper } from '../mapper';

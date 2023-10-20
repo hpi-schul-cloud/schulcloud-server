@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { AccountService } from '@src/modules/account';
+import { AccountService } from '@modules/account';
 // invalid import
-import { AccountDto } from '@src/modules/account/services/dto';
+import { AccountDto } from '@modules/account/services/dto';
 // invalid import, can produce dependency cycles
-import type { IServerConfig } from '@src/modules/server';
+import type { IServerConfig } from '@modules/server';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';

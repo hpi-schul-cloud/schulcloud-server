@@ -3,7 +3,7 @@
 import { NestFactory } from '@nestjs/core';
 
 // register source-map-support for debugging
-import { FilesStorageAMQPModule } from '@src/modules/files-storage';
+import { FilesStorageAMQPModule } from '@modules/files-storage';
 import { install as sourceMapInstall } from 'source-map-support';
 
 async function bootstrap() {

@@ -19,10 +19,11 @@ import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto'
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
-import { LegacySchoolService, UserService } from '@src/modules';
-import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
-import { ICurrentUser } from '@src/modules/authentication';
-import { CourseService } from '@src/modules/learnroom';
+import { AuthorizationReferenceService } from '@modules/authorization/domain';
+import { ICurrentUser } from '@modules/authentication';
+import { CourseService } from '@modules/learnroom/service';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { IScopeInfo, VideoConference, VideoConferenceJoin, VideoConferenceState } from './dto';
 import { VideoConferenceDeprecatedUc } from './video-conference-deprecated.uc';
 import {

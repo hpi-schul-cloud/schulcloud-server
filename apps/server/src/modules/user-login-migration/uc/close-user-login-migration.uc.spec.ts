@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, UserLoginMigrationDO } from '@shared/domain';
 import { setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
-import { Action, AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { UserLoginMigrationNotFoundLoggableException } from '../error';
 import { SchoolMigrationService, UserLoginMigrationRevertService, UserLoginMigrationService } from '../service';
 import { CloseUserLoginMigrationUc } from './close-user-login-migration.uc';

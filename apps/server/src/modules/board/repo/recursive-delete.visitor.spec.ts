@@ -12,7 +12,7 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
-import { FileDto, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
 
 describe(RecursiveDeleteVisitor.name, () => {

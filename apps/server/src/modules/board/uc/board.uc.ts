@@ -9,8 +9,8 @@ import {
 	EntityId,
 } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization/domain';
-import { Action } from '@src/modules/authorization';
+import { AuthorizationService } from '@modules/authorization/domain';
+import { Action } from '@modules/authorization';
 import { CardService, ColumnBoardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 
