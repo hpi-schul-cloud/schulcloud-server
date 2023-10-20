@@ -16,6 +16,7 @@ import {
 	TeamRule,
 	UserRule,
 	UserLoginMigrationRule,
+	SchoolRule,
 } from '../rules';
 import { RuleManager } from './rule-manager';
 
@@ -33,6 +34,7 @@ describe('RuleManager', () => {
 	let boardDoRule: DeepMocked<BoardDoRule>;
 	let contextExternalToolRule: DeepMocked<ContextExternalToolRule>;
 	let userLoginMigrationRule: DeepMocked<UserLoginMigrationRule>;
+	let schoolRule: DeepMocked<SchoolRule>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -52,6 +54,7 @@ describe('RuleManager', () => {
 				{ provide: BoardDoRule, useValue: createMock<BoardDoRule>() },
 				{ provide: ContextExternalToolRule, useValue: createMock<ContextExternalToolRule>() },
 				{ provide: UserLoginMigrationRule, useValue: createMock<UserLoginMigrationRule>() },
+				{ provide: SchoolRule, useValue: createMock<SchoolRule>() },
 			],
 		}).compile();
 
@@ -68,6 +71,7 @@ describe('RuleManager', () => {
 		boardDoRule = await module.get(BoardDoRule);
 		contextExternalToolRule = await module.get(ContextExternalToolRule);
 		userLoginMigrationRule = await module.get(UserLoginMigrationRule);
+		schoolRule = await module.get(SchoolRule);
 	});
 
 	afterEach(() => {
@@ -98,6 +102,7 @@ describe('RuleManager', () => {
 				boardDoRule.isApplicable.mockReturnValueOnce(false);
 				contextExternalToolRule.isApplicable.mockReturnValueOnce(false);
 				userLoginMigrationRule.isApplicable.mockReturnValueOnce(false);
+				schoolRule.isApplicable.mockReturnValueOnce(false);
 
 				return { user, object, context };
 			};
@@ -119,6 +124,7 @@ describe('RuleManager', () => {
 				expect(boardDoRule.isApplicable).toBeCalled();
 				expect(contextExternalToolRule.isApplicable).toBeCalled();
 				expect(userLoginMigrationRule.isApplicable).toBeCalled();
+				expect(schoolRule.isApplicable).toBeCalled();
 			});
 
 			it('should return CourseRule', () => {
@@ -148,6 +154,7 @@ describe('RuleManager', () => {
 				boardDoRule.isApplicable.mockReturnValueOnce(false);
 				contextExternalToolRule.isApplicable.mockReturnValueOnce(false);
 				userLoginMigrationRule.isApplicable.mockReturnValueOnce(false);
+				schoolRule.isApplicable.mockReturnValueOnce(false);
 
 				return { user, object, context };
 			};
@@ -177,6 +184,7 @@ describe('RuleManager', () => {
 				boardDoRule.isApplicable.mockReturnValueOnce(false);
 				contextExternalToolRule.isApplicable.mockReturnValueOnce(false);
 				userLoginMigrationRule.isApplicable.mockReturnValueOnce(false);
+				schoolRule.isApplicable.mockReturnValueOnce(false);
 
 				return { user, object, context };
 			};

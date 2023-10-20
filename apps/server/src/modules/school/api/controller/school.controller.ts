@@ -1,7 +1,8 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller';
-import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@src/modules/authentication';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { SchoolUc } from '../../domain';
 import { SchoolResponseMapper } from './mapper';
 import { SchoolQueryParams, SchoolUrlParams } from './param';
@@ -28,8 +29,11 @@ export class SchoolController {
 	}
 
 	@Get('/:schoolId')
-	public async getSchool(@Param() urlParams: SchoolUrlParams): Promise<SchoolResponse> {
-		const school = await this.schoolUc.getSchool(urlParams.schoolId);
+	public async getSchool(
+		@Param() urlParams: SchoolUrlParams,
+		@CurrentUser() user: ICurrentUser
+	): Promise<SchoolResponse> {
+		const school = await this.schoolUc.getSchool(urlParams.schoolId, user.userId);
 
 		const res = SchoolResponseMapper.mapToResponse(school);
 
