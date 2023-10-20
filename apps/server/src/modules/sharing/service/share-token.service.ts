@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LessonService } from '@src/modules/lesson/service';
-import { TaskService } from '@src/modules/task/service';
+import { CourseService } from '@modules/learnroom/service';
+import { LessonService } from '@modules/lesson/service';
+import { TaskService } from '@modules/task/service';
 import {
 	ShareTokenContext,
 	ShareTokenDO,

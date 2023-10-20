@@ -3,7 +3,7 @@ import { ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { NodeEnvType } from '@src/modules/server/server.config';
+import { NodeEnvType } from '@modules/server/server.config';
 import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
 import { KeycloakManagementController } from './keycloak-configuration.controller';
 

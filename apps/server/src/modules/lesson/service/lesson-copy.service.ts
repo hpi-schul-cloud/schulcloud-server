@@ -12,16 +12,10 @@ import {
 	Material,
 } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
-import {
-	CopyDictionary,
-	CopyElementType,
-	CopyHelperService,
-	CopyStatus,
-	CopyStatusEnum,
-} from '@src/modules/copy-helper';
-import { CopyFilesService } from '@src/modules/files-storage-client';
-import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
-import { TaskCopyService } from '@src/modules/task/service/task-copy.service';
+import { CopyDictionary, CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyFilesService } from '@modules/files-storage-client';
+import { FileUrlReplacement } from '@modules/files-storage-client/service/copy-files.service';
+import { TaskCopyService } from '@modules/task/service/task-copy.service';
 import { randomBytes } from 'crypto';
 import { LessonCopyParams } from '../types';
 import { EtherpadService } from './etherpad.service';
@@ -266,29 +260,32 @@ export class LessonCopyService {
 	}
 
 	private copyLernStore(element: IComponentProperties): IComponentProperties {
-		const resources = ((element.content as IComponentLernstoreProperties).resources ?? []).map(
-			({ client, description, merlinReference, title, url }) => {
-				const result = {
-					client,
-					description,
-					merlinReference,
-					title,
-					url,
-				};
-				return result;
-			}
-		);
-
-		const lernstore = {
+		const lernstore: IComponentProperties = {
 			title: element.title,
 			hidden: element.hidden,
 			component: ComponentType.LERNSTORE,
 			user: element.user, // TODO should be params.user - but that made the server crash, but property is normally undefined
-			content: {
-				resources,
-			},
 		};
-		return lernstore as IComponentProperties;
+
+		if (element.content) {
+			const resources = ((element.content as IComponentLernstoreProperties).resources ?? []).map(
+				({ client, description, merlinReference, title, url }) => {
+					const result = {
+						client,
+						description,
+						merlinReference,
+						title,
+						url,
+					};
+					return result;
+				}
+			);
+
+			const lernstoreContent: IComponentLernstoreProperties = { resources };
+			lernstore.content = lernstoreContent;
+		}
+
+		return lernstore;
 	}
 
 	private static copyGeogebra(originalElement: IComponentProperties): IComponentProperties {

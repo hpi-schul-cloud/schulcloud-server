@@ -51,7 +51,7 @@ describe('SchoolExternalToolValidationService', () => {
 				...externalToolFactory.buildWithId(),
 				...externalToolDoMock,
 			});
-			externalToolService.findExternalToolById.mockResolvedValue(externalTool);
+			externalToolService.findById.mockResolvedValue(externalTool);
 			const schoolExternalToolId = schoolExternalTool.id as string;
 			return {
 				schoolExternalTool,
@@ -66,7 +66,7 @@ describe('SchoolExternalToolValidationService', () => {
 
 				await service.validate(schoolExternalTool);
 
-				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(schoolExternalTool.toolId);
+				expect(externalToolService.findById).toHaveBeenCalledWith(schoolExternalTool.toolId);
 			});
 
 			it('should call commonToolValidationService.checkForDuplicateParameters', async () => {

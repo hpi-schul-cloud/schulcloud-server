@@ -13,7 +13,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { Action, AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { TaskService } from '../service';
 import { TaskUC } from './task.uc';
 

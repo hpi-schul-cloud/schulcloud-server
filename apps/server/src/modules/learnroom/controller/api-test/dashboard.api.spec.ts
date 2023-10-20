@@ -2,12 +2,12 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardEntity, GridElement, Permission, User, RoleName } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { IDashboardRepo } from '@shared/repo';
 import { courseFactory, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { DashboardResponse } from '@src/modules/learnroom/controller/dto';
-import { ServerTestModule } from '@src/modules/server/server.module';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { DashboardResponse } from '@modules/learnroom/controller/dto';
+import { ServerTestModule } from '@modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 

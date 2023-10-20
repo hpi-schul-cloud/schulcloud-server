@@ -11,9 +11,8 @@ import {
 } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { SubmissionsResponse } from '@src/modules/board/controller/dto/submission-item/submissions.response';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
+import { SubmissionsResponse } from './dto/submission-item/submissions.response';
 import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
 import { SubmissionItemUc } from '../uc/submission-item.uc';

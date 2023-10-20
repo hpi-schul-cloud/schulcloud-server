@@ -1,4 +1,4 @@
-import { OauthConfigDto } from '@src/modules/system/service/dto';
+import { OauthConfigDto } from '@modules/system/service/dto';
 
 export abstract class IdentityManagementOauthService {
 	/**

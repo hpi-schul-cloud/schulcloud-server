@@ -19,8 +19,7 @@ import {
 	UserBoardRoles,
 	UserRoleEnum,
 } from '@shared/domain';
-import { AuthorizationService } from '@src/modules/authorization';
-import { Action } from '@src/modules/authorization/types/action.enum';
+import { AuthorizationService, Action } from '@modules/authorization';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { BaseUc } from './base.uc';
 
