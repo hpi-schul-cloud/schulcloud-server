@@ -1,5 +1,5 @@
-import { County } from '@src/modules/school/domain';
-import { FederalStateDto } from '@src/modules/school/domain/dto';
+import { County } from '../../../domain';
+import { FederalStateDto } from '../../../domain/dto';
 import { FederalStateResponse } from '../response';
 import { CountyResponse } from '../response/county.response';
 

@@ -1,4 +1,4 @@
-import { SystemDto } from '@src/modules/school/domain';
+import { SystemDto } from '../../../domain';
 import { SystemResponse } from '../response';
 
 export class SystemMapper {

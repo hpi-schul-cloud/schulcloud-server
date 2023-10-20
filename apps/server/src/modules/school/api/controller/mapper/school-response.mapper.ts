@@ -1,5 +1,5 @@
 import { PaginationParams } from '@shared/controller';
-import { SchoolDto, SlimSchoolDto } from '@src/modules/school/domain/dto';
+import { SchoolDto, SlimSchoolDto } from '../../../domain/dto';
 import { SchoolResponse, SlimSchoolListResponse } from '../response';
 import { SlimSchoolResponse } from '../response/school-reduced.response';
 import { FederalStateMapper } from './federal-state.mapper';

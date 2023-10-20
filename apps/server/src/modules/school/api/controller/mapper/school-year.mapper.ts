@@ -1,4 +1,4 @@
-import { SchoolYearDto } from '@src/modules/school/domain';
+import { SchoolYearDto } from '../../../domain';
 import { SchoolYearResponse } from '../response';
 
 export class SchoolYearMapper {
