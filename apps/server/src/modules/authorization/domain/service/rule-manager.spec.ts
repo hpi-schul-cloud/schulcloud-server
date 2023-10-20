@@ -44,6 +44,7 @@ describe('RuleManager', () => {
 				RuleManager,
 				{ provide: CourseRule, useValue: createMock<CourseRule>() },
 				{ provide: CourseGroupRule, useValue: createMock<CourseGroupRule>() },
+				{ provide: GroupRule, useValue: createMock<GroupRule>() },
 				{ provide: LessonRule, useValue: createMock<LessonRule>() },
 				{ provide: LegacySchoolRule, useValue: createMock<LegacySchoolRule>() },
 				{ provide: UserRule, useValue: createMock<UserRule>() },
