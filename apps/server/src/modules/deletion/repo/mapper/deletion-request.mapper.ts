@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionRequest } from '../../domain/deletion-request.do';
-import { DeletionRequestEntity } from '../../entities';
+import { DeletionRequestEntity } from '../../entity';
 
 export class DeletionRequestMapper {
 	static mapToDO(entity: DeletionRequestEntity): DeletionRequest {

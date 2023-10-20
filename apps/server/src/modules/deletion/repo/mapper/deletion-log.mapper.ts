@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DeletionLogEntity } from '../../entities/deletion-log.entity';
+import { DeletionLogEntity } from '../../entity/deletion-log.entity';
 import { DeletionLog } from '../../domain/deletion-log.do';
 
 export class DeletionLogMapper {
