@@ -25,7 +25,6 @@ import { OauthProviderApiModule } from '@src/modules/oauth-provider';
 import { OauthApiModule } from '@src/modules/oauth/oauth-api.module';
 import { PseudonymApiModule } from '@src/modules/pseudonym/pseudonym-api.module';
 import { RocketChatModule } from '@src/modules/rocketchat';
-import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { SharingApiModule } from '@src/modules/sharing/sharing.module';
 import { SystemApiModule } from '@src/modules/system/system-api.module';
 import { TaskApiModule } from '@src/modules/task/task-api.module';
@@ -76,7 +75,6 @@ const serverModules = [
 	BoardApiModule,
 	GroupApiModule,
 	TeamsApiModule,
-	SchoolApiModule,
 	PseudonymApiModule,
 ];
 

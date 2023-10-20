@@ -75,7 +75,7 @@ export class ExternalToolService {
 		return tools;
 	}
 
-	async findExternalToolById(id: EntityId): Promise<ExternalTool> {
+	async findById(id: EntityId): Promise<ExternalTool> {
 		const tool: ExternalTool = await this.externalToolRepo.findById(id);
 		if (ExternalTool.isOauth2Config(tool.config)) {
 			try {

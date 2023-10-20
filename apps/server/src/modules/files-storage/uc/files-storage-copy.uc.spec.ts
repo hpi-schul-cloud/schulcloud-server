@@ -8,7 +8,8 @@ import { AntivirusService } from '@shared/infra/antivirus';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { Action, AuthorizationService } from '@src/modules/authorization';
+import { Action } from '@src/modules/authorization';
+import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { CopyFileResponseBuilder } from '../mapper';
@@ -68,7 +69,7 @@ describe('FilesStorageUC', () => {
 	let module: TestingModule;
 	let filesStorageUC: FilesStorageUC;
 	let filesStorageService: DeepMocked<FilesStorageService>;
-	let authorizationService: DeepMocked<AuthorizationService>;
+	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
 
 	beforeEach(() => {
 		jest.resetAllMocks();
@@ -97,8 +98,8 @@ describe('FilesStorageUC', () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
-					provide: AuthorizationService,
-					useValue: createMock<AuthorizationService>(),
+					provide: AuthorizationReferenceService,
+					useValue: createMock<AuthorizationReferenceService>(),
 				},
 				{
 					provide: HttpService,
@@ -112,7 +113,7 @@ describe('FilesStorageUC', () => {
 		}).compile();
 
 		filesStorageUC = module.get(FilesStorageUC);
-		authorizationService = module.get(AuthorizationService);
+		authorizationReferenceService = module.get(AuthorizationReferenceService);
 		filesStorageService = module.get(FilesStorageService);
 	});
 
@@ -134,7 +135,7 @@ describe('FilesStorageUC', () => {
 
 				const fileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.name);
 
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
+				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
 				filesStorageService.copyFilesOfParent.mockResolvedValueOnce([[fileResponse], 1]);
 
 				return { sourceParams, targetParams, userId, fileResponse };
@@ -145,7 +146,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.copyFilesOfParent(userId, sourceParams, targetParams);
 
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenNthCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenNthCalledWith(
 					1,
 					userId,
 					sourceParams.parentType,
@@ -159,7 +160,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.copyFilesOfParent(userId, sourceParams, targetParams);
 
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenNthCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenNthCalledWith(
 					2,
 					userId,
 					targetParams.target.parentType,
@@ -191,7 +192,7 @@ describe('FilesStorageUC', () => {
 				const targetParams = createTargetParams();
 				const error = new ForbiddenException();
 
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error).mockResolvedValueOnce();
+				authorizationReferenceService.checkPermissionByReferences.mockRejectedValueOnce(error).mockResolvedValueOnce();
 
 				return { sourceParams, targetParams, userId, error };
 			};
@@ -210,7 +211,7 @@ describe('FilesStorageUC', () => {
 				const targetParams = createTargetParams();
 				const error = new ForbiddenException();
 
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockRejectedValueOnce(error);
+				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce().mockRejectedValueOnce(error);
 
 				return { sourceParams, targetParams, userId, error };
 			};
@@ -229,7 +230,9 @@ describe('FilesStorageUC', () => {
 				const targetParams = createTargetParams();
 				const error = new ForbiddenException();
 
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error).mockRejectedValueOnce(error);
+				authorizationReferenceService.checkPermissionByReferences
+					.mockRejectedValueOnce(error)
+					.mockRejectedValueOnce(error);
 
 				return { sourceParams, targetParams, userId, error };
 			};
@@ -249,7 +252,7 @@ describe('FilesStorageUC', () => {
 
 				const error = new Error('test');
 
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
+				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
 				filesStorageService.copyFilesOfParent.mockRejectedValueOnce(error);
 
 				return { sourceParams, targetParams, userId, error };
@@ -289,7 +292,7 @@ describe('FilesStorageUC', () => {
 				);
 
 				filesStorageService.getFileRecord.mockResolvedValue(fileRecord);
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
+				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
 				filesStorageService.copy.mockResolvedValueOnce([fileResponse]);
 
 				return { singleFileParams, copyFileParams, userId, fileResponse, fileRecord };
@@ -308,7 +311,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.copyOneFile(userId, singleFileParams, copyFileParams);
 
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenNthCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenNthCalledWith(
 					1,
 					userId,
 					fileRecord.parentType,
@@ -322,7 +325,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.copyOneFile(userId, singleFileParams, copyFileParams);
 
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenNthCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenNthCalledWith(
 					2,
 					userId,
 					copyFileParams.target.parentType,
@@ -355,7 +358,7 @@ describe('FilesStorageUC', () => {
 				const error = new ForbiddenException();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error).mockResolvedValueOnce();
+				authorizationReferenceService.checkPermissionByReferences.mockRejectedValueOnce(error).mockResolvedValueOnce();
 
 				return { singleFileParams, copyFileParams, userId, fileRecord, error };
 			};
@@ -375,7 +378,7 @@ describe('FilesStorageUC', () => {
 				const error = new ForbiddenException();
 
 				filesStorageService.getFileRecord.mockResolvedValue(fileRecord);
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockRejectedValueOnce(error);
+				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce().mockRejectedValueOnce(error);
 
 				return { singleFileParams, copyFileParams, userId, fileRecord, error };
 			};
@@ -395,7 +398,9 @@ describe('FilesStorageUC', () => {
 				const error = new ForbiddenException();
 
 				filesStorageService.getFileRecord.mockResolvedValue(fileRecord);
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error).mockRejectedValueOnce(error);
+				authorizationReferenceService.checkPermissionByReferences
+					.mockRejectedValueOnce(error)
+					.mockRejectedValueOnce(error);
 
 				return { singleFileParams, copyFileParams, userId, fileRecord, error };
 			};
@@ -434,7 +439,7 @@ describe('FilesStorageUC', () => {
 				const error = new Error('test');
 
 				filesStorageService.getFileRecord.mockResolvedValue(fileRecord);
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
+				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
 				filesStorageService.copy.mockRejectedValueOnce(error);
 
 				return { singleFileParams, copyFileParams, userId, fileRecord, error };
