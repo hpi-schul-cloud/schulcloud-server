@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-// invalid import
-import { IResolvedUser, IRole } from '@src/modules/authentication/interface';
 
-export type Role = IRole;
+export type Role = {
+	name: string;
 
-export class ResolvedUserResponse implements IResolvedUser {
+	id: string;
+};
+
+export class ResolvedUserResponse {
 	@ApiProperty()
 	firstName!: string;
 
