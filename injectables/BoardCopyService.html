@@ -925,11 +925,11 @@ import {
 } from &#x27;@shared/domain&#x27;;
 import { BoardRepo } from &#x27;@shared/repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { ColumnBoardCopyService } from &#x27;@src/modules/board/service/column-board-copy.service&#x27;;
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from &#x27;@src/modules/copy-helper&#x27;;
-import { getResolvedValues } from &#x27;@src/modules/files-storage/helper&#x27;;
-import { LessonCopyService } from &#x27;@src/modules/lesson/service&#x27;;
-import { TaskCopyService } from &#x27;@src/modules/task/service&#x27;;
+import { ColumnBoardCopyService } from &#x27;@modules/board/service/column-board-copy.service&#x27;;
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from &#x27;@modules/copy-helper&#x27;;
+import { getResolvedValues } from &#x27;@modules/files-storage/helper&#x27;;
+import { LessonCopyService } from &#x27;@modules/lesson/service&#x27;;
+import { TaskCopyService } from &#x27;@modules/task/service&#x27;;
 import { sortBy } from &#x27;lodash&#x27;;
 
 type BoardCopyParams &#x3D; {

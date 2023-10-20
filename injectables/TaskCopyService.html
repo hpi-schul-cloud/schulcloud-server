@@ -564,9 +564,9 @@
 import { EntityId } from &#x27;@shared/domain&#x27;;
 import { Course, LessonEntity, Task, User } from &#x27;@shared/domain/entity&#x27;;
 import { TaskRepo } from &#x27;@shared/repo&#x27;;
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from &#x27;@src/modules/copy-helper&#x27;;
-import { CopyFilesService } from &#x27;@src/modules/files-storage-client&#x27;;
-import { FileUrlReplacement } from &#x27;@src/modules/files-storage-client/service/copy-files.service&#x27;;
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from &#x27;@modules/copy-helper&#x27;;
+import { CopyFilesService } from &#x27;@modules/files-storage-client&#x27;;
+import { FileUrlReplacement } from &#x27;@modules/files-storage-client/service/copy-files.service&#x27;;
 
 type TaskCopyParams &#x3D; {
 	originalTaskId: EntityId;

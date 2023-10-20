@@ -651,13 +651,13 @@ It loads an appropriate strategy and applies that to the given data.</p>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { TeamPermissionsDto } from &#x27;@src/modules/collaborative-storage/services/dto/team-permissions.dto&#x27;;
-import { TeamDto } from &#x27;@src/modules/collaborative-storage/services/dto/team.dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { TeamPermissionsDto } from &#x27;@modules/collaborative-storage/services/dto/team-permissions.dto&#x27;;
+import { TeamDto } from &#x27;@modules/collaborative-storage/services/dto/team.dto&#x27;;
 import { ICollaborativeStorageStrategy } from &#x27;@shared/infra/collaborative-storage/strategy/base.interface.strategy&#x27;;
 import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { CollaborativeStorageAdapterMapper } from &#x27;@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { RoleDto } from &#x27;@src/modules/role/service/dto/role.dto&#x27;;
+import { RoleDto } from &#x27;@modules/role/service/dto/role.dto&#x27;;
 
 /**
  * Provides an Adapter to an external collaborative storage.

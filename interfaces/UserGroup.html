@@ -225,15 +225,15 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
 import { Course, EntityId, Pseudonym, RoleName, RoleReference, UserDO } from &#x27;@shared/domain&#x27;;
-import { CourseService } from &#x27;@src/modules/learnroom/service&#x27;;
-import { ToolContextType } from &#x27;@src/modules/tool/common/enum&#x27;;
-import { ContextExternalTool, ContextRef } from &#x27;@src/modules/tool/context-external-tool/domain&#x27;;
-import { ContextExternalToolService } from &#x27;@src/modules/tool/context-external-tool/service&#x27;;
-import { ExternalTool } from &#x27;@src/modules/tool/external-tool/domain&#x27;;
-import { ExternalToolService } from &#x27;@src/modules/tool/external-tool/service&#x27;;
-import { SchoolExternalTool } from &#x27;@src/modules/tool/school-external-tool/domain&#x27;;
-import { SchoolExternalToolService } from &#x27;@src/modules/tool/school-external-tool/service&#x27;;
-import { UserService } from &#x27;@src/modules/user&#x27;;
+import { CourseService } from &#x27;@modules/learnroom/service&#x27;;
+import { ToolContextType } from &#x27;@modules/tool/common/enum&#x27;;
+import { ContextExternalTool, ContextRef } from &#x27;@modules/tool/context-external-tool/domain&#x27;;
+import { ContextExternalToolService } from &#x27;@modules/tool/context-external-tool/service&#x27;;
+import { ExternalTool } from &#x27;@modules/tool/external-tool/domain&#x27;;
+import { ExternalToolService } from &#x27;@modules/tool/external-tool/service&#x27;;
+import { SchoolExternalTool } from &#x27;@modules/tool/school-external-tool/domain&#x27;;
+import { SchoolExternalToolService } from &#x27;@modules/tool/school-external-tool/service&#x27;;
+import { UserService } from &#x27;@modules/user&#x27;;
 import { PseudonymService } from &#x27;./pseudonym.service&#x27;;
 
 interface UserMetdata {

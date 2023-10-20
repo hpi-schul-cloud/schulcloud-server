@@ -519,10 +519,10 @@ import { ForbiddenException, Injectable, InternalServerErrorException } from &#x
 import { Course, EntityId, LessonEntity, User } from &#x27;@shared/domain&#x27;;
 import { Permission } from &#x27;@shared/domain/interface/permission.enum&#x27;;
 import { CourseRepo, LessonRepo } from &#x27;@shared/repo&#x27;;
-import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
-import { CopyHelperService, CopyStatus } from &#x27;@src/modules/copy-helper&#x27;;
-import { LessonCopyParentParams } from &#x27;@src/modules/lesson&#x27;;
-import { LessonCopyService } from &#x27;@src/modules/lesson/service&#x27;;
+import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { CopyHelperService, CopyStatus } from &#x27;@modules/copy-helper&#x27;;
+import { LessonCopyParentParams } from &#x27;@modules/lesson&#x27;;
+import { LessonCopyService } from &#x27;@modules/lesson/service&#x27;;
 
 @Injectable()
 export class LessonCopyUC {

@@ -892,10 +892,10 @@
 import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { RequestTimeout } from &#x27;@shared/common&#x27;;
 import { PaginationParams } from &#x27;@shared/controller/&#x27;;
-import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
-import { CopyApiResponse, CopyMapper } from &#x27;@src/modules/copy-helper&#x27;;
+import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
+import { CopyApiResponse, CopyMapper } from &#x27;@modules/copy-helper&#x27;;
 // invalid import can produce dependency cycles
-import { serverConfig } from &#x27;@src/modules/server/server.config&#x27;;
+import { serverConfig } from &#x27;@modules/server/server.config&#x27;;
 import { TaskMapper } from &#x27;../mapper&#x27;;
 import { TaskCopyUC } from &#x27;../uc/task-copy.uc&#x27;;
 import { TaskUC } from &#x27;../uc/task.uc&#x27;;

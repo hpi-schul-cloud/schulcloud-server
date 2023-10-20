@@ -66,10 +66,6 @@
 <title>cluster_UserLoginMigrationModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 2124,-268 2124,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_UserLoginMigrationModule_exports</title>
-<polygon fill="none" stroke="black" points="904,-208 904,-260 1839,-260 1839,-208 904,-208"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_UserLoginMigrationModule_imports</title>
 <polygon fill="none" stroke="black" points="1496,-78 1496,-130 2116,-130 2116,-78 1496,-78"/>
@@ -77,6 +73,10 @@
 <g id="clust6" class="cluster">
 <title>cluster_UserLoginMigrationModule_providers</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 1488,-130 1488,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_UserLoginMigrationModule_exports</title>
+<polygon fill="none" stroke="black" points="904,-208 904,-260 1839,-260 1839,-208 904,-208"/>
 </g>
 <!-- AccountModule -->
 <g id="node1" class="node">
@@ -400,10 +400,10 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;;
 import { UserLoginMigrationRepo } from &#x27;@shared/repo&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
-import { AccountModule } from &#x27;@src/modules/account&#x27;;
-import { LegacySchoolModule } from &#x27;@src/modules/legacy-school&#x27;;
-import { SystemModule } from &#x27;@src/modules/system&#x27;;
-import { UserModule } from &#x27;@src/modules/user&#x27;;
+import { AccountModule } from &#x27;@modules/account&#x27;;
+import { LegacySchoolModule } from &#x27;@modules/legacy-school&#x27;;
+import { SystemModule } from &#x27;@modules/system&#x27;;
+import { UserModule } from &#x27;@modules/user&#x27;;
 import {
 	MigrationCheckService,
 	SchoolMigrationService,

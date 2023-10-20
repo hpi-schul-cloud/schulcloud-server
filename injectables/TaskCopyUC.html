@@ -852,8 +852,8 @@
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { Course, EntityId, Task, LessonEntity, User } from &#x27;@shared/domain&#x27;;
 import { CourseRepo, LessonRepo, TaskRepo } from &#x27;@shared/repo&#x27;;
-import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
-import { CopyHelperService, CopyStatus } from &#x27;@src/modules/copy-helper&#x27;;
+import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { CopyHelperService, CopyStatus } from &#x27;@modules/copy-helper&#x27;;
 import { TaskCopyService } from &#x27;../service&#x27;;
 import { TaskCopyParentParams } from &#x27;../types&#x27;;
 

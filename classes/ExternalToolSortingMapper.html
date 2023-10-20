@@ -193,8 +193,8 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { QueryOrderMap } from &#x27;@mikro-orm/core&#x27;;
 import { SortOrderMap } from &#x27;@shared/domain&#x27;;
-import { ExternalTool } from &#x27;@src/modules/tool/external-tool/domain&#x27;;
-import { ExternalToolEntity } from &#x27;@src/modules/tool/external-tool/entity&#x27;;
+import { ExternalTool } from &#x27;@modules/tool/external-tool/domain&#x27;;
+import { ExternalToolEntity } from &#x27;@modules/tool/external-tool/entity&#x27;;
 
 export class ExternalToolSortingMapper {
 	static mapDOSortOrderToQueryOrder(sort: SortOrderMap&lt;ExternalTool&gt;): QueryOrderMap&lt;ExternalToolEntity&gt; {

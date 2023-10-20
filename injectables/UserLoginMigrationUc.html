@@ -753,12 +753,12 @@
 import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
 import { EntityId, Page, Permission, LegacySchoolDo, User, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { AuthenticationService } from &#x27;@src/modules/authentication/services/authentication.service&#x27;;
-import { Action, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
-import { OAuthTokenDto } from &#x27;@src/modules/oauth&#x27;;
-import { OAuthService } from &#x27;@src/modules/oauth/service/oauth.service&#x27;;
-import { ProvisioningService } from &#x27;@src/modules/provisioning&#x27;;
-import { OauthDataDto } from &#x27;@src/modules/provisioning/dto&#x27;;
+import { AuthenticationService } from &#x27;@modules/authentication/services/authentication.service&#x27;;
+import { Action, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { OAuthTokenDto } from &#x27;@modules/oauth&#x27;;
+import { OAuthService } from &#x27;@modules/oauth/service/oauth.service&#x27;;
+import { ProvisioningService } from &#x27;@modules/provisioning&#x27;;
+import { OauthDataDto } from &#x27;@modules/provisioning/dto&#x27;;
 import { OAuthMigrationError, SchoolMigrationError, UserLoginMigrationError } from &#x27;../error&#x27;;
 import { PageTypes } from &#x27;../interface/page-types.enum&#x27;;
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from &#x27;../service&#x27;;

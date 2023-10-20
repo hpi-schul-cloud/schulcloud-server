@@ -1068,9 +1068,9 @@
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { EntityId, LegacySchoolDo, SchoolFeatures, SystemTypeEnum, UserDO, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
 import { UserLoginMigrationRepo } from &#x27;@shared/repo&#x27;;
-import { LegacySchoolService } from &#x27;@src/modules/legacy-school&#x27;;
-import { SystemDto, SystemService } from &#x27;@src/modules/system&#x27;;
-import { UserService } from &#x27;@src/modules/user&#x27;;
+import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
+import { SystemDto, SystemService } from &#x27;@modules/system&#x27;;
+import { UserService } from &#x27;@modules/user&#x27;;
 import { UserLoginMigrationNotFoundLoggableException } from &#x27;../error&#x27;;
 import { SchoolMigrationService } from &#x27;./school-migration.service&#x27;;
 

@@ -709,11 +709,11 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { JwtService } from &#x27;@nestjs/jwt&#x27;;
-import { AccountService } from &#x27;@src/modules/account&#x27;;
+import { AccountService } from &#x27;@modules/account&#x27;;
 // invalid import
-import { AccountDto } from &#x27;@src/modules/account/services/dto&#x27;;
+import { AccountDto } from &#x27;@modules/account/services/dto&#x27;;
 // invalid import, can produce dependency cycles
-import type { IServerConfig } from &#x27;@src/modules/server&#x27;;
+import type { IServerConfig } from &#x27;@modules/server&#x27;;
 import { randomUUID } from &#x27;crypto&#x27;;
 import jwt, { JwtPayload } from &#x27;jsonwebtoken&#x27;;
 import { JwtValidationAdapter } from &#x27;../strategy/jwt-validation.adapter&#x27;;

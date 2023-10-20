@@ -254,7 +254,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import IdentityProviderRepresentation from &#x27;@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation&#x27;;
 import { Inject } from &#x27;@nestjs/common&#x27;;
 import { DefaultEncryptionService, IEncryptionService } from &#x27;@shared/infra/encryption&#x27;;
-import { OidcConfigDto } from &#x27;@src/modules/system/service&#x27;;
+import { OidcConfigDto } from &#x27;@modules/system/service&#x27;;
 
 export class OidcIdentityProviderMapper {
 	constructor(@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService) {}

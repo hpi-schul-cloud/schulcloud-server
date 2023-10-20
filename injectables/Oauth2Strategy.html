@@ -250,10 +250,10 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
 import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
-import { AccountService } from &#x27;@src/modules/account/services/account.service&#x27;;
-import { AccountDto } from &#x27;@src/modules/account/services/dto&#x27;;
-import { OAuthTokenDto } from &#x27;@src/modules/oauth&#x27;;
-import { OAuthService } from &#x27;@src/modules/oauth/service/oauth.service&#x27;;
+import { AccountService } from &#x27;@modules/account/services/account.service&#x27;;
+import { AccountDto } from &#x27;@modules/account/services/dto&#x27;;
+import { OAuthTokenDto } from &#x27;@modules/oauth&#x27;;
+import { OAuthService } from &#x27;@modules/oauth/service/oauth.service&#x27;;
 import { Strategy } from &#x27;passport-custom&#x27;;
 import { Oauth2AuthorizationBodyParams } from &#x27;../controllers/dto&#x27;;
 import { SchoolInMigrationError } from &#x27;../errors/school-in-migration.error&#x27;;

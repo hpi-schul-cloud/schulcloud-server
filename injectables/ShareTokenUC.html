@@ -1263,13 +1263,13 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from &#x27;@nestjs/common&#x27;;
 import { EntityId, Permission } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
-import { AuthorizationReferenceService } from &#x27;@src/modules/authorization/domain&#x27;;
-import { CopyStatus } from &#x27;@src/modules/copy-helper&#x27;;
-import { CourseCopyService } from &#x27;@src/modules/learnroom&#x27;;
-import { CourseService } from &#x27;@src/modules/learnroom/service&#x27;;
-import { LessonCopyService } from &#x27;@src/modules/lesson/service&#x27;;
-import { TaskCopyService } from &#x27;@src/modules/task/service&#x27;;
+import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { AuthorizationReferenceService } from &#x27;@modules/authorization/domain&#x27;;
+import { CopyStatus } from &#x27;@modules/copy-helper&#x27;;
+import { CourseCopyService } from &#x27;@modules/learnroom&#x27;;
+import { CourseService } from &#x27;@modules/learnroom/service&#x27;;
+import { LessonCopyService } from &#x27;@modules/lesson/service&#x27;;
+import { TaskCopyService } from &#x27;@modules/task/service&#x27;;
 import {
 	ShareTokenContext,
 	ShareTokenContextType,

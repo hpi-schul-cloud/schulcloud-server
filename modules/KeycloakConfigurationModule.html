@@ -70,13 +70,13 @@
 <title>cluster_KeycloakConfigurationModule_imports</title>
 <polygon fill="none" stroke="black" points="797,-78 797,-130 1671,-130 1671,-78 797,-78"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_KeycloakConfigurationModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 789,-130 789,-78 16,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_KeycloakConfigurationModule_exports</title>
 <polygon fill="none" stroke="black" points="745,-208 745,-260 1252,-260 1252,-208 745,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_KeycloakConfigurationModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 789,-130 789,-78 16,-78"/>
 </g>
 <!-- AccountModule -->
 <g id="node1" class="node">
@@ -351,7 +351,8 @@
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { EncryptionModule } from &#x27;@shared/infra/encryption&#x27;;
 import { ConsoleWriterModule } from &#x27;@shared/infra/console&#x27;;
-import { AccountModule, SystemModule } from &#x27;@src/modules&#x27;;
+import { AccountModule } from &#x27;@modules/account&#x27;;
+import { SystemModule } from &#x27;@modules/system&#x27;;
 import { KeycloakAdministrationModule } from &#x27;../keycloak-administration/keycloak-administration.module&#x27;;
 import { KeycloakConsole } from &#x27;./console/keycloak-configuration.console&#x27;;
 import { KeycloakConfigurationInputFiles } from &#x27;./interface/keycloak-configuration-input-files.interface&#x27;;

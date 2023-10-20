@@ -473,7 +473,7 @@ import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
 import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import bcrypt from &#x27;bcryptjs&#x27;;
 import { UserRepo } from &#x27;@shared/repo&#x27;;
-import { AccountDto } from &#x27;@src/modules/account/services/dto&#x27;;
+import { AccountDto } from &#x27;@modules/account/services/dto&#x27;;
 import { GuardAgainst } from &#x27;@shared/common/utils/guard-against&#x27;;
 import { IdentityManagementOauthService, IIdentityManagementConfig } from &#x27;@shared/infra/identity-management&#x27;;
 import { CurrentUserMapper } from &#x27;../mapper&#x27;;

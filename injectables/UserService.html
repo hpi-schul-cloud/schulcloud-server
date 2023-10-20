@@ -1199,13 +1199,13 @@ import { EntityId, IFindOptions, LanguageType, User } from &#x27;@shared/domain&
 import { RoleReference, Page, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { UserRepo } from &#x27;@shared/repo&#x27;;
 import { UserDORepo } from &#x27;@shared/repo/user/user-do.repo&#x27;;
-import { AccountService } from &#x27;@src/modules/account&#x27;;
-import { AccountDto } from &#x27;@src/modules/account/services/dto&#x27;;
-import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
+import { AccountService } from &#x27;@modules/account&#x27;;
+import { AccountDto } from &#x27;@modules/account/services/dto&#x27;;
+import { ICurrentUser } from &#x27;@modules/authentication&#x27;;
 // invalid import
-import { CurrentUserMapper } from &#x27;@src/modules/authentication/mapper&#x27;;
-import { RoleDto } from &#x27;@src/modules/role/service/dto/role.dto&#x27;;
-import { RoleService } from &#x27;@src/modules/role/service/role.service&#x27;;
+import { CurrentUserMapper } from &#x27;@modules/authentication/mapper&#x27;;
+import { RoleDto } from &#x27;@modules/role/service/dto/role.dto&#x27;;
+import { RoleService } from &#x27;@modules/role/service/role.service&#x27;;
 import { BadRequestException, Injectable } from &#x27;@nestjs/common&#x27;;
 import { IUserConfig } from &#x27;../interfaces&#x27;;
 import { UserMapper } from &#x27;../mapper/user.mapper&#x27;;

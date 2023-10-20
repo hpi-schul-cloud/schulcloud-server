@@ -1586,11 +1586,11 @@ import {
 import { Account, EntityId, Permission, PermissionService, Role, RoleName, SchoolEntity, User } from &#x27;@shared/domain&#x27;;
 import { UserRepo } from &#x27;@shared/repo&#x27;;
 // TODO: module internals should be imported with relative paths
-import { AccountService } from &#x27;@src/modules/account/services/account.service&#x27;;
-import { AccountDto } from &#x27;@src/modules/account/services/dto/account.dto&#x27;;
+import { AccountService } from &#x27;@modules/account/services/account.service&#x27;;
+import { AccountDto } from &#x27;@modules/account/services/dto/account.dto&#x27;;
 
 import { BruteForcePrevention } from &#x27;@src/imports-from-feathers&#x27;;
-import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
+import { ICurrentUser } from &#x27;@modules/authentication&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
 import { IAccountConfig } from &#x27;../account-config&#x27;;
 import {

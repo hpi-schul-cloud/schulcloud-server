@@ -1616,16 +1616,16 @@ import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { BaseDORepo } from &#x27;@shared/repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { ToolContextType } from &#x27;@src/modules/tool/common/enum/tool-context-type.enum&#x27;;
-import { ContextExternalTool, ContextRef } from &#x27;@src/modules/tool/context-external-tool/domain&#x27;;
+import { ToolContextType } from &#x27;@modules/tool/common/enum/tool-context-type.enum&#x27;;
+import { ContextExternalTool, ContextRef } from &#x27;@modules/tool/context-external-tool/domain&#x27;;
 import {
 	ContextExternalToolEntity,
 	ContextExternalToolType,
 	IContextExternalToolProperties,
-} from &#x27;@src/modules/tool/context-external-tool/entity&#x27;;
-import { ContextExternalToolQuery } from &#x27;@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types&#x27;;
-import { SchoolExternalToolRefDO } from &#x27;@src/modules/tool/school-external-tool/domain&#x27;;
-import { SchoolExternalToolEntity } from &#x27;@src/modules/tool/school-external-tool/entity&#x27;;
+} from &#x27;@modules/tool/context-external-tool/entity&#x27;;
+import { ContextExternalToolQuery } from &#x27;@modules/tool/context-external-tool/uc/dto/context-external-tool.types&#x27;;
+import { SchoolExternalToolRefDO } from &#x27;@modules/tool/school-external-tool/domain&#x27;;
+import { SchoolExternalToolEntity } from &#x27;@modules/tool/school-external-tool/entity&#x27;;
 import { EntityId } from &#x27;../../domain&#x27;;
 import { ExternalToolRepoMapper } from &#x27;../externaltool&#x27;;
 import { ContextExternalToolScope } from &#x27;./context-external-tool.scope&#x27;;

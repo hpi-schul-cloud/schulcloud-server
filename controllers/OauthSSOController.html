@@ -979,9 +979,9 @@ import {
 import { ApiOkResponse, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ISession } from &#x27;@shared/domain/types/session&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { ICurrentUser, Authenticate, CurrentUser, JWT } from &#x27;@src/modules/authentication&#x27;;
-import { OAuthMigrationError } from &#x27;@src/modules/user-login-migration/error/oauth-migration.error&#x27;;
-import { MigrationDto } from &#x27;@src/modules/user-login-migration/service/dto&#x27;;
+import { ICurrentUser, Authenticate, CurrentUser, JWT } from &#x27;@modules/authentication&#x27;;
+import { OAuthMigrationError } from &#x27;@modules/user-login-migration/error/oauth-migration.error&#x27;;
+import { MigrationDto } from &#x27;@modules/user-login-migration/service/dto&#x27;;
 import { CookieOptions, Request, Response } from &#x27;express&#x27;;
 import { HydraOauthUc } from &#x27;../uc/hydra-oauth.uc&#x27;;
 import { UserMigrationResponse } from &#x27;./dto/user-migration.response&#x27;;

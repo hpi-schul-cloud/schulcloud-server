@@ -654,12 +654,12 @@ import {
 	ProviderLoginResponse,
 	ProviderRedirectResponse,
 } from &#x27;@shared/infra/oauth-provider/dto&#x27;;
-import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
-import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from &#x27;@src/modules/oauth-provider/controller/dto&#x27;;
-import { OauthProviderRequestMapper } from &#x27;@src/modules/oauth-provider/mapper/oauth-provider-request.mapper&#x27;;
-import { PseudonymService } from &#x27;@src/modules/pseudonym/service&#x27;;
-import { ExternalTool, Oauth2ToolConfig } from &#x27;@src/modules/tool/external-tool/domain&#x27;;
-import { UserService } from &#x27;@src/modules/user&#x27;;
+import { AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from &#x27;@modules/oauth-provider/controller/dto&#x27;;
+import { OauthProviderRequestMapper } from &#x27;@modules/oauth-provider/mapper/oauth-provider-request.mapper&#x27;;
+import { PseudonymService } from &#x27;@modules/pseudonym/service&#x27;;
+import { ExternalTool, Oauth2ToolConfig } from &#x27;@modules/tool/external-tool/domain&#x27;;
+import { UserService } from &#x27;@modules/user&#x27;;
 import { OauthProviderLoginFlowService } from &#x27;../service/oauth-provider.login-flow.service&#x27;;
 
 @Injectable()

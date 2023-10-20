@@ -237,7 +237,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, Controller, ForbiddenException, Get, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
-import { Authenticate } from &#x27;@src/modules/authentication&#x27;;
+import { Authenticate } from &#x27;@modules/authentication/decorator/auth.decorator&#x27;;
 
 // Dummy html response so we can test i-frame integration
 const dummyResponse &#x3D; (title: string) &#x3D;&gt; &#x60;
