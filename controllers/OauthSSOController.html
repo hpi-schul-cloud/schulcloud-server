@@ -170,8 +170,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -282,8 +282,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="99"
-                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:99</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="98"
+                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:98</a></div>
                         </td>
                     </tr>
 
@@ -396,8 +396,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="153"
-                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:153</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="152"
+                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:152</a></div>
                         </td>
                     </tr>
 
@@ -488,8 +488,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="184"
-                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:184</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="183"
+                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:183</a></div>
                         </td>
                     </tr>
 
@@ -605,8 +605,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="66"
-                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:66</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -706,8 +706,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="163"
-                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:163</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="162"
+                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:162</a></div>
                         </td>
                     </tr>
 
@@ -799,8 +799,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="84"
-                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:84</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="83"
+                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:83</a></div>
                         </td>
                     </tr>
 
@@ -888,8 +888,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="120"
-                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:120</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="119"
+                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:119</a></div>
                         </td>
                     </tr>
 
@@ -979,13 +979,12 @@ import {
 import { ApiOkResponse, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ISession } from &#x27;@shared/domain/types/session&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
-import { Authenticate, CurrentUser, JWT } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
-import { UserMigrationResponse } from &#x27;@src/modules/oauth/controller/dto/user-migration.response&#x27;;
-import { HydraOauthUc } from &#x27;@src/modules/oauth/uc/hydra-oauth.uc&#x27;;
+import { ICurrentUser, Authenticate, CurrentUser, JWT } from &#x27;@src/modules/authentication&#x27;;
 import { OAuthMigrationError } from &#x27;@src/modules/user-login-migration/error/oauth-migration.error&#x27;;
 import { MigrationDto } from &#x27;@src/modules/user-login-migration/service/dto&#x27;;
 import { CookieOptions, Request, Response } from &#x27;express&#x27;;
+import { HydraOauthUc } from &#x27;../uc/hydra-oauth.uc&#x27;;
+import { UserMigrationResponse } from &#x27;./dto/user-migration.response&#x27;;
 import { OAuthSSOError } from &#x27;../loggable/oauth-sso.error&#x27;;
 import { OAuthTokenDto } from &#x27;../interface&#x27;;
 import { OauthLoginStateMapper } from &#x27;../mapper/oauth-login-state.mapper&#x27;;

@@ -1318,25 +1318,25 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from &#x27;@nestjs/common&#x27;;
-import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
-import { OauthProviderLogoutFlowUc } from &#x27;@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc&#x27;;
-import { OauthProviderLoginFlowUc } from &#x27;@src/modules/oauth-provider/uc/oauth-provider.login-flow.uc&#x27;;
-import { OauthProviderResponseMapper } from &#x27;@src/modules/oauth-provider/mapper/oauth-provider-response.mapper&#x27;;
-import { OauthProviderConsentFlowUc } from &#x27;@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc&#x27;;
+import { ICurrentUser, Authenticate, CurrentUser } from &#x27;@src/modules/authentication&#x27;;
+// import should be @shared/infra/oauth-provider
 import {
 	ProviderConsentResponse,
 	ProviderLoginResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
+	ProviderConsentSessionResponse,
 } from &#x27;@shared/infra/oauth-provider/dto&#x27;;
-import { ConsentResponse } from &#x27;@src/modules/oauth-provider/controller/dto/response/consent.response&#x27;;
-import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
-import { OauthProviderClientCrudUc } from &#x27;@src/modules/oauth-provider/uc/oauth-provider.client-crud.uc&#x27;;
-import { RedirectResponse } from &#x27;@src/modules/oauth-provider/controller/dto/response/redirect.response&#x27;;
-import { ProviderConsentSessionResponse } from &#x27;@shared/infra/oauth-provider/dto/response/consent-session.response&#x27;;
 import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { OauthProviderLogoutFlowUc } from &#x27;../uc/oauth-provider.logout-flow.uc&#x27;;
+import { OauthProviderLoginFlowUc } from &#x27;../uc/oauth-provider.login-flow.uc&#x27;;
+import { OauthProviderResponseMapper } from &#x27;../mapper/oauth-provider-response.mapper&#x27;;
+import { OauthProviderConsentFlowUc } from &#x27;../uc/oauth-provider.consent-flow.uc&#x27;;
+import { ConsentResponse } from &#x27;./dto/response/consent.response&#x27;;
+import { OauthProviderClientCrudUc } from &#x27;../uc/oauth-provider.client-crud.uc&#x27;;
+import { RedirectResponse } from &#x27;./dto/response/redirect.response&#x27;;
 import { OauthProviderUc } from &#x27;../uc/oauth-provider.uc&#x27;;
 import {
 	AcceptQuery,

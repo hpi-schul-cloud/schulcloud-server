@@ -164,30 +164,6 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain&#x27;;
 
-export interface IRole {
-	name: string;
-
-	id: string;
-}
-
-export interface IResolvedUser {
-	firstName: string;
-
-	lastName: string;
-
-	id: string;
-
-	createdAt: Date;
-
-	updatedAt: Date;
-
-	roles: IRole[];
-
-	permissions: string[];
-
-	schoolId: string;
-}
-
 export interface ICurrentUser {
 	/** authenticated users id */
 	userId: EntityId;

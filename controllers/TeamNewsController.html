@@ -141,8 +141,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/news/controller/team-news.controller.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">apps/server/src/modules/news/controller/team-news.controller.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -232,11 +232,8 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, Param, Query } from &#x27;@nestjs/common&#x27;;
 import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
-
+import { ICurrentUser, Authenticate, CurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { PaginationParams } from &#x27;@shared/controller&#x27;;
-import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
-
 import { NewsMapper } from &#x27;../mapper/news.mapper&#x27;;
 import { NewsUc } from &#x27;../uc&#x27;;
 import { FilterNewsParams, NewsListResponse, TeamUrlParams } from &#x27;./dto&#x27;;

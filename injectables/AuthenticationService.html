@@ -132,7 +132,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -231,8 +231,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="64"
-                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:64</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -300,8 +300,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="41"
-                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:41</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -369,8 +369,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:24</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -448,8 +448,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="83"
-                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:83</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:84</a></div>
                         </td>
                     </tr>
 
@@ -515,8 +515,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="79"
-                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:79</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="80"
+                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:80</a></div>
                         </td>
                     </tr>
 
@@ -584,8 +584,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -653,8 +653,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="75"
-                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:75</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -709,14 +709,15 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { JwtService } from &#x27;@nestjs/jwt&#x27;;
-import { AccountService } from &#x27;@src/modules/account/services/account.service&#x27;;
+import { AccountService } from &#x27;@src/modules/account&#x27;;
+// invalid import
 import { AccountDto } from &#x27;@src/modules/account/services/dto&#x27;;
-import { JwtValidationAdapter } from &#x27;@src/modules/authentication/strategy/jwt-validation.adapter&#x27;;
+// invalid import, can produce dependency cycles
 import type { IServerConfig } from &#x27;@src/modules/server&#x27;;
 import { randomUUID } from &#x27;crypto&#x27;;
 import jwt, { JwtPayload } from &#x27;jsonwebtoken&#x27;;
-import { BruteForceError } from &#x27;../errors/brute-force.error&#x27;;
-import { UnauthorizedLoggableException } from &#x27;../errors/unauthorized.loggable-exception&#x27;;
+import { JwtValidationAdapter } from &#x27;../strategy/jwt-validation.adapter&#x27;;
+import { BruteForceError, UnauthorizedLoggableException } from &#x27;../errors&#x27;;
 import { CreateJwtPayload } from &#x27;../interface/jwt-payload&#x27;;
 import { LoginDto } from &#x27;../uc/dto&#x27;;
 

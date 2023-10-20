@@ -74,12 +74,6 @@
 
 
 
-            <p class="comment">
-                <h3>Implements</h3>
-            </p>
-            <p class="comment">
-                            <code><a href="../interfaces/IResolvedUser.html" target="_self" >IResolvedUser</a></code>
-            </p>
 
 
             <section data-compodoc="block-index">
@@ -174,7 +168,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/user/controller/dto/resolved-user.response.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/user/controller/dto/resolved-user.response.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -210,7 +204,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/user/controller/dto/resolved-user.response.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/user/controller/dto/resolved-user.response.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -246,7 +240,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/user/controller/dto/resolved-user.response.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/user/controller/dto/resolved-user.response.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -282,7 +276,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/user/controller/dto/resolved-user.response.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/user/controller/dto/resolved-user.response.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -318,7 +312,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/user/controller/dto/resolved-user.response.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/modules/user/controller/dto/resolved-user.response.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -354,7 +348,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/user/controller/dto/resolved-user.response.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/user/controller/dto/resolved-user.response.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -390,7 +384,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/modules/user/controller/dto/resolved-user.response.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/modules/user/controller/dto/resolved-user.response.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -426,7 +420,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/user/controller/dto/resolved-user.response.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/user/controller/dto/resolved-user.response.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -446,11 +440,14 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
-import { IResolvedUser, IRole } from &#x27;@src/modules/authentication/interface/user&#x27;;
 
-export type Role &#x3D; IRole;
+export type Role &#x3D; {
+	name: string;
 
-export class ResolvedUserResponse implements IResolvedUser {
+	id: string;
+};
+
+export class ResolvedUserResponse {
 	@ApiProperty()
 	firstName!: string;
 

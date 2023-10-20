@@ -5597,13 +5597,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/IRepoLoader.html" data-type="entity-link" >IRepoLoader</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/IResolvedUser.html" data-type="entity-link" >IResolvedUser</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/IRetryOptions.html" data-type="entity-link" >IRetryOptions</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IRole.html" data-type="entity-link" >IRole</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/IRoleProperties.html" data-type="entity-link" >IRoleProperties</a>

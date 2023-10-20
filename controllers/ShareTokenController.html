@@ -451,9 +451,9 @@
 } from &#x27;@nestjs/common&#x27;;
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError, RequestTimeout } from &#x27;@shared/common&#x27;;
-import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
-import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
+import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { CopyApiResponse, CopyMapper } from &#x27;@src/modules/copy-helper&#x27;;
+// invalid import can produce dependency cycles
 import { serverConfig } from &#x27;@src/modules/server/server.config&#x27;;
 import { ShareTokenInfoResponseMapper, ShareTokenResponseMapper } from &#x27;../mapper&#x27;;
 import { ShareTokenUC } from &#x27;../uc&#x27;;

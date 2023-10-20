@@ -154,8 +154,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/collaborative-storage/controller/collaborative-storage.controller.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/collaborative-storage/controller/collaborative-storage.controller.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -246,9 +246,8 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { Body, Controller, Param, Patch } from &#x27;@nestjs/common&#x27;;
-import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
+import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { ICurrentUser } from &#x27;../../authentication/interface/user&#x27;;
 import { CollaborativeStorageUc } from &#x27;../uc/collaborative-storage.uc&#x27;;
 import { TeamPermissionsBody } from &#x27;./dto/team-permissions.body.params&#x27;;
 import { TeamRoleDto } from &#x27;./dto/team-role.params&#x27;;
