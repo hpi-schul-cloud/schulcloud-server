@@ -3,7 +3,7 @@ import { County } from '../type';
 
 export class FederalState extends DomainObject<FederalStateProps> {}
 
-interface FederalStateProps extends AuthorizableObject {
+export interface FederalStateProps extends AuthorizableObject {
 	name: string;
 	abbreviation: string;
 	logoUrl: string;
