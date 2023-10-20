@@ -3,12 +3,7 @@ import { Test } from '@nestjs/testing';
 import WebSocket from 'ws';
 import { TextEncoder } from 'util';
 import { INestApplication } from '@nestjs/common';
-import { CoreModule } from '@src/core';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@src/config';
-import { config } from '../../config';
-import { TldrawWsService } from '../../service';
-import { TldrawBoardRepo } from '../../repo';
+import { TldrawTestModule } from '../..';
 import { TldrawWs } from '../tldraw.ws';
 import { TestHelper } from '../../helper/test-helper';
 
@@ -27,10 +22,8 @@ describe('WebSocketController (WsAdapter)', () => {
 	const getMessage = () => new TextEncoder().encode(testMessage);
 
 	beforeAll(async () => {
-		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
-			imports,
-			providers: [TldrawWs, TldrawBoardRepo, TldrawWsService],
+			imports: [TldrawTestModule],
 		}).compile();
 		gateway = testingModule.get<TldrawWs>(TldrawWs);
 		app = testingModule.createNestApplication();

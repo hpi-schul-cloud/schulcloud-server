@@ -1,24 +1,25 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { User, Course } from '@shared/domain';
 import { MongoMemoryDatabaseModule, MongoDatabaseModuleOptions } from '@shared/infra/database';
 import { CoreModule } from '@src/core';
-import { LoggerModule } from '@src/core/logger';
-import { TldrawModule } from './tldraw.module';
+import { ConfigModule } from '@nestjs/config';
+import { createConfigModuleOptions } from '@src/config';
+import { TldrawBoardRepo } from './repo';
+import { TldrawWsService } from './service';
+import { config } from './config';
+import { TldrawWs } from './controller';
 
-const imports = [
-	TldrawModule,
-	MongoMemoryDatabaseModule.forRoot({ entities: [User, Course] }),
-	CoreModule,
-	LoggerModule,
-];
+const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
+const providers = [TldrawWs, TldrawBoardRepo, TldrawWsService];
 @Module({
 	imports,
+	providers,
 })
 export class TldrawTestModule {
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
 			module: TldrawTestModule,
 			imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...options })],
+			providers,
 		};
 	}
 }
