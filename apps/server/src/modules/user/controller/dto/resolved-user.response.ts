@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IResolvedUser, IRole } from '@src/modules/authentication/interface/user';
+// invalid import
+import { IResolvedUser, IRole } from '@src/modules/authentication/interface';
 
 export type Role = IRole;
 
