@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, InputFormat } from '@shared/domain';
 import {
+	cardFactory,
 	fileElementFactory,
 	richTextElementFactory,
 	setupEntities,
@@ -119,6 +120,38 @@ describe(ElementUc.name, () => {
 				await uc.updateElementContent(user.id, fileElement.id, content);
 
 				expect(elementService.update).toHaveBeenCalledWith(fileElement, content);
+			});
+		});
+	});
+
+	describe('deleteElement', () => {
+		describe('when deleting a content element', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const element = richTextElementFactory.build();
+
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
+				);
+
+				return { user, element };
+			};
+
+			it('should call the service to find the element', async () => {
+				const { user, element } = setup();
+
+				await uc.deleteElement(user.id, element.id);
+
+				expect(elementService.findById).toHaveBeenCalledWith(element.id);
+			});
+
+			it('should call the service to delete the element', async () => {
+				const { user, element } = setup();
+				elementService.findById.mockResolvedValueOnce(element);
+
+				await uc.deleteElement(user.id, element.id);
+
+				expect(elementService.delete).toHaveBeenCalledWith(element);
 			});
 		});
 	});

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { AnyBoardDo, AnyContentElementDo, Card, ContentElementType, EntityId } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService, Action } from '@modules/authorization';
@@ -8,6 +8,7 @@ import { BaseUc } from './base.uc';
 @Injectable()
 export class CardUc extends BaseUc {
 	constructor(
+		@Inject(forwardRef(() => AuthorizationService))
 		protected readonly authorizationService: AuthorizationService,
 		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly cardService: CardService,
@@ -25,6 +26,33 @@ export class CardUc extends BaseUc {
 		const allowedCards = await this.filterAllowed(userId, cards, Action.read);
 
 		return allowedCards;
+	}
+
+	async updateCardHeight(userId: EntityId, cardId: EntityId, height: number): Promise<void> {
+		this.logger.debug({ action: 'updateCardHeight', userId, cardId, height });
+
+		const card = await this.cardService.findById(cardId);
+		await this.checkPermission(userId, card, Action.write);
+
+		await this.cardService.updateHeight(card, height);
+	}
+
+	async updateCardTitle(userId: EntityId, cardId: EntityId, title: string): Promise<void> {
+		this.logger.debug({ action: 'updateCardTitle', userId, cardId, title });
+
+		const card = await this.cardService.findById(cardId);
+		await this.checkPermission(userId, card, Action.write);
+
+		await this.cardService.updateTitle(card, title);
+	}
+
+	async deleteCard(userId: EntityId, cardId: EntityId): Promise<void> {
+		this.logger.debug({ action: 'deleteCard', userId, cardId });
+
+		const card = await this.cardService.findById(cardId);
+		await this.checkPermission(userId, card, Action.write);
+
+		await this.cardService.delete(card);
 	}
 
 	// --- elements ---
@@ -46,15 +74,6 @@ export class CardUc extends BaseUc {
 		}
 
 		return element;
-	}
-
-	async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
-		this.logger.debug({ action: 'deleteElement', userId, elementId });
-
-		const element = await this.elementService.findById(elementId);
-		await this.checkPermission(userId, element, Action.write);
-
-		await this.elementService.delete(element);
 	}
 
 	async moveElement(

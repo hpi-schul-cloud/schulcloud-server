@@ -111,7 +111,7 @@ export class ElementController {
 		@Param() urlParams: ContentElementUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.cardUc.deleteElement(currentUser.userId, urlParams.contentElementId);
+		await this.elementUc.deleteElement(currentUser.userId, urlParams.contentElementId);
 	}
 
 	@ApiOperation({ summary: 'Create a new submission item having parent a submission container element.' })

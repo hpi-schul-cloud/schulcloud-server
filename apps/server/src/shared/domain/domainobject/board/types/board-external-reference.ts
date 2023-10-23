@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain/types';
 
 export enum BoardExternalReferenceType {
-	Course = 'course',
+	'Course' = 'course',
 }
 
 export interface BoardExternalReference {

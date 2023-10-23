@@ -1,5 +1,6 @@
 import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
+	AnyBoardDo,
 	AnyContentElementDo,
 	EntityId,
 	isSubmissionContainerElement,
@@ -33,18 +34,29 @@ export class ElementUc extends BaseUc {
 		elementId: EntityId,
 		content: AnyElementContentBody
 	): Promise<AnyContentElementDo> {
-		let element = await this.elementService.findById(elementId);
+		const element = await this.getElementWithWritePermission(userId, elementId);
 
-		const parent = await this.elementService.findParentOfId(elementId);
+		await this.elementService.update(element, content);
+		return element;
+	}
 
-		// TODO refactor
+	async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
+		const element = await this.getElementWithWritePermission(userId, elementId);
+
+		await this.elementService.delete(element);
+	}
+
+	private async getElementWithWritePermission(userId: EntityId, elementId: EntityId): Promise<AnyContentElementDo> {
+		const element = await this.elementService.findById(elementId);
+
+		const parent: AnyBoardDo = await this.elementService.findParentOfId(elementId);
+
 		if (isSubmissionItem(parent)) {
-			await this.checkSubmissionItemEditPermission(userId, parent);
+			await this.checkSubmissionItemWritePermission(userId, parent);
 		} else {
 			await this.checkPermission(userId, element, Action.write);
 		}
 
-		element = await this.elementService.update(element, content);
 		return element;
 	}
 

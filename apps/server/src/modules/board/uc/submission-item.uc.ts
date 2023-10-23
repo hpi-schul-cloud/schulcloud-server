@@ -67,7 +67,7 @@ export class SubmissionItemUc extends BaseUc {
 		completed: boolean
 	): Promise<SubmissionItem> {
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
-		await this.checkSubmissionItemEditPermission(userId, submissionItem);
+		await this.checkSubmissionItemWritePermission(userId, submissionItem);
 		await this.submissionItemService.update(submissionItem, completed);
 
 		return submissionItem;
@@ -84,7 +84,7 @@ export class SubmissionItemUc extends BaseUc {
 
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
 
-		await this.checkSubmissionItemEditPermission(userId, submissionItem);
+		await this.checkSubmissionItemWritePermission(userId, submissionItem);
 
 		const element = await this.elementService.create(submissionItem, type);
 

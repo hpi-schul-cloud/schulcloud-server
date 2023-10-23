@@ -2,7 +2,7 @@ import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { TimestampsResponse } from '../timestamps.response';
 import { FileElementResponse, RichTextElementResponse } from '../element';
 
-export type SubmissionContentElementResponse = RichTextElementResponse | FileElementResponse;
+// export SubmissionContentElementResponse = RichTextElementResponse | FileElementResponse;
 
 @ApiExtraModels(FileElementResponse, RichTextElementResponse)
 export class SubmissionItemResponse {
@@ -32,5 +32,5 @@ export class SubmissionItemResponse {
 			oneOf: [{ $ref: getSchemaPath(FileElementResponse) }, { $ref: getSchemaPath(RichTextElementResponse) }],
 		},
 	})
-	elements: SubmissionContentElementResponse[];
+	elements: (RichTextElementResponse | FileElementResponse)[];
 }

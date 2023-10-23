@@ -1,6 +1,6 @@
 import { AnyBoardDo, EntityId, SubmissionItem, UserRoleEnum } from '@shared/domain';
 import { ForbiddenException, forwardRef, Inject } from '@nestjs/common';
-import { Action, AuthorizationService } from '../../authorization';
+import { AuthorizationService, Action } from '@modules/authorization';
 import { BoardDoAuthorizableService } from '../service';
 
 export abstract class BaseUc {
@@ -12,12 +12,12 @@ export abstract class BaseUc {
 
 	protected async checkPermission(
 		userId: EntityId,
-		boardDo: AnyBoardDo,
+		anyBoardDo: AnyBoardDo,
 		action: Action,
 		requiredUserRole?: UserRoleEnum
 	): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
+		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(anyBoardDo);
 		if (requiredUserRole) {
 			boardDoAuthorizable.requiredUserRole = requiredUserRole;
 		}
@@ -42,7 +42,7 @@ export abstract class BaseUc {
 		return false;
 	}
 
-	protected async checkSubmissionItemEditPermission(userId: EntityId, submissionItem: SubmissionItem) {
+	protected async checkSubmissionItemWritePermission(userId: EntityId, submissionItem: SubmissionItem) {
 		if (submissionItem.userId !== userId) {
 			throw new ForbiddenException();
 		}
