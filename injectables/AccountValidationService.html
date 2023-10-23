@@ -119,7 +119,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -196,8 +196,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="11"
+                                    class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -301,8 +301,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -382,8 +382,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -454,11 +454,9 @@ import { AccountEntityToDtoMapper } from &#x27;../mapper/account-entity-to-dto.m
 import { AccountRepo } from &#x27;../repo/account.repo&#x27;;
 
 @Injectable()
-// TODO: naming?
 export class AccountValidationService {
 	constructor(private accountRepo: AccountRepo, private userRepo: UserRepo) {}
 
-	// TODO: this should be refactored and rewritten more nicely
 	async isUniqueEmail(email: string, userId?: EntityId, accountId?: EntityId, systemId?: EntityId): Promise&lt;boolean&gt; {
 		const [foundUsers, [accounts]] &#x3D; await Promise.all([
 			// Test coverage: Missing branch null check; unreachable
@@ -478,12 +476,12 @@ export class AccountValidationService {
 	}
 
 	async isUniqueEmailForUser(email: string, userId: EntityId): Promise&lt;boolean&gt; {
-		const account &#x3D; await this.accountRepo.findByUserId(userId); // TODO: findOrFail?
+		const account &#x3D; await this.accountRepo.findByUserId(userId);
 		return this.isUniqueEmail(email, userId, account?.id, account?.systemId?.toString());
 	}
 
 	async isUniqueEmailForAccount(email: string, accountId: EntityId): Promise&lt;boolean&gt; {
-		const account &#x3D; await this.accountRepo.findById(accountId); // TODO: findOrFail?
+		const account &#x3D; await this.accountRepo.findById(accountId);
 		return this.isUniqueEmail(email, account.userId?.toString(), account.id, account?.systemId?.toString());
 	}
 }
