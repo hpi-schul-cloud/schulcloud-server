@@ -1,57 +1,62 @@
 import { Account } from '@shared/domain';
 import { AccountDto } from '@modules/account/services/dto/account.dto';
-import { accountDtoFactory, accountFactory } from '@shared/testing';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountResponseMapper } from '.';
 
 describe('AccountResponseMapper', () => {
 	describe('mapToResponseFromEntity', () => {
-		describe('When mapping AccountEntity to AccountResponse', () => {
-			const setup = () => {
-				const testEntityAllFields: Account = accountFactory.withAllProperties().buildWithId();
-
-				const testEntityMissingUserId: Account = accountFactory.withoutSystemAndUserId().build();
-
-				return { testEntityAllFields, testEntityMissingUserId };
+		it('should map all fields', () => {
+			const testEntity: Account = {
+				_id: new ObjectId(),
+				id: new ObjectId().toString(),
+				userId: new ObjectId(),
+				activated: true,
+				username: 'username',
+				createdAt: new Date(),
+				updatedAt: new Date(),
 			};
+			const ret = AccountResponseMapper.mapToResponseFromEntity(testEntity);
 
-			it('should map all fields', () => {
-				const { testEntityAllFields } = setup();
+			expect(ret.id).toBe(testEntity.id);
+			expect(ret.userId).toBe(testEntity.userId?.toString());
+			expect(ret.activated).toBe(testEntity.activated);
+			expect(ret.username).toBe(testEntity.username);
+			expect(ret.updatedAt).toBe(testEntity.updatedAt);
+		});
 
-				const ret = AccountResponseMapper.mapToResponseFromEntity(testEntityAllFields);
+		it('should ignore missing userId', () => {
+			const testEntity: Account = {
+				_id: new ObjectId(),
+				id: new ObjectId().toString(),
+				userId: undefined,
+				activated: true,
+				username: 'username',
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			};
+			const ret = AccountResponseMapper.mapToResponseFromEntity(testEntity);
 
-				expect(ret.id).toBe(testEntityAllFields.id);
-				expect(ret.userId).toBe(testEntityAllFields.userId?.toString());
-				expect(ret.activated).toBe(testEntityAllFields.activated);
-				expect(ret.username).toBe(testEntityAllFields.username);
-			});
-
-			it('should ignore missing userId', () => {
-				const { testEntityMissingUserId } = setup();
-
-				const ret = AccountResponseMapper.mapToResponseFromEntity(testEntityMissingUserId);
-
-				expect(ret.userId).toBeUndefined();
-			});
+			expect(ret.userId).toBeUndefined();
 		});
 	});
 
 	describe('mapToResponse', () => {
-		describe('When mapping AccountDto to AccountResponse', () => {
-			const setup = () => {
-				const testDto: AccountDto = accountDtoFactory.buildWithId();
-				return testDto;
+		it('should map all fields', () => {
+			const testDto: AccountDto = {
+				id: new ObjectId().toString(),
+				userId: new ObjectId().toString(),
+				activated: true,
+				username: 'username',
+				createdAt: new Date(),
+				updatedAt: new Date(),
 			};
+			const ret = AccountResponseMapper.mapToResponse(testDto);
 
-			it('should map all fields', () => {
-				const testDto = setup();
-
-				const ret = AccountResponseMapper.mapToResponse(testDto);
-
-				expect(ret.id).toBe(testDto.id);
-				expect(ret.userId).toBe(testDto.userId?.toString());
-				expect(ret.activated).toBe(testDto.activated);
-				expect(ret.username).toBe(testDto.username);
-			});
+			expect(ret.id).toBe(testDto.id);
+			expect(ret.userId).toBe(testDto.userId?.toString());
+			expect(ret.activated).toBe(testDto.activated);
+			expect(ret.username).toBe(testDto.username);
+			expect(ret.updatedAt).toBe(testDto.updatedAt);
 		});
 	});
 });
