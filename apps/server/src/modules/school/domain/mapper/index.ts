@@ -1,1 +1,1 @@
-export * from './school.mapper';
+export * from './school.dto.mapper';

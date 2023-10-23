@@ -1,17 +1,17 @@
 import { School } from '../do';
 import { SchoolDto, SlimSchoolDto } from '../dto';
-import { FederalStateMapper } from './federal-state.mapper';
-import { SchoolYearMapper } from './school-year.mapper';
-import { SystemMapper } from './system.mapper';
+import { FederalStateDtoMapper } from './federal-state.dto.mapper';
+import { SchoolYearDtoMapper } from './school-year.dto.mapper';
+import { SystemDtoMapper } from './system.dto.mapper';
 
-export class SchoolMapper {
+export class SchoolDtoMapper {
 	public static mapToDto(school: School): SchoolDto {
 		const schoolProps = school.getProps();
 
-		const federalState = FederalStateMapper.mapToDto(schoolProps.federalState);
-		const currentYear = schoolProps.currentYear && SchoolYearMapper.mapToDto(schoolProps.currentYear);
+		const federalState = FederalStateDtoMapper.mapToDto(schoolProps.federalState);
+		const currentYear = schoolProps.currentYear && SchoolYearDtoMapper.mapToDto(schoolProps.currentYear);
 		const features = schoolProps.features && Array.from(schoolProps.features);
-		const systems = schoolProps.systems?.map((system) => SystemMapper.mapToDto(system));
+		const systems = schoolProps.systems?.map((system) => SystemDtoMapper.mapToDto(system));
 
 		const dto = new SchoolDto({
 			id: school.id,

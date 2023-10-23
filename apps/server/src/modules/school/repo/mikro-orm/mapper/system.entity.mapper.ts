@@ -1,7 +1,7 @@
 import { SystemEntity } from '@shared/domain';
 import { System } from '../../../domain';
 
-export class SystemMapper {
+export class SystemEntityMapper {
 	public static mapToDo(entity: SystemEntity): System {
 		const system = new System({
 			id: entity.id,

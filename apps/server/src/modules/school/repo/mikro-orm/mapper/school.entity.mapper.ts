@@ -1,19 +1,19 @@
 import { SchoolEntity } from '@shared/domain';
 import { MikroOrmRepoUtils } from '@shared/repo/mikro-orm-repo.utils';
 import { School, SchoolFeature } from '../../../domain';
-import { FederalStateMapper } from './federal-state.mapper';
-import { SchoolYearMapper } from './school-year.mapper';
-import { SystemMapper } from './system.mapper';
+import { FederalStateEntityMapper } from './federal-state.entity.mapper';
+import { SchoolYearEntityMapper } from './school-year.entity.mapper';
+import { SystemEntityMapper } from './system.entity.mapper';
 
-export class SchoolMapper {
+export class SchoolEntityMapper {
 	public static mapToDo(entity: SchoolEntity): School {
 		MikroOrmRepoUtils.checkIfRequiredRefsArePopulated(entity, ['federalState']);
 		MikroOrmRepoUtils.removeOptionalRefsIfNotPopulated(entity, ['currentYear', 'systems']);
 
-		const currentYear = entity.currentYear && SchoolYearMapper.mapToDo(entity.currentYear);
-		const federalState = FederalStateMapper.mapToDo(entity.federalState);
+		const currentYear = entity.currentYear && SchoolYearEntityMapper.mapToDo(entity.currentYear);
+		const federalState = FederalStateEntityMapper.mapToDo(entity.federalState);
 		const features = this.mapFeatures(entity);
-		const systems = entity.systems?.getItems().map((system) => SystemMapper.mapToDo(system));
+		const systems = entity.systems?.getItems().map((system) => SystemEntityMapper.mapToDo(system));
 
 		const school = new School({
 			id: entity.id,

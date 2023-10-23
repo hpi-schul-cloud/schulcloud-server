@@ -2,7 +2,7 @@ import { EntityName, FindOptions } from '@mikro-orm/core';
 import { EntityId, IFindOptions, SchoolEntity, SortOrder } from '@shared/domain';
 import { BaseRepo } from '@shared/repo';
 import { School, SchoolProps, SchoolQuery, SchoolRepo } from '../../domain';
-import { SchoolMapper } from './mapper/school.mapper';
+import { SchoolEntityMapper } from './mapper/school.entity.mapper';
 import { SchoolScope } from './scope/school.scope';
 
 // TODO: How should the repo implentation be named? I'm undecided between "SchoolMongoRepo" and "SchoolMikroOrmRepo".
@@ -23,7 +23,7 @@ export class SchoolMikroOrmRepo extends BaseRepo<SchoolEntity> implements School
 
 		const entities = await this._em.find(SchoolEntity, scope.query, findOptions);
 
-		const schools = SchoolMapper.mapToDos(entities);
+		const schools = SchoolEntityMapper.mapToDos(entities);
 
 		return schools;
 	}
@@ -35,7 +35,7 @@ export class SchoolMikroOrmRepo extends BaseRepo<SchoolEntity> implements School
 			{ populate: ['federalState', 'currentYear', 'systems'] }
 		);
 
-		const school = SchoolMapper.mapToDo(entity);
+		const school = SchoolEntityMapper.mapToDo(entity);
 
 		return school;
 	}

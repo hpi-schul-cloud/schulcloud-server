@@ -2,16 +2,16 @@ import { PaginationParams } from '@shared/controller';
 import { SchoolDto, SlimSchoolDto } from '../../../domain/dto';
 import { SchoolResponse, SlimSchoolListResponse } from '../response';
 import { SlimSchoolResponse } from '../response/school-reduced.response';
-import { FederalStateMapper } from './federal-state.mapper';
-import { SchoolYearMapper } from './school-year.mapper';
-import { SystemMapper } from './system.mapper';
+import { FederalStateResponseMapper } from './federal-state.response.mapper';
+import { SchoolYearResponseMapper } from './school-year.response.mapper';
+import { SystemResponseMapper } from './system.response.mapper';
 
 export class SchoolResponseMapper {
 	public static mapToResponse(school: SchoolDto): SchoolResponse {
-		const federalState = FederalStateMapper.mapToResponse(school.federalState);
-		const currentYear = school.currentYear && SchoolYearMapper.mapToResponse(school.currentYear);
+		const federalState = FederalStateResponseMapper.mapToResponse(school.federalState);
+		const currentYear = school.currentYear && SchoolYearResponseMapper.mapToResponse(school.currentYear);
 		const features = school.features && Array.from(school.features);
-		const systems = school.systems?.map((system) => SystemMapper.mapToResponse(system));
+		const systems = school.systems?.map((system) => SystemResponseMapper.mapToResponse(system));
 
 		// TODO: Do we want to access the props via getProps() here or do we want getters?
 		// I added getters for federalState and schoolYear because there are conditions with them below

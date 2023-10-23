@@ -5,7 +5,7 @@ import { SchoolEntity } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, schoolFactory } from '@shared/testing';
 import { SCHOOL_REPO } from '../../domain';
-import { SchoolMapper } from './mapper';
+import { SchoolEntityMapper } from './mapper';
 import { SchoolMikroOrmRepo } from './school.repo';
 
 describe('SchoolMikroOrmRepo', () => {
@@ -49,7 +49,7 @@ describe('SchoolMikroOrmRepo', () => {
 			const entity = schoolFactory.build();
 			await em.persistAndFlush([entity]);
 			em.clear();
-			const school = SchoolMapper.mapToDo(entity);
+			const school = SchoolEntityMapper.mapToDo(entity);
 
 			const result = await repo.getSchool(entity.id);
 

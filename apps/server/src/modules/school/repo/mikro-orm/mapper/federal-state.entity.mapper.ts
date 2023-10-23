@@ -1,7 +1,7 @@
 import { FederalStateEntity } from '@shared/domain';
 import { FederalState } from '../../../domain';
 
-export class FederalStateMapper {
+export class FederalStateEntityMapper {
 	public static mapToDo(entity: FederalStateEntity): FederalState {
 		const federalState = new FederalState({
 			id: entity.id,

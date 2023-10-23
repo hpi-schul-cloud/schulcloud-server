@@ -5,7 +5,7 @@ import { AuthorizationContextBuilder } from '@src/modules/authorization/domain/m
 import { AuthorizationService } from '@src/modules/authorization/domain/service/authorization.service';
 import { SchoolDto } from '../dto';
 import { SlimSchoolDto } from '../dto/slim-school.dto';
-import { SchoolMapper } from '../mapper';
+import { SchoolDtoMapper } from '../mapper';
 import { SchoolService } from '../service';
 import { SchoolQuery } from '../type';
 
@@ -19,7 +19,7 @@ export class SchoolUc {
 	public async getListOfSlimSchools(query: SchoolQuery, pagination: IPagination): Promise<SlimSchoolDto[]> {
 		const schools = await this.schoolService.getAllSchools(query, pagination);
 
-		const dtos = SchoolMapper.mapToListOfSlimDtos(schools);
+		const dtos = SchoolDtoMapper.mapToListOfSlimDtos(schools);
 
 		return dtos;
 	}
@@ -31,7 +31,7 @@ export class SchoolUc {
 		const authContext = AuthorizationContextBuilder.read([Permission.SCHOOL_EDIT]);
 		this.authorizationService.checkPermission(user, school, authContext);
 
-		const dto = SchoolMapper.mapToDto(school);
+		const dto = SchoolDtoMapper.mapToDto(school);
 
 		return dto;
 	}

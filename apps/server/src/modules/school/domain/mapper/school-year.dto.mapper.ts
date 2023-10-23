@@ -1,7 +1,7 @@
 import { SchoolYear } from '../do';
 import { SchoolYearDto } from '../dto';
 
-export class SchoolYearMapper {
+export class SchoolYearDtoMapper {
 	public static mapToDto(schoolYear: SchoolYear): SchoolYearDto {
 		const schoolYearProps = schoolYear.getProps();
 

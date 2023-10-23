@@ -1,7 +1,7 @@
 import { System } from '../do';
 import { SystemDto } from '../dto';
 
-export class SystemMapper {
+export class SystemDtoMapper {
 	public static mapToDto(system: System): SystemDto {
 		const systemProps = system.getProps();
 

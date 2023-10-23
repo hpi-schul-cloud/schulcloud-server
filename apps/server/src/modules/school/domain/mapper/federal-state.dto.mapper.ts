@@ -1,7 +1,7 @@
 import { FederalState } from '../do';
 import { FederalStateDto } from '../dto';
 
-export class FederalStateMapper {
+export class FederalStateDtoMapper {
 	public static mapToDto(federalState: FederalState): FederalStateDto {
 		const federalStateProps = federalState.getProps();
 

@@ -1,3 +1,3 @@
-export * from './federal-state.mapper';
-export * from './school-year.mapper';
-export * from './school.mapper';
+export * from './federal-state.entity.mapper';
+export * from './school-year.entity.mapper';
+export * from './school.entity.mapper';

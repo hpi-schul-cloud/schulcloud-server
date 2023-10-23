@@ -3,7 +3,7 @@ import { FederalStateDto } from '../../../domain/dto';
 import { FederalStateResponse } from '../response';
 import { CountyResponse } from '../response/county.response';
 
-export class FederalStateMapper {
+export class FederalStateResponseMapper {
 	public static mapToResponse(federalState: FederalStateDto): FederalStateResponse {
 		const counties = federalState.counties && this.mapToCountyResponses(federalState.counties);
 

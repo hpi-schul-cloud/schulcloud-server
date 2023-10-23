@@ -1,1 +1,1 @@
-export * from './school-response.mapper';
+export * from './school.response.mapper';
