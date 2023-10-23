@@ -6,6 +6,8 @@ import { CoreModule } from '@src/core';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { createMock } from '@golevelup/ts-jest';
+import { Doc } from 'yjs';
+import * as YjsUtils from '../utils/ydoc-utils';
 import { config } from '../config';
 import { TldrawBoardRepo } from './tldraw-board.repo';
 import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
@@ -21,15 +23,6 @@ describe('TldrawBoardRepo', () => {
 
 	const gatewayPort = 3346;
 	const wsUrl = TestHelper.getWsUrl(gatewayPort);
-	const testMessage =
-		'AZQBAaCbuLANBIsBeyJpZCI6ImU1YTYwZGVjLTJkMzktNDAxZS0xMDVhLWIwMmM0N2JkYjFhMiIsInRkVXNlciI6eyJp' +
-		'ZCI6ImU1YTYwZGVjLTJkMzktNDAxZS0xMDVhLWIwMmM0N2JkYjFhMiIsImNvbG9yIjoiI0JENTRDNiIsInBvaW50Ijpb' +
-		'ODY4LDc2OV0sInNlbGVjdGVkSWRzIjpbXSwiYWN0aXZlU2hhcGVzIjpbXSwic2Vzc2lvbiI6ZmFsc2V9fQ==';
-
-	const delay = (ms: number) =>
-		new Promise((resolve) => {
-			setTimeout(resolve, ms);
-		});
 
 	jest.useFakeTimers();
 
@@ -59,7 +52,7 @@ describe('TldrawBoardRepo', () => {
 		await app.close();
 	});
 
-	it('should repo properties be defined', () => {
+	it('should check if repo and its properties are set correctly', () => {
 		expect(repo).toBeDefined();
 		expect(repo.mdb).toBeDefined();
 		expect(repo.configService).toBeDefined();
@@ -69,73 +62,160 @@ describe('TldrawBoardRepo', () => {
 		expect(repo.collectionName).toBeDefined();
 	});
 
-	describe('when document receive empty update', () => {
-		const setup = async () => {
-			const doc = new WsSharedDocDo('TEST2', service);
-			ws = await TestHelper.setupWs(wsUrl, 'TEST2');
-			const wsSet = new Set();
-			wsSet.add(ws);
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			doc.conns.set(ws, wsSet);
-			const storeGetYDocSpy = jest
-				.spyOn(repo.mdb, 'getYDoc')
-				.mockImplementation(() => Promise.resolve(new WsSharedDocDo('TEST', service)));
-			const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdate').mockImplementation(() => Promise.resolve(1));
+	describe('updateDocument', () => {
+		describe('when document receives empty update', () => {
+			const setup = async () => {
+				const doc = new WsSharedDocDo('TEST2', service);
+				ws = await TestHelper.setupWs(wsUrl, 'TEST2');
+				const wsSet = new Set();
+				wsSet.add(ws);
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				doc.conns.set(ws, wsSet);
+				const storeGetYDocSpy = jest
+					.spyOn(repo.mdb, 'getYDoc')
+					.mockImplementation(() => Promise.resolve(new WsSharedDocDo('TEST', service)));
+				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdate').mockImplementation(() => Promise.resolve(1));
 
-			return {
-				doc,
-				storeUpdateSpy,
-				storeGetYDocSpy,
+				return {
+					doc,
+					storeUpdateSpy,
+					storeGetYDocSpy,
+				};
 			};
-		};
 
-		it('should not update db with diff', async () => {
-			const { doc, storeUpdateSpy, storeGetYDocSpy } = await setup();
+			it('should not update db with diff', async () => {
+				const { doc, storeUpdateSpy, storeGetYDocSpy } = await setup();
 
-			await repo.updateDocument('TEST2', doc);
-			await delay(100);
-			expect(storeUpdateSpy).toHaveBeenCalledTimes(0);
-			storeUpdateSpy.mockRestore();
-			storeGetYDocSpy.mockRestore();
-			ws.close();
+				await repo.updateDocument('TEST2', doc);
+				expect(storeUpdateSpy).toHaveBeenCalledTimes(0);
+				storeUpdateSpy.mockRestore();
+				storeGetYDocSpy.mockRestore();
+				ws.close();
+			});
+		});
+
+		describe('when document receive update', () => {
+			const setup = async () => {
+				const clientMessageMock = 'test-message';
+				const doc = new WsSharedDocDo('TEST', service);
+				ws = await TestHelper.setupWs(wsUrl, 'TEST');
+				const wsSet = new Set();
+				wsSet.add(ws);
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				doc.conns.set(ws, wsSet);
+				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdate').mockImplementation(() => Promise.resolve(1));
+				const storeGetYDocSpy = jest
+					.spyOn(repo.mdb, 'getYDoc')
+					.mockImplementation(() => Promise.resolve(new WsSharedDocDo('TEST', service)));
+				const byteArray = new TextEncoder().encode(clientMessageMock);
+
+				return {
+					doc,
+					byteArray,
+					storeUpdateSpy,
+					storeGetYDocSpy,
+				};
+			};
+
+			it('should update db with diff', async () => {
+				const { doc, byteArray, storeUpdateSpy, storeGetYDocSpy } = await setup();
+
+				await repo.updateDocument('TEST', doc);
+				doc.emit('update', [byteArray, undefined, doc]);
+				expect(storeUpdateSpy).toHaveBeenCalled();
+				expect(storeUpdateSpy).toHaveBeenCalledTimes(1);
+				storeUpdateSpy.mockRestore();
+				storeGetYDocSpy.mockRestore();
+				ws.close();
+			});
 		});
 	});
 
-	describe('when document receive update', () => {
-		const setup = async () => {
-			const doc = new WsSharedDocDo('TEST', service);
-			ws = await TestHelper.setupWs(wsUrl, 'TEST');
-			const wsSet = new Set();
-			wsSet.add(ws);
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			doc.conns.set(ws, wsSet);
-			const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdate').mockImplementation(() => Promise.resolve(1));
-			const storeGetYDocSpy = jest
-				.spyOn(repo.mdb, 'getYDoc')
-				.mockImplementation(() => Promise.resolve(new WsSharedDocDo('TEST', service)));
-			const byteArray = new TextEncoder().encode(testMessage);
+	describe('getYDocFromMdb', () => {
+		describe('when taking doc data from db', () => {
+			const setup = () => {
+				const storeGetYDocSpy = jest
+					.spyOn(repo.mdb, 'getYDoc')
+					.mockImplementation(() => Promise.resolve(new WsSharedDocDo('TEST', service)));
 
-			return {
-				doc,
-				byteArray,
-				storeUpdateSpy,
-				storeGetYDocSpy,
+				return {
+					storeGetYDocSpy,
+				};
 			};
+
+			it('should return ydoc', async () => {
+				const { storeGetYDocSpy } = setup();
+				expect(await repo.getYDocFromMdb('test')).toBeInstanceOf(Doc);
+
+				storeGetYDocSpy.mockRestore();
+			});
+		});
+	});
+
+	describe('updateStoredDocWithDiff', () => {
+		describe('when the difference between update and current drawing is more than 0', () => {
+			const setup = () => {
+				const calculateDiffSpy = jest.spyOn(YjsUtils, 'calculateDiff').mockImplementationOnce(() => 1);
+				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdate').mockImplementation(() => Promise.resolve(1));
+
+				return {
+					calculateDiffSpy,
+					storeUpdateSpy,
+				};
+			};
+
+			it('should call store update method', () => {
+				const { storeUpdateSpy, calculateDiffSpy } = setup();
+				const diffArray = new Uint8Array();
+				repo.updateStoredDocWithDiff('test', diffArray);
+
+				expect(storeUpdateSpy).toHaveBeenCalled();
+
+				calculateDiffSpy.mockRestore();
+				storeUpdateSpy.mockRestore();
+			});
+		});
+
+		describe('when the difference between update and current drawing is 0', () => {
+			const setup = () => {
+				const calculateDiffSpy = jest.spyOn(YjsUtils, 'calculateDiff').mockImplementationOnce(() => 0);
+				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdate');
+
+				return {
+					calculateDiffSpy,
+					storeUpdateSpy,
+				};
+			};
+
+			it('should not call store update method', () => {
+				const { storeUpdateSpy, calculateDiffSpy } = setup();
+				const diffArray = new Uint8Array();
+				repo.updateStoredDocWithDiff('test', diffArray);
+
+				expect(storeUpdateSpy).not.toHaveBeenCalled();
+
+				calculateDiffSpy.mockRestore();
+				storeUpdateSpy.mockRestore();
+			});
+		});
+	});
+
+	describe('flushDocument', () => {
+		const setup = () => {
+			const flushDocumentSpy = jest.spyOn(repo.mdb, 'flushDocument').mockImplementation(() => Promise.resolve());
+
+			return { flushDocumentSpy };
 		};
 
-		it('should store on db', async () => {
-			const { doc, byteArray, storeUpdateSpy, storeGetYDocSpy } = await setup();
+		it('should call flush method on mdbPersistence', async () => {
+			const { flushDocumentSpy } = setup();
+			await repo.flushDocument('test');
 
-			await repo.updateDocument('TEST', doc);
-			doc.emit('update', [byteArray, undefined, doc]);
-			await delay(100);
-			expect(storeUpdateSpy).toHaveBeenCalled();
-			expect(storeUpdateSpy).toHaveBeenCalledTimes(1);
-			storeUpdateSpy.mockRestore();
-			storeGetYDocSpy.mockRestore();
-			ws.close();
+			expect(flushDocumentSpy).toHaveBeenCalled();
+
+			flushDocumentSpy.mockRestore();
 		});
 	});
 });

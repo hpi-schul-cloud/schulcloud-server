@@ -94,17 +94,17 @@ export class TldrawWsService {
 	/**
 	 * Gets a Y.Doc by name, whether in memory or on disk
 	 *
-	 * @param {string} docname - the name of the Y.Doc to find or create
+	 * @param {string} docName - the name of the Y.Doc to find or create
 	 * @param  {boolean} gc - whether to allow gc on the doc (applies only when created)
 	 * @return {WsSharedDocDo}
 	 */
-	getYDoc(docname: string, gc = true) {
-		return map.setIfUndefined(this.docs, docname, () => {
-			const doc = new WsSharedDocDo(docname, this, gc);
+	getYDoc(docName: string, gc = true) {
+		return map.setIfUndefined(this.docs, docName, () => {
+			const doc = new WsSharedDocDo(docName, this, gc);
 			if (this.persistence !== null) {
-				this.persistence.bindState(docname, doc).catch(() => {});
+				this.persistence.bindState(docName, doc).catch(() => {});
 			}
-			this.docs.set(docname, doc);
+			this.docs.set(docName, doc);
 			return doc;
 		});
 	}

@@ -44,8 +44,8 @@ export class TldrawBoardRepo {
 	}
 
 	updateStoredDocWithDiff(docName: string, diff: Uint8Array) {
-		const clac = calculateDiff(diff);
-		if (clac > 0) {
+		const calc = calculateDiff(diff);
+		if (calc > 0) {
 			void this.mdb.storeUpdate(docName, diff);
 		}
 	}

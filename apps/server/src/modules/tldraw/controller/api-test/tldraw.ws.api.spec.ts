@@ -14,12 +14,9 @@ describe('WebSocketController (WsAdapter)', () => {
 
 	const gatewayPort = 3346;
 	const wsUrl = TestHelper.getWsUrl(gatewayPort);
-	const testMessage =
-		'AZQBAaCbuLANBIsBeyJ0ZFVzZXIiOnsiaWQiOiJkNGIxZThmYi0yMWUwLTQ3ZDAtMDI0Y' +
-		'S0zZGEwYjMzNjQ3MjIiLCJjb2xvciI6IiNGMDRGODgiLCJwb2ludCI6WzAsMF0sInNlbGVjdGVkSWRzIjpbXSwiYWN' +
-		'0aXZlU2hhcGVzIjpbXSwic2Vzc2lvbiI6ZmFsc2V9fQ==';
+	const clientMessageMock = 'test-message';
 
-	const getMessage = () => new TextEncoder().encode(testMessage);
+	const getMessage = () => new TextEncoder().encode(clientMessageMock);
 
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
