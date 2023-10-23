@@ -1,12 +1,12 @@
 import { ITemporaryFile, ITemporaryFileStorage, IUser } from '@lumieducation/h5p-server';
 import { Inject, Injectable, NotAcceptableException } from '@nestjs/common';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { FileDto } from '@src/modules/files-storage/dto/file.dto';
 import { ReadStream } from 'fs';
 import { Readable } from 'stream';
 import { TemporaryFile } from '../entity/temporary-file.entity';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { TemporaryFileRepo } from '../repo/temporary-file.repo';
+import { H5pFileDto } from '../controller/dto/h5p-file.dto';
 
 @Injectable()
 export class TemporaryFileStorage implements ITemporaryFileStorage {
@@ -102,7 +102,7 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		}
 		await this.s3Client.create(
 			path,
-			new FileDto({ name: path, mimeType: 'application/octet-stream', data: dataStream })
+			new H5pFileDto({ name: path, mimeType: 'application/octet-stream', data: dataStream })
 		);
 
 		if (tempFile === undefined) {
