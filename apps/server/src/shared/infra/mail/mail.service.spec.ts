@@ -15,6 +15,7 @@ describe('MailService', () => {
 	};
 
 	beforeAll(async () => {
+		Configuration.set('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS', 'schul-cloud.org, example.com');
 		module = await Test.createTestingModule({
 			providers: [
 				MailService,
@@ -38,7 +39,6 @@ describe('MailService', () => {
 	describe('send', () => {
 		describe('when recipients array is empty', () => {
 			it('should not send email', async () => {
-				Configuration.set('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS', 'schul-cloud.org');
 				const data: Mail = {
 					mail: { plainTextContent: 'content', subject: 'Test' },
 					recipients: ['test@schul-cloud.org'],
@@ -53,7 +53,6 @@ describe('MailService', () => {
 		});
 		describe('when sending email', () => {
 			it('should remove email address that have blacklisted domain and send given data to queue', async () => {
-				Configuration.set('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS', 'schul-cloud.org, example.com');
 				const data: Mail = {
 					mail: { plainTextContent: 'content', subject: 'Test' },
 					recipients: ['test@schul-cloud.org', 'test@example1.com', 'test2@schul-cloud.org', 'test3@schul-cloud.org'],
