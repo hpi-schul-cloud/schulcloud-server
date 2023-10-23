@@ -3,11 +3,11 @@ import { BadRequestException, Injectable, NotFoundException, UnprocessableEntity
 import { LegacySchoolDo } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { LegacyLogger } from '@src/core/logger';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { SystemDto, SystemService } from '@src/modules/system/service';
-import { UserService } from '@src/modules/user';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountDto } from '@modules/account/services/dto';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { SystemDto, SystemService } from '@modules/system/service';
+import { UserService } from '@modules/user';
 import { EntityId } from '@src/shared/domain/types';
 import { PageTypes } from '../interface/page-types.enum';
 import { MigrationDto } from './dto/migration.dto';

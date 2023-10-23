@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount, IdmAccountUpdate } from '@shared/domain';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
-import { ServerModule } from '@src/modules/server';
+import { ServerModule } from '@modules/server';
 import { v1 } from 'uuid';
 import { IdentityManagementService } from '../../identity-management.service';
 import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';

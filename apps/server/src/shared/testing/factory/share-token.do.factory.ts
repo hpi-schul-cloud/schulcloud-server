@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 import { EntityId } from '@shared/domain';
-import { ShareTokenDO, ShareTokenParentType } from '@src/modules/sharing/domainobject/share-token.do';
+import { ShareTokenDO, ShareTokenParentType } from '@modules/sharing/domainobject/share-token.do';
 import { ObjectId } from 'bson';
 import { Factory } from 'fishery';
 

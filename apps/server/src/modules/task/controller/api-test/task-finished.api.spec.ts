@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -12,9 +12,9 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@src/modules/server/server.module';
-import { TaskListResponse } from '@src/modules/task/controller/dto';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@modules/server/server.module';
+import { TaskListResponse } from '@modules/task/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
 

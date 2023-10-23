@@ -1,8 +1,8 @@
 import { Collection, Entity, Enum, Index, ManyToMany, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
 import { IEntityWithSchool, ILearnroom } from '@shared/domain/interface';
-import { ClassEntity } from '@src/modules/class/entity/class.entity';
-import { GroupEntity } from '@src/modules/group/entity/group.entity';
+import { ClassEntity } from '@modules/class/entity/class.entity';
+import { GroupEntity } from '@modules/group/entity/group.entity';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CourseGroup } from './coursegroup.entity';

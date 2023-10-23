@@ -8,8 +8,8 @@ import {
 	externalToolFactory,
 	oauth2ToolConfigFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { ICurrentUser } from '@src/modules/authentication';
-import { AuthorizationService } from '@src/modules/authorization';
+import { ICurrentUser } from '@modules/authentication';
+import { AuthorizationService } from '@modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalTool, Oauth2ToolConfig } from '../domain';
 import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
@@ -301,7 +301,7 @@ describe('ExternalToolUc', () => {
 		it('should fetch a tool', async () => {
 			const { currentUser } = setupAuthorization();
 			const { externalTool, toolId } = setup();
-			externalToolService.findExternalToolById.mockResolvedValue(externalTool);
+			externalToolService.findById.mockResolvedValue(externalTool);
 
 			const result: ExternalTool = await uc.getExternalTool(currentUser.userId, toolId);
 
@@ -327,7 +327,7 @@ describe('ExternalToolUc', () => {
 			});
 
 			externalToolService.updateExternalTool.mockResolvedValue(updatedExternalToolDO);
-			externalToolService.findExternalToolById.mockResolvedValue(new ExternalTool(externalToolDOtoUpdate));
+			externalToolService.findById.mockResolvedValue(new ExternalTool(externalToolDOtoUpdate));
 
 			return {
 				externalTool,
