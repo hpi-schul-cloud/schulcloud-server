@@ -1,5 +1,6 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
@@ -13,8 +14,6 @@ describe('PreviewProducer', () => {
 	let service: PreviewProducer;
 	let configService: DeepMocked<ConfigService>;
 	let amqpConnection: DeepMocked<AmqpConnection>;
-
-	const timeout = 10000;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -39,7 +38,6 @@ describe('PreviewProducer', () => {
 		service = module.get(PreviewProducer);
 		amqpConnection = module.get(AmqpConnection);
 		configService = module.get(ConfigService);
-		configService.get.mockReturnValue(timeout);
 	});
 
 	afterAll(async () => {
@@ -56,6 +54,8 @@ describe('PreviewProducer', () => {
 	describe('generate', () => {
 		describe('when valid params are passed and amqp connection return with a message', () => {
 			const setup = () => {
+				const timeout = 10000;
+
 				const params: PreviewFileOptions = {
 					originFilePath: 'file/test.jpeg',
 					previewFilePath: 'preview/text.webp',
@@ -67,6 +67,7 @@ describe('PreviewProducer', () => {
 
 				const message = [];
 				amqpConnection.request.mockResolvedValueOnce({ message });
+				configService.get.mockReturnValue(timeout);
 
 				const expectedParams = {
 					exchange: FilesPreviewExchange,
@@ -106,16 +107,20 @@ describe('PreviewProducer', () => {
 					},
 				};
 
-				amqpConnection.request.mockResolvedValueOnce({ error: new Error() });
+				const error = new Error('An error from called service');
+
+				amqpConnection.request.mockResolvedValueOnce({ error });
 				const spy = jest.spyOn(ErrorMapper, 'mapRpcErrorResponseToDomainError');
 
-				return { params, spy };
+				return { params, spy, error };
 			};
 
 			it('should call error mapper and throw with error', async () => {
-				const { params, spy } = setup();
+				const { params, spy, error } = setup();
 
-				await expect(service.generate(params)).rejects.toThrowError();
+				await expect(service.generate(params)).rejects.toThrowError(
+					new InternalServerErrorException(null, { cause: error })
+				);
 				expect(spy).toBeCalled();
 			});
 		});
