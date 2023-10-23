@@ -12,13 +12,13 @@ import {
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
-import { Action, AuthorizationService } from '@src/modules/authorization';
-import { OAuthTokenDto } from '@src/modules/oauth';
-import { OAuthService } from '@src/modules/oauth/service/oauth.service';
-import { ProvisioningService } from '@src/modules/provisioning';
-import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
-import { LegacySchoolService } from '@src/modules/legacy-school';
+import { AuthenticationService } from '@modules/authentication/services/authentication.service';
+import { Action, AuthorizationService } from '@modules/authorization';
+import { OAuthTokenDto } from '@modules/oauth';
+import { OAuthService } from '@modules/oauth/service/oauth.service';
+import { ProvisioningService } from '@modules/provisioning';
+import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@modules/provisioning/dto';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { Oauth2MigrationParams } from '../controller/dto/oauth2-migration.params';
 import { OAuthMigrationError, SchoolMigrationError, UserLoginMigrationError } from '../error';
 import { PageTypes } from '../interface/page-types.enum';

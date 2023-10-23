@@ -5,11 +5,9 @@ import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper
 import { AccountRepo } from '../repo/account.repo';
 
 @Injectable()
-// TODO: naming?
 export class AccountValidationService {
 	constructor(private accountRepo: AccountRepo, private userRepo: UserRepo) {}
 
-	// TODO: this should be refactored and rewritten more nicely
 	async isUniqueEmail(email: string, userId?: EntityId, accountId?: EntityId, systemId?: EntityId): Promise<boolean> {
 		const [foundUsers, [accounts]] = await Promise.all([
 			// Test coverage: Missing branch null check; unreachable
@@ -29,12 +27,12 @@ export class AccountValidationService {
 	}
 
 	async isUniqueEmailForUser(email: string, userId: EntityId): Promise<boolean> {
-		const account = await this.accountRepo.findByUserId(userId); // TODO: findOrFail?
+		const account = await this.accountRepo.findByUserId(userId);
 		return this.isUniqueEmail(email, userId, account?.id, account?.systemId?.toString());
 	}
 
 	async isUniqueEmailForAccount(email: string, accountId: EntityId): Promise<boolean> {
-		const account = await this.accountRepo.findById(accountId); // TODO: findOrFail?
+		const account = await this.accountRepo.findById(accountId);
 		return this.isUniqueEmail(email, account.userId?.toString(), account.id, account?.systemId?.toString());
 	}
 }

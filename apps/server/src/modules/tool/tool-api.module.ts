@@ -1,10 +1,13 @@
+import { AuthorizationModule } from '@modules/authorization';
+import { LegacySchoolModule } from '@modules/legacy-school';
+import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { LegacySchoolModule } from '@src/modules/legacy-school';
-import { UserModule } from '@src/modules/user';
+import { BoardModule } from '../board';
+import { LearnroomModule } from '../learnroom';
 import { CommonToolModule } from './common';
+import { ToolPermissionHelper } from './common/uc/tool-permission-helper';
 import { ToolContextController } from './context-external-tool/controller';
 import { ToolReferenceController } from './context-external-tool/controller/tool-reference.controller';
 import { ContextExternalToolUc, ToolReferenceUc } from './context-external-tool/uc';
@@ -29,6 +32,8 @@ import { ToolModule } from './tool.module';
 		LoggerModule,
 		LegacySchoolModule,
 		ToolConfigModule,
+		LearnroomModule,
+		BoardModule,
 	],
 	controllers: [
 		ToolLaunchController,
@@ -51,6 +56,7 @@ import { ToolModule } from './tool.module';
 		ContextExternalToolUc,
 		ToolLaunchUc,
 		ToolReferenceUc,
+		ToolPermissionHelper,
 	],
 })
 export class ToolApiModule {}

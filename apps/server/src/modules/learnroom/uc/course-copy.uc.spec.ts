@@ -4,9 +4,9 @@ import { ForbiddenException, InternalServerErrorException } from '@nestjs/common
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationContextBuilder } from '@src/modules/authorization';
-import { AuthorizationReferenceService, AuthorizableReferenceType } from '@src/modules/authorization/domain';
-import { CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper';
+import { AuthorizationContextBuilder } from '@modules/authorization';
+import { AuthorizationReferenceService, AuthorizableReferenceType } from '@modules/authorization/domain';
+import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseCopyService } from '../service';
 import { CourseCopyUC } from './course-copy.uc';
 

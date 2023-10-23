@@ -10,9 +10,9 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
-import { ToolModule } from '@src/modules/tool';
+import { ToolModule } from '@modules/tool';
 import { LoggerModule } from '@src/core/logger';
-import { BoardModule } from '@src/modules/board';
+import { BoardModule } from '@modules/board';
 import { ReferenceLoader, AuthorizationReferenceService, AuthorizationHelper } from './domain';
 import { AuthorizationModule } from './authorization.module';
 

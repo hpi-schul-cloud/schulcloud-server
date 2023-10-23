@@ -3,7 +3,7 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import {
 	cleanupCollections,
 	fileRecordFactory,
@@ -12,9 +12,9 @@ import {
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FilesStorageTestModule } from '@src/modules/files-storage';
-import { FileRecordListResponse, ScanResultParams } from '@src/modules/files-storage/controller/dto';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { FilesStorageTestModule } from '@modules/files-storage';
+import { FileRecordListResponse, ScanResultParams } from '@modules/files-storage/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
 import { FileRecord, FileRecordParentType } from '../../entity';

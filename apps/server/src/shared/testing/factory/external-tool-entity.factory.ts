@@ -5,7 +5,7 @@ import {
 	LtiMessageType,
 	LtiPrivacyPermission,
 	ToolConfigType,
-} from '@src/modules/tool/common/enum';
+} from '@modules/tool/common/enum';
 import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
@@ -13,7 +13,7 @@ import {
 	IExternalToolProperties,
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
-} from '@src/modules/tool/external-tool/entity';
+} from '@modules/tool/external-tool/entity';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 

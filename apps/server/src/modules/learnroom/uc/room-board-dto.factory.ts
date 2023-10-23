@@ -14,7 +14,7 @@ import {
 	TaskWithStatusVo,
 	User,
 } from '@shared/domain';
-import { AuthorizationService, Action } from '@src/modules/authorization';
+import { AuthorizationService, Action } from '@modules/authorization';
 import {
 	ColumnBoardMetaData,
 	LessonMetaData,

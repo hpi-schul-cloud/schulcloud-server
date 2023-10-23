@@ -1,4 +1,5 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, Course, Permission, SchoolEntity, User } from '@shared/domain';
@@ -15,18 +16,17 @@ import {
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
 import { ObjectId } from 'bson';
 import { CustomParameterScope, ToolContextType } from '../../../common/enum';
+import { ExternalToolEntity } from '../../../external-tool/entity';
+import { CustomParameterEntryResponse } from '../../../school-external-tool/controller/dto';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
 import {
 	ContextExternalToolPostParams,
 	ContextExternalToolResponse,
 	ContextExternalToolSearchListResponse,
 } from '../dto';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
-import { ExternalToolEntity } from '../../../external-tool/entity';
-import { CustomParameterEntryResponse } from '../../../school-external-tool/controller/dto';
 
 describe('ToolContextController (API)', () => {
 	let app: INestApplication;
@@ -116,8 +116,8 @@ describe('ToolContextController (API)', () => {
 
 		describe('when user is not authorized for the requested context', () => {
 			const setup = async () => {
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const school = schoolFactory.build();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const course = courseFactory.build({ teachers: [teacherUser] });
 				const otherCourse = courseFactory.build();
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.build({
@@ -130,7 +130,7 @@ describe('ToolContextController (API)', () => {
 				em.clear();
 
 				const postParams: ContextExternalToolPostParams = {
-					schoolToolId: school.id,
+					schoolToolId: schoolExternalToolEntity.id,
 					contextId: otherCourse.id,
 					contextType: ToolContextType.COURSE,
 					parameters: [],

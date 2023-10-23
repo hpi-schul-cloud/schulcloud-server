@@ -12,8 +12,8 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
-import { BoardDoAuthorizableService } from '@src/modules/board';
-import { ContextExternalToolAuthorizableService } from '@src/modules/tool/context-external-tool/service';
+import { BoardDoAuthorizableService } from '@modules/board';
+import { ContextExternalToolAuthorizableService } from '@modules/tool/context-external-tool/service';
 import { AuthorizableReferenceType } from '../type';
 
 type RepoType =

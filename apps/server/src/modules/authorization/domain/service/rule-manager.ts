@@ -15,6 +15,7 @@ import {
 	TeamRule,
 	UserLoginMigrationRule,
 	UserRule,
+	GroupRule,
 } from '../rules';
 
 @Injectable()
@@ -33,7 +34,8 @@ export class RuleManager {
 		private readonly schoolExternalToolRule: SchoolExternalToolRule,
 		private readonly boardDoRule: BoardDoRule,
 		private readonly contextExternalToolRule: ContextExternalToolRule,
-		private readonly userLoginMigrationRule: UserLoginMigrationRule
+		private readonly userLoginMigrationRule: UserLoginMigrationRule,
+		private readonly groupRule: GroupRule
 	) {
 		this.rules = [
 			this.courseRule,
@@ -48,6 +50,7 @@ export class RuleManager {
 			this.boardDoRule,
 			this.contextExternalToolRule,
 			this.userLoginMigrationRule,
+			this.groupRule,
 		];
 	}
 

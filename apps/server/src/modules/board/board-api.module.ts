@@ -1,6 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '@src/modules/authorization';
+import { AuthorizationModule } from '@modules/authorization';
 import { BoardModule } from './board.module';
 import {
 	BoardController,

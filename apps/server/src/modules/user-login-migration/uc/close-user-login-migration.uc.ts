@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { EntityId, Permission, User, UserLoginMigrationDO } from '@shared/domain';
-import { Action, AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizationService } from '@modules/authorization';
 import {
 	UserLoginMigrationGracePeriodExpiredLoggableException,
 	UserLoginMigrationNotFoundLoggableException,

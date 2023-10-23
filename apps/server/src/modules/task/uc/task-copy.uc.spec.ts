@@ -5,9 +5,9 @@ import { ForbiddenException, InternalServerErrorException, NotFoundException } f
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { Action, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { TaskCopyService } from '../service';
 import { TaskCopyUC } from './task-copy.uc';
 import { TaskCopyParentParams } from '../types';

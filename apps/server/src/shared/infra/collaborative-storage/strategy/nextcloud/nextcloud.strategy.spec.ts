@@ -9,10 +9,10 @@ import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/
 import { LtiToolRepo } from '@shared/repo';
 import { ltiToolDOFactory, pseudonymFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
-import { PseudonymService } from '@src/modules/pseudonym';
-import { ExternalToolService } from '@src/modules/tool/external-tool/service';
-import { UserService } from '@src/modules/user';
+import { TeamDto, TeamUserDto } from '@modules/collaborative-storage/services/dto/team.dto';
+import { PseudonymService } from '@modules/pseudonym';
+import { ExternalToolService } from '@modules/tool/external-tool/service';
+import { UserService } from '@modules/user';
 
 class NextcloudStrategySpec extends NextcloudStrategy {
 	static specGenerateGroupId(dto: TeamRolePermissionsDto): string {

@@ -15,8 +15,8 @@ import {
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
-import { CustomParameterTypeParams } from '@src/modules/tool/common/enum';
+import { ServerTestModule } from '@modules/server';
+import { CustomParameterTypeParams } from '@modules/tool/common/enum';
 import { Response } from 'supertest';
 import { CustomParameterLocationParams, CustomParameterScopeTypeParams } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';

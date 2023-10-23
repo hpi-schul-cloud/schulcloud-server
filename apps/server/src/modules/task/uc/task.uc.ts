@@ -12,7 +12,7 @@ import {
 	User,
 } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
-import { Action, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { TaskService } from '../service';
 
 @Injectable()
