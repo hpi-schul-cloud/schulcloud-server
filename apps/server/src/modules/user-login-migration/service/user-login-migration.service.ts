@@ -2,9 +2,9 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, LegacySchoolDo, SchoolFeatures, SystemTypeEnum, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { SystemDto, SystemService } from '@src/modules/system';
-import { UserService } from '@src/modules/user';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { SystemDto, SystemService } from '@modules/system';
+import { UserService } from '@modules/user';
 import { UserLoginMigrationNotFoundLoggableException } from '../error';
 import { SchoolMigrationService } from './school-migration.service';
 

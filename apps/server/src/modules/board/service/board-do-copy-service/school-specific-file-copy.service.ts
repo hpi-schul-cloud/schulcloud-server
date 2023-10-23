@@ -1,5 +1,5 @@
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { CopyFileDto } from '@src/modules/files-storage-client/dto';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { CopyFileDto } from '@modules/files-storage-client/dto';
 import {
 	SchoolSpecificFileCopyService,
 	SchoolSpecificFileCopyServiceCopyParams,

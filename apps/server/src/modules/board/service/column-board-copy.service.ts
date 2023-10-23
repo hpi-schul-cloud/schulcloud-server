@@ -7,8 +7,8 @@ import {
 	isColumnBoard,
 } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
-import { CopyStatus } from '@src/modules/copy-helper';
-import { UserService } from '@src/modules/user';
+import { CopyStatus } from '@modules/copy-helper';
+import { UserService } from '@modules/user';
 import { BoardDoRepo } from '../repo';
 import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './board-do-copy-service';
 

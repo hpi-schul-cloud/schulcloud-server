@@ -1,5 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication, NotFoundException, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
@@ -8,8 +10,6 @@ import { AntivirusService } from '@shared/infra/antivirus';
 import { PreviewProducer } from '@shared/infra/preview-generator';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
@@ -89,6 +89,7 @@ describe('File Controller (API) - preview', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let s3ClientAdapter: DeepMocked<S3ClientAdapter>;
+	let antivirusService: DeepMocked<AntivirusService>;
 	let currentUser: ICurrentUser;
 	let api: API;
 	let schoolId: EntityId;
@@ -123,6 +124,7 @@ describe('File Controller (API) - preview', () => {
 
 		em = module.get(EntityManager);
 		s3ClientAdapter = module.get(FILES_STORAGE_S3_CONNECTION);
+		antivirusService = module.get(AntivirusService);
 		api = new API(app);
 	});
 
@@ -147,6 +149,7 @@ describe('File Controller (API) - preview', () => {
 		uploadPath = `/file/upload/${schoolId}/schools/${schoolId}`;
 
 		jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
+		antivirusService.checkStream.mockResolvedValueOnce({ virus_detected: false });
 	});
 
 	const setScanStatus = async (fileRecordId: EntityId, status: ScanStatus) => {

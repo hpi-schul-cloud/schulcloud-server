@@ -1,10 +1,9 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -13,14 +12,18 @@ import {
 	roleFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { Request } from 'express';
 import request from 'supertest';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { createMock } from '@golevelup/ts-jest';
 
+// config must be set outside before the server module is importat, otherwise the configuration is already set
+const configBefore = Configuration.toObject({ plainSecrets: true });
 Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
 // eslint-disable-next-line import/first
-import { ServerTestModule } from '@src/modules/server/server.module';
+import { ServerTestModule } from '@modules/server';
 
 // This needs to be in a separate test file because of the above configuration.
 // When we find a way to mock the config, it should be moved alongside the other API tests.
@@ -28,10 +31,8 @@ describe('Rooms copy (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
-	let configBefore: IConfig;
 
 	beforeAll(async () => {
-		configBefore = Configuration.toObject({ plainSecrets: true });
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
@@ -43,6 +44,8 @@ describe('Rooms copy (API)', () => {
 					return true;
 				},
 			})
+			.overrideProvider(FilesStorageClientAdapterService)
+			.useValue(createMock<FilesStorageClientAdapterService>())
 			.compile();
 
 		app = moduleFixture.createNestApplication();

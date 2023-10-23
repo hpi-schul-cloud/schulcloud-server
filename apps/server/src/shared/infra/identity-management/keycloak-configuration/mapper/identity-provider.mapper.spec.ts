@@ -3,7 +3,7 @@ import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { OidcConfigDto } from '@src/modules/system/service';
+import { OidcConfigDto } from '@modules/system/service';
 import { OidcIdentityProviderMapper } from './identity-provider.mapper';
 
 describe('OidcIdentityProviderMapper', () => {

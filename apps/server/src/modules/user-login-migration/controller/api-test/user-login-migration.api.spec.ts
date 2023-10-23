@@ -15,13 +15,13 @@ import {
 	userLoginMigrationFactory,
 } from '@shared/testing';
 import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
-import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
-import { ServerTestModule } from '@src/modules/server';
+import { OauthTokenResponse } from '@modules/oauth/service/dto';
+import { ServerTestModule } from '@modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { UUID } from 'bson';
 import { Response } from 'supertest';
-import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/response';
+import { SanisResponse, SanisRole } from '@modules/provisioning/strategy/sanis/response';
 import { UserLoginMigrationResponse } from '../dto';
 import { Oauth2MigrationParams } from '../dto/oauth2-migration.params';
 

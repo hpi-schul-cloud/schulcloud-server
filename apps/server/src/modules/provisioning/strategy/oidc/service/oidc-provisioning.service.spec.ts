@@ -14,13 +14,13 @@ import {
 	roleFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountSaveDto } from '@src/modules/account/services/dto';
-import { Group, GroupService } from '@src/modules/group';
-import { RoleService } from '@src/modules/role';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { FederalStateService, LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
-import { UserService } from '@src/modules/user';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountSaveDto } from '@modules/account/services/dto';
+import { Group, GroupService } from '@modules/group';
+import { RoleService } from '@modules/role';
+import { RoleDto } from '@modules/role/service/dto/role.dto';
+import { FederalStateService, LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import CryptoJS from 'crypto-js';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';

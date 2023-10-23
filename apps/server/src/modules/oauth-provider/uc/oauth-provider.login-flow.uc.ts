@@ -7,12 +7,12 @@ import {
 	ProviderLoginResponse,
 	ProviderRedirectResponse,
 } from '@shared/infra/oauth-provider/dto';
-import { AuthorizationService } from '@src/modules/authorization';
-import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@src/modules/oauth-provider/controller/dto';
-import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
-import { PseudonymService } from '@src/modules/pseudonym/service';
-import { ExternalTool, Oauth2ToolConfig } from '@src/modules/tool/external-tool/domain';
-import { UserService } from '@src/modules/user';
+import { AuthorizationService } from '@modules/authorization';
+import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@modules/oauth-provider/controller/dto';
+import { OauthProviderRequestMapper } from '@modules/oauth-provider/mapper/oauth-provider-request.mapper';
+import { PseudonymService } from '@modules/pseudonym/service';
+import { ExternalTool, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
+import { UserService } from '@modules/user';
 import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
 
 @Injectable()

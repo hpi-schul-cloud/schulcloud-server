@@ -11,7 +11,7 @@ import {
 	UserRoleEnum,
 } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
-import { AuthorizationLoaderService } from '@src/modules/authorization';
+import { AuthorizationLoaderService } from '@modules/authorization';
 import { BoardDoRepo } from '../repo';
 
 @Injectable()

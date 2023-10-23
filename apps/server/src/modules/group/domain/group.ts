@@ -38,6 +38,10 @@ export class Group extends DomainObject<GroupProps> {
 		return this.props.organizationId;
 	}
 
+	get type(): GroupTypes {
+		return this.props.type;
+	}
+
 	removeUser(user: UserDO): void {
 		this.props.users = this.props.users.filter((groupUser: GroupUser): boolean => groupUser.userId !== user.id);
 	}
