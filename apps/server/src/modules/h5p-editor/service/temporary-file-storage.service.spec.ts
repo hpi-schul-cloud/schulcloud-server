@@ -142,7 +142,7 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN file does not exist', () => {
 			it('should return false', async () => {
 				const { user1 } = setup();
-				repo.findByUserAndFilename.mockRejectedValueOnce(new Error('Not found'));
+				repo.findAllByUserAndFilename.mockResolvedValue([]);
 
 				const exists = await storage.fileExists('abc/nonexistingfile.txt', user1);
 
@@ -272,14 +272,11 @@ describe('TemporaryFileStorage', () => {
 		});
 
 		describe('WHEN file does not exist', () => {
-			it('should create new file', async () => {
+			it('should create and overwrite new file', async () => {
 				const { user1 } = setup();
 				const filename = 'newfile.txt';
 				const newData = 'This is new fake H5P content.';
 				const readStream = Readable.from(newData) as ReadStream;
-				repo.findByUserAndFilename.mockImplementation(() => {
-					throw new Error('Not found');
-				});
 				let savedData = Buffer.alloc(0);
 				s3clientAdapter.create.mockImplementation(async (path: string, file: FileDto) => {
 					savedData += file.data.read();
@@ -288,7 +285,7 @@ describe('TemporaryFileStorage', () => {
 
 				await storage.saveFile(filename, readStream, user1, tomorrow);
 
-				expect(s3clientAdapter.delete).not.toHaveBeenCalled();
+				expect(s3clientAdapter.delete).toHaveBeenCalled();
 				expect(savedData.toString()).toBe(newData);
 			});
 		});
