@@ -13,6 +13,10 @@ export class TemporaryFileRepo extends BaseRepo<TemporaryFile> {
 		return this._em.findOneOrFail(this.entityName, { ownedByUserId: userId, filename });
 	}
 
+	async findAllByUserAndFilename(userId: EntityId, filename: string): Promise<TemporaryFile[]> {
+		return this._em.find(this.entityName, { ownedByUserId: userId, filename });
+	}
+
 	async findExpired(): Promise<TemporaryFile[]> {
 		const now = new Date();
 		return this._em.find(this.entityName, { expiresAt: { $lt: now } });

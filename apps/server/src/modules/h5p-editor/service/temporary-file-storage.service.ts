@@ -16,10 +16,9 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 	) {}
 
 	private checkFilename(filename: string): void {
-		if (/^[a-zA-Z0-9/._-]+$/g.test(filename) && !filename.includes('..') && !filename.startsWith('/')) {
-			return;
+		if (!/^[a-zA-Z0-9/._-]+$/g.test(filename) && filename.includes('..') && filename.startsWith('/')) {
+			throw new NotAcceptableException(`Filename contains forbidden characters or is empty: '${filename}'`);
 		}
-		throw new NotAcceptableException(`Filename contains forbidden characters or is empty: '${filename}'`);
 	}
 
 	private getFileInfo(filename: string, userId: string): Promise<TemporaryFile> {
@@ -36,12 +35,9 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 
 	public async fileExists(filename: string, user: IUser): Promise<boolean> {
 		this.checkFilename(filename);
-		try {
-			await this.repo.findByUserAndFilename(user.id, filename);
-			return true;
-		} catch (error) {
-			return false;
-		}
+		const files = await this.repo.findAllByUserAndFilename(user.id, filename);
+		const exists = files.length !== 0;
+		return exists;
 	}
 
 	public async getFileStats(filename: string, user: IUser): Promise<TemporaryFile> {
@@ -97,26 +93,24 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		try {
 			tempFile = await this.repo.findByUserAndFilename(user.id, filename);
 			await this.s3Client.delete([path]);
-		} catch (err) {
-			/* does not exist */
+		} finally {
+			if (tempFile === undefined) {
+				tempFile = new TemporaryFile({
+					filename,
+					ownedByUserId: user.id,
+					expiresAt: expirationTime,
+					birthtime: new Date(),
+					size: dataStream.bytesRead,
+				});
+			} else {
+				tempFile.expiresAt = expirationTime;
+				tempFile.size = dataStream.bytesRead;
+			}
 		}
 		await this.s3Client.create(
 			path,
 			new H5pFileDto({ name: path, mimeType: 'application/octet-stream', data: dataStream })
 		);
-
-		if (tempFile === undefined) {
-			tempFile = new TemporaryFile({
-				filename,
-				ownedByUserId: user.id,
-				expiresAt: expirationTime,
-				birthtime: new Date(),
-				size: dataStream.bytesRead,
-			});
-		} else {
-			tempFile.expiresAt = expirationTime;
-			tempFile.size = dataStream.bytesRead;
-		}
 		await this.repo.save(tempFile);
 
 		return tempFile;
