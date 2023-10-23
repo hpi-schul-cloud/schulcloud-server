@@ -8,6 +8,7 @@ import {
 	Param,
 	Patch,
 	Post,
+	UnprocessableEntityException,
 } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
@@ -17,9 +18,10 @@ import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
 import { SubmissionItemUc } from '../uc/submission-item.uc';
 import {
-	AnyContentElementResponse,
 	CreateContentElementBodyParams,
 	FileElementResponse,
+	isFileElementResponse,
+	isRichTextElementResponse,
 	RichTextElementResponse,
 	SubmissionContainerUrlParams,
 	SubmissionItemUrlParams,
@@ -91,10 +93,13 @@ export class BoardSubmissionController {
 		@Param() urlParams: SubmissionItemUrlParams,
 		@Body() bodyParams: CreateContentElementBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<AnyContentElementResponse> {
+	): Promise<FileElementResponse | RichTextElementResponse> {
 		const { type } = bodyParams;
 		const element = await this.submissionItemUc.createElement(currentUser.userId, urlParams.submissionItemId, type);
 		const response = ContentElementResponseFactory.mapToResponse(element);
+		if (!isFileElementResponse(response) && !isRichTextElementResponse(response)) {
+			throw new UnprocessableEntityException();
+		}
 
 		return response;
 	}
