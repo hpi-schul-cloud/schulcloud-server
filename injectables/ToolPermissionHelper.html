@@ -112,12 +112,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>)</code>
+<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, boardElementService: <a href="../injectables/ContentElementService.html" target="_self">ContentElementService</a>, boardService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tool/common/uc/tool-permission-helper.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/tool/common/uc/tool-permission-helper.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -170,6 +170,30 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>boardElementService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ContentElementService.html" target="_self" >ContentElementService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>boardService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BoardDoAuthorizableService.html" target="_self" >BoardDoAuthorizableService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -207,8 +231,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/uc/tool-permission-helper.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/uc/tool-permission-helper.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -301,8 +325,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/uc/tool-permission-helper.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/uc/tool-permission-helper.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -378,14 +402,16 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-import { Course, EntityId, LegacySchoolDo, User } from &#x27;@shared/domain&#x27;;
-import { AuthorizationContext, AuthorizationService } from &#x27;@modules/authorization&#x27;;
-import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContext, AuthorizationService, ForbiddenLoggableException } from &#x27;@modules/authorization&#x27;;
+import { AuthorizableReferenceType } from &#x27;@modules/authorization/domain&#x27;;
+import { BoardDoAuthorizableService, ContentElementService } from &#x27;@modules/board&#x27;;
 import { CourseService } from &#x27;@modules/learnroom&#x27;;
+import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
+import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { BoardDoAuthorizable, Course, EntityId, LegacySchoolDo, User } from &#x27;@shared/domain&#x27;;
 import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
 import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
-// import { ContextTypeMapper } from &#x27;../mapper&#x27;;
+import { ToolContextType } from &#x27;../enum&#x27;;
 
 @Injectable()
 export class ToolPermissionHelper {
@@ -395,7 +421,9 @@ export class ToolPermissionHelper {
 		// invalid dependency on this place it is in UC layer in a other module
 		// loading of ressources should be part of service layer
 		// if it must resolve different loadings based on the request it can be added in own service and use in UC
-		private readonly courseService: CourseService
+		private readonly courseService: CourseService,
+		private readonly boardElementService: ContentElementService,
+		private readonly boardService: BoardDoAuthorizableService
 	) {}
 
 	// TODO build interface to get contextDO by contextType
@@ -404,19 +432,24 @@ export class ToolPermissionHelper {
 		contextExternalTool: ContextExternalTool,
 		context: AuthorizationContext
 	): Promise&lt;void&gt; {
-		// loading of ressources should be part of the UC -&gt; unnessasary awaits
-		const [authorizableUser, course]: [User, Course] &#x3D; await Promise.all([
-			this.authorizationService.getUserWithPermissions(userId),
-			this.courseService.findById(contextExternalTool.contextRef.id),
-		]);
+		const authorizableUser &#x3D; await this.authorizationService.getUserWithPermissions(userId);
 
-		if (contextExternalTool.id) {
-			this.authorizationService.checkPermission(authorizableUser, contextExternalTool, context);
+		this.authorizationService.checkPermission(authorizableUser, contextExternalTool, context);
+
+		if (contextExternalTool.contextRef.type &#x3D;&#x3D;&#x3D; ToolContextType.COURSE) {
+			// loading of ressources should be part of the UC -&gt; unnessasary awaits
+			const course: Course &#x3D; await this.courseService.findById(contextExternalTool.contextRef.id);
+
+			this.authorizationService.checkPermission(authorizableUser, course, context);
+		} else if (contextExternalTool.contextRef.type &#x3D;&#x3D;&#x3D; ToolContextType.BOARD_ELEMENT) {
+			const boardElement &#x3D; await this.boardElementService.findById(contextExternalTool.contextRef.id);
+
+			const board: BoardDoAuthorizable &#x3D; await this.boardService.getBoardAuthorizable(boardElement);
+
+			this.authorizationService.checkPermission(authorizableUser, board, context);
+		} else {
+			throw new ForbiddenLoggableException(userId, AuthorizableReferenceType.ContextExternalToolEntity, context);
 		}
-
-		// const type &#x3D; ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextExternalTool.contextRef.type);
-		// no different types possible until it is fixed.
-		this.authorizationService.checkPermission(authorizableUser, course, context);
 	}
 
 	public async ensureSchoolPermissions(

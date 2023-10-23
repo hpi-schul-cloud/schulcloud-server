@@ -116,7 +116,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-validation.service.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-validation.service.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -218,8 +218,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="35"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-validation.service.ts:35</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-validation.service.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -280,15 +280,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>validate(toValidate: <a href="../undefineds/ContextExternalToolDto.html" target="_self">ContextExternalToolDto</a>)</code>
+                    <code>validate(contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="21"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-validation.service.ts:21</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-validation.service.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -309,9 +309,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>toValidate</td>
+                                                <td>contextExternalTool</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#ContextExternalToolDto" target="_self" >ContextExternalToolDto</a></code>
+                                                            <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
                                             </td>
 
                                             <td>
@@ -348,7 +348,6 @@ import { ExternalToolService } from &#x27;../../external-tool/service&#x27;;
 import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
 import { SchoolExternalToolService } from &#x27;../../school-external-tool/service&#x27;;
 import { ContextExternalTool } from &#x27;../domain&#x27;;
-import { ContextExternalToolDto } from &#x27;../uc/dto/context-external-tool.types&#x27;;
 import { ContextExternalToolService } from &#x27;./context-external-tool.service&#x27;;
 
 @Injectable()
@@ -360,9 +359,7 @@ export class ContextExternalToolValidationService {
 		private readonly commonToolValidationService: CommonToolValidationService
 	) {}
 
-	async validate(toValidate: ContextExternalToolDto): Promise&lt;void&gt; {
-		const contextExternalTool: ContextExternalTool &#x3D; new ContextExternalTool(toValidate);
-
+	async validate(contextExternalTool: ContextExternalTool): Promise&lt;void&gt; {
 		await this.checkDuplicateInContext(contextExternalTool);
 
 		const loadedSchoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolService.findById(

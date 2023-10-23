@@ -209,8 +209,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/mapper/context-external-tool-request.mapper.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="22"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/mapper/context-external-tool-request.mapper.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -266,15 +266,14 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ContextExternalToolPostParams } from &#x27;../controller/dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CustomParameterEntry } from &#x27;../../common/domain&#x27;;
 import { CustomParameterEntryParam } from &#x27;../../school-external-tool/controller/dto&#x27;;
+import { ContextExternalToolPostParams } from &#x27;../controller/dto&#x27;;
 import { ContextExternalToolDto } from &#x27;../uc/dto/context-external-tool.types&#x27;;
-import { CustomParameterEntry } from &#x27;../../common/domain&#x27;;
 
 export class ContextExternalToolRequestMapper {
 	static mapContextExternalToolRequest(request: ContextExternalToolPostParams): ContextExternalToolDto {
 		return {
-			id: &#x27;&#x27;,
 			schoolToolRef: {
 				schoolToolId: request.schoolToolId,
 			},

@@ -129,12 +129,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(toolPermissionHelper: <a href="../injectables/ToolPermissionHelper.html" target="_self">ToolPermissionHelper</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, contextExternalToolValidationService: <a href="../injectables/ContextExternalToolValidationService.html" target="_self">ContextExternalToolValidationService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
+<code>constructor(toolPermissionHelper: <a href="../injectables/ToolPermissionHelper.html" target="_self">ToolPermissionHelper</a>, schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, contextExternalToolValidationService: <a href="../injectables/ContextExternalToolValidationService.html" target="_self">ContextExternalToolValidationService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:19</a></div>
                             </td>
                         </tr>
 
@@ -156,6 +156,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/ToolPermissionHelper.html" target="_self" >ToolPermissionHelper</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>schoolExternalToolService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SchoolExternalToolService.html" target="_self" >SchoolExternalToolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -199,18 +211,6 @@
                                                     </td>
                                                     
                                                 </tr>
-                                                <tr>
-                                                        <td>logger</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -240,15 +240,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createContextExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalToolDto: <a href="../undefineds/ContextExternalToolDto.html" target="_self">ContextExternalToolDto</a>)</code>
+                    <code>createContextExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalToolDto: <a href="../undefineds/ContextExternalToolDto.html" target="_self">ContextExternalToolDto</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="21"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:21</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -270,6 +270,18 @@
                                     <tbody>
                                         <tr>
                                                 <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>schoolId</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
@@ -329,8 +341,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="64"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:64</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -411,8 +423,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="96"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:96</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="124"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:124</a></div>
                         </td>
                     </tr>
 
@@ -492,8 +504,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="87"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:87</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="115"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:115</a></div>
                         </td>
                     </tr>
 
@@ -574,8 +586,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="101"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:101</a></div>
                         </td>
                     </tr>
 
@@ -660,15 +672,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateContextExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalToolDto: <a href="../undefineds/ContextExternalToolDto.html" target="_self">ContextExternalToolDto</a>)</code>
+                    <code>updateContextExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalToolDto: <a href="../undefineds/ContextExternalToolDto.html" target="_self">ContextExternalToolDto</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -690,6 +702,18 @@
                                     <tbody>
                                         <tr>
                                                 <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>schoolId</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
@@ -744,12 +768,19 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+	AuthorizationContext,
+	AuthorizationContextBuilder,
+	AuthorizationService,
+	ForbiddenLoggableException,
+} from &#x27;@modules/authorization&#x27;;
+import { AuthorizableReferenceType } from &#x27;@modules/authorization/domain&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId, Permission, User } from &#x27;@shared/domain&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { ToolContextType } from &#x27;../../common/enum&#x27;;
 import { ToolPermissionHelper } from &#x27;../../common/uc/tool-permission-helper&#x27;;
+import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
+import { SchoolExternalToolService } from &#x27;../../school-external-tool/service&#x27;;
 import { ContextExternalTool, ContextRef } from &#x27;../domain&#x27;;
 import { ContextExternalToolService, ContextExternalToolValidationService } from &#x27;../service&#x27;;
 import { ContextExternalToolDto } from &#x27;./dto/context-external-tool.types&#x27;;
@@ -758,22 +789,32 @@ import { ContextExternalToolDto } from &#x27;./dto/context-external-tool.types&#
 export class ContextExternalToolUc {
 	constructor(
 		private readonly toolPermissionHelper: ToolPermissionHelper,
+		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly contextExternalToolValidationService: ContextExternalToolValidationService,
-		private readonly authorizationService: AuthorizationService,
-		private readonly logger: LegacyLogger
+		private readonly authorizationService: AuthorizationService
 	) {}
 
 	async createContextExternalTool(
 		userId: EntityId,
+		schoolId: EntityId,
 		contextExternalToolDto: ContextExternalToolDto
 	): Promise&lt;ContextExternalTool&gt; {
-		const contextExternalTool &#x3D; new ContextExternalTool(contextExternalToolDto);
 		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
+		const schoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolService.findById(
+			contextExternalToolDto.schoolToolRef.schoolToolId
+		);
+
+		if (schoolExternalTool.schoolId !&#x3D;&#x3D; schoolId) {
+			throw new ForbiddenLoggableException(userId, AuthorizableReferenceType.ContextExternalToolEntity, context);
+		}
+
+		contextExternalToolDto.schoolToolRef.schoolId &#x3D; schoolId;
+		const contextExternalTool &#x3D; new ContextExternalTool(contextExternalToolDto);
 
 		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, context);
 
-		await this.contextExternalToolValidationService.validate(contextExternalToolDto);
+		await this.contextExternalToolValidationService.validate(contextExternalTool);
 
 		const createdTool: ContextExternalTool &#x3D; await this.contextExternalToolService.saveContextExternalTool(
 			contextExternalTool
@@ -784,27 +825,38 @@ export class ContextExternalToolUc {
 
 	async updateContextExternalTool(
 		userId: EntityId,
+		schoolId: EntityId,
 		contextExternalToolId: EntityId,
 		contextExternalToolDto: ContextExternalToolDto
 	): Promise&lt;ContextExternalTool&gt; {
-		const contextExternalTool: ContextExternalTool &#x3D; new ContextExternalTool(contextExternalToolDto);
-
-		await this.toolPermissionHelper.ensureContextPermissions(
-			userId,
-			contextExternalTool,
-			AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN])
+		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
+		const schoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolService.findById(
+			contextExternalToolDto.schoolToolRef.schoolToolId
 		);
 
-		const updated: ContextExternalTool &#x3D; new ContextExternalTool({
-			...contextExternalTool,
-			id: contextExternalToolId,
+		if (schoolExternalTool.schoolId !&#x3D;&#x3D; schoolId) {
+			throw new ForbiddenLoggableException(userId, AuthorizableReferenceType.ContextExternalToolEntity, context);
+		}
+
+		let contextExternalTool: ContextExternalTool &#x3D; await this.contextExternalToolService.findById(
+			contextExternalToolId
+		);
+
+		contextExternalTool &#x3D; new ContextExternalTool({
+			...contextExternalToolDto,
+			id: contextExternalTool.id,
 		});
+		contextExternalTool.schoolToolRef.schoolId &#x3D; schoolId;
 
-		await this.contextExternalToolValidationService.validate(updated);
+		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, context);
 
-		const saved: ContextExternalTool &#x3D; await this.contextExternalToolService.saveContextExternalTool(updated);
+		await this.contextExternalToolValidationService.validate(contextExternalTool);
 
-		return saved;
+		const updatedTool: ContextExternalTool &#x3D; await this.contextExternalToolService.saveContextExternalTool(
+			contextExternalTool
+		);
+
+		return updatedTool;
 	}
 
 	public async deleteContextExternalTool(userId: EntityId, contextExternalToolId: EntityId): Promise&lt;void&gt; {
