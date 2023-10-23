@@ -9,7 +9,8 @@ import { UserService } from '@src/modules/user';
 import { Request } from 'express';
 import { Readable } from 'stream';
 import { H5PContentRepo } from '../repo';
-import { ContentStorage, H5PEditorService, H5PPlayerService, LibraryStorage } from '../service';
+import { ContentStorage, LibraryStorage } from '../service';
+import { H5PEditorProvider, H5PPlayerProvider } from '../provider';
 import { TemporaryFileStorage } from '../service/temporary-file-storage.service';
 import { H5PEditorUc } from './h5p.uc';
 
@@ -51,8 +52,8 @@ describe('H5P Files', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				H5PEditorUc,
-				H5PEditorService,
-				H5PPlayerService,
+				H5PEditorProvider,
+				H5PPlayerProvider,
 				{
 					provide: H5PAjaxEndpoint,
 					useValue: createMock<H5PAjaxEndpoint>(),

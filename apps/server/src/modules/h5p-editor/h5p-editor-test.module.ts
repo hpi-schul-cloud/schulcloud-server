@@ -11,17 +11,11 @@ import { UserModule } from '@modules/user';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 import { H5PEditorModule } from './h5p-editor.module';
 import { H5PContentRepo, LibraryRepo, TemporaryFileRepo } from './repo';
-import {
-	ContentStorage,
-	H5PAjaxEndpointService,
-	H5PEditorService,
-	H5PPlayerService,
-	LibraryStorage,
-	TemporaryFileStorage,
-} from './service';
+import { ContentStorage, H5PAjaxEndpointService, LibraryStorage, TemporaryFileStorage } from './service';
 import { H5PEditorUc } from './uc/h5p.uc';
 import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
 import { H5PEditorController } from './controller';
+import { H5PEditorProvider, H5PPlayerProvider } from './provider';
 
 const imports = [
 	H5PEditorModule,
@@ -38,8 +32,8 @@ const imports = [
 const controllers = [H5PEditorController];
 const providers = [
 	H5PEditorUc,
-	H5PPlayerService,
-	H5PEditorService,
+	H5PPlayerProvider,
+	H5PEditorProvider,
 	H5PAjaxEndpointService,
 	H5PContentRepo,
 	LibraryRepo,
