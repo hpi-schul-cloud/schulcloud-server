@@ -7,14 +7,13 @@ import { SystemMapper } from './system.mapper';
 
 export class SchoolMapper {
 	public static mapToDo(entity: SchoolEntity): School {
-		MikroOrmRepoUtils.checkIfRequiredPropsArePopulated(entity, ['federalState']);
-
-		MikroOrmRepoUtils.removeOptionalReferencesIfNotPopulated(entity, ['currentYear', 'systems']);
+		MikroOrmRepoUtils.checkIfRequiredRefsArePopulated(entity, ['federalState']);
+		MikroOrmRepoUtils.removeOptionalRefsIfNotPopulated(entity, ['currentYear', 'systems']);
 
 		const currentYear = entity.currentYear && SchoolYearMapper.mapToDo(entity.currentYear);
 		const federalState = FederalStateMapper.mapToDo(entity.federalState);
 		const features = this.mapFeatures(entity);
-		const systems = entity.systems.getItems().map((system) => SystemMapper.mapToDo(system));
+		const systems = entity.systems?.getItems().map((system) => SystemMapper.mapToDo(system));
 
 		const school = new School({
 			id: entity.id,
