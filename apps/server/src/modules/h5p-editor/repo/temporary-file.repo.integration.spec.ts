@@ -65,6 +65,27 @@ describe('TemporaryFileRepo', () => {
 		});
 	});
 
+	describe('findAllByUserAndFilename', () => {
+		it('should be able to retrieve entity', async () => {
+			const tempFile = h5pTemporaryFileFactory.build();
+			await em.persistAndFlush(tempFile);
+
+			const result = await repo.findAllByUserAndFilename(tempFile.ownedByUserId, tempFile.filename);
+
+			expect(result).toBeDefined();
+			expect(result).toEqual([tempFile]);
+		});
+
+		it('should return empty array', async () => {
+			const user = 'wrong-user-id';
+			const filename = 'file.txt';
+
+			const findBy = await repo.findAllByUserAndFilename(user, filename);
+
+			expect(findBy).toEqual([]);
+		});
+	});
+
 	describe('findExpired', () => {
 		it('should return expired files', async () => {
 			const [expiredFile, validFile] = [h5pTemporaryFileFactory.isExpired().build(), h5pTemporaryFileFactory.build()];
