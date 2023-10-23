@@ -6,8 +6,7 @@ import { cardFactory, richTextElementFactory } from '@shared/testing/factory/dom
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@modules/authorization';
 import { ObjectId } from 'bson';
-import { BoardDoAuthorizableService, ContentElementService } from '../service';
-import { CardService } from '../service/card.service';
+import { BoardDoAuthorizableService, ContentElementService, CardService } from '../service';
 import { CardUc } from './card.uc';
 
 describe(CardUc.name, () => {
@@ -95,29 +94,28 @@ describe(CardUc.name, () => {
 		});
 	});
 
-	const setup = () => {
-		jest.clearAllMocks();
-		const user = userFactory.buildWithId();
-		const board = columnBoardFactory.build();
-		const boardId = board.id;
-		const column = columnFactory.build();
-		const card = cardFactory.build();
-		authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+	describe('deleteCard', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const board = columnBoardFactory.build();
+			const boardId = board.id;
+			const column = columnFactory.build();
+			const card = cardFactory.build();
+			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-		const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-			users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
-			id: board.id,
-		});
-		const createCardBodyParams = {
-			requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
+			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+				id: board.id,
+			});
+			const createCardBodyParams = {
+				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
+			};
+
+			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
+
+			return { user, board, boardId, column, card, createCardBodyParams };
 		};
 
-		boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
-
-		return { user, board, boardId, column, card, createCardBodyParams };
-	};
-
-	describe('deleteCard', () => {
 		describe('when deleting a card', () => {
 			it('should call the service to find the card', async () => {
 				const { user, card } = setup();
@@ -139,6 +137,27 @@ describe(CardUc.name, () => {
 	});
 
 	describe('updateCardHeight', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const board = columnBoardFactory.build();
+			const boardId = board.id;
+			const column = columnFactory.build();
+			const card = cardFactory.build();
+			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+				id: board.id,
+			});
+			const createCardBodyParams = {
+				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
+			};
+
+			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
+
+			return { user, board, boardId, column, card, createCardBodyParams };
+		};
+
 		describe('when updating a card height', () => {
 			it('should call the service to find the card', async () => {
 				const { user, card } = setup();
@@ -171,6 +190,27 @@ describe(CardUc.name, () => {
 	});
 
 	describe('updateCardTitle', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const board = columnBoardFactory.build();
+			const boardId = board.id;
+			const column = columnFactory.build();
+			const card = cardFactory.build();
+			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+				id: board.id,
+			});
+			const createCardBodyParams = {
+				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
+			};
+
+			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
+
+			return { user, board, boardId, column, card, createCardBodyParams };
+		};
+
 		describe('when updating a card title', () => {
 			it('should call the service to find the card', async () => {
 				const { user, card } = setup();

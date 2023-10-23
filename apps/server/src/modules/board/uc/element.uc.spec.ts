@@ -2,7 +2,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, InputFormat } from '@shared/domain';
 import {
-	cardFactory,
 	fileElementFactory,
 	richTextElementFactory,
 	setupEntities,
@@ -13,8 +12,7 @@ import {
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@modules/authorization';
 import { ObjectId } from 'bson';
-import { BoardDoAuthorizableService, ContentElementService } from '../service';
-import { SubmissionItemService } from '../service/submission-item.service';
+import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { ElementUc } from './element.uc';
 
 describe(ElementUc.name, () => {
