@@ -57,10 +57,11 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		this.checkFilename(filename);
 		const tempFile = await this.repo.findByUserAndFilename(user.id, filename);
 		const path = this.getFilePath(user.id, filename);
+		let rangeEndNew = 0;
 		if (rangeEnd === undefined) {
-			rangeEnd = tempFile.size - 1;
+			rangeEndNew = tempFile.size - 1;
 		}
-		const response = await this.s3Client.get(path, `${rangeStart}-${rangeEnd}`);
+		const response = await this.s3Client.get(path, `${rangeStart}-${rangeEndNew}`);
 
 		return response.data;
 	}
