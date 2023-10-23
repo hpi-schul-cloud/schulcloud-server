@@ -5,6 +5,7 @@ import {
 	AuthorizationService,
 	ForbiddenLoggableException,
 } from '@modules/authorization';
+import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { BoardDoAuthorizableService, ContentElementService } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
@@ -21,7 +22,6 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { boardDoAuthorizableFactory } from '@shared/testing/factory/domainobject/board/board-do-authorizable.factory';
-import { AuthorizableReferenceType } from '../../../authorization/domain';
 import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ToolContextType } from '../enum';
