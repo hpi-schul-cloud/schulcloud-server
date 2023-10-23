@@ -11,24 +11,33 @@ export type MetaData = {
 
 @Injectable()
 export class MetaTagExtractorService {
-	// WIP: add nice debug logging for available open GraphData?!?
 	async fetchMetaData(url: string): Promise<MetaData> {
 		if (url.length === 0) {
+			// WIP: add nice debug logging for available open GraphData?!?
 			throw new Error(`MetaTagExtractorService requires a valid URL. Given URL: ${url}`);
 		}
 
-		const data = await ogs({ url, fetchOptions: { headers: { 'User-Agent': 'Open Graph Scraper' } } });
+		try {
+			const data = await ogs({ url, fetchOptions: { headers: { 'User-Agent': 'Open Graph Scraper' } } });
 
-		const title = data.result?.ogTitle ?? '';
-		const description = data?.result?.ogDescription ?? '';
-		const image = data?.result?.ogImage ? this.pickImage(data?.result?.ogImage) : undefined;
+			const title = data.result?.ogTitle ?? '';
+			const description = data.result?.ogDescription ?? '';
+			const image = data.result?.ogImage ? this.pickImage(data?.result?.ogImage) : undefined;
 
-		return {
-			title,
-			description,
-			image,
-			url,
-		};
+			return {
+				title,
+				description,
+				image,
+				url,
+			};
+		} catch (error) {
+			// WIP: add nice debug logging for available open GraphData?!?
+			return {
+				title: '',
+				description: '',
+				url,
+			};
+		}
 	}
 
 	private pickImage(images: ImageObject[], minWidth = 400): ImageObject | undefined {
