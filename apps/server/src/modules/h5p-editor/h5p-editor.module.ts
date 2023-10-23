@@ -7,11 +7,10 @@ import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
-import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
-import { AuthorizationModule } from '@src/modules/authorization';
-
+import { AuthorizationModule } from '@modules/authorization';
+import { UserModule } from '@modules/user';
 import { S3ClientModule } from '@shared/infra/s3-client';
-import { UserModule } from '..';
+import { AuthenticationModule } from '../authentication/authentication.module';
 import { H5PEditorController } from './controller/h5p-editor.controller';
 import { H5PContent, InstalledLibrary, TemporaryFile } from './entity';
 import { config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';

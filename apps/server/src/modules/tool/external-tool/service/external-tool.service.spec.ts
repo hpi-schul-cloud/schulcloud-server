@@ -308,7 +308,7 @@ describe('ExternalToolService', () => {
 		});
 	});
 
-	describe('findExternalToolById', () => {
+	describe('findById', () => {
 		describe('when external tool id is set', () => {
 			const setup = () => {
 				const { externalTool } = createTools();
@@ -320,7 +320,7 @@ describe('ExternalToolService', () => {
 			it('should get domain object', async () => {
 				const { externalTool } = setup();
 
-				const result: ExternalTool = await service.findExternalToolById('toolId');
+				const result: ExternalTool = await service.findById('toolId');
 
 				expect(result).toEqual(externalTool);
 			});
@@ -340,7 +340,7 @@ describe('ExternalToolService', () => {
 			it('should get domain object and add external oauth2 data', async () => {
 				const { externalTool, oauth2ToolConfig } = setup();
 
-				const result: ExternalTool = await service.findExternalToolById('toolId');
+				const result: ExternalTool = await service.findById('toolId');
 
 				expect(result).toEqual({ ...externalTool, config: oauth2ToolConfig });
 			});
@@ -362,7 +362,7 @@ describe('ExternalToolService', () => {
 			it('should throw UnprocessableEntityException ', async () => {
 				const { externalTool } = setup();
 
-				const func = () => service.findExternalToolById('toolId');
+				const func = () => service.findById('toolId');
 
 				await expect(func()).rejects.toThrow(`Could not resolve oauth2Config of tool ${externalTool.name}.`);
 			});

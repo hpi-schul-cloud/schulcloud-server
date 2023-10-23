@@ -23,13 +23,11 @@ export class ContextExternalToolValidationService {
 
 		await this.checkDuplicateInContext(contextExternalTool);
 
-		const loadedSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(
+		const loadedSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
 			contextExternalTool.schoolToolRef.schoolToolId
 		);
 
-		const loadedExternalTool: ExternalTool = await this.externalToolService.findExternalToolById(
-			loadedSchoolExternalTool.toolId
-		);
+		const loadedExternalTool: ExternalTool = await this.externalToolService.findById(loadedSchoolExternalTool.toolId);
 
 		this.commonToolValidationService.checkCustomParameterEntries(loadedExternalTool, contextExternalTool);
 	}

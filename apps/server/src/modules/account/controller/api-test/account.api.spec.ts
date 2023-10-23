@@ -16,8 +16,8 @@ import {
 	AccountSearchType,
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
-} from '@src/modules/account/controller/dto';
-import { ServerTestModule } from '@src/modules/server/server.module';
+} from '@modules/account/controller/dto';
+import { ServerTestModule } from '@modules/server/server.module';
 
 describe('Account Controller (API)', () => {
 	const basePath = '/account';

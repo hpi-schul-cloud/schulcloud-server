@@ -4,7 +4,7 @@ import { LegacySchoolDo, SystemEntity, User } from '@shared/domain';
 import { LegacySchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { ErrorLoggable } from '@src/core/error/loggable/error.loggable';
 import { Logger } from '@src/core/logger';
-import { AccountDto } from '@src/modules/account/services/dto';
+import { AccountDto } from '@modules/account/services/dto';
 import { Strategy } from 'passport-custom';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { ICurrentUser } from '../interface';

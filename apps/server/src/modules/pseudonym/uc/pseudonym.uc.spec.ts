@@ -3,8 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, Pseudonym, SchoolEntity, User } from '@shared/domain';
 import { legacySchoolDoFactory, pseudonymFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { ForbiddenException } from '@nestjs/common';
-import { Action, AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school';
+import { Action, AuthorizationService } from '@modules/authorization';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { PseudonymService } from '../service';
 import { PseudonymUc } from './pseudonym.uc';
 

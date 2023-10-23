@@ -5,13 +5,10 @@ import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { S3ClientModule } from '@shared/infra/s3-client';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
-import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { UserModule } from '..';
-import { H5PEditorController } from './controller';
-import { H5PContent } from './entity';
-import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
+import { AuthenticationModule } from '@modules/authentication/authentication.module';
+import { AuthorizationModule } from '@modules/authorization';
+import { UserModule } from '@modules/user';
+import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 import { H5PEditorModule } from './h5p-editor.module';
 import { H5PContentRepo, LibraryRepo, TemporaryFileRepo } from './repo';
 import {
@@ -23,10 +20,12 @@ import {
 	TemporaryFileStorage,
 } from './service';
 import { H5PEditorUc } from './uc/h5p.uc';
+import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
+import { H5PEditorController } from './controller';
 
 const imports = [
 	H5PEditorModule,
-	MongoMemoryDatabaseModule.forRoot({ entities: [...ALL_ENTITIES, H5PContent] }),
+	MongoMemoryDatabaseModule.forRoot({ entities: [...ALL_ENTITIES, H5PContentRepo] }),
 	AuthenticationApiModule,
 	AuthorizationModule,
 	AuthenticationModule,

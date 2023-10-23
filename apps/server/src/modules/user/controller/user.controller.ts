@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Patch } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { ResolvedUserMapper } from '../mapper';
 import { UserUc } from '../uc';
 import { ChangeLanguageParams, ResolvedUserResponse, SuccessfulResponse } from './dto';

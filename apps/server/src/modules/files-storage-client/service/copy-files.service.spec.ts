@@ -8,7 +8,7 @@ import {
 	legacyFileEntityMockFactory,
 	setupEntities,
 } from '@shared/testing';
-import { CopyElementType, CopyHelperService } from '@src/modules/copy-helper';
+import { CopyElementType, CopyHelperService } from '@modules/copy-helper';
 import { CopyFilesService } from './copy-files.service';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 

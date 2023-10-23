@@ -2,10 +2,10 @@ import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiToolService } from '@src/modules/lti-tool/service';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { ExternalToolService } from '@src/modules/tool/external-tool/service';
-import { IToolFeatures, ToolFeatures } from '@src/modules/tool/tool-config';
+import { LtiToolService } from '@modules/lti-tool/service';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { ExternalToolService } from '@modules/tool/external-tool/service';
+import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 
 @Injectable()
 export class OauthProviderLoginFlowService {

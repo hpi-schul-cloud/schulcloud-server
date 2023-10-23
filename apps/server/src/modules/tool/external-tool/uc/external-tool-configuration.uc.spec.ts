@@ -10,16 +10,16 @@ import {
 	schoolExternalToolFactory,
 	setupEntities,
 } from '@shared/testing';
-import { AuthorizationContextBuilder } from '@src/modules/authorization';
+import { AuthorizationContextBuilder } from '@modules/authorization';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
+import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalTool } from '../domain';
-import { ExternalToolLogoService, ExternalToolService, ExternalToolConfigurationService } from '../service';
+import { ExternalToolConfigurationService, ExternalToolLogoService, ExternalToolService } from '../service';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
-import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
 describe('ExternalToolConfigurationUc', () => {
 	let module: TestingModule;
@@ -439,8 +439,8 @@ describe('ExternalToolConfigurationUc', () => {
 					schoolExternalToolId
 				);
 
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
-				externalToolService.findExternalToolById.mockResolvedValueOnce(externalTool);
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
 
 				return {
 					externalTool,
@@ -478,7 +478,7 @@ describe('ExternalToolConfigurationUc', () => {
 					schoolExternalToolId
 				);
 
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				toolPermissionHelper.ensureSchoolPermissions.mockImplementation(() => {
 					throw new UnauthorizedException();
 				});
@@ -512,8 +512,8 @@ describe('ExternalToolConfigurationUc', () => {
 					schoolExternalToolId
 				);
 
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
-				externalToolService.findExternalToolById.mockResolvedValueOnce(externalTool);
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
 
 				return {
 					schoolExternalToolId,
@@ -553,9 +553,9 @@ describe('ExternalToolConfigurationUc', () => {
 					contextExternalToolId
 				);
 
-				contextExternalToolService.getContextExternalToolById.mockResolvedValueOnce(contextExternalTool);
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
-				externalToolService.findExternalToolById.mockResolvedValueOnce(externalTool);
+				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
 
 				return {
 					externalTool,
@@ -593,7 +593,7 @@ describe('ExternalToolConfigurationUc', () => {
 					contextExternalToolId
 				);
 
-				contextExternalToolService.getContextExternalToolById.mockResolvedValueOnce(contextExternalTool);
+				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
 				toolPermissionHelper.ensureContextPermissions.mockImplementation(() => {
 					throw new UnauthorizedException();
 				});
@@ -632,9 +632,9 @@ describe('ExternalToolConfigurationUc', () => {
 					contextExternalToolId
 				);
 
-				contextExternalToolService.getContextExternalToolById.mockResolvedValueOnce(contextExternalTool);
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
-				externalToolService.findExternalToolById.mockResolvedValueOnce(externalTool);
+				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
 
 				return {
 					contextExternalToolId,

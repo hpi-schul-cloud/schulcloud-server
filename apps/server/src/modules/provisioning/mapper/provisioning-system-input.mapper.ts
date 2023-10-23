@@ -1,5 +1,5 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { SystemDto } from '@modules/system/service/dto/system.dto';
 import { ProvisioningSystemDto } from '../dto';
 
 export class ProvisioningSystemInputMapper {
