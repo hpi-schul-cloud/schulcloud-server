@@ -7,7 +7,6 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { GetFileResponse } from '@src/modules/files-storage/interface';
 import { FileMetadata, InstalledLibrary } from '../entity/library.entity';
 import { H5P_LIBRARIES_S3_CONNECTION } from '../h5p-editor.config';
 import { LibraryRepo } from '../repo/library.repo';
@@ -164,9 +163,10 @@ describe('LibraryStorage', () => {
 			for (const file of savedFiles) {
 				if (file[0] === filepath) {
 					return Promise.resolve({
+						name: file[1],
 						contentLength: file[1].length,
 						data: Readable.from(Buffer.from(file[1])),
-					} as GetFileResponse);
+					});
 				}
 			}
 			throw new Error(`S3 object under ${filepath} not found`);
