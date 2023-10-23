@@ -1,5 +1,5 @@
 import { ITemporaryFile, ITemporaryFileStorage, IUser } from '@lumieducation/h5p-server';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotAcceptableException } from '@nestjs/common';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { FileDto } from '@src/modules/files-storage/dto/file.dto';
 import { ReadStream } from 'fs';
@@ -19,7 +19,7 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		if (/^[a-zA-Z0-9/._-]+$/g.test(filename) && !filename.includes('..') && !filename.startsWith('/')) {
 			return;
 		}
-		throw new Error(`Filename contains forbidden characters or is empty: '${filename}'`);
+		throw new NotAcceptableException(`Filename contains forbidden characters or is empty: '${filename}'`);
 	}
 
 	private getFileInfo(filename: string, userId: string): Promise<TemporaryFile> {
@@ -89,7 +89,7 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		this.checkFilename(filename);
 		const now = new Date();
 		if (expirationTime < now) {
-			throw new Error('expirationTime must be in the future');
+			throw new NotAcceptableException('expirationTime must be in the future');
 		}
 
 		const path = this.getFilePath(user.id, filename);
