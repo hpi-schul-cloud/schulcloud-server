@@ -4,7 +4,8 @@ import { HttpException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType, UserDO } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { AuthorizationService, UserService } from '@src/modules';
+import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
+import { UserService } from '@src/modules/user';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PEditorUc } from './h5p.uc';
@@ -40,8 +41,8 @@ describe('H5P Ajax', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: AuthorizationService,
-					useValue: createMock<AuthorizationService>(),
+					provide: AuthorizationReferenceService,
+					useValue: createMock<AuthorizationReferenceService>(),
 				},
 				{
 					provide: H5PContentRepo,

@@ -16,8 +16,10 @@ import {
 	NotFoundException,
 } from '@nestjs/common';
 import { EntityId, LanguageType } from '@shared/domain';
-import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService, UserService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
+import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
+import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
+import { UserService } from '@src/modules/user';
 import { Request } from 'express';
 import { Readable } from 'stream';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
@@ -35,7 +37,7 @@ export class H5PEditorUc {
 		private h5pAjaxEndpoint: H5PAjaxEndpoint,
 		private libraryService: LibraryStorage,
 		private readonly userService: UserService,
-		private readonly authorizationService: AuthorizationService,
+		private readonly authorizationReferenceService: AuthorizationReferenceService,
 		private readonly h5pContentRepo: H5PContentRepo
 	) {}
 
@@ -46,7 +48,7 @@ export class H5PEditorUc {
 		context: AuthorizationContext
 	) {
 		const allowedType = H5PContentMapper.mapToAllowedAuthorizationEntityType(parentType);
-		await this.authorizationService.checkPermissionByReferences(userId, allowedType, parentId, context);
+		await this.authorizationReferenceService.checkPermissionByReferences(userId, allowedType, parentId, context);
 	}
 
 	/**

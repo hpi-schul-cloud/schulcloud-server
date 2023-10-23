@@ -38,7 +38,6 @@ import {
 } from './dto';
 import { H5PEditorModelContentResponse, H5PEditorModelResponse, H5PSaveResponse } from './dto/h5p-editor.response';
 
-
 @ApiTags('h5p-editor')
 @Authenticate('jwt')
 @Controller('h5p-editor')
