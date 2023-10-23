@@ -15,6 +15,7 @@ import {
 import { ClassEntity } from '@modules/class/entity';
 import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
 import { ServerTestModule } from '@modules/server';
+import { ObjectId } from 'bson';
 import { GroupEntity, GroupEntityTypes } from '../../entity';
 import { ClassRootType } from '../../uc/dto/class-root-type';
 import { ClassInfoSearchListResponse, ClassSortBy } from '../dto';
@@ -41,7 +42,7 @@ describe('Group (API)', () => {
 		await app.close();
 	});
 
-	describe('findClassesForSchool', () => {
+	describe('[GET] /groups/class', () => {
 		describe('when an admin requests a list of classes', () => {
 			const setup = async () => {
 				const school: SchoolEntity = schoolFactory.buildWithId();
@@ -126,6 +127,7 @@ describe('Group (API)', () => {
 							name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 							teachers: [teacherUser.lastName],
 							schoolYear: schoolYear.name,
+							isUpgradable: false,
 						},
 					],
 					skip: 0,
@@ -154,6 +156,121 @@ describe('Group (API)', () => {
 				const response = await studentClient.get(`/class`);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+			});
+		});
+	});
+
+	describe('[GET] /groups/:groupId', () => {
+		describe('when authorized user requests a group', () => {
+			describe('when group exists', () => {
+				const setup = async () => {
+					const school: SchoolEntity = schoolFactory.buildWithId();
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+
+					const group: GroupEntity = groupEntityFactory.buildWithId({
+						users: [
+							{
+								user: teacherUser,
+								role: teacherUser.roles[0],
+							},
+						],
+						organization: school,
+					});
+
+					await em.persistAndFlush([teacherAccount, teacherUser, group]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(teacherAccount);
+
+					return {
+						loggedInClient,
+						group,
+						teacherUser,
+					};
+				};
+
+				it('should return the group', async () => {
+					const { loggedInClient, group, teacherUser } = await setup();
+
+					const response = await loggedInClient.get(`${group.id}`);
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual({
+						id: group.id,
+						name: group.name,
+						type: group.type,
+						users: [
+							{
+								id: teacherUser.id,
+								firstName: teacherUser.firstName,
+								lastName: teacherUser.lastName,
+								role: teacherUser.roles[0].name,
+							},
+						],
+						externalSource: {
+							externalId: group.externalSource?.externalId,
+							systemId: group.externalSource?.system.id,
+						},
+					});
+				});
+			});
+
+			describe('when group does not exist', () => {
+				const setup = async () => {
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+					await em.persistAndFlush([teacherAccount, teacherUser]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(teacherAccount);
+
+					return {
+						loggedInClient,
+					};
+				};
+
+				it('should return not found', async () => {
+					const { loggedInClient } = await setup();
+
+					const response = await loggedInClient.get(`${new ObjectId().toHexString()}`);
+
+					expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+					expect(response.body).toEqual({
+						code: HttpStatus.NOT_FOUND,
+						message: 'Not Found',
+						title: 'Not Found',
+						type: 'NOT_FOUND',
+					});
+				});
+			});
+		});
+
+		describe('when unauthorized user requests a group', () => {
+			const setup = async () => {
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				const group: GroupEntity = groupEntityFactory.buildWithId();
+
+				await em.persistAndFlush([studentAccount, studentUser, group]);
+				em.clear();
+
+				return {
+					groupId: group.id,
+				};
+			};
+
+			it('should return unauthorized', async () => {
+				const { groupId } = await setup();
+
+				const response = await testApiClient.get(`${groupId}`);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.body).toEqual({
+					code: HttpStatus.UNAUTHORIZED,
+					message: 'Unauthorized',
+					title: 'Unauthorized',
+					type: 'UNAUTHORIZED',
+				});
 			});
 		});
 	});
