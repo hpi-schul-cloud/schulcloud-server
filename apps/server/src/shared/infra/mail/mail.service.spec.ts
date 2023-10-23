@@ -1,5 +1,6 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Mail } from './mail.interface';
 import { MailService } from './mail.service';
 
@@ -36,7 +37,8 @@ describe('MailService', () => {
 
 	describe('send', () => {
 		describe('when recipients array is empty', () => {
-			it('should not send email)', async () => {
+			it('should not send email', async () => {
+				Configuration.set('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS', 'schul-cloud.org');
 				const data: Mail = {
 					mail: { plainTextContent: 'content', subject: 'Test' },
 					recipients: ['test@schul-cloud.org'],
@@ -51,10 +53,11 @@ describe('MailService', () => {
 		});
 		describe('when sending email', () => {
 			it('should remove email address that have blacklisted domain and send given data to queue', async () => {
+				Configuration.set('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS', 'schul-cloud.org, example.com');
 				const data: Mail = {
 					mail: { plainTextContent: 'content', subject: 'Test' },
-					recipients: ['test@schul-cloud.org', 'test@example.com', 'test2@schul-cloud.org', 'test3@schul-cloud.org'],
-					cc: ['test@example1.com', 'test5@schul-cloud.org', 'test6@schul-cloud.org'],
+					recipients: ['test@schul-cloud.org', 'test@example1.com', 'test2@schul-cloud.org', 'test3@schul-cloud.org'],
+					cc: ['test@example.com', 'test5@schul-cloud.org', 'test6@schul-cloud.org'],
 					bcc: ['test7@schul-cloud.org', 'test@example2.com', 'test8@schul-cloud.org'],
 					replyTo: ['test@example3.com', 'test9@schul-cloud.org', 'test10@schul-cloud.org'],
 				};
@@ -63,8 +66,8 @@ describe('MailService', () => {
 
 				await service.send(data);
 
-				expect(data.recipients).toEqual(['test@example.com']);
-				expect(data.cc).toEqual(['test@example1.com']);
+				expect(data.recipients).toEqual(['test@example1.com']);
+				expect(data.cc).toEqual([]);
 				expect(data.bcc).toEqual(['test@example2.com']);
 				expect(data.replyTo).toEqual(['test@example3.com']);
 

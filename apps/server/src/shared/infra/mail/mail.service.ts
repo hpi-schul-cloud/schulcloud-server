@@ -17,10 +17,13 @@ export class MailService {
 	) {}
 
 	public async send(data: Mail): Promise<void> {
-		data.recipients = this.removeEmailAddressesThatHaveBlockedDomain(data.recipients) as string[];
-		data.cc = this.removeEmailAddressesThatHaveBlockedDomain(data.cc);
-		data.bcc = this.removeEmailAddressesThatHaveBlockedDomain(data.bcc);
-		data.replyTo = this.removeEmailAddressesThatHaveBlockedDomain(data.replyTo);
+		if (Configuration.has('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS')) {
+			const domainBlockList = Configuration.get('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS') as string;
+			data.recipients = this.removeEmailAddressesThatHaveBlockedDomain(data.recipients, domainBlockList) as string[];
+			data.cc = this.removeEmailAddressesThatHaveBlockedDomain(data.cc, domainBlockList);
+			data.bcc = this.removeEmailAddressesThatHaveBlockedDomain(data.bcc, domainBlockList);
+			data.replyTo = this.removeEmailAddressesThatHaveBlockedDomain(data.replyTo, domainBlockList);
+		}
 
 		if (data.recipients.length === 0) {
 			return;
@@ -29,22 +32,24 @@ export class MailService {
 		await this.amqpConnection.publish(this.options.exchange, this.options.routingKey, data, { persistent: true });
 	}
 
-	private removeEmailAddressesThatHaveBlockedDomain(mails: string[] | undefined): string[] | undefined {
+	private removeEmailAddressesThatHaveBlockedDomain(
+		mails: string[] | undefined,
+		domainBlockList: string
+	): string[] | undefined {
 		if (mails === undefined || mails === null) {
 			return mails;
 		}
-		const domainBlockList = Configuration.get('BLACKLISTED_EMAIL_DOMAINS') as string;
 		const domainBlockListArray = domainBlockList.split(',').map((domain) => domain.trim());
-		const notBlacklistedEmailsArray: string[] = [];
 
 		for (const blockedDomain of domainBlockListArray) {
-			for (const mail of mails) {
-				const mailDomain = mail.split('@')[1];
-				if (mailDomain !== blockedDomain) {
-					notBlacklistedEmailsArray.push(mail);
+			// eslint-disable-next-line no-plusplus
+			for (let i = mails.length - 1; i > -1; i--) {
+				const mailDomain = mails[i].split('@')[1];
+				if (mailDomain === blockedDomain) {
+					mails.splice(i, 1);
 				}
 			}
 		}
-		return notBlacklistedEmailsArray;
+		return mails;
 	}
 }
