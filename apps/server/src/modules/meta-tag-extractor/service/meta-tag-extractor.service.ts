@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-// import fetch from 'node-fetch';
 import ogs from 'open-graph-scraper';
 import { ImageObject } from 'open-graph-scraper/dist/lib/types';
 
