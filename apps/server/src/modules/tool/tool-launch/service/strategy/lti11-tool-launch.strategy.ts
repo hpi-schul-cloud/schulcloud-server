@@ -1,10 +1,10 @@
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { PseudonymService } from '@src/modules/pseudonym/service';
-import { UserService } from '@src/modules/user';
+import { CourseService } from '@modules/learnroom/service';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { PseudonymService } from '@modules/pseudonym/service';
+import { UserService } from '@modules/user';
 import { Authorization } from 'oauth-1.0a';
 import { LtiRole } from '../../../common/enum';
 import { ExternalTool } from '../../../external-tool/domain';

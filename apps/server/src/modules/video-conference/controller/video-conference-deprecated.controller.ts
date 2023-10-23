@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { VideoConferenceScope } from '@shared/domain/interface';
-import { Authenticate, CurrentUser, ICurrentUser } from '@src/modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { BBBBaseResponse } from '../bbb';
 import { defaultVideoConferenceOptions } from '../interface';
 import { VideoConferenceResponseDeprecatedMapper } from '../mapper/vc-deprecated-response.mapper';

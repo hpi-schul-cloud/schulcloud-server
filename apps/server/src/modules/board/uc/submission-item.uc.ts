@@ -9,7 +9,7 @@ import {
 	UserRoleEnum,
 } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { AuthorizationService, Action } from '@src/modules/authorization';
+import { AuthorizationService, Action } from '@modules/authorization';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 
 @Injectable()

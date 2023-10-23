@@ -10,9 +10,9 @@ import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/
 import { LtiToolRepo } from '@shared/repo';
 import { axiosResponseFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
-import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
-import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
+import { CookiesDto } from '@modules/oauth/service/dto/cookies.dto';
+import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
+import { HydraSsoService } from '@modules/oauth/service/hydra.service';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';

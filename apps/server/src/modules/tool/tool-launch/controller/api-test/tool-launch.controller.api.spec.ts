@@ -13,7 +13,7 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
+import { ServerTestModule } from '@modules/server';
 import { Response } from 'supertest';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { LaunchRequestMethod } from '../../types';

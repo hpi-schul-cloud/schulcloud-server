@@ -5,9 +5,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { LanguageType, User } from '@shared/domain';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@src/modules/server/server.module';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 

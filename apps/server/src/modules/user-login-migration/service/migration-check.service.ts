@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { UserService } from '@src/modules/user';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 
 @Injectable()
 export class MigrationCheckService {

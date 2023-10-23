@@ -4,7 +4,7 @@ import { TestingModule } from '@nestjs/testing/testing-module';
 import { SchoolEntity } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, schoolFactory } from '@shared/testing';
-import { classEntityFactory } from '@src/modules/class/entity/testing/factory/class.entity.factory';
+import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
 import { Class } from '../domain';
 import { ClassEntity } from '../entity';
 import { ClassesRepo } from './classes.repo';

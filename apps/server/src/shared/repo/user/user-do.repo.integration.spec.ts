@@ -27,7 +27,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { UserQuery } from '@src/modules/user/service/user-query.type';
+import { UserQuery } from '@modules/user/service/user-query.type';
 
 describe('UserRepo', () => {
 	let module: TestingModule;

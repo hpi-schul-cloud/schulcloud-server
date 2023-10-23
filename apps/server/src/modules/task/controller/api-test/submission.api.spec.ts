@@ -4,7 +4,7 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { Permission, Submission } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import {
 	cleanupCollections,
 	courseGroupFactory,
@@ -14,10 +14,10 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@src/modules';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@src/modules/server/server.module';
-import { SubmissionStatusListResponse } from '@src/modules/task/controller/dto/submission.response';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@modules/server/server.module';
+import { SubmissionStatusListResponse } from '@modules/task/controller/dto/submission.response';
 import { Request } from 'express';
 import request from 'supertest';
 

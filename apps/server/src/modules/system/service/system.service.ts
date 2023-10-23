@@ -3,8 +3,8 @@ import { EntityNotFoundError } from '@shared/common';
 import { EntityId, SystemEntity, SystemTypeEnum } from '@shared/domain';
 import { IdentityManagementOauthService } from '@shared/infra/identity-management/identity-management-oauth.service';
 import { SystemRepo } from '@shared/repo';
-import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { SystemMapper } from '@modules/system/mapper/system.mapper';
+import { SystemDto } from '@modules/system/service/dto/system.dto';
 
 @Injectable()
 export class SystemService {
