@@ -96,22 +96,10 @@ describe('H5P Ajax', () => {
 			);
 		});
 
-		it('should convert any H5P-Errors into HttpExceptions', async () => {
-			ajaxEndpoint.getAjax.mockRejectedValueOnce(new H5pError('dummy-error', { error: 'Dummy Error' }, 400));
-			// const result = uc.getAjax({ action: 'content-type-cache' }, userMock);
-			await uc.getAjax({ action: 'content-type-cache' }, userMock);
-
-			expect(spy).toHaveBeenCalledTimes(1);
-			// await expect(result).rejects.toThrowError(new HttpException('dummy-error (error: Dummy Error)', 400));
-		});
-
-		it('should convert any non-H5P-Errors into InternalServerErrorException', async () => {
+		it('should invoce h5p-error mapper', async () => {
 			ajaxEndpoint.getAjax.mockRejectedValueOnce(new Error('Dummy Error'));
-			// const result = uc.getAjax({ action: 'content-type-cache' }, userMock);
 			await uc.getAjax({ action: 'content-type-cache' }, userMock);
-
 			expect(spy).toHaveBeenCalledTimes(1);
-			// await expect(result).rejects.toThrowError(InternalServerErrorException);
 		});
 	});
 
@@ -214,31 +202,14 @@ describe('H5P Ajax', () => {
 			);
 		});
 
-		it('should convert any H5P-Errors into HttpExceptions', async () => {
+		it('should invoce h5p-error.mapper', async () => {
 			ajaxEndpoint.postAjax.mockRejectedValueOnce(new H5pError('dummy-error', { error: 'Dummy Error' }, 400));
 
-			// const result = uc.postAjax(
 			await uc.postAjax(
 				userMock,
 				{ action: 'libraries' },
 				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' }
 			);
-
-			// await expect(result).rejects.toThrowError(new HttpException('dummy-error (error: Dummy Error)', 400));
-			expect(spy).toHaveBeenCalledTimes(1);
-		});
-
-		it('should convert any non-H5P-Errors into InternalServerErrorException', async () => {
-			ajaxEndpoint.postAjax.mockRejectedValueOnce(new Error('Dummy Error'));
-
-			// const result = uc.postAjax(
-			await uc.postAjax(
-				userMock,
-				{ action: 'libraries' },
-				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' }
-			);
-
-			// await expect(result).rejects.toThrowError(InternalServerErrorException);
 			expect(spy).toHaveBeenCalledTimes(1);
 		});
 	});
