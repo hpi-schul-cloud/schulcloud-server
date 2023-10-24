@@ -1,3 +1,4 @@
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import {
 	ApiCreatedResponse,
@@ -12,7 +13,6 @@ import {
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common';
 import { LegacyLogger } from '@src/core/logger';
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { ContextExternalTool } from '../domain';
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from '../mapper';
 import { ContextExternalToolUc } from '../uc';
@@ -50,6 +50,7 @@ export class ToolContextController {
 
 		const createdTool: ContextExternalTool = await this.contextExternalToolUc.createContextExternalTool(
 			currentUser.userId,
+			currentUser.schoolId,
 			contextExternalTool
 		);
 
@@ -152,6 +153,7 @@ export class ToolContextController {
 
 		const updatedTool: ContextExternalTool = await this.contextExternalToolUc.updateContextExternalTool(
 			currentUser.userId,
+			currentUser.schoolId,
 			params.contextExternalToolId,
 			contextExternalTool
 		);
