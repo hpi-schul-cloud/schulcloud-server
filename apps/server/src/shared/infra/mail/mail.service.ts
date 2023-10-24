@@ -49,11 +49,15 @@ export class MailService {
 		const mailWhitelist: string[] = [];
 
 		for (const mail of mails) {
-			const mailDomain = mail.split('@')[1];
+			const mailDomain = this.getMailDomain(mail);
 			if (mailDomain && !domainBlackList.includes(mailDomain)) {
 				mailWhitelist.push(mail);
 			}
 		}
 		return mailWhitelist;
+	}
+
+	private getMailDomain(mail: string): string {
+		return mail.split('@')[1];
 	}
 }
