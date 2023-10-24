@@ -8,6 +8,10 @@ import {
 	columnBoardNodeFactory,
 	columnNodeFactory,
 	courseFactory,
+	submissionContainerElementFactory,
+	submissionContainerElementNodeFactory,
+	submissionItemFactory,
+	submissionItemNodeFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
@@ -15,11 +19,13 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { AnyContentElementResponse, SubmissionContainerElementResponse } from '../dto';
 
 const baseRouteName = '/cards';
+const submissionRouteName = '/board-submissions';
 
 describe(`content element create (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	let testApiClientSubmission: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -30,6 +36,7 @@ describe(`content element create (api)`, () => {
 		await app.init();
 		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, baseRouteName);
+		testApiClientSubmission = new TestApiClient(app, submissionRouteName);
 	});
 
 	afterAll(async () => {
@@ -143,22 +150,33 @@ describe(`content element create (api)`, () => {
 				await cleanupCollections(em);
 
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const course = courseFactory.build({ teachers: [teacherUser] });
-				await em.persistAndFlush([teacherAccount, teacherUser, course]);
+				const course = courseFactory.build({ teachers: [teacherUser], students: [studentUser] });
+
+				await em.persistAndFlush([teacherAccount, teacherUser, studentAccount, studentUser, course]);
 
 				const columnBoardNode = columnBoardNodeFactory.buildWithId({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
 				});
 				const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 				const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-				const submissionContainerNode = columnNodeFactory.buildWithId({ parent: cardNode });
-				const submissionItemNode = cardNodeFactory.buildWithId({ parent: submissionContainerNode });
+				const submissionElementContainerNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
+				const submissionItemNode = submissionItemNodeFactory.buildWithId({
+					parent: submissionElementContainerNode,
+					userId: studentUser.id,
+				});
 
-				await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode, submissionItemNode]);
+				await em.persistAndFlush([
+					columnBoardNode,
+					columnNode,
+					cardNode,
+					submissionElementContainerNode,
+					submissionItemNode,
+				]);
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await testApiClientSubmission.login(studentAccount);
 
 				return { loggedInClient, cardNode, submissionItemNode };
 			};
@@ -191,6 +209,16 @@ describe(`content element create (api)`, () => {
 				});
 
 				expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.FILE);
+			});
+
+			it('should throw if element is not RICH_TEXT or FILE', async () => {
+				const { loggedInClient, submissionItemNode } = await setup();
+
+				const response = await loggedInClient.post(`${submissionItemNode.id}/elements`, {
+					type: ContentElementType.EXTERNAL_TOOL,
+				});
+
+				expect(response.statusCode).toEqual(400);
 			});
 		});
 	});
