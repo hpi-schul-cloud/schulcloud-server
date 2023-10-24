@@ -10,7 +10,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { ObjectId } from 'bson';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { SubmissionItemService } from '../service/submission-item.service';

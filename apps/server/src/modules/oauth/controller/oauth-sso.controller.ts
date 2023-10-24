@@ -14,13 +14,12 @@ import {
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ISession } from '@shared/domain/types/session';
 import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
-import { UserMigrationResponse } from '@src/modules/oauth/controller/dto/user-migration.response';
-import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
-import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
-import { MigrationDto } from '@src/modules/user-login-migration/service/dto';
+import { ICurrentUser, Authenticate, CurrentUser, JWT } from '@modules/authentication';
+import { OAuthMigrationError } from '@modules/user-login-migration/error/oauth-migration.error';
+import { MigrationDto } from '@modules/user-login-migration/service/dto';
 import { CookieOptions, Request, Response } from 'express';
+import { HydraOauthUc } from '../uc/hydra-oauth.uc';
+import { UserMigrationResponse } from './dto/user-migration.response';
 import { OAuthSSOError } from '../loggable/oauth-sso.error';
 import { OAuthTokenDto } from '../interface';
 import { OauthLoginStateMapper } from '../mapper/oauth-login-state.mapper';

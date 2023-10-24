@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { BoardRepo, CourseRepo, DashboardModelMapper, DashboardRepo, LessonRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { BoardModule } from '@src/modules/board';
-import { CopyHelperModule } from '@src/modules/copy-helper';
-import { LessonModule } from '@src/modules/lesson';
-import { TaskModule } from '@src/modules/task';
+import { BoardModule } from '@modules/board';
+import { CopyHelperModule } from '@modules/copy-helper';
+import { LessonModule } from '@modules/lesson';
+import { TaskModule } from '@modules/task';
 import {
 	BoardCopyService,
 	ColumnBoardTargetService,

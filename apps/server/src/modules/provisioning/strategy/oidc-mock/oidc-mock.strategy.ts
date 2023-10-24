@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthSSOError } from '@src/modules/oauth/loggable';
+import { OAuthSSOError } from '@modules/oauth/loggable';
 import { ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
 

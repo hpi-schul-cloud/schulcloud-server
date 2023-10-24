@@ -4,19 +4,13 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
 import { Counted } from '@shared/domain';
 import { isEmail, validateOrReject } from 'class-validator';
-import { LegacyLogger } from '../../../core/logger'; // TODO: use path alias
-// TODO: account needs to define its own config, which is made available for the server
+import { LegacyLogger } from '../../../core/logger';
 import { IServerConfig } from '../../server/server.config';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
 import { AccountDto, AccountSaveDto } from './dto';
-
-/* TODO: extract a service that contains all things required by feathers,
-which is responsible for the additionally required validation 
-
-it should be clearly visible which functions are only needed for feathers, and easy to remove them */
 
 @Injectable()
 export class AccountService extends AbstractAccountService {
@@ -84,7 +78,6 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	async saveWithValidation(dto: AccountSaveDto): Promise<void> {
-		// TODO: move as much as possible into the class validator
 		await validateOrReject(dto);
 		// sanatizeUsername ✔
 		if (!dto.systemId) {
@@ -115,7 +108,6 @@ export class AccountService extends AbstractAccountService {
 		// 	dto.password = undefined;
 		// }
 
-		// TODO: split validation from saving, so it can be used independently
 		await this.save(dto);
 	}
 
