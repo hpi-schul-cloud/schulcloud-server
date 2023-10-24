@@ -109,3 +109,6 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: preview-generator-scaled-object.yml.j2
+    when:
+     - KEDA_ENABLED is defined and KEDA_ENABLED|bool
+     - SCALED_PREVIEW_GENERATOR_ENABLED is defined and SCALED_PREVIEW_GENERATOR_ENABLED|bool
