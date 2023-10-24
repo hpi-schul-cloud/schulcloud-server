@@ -472,7 +472,7 @@ describe('LibraryStorage', () => {
 			const { addonLib } = await setup();
 
 			const addons = await storage.listAddons();
-			expect(addons).toContainEqual(expect.objectContaining(addonLib));
+			expect(addons).toEqual([addonLib]);
 		});
 
 		it('should count dependencies', async () => {

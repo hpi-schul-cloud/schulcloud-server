@@ -9,7 +9,7 @@ import {
 	type ILibraryName,
 	type ILibraryStorage,
 } from '@lumieducation/h5p-server';
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { FileDto } from '@src/modules/files-storage/dto';
 import mime from 'mime';
@@ -97,7 +97,7 @@ export class LibraryStorage implements ILibraryStorage {
 		);
 
 		if (existingLibrary !== null) {
-			throw new Error("Can't add library because it already exists");
+			throw new ConflictException("Can't add library because it already exists");
 		}
 
 		const library = new InstalledLibrary(libMeta, restricted, undefined);
@@ -406,7 +406,7 @@ export class LibraryStorage implements ILibraryStorage {
 
 	private async getMetadata(library: ILibraryName): Promise<ILibraryMetadata> {
 		if (!library) {
-			throw new Error('You must pass in a library name to getLibrary.');
+			throw new NotAcceptableException('You must pass in a library name to getLibrary.');
 		}
 
 		const result = await this.libraryRepo.findOneByNameAndVersionOrFail(
@@ -429,26 +429,28 @@ export class LibraryStorage implements ILibraryStorage {
 
 		this.checkFilename(file);
 
+		let result: { stream: Readable | never; mimetype: string; size: number | undefined } | null = null;
+
 		if (file === 'library.json') {
 			const metadata = await this.getMetadata(libraryName);
 			const stringifiedMetadata = JSON.stringify(metadata);
 			const readable = Readable.from(stringifiedMetadata);
 
-			return {
+			result = {
 				stream: readable,
 				mimetype: 'application/json',
 				size: stringifiedMetadata.length,
 			};
+		} else {
+			const response = await this.s3Client.get(this.getS3Key(libraryName, file));
+			const mimetype = mime.lookup(file, 'application/octet-stream');
+
+			result = {
+				stream: response.data,
+				mimetype,
+				size: response.contentLength,
+			};
 		}
-
-		const response = await this.s3Client.get(this.getS3Key(libraryName, file));
-
-		const mimetype = mime.lookup(file, 'application/octet-stream');
-
-		return {
-			stream: response.data,
-			mimetype,
-			size: response.contentLength,
-		};
+		return result;
 	}
 }
