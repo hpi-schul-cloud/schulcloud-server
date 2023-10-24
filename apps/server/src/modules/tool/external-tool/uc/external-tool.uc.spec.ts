@@ -8,8 +8,8 @@ import {
 	externalToolFactory,
 	oauth2ToolConfigFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { ICurrentUser } from '@src/modules/authentication';
-import { AuthorizationService } from '@src/modules/authorization';
+import { ICurrentUser } from '@modules/authentication';
+import { AuthorizationService } from '@modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalTool, Oauth2ToolConfig } from '../domain';
 import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';

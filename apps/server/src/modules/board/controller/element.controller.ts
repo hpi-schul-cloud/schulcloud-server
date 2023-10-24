@@ -12,8 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
 import {

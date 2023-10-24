@@ -1,13 +1,8 @@
 import { UnprocessableEntityException } from '@nestjs/common';
-import { CustomParameter, CustomParameterEntry } from '@src/modules/tool/common/domain';
-import { CustomParameterEntryEntity } from '@src/modules/tool/common/entity';
-import { ToolConfigType } from '@src/modules/tool/common/enum';
-import {
-	BasicToolConfig,
-	ExternalTool,
-	Lti11ToolConfig,
-	Oauth2ToolConfig,
-} from '@src/modules/tool/external-tool/domain';
+import { CustomParameter, CustomParameterEntry } from '@modules/tool/common/domain';
+import { CustomParameterEntryEntity } from '@modules/tool/common/entity';
+import { ToolConfigType } from '@modules/tool/common/enum';
+import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
 import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
@@ -15,7 +10,7 @@ import {
 	IExternalToolProperties,
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
-} from '@src/modules/tool/external-tool/entity';
+} from '@modules/tool/external-tool/entity';
 
 // TODO: maybe rename because of usage in external tool repo and school external tool repo
 export class ExternalToolRepoMapper {

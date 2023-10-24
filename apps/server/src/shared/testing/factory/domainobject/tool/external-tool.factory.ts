@@ -1,4 +1,4 @@
-import { CustomParameter } from '@src/modules/tool/common/domain';
+import { CustomParameter } from '@modules/tool/common/domain';
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -7,14 +7,14 @@ import {
 	LtiPrivacyPermission,
 	TokenEndpointAuthMethod,
 	ToolConfigType,
-} from '@src/modules/tool/common/enum';
+} from '@modules/tool/common/enum';
 import {
 	BasicToolConfig,
 	ExternalTool,
 	ExternalToolProps,
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
-} from '@src/modules/tool/external-tool/domain';
+} from '@modules/tool/external-tool/domain';
 import { DeepPartial } from 'fishery';
 import { DoBaseFactory } from '../do-base.factory';
 

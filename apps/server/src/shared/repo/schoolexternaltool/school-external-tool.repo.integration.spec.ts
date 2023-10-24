@@ -11,11 +11,11 @@ import {
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
-import { SchoolExternalToolQuery } from '@src/modules/tool/school-external-tool/uc/dto/school-external-tool.types';
-import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
-import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
-import { CustomParameterEntry } from '@src/modules/tool/common/domain';
-import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
+import { SchoolExternalToolQuery } from '@modules/tool/school-external-tool/uc/dto/school-external-tool.types';
+import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { CustomParameterEntry } from '@modules/tool/common/domain';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
 
 describe('SchoolExternalToolRepo', () => {
