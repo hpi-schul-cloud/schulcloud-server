@@ -96,10 +96,7 @@ export class BoardSubmissionController {
 	): Promise<FileElementResponse | RichTextElementResponse> {
 		const { type } = bodyParams;
 		const element = await this.submissionItemUc.createElement(currentUser.userId, urlParams.submissionItemId, type);
-		const response = ContentElementResponseFactory.mapToResponse(element);
-		if (!isFileElementResponse(response) && !isRichTextElementResponse(response)) {
-			throw new UnprocessableEntityException();
-		}
+		const response = ContentElementResponseFactory.mapSubmissionContentToResponse(element);
 
 		return response;
 	}

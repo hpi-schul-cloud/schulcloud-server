@@ -1,11 +1,10 @@
 import { AnyBoardDo, EntityId, SubmissionItem, UserRoleEnum } from '@shared/domain';
-import { ForbiddenException, forwardRef, Inject } from '@nestjs/common';
+import { ForbiddenException } from '@nestjs/common';
 import { AuthorizationService, Action } from '@modules/authorization';
 import { BoardDoAuthorizableService } from '../service';
 
 export abstract class BaseUc {
 	constructor(
-		@Inject(forwardRef(() => AuthorizationService))
 		protected readonly authorizationService: AuthorizationService,
 		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService
 	) {}

@@ -1,6 +1,12 @@
-import { NotImplementedException } from '@nestjs/common';
-import { AnyBoardDo } from '@shared/domain';
-import { AnyContentElementResponse } from '../dto';
+import { NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
+import { AnyBoardDo, FileElement, isSubmissionItemContent, RichTextElement } from '@shared/domain';
+import {
+	AnyContentElementResponse,
+	FileElementResponse,
+	RichTextElementResponse,
+	isFileElementResponse,
+	isRichTextElementResponse,
+} from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
 import { ExternalToolElementResponseMapper } from './external-tool-element-response.mapper';
 import { FileElementResponseMapper } from './file-element-response.mapper';
@@ -26,6 +32,16 @@ export class ContentElementResponseFactory {
 
 		const result = elementMapper.mapToResponse(element);
 
+		return result;
+	}
+
+	static mapSubmissionContentToResponse(
+		element: RichTextElement | FileElement
+	): FileElementResponse | RichTextElementResponse {
+		const result = this.mapToResponse(element);
+		if (!isFileElementResponse(result) && !isRichTextElementResponse(result)) {
+			throw new UnprocessableEntityException();
+		}
 		return result;
 	}
 }

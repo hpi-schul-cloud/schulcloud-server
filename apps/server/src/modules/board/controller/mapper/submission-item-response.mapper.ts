@@ -11,6 +11,7 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { FileElementResponseMapper } from './file-element-response.mapper';
 import { RichTextElementResponseMapper } from './rich-text-element-response.mapper';
 import { SubmissionItemResponse, SubmissionsResponse, TimestampsResponse, UserDataResponse } from '../dto';
+import { ContentElementResponseFactory } from './content-element-response.factory';
 
 export class SubmissionItemResponseMapper {
 	private static instance: SubmissionItemResponseMapper;
@@ -44,17 +45,7 @@ export class SubmissionItemResponseMapper {
 				createdAt: submissionItem.createdAt,
 			}),
 			userId: submissionItem.userId,
-			elements: children.map((element) => {
-				if (isFileElement(element)) {
-					const mapper = FileElementResponseMapper.getInstance();
-					return mapper.mapToResponse(element);
-				}
-				if (isRichTextElement(element)) {
-					const mapper = RichTextElementResponseMapper.getInstance();
-					return mapper.mapToResponse(element);
-				}
-				throw new UnprocessableEntityException();
-			}),
+			elements: children.map((element) => ContentElementResponseFactory.mapSubmissionContentToResponse(element)),
 		});
 
 		return result;
