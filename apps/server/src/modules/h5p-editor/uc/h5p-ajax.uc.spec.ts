@@ -1,15 +1,14 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { H5PAjaxEndpoint, H5PEditor, H5PPlayer, H5pError } from '@lumieducation/h5p-server';
-import { HttpException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType, UserDO } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { UserService } from '@src/modules/user';
+import { H5PErrorMapper } from '../mapper/h5p-error.mapper';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PEditorUc } from './h5p.uc';
-import { H5PErrorMapper } from '../mapper/h5p-error.mapper';
 
 describe('H5P Ajax', () => {
 	let module: TestingModule;

@@ -213,11 +213,23 @@ export class H5PEditorUc {
 
 		try {
 			const rangeCallback = this.getRange(req);
+			const adapterRangeCallback: (filesize: number) => { end: number; start: number } = (filesize) => {
+				let returnValue = { start: 0, end: 0 };
+
+				if (rangeCallback) {
+					const result = rangeCallback(filesize);
+
+					if (result) {
+						returnValue = { start: result.start, end: result.end };
+					}
+				}
+
+				return returnValue;
+			};
 			const { mimetype, range, stats, stream } = await this.h5pAjaxEndpoint.getTemporaryFile(
 				file,
 				user,
-				// @ts-expect-error 2345: Callback can return undefined, typings from @lumieducation/h5p-server are wrong
-				rangeCallback
+				adapterRangeCallback
 			);
 
 			return {

@@ -289,7 +289,7 @@ describe('H5PEditor Controller (api)', () => {
 
 				const response = await loggedInClient.get(`temp-files/${mockFile.name}`);
 
-				expect(response.statusCode).toEqual(HttpStatus.OK);
+				expect(response.statusCode).toEqual(HttpStatus.PARTIAL_CONTENT);
 				expect(response.text).toBe(mockFile.content);
 			});
 
