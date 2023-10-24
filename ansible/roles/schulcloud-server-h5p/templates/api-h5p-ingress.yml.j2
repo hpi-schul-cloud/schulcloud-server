@@ -17,6 +17,14 @@ metadata:
     nginx.ingress.kubernetes.io/server-snippet: |
       client_header_buffer_size 100k;
       large_client_header_buffers 4 100k;
+{% if KEDA_NAMESPACE_ACTIVATOR_ENABLED is defined %}
+      proxy_intercept_errors on;
+      error_page 503 = @errorpages;
+
+      location @errorpages {
+        return 302 'https://activate.cd.dbildungscloud.dev/namespace?namespace={{ NAMESPACE }}&redirected-from-503=true';
+      }
+{% endif %}
 {% if CLUSTER_ISSUER is defined %}
     cert-manager.io/cluster-issuer: {{ CLUSTER_ISSUER }}
 {% endif %}
