@@ -1,8 +1,10 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { createMock } from '@golevelup/ts-jest';
+import { ConfigService } from '@nestjs/config';
 import { Mail } from './mail.interface';
 import { MailService } from './mail.service';
+import { IMailConfig } from './interfaces/mail-config';
 
 describe('MailService', () => {
 	let module: TestingModule;
@@ -15,12 +17,15 @@ describe('MailService', () => {
 	};
 
 	beforeAll(async () => {
-		Configuration.set('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS', 'schul-cloud.org, example.com');
 		module = await Test.createTestingModule({
 			providers: [
 				MailService,
 				{ provide: AmqpConnection, useValue: { publish: () => {} } },
 				{ provide: 'MAIL_SERVICE_OPTIONS', useValue: mailServiceOptions },
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService<IMailConfig, true>>({ get: () => ['schul-cloud.org', 'example.com'] }),
+				},
 			],
 		}).compile();
 
