@@ -594,10 +594,10 @@ describe('PreviewService', () => {
 				};
 			};
 
-			it('does not pass error', async () => {
-				const { fileRecord } = setup();
+			it('should throw error', async () => {
+				const { fileRecord, error } = setup();
 
-				await previewService.deletePreviews([fileRecord]);
+				await expect(previewService.deletePreviews([fileRecord])).rejects.toThrowError(error);
 			});
 		});
 	});

@@ -45,27 +45,17 @@ export class PreviewService {
 			bytesRange,
 		};
 
-		if (previewParams.forceUpdate) {
-			await this.generatePreview(previewFileParams);
-		}
-
 		const response = await this.tryGetPreviewOrGenerate(previewFileParams);
 
 		return response;
 	}
 
 	public async deletePreviews(fileRecords: FileRecord[]): Promise<void> {
-		try {
-			const paths = fileRecords.map((fileRecord) =>
-				createPreviewDirectoryPath(fileRecord.getSchoolId(), fileRecord.id)
-			);
+		const paths = fileRecords.map((fileRecord) => createPreviewDirectoryPath(fileRecord.getSchoolId(), fileRecord.id));
 
-			const promises = paths.map((path) => this.storageClient.deleteDirectory(path));
+		const promises = paths.map((path) => this.storageClient.deleteDirectory(path));
 
-			await Promise.all(promises);
-		} catch (error) {
-			this.logger.warn(error);
-		}
+		await Promise.all(promises);
 	}
 
 	private checkIfPreviewPossible(fileRecord: FileRecord): void | UnprocessableEntityException {
@@ -79,6 +69,10 @@ export class PreviewService {
 		let file: GetFileResponse;
 
 		try {
+			if (params.previewParams.forceUpdate) {
+				await this.generatePreview(params);
+			}
+
 			file = await this.getPreviewFile(params);
 		} catch (error) {
 			if (!(error instanceof NotFoundException)) {

@@ -1,9 +1,9 @@
+import { AuthorizationContext } from '@modules/authorization';
+import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationContext } from '@modules/authorization';
-import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
 import { Request } from 'express';
@@ -164,8 +164,9 @@ export class FilesStorageUC {
 	// delete
 	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.delete);
-		const [fileRecords, count] = await this.filesStorageService.deleteFilesOfParent(params.parentId);
+		const [fileRecords, count] = await this.filesStorageService.getFileRecordsOfParent(params.parentId);
 		await this.previewService.deletePreviews(fileRecords);
+		await this.filesStorageService.deleteFilesOfParent(fileRecords);
 
 		return [fileRecords, count];
 	}
@@ -175,8 +176,8 @@ export class FilesStorageUC {
 		const { parentType, parentId } = fileRecord.getParentInfo();
 
 		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.delete);
-		await this.filesStorageService.delete([fileRecord]);
 		await this.previewService.deletePreviews([fileRecord]);
+		await this.filesStorageService.delete([fileRecord]);
 
 		return fileRecord;
 	}

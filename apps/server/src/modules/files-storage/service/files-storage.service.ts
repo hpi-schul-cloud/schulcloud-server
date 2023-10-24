@@ -304,14 +304,10 @@ export class FilesStorageService {
 		await this.deleteWithRollbackByError(fileRecords);
 	}
 
-	public async deleteFilesOfParent(parentId: EntityId): Promise<Counted<FileRecord[]>> {
-		const [fileRecords, count] = await this.getFileRecordsOfParent(parentId);
-
-		if (count > 0) {
+	public async deleteFilesOfParent(fileRecords: FileRecord[]): Promise<void> {
+		if (fileRecords.length > 0) {
 			await this.delete(fileRecords);
 		}
-
-		return [fileRecords, count];
 	}
 
 	// restore
