@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, IPagination, Permission } from '@shared/domain';
 // Importing AuthorizationService and AuthorizationContextBuilder from the barrel file leads to a runtime error.
-import { AuthorizationContextBuilder } from '@src/modules/authorization/domain/mapper/authorization-context.builder';
-import { AuthorizationService } from '@src/modules/authorization/domain/service/authorization.service';
-import { SchoolDto } from '../dto';
-import { SlimSchoolDto } from '../dto/slim-school.dto';
+import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
+import { SchoolDto, SlimSchoolDto } from '../dto';
 import { SchoolDtoMapper } from '../mapper';
 import { SchoolService } from '../service';
 import { SchoolQuery } from '../type';
