@@ -3,6 +3,7 @@ import {
 	boardFactory,
 	columnboardBoardElementFactory,
 	columnBoardFactory,
+	columnBoardTargetFactory,
 	courseFactory,
 	lessonBoardElementFactory,
 	lessonFactory,
@@ -171,6 +172,36 @@ describe('Board Entity', () => {
 			board.syncBoardElementReferences([existinglesson, lesson]);
 
 			expect(board.references[0].target.id).toEqual(lesson.id);
+		});
+
+		it('should add columnboards to board', () => {
+			const columnBoardTarget = columnBoardTargetFactory.buildWithId();
+			const board = boardFactory.buildWithId({ references: [] });
+
+			board.syncBoardElementReferences([columnBoardTarget]);
+
+			expect(board.references.count()).toEqual(1);
+		});
+
+		it('should NOT add columnboards to board that is already there', () => {
+			const target = columnBoardTargetFactory.buildWithId();
+			const boardElement = columnboardBoardElementFactory.buildWithId({ target });
+			const board = boardFactory.buildWithId({ references: [boardElement] });
+
+			board.syncBoardElementReferences([target]);
+
+			expect(board.references.count()).toEqual(1);
+		});
+
+		it('should add new columnboards to the beginning of the list', () => {
+			const newTarget = columnBoardTargetFactory.buildWithId();
+			const existingTarget = columnBoardTargetFactory.buildWithId();
+			const existingElement = columnboardBoardElementFactory.buildWithId({ target: existingTarget });
+			const board = boardFactory.buildWithId({ references: [existingElement] });
+
+			board.syncBoardElementReferences([existingTarget, newTarget]);
+
+			expect(board.references[0].target.id).toEqual(newTarget.id);
 		});
 
 		describe('when board element has an invalid type', () => {

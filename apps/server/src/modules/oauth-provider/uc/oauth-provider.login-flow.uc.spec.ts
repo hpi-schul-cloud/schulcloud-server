@@ -1,12 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalToolDO, LtiToolDO, Permission, PseudonymDO } from '@shared/domain';
+import { LtiToolDO, Permission, Pseudonym, UserDO } from '@shared/domain';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderLoginResponse, ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto';
-import { externalToolDOFactory, ltiToolDOFactory, setupEntities, userFactory } from '@shared/testing';
+import {
+	externalToolFactory,
+	ltiToolDOFactory,
+	pseudonymFactory,
+	setupEntities,
+	userDoFactory,
+	userFactory,
+} from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
 import { PseudonymService } from '@src/modules/pseudonym';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain';
+import { UserService } from '@src/modules/user';
 import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '../controller/dto';
 import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
 import { OauthProviderLoginFlowUc } from './oauth-provider.login-flow.uc';
@@ -19,12 +28,13 @@ describe('OauthProviderLoginFlowUc', () => {
 	let oauthProviderLoginFlowService: DeepMocked<OauthProviderLoginFlowService>;
 	let pseudonymService: DeepMocked<PseudonymService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
+	let userService: DeepMocked<UserService>;
 
-	const pseudonym: PseudonymDO = {
+	const pseudonym: Pseudonym = pseudonymFactory.build({
 		pseudonym: 'pseudonym',
 		toolId: 'toolId',
 		userId: 'userId',
-	};
+	});
 	const redirectResponse: ProviderRedirectResponse = {
 		redirect_to: 'redirect_to',
 	};
@@ -49,6 +59,10 @@ describe('OauthProviderLoginFlowUc', () => {
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
 			],
 		}).compile();
 
@@ -57,6 +71,7 @@ describe('OauthProviderLoginFlowUc', () => {
 		oauthProviderLoginFlowService = module.get(OauthProviderLoginFlowService);
 		pseudonymService = module.get(PseudonymService);
 		authorizationService = module.get(AuthorizationService);
+		userService = module.get(UserService);
 
 		await setupEntities();
 	});
@@ -122,19 +137,40 @@ describe('OauthProviderLoginFlowUc', () => {
 					subject: 'subject',
 				};
 
-				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config({ skipConsent: true }).buildWithId();
+				const user: UserDO = userDoFactory.buildWithId();
+				const tool: ExternalTool = externalToolFactory.withOauth2Config({ skipConsent: true }).buildWithId();
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
 				oauthProviderLoginFlowService.isNextcloudTool.mockReturnValue(false);
+				userService.findById.mockResolvedValue(user);
 				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);
 				oauthProviderService.acceptLoginRequest.mockResolvedValue(redirectResponse);
 
 				return {
 					query,
 					loginRequestBodyMock,
+					tool,
+					user,
+					userId: user.id as string,
 				};
 			};
+
+			it('should call userService', async () => {
+				const { query, loginRequestBodyMock, userId } = setup();
+
+				await uc.patchLoginRequest(userId, 'challenge', loginRequestBodyMock, query);
+
+				expect(userService.findById).toHaveBeenCalledWith(userId);
+			});
+
+			it('should call pseudonymService', async () => {
+				const { query, loginRequestBodyMock, tool, user } = setup();
+
+				await uc.patchLoginRequest('userId', 'challenge', loginRequestBodyMock, query);
+
+				expect(pseudonymService.findOrCreatePseudonym).toHaveBeenCalledWith(user, tool);
+			});
 
 			it('should accept the login request', async () => {
 				const { query, loginRequestBodyMock } = setup();
@@ -254,9 +290,7 @@ describe('OauthProviderLoginFlowUc', () => {
 					subject: 'subject',
 				};
 
-				const tool: ExternalToolDO = externalToolDOFactory
-					.withOauth2Config()
-					.buildWithId({ name: 'SchulcloudNextcloud' });
+				const tool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId({ name: 'SchulcloudNextcloud' });
 
 				const user = userFactory.buildWithId();
 
@@ -346,7 +380,7 @@ describe('OauthProviderLoginFlowUc', () => {
 					subject: 'subject',
 				};
 
-				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().build({ id: undefined });
+				const tool: ExternalTool = externalToolFactory.withOauth2Config().build({ id: undefined });
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
@@ -389,7 +423,7 @@ describe('OauthProviderLoginFlowUc', () => {
 					subject: 'subject',
 				};
 
-				const tool: ExternalToolDO = externalToolDOFactory.buildWithId();
+				const tool: ExternalTool = externalToolFactory.buildWithId();
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);

@@ -203,32 +203,5 @@ describe('TaskRule', () => {
 				expect(res).toBe(false);
 			});
 		});
-
-		describe('when task has course with 2 students and task has 1 assigned students', () => {
-			const setup = () => {
-				const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.STUDENT });
-				const assignedStudent = userFactory.build({ roles: [role] });
-				const notAssignedStudent = userFactory.build({ roles: [role] });
-				const course = courseFactory.build({ students: [assignedStudent, notAssignedStudent] });
-				const task = taskFactory.build({ course, users: [assignedStudent] });
-
-				return { role, task, course, assignedStudent, notAssignedStudent };
-			};
-
-			it('should return "false" if user is not assigend to task regardless of task permissions', () => {
-				const { notAssignedStudent, task } = setup();
-				const res = service.hasPermission(notAssignedStudent, task, {
-					action: Action.read,
-					requiredPermissions: [permissionA, permissionB, permissionC],
-				});
-				expect(res).toBe(false);
-			});
-
-			it('should return "false" if user is not assigend to task regardless of task permissions', () => {
-				const { assignedStudent, task } = setup();
-				const res = service.hasPermission(assignedStudent, task, { action: Action.read, requiredPermissions: [] });
-				expect(res).toBe(true);
-			});
-		});
 	});
 });

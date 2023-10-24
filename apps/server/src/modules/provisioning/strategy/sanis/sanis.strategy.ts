@@ -1,14 +1,21 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { firstValueFrom } from 'rxjs';
 import { RoleName } from '@shared/domain';
-import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto } from '../../dto';
+import {
+	ExternalSchoolDto,
+	ExternalUserDto,
+	OauthDataDto,
+	OauthDataStrategyInputDto,
+	ExternalGroupDto,
+} from '../../dto';
 import { OidcProvisioningStrategy } from '../oidc/oidc.strategy';
 import { OidcProvisioningService } from '../oidc/service/oidc-provisioning.service';
 import { SanisResponseMapper } from './sanis-response.mapper';
-import { SanisResponse } from './sanis.response';
+import { SanisResponse } from './response';
 
 @Injectable()
 export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
@@ -44,11 +51,18 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 
 		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(axiosResponse.data);
 
+		let externalGroups: ExternalGroupDto[] | undefined;
+		if (Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED')) {
+			externalGroups = this.responseMapper.mapToExternalGroupDtos(axiosResponse.data);
+		}
+
 		const oauthData: OauthDataDto = new OauthDataDto({
 			system: input.system,
 			externalSchool,
 			externalUser,
+			externalGroups,
 		});
+
 		return oauthData;
 	}
 

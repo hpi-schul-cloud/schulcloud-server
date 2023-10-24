@@ -10,10 +10,10 @@ import {
 	BBBService,
 	GuestPolicy,
 } from '../bbb';
-import { IScopeInfo, ScopeRef } from './dto';
-import { VideoConferenceService } from '../service';
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
 import { ErrorStatus } from '../error/error-status.enum';
+import { VideoConferenceOptions } from '../interface';
+import { VideoConferenceService } from '../service';
+import { IScopeInfo, ScopeRef } from './dto';
 
 @Injectable()
 export class VideoConferenceCreateUc {
@@ -33,18 +33,8 @@ export class VideoConferenceCreateUc {
 		}
 
 		if (bbbMeetingInfoResponse === undefined) {
-			await this.create(currentUserId, scope, this.mergeOptionsWithDefaults(options));
+			await this.create(currentUserId, scope, options);
 		}
-	}
-
-	private mergeOptionsWithDefaults(options: VideoConferenceOptions): VideoConferenceOptions {
-		return {
-			everyAttendeeJoinsMuted: options.everyAttendeeJoinsMuted ?? defaultVideoConferenceOptions.everyAttendeeJoinsMuted,
-			everybodyJoinsAsModerator:
-				options.everybodyJoinsAsModerator ?? defaultVideoConferenceOptions.everybodyJoinsAsModerator,
-			moderatorMustApproveJoinRequests:
-				options.moderatorMustApproveJoinRequests ?? defaultVideoConferenceOptions.moderatorMustApproveJoinRequests,
-		};
 	}
 
 	private async create(currentUserId: EntityId, scope: ScopeRef, options: VideoConferenceOptions): Promise<void> {
@@ -64,6 +54,7 @@ export class VideoConferenceCreateUc {
 		await this.videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions(scope.id, scope.scope, options);
 
 		const configBuilder: BBBCreateConfigBuilder = this.prepareBBBCreateConfigBuilder(scope, options, scopeInfo);
+
 		await this.bbbService.create(configBuilder.build());
 	}
 
@@ -75,7 +66,7 @@ export class VideoConferenceCreateUc {
 		const configBuilder: BBBCreateConfigBuilder = new BBBCreateConfigBuilder({
 			name: this.videoConferenceService.sanitizeString(scopeInfo.title),
 			meetingID: scope.id,
-		}).withLogoutUrl(scopeInfo.logoutUrl);
+		}).withLogoutUrl(options.logoutUrl ?? scopeInfo.logoutUrl);
 
 		if (options.moderatorMustApproveJoinRequests) {
 			configBuilder.withGuestPolicy(GuestPolicy.ASK_MODERATOR);

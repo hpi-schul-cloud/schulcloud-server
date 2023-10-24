@@ -1,5 +1,4 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller/';
@@ -10,7 +9,7 @@ import { serverConfig } from '@src/modules/server/server.config';
 import { TaskMapper } from '../mapper';
 import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskUC } from '../uc/task.uc';
-import { TaskCreateParams, TaskListResponse, TaskResponse, TaskUpdateParams, TaskUrlParams } from './dto';
+import { TaskListResponse, TaskResponse, TaskUrlParams } from './dto';
 import { TaskCopyApiParams } from './dto/task-copy.params';
 
 @ApiTags('Task')
@@ -102,51 +101,5 @@ export class TaskController {
 		const result = await this.taskUc.delete(currentUser.userId, urlParams.taskId);
 
 		return result;
-	}
-
-	@Post()
-	async create(@Body() params: TaskCreateParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
-		this.FeatureTaskCardEnabled();
-
-		const taskWithSatusVo = await this.taskUc.create(currentUser.userId, TaskMapper.mapTaskCreateToDomain(params));
-
-		const response = TaskMapper.mapToResponse(taskWithSatusVo);
-		return response;
-	}
-
-	@Patch(':taskId')
-	async update(
-		@Param() urlParams: TaskUrlParams,
-		@Body() params: TaskUpdateParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<TaskResponse> {
-		this.FeatureTaskCardEnabled();
-
-		const taskWithSatusVo = await this.taskUc.update(
-			currentUser.userId,
-			urlParams.taskId,
-			TaskMapper.mapTaskUpdateToDomain(params)
-		);
-
-		const response = TaskMapper.mapToResponse(taskWithSatusVo);
-
-		return response;
-	}
-
-	@Get(':taskId')
-	async findTask(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
-		this.FeatureTaskCardEnabled();
-
-		const taskWithSatusVo = await this.taskUc.find(currentUser.userId, urlParams.taskId);
-
-		const response = TaskMapper.mapToResponse(taskWithSatusVo);
-		return response;
-	}
-
-	private FeatureTaskCardEnabled() {
-		const enabled = Configuration.get('FEATURE_TASK_CARD_ENABLED') as boolean;
-		if (!enabled) {
-			throw new NotImplementedException('Feature not enabled');
-		}
 	}
 }

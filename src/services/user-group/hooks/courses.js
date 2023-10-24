@@ -1,4 +1,6 @@
 const _ = require('lodash');
+const { Configuration } = require('@hpi-schul-cloud/commons/lib');
+const { service } = require('feathers-mongoose');
 
 const { BadRequest } = require('../../../errors');
 const globalHooks = require('../../../hooks');
@@ -10,17 +12,34 @@ const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCur
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
 
 const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
-
 /**
  * adds all students to a course when a class is added to the course
  * @param hook - contains created/patched object and request body
  */
-const addWholeClassToCourse = (hook) => {
+const addWholeClassToCourse = async (hook) => {
+	const { app } = hook;
 	const requestBody = hook.data;
 	const course = hook.result;
-	if (requestBody.classIds === undefined) {
-		return hook;
+
+	if (Configuration.get('FEATURE_GROUPS_IN_COURSE_ENABLED') && (requestBody.groupIds || []).length > 0) {
+		await Promise.all(
+			requestBody.groupIds.map((groupId) =>
+				app
+					.service('nest-group-service')
+					.findById(groupId)
+					.then((group) => group.users)
+			)
+		).then(async (groupUsers) => {
+			// flatten deep arrays and remove duplicates
+			const userIds = _.flattenDeep(groupUsers).map((groupUser) => groupUser.userId);
+			const uniqueUserIds = _.uniqWith(userIds, (a, b) => a === b);
+
+			await CourseModel.update({ _id: course._id }, { $addToSet: { userIds: { $each: uniqueUserIds } } }).exec();
+
+			return undefined;
+		});
 	}
+
 	if ((requestBody.classIds || []).length > 0) {
 		// just courses do have a property "classIds"
 		return Promise.all(
@@ -34,6 +53,7 @@ const addWholeClassToCourse = (hook) => {
 			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
 
 			await CourseModel.update({ _id: course._id }, { $addToSet: { userIds: { $each: studentIds } } }).exec();
+
 			return hook;
 		});
 	}

@@ -10,6 +10,7 @@ export class AccountResponseMapper {
 			userId: account.userId?.toString(),
 			activated: account.activated,
 			username: account.username,
+			updatedAt: account.updatedAt,
 		});
 	}
 
@@ -19,6 +20,7 @@ export class AccountResponseMapper {
 			userId: account.userId,
 			activated: account.activated,
 			username: account.username,
+			updatedAt: account.updatedAt,
 		});
 	}
 }

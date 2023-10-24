@@ -1,4 +1,4 @@
-import { Lesson, Submission, Task } from '@shared/domain';
+import { LessonEntity, Submission, Task } from '@shared/domain';
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import { CopyFileDto, FileDto } from '../dto';
 import { EntitiesWithFiles, ICopyFileDomainObjectProps, IFileDomainObjectProps } from '../interfaces';
@@ -60,7 +60,7 @@ export class FilesStorageClientMapper {
 	}
 
 	static mapEntityToParentType(entity: EntitiesWithFiles): FileRecordParentType {
-		if (entity instanceof Lesson) return FileRecordParentType.Lesson;
+		if (entity instanceof LessonEntity) return FileRecordParentType.Lesson;
 
 		if (entity instanceof Task) return FileRecordParentType.Task;
 

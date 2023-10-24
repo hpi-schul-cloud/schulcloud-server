@@ -4,7 +4,7 @@ const { authenticate } = require('@feathersjs/authentication').hooks;
 const { BadRequest } = require('../../../errors');
 const { hasPermission } = require('../../../hooks');
 
-const { SC_SHORT_TITLE, SC_TITLE } = require('../../../../config/globals');
+const { SC_TITLE } = require('../../../../config/globals');
 
 const mailContent = (firstName, lastName, registrationLink) => {
 	const mail = {
@@ -14,7 +14,7 @@ const mailContent = (firstName, lastName, registrationLink) => {
 Hallo ${firstName} ${lastName}!
 \nDu wurdest eingeladen, der ${SC_TITLE} beizutreten, bitte vervollständige deine Registrierung unter folgendem Link: 
 ${registrationLink}
-\nViel Spaß und einen guten Start wünscht dir dein ${SC_SHORT_TITLE}-Team`,
+\nViel Spaß und einen guten Start wünscht dir dein ${SC_TITLE}-Team`,
 			html: '',
 		},
 	};

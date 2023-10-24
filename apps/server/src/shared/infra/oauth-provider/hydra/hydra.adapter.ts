@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
-import { firstValueFrom, Observable } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
+import { AxiosResponse, Method, RawAxiosRequestHeaders } from 'axios';
 import QueryString from 'qs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { URL } from 'url';
 import {
 	AcceptConsentRequestBody,
@@ -15,8 +15,8 @@ import {
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '../dto';
-import { OauthProviderService } from '../oauth-provider.service';
 import { ProviderConsentSessionResponse } from '../dto/response/consent-session.response';
+import { OauthProviderService } from '../oauth-provider.service';
 
 @Injectable()
 export class HydraAdapter extends OauthProviderService {
@@ -158,7 +158,7 @@ export class HydraAdapter extends OauthProviderService {
 		method: Method,
 		url: string,
 		data?: unknown,
-		additionalHeaders: AxiosRequestHeaders = {}
+		additionalHeaders: RawAxiosRequestHeaders = {}
 	): Promise<T> {
 		const observable: Observable<AxiosResponse<T>> = this.httpService.request({
 			url,

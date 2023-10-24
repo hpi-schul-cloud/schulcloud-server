@@ -41,14 +41,6 @@ describe(RichTextElementNode.name, () => {
 			expect(builder.buildRichTextElement).toHaveBeenCalledWith(element);
 		});
 
-		it('should call the specific builder method', () => {
-			const { element, builder } = setup();
-
-			element.useDoBuilder(builder);
-
-			expect(builder.buildRichTextElement).toHaveBeenCalledWith(element);
-		});
-
 		it('should return RichTextElementDo', () => {
 			const { element, builder, elementDo } = setup();
 

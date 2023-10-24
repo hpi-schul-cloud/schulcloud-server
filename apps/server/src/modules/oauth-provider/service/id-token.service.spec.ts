@@ -1,17 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalToolDO, PseudonymDO, Team, UserDO } from '@shared/domain';
+import { Pseudonym, TeamEntity, UserDO } from '@shared/domain';
 import { TeamsRepo } from '@shared/repo';
-import { externalToolDOFactory, setupEntities, userDoFactory } from '@shared/testing';
-import { pseudonymDOFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
+import { externalToolFactory, pseudonymFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { IdToken } from '@src/modules/oauth-provider/interface/id-token';
 import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.enum';
 import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
 import { PseudonymService } from '@src/modules/pseudonym/service';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import { UserService } from '@src/modules/user/service/user.service';
+import { IdTokenCreationLoggableException } from '../error/id-token-creation-exception.loggable';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 import resetAllMocks = jest.resetAllMocks;
 
@@ -24,18 +23,7 @@ describe('IdTokenService', () => {
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let userService: DeepMocked<UserService>;
 
-	const hostUrl = 'https://host.de';
-
 	beforeAll(async () => {
-		jest.spyOn(Configuration, 'get').mockImplementation((key: string) => {
-			switch (key) {
-				case 'HOST':
-					return hostUrl;
-				default:
-					return null;
-			}
-		});
-
 		module = await Test.createTestingModule({
 			providers: [
 				IdTokenService,
@@ -83,31 +71,33 @@ describe('IdTokenService', () => {
 
 				const displayName = 'display name';
 
-				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
+				const tool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
 
-				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId({ pseudonym: 'pseudonym' });
+				const pseudonym: Pseudonym = pseudonymFactory.build({ pseudonym: 'pseudonym' });
 
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				pseudonymService.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
+				const iframeSubject = 'iframeSubject';
+				pseudonymService.getIframeSubject.mockReturnValueOnce(iframeSubject);
 
 				return {
 					user,
 					displayName,
 					tool,
 					pseudonym,
+					iframeSubject,
 				};
 			};
 
 			it('should return the correct id token', async () => {
-				const { user } = setup();
+				const { user, iframeSubject } = setup();
 
 				const result: IdToken = await service.createIdToken('userId', [], 'clientId');
 
 				expect(result).toEqual<IdToken>({
-					iframe:
-						'<iframe src="https://host.de/oauth2/username/pseudonym" title="username" style="height: 26px; width: 180px; border: none;"></iframe>',
+					iframe: iframeSubject,
 					schoolId: user.schoolId,
 				});
 			});
@@ -115,21 +105,23 @@ describe('IdTokenService', () => {
 
 		describe('when scopes contain groups', () => {
 			const setup = () => {
-				const team: Team = teamFactory.buildWithId();
+				const team: TeamEntity = teamFactory.buildWithId();
 
 				const user: UserDO = userDoFactory.buildWithId({ schoolId: 'schoolId' });
 
 				const displayName = 'display name';
 
-				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
+				const tool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
 
-				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId({ pseudonym: 'pseudonym' });
+				const pseudonym: Pseudonym = pseudonymFactory.build({ pseudonym: 'pseudonym' });
 
 				teamsRepo.findByUserId.mockResolvedValue([team]);
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				pseudonymService.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
+				const iframeSubject = 'iframeSubject';
+				pseudonymService.getIframeSubject.mockReturnValueOnce(iframeSubject);
 
 				return {
 					team,
@@ -137,17 +129,17 @@ describe('IdTokenService', () => {
 					displayName,
 					tool,
 					pseudonym,
+					iframeSubject,
 				};
 			};
 
 			it('should return the correct id token', async () => {
-				const { user, team } = setup();
+				const { user, team, iframeSubject } = setup();
 
 				const result: IdToken = await service.createIdToken('userId', [OauthScope.GROUPS], 'clientId');
 
 				expect(result).toEqual<IdToken>({
-					iframe:
-						'<iframe src="https://host.de/oauth2/username/pseudonym" title="username" style="height: 26px; width: 180px; border: none;"></iframe>',
+					iframe: iframeSubject,
 					schoolId: user.schoolId,
 					groups: [
 						{
@@ -165,31 +157,33 @@ describe('IdTokenService', () => {
 
 				const displayName = 'display name';
 
-				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
+				const tool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
 
-				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId({ pseudonym: 'pseudonym' });
+				const pseudonym: Pseudonym = pseudonymFactory.build({ pseudonym: 'pseudonym' });
 
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				pseudonymService.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
+				const iframeSubject = 'iframeSubject';
+				pseudonymService.getIframeSubject.mockReturnValueOnce(iframeSubject);
 
 				return {
 					user,
 					displayName,
 					tool,
 					pseudonym,
+					iframeSubject,
 				};
 			};
 
 			it('should return the correct id token', async () => {
-				const { user } = setup();
+				const { user, iframeSubject } = setup();
 
 				const result: IdToken = await service.createIdToken('userId', [OauthScope.EMAIL], 'clientId');
 
 				expect(result).toEqual<IdToken>({
-					iframe:
-						'<iframe src="https://host.de/oauth2/username/pseudonym" title="username" style="height: 26px; width: 180px; border: none;"></iframe>',
+					iframe: iframeSubject,
 					schoolId: user.schoolId,
 					email: user.email,
 				});
@@ -202,31 +196,33 @@ describe('IdTokenService', () => {
 
 				const displayName = 'display name';
 
-				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
+				const tool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
 
-				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId({ pseudonym: 'pseudonym' });
+				const pseudonym: Pseudonym = pseudonymFactory.build({ pseudonym: 'pseudonym' });
 
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				pseudonymService.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
+				const iframeSubject = 'iframeSubject';
+				pseudonymService.getIframeSubject.mockReturnValueOnce(iframeSubject);
 
 				return {
 					user,
 					displayName,
 					tool,
 					pseudonym,
+					iframeSubject,
 				};
 			};
 
 			it('should return the correct id token', async () => {
-				const { user, displayName } = setup();
+				const { user, displayName, iframeSubject } = setup();
 
 				const result: IdToken = await service.createIdToken('userId', [OauthScope.PROFILE], 'clientId');
 
 				expect(result).toEqual<IdToken>({
-					iframe:
-						'<iframe src="https://host.de/oauth2/username/pseudonym" title="username" style="height: 26px; width: 180px; border: none;"></iframe>',
+					iframe: iframeSubject,
 					schoolId: user.schoolId,
 					name: displayName,
 					userId: user.id,
@@ -240,9 +236,9 @@ describe('IdTokenService', () => {
 
 				const displayName = 'display name';
 
-				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().build({ id: undefined });
+				const tool: ExternalTool = externalToolFactory.withOauth2Config().build({ id: undefined });
 
-				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId({ pseudonym: 'pseudonym' });
+				const pseudonym: Pseudonym = pseudonymFactory.build({ pseudonym: 'pseudonym' });
 
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
@@ -256,16 +252,12 @@ describe('IdTokenService', () => {
 				};
 			};
 
-			it('should throw an InternalServerErrorException', async () => {
-				setup();
+			it('should throw an IdTokenCreationLoggableException', async () => {
+				const { user } = setup();
 
 				const func = async () => service.createIdToken('userId', [OauthScope.PROFILE], 'clientId');
 
-				await expect(func).rejects.toThrow(
-					new InternalServerErrorException(
-						'Something went wrong for id token creation. Tool could not be found for userId: userId and clientId: clientId'
-					)
-				);
+				await expect(func).rejects.toThrow(new IdTokenCreationLoggableException('clientId', user.id));
 			});
 		});
 	});

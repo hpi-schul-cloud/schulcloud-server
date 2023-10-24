@@ -34,11 +34,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	async findByUserIdOrFail(userId: EntityId): Promise<AccountDto> {
-		// TODO: use a findOneorFail in the background -> then the custom error will no longer be needed
-		const accountEntity = await this.accountRepo.findByUserId(userId);
-		if (!accountEntity) {
-			throw new EntityNotFoundError('Account');
-		}
+		const accountEntity = await this.accountRepo.findByUserIdOrFail(userId);
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 

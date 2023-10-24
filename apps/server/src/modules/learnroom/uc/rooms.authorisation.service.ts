@@ -1,5 +1,5 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { Course, Lesson, Task, User } from '@shared/domain';
+import { Course, LessonEntity, Task, User } from '@shared/domain';
 
 export enum TaskParentPermission {
 	read,
@@ -42,7 +42,7 @@ export class RoomsAuthorisationService {
 		return hasPermission;
 	}
 
-	hasLessonReadPermission(user: User, lesson: Lesson): boolean {
+	hasLessonReadPermission(user: User, lesson: LessonEntity): boolean {
 		let hasCoursePermission = false;
 		hasCoursePermission = this.hasCourseReadPermission(user, lesson.course);
 		if (lesson.hidden) {

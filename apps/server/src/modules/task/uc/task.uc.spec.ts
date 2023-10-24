@@ -132,7 +132,6 @@ describe('TaskUC', () => {
 						lessonIdsOfOpenCourses: [],
 						lessonIdsOfFinishedCourses: [],
 					},
-					{ userId: user.id },
 					{ pagination: undefined, order: { dueDate: SortOrder.desc } },
 				];
 				expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
@@ -172,7 +171,6 @@ describe('TaskUC', () => {
 						lessonIdsOfOpenCourses: [],
 						lessonIdsOfFinishedCourses: [],
 					},
-					{ userId: user.id },
 					{ pagination: { skip }, order: { dueDate: SortOrder.desc } },
 				];
 				expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
@@ -191,7 +189,6 @@ describe('TaskUC', () => {
 						lessonIdsOfOpenCourses: [],
 						lessonIdsOfFinishedCourses: [],
 					},
-					{ userId: user.id },
 					{ pagination: { limit }, order: { dueDate: SortOrder.desc } },
 				];
 				expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
@@ -228,7 +225,6 @@ describe('TaskUC', () => {
 						lessonIdsOfOpenCourses: [lesson.id],
 						lessonIdsOfFinishedCourses: [],
 					},
-					{ userId: user.id },
 					{ pagination: undefined, order: { dueDate: SortOrder.desc } },
 				];
 				expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
@@ -265,7 +261,6 @@ describe('TaskUC', () => {
 						lessonIdsOfOpenCourses: [],
 						lessonIdsOfFinishedCourses: [],
 					},
-					{ userId: user.id },
 					{ pagination: undefined, order: { dueDate: SortOrder.desc } },
 				];
 				expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
@@ -376,7 +371,7 @@ describe('TaskUC', () => {
 			});
 		});
 
-		describe('when user is a student without task assignment ', () => {
+		describe('when user is a student', () => {
 			const setup = () => {
 				const permissions = [Permission.TASK_DASHBOARD_VIEW_V3];
 				const user = setupUser(permissions);

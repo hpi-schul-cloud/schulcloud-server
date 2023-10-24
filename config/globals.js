@@ -43,7 +43,6 @@ const globals = {
 	SC_DOMAIN: process.env.SC_DOMAIN || 'localhost',
 	SC_THEME: process.env.SC_THEME || 'default',
 	SC_TITLE: process.env.SC_TITLE || 'HPI Schul-Cloud',
-	SC_SHORT_TITLE: process.env.SC_SHORT_TITLE || 'HPI Schul-Cloud',
 	SMTP_SENDER: process.env.SMTP_SENDER || 'noreply@dbildungscloud.de',
 
 	LEAD_TIME: process.env.LEAD_TIME ? parseInt(process.env.LEAD_TIME, 10) : undefined,

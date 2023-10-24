@@ -100,8 +100,6 @@ export const teacherPermissions = [
 	Permission.TOPIC_CREATE,
 	Permission.TOPIC_EDIT,
 	Permission.START_MEETING,
-	Permission.TASK_CARD_VIEW,
-	Permission.TASK_CARD_EDIT,
 	Permission.CONTEXT_TOOL_ADMIN,
 ] as Permission[];
 
