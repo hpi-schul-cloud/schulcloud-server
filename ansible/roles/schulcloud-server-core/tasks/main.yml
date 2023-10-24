@@ -64,6 +64,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: ingress.yml.j2
+      apply: yes
 
   - name: FileStorageDeployment
     kubernetes.core.k8s:
@@ -82,6 +83,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-files-ingress.yml.j2
+      apply: yes
 
   - name: FwuLearningContentsDeployment
     kubernetes.core.k8s:
@@ -95,6 +97,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-fwu-ingress.yml.j2
+      apply: yes
     when: FEATURE_FWU_CONTENT_ENABLED is defined and FEATURE_FWU_CONTENT_ENABLED|bool
 
   - name: Delete Files CronJob

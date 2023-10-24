@@ -17,5 +17,6 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-h5p-ingress.yml.j2
+      apply: yes
     when: WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool
     
