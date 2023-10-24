@@ -7,7 +7,7 @@ import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
-import { AuthorizationModule } from '@modules/authorization';
+import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
 import { UserModule } from '@modules/user';
 import { S3ClientModule } from '@shared/infra/s3-client';
 import { AuthenticationModule } from '../authentication/authentication.module';
@@ -27,7 +27,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 
 const imports = [
 	AuthenticationModule,
-	AuthorizationModule,
+	AuthorizationReferenceModule,
 	CoreModule,
 	UserModule,
 	RabbitMQWrapperModule,
