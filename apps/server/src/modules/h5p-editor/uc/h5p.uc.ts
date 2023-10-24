@@ -2,19 +2,12 @@ import {
 	H5PAjaxEndpoint,
 	H5PEditor,
 	H5PPlayer,
-	H5pError,
 	IContentMetadata,
 	IEditorModel,
 	IPlayerModel,
 	IUser as LumiIUser,
 } from '@lumieducation/h5p-server';
-import {
-	BadRequestException,
-	HttpException,
-	Injectable,
-	InternalServerErrorException,
-	NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { EntityId, LanguageType } from '@shared/domain';
 import { ICurrentUser } from '@src/modules/authentication';
 import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
@@ -28,6 +21,7 @@ import { H5PContentMapper } from '../mapper/h5p-content.mapper';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { LumiUserWithContentData } from '../types/lumi-types';
+import { H5PErrorMapper } from '../mapper/h5p-error.mapper';
 
 @Injectable()
 export class H5PEditorUc {
@@ -78,17 +72,11 @@ export class H5PEditorUc {
 		};
 	}
 
-	private mapH5pError(error: unknown) {
-		if (error instanceof H5pError) {
-			return new HttpException(error.message, error.httpStatusCode);
-		}
-
-		return new InternalServerErrorException({ error });
-	}
-
+	// eslint-disable-next-line consistent-return
 	public async getAjax(query: AjaxGetQueryParams, currentUser: ICurrentUser) {
 		const user = this.changeUserType(currentUser);
 		const language = await this.getUserLanguage(currentUser);
+		const h5pErrorMapper = new H5PErrorMapper();
 
 		try {
 			const result = await this.h5pAjaxEndpoint.getAjax(
@@ -99,13 +87,13 @@ export class H5PEditorUc {
 				language,
 				user
 			);
-
 			return result;
 		} catch (err) {
-			throw this.mapH5pError(err);
+			h5pErrorMapper.mapH5pError(err);
 		}
 	}
 
+	// eslint-disable-next-line consistent-return
 	public async postAjax(
 		currentUser: ICurrentUser,
 		query: AjaxPostQueryParams,
@@ -115,6 +103,7 @@ export class H5PEditorUc {
 	) {
 		const user = this.changeUserType(currentUser);
 		const language = await this.getUserLanguage(currentUser);
+		const h5pErrorMapper = new H5PErrorMapper();
 
 		try {
 			const result = await this.h5pAjaxEndpoint.postAjax(
@@ -141,7 +130,7 @@ export class H5PEditorUc {
 
 			return result;
 		} catch (err) {
-			throw this.mapH5pError(err);
+			h5pErrorMapper.mapH5pError(err);
 		}
 	}
 
