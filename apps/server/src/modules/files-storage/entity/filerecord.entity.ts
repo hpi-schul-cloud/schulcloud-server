@@ -254,6 +254,12 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return isVerified;
 	}
 
+	public isPreviewPossible(): boolean {
+		const isPreviewPossible = Object.values<string>(PreviewInputMimeTypes).includes(this.mimeType);
+
+		return isPreviewPossible;
+	}
+
 	public getParentInfo(): IParentInfo {
 		const { parentId, parentType, schoolId } = this;
 
@@ -269,7 +275,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED;
 		}
 
-		if (!Object.values<string>(PreviewInputMimeTypes).includes(this.mimeType)) {
+		if (!this.isPreviewPossible()) {
 			return PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE;
 		}
 

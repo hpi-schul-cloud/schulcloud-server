@@ -2,14 +2,14 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, ExternalSource, FederalStateEntity, SchoolFeatures, SchoolYearEntity } from '@shared/domain';
 import { LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { Logger } from '@src/core/logger';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountSaveDto } from '@src/modules/account/services/dto';
-import { Group, GroupService, GroupUser } from '@src/modules/group';
-import { FederalStateService, LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
-import { FederalStateNames } from '@src/modules/legacy-school/types';
-import { RoleService } from '@src/modules/role';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { UserService } from '@src/modules/user';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountSaveDto } from '@modules/account/services/dto';
+import { Group, GroupService, GroupUser } from '@modules/group';
+import { FederalStateService, LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
+import { FederalStateNames } from '@modules/legacy-school/types';
+import { RoleService } from '@modules/role';
+import { RoleDto } from '@modules/role/service/dto/role.dto';
+import { UserService } from '@modules/user';
 import { ObjectId } from 'bson';
 import CryptoJS from 'crypto-js';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -119,10 +119,6 @@ export class OidcProvisioningService {
 	}
 
 	async provisionExternalGroup(externalGroup: ExternalGroupDto, systemId: EntityId): Promise<void> {
-		if (externalGroup.users.length === 0) {
-			return;
-		}
-
 		const existingGroup: Group | null = await this.groupService.findByExternalSource(
 			externalGroup.externalId,
 			systemId
@@ -145,6 +141,10 @@ export class OidcProvisioningService {
 
 		const users: GroupUser[] = await this.getFilteredGroupUsers(externalGroup, systemId);
 
+		if (!users.length) {
+			return;
+		}
+
 		const group: Group = new Group({
 			id: existingGroup ? existingGroup.id : new ObjectId().toHexString(),
 			name: externalGroup.name,
@@ -156,8 +156,9 @@ export class OidcProvisioningService {
 			organizationId,
 			validFrom: externalGroup.from,
 			validUntil: externalGroup.until,
-			users,
+			users: existingGroup ? existingGroup.users : [],
 		});
+		users.forEach((user: GroupUser) => group.addUser(user));
 
 		await this.groupService.save(group);
 	}
@@ -168,7 +169,7 @@ export class OidcProvisioningService {
 				const user: UserDO | null = await this.userService.findByExternalId(externalGroupUser.externalUserId, systemId);
 				const roles: RoleDto[] = await this.roleService.findByNames([externalGroupUser.roleName]);
 
-				if (!user || !user.id || roles.length !== 1 || !roles[0].id) {
+				if (!user?.id || roles.length !== 1 || !roles[0].id) {
 					this.logger.info(new UserForGroupNotFoundLoggable(externalGroupUser));
 					return null;
 				}

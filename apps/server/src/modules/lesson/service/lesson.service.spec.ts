@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonRepo } from '@shared/repo';
 import { lessonFactory, setupEntities } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ComponentType, IComponentProperties } from '@shared/domain';
 import { LessonService } from './lesson.service';

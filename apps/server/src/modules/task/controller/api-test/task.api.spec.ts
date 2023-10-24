@@ -10,8 +10,8 @@ import {
 	submissionFactory,
 	taskFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server/server.module';
-import { TaskListResponse } from '@src/modules/task/controller/dto';
+import { ServerTestModule } from '@modules/server/server.module';
+import { TaskListResponse } from '@modules/task/controller/dto';
 
 const tomorrow = new Date(Date.now() + 86400000);
 

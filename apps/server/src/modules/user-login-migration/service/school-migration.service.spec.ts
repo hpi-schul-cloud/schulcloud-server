@@ -7,10 +7,10 @@ import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/doma
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
 import { legacySchoolDoFactory, setupEntities, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser } from '@src/modules/authentication';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { UserService } from '@src/modules/user';
-import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
+import { ICurrentUser } from '@modules/authentication';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
+import { OAuthMigrationError } from '@modules/user-login-migration/error/oauth-migration.error';
 import { SchoolMigrationService } from './school-migration.service';
 
 describe('SchoolMigrationService', () => {

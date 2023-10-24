@@ -5,8 +5,8 @@ import { Permission, User } from '@shared/domain';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationService } from '@src/modules';
-import { ICurrentUser } from '@src/modules/authentication';
+import { AuthorizationService } from '@modules/authorization';
+import { ICurrentUser } from '@modules/authentication';
 import { OauthProviderClientCrudUc } from './oauth-provider.client-crud.uc';
 import resetAllMocks = jest.resetAllMocks;
 

@@ -8,8 +8,7 @@ import {
 	UserRoleEnum,
 } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
-import { Action } from '@src/modules/authorization/types/action.enum';
+import { AuthorizationService, Action } from '@modules/authorization';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { SubmissionItemService } from '../service/submission-item.service';
@@ -28,11 +27,12 @@ export class ElementUc {
 	}
 
 	async updateElementContent(userId: EntityId, elementId: EntityId, content: AnyElementContentBody) {
-		const element = await this.elementService.findById(elementId);
+		let element = await this.elementService.findById(elementId);
 
 		await this.checkPermission(userId, element, Action.write);
 
-		await this.elementService.update(element, content);
+		element = await this.elementService.update(element, content);
+		return element;
 	}
 
 	async createSubmissionItem(

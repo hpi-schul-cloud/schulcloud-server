@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
+import { OauthProviderLogoutFlowUc } from '@modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
+import { OauthProviderResponseMapper } from '@modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import {
 	AcceptQuery,
 	ChallengeParams,
@@ -14,16 +14,16 @@ import {
 	OauthClientBody,
 	OauthClientResponse,
 	RedirectResponse,
-} from '@src/modules/oauth-provider/controller/dto';
+} from '@modules/oauth-provider/controller/dto';
 import {
 	ProviderConsentResponse,
 	ProviderConsentSessionResponse,
 	ProviderLoginResponse,
 	ProviderRedirectResponse,
 } from '@shared/infra/oauth-provider/dto';
-import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
-import { ICurrentUser } from '@src/modules/authentication';
-import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
+import { OauthProviderConsentFlowUc } from '@modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
+import { ICurrentUser } from '@modules/authentication';
+import { OauthProviderUc } from '@modules/oauth-provider/uc/oauth-provider.uc';
 import { OauthProviderController } from './oauth-provider.controller';
 import { OauthProviderClientCrudUc } from '../uc/oauth-provider.client-crud.uc';
 import { OauthProviderLoginFlowUc } from '../uc/oauth-provider.login-flow.uc';

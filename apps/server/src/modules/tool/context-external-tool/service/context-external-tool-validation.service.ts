@@ -6,7 +6,6 @@ import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ContextExternalTool } from '../domain';
-import { ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
 import { ContextExternalToolService } from './context-external-tool.service';
 
 @Injectable()
@@ -18,18 +17,14 @@ export class ContextExternalToolValidationService {
 		private readonly commonToolValidationService: CommonToolValidationService
 	) {}
 
-	async validate(toValidate: ContextExternalToolDto): Promise<void> {
-		const contextExternalTool: ContextExternalTool = new ContextExternalTool(toValidate);
-
+	async validate(contextExternalTool: ContextExternalTool): Promise<void> {
 		await this.checkDuplicateInContext(contextExternalTool);
 
-		const loadedSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(
+		const loadedSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
 			contextExternalTool.schoolToolRef.schoolToolId
 		);
 
-		const loadedExternalTool: ExternalTool = await this.externalToolService.findExternalToolById(
-			loadedSchoolExternalTool.toolId
-		);
+		const loadedExternalTool: ExternalTool = await this.externalToolService.findById(loadedSchoolExternalTool.toolId);
 
 		this.commonToolValidationService.checkCustomParameterEntries(loadedExternalTool, contextExternalTool);
 	}

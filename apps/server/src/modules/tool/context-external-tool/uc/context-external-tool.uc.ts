@@ -1,33 +1,50 @@
+import {
+	AuthorizationContext,
+	AuthorizationContextBuilder,
+	AuthorizationService,
+	ForbiddenLoggableException,
+} from '@modules/authorization';
+import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { Injectable } from '@nestjs/common';
 import { EntityId, Permission, User } from '@shared/domain';
-import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { LegacyLogger } from '@src/core/logger';
-import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
-import { ContextExternalToolDto } from './dto/context-external-tool.types';
-import { ContextExternalTool, ContextRef } from '../domain';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { ContextExternalTool, ContextRef } from '../domain';
+import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
+import { ContextExternalToolDto } from './dto/context-external-tool.types';
 
 @Injectable()
 export class ContextExternalToolUc {
 	constructor(
 		private readonly toolPermissionHelper: ToolPermissionHelper,
+		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly contextExternalToolValidationService: ContextExternalToolValidationService,
-		private readonly authorizationService: AuthorizationService,
-		private readonly logger: LegacyLogger
+		private readonly authorizationService: AuthorizationService
 	) {}
 
 	async createContextExternalTool(
 		userId: EntityId,
+		schoolId: EntityId,
 		contextExternalToolDto: ContextExternalToolDto
 	): Promise<ContextExternalTool> {
-		const contextExternalTool = new ContextExternalTool(contextExternalToolDto);
 		const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
+			contextExternalToolDto.schoolToolRef.schoolToolId
+		);
+
+		if (schoolExternalTool.schoolId !== schoolId) {
+			throw new ForbiddenLoggableException(userId, AuthorizableReferenceType.ContextExternalToolEntity, context);
+		}
+
+		contextExternalToolDto.schoolToolRef.schoolId = schoolId;
+		const contextExternalTool = new ContextExternalTool(contextExternalToolDto);
 
 		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, context);
 
-		await this.contextExternalToolValidationService.validate(contextExternalToolDto);
+		await this.contextExternalToolValidationService.validate(contextExternalTool);
 
 		const createdTool: ContextExternalTool = await this.contextExternalToolService.saveContextExternalTool(
 			contextExternalTool
@@ -38,43 +55,54 @@ export class ContextExternalToolUc {
 
 	async updateContextExternalTool(
 		userId: EntityId,
+		schoolId: EntityId,
 		contextExternalToolId: EntityId,
 		contextExternalToolDto: ContextExternalToolDto
 	): Promise<ContextExternalTool> {
-		const contextExternalTool: ContextExternalTool = new ContextExternalTool(contextExternalToolDto);
-
-		await this.toolPermissionHelper.ensureContextPermissions(
-			userId,
-			contextExternalTool,
-			AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN])
+		const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
+			contextExternalToolDto.schoolToolRef.schoolToolId
 		);
 
-		const updated: ContextExternalTool = new ContextExternalTool({
-			...contextExternalTool,
-			id: contextExternalToolId,
-		});
+		if (schoolExternalTool.schoolId !== schoolId) {
+			throw new ForbiddenLoggableException(userId, AuthorizableReferenceType.ContextExternalToolEntity, context);
+		}
 
-		await this.contextExternalToolValidationService.validate(updated);
-
-		const saved: ContextExternalTool = await this.contextExternalToolService.saveContextExternalTool(updated);
-
-		return saved;
-	}
-
-	async deleteContextExternalTool(userId: EntityId, contextExternalToolId: EntityId): Promise<void> {
-		const tool: ContextExternalTool = await this.contextExternalToolService.getContextExternalToolById(
+		let contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findById(
 			contextExternalToolId
 		);
-		const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
 
-		await this.toolPermissionHelper.ensureContextPermissions(userId, tool, context);
+		contextExternalTool = new ContextExternalTool({
+			...contextExternalToolDto,
+			id: contextExternalTool.id,
+		});
+		contextExternalTool.schoolToolRef.schoolId = schoolId;
 
-		const promise: Promise<void> = this.contextExternalToolService.deleteContextExternalTool(tool);
+		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, context);
 
-		return promise;
+		await this.contextExternalToolValidationService.validate(contextExternalTool);
+
+		const updatedTool: ContextExternalTool = await this.contextExternalToolService.saveContextExternalTool(
+			contextExternalTool
+		);
+
+		return updatedTool;
 	}
 
-	async getContextExternalToolsForContext(userId: EntityId, contextType: ToolContextType, contextId: string) {
+	public async deleteContextExternalTool(userId: EntityId, contextExternalToolId: EntityId): Promise<void> {
+		const tool: ContextExternalTool = await this.contextExternalToolService.findById(contextExternalToolId);
+
+		const context = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
+		await this.toolPermissionHelper.ensureContextPermissions(userId, tool, context);
+
+		await this.contextExternalToolService.deleteContextExternalTool(tool);
+	}
+
+	public async getContextExternalToolsForContext(
+		userId: EntityId,
+		contextType: ToolContextType,
+		contextId: string
+	): Promise<ContextExternalTool[]> {
 		const tools: ContextExternalTool[] = await this.contextExternalToolService.findAllByContext(
 			new ContextRef({ id: contextId, type: contextType })
 		);
@@ -85,7 +113,7 @@ export class ContextExternalToolUc {
 	}
 
 	async getContextExternalTool(userId: EntityId, contextToolId: EntityId) {
-		const tool: ContextExternalTool = await this.contextExternalToolService.getContextExternalToolById(contextToolId);
+		const tool: ContextExternalTool = await this.contextExternalToolService.findById(contextToolId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 
 		await this.toolPermissionHelper.ensureContextPermissions(userId, tool, context);

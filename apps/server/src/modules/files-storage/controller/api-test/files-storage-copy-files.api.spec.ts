@@ -4,7 +4,7 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { EntityId, Permission } from '@shared/domain';
-import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { AntivirusService } from '@shared/infra/antivirus';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import {
 	cleanupCollections,
@@ -15,15 +15,15 @@ import {
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FILES_STORAGE_S3_CONNECTION, FilesStorageTestModule } from '@src/modules/files-storage';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { FILES_STORAGE_S3_CONNECTION, FilesStorageTestModule } from '@modules/files-storage';
 import {
 	CopyFileParams,
 	CopyFilesOfParentParams,
 	FileRecordListResponse,
 	FileRecordResponse,
-} from '@src/modules/files-storage/controller/dto';
+} from '@modules/files-storage/controller/dto';
 import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
