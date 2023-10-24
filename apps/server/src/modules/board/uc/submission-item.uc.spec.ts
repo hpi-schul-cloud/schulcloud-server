@@ -11,10 +11,14 @@ import {
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { Action, AuthorizationService } from '@modules/authorization';
-import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+	BadRequestException,
+	ForbiddenException,
+	NotFoundException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { SubmissionItemUc } from './submission-item.uc';
-import { isFileElementResponse, isRichTextElementResponse } from '../controller/dto';
 
 describe(SubmissionItemUc.name, () => {
 	let module: TestingModule;
@@ -263,7 +267,6 @@ describe(SubmissionItemUc.name, () => {
 			submissionItemService.findById.mockResolvedValue(submissionItem);
 
 			const element = richTextElementFactory.build();
-			elementService.create.mockResolvedValueOnce(element);
 
 			boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
 				new BoardDoAuthorizable({
@@ -272,17 +275,20 @@ describe(SubmissionItemUc.name, () => {
 				})
 			);
 
-			return { submissionItem, user };
+			return { element, submissionItem, user };
 		};
 
 		it('should call service to find the submission item ', async () => {
-			const { submissionItem, user } = setup();
+			const { element, submissionItem, user } = setup();
+			elementService.create.mockResolvedValueOnce(element);
+
 			await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
 			expect(submissionItemService.findById).toHaveBeenCalledWith(submissionItem.id);
 		});
 
 		it('should authorize', async () => {
-			const { submissionItem, user } = setup();
+			const { element, submissionItem, user } = setup();
+			elementService.create.mockResolvedValueOnce(element);
 
 			const boardDoAuthorizable = await boardDoAuthorizableService.getBoardAuthorizable(submissionItem);
 
@@ -308,15 +314,28 @@ describe(SubmissionItemUc.name, () => {
 		});
 
 		it('should call service to create element', async () => {
-			const { submissionItem, user } = setup();
+			const { element, submissionItem, user } = setup();
+			elementService.create.mockResolvedValueOnce(element);
+
 			await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
 			expect(elementService.create).toHaveBeenCalledWith(submissionItem, ContentElementType.RICH_TEXT);
 		});
 
 		it('should return element', async () => {
+			const { element, submissionItem, user } = setup();
+			elementService.create.mockResolvedValueOnce(element);
+
+			const returnedElement = await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
+			expect(returnedElement).toEqual(element);
+		});
+
+		it('should throw if element is not file or rich text', async () => {
 			const { submissionItem, user } = setup();
-			const element = await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
-			expect(element).toBeDefined();
+			const otherElement = submissionContainerElementFactory.build();
+			elementService.create.mockResolvedValueOnce(otherElement);
+			await expect(uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT)).rejects.toThrow(
+				new UnprocessableEntityException()
+			);
 		});
 	});
 });

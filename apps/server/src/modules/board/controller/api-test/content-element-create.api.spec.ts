@@ -37,101 +37,161 @@ describe(`content element create (api)`, () => {
 	});
 
 	describe('with valid user', () => {
-		const setup = async () => {
-			await cleanupCollections(em);
+		describe('when parent is a card', () => {
+			const setup = async () => {
+				await cleanupCollections(em);
 
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-			const course = courseFactory.build({ teachers: [teacherUser] });
-			await em.persistAndFlush([teacherAccount, teacherUser, course]);
+				const course = courseFactory.build({ teachers: [teacherUser] });
+				await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
-				context: { id: course.id, type: BoardExternalReferenceType.Course },
-			});
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+				const columnBoardNode = columnBoardNodeFactory.buildWithId({
+					context: { id: course.id, type: BoardExternalReferenceType.Course },
+				});
+				const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+				const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
 
-			await em.persistAndFlush([columnBoardNode, columnNode, cardNode]);
-			em.clear();
+				await em.persistAndFlush([columnBoardNode, columnNode, cardNode]);
+				em.clear();
 
-			const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, columnBoardNode, columnNode, cardNode };
-		};
+				return { loggedInClient, columnBoardNode, columnNode, cardNode };
+			};
 
-		it('should return status 201', async () => {
-			const { loggedInClient, cardNode } = await setup();
+			it('should return status 201', async () => {
+				const { loggedInClient, cardNode } = await setup();
 
-			const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.RICH_TEXT });
+				const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.RICH_TEXT });
 
-			expect(response.statusCode).toEqual(201);
-		});
-
-		it('should return the created content element of type RICH_TEXT', async () => {
-			const { loggedInClient, cardNode } = await setup();
-
-			const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.RICH_TEXT });
-
-			expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.RICH_TEXT);
-		});
-
-		it('should return the created content element of type FILE', async () => {
-			const { loggedInClient, cardNode } = await setup();
-
-			const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.FILE });
-
-			expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.FILE);
-		});
-
-		it('should return the created content element of type EXTERNAL_TOOL', async () => {
-			const { loggedInClient, cardNode } = await setup();
-
-			const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.EXTERNAL_TOOL });
-
-			expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.EXTERNAL_TOOL);
-		});
-
-		it('should return the created content element of type SUBMISSION_CONTAINER with dueDate set to null', async () => {
-			const { loggedInClient, cardNode } = await setup();
-
-			const response = await loggedInClient.post(`${cardNode.id}/elements`, {
-				type: ContentElementType.SUBMISSION_CONTAINER,
+				expect(response.statusCode).toEqual(201);
 			});
 
-			expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.SUBMISSION_CONTAINER);
-			expect((response.body as SubmissionContainerElementResponse).content.dueDate).toBeNull();
-		});
+			it('should return the created content element of type RICH_TEXT', async () => {
+				const { loggedInClient, cardNode } = await setup();
 
-		it('should actually create the content element', async () => {
-			const { loggedInClient, cardNode } = await setup();
-			const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.RICH_TEXT });
+				const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.RICH_TEXT });
 
-			const elementId = (response.body as AnyContentElementResponse).id;
-
-			const result = await em.findOneOrFail(RichTextElementNode, elementId);
-			expect(result.id).toEqual(elementId);
-		});
-
-		it('should throw an error if toPosition param is not a number', async () => {
-			const { loggedInClient, cardNode } = await setup();
-
-			const response = await loggedInClient.post(`${cardNode.id}/elements`, {
-				type: ContentElementType.RICH_TEXT,
-				toPosition: 'not a number',
+				expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.RICH_TEXT);
 			});
 
-			expect(response.statusCode).toEqual(400);
-		});
+			it('should return the created content element of type FILE', async () => {
+				const { loggedInClient, cardNode } = await setup();
 
-		it('should throw an error if toPosition param is a negative number', async () => {
-			const { loggedInClient, cardNode } = await setup();
+				const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.FILE });
 
-			const response = await loggedInClient.post(`${cardNode.id}/elements`, {
-				type: ContentElementType.RICH_TEXT,
-				toPosition: -1,
+				expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.FILE);
 			});
 
-			expect(response.statusCode).toEqual(400);
+			it('should return the created content element of type EXTERNAL_TOOL', async () => {
+				const { loggedInClient, cardNode } = await setup();
+
+				const response = await loggedInClient.post(`${cardNode.id}/elements`, {
+					type: ContentElementType.EXTERNAL_TOOL,
+				});
+
+				expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.EXTERNAL_TOOL);
+			});
+
+			it('should return the created content element of type SUBMISSION_CONTAINER with dueDate set to null', async () => {
+				const { loggedInClient, cardNode } = await setup();
+
+				const response = await loggedInClient.post(`${cardNode.id}/elements`, {
+					type: ContentElementType.SUBMISSION_CONTAINER,
+				});
+
+				expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.SUBMISSION_CONTAINER);
+				expect((response.body as SubmissionContainerElementResponse).content.dueDate).toBeNull();
+			});
+
+			it('should actually create the content element', async () => {
+				const { loggedInClient, cardNode } = await setup();
+				const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.RICH_TEXT });
+
+				const elementId = (response.body as AnyContentElementResponse).id;
+
+				const result = await em.findOneOrFail(RichTextElementNode, elementId);
+				expect(result.id).toEqual(elementId);
+			});
+
+			it('should throw an error if toPosition param is not a number', async () => {
+				const { loggedInClient, cardNode } = await setup();
+
+				const response = await loggedInClient.post(`${cardNode.id}/elements`, {
+					type: ContentElementType.RICH_TEXT,
+					toPosition: 'not a number',
+				});
+
+				expect(response.statusCode).toEqual(400);
+			});
+
+			it('should throw an error if toPosition param is a negative number', async () => {
+				const { loggedInClient, cardNode } = await setup();
+
+				const response = await loggedInClient.post(`${cardNode.id}/elements`, {
+					type: ContentElementType.RICH_TEXT,
+					toPosition: -1,
+				});
+
+				expect(response.statusCode).toEqual(400);
+			});
+		});
+
+		describe('when parent is a submission item', () => {
+			const setup = async () => {
+				await cleanupCollections(em);
+
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+				const course = courseFactory.build({ teachers: [teacherUser] });
+				await em.persistAndFlush([teacherAccount, teacherUser, course]);
+
+				const columnBoardNode = columnBoardNodeFactory.buildWithId({
+					context: { id: course.id, type: BoardExternalReferenceType.Course },
+				});
+				const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+				const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+				const submissionContainerNode = columnNodeFactory.buildWithId({ parent: cardNode });
+				const submissionItemNode = cardNodeFactory.buildWithId({ parent: submissionContainerNode });
+
+				await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode, submissionItemNode]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient, cardNode, submissionItemNode };
+			};
+
+			it('should return status 201', async () => {
+				const { loggedInClient, submissionItemNode } = await setup();
+
+				const response = await loggedInClient.post(`${submissionItemNode.id}/elements`, {
+					type: ContentElementType.RICH_TEXT,
+				});
+
+				expect(response.statusCode).toEqual(201);
+			});
+
+			it('should return the created content element of type RICH_TEXT', async () => {
+				const { loggedInClient, submissionItemNode } = await setup();
+
+				const response = await loggedInClient.post(`${submissionItemNode.id}/elements`, {
+					type: ContentElementType.RICH_TEXT,
+				});
+
+				expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.RICH_TEXT);
+			});
+
+			it('should return the created content element of type FILE', async () => {
+				const { loggedInClient, submissionItemNode } = await setup();
+
+				const response = await loggedInClient.post(`${submissionItemNode.id}/elements`, {
+					type: ContentElementType.FILE,
+				});
+
+				expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.FILE);
+			});
 		});
 	});
 
