@@ -28,7 +28,6 @@ import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { LumiUserWithContentData } from '../types/lumi-types';
 import { H5PErrorMapper } from '../mapper/h5p-error.mapper';
-import { de } from '@faker-js/faker';
 
 @Injectable()
 export class H5PEditorUc {
