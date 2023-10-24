@@ -23,13 +23,13 @@ export class MailService {
 
 	public async send(data: Mail): Promise<void> {
 		if (this.domainBlacklist.length > 0) {
-			data.recipients = this.removeEmailAddressesThatHaveBlockedDomain(
+			data.recipients = this.removeEmailAddressesThatHaveBlacklistedDomain(
 				data.recipients,
 				this.domainBlacklist
 			) as string[];
-			data.cc = this.removeEmailAddressesThatHaveBlockedDomain(data.cc, this.domainBlacklist);
-			data.bcc = this.removeEmailAddressesThatHaveBlockedDomain(data.bcc, this.domainBlacklist);
-			data.replyTo = this.removeEmailAddressesThatHaveBlockedDomain(data.replyTo, this.domainBlacklist);
+			data.cc = this.removeEmailAddressesThatHaveBlacklistedDomain(data.cc, this.domainBlacklist);
+			data.bcc = this.removeEmailAddressesThatHaveBlacklistedDomain(data.bcc, this.domainBlacklist);
+			data.replyTo = this.removeEmailAddressesThatHaveBlacklistedDomain(data.replyTo, this.domainBlacklist);
 		}
 
 		if (data.recipients.length === 0) {
@@ -39,7 +39,7 @@ export class MailService {
 		await this.amqpConnection.publish(this.options.exchange, this.options.routingKey, data, { persistent: true });
 	}
 
-	private removeEmailAddressesThatHaveBlockedDomain(
+	private removeEmailAddressesThatHaveBlacklistedDomain(
 		mails: string[] | undefined,
 		domainBlackList: string[]
 	): string[] | undefined {
