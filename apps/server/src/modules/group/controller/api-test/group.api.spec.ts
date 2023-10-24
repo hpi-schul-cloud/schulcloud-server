@@ -120,6 +120,7 @@ describe('Group (API)', () => {
 							name: group.name,
 							externalSourceName: system.displayName,
 							teachers: [adminUser.lastName],
+							studentCount: 0,
 						},
 						{
 							id: clazz.id,
@@ -128,6 +129,7 @@ describe('Group (API)', () => {
 							teachers: [teacherUser.lastName],
 							schoolYear: schoolYear.name,
 							isUpgradable: false,
+							studentCount: 0,
 						},
 					],
 					skip: 0,

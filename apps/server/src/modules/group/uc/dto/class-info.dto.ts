@@ -15,6 +15,8 @@ export class ClassInfoDto {
 
 	isUpgradable?: boolean;
 
+	studentCount: number;
+
 	constructor(props: ClassInfoDto) {
 		this.id = props.id;
 		this.type = props.type;
@@ -23,5 +25,6 @@ export class ClassInfoDto {
 		this.teachers = props.teachers;
 		this.schoolYear = props.schoolYear;
 		this.isUpgradable = props.isUpgradable;
+		this.studentCount = props.studentCount;
 	}
 }
