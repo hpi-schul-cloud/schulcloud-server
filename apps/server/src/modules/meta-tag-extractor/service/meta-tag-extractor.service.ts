@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import ogs from 'open-graph-scraper';
 import { ImageObject } from 'open-graph-scraper/dist/lib/types';
+import { basename } from 'path';
 
 export type MetaData = {
 	title: string;
@@ -17,6 +18,12 @@ export class MetaTagExtractorService {
 			throw new Error(`MetaTagExtractorService requires a valid URL. Given URL: ${url}`);
 		}
 
+		const metaData = (await this.tryExtractMetaTags(url)) ?? this.tryFilenameAsFallback(url);
+
+		return metaData ?? { url, title: '', description: '' };
+	}
+
+	private async tryExtractMetaTags(url: string): Promise<MetaData | undefined> {
 		try {
 			const data = await ogs({ url, fetchOptions: { headers: { 'User-Agent': 'Open Graph Scraper' } } });
 
@@ -31,12 +38,21 @@ export class MetaTagExtractorService {
 				url,
 			};
 		} catch (error) {
-			// WIP: add nice debug logging for available open GraphData?!?
+			return undefined;
+		}
+	}
+
+	private tryFilenameAsFallback(url: string): MetaData | undefined {
+		try {
+			const urlObject = new URL(url);
+			const title = basename(urlObject.pathname);
 			return {
-				title: '',
+				title,
 				description: '',
 				url,
 			};
+		} catch (error) {
+			return undefined;
 		}
 	}
 
