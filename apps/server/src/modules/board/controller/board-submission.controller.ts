@@ -8,7 +8,6 @@ import {
 	Param,
 	Patch,
 	Post,
-	UnprocessableEntityException,
 } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
@@ -20,8 +19,6 @@ import { SubmissionItemUc } from '../uc/submission-item.uc';
 import {
 	CreateContentElementBodyParams,
 	FileElementResponse,
-	isFileElementResponse,
-	isRichTextElementResponse,
 	RichTextElementResponse,
 	SubmissionContainerUrlParams,
 	SubmissionItemUrlParams,

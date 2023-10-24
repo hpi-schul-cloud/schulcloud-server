@@ -1,15 +1,4 @@
-import {
-	FileElement,
-	isFileElement,
-	isRichTextElement,
-	isSubmissionItemContent,
-	RichTextElement,
-	SubmissionItem,
-	UserBoardRoles,
-} from '@shared/domain';
-import { UnprocessableEntityException } from '@nestjs/common';
-import { FileElementResponseMapper } from './file-element-response.mapper';
-import { RichTextElementResponseMapper } from './rich-text-element-response.mapper';
+import { FileElement, isSubmissionItemContent, RichTextElement, SubmissionItem, UserBoardRoles } from '@shared/domain';
 import { SubmissionItemResponse, SubmissionsResponse, TimestampsResponse, UserDataResponse } from '../dto';
 import { ContentElementResponseFactory } from './content-element-response.factory';
 

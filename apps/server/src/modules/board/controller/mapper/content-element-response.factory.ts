@@ -1,5 +1,5 @@
 import { NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
-import { AnyBoardDo, FileElement, isSubmissionItemContent, RichTextElement } from '@shared/domain';
+import { AnyBoardDo, FileElement, RichTextElement } from '@shared/domain';
 import {
 	AnyContentElementResponse,
 	FileElementResponse,
