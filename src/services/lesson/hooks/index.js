@@ -60,7 +60,7 @@ const convertMerlinUrl = async (context) => {
 					await Promise.all(
 						content.content.resources.map(async (resource) => {
 							if (resource && resource.merlinReference) {
-								resource.url = await context.app.service('edu-sharing/merlinToken').find({
+								resource.url = await context.app.service('edu-sharing-merlinToken').find({
 									...context.params,
 									query: { ...context.params.query, merlinReference: resource.merlinReference },
 								});
@@ -82,7 +82,7 @@ const convertMerlinUrl = async (context) => {
 		await Promise.all(
 			materialIds.map(async (material) => {
 				if (material.merlinReference) {
-					material.url = await context.app.service('edu-sharing/merlinToken').find({
+					material.url = await context.app.service('edu-sharing-merlinToken').find({
 						...context.params,
 						query: {
 							...context.params.query,
@@ -229,48 +229,50 @@ const populateWhitelist = {
 	],
 };
 
-exports.before = () => ({
-	all: [authenticate('jwt'), mapUsers],
-	find: [
-		hasPermission('TOPIC_VIEW'),
-		iff(isProvider('external'), validateLessonFind),
-		iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
-		iff(isProvider('external'), restrictToUsersCoursesLessons),
-	],
-	get: [
-		hasPermission('TOPIC_VIEW'),
-		iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
-		iff(isProvider('external'), restrictToUsersCoursesLessons),
-	],
-	create: [
-		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
-		injectUserId,
-		checkCorrectCourseOrTeamId,
-		setPosition,
-		iff(isProvider('external'), preventPopulate),
-	],
-	update: [
-		iff(isProvider('external'), preventPopulate),
-		permitGroupOperation,
-		ifNotLocal(checkCorrectCourseOrTeamId),
-		iff(isProvider('external'), restrictToUsersCoursesLessons),
-		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
-	],
-	patch: [
-		attachMerlinReferenceToLesson,
-		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
-		permitGroupOperation,
-		ifNotLocal(checkCorrectCourseOrTeamId),
-		iff(isProvider('external'), restrictToUsersCoursesLessons),
-		iff(isProvider('external'), preventPopulate),
-	],
-	remove: [
-		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', false),
-		permitGroupOperation,
-		iff(isProvider('external'), restrictToUsersCoursesLessons),
-		iff(isProvider('external'), preventPopulate),
-	],
-});
+exports.before = () => {
+	return {
+		all: [authenticate('jwt'), mapUsers],
+		find: [
+			hasPermission('TOPIC_VIEW'),
+			iff(isProvider('external'), validateLessonFind),
+			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
+			iff(isProvider('external'), restrictToUsersCoursesLessons),
+		],
+		get: [
+			hasPermission('TOPIC_VIEW'),
+			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
+			iff(isProvider('external'), restrictToUsersCoursesLessons),
+		],
+		create: [
+			checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
+			injectUserId,
+			checkCorrectCourseOrTeamId,
+			setPosition,
+			iff(isProvider('external'), preventPopulate),
+		],
+		update: [
+			iff(isProvider('external'), preventPopulate),
+			permitGroupOperation,
+			ifNotLocal(checkCorrectCourseOrTeamId),
+			iff(isProvider('external'), restrictToUsersCoursesLessons),
+			checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
+		],
+		patch: [
+			attachMerlinReferenceToLesson,
+			checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
+			permitGroupOperation,
+			ifNotLocal(checkCorrectCourseOrTeamId),
+			iff(isProvider('external'), restrictToUsersCoursesLessons),
+			iff(isProvider('external'), preventPopulate),
+		],
+		remove: [
+			checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', false),
+			permitGroupOperation,
+			iff(isProvider('external'), restrictToUsersCoursesLessons),
+			iff(isProvider('external'), preventPopulate),
+		],
+	};
+};
 
 exports.after = {
 	all: [],

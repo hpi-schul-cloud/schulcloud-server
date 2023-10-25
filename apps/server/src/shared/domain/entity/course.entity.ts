@@ -1,4 +1,6 @@
 import { Collection, Entity, Enum, Index, ManyToMany, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/core';
+import { ClassEntity } from '@modules/class/entity/class.entity';
+import { GroupEntity } from '@modules/group/entity/group.entity';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
 import { IEntityWithSchool, ILearnroom } from '@shared/domain/interface';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '../types';
@@ -22,6 +24,8 @@ export interface ICourseProperties {
 	untilDate?: Date;
 	copyingSince?: Date;
 	features?: CourseFeature[];
+	classes?: ClassEntity[];
+	groups?: GroupEntity[];
 }
 
 // that is really really shit default handling :D constructor, getter, js default, em default...what the hell
@@ -98,6 +102,12 @@ export class Course
 	@Enum({ nullable: true, array: true })
 	features?: CourseFeature[];
 
+	@ManyToMany(() => ClassEntity, undefined, { fieldName: 'classIds' })
+	classes = new Collection<ClassEntity>(this);
+
+	@ManyToMany(() => GroupEntity, undefined, { fieldName: 'groupIds' })
+	groups = new Collection<GroupEntity>(this);
+
 	constructor(props: ICourseProperties) {
 		super();
 		if (props.name) this.name = props.name;
@@ -111,6 +121,8 @@ export class Course
 		if (props.startDate) this.startDate = props.startDate;
 		if (props.copyingSince) this.copyingSince = props.copyingSince;
 		if (props.features) this.features = props.features;
+		this.classes.set(props.classes || []);
+		this.groups.set(props.groups || []);
 	}
 
 	public getStudentIds(): EntityId[] {

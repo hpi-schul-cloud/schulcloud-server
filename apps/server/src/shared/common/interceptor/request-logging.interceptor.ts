@@ -3,7 +3,7 @@ import { LegacyLogger, RequestLoggingBody } from '@src/core/logger';
 import { Request } from 'express';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ICurrentUser } from '@modules/authentication/interface/user';
 
 @Injectable()
 export class RequestLoggingInterceptor implements NestInterceptor {

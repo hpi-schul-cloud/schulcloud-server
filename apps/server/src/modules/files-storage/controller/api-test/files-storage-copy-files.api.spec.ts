@@ -1,10 +1,12 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { EntityId, Permission } from '@shared/domain';
-import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { AntivirusService } from '@shared/infra/antivirus';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import {
 	cleanupCollections,
@@ -15,19 +17,14 @@ import {
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FILES_STORAGE_S3_CONNECTION, FilesStorageTestModule } from '@src/modules/files-storage';
-import {
-	CopyFileParams,
-	CopyFilesOfParentParams,
-	FileRecordListResponse,
-	FileRecordResponse,
-} from '@src/modules/files-storage/controller/dto';
+import NodeClam from 'clamscan';
 import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
 import { FileRecordParentType } from '../../entity';
+import { FilesStorageTestModule } from '../../files-storage-test.module';
+import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
+import { CopyFileParams, CopyFilesOfParentParams, FileRecordListResponse, FileRecordResponse } from '../dto';
 import { availableParentTypes } from './mocks';
 
 const baseRouteName = '/file/copy';
@@ -107,6 +104,8 @@ describe(`${baseRouteName} (api)`, () => {
 					return true;
 				},
 			})
+			.overrideProvider(NodeClam)
+			.useValue(createMock<NodeClam>())
 			.compile();
 
 		app = module.createNestApplication();

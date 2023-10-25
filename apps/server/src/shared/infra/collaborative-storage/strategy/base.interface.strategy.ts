@@ -1,4 +1,4 @@
-import { TeamDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
+import { TeamDto } from '@modules/collaborative-storage/services/dto/team.dto';
 import { TeamRolePermissionsDto } from '../dto/team-role-permissions.dto';
 
 /**

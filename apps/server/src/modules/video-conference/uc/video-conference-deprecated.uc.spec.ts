@@ -19,9 +19,11 @@ import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto'
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
-import { AuthorizationService, LegacySchoolService, UserService } from '@src/modules';
-import { ICurrentUser } from '@src/modules/authentication';
-import { CourseService } from '@src/modules/learnroom/service';
+import { AuthorizationReferenceService } from '@modules/authorization/domain';
+import { ICurrentUser } from '@modules/authentication';
+import { CourseService } from '@modules/learnroom/service';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { IScopeInfo, VideoConference, VideoConferenceJoin, VideoConferenceState } from './dto';
 import { VideoConferenceDeprecatedUc } from './video-conference-deprecated.uc';
 import {
@@ -63,7 +65,7 @@ describe('VideoConferenceUc', () => {
 	let useCase: VideoConferenceDeprecatedUcSpec;
 
 	let bbbService: DeepMocked<BBBService>;
-	let authorizationService: DeepMocked<AuthorizationService>;
+	let authorizationService: DeepMocked<AuthorizationReferenceService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let courseService: DeepMocked<CourseService>;
@@ -118,8 +120,8 @@ describe('VideoConferenceUc', () => {
 					useValue: createMock<BBBService>(),
 				},
 				{
-					provide: AuthorizationService,
-					useValue: createMock<AuthorizationService>(),
+					provide: AuthorizationReferenceService,
+					useValue: createMock<AuthorizationReferenceService>(),
 				},
 				{
 					provide: VideoConferenceRepo,
@@ -149,7 +151,7 @@ describe('VideoConferenceUc', () => {
 		}).compile();
 		useCase = module.get(VideoConferenceDeprecatedUcSpec);
 		schoolService = module.get(LegacySchoolService);
-		authorizationService = module.get(AuthorizationService);
+		authorizationService = module.get(AuthorizationReferenceService);
 		courseService = module.get(CourseService);
 		calendarService = module.get(CalendarService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);

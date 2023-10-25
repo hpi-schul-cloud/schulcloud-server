@@ -6,5 +6,7 @@ export const submissionContainerElementNodeFactory = BaseFactory.define<
 	SubmissionContainerElementNode,
 	SubmissionContainerNodeProps
 >(SubmissionContainerElementNode, () => {
-	return {};
+	return {
+		dueDate: null,
+	};
 });

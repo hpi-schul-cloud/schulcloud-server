@@ -1,6 +1,6 @@
-import { OauthConfigResponse } from '@src/modules/system/controller/dto/oauth-config.response';
-import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { OauthConfigResponse } from '@modules/system/controller/dto/oauth-config.response';
+import { OauthConfigDto } from '@modules/system/service/dto/oauth-config.dto';
+import { SystemDto } from '@modules/system/service/dto/system.dto';
 import { PublicSystemListResponse } from '../dto/public-system-list.response';
 import { PublicSystemResponse } from '../dto/public-system-response';
 

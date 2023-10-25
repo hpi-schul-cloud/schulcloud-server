@@ -53,6 +53,7 @@ export const userPermissions = [
 	Permission.CLASS_VIEW,
 	Permission.COURSE_VIEW,
 	Permission.LERNSTORE_VIEW,
+	Permission.GROUP_VIEW,
 ] as Permission[];
 
 export const studentPermissions = [
@@ -73,6 +74,7 @@ const sharedAdminPermissions = [
 	Permission.COURSE_CREATE,
 	Permission.COURSE_EDIT,
 	Permission.COURSE_REMOVE,
+	Permission.GROUP_LIST,
 	Permission.NEWS_CREATE,
 	Permission.NEWS_EDIT,
 	Permission.STUDENT_SKIP_REGISTRATION,

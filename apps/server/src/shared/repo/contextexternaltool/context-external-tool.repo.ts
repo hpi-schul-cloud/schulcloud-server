@@ -3,16 +3,16 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BaseDORepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ToolContextType } from '@src/modules/tool/common/enum/tool-context-type.enum';
-import { ContextExternalTool, ContextRef } from '@src/modules/tool/context-external-tool/domain';
+import { ToolContextType } from '@modules/tool/common/enum/tool-context-type.enum';
+import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
 import {
 	ContextExternalToolEntity,
 	ContextExternalToolType,
 	IContextExternalToolProperties,
-} from '@src/modules/tool/context-external-tool/entity';
-import { ContextExternalToolQuery } from '@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types';
-import { SchoolExternalToolRefDO } from '@src/modules/tool/school-external-tool/domain';
-import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
+} from '@modules/tool/context-external-tool/entity';
+import { ContextExternalToolQuery } from '@modules/tool/context-external-tool/uc/dto/context-external-tool.types';
+import { SchoolExternalToolRefDO } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { EntityId } from '../../domain';
 import { ExternalToolRepoMapper } from '../externaltool';
 import { ContextExternalToolScope } from './context-external-tool.scope';
@@ -115,6 +115,8 @@ export class ContextExternalToolRepo extends BaseDORepo<
 		switch (type) {
 			case ToolContextType.COURSE:
 				return ContextExternalToolType.COURSE;
+			case ToolContextType.BOARD_ELEMENT:
+				return ContextExternalToolType.BOARD_ELEMENT;
 			default:
 				throw new Error('Unknown ToolContextType');
 		}
@@ -124,6 +126,8 @@ export class ContextExternalToolRepo extends BaseDORepo<
 		switch (type) {
 			case ContextExternalToolType.COURSE:
 				return ToolContextType.COURSE;
+			case ContextExternalToolType.BOARD_ELEMENT:
+				return ToolContextType.BOARD_ELEMENT;
 			default:
 				throw new Error('Unknown ContextExternalToolType');
 		}

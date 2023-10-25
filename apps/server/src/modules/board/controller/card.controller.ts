@@ -14,8 +14,7 @@ import {
 } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { BoardUc, CardUc } from '../uc';
 import {
 	AnyContentElementResponse,
@@ -25,6 +24,7 @@ import {
 	CreateContentElementBodyParams,
 	ExternalToolElementResponse,
 	FileElementResponse,
+	LinkElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
 	RichTextElementResponse,
@@ -116,19 +116,21 @@ export class CardController {
 
 	@ApiOperation({ summary: 'Create a new element on a card.' })
 	@ApiExtraModels(
-		RichTextElementResponse,
+		ExternalToolElementResponse,
 		FileElementResponse,
-		SubmissionContainerElementResponse,
-		ExternalToolElementResponse
+		LinkElementResponse,
+		RichTextElementResponse,
+		SubmissionContainerElementResponse
 	)
 	@ApiResponse({
 		status: 201,
 		schema: {
 			oneOf: [
-				{ $ref: getSchemaPath(RichTextElementResponse) },
-				{ $ref: getSchemaPath(FileElementResponse) },
-				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(ExternalToolElementResponse) },
+				{ $ref: getSchemaPath(FileElementResponse) },
+				{ $ref: getSchemaPath(LinkElementResponse) },
+				{ $ref: getSchemaPath(RichTextElementResponse) },
+				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 			],
 		},
 	})
@@ -137,7 +139,7 @@ export class CardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':cardId/elements')
 	async createElement(
-		@Param() urlParams: CardUrlParams, // TODO add type-property ?
+		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: CreateContentElementBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<AnyContentElementResponse> {

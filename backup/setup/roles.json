@@ -6,7 +6,7 @@
 		"name": "user",
 		"roles": [],
 		"updatedAt": {
-			"$date": "2023-05-16T11:11:21.297Z"
+			"$date": "2023-10-18T05:58:52.716Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -58,7 +58,8 @@
 			"TOOL_VIEW",
 			"TOPIC_VIEW",
 			"NEXTCLOUD_USER",
-			"CONTEXT_TOOL_USER"
+			"CONTEXT_TOOL_USER",
+			"GROUP_VIEW"
 		],
 		"__v": 0
 	},
@@ -68,7 +69,7 @@
 		},
 		"name": "administrator",
 		"updatedAt": {
-			"$date": "2023-09-04T12:13:44.069Z"
+			"$date": "2023-10-18T05:58:52.729Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -132,7 +133,8 @@
 			"SCHOOL_TOOL_ADMIN",
 			"USER_LOGIN_MIGRATION_ADMIN",
 			"START_MEETING",
-			"JOIN_MEETING"
+			"JOIN_MEETING",
+			"GROUP_LIST"
 		],
 		"__v": 2
 	},
@@ -142,7 +144,7 @@
 		},
 		"name": "superhero",
 		"updatedAt": {
-			"$date": "2022-09-22T13:14:23.839Z"
+			"$date": "2023-10-18T05:58:52.729Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -188,7 +190,8 @@
 			"TEAM_EDIT",
 			"TOOL_CREATE",
 			"TOOL_EDIT",
-			"YEARS_EDIT"
+			"YEARS_EDIT",
+			"GROUP_LIST"
 		],
 		"__v": 2
 	},
@@ -198,7 +201,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2023-09-04T12:54:47.237Z"
+			"$date": "2023-10-18T05:59:16.621Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -245,7 +248,8 @@
 			"HOMEWORK_CREATE",
 			"HOMEWORK_EDIT",
 			"CONTEXT_TOOL_ADMIN",
-			"JOIN_MEETING"
+			"JOIN_MEETING",
+			"GROUP_LIST"
 		],
 		"__v": 2
 	},
