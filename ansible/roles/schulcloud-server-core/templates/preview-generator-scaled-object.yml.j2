@@ -4,6 +4,8 @@ kind: ScaledObject
 metadata:
   name: preview-generator-rabbitmq-scaledobject
   namespace: {{ NAMESPACE }}
+  labels:
+    app: preview-generator
 spec:
   scaleTargetRef:
     name: preview-generator-deployment
