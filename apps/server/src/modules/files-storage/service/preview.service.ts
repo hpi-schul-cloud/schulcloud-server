@@ -6,10 +6,9 @@ import { PreviewParams } from '../controller/dto';
 import { FileRecord, PreviewStatus } from '../entity';
 import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
-import { createPath, createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
+import { createPreviewDirectoryPath, getPreviewName } from '../helper';
 import { GetFileResponse, PreviewFileParams } from '../interface';
-import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
-import { FileResponseBuilder } from '../mapper';
+import { FileResponseBuilder, PreviewBuilder } from '../mapper';
 
 @Injectable()
 export class PreviewService {
@@ -28,22 +27,7 @@ export class PreviewService {
 	): Promise<GetFileResponse> {
 		this.checkIfPreviewPossible(fileRecord);
 
-		const { schoolId, id, mimeType } = fileRecord;
-		const originFilePath = createPath(schoolId, id);
-		const format = this.getFormat(previewParams.outputFormat ?? mimeType);
-
-		const hash = createPreviewNameHash(id, previewParams);
-		const previewFilePath = createPreviewFilePath(schoolId, hash, id);
-
-		const previewFileParams = {
-			fileRecord,
-			previewParams,
-			hash,
-			previewFilePath,
-			originFilePath,
-			format,
-			bytesRange,
-		};
+		const previewFileParams = PreviewBuilder.buildParams(fileRecord, previewParams, bytesRange);
 
 		const response = await this.tryGetPreviewOrGenerate(previewFileParams);
 
@@ -88,7 +72,7 @@ export class PreviewService {
 
 	private async getPreviewFile(params: PreviewFileParams): Promise<GetFileResponse> {
 		const { fileRecord, previewFilePath, bytesRange, previewParams } = params;
-		const name = this.getPreviewName(fileRecord, previewParams.outputFormat);
+		const name = getPreviewName(fileRecord, previewParams.outputFormat);
 		const file = await this.storageClient.get(previewFilePath, bytesRange);
 
 		const response = FileResponseBuilder.build(file, name);
@@ -97,30 +81,8 @@ export class PreviewService {
 	}
 
 	private async generatePreview(params: PreviewFileParams): Promise<void> {
-		const payload = {
-			originFilePath: params.originFilePath,
-			previewFilePath: params.previewFilePath,
-			previewOptions: { width: params.previewParams.width, format: params.format },
-		};
+		const payload = PreviewBuilder.buildPayload(params);
 
 		await this.previewProducer.generate(payload);
-	}
-
-	private getFormat(mimeType: string): string {
-		const format = mimeType.split('/')[1];
-
-		return format;
-	}
-
-	private getPreviewName(fileRecord: FileRecord, outputFormat?: PreviewOutputMimeTypes): string {
-		if (!outputFormat) {
-			return fileRecord.name;
-		}
-
-		const fileNameWithoutExtension = fileRecord.name.split('.')[0];
-		const format = this.getFormat(outputFormat);
-		const name = `${fileNameWithoutExtension}.${format}`;
-
-		return name;
 	}
 }

@@ -1,5 +1,6 @@
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord } from '../entity';
+import { PreviewOutputMimeTypes } from '../interface';
 
 export function markForDelete(fileRecords: FileRecord[]): FileRecord[] {
 	const markedFileRecords = fileRecords.map((fileRecord) => {
@@ -37,4 +38,22 @@ export function createFileRecord(
 	});
 
 	return entity;
+}
+
+export function getFormat(mimeType: string): string {
+	const format = mimeType.split('/')[1];
+
+	return format;
+}
+
+export function getPreviewName(fileRecord: FileRecord, outputFormat?: PreviewOutputMimeTypes): string {
+	if (!outputFormat) {
+		return fileRecord.name;
+	}
+
+	const fileNameWithoutExtension = fileRecord.name.split('.')[0];
+	const format = getFormat(outputFormat);
+	const name = `${fileNameWithoutExtension}.${format}`;
+
+	return name;
 }

@@ -1,8 +1,9 @@
 import { EntityId } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { createFileRecord, markForDelete, unmarkForDelete } from '.';
+import { createFileRecord, getFormat, getPreviewName, markForDelete, unmarkForDelete } from '.';
 import { FileRecord } from '../entity';
+import { PreviewOutputMimeTypes } from '../interface';
 
 describe('File Record Helper', () => {
 	const setupFileRecords = () => {
@@ -86,6 +87,41 @@ describe('File Record Helper', () => {
 
 			expect(newFileRecord).toEqual(expect.objectContaining({ ...expectedObject }));
 			expect(newFileRecord).toEqual(expect.any(FileRecord));
+		});
+	});
+
+	describe('getFormat is called', () => {
+		it('should return format', () => {
+			const mimeType = 'image/jpeg';
+
+			const result = getFormat(mimeType);
+
+			expect(result).toEqual('jpeg');
+		});
+	});
+
+	describe('getPreviewName is called', () => {
+		const setup = () => {
+			const fileRecord = fileRecordFactory.buildWithId();
+			const outputFormat = PreviewOutputMimeTypes.IMAGE_WEBP;
+
+			return { fileRecord, outputFormat };
+		};
+
+		it('should return origin file name', () => {
+			const { fileRecord } = setup();
+
+			const result = getPreviewName(fileRecord, undefined);
+
+			expect(result).toEqual(fileRecord.name);
+		});
+
+		it('should return preview name', () => {
+			const { fileRecord, outputFormat } = setup();
+
+			const result = getPreviewName(fileRecord, outputFormat);
+
+			expect(result).toEqual(`${fileRecord.name.split('.')[0]}.webp`);
 		});
 	});
 });

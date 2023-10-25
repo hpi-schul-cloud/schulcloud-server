@@ -5,6 +5,7 @@ import { subClass } from 'gm';
 import { PassThrough } from 'stream';
 import { PreviewFileOptions, PreviewOptions, PreviewResponseMessage } from './interface';
 import { PreviewActionsLoggable } from './loggable/preview-actions.loggable';
+import { PreviewGeneratorBuilder } from './preview-generator.builder';
 
 @Injectable()
 export class PreviewGeneratorService {
@@ -21,7 +22,8 @@ export class PreviewGeneratorService {
 		const original = await this.downloadOriginFile(originFilePath);
 		const preview = this.resizeAndConvert(original, previewOptions);
 
-		const file = { data: preview, mimeType: previewOptions.format };
+		const file = PreviewGeneratorBuilder.buildFile(preview, params.previewOptions);
+
 		await this.storageClient.create(previewFilePath, file);
 
 		this.logger.debug(new PreviewActionsLoggable('PreviewGeneratorService.generatePreview:end', params));
