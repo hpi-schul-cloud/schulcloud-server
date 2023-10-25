@@ -6,7 +6,7 @@ describe('createPrometheusMetricsApp', () => {
 	describe('should create an app that should', () => {
 		it('collect all the available metrics and expose them on given route', async () => {
 			const testMetricsRoute = '/prometheus-metrics';
-			const exampleDefaultMetricName = 'process_heap_bytes';
+			const exampleDefaultMetricName = 'process_cpu_user_seconds_total';
 			const exampleMetricsRouteMetric =
 				`sc_api_response_time_in_seconds_count{` +
 				`method="GET",` +
