@@ -41,9 +41,9 @@ const config: IServerConfig = {
 	FEATURE_IDENTITY_MANAGEMENT_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
-	BLACKLISTED_DOMAINS: Configuration.has('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS')
-		? (Configuration.get('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS') as string).split(',').map((domain) => domain.trim())
-		: ([] as string[]),
+	ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS: (Configuration.get('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS') as string)
+		.split(',')
+		.map((domain) => domain.trim()),
 };
 
 export const serverConfig = () => config;
