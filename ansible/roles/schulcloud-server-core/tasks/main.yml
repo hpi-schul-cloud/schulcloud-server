@@ -97,7 +97,7 @@
       template: preview-generator-configmap.yml.j2
       apply: yes
 
-  - name: PreviewGenerator Secret by 1Password
+  - name: preview generator Secret by 1Password
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
