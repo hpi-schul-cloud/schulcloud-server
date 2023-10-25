@@ -8,7 +8,7 @@ import { LoggerModule } from '@src/core/logger';
 import { AuthenticationModule } from '@modules/authentication/authentication.module';
 import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
 import { UserModule } from '@modules/user';
-import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
+import { AuthenticationApiModule } from '../authentication/authentication-api.module';
 import { H5PEditorModule } from './h5p-editor.module';
 import { H5PContentRepo, LibraryRepo, TemporaryFileRepo } from './repo';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from './service';

@@ -1,9 +1,11 @@
+import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@modules/authentication';
 import {
 	cleanupCollections,
 	fileRecordFactory,
@@ -12,12 +14,12 @@ import {
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
-import { FilesStorageTestModule } from '@modules/files-storage';
-import { FileRecordResponse, RenameFileParams } from '@modules/files-storage/controller/dto';
+import NodeClam from 'clamscan';
 import { Request } from 'express';
 import request from 'supertest';
 import { FileRecord, FileRecordParentType } from '../../entity';
+import { FilesStorageTestModule } from '../../files-storage-test.module';
+import { FileRecordResponse, RenameFileParams } from '../dto';
 
 const baseRouteName = '/file/rename/';
 
@@ -62,6 +64,8 @@ describe(`${baseRouteName} (api)`, () => {
 					return true;
 				},
 			})
+			.overrideProvider(NodeClam)
+			.useValue(createMock<NodeClam>())
 			.compile();
 
 		app = module.createNestApplication();

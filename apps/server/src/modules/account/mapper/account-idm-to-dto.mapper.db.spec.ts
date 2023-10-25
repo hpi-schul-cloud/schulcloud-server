@@ -24,9 +24,9 @@ describe('AccountIdmToDtoMapperDb', () => {
 	afterAll(async () => {
 		await module.close();
 	});
-	describe('mapToDto', () => {
-		describe('when mapping from entity to dto', () => {
-			const setup = () => {
+	describe('when mapping from entity to dto', () => {
+		describe('mapToDto', () => {
+			it('should map all fields', () => {
 				const testIdmEntity: IdmAccount = {
 					id: 'id',
 					username: 'username',
@@ -38,12 +38,6 @@ describe('AccountIdmToDtoMapperDb', () => {
 					attDbcUserId: 'attDbcUserId',
 					attDbcSystemId: 'attDbcSystemId',
 				};
-				return testIdmEntity;
-			};
-
-			it('should map all fields', () => {
-				const testIdmEntity = setup();
-
 				const ret = mapper.mapToDto(testIdmEntity);
 
 				expect(ret).toEqual(
@@ -58,42 +52,42 @@ describe('AccountIdmToDtoMapperDb', () => {
 					})
 				);
 			});
-		});
 
-		describe('when date is undefined', () => {
-			const setup = () => {
-				const testIdmEntity: IdmAccount = {
-					id: 'id',
+			describe('when date is undefined', () => {
+				const setup = () => {
+					const testIdmEntity: IdmAccount = {
+						id: 'id',
+					};
+
+					const dateMock = new Date();
+					jest.useFakeTimers();
+					jest.setSystemTime(dateMock);
+
+					return { testIdmEntity, dateMock };
 				};
-				return testIdmEntity;
-			};
 
-			it('should use actual date', () => {
-				const testIdmEntity = setup();
+				it('should use actual date', () => {
+					const { testIdmEntity, dateMock } = setup();
 
-				const ret = mapper.mapToDto(testIdmEntity);
+					const ret = mapper.mapToDto(testIdmEntity);
 
-				const now = new Date();
-				expect(ret.createdAt).toEqual(now);
-				expect(ret.updatedAt).toEqual(now);
+					expect(ret.createdAt).toEqual(dateMock);
+					expect(ret.updatedAt).toEqual(dateMock);
+
+					jest.useRealTimers();
+				});
 			});
-		});
 
-		describe('when a fields value is missing', () => {
-			const setup = () => {
-				const testIdmEntity: IdmAccount = {
-					id: 'id',
-				};
-				return testIdmEntity;
-			};
+			describe('when a fields value is missing', () => {
+				it('should fill with empty string', () => {
+					const testIdmEntity: IdmAccount = {
+						id: 'id',
+					};
+					const ret = mapper.mapToDto(testIdmEntity);
 
-			it('should fill with empty string', () => {
-				const testIdmEntity = setup();
-
-				const ret = mapper.mapToDto(testIdmEntity);
-
-				expect(ret.id).toBe('');
-				expect(ret.username).toBe('');
+					expect(ret.id).toBe('');
+					expect(ret.username).toBe('');
+				});
 			});
 		});
 	});

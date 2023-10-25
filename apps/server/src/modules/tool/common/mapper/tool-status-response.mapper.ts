@@ -1,4 +1,4 @@
-import { ToolConfigurationStatusResponse } from '../../context-external-tool/controller/dto/tool-configuration-status.response';
+import { ToolConfigurationStatusResponse } from '../../context-external-tool/controller/dto';
 import { ToolConfigurationStatus } from '../enum';
 
 export const statusMapping: Record<ToolConfigurationStatus, ToolConfigurationStatusResponse> = {
