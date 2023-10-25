@@ -4,7 +4,7 @@ import { EntityNotFoundError } from '@shared/common';
 import { Account, Counted, EntityId } from '@shared/domain';
 import bcrypt from 'bcryptjs';
 import { AccountEntityToDtoMapper } from '../mapper';
-import { AccountRepo } from '../repo/account.repo';
+import { AccountRepo } from '../repo';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';

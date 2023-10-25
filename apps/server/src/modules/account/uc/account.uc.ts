@@ -6,15 +6,14 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
-import { Account, EntityId, Permission, PermissionService, Role, RoleName, SchoolEntity, User } from '@shared/domain';
+import { Account, EntityId, Permission, Role, RoleName, SchoolEntity, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 // TODO: module internals should be imported with relative paths
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto/account.dto';
-
 import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ICurrentUser } from '@src/modules/authentication';
 import { ObjectId } from 'bson';
+import { AccountDto, AccountSaveDto } from '../services/dto';
+import { AccountService, AccountValidationService } from '../services';
 import { IAccountConfig } from '../account-config';
 import {
 	AccountByIdBodyParams,
@@ -26,8 +25,6 @@ import {
 	PatchMyAccountParams,
 } from '../controller/dto';
 import { AccountResponseMapper } from '../mapper';
-import { AccountValidationService } from '../services/account.validation.service';
-import { AccountSaveDto } from '../services/dto';
 
 type UserPreferences = {
 	// first login completed
@@ -38,7 +35,6 @@ export class AccountUc {
 	constructor(
 		private readonly accountService: AccountService,
 		private readonly userRepo: UserRepo,
-		private readonly permissionService: PermissionService,
 		private readonly accountValidationService: AccountValidationService,
 		private readonly configService: ConfigService<IAccountConfig, true>
 	) {}
@@ -359,6 +355,49 @@ export class AccountUc {
 		);
 	}
 
+	private resolvePermissionsByRoles(inputRoles: Role[]): string[] {
+		let permissions: string[] = [];
+
+		for (let i = 0; i < inputRoles.length; i += 1) {
+			const role = inputRoles[i];
+			if (!role.roles.isInitialized(true)) {
+				throw new Error('Roles items are not loaded.');
+			}
+			const innerRoles = role.roles.getItems();
+			permissions = [...permissions, ...role.permissions];
+
+			if (innerRoles.length > 0) {
+				const subPermissions = this.resolvePermissionsByRoles(innerRoles);
+				permissions = [...permissions, ...subPermissions];
+			}
+		}
+
+		permissions = [...new Set(permissions)];
+
+		return permissions;
+	}
+
+	private resolvePermissions(user: User): string[] {
+		if (!user.roles.isInitialized(true)) {
+			throw new Error('Roles items are not loaded.');
+		}
+		const rolesAndPermissions = this.resolvePermissionsByRoles(user.roles.getItems());
+
+		return rolesAndPermissions;
+	}
+
+	/**
+	 * @deprecated
+	 */
+	private hasUserAllSchoolPermissions(user: User, requiredPermissions: string[]): boolean {
+		if (!Array.isArray(requiredPermissions) || requiredPermissions.length === 0) {
+			return false;
+		}
+		const usersPermissions = this.resolvePermissions(user);
+		const hasPermissions = requiredPermissions.every((p) => usersPermissions.includes(p));
+		return hasPermissions;
+	}
+
 	private hasPermissionsToAccessAccount(
 		currentUser: User,
 		targetUser: User,
@@ -416,7 +455,7 @@ export class AccountUc {
 		}
 
 		return (
-			this.permissionService.hasUserAllSchoolPermissions(currentUser, permissionsToCheck) ||
+			this.hasUserAllSchoolPermissions(currentUser, permissionsToCheck) ||
 			this.schoolPermissionExists(
 				this.extractRoles(currentUser.roles.getItems()),
 				currentUser.school,

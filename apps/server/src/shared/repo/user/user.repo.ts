@@ -12,8 +12,8 @@ import {
 	SchoolEntity,
 	SortOrder,
 	User,
-} from '@shared/domain';
-import { BaseRepo } from '@shared/repo/base.repo';
+} from '../../domain';
+import { BaseRepo } from '../base.repo';
 import { MongoPatterns } from '../mongo.patterns';
 
 @Injectable()

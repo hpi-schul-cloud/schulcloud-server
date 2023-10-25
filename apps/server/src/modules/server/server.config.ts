@@ -1,9 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import type { IIdentityManagementConfig } from '@shared/infra/identity-management';
 import type { ICoreModuleConfig } from '@src/core';
-import type { IAccountConfig, IFilesStorageClientConfig, IUserConfig } from '@src/modules/';
+import type { IAccountConfig } from '@src/modules/account';
+import type { IFilesStorageClientConfig } from '@src/modules/files-storage-client';
+import type { IUserConfig } from '@src/modules/user';
 import type { ICommonCartridgeConfig } from '@src/modules/learnroom/common-cartridge';
-import { SchoolConfig } from '@src/modules/school';
+import type { SchoolConfig } from '@src/modules/school';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -20,8 +22,10 @@ export interface IServerConfig
 		IAccountConfig,
 		IIdentityManagementConfig,
 		ICommonCartridgeConfig {
+	// should not used
 	NODE_ENV: string;
 	SC_DOMAIN: string;
+	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: boolean; // TODO: Wrong placed, must move into module that us it
 }
 
 const config: IServerConfig = {

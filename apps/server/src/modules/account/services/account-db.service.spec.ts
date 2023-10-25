@@ -8,13 +8,13 @@ import { IdentityManagementService } from '@shared/infra/identity-management/ide
 import { accountFactory, setupEntities, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountDto } from '@src/modules/account/services/dto';
-import { IServerConfig } from '@src/modules/server';
 import bcrypt from 'bcryptjs';
 import { LegacyLogger } from '../../../core/logger';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
+import { IAccountConfig } from '../account-config';
 
 describe('AccountDbService', () => {
 	let module: TestingModule;
@@ -43,7 +43,7 @@ describe('AccountDbService', () => {
 				},
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService<IServerConfig, true>>(),
+					useValue: createMock<ConfigService<IAccountConfig, true>>(),
 				},
 				{
 					provide: IdentityManagementService,
