@@ -11,7 +11,7 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
-import { ExternalToolContentBody, FileContentBody, RichTextContentBody } from '../controller/dto';
+import { ExternalToolContentBody, FileContentBody, LinkContentBody, RichTextContentBody } from '../controller/dto';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
 
 describe(ContentElementUpdateVisitor.name, () => {
@@ -76,23 +76,6 @@ describe(ContentElementUpdateVisitor.name, () => {
 		});
 	});
 
-	describe('when visiting a link element using the wrong content', () => {
-		const setup = () => {
-			const linkElement = linkElementFactory.build();
-			const content = new FileContentBody();
-			content.caption = 'a caption';
-			const updater = new ContentElementUpdateVisitor(content);
-
-			return { linkElement, updater };
-		};
-
-		it('should throw an error', async () => {
-			const { linkElement, updater } = setup();
-
-			await expect(() => updater.visitLinkElementAsync(linkElement)).rejects.toThrow();
-		});
-	});
-
 	describe('when visiting a rich text element using the wrong content', () => {
 		const setup = () => {
 			const richTextElement = richTextElementFactory.build();
@@ -125,6 +108,69 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const { submissionContainerElement, updater } = setup();
 
 			await expect(() => updater.visitSubmissionContainerElementAsync(submissionContainerElement)).rejects.toThrow();
+		});
+	});
+
+	describe('when visiting a link element', () => {
+		describe('when content is valid', () => {
+			const setup = () => {
+				const linkElement = linkElementFactory.build();
+				const content = new LinkContentBody();
+				content.url = 'https://super-example.com/';
+				content.title = 'SuperExample - the best examples in the web';
+				content.imageUrl = '/preview/image.jpg';
+				const updater = new ContentElementUpdateVisitor(content);
+
+				return { linkElement, content, updater };
+			};
+
+			it('should update the content', async () => {
+				const { linkElement, content, updater } = setup();
+
+				await updater.visitLinkElementAsync(linkElement);
+
+				expect(linkElement.url).toEqual(content.url);
+				expect(linkElement.title).toEqual(content.title);
+				expect(linkElement.imageUrl).toEqual(content.imageUrl);
+			});
+		});
+
+		describe('when content is not a link element', () => {
+			const setup = () => {
+				const linkElement = linkElementFactory.build();
+				const content = new FileContentBody();
+				content.caption = 'a caption';
+				const updater = new ContentElementUpdateVisitor(content);
+
+				return { linkElement, updater };
+			};
+
+			it('should throw an error', async () => {
+				const { linkElement, updater } = setup();
+
+				await expect(() => updater.visitLinkElementAsync(linkElement)).rejects.toThrow();
+			});
+		});
+
+		describe('when imageUrl for preview image is not a relative url', () => {
+			const setup = () => {
+				const linkElement = linkElementFactory.build();
+				const content = new LinkContentBody();
+				content.url = 'https://super-example.com/';
+				content.title = 'SuperExample - the best examples in the web';
+				content.imageUrl = 'https://www.external.de/fake-preview-image.jpg';
+				const updater = new ContentElementUpdateVisitor(content);
+
+				return { linkElement, content, updater };
+			};
+
+			it('should ignore the image url', async () => {
+				const { linkElement, updater } = setup();
+
+				await updater.visitLinkElementAsync(linkElement);
+
+				expect(linkElement.imageUrl).toBe('');
+			});
 		});
 	});
 
