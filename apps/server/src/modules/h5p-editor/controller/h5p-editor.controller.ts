@@ -23,10 +23,10 @@ import { Request, Response } from 'express';
 
 import { H5PEditorUc } from '../uc/h5p.uc';
 
+import { AjaxPostBodyParamsTransformPipe } from './dto/ajax/post.body.params.transform-pipe';
 import {
 	AjaxGetQueryParams,
 	AjaxPostBodyParams,
-	AjaxPostBodyParamsTransformPipe,
 	AjaxPostQueryParams,
 	ContentFileUrlParams,
 	GetH5PContentParams,
