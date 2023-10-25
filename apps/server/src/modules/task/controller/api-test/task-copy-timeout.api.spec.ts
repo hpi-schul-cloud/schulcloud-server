@@ -15,13 +15,13 @@ import {
 } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
-// eslint-disable-next-line import/first
-import { createMock } from '@golevelup/ts-jest';
-import { ServerTestModule } from '@modules/server/server.module';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 
+// config must be set outside before the server module is imported, otherwise the configuration is already set
 Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
+
+// eslint-disable-next-line import/first
+import { ServerTestModule } from '@modules/server/server.module';
 
 // This needs to be in a separate test file because of the above configuration.
 // When we find a way to mock the config, it should be moved alongside the other API tests.
@@ -44,8 +44,6 @@ describe('Task copy (API)', () => {
 					return true;
 				},
 			})
-			.overrideProvider(FilesStorageClientAdapterService)
-			.useValue(createMock<FilesStorageClientAdapterService>())
 			.compile();
 
 		app = moduleFixture.createNestApplication();
