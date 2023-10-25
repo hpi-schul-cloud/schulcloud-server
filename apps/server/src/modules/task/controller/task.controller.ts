@@ -96,6 +96,11 @@ export class TaskController {
 		return dto;
 	}
 
+	createTask(@CurrentUser() currentUser: ICurrentUser, @Body() params: string) {
+		const dto = 'unknown';
+		return dto;
+	}
+
 	@Delete(':taskId')
 	async delete(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
 		const result = await this.taskUc.delete(currentUser.userId, urlParams.taskId);
