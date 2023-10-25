@@ -84,7 +84,7 @@
       namespace: "{{ NAMESPACE }}"
       template: amqp-files-deployment.yml.j2
 
-  - name: PreviewGeneratorDeployment
+  - name: Preview Generator Deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
