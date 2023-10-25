@@ -104,7 +104,7 @@
       template: preview-generator-onepassword.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
 
-  - name: PreviewGeneratorScaledObject
+  - name: preview generator scaled object
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
