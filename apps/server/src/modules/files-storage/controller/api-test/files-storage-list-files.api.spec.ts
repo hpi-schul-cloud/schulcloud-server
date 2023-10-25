@@ -1,3 +1,4 @@
+import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
@@ -13,6 +14,7 @@ import {
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
+import NodeClam from 'clamscan';
 import { Request } from 'express';
 import request from 'supertest';
 import { FileRecordParentType, PreviewStatus } from '../../entity';
@@ -62,6 +64,8 @@ describe(`${baseRouteName} (api)`, () => {
 					return true;
 				},
 			})
+			.overrideProvider(NodeClam)
+			.useValue(createMock<NodeClam>())
 			.compile();
 
 		app = module.createNestApplication();

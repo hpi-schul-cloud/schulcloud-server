@@ -9,6 +9,7 @@ import { EntityId, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
+import NodeClam from 'clamscan';
 import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
@@ -115,6 +116,8 @@ describe('files-storage controller (API)', () => {
 					return true;
 				},
 			})
+			.overrideProvider(NodeClam)
+			.useValue(createMock<NodeClam>())
 			.compile();
 
 		app = module.createNestApplication();

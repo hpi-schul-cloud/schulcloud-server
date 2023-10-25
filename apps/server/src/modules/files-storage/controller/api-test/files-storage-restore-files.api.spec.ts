@@ -16,6 +16,7 @@ import {
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
+import NodeClam from 'clamscan';
 import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
@@ -127,6 +128,8 @@ describe(`${baseRouteName} (api)`, () => {
 					return true;
 				},
 			})
+			.overrideProvider(NodeClam)
+			.useValue(createMock<NodeClam>())
 			.compile();
 
 		app = module.createNestApplication();

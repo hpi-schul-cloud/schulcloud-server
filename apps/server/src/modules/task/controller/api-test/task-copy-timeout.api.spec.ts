@@ -18,8 +18,10 @@ import {
 import { Request } from 'express';
 import request from 'supertest';
 
+// config must be set outside before the server module is imported, otherwise the configuration is already set
 Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
+
 // eslint-disable-next-line import/first
 import { ServerTestModule } from '@modules/server/server.module';
 
