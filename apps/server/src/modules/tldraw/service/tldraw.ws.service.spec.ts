@@ -432,7 +432,7 @@ describe('TldrawWSService', () => {
 
 	describe('flushDocument', () => {
 		const setup = () => {
-			const flushDocumentSpy = jest.spyOn(service, 'flushDocument').mockImplementation(() => Promise.resolve());
+			const flushDocumentSpy = jest.spyOn(service, 'flushDocument').mockResolvedValueOnce(Promise.resolve());
 
 			return { flushDocumentSpy };
 		};

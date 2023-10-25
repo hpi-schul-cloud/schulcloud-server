@@ -1375,7 +1375,7 @@
 			},
 			"default": {
 				"SOCKET_PORT": 3345,
-				"PING_TIMEOUT": 30000,
+				"PING_TIMEOUT": 10000,
 				"GC_ENABLED": true,
 				"DB_COLLECTION_NAME": "drawing",
 				"DB_FLUSH_SIZE": 400,

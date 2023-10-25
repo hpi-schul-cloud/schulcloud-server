@@ -3,8 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
-import { TldrawBoardRepo } from '@src/modules/tldraw/repo';
-import { TldrawWsService } from '@src/modules/tldraw/service';
+import { TldrawBoardRepo } from './repo';
+import { TldrawWsService } from './service';
 import { TldrawWs } from './controller';
 import { config } from './config';
 

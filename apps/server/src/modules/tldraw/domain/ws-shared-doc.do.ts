@@ -6,7 +6,7 @@ import { WSMessageType } from '../types/connection-enum';
 import { TldrawWsService } from '../service';
 
 export class WsSharedDocDo extends Doc {
-	name: string;
+	public name: string;
 
 	public conns: Map<WebSocket, Set<number>>;
 
@@ -37,7 +37,7 @@ export class WsSharedDocDo extends Doc {
 	public awarenessChangeHandler = (
 		{ added, updated, removed }: { added: Array<number>; updated: Array<number>; removed: Array<number> },
 		wsConnection: WebSocket | null
-	) => {
+	): void => {
 		const changedClients = this.manageClientsConnections({ added, updated, removed }, wsConnection);
 		const buff = this.prepareAwarenessMessage(changedClients);
 		this.sendAwarenessMessage(buff);
@@ -50,7 +50,7 @@ export class WsSharedDocDo extends Doc {
 	private manageClientsConnections(
 		{ added, updated, removed }: { added: Array<number>; updated: Array<number>; removed: Array<number> },
 		wsConnection: WebSocket | null
-	) {
+	): number[] {
 		const changedClients = added.concat(updated, removed);
 		if (wsConnection !== null) {
 			const connControlledIDs = this.conns.get(wsConnection);
@@ -69,7 +69,7 @@ export class WsSharedDocDo extends Doc {
 	/**
 	 * @param changedClients array of changed clients
 	 */
-	private prepareAwarenessMessage(changedClients: number[]) {
+	private prepareAwarenessMessage(changedClients: number[]): Uint8Array {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, WSMessageType.AWARENESS);
 		encoding.writeVarUint8Array(encoder, encodeAwarenessUpdate(this.awareness, changedClients));
@@ -80,7 +80,7 @@ export class WsSharedDocDo extends Doc {
 	/**
 	 * @param {{ Uint8Array }} buff encoded message about changes
 	 */
-	private sendAwarenessMessage(buff: Uint8Array) {
+	private sendAwarenessMessage(buff: Uint8Array): void {
 		this.conns.forEach((_, c) => {
 			this.tldrawService.send(this, c, buff);
 		});

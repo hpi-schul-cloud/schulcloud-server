@@ -11,11 +11,11 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 	server!: Server;
 
 	constructor(
-		readonly configService: ConfigService<TldrawConfig, true>,
+		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly tldrawWsService: TldrawWsService
 	) {}
 
-	handleConnection(client: WebSocket, request: Request) {
+	public handleConnection(client: WebSocket, request: Request): void {
 		const docName = this.getDocNameFromRequest(request);
 
 		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
@@ -28,7 +28,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		}
 	}
 
-	afterInit() {
+	public afterInit(): void {
 		this.tldrawWsService.setPersistence({
 			bindState: async (docName, ydoc) => {
 				await this.tldrawWsService.updateDocument(docName, ydoc);

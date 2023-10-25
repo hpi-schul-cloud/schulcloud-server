@@ -10,20 +10,20 @@ import { TldrawBoardRepo } from '@src/modules/tldraw/repo';
 
 @Injectable()
 export class TldrawWsService {
-	pingTimeout: number;
+	public pingTimeout: number;
 
-	persistence: Persitence | null = null;
+	public persistence: Persitence | null = null;
 
-	docs = new Map();
+	public docs = new Map();
 
 	constructor(
-		readonly configService: ConfigService<TldrawConfig, true>,
+		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly tldrawBoardRepo: TldrawBoardRepo
 	) {
-		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT') ?? 10000;
+		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
 	}
 
-	setPersistence(persistence_: Persitence) {
+	public setPersistence(persistence_: Persitence): void {
 		this.persistence = persistence_;
 	}
 
@@ -31,7 +31,7 @@ export class TldrawWsService {
 	 * @param {WsSharedDocDo} doc
 	 * @param {WebSocket} ws
 	 */
-	closeConn(doc: WsSharedDocDo, ws: WebSocket) {
+	public closeConn(doc: WsSharedDocDo, ws: WebSocket): void {
 		if (doc.conns.has(ws)) {
 			const controlledIds = doc.conns.get(ws) as Set<number>;
 			doc.conns.delete(ws);
@@ -61,7 +61,7 @@ export class TldrawWsService {
 	 * @param {WebSocket} conn
 	 * @param {Uint8Array} message
 	 */
-	send(doc: WsSharedDocDo, conn: WebSocket, message: Uint8Array) {
+	public send(doc: WsSharedDocDo, conn: WebSocket, message: Uint8Array): void {
 		if (conn.readyState !== WSConnectionState.CONNECTING && conn.readyState !== WSConnectionState.OPEN) {
 			this.closeConn(doc, conn);
 		}
@@ -81,7 +81,7 @@ export class TldrawWsService {
 	 * @param {any} origin
 	 * @param {WsSharedDocDo} doc
 	 */
-	updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo) {
+	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, WSMessageType.SYNC);
 		writeUpdate(encoder, update);
@@ -98,7 +98,7 @@ export class TldrawWsService {
 	 * @param  {boolean} gc - whether to allow gc on the doc (applies only when created)
 	 * @return {WsSharedDocDo}
 	 */
-	getYDoc(docName: string, gc = true) {
+	getYDoc(docName: string, gc = true): WsSharedDocDo {
 		return map.setIfUndefined(this.docs, docName, () => {
 			const doc = new WsSharedDocDo(docName, this, gc);
 			if (this.persistence !== null) {
@@ -109,7 +109,7 @@ export class TldrawWsService {
 		});
 	}
 
-	messageHandler(conn: WebSocket, doc: WsSharedDocDo, message: Uint8Array) {
+	public messageHandler(conn: WebSocket, doc: WsSharedDocDo, message: Uint8Array): void {
 		try {
 			const encoder = encoding.createEncoder();
 			const decoder = decoding.createDecoder(message);
@@ -142,7 +142,7 @@ export class TldrawWsService {
 	 * @param {WebSocket} ws
 	 * @param {string} docName
 	 */
-	setupWSConnection(ws: WebSocket, docName = 'GLOBAL') {
+	public setupWSConnection(ws: WebSocket, docName = 'GLOBAL'): void {
 		ws.binaryType = 'arraybuffer';
 		// get doc, initialize if it does not exist yet
 		const doc = this.getYDoc(docName, true);
@@ -198,11 +198,11 @@ export class TldrawWsService {
 		}
 	}
 
-	async updateDocument(docName: string, ydoc: WsSharedDocDo) {
+	public async updateDocument(docName: string, ydoc: WsSharedDocDo): Promise<void> {
 		await this.tldrawBoardRepo.updateDocument(docName, ydoc);
 	}
 
-	async flushDocument(docName: string) {
+	public async flushDocument(docName: string): Promise<void> {
 		await this.tldrawBoardRepo.flushDocument(docName);
 	}
 }
