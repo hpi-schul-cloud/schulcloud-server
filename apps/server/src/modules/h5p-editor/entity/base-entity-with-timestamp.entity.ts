@@ -11,7 +11,7 @@ export interface ITemporaryFileProperties {
 }
 
 @Entity({ tableName: 'h5p-editor-temp-file' })
-export class TemporaryFile extends BaseEntity implements ITemporaryFile, IFileStats {
+export class BaseEntityWithTimestamp extends BaseEntity implements ITemporaryFile, IFileStats {
 	/**
 	 * The name by which the file can be identified; can be a path including subdirectories (e.g. 'images/xyz.png')
 	 */

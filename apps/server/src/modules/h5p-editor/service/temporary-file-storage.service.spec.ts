@@ -7,7 +7,7 @@ import { FileDto } from '@src/modules/files-storage/dto';
 import { GetFileResponse } from '@src/modules/files-storage/interface';
 import { ReadStream } from 'fs';
 import { Readable } from 'node:stream';
-import { TemporaryFile } from '../entity/temporary-file.entity';
+import { BaseEntityWithTimestamp } from '../entity/base-entity-with-timestamp.entity';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { TemporaryFileRepo } from '../repo/temporary-file.repo';
 import { TemporaryFileStorage } from './temporary-file-storage.service';
@@ -58,7 +58,7 @@ describe('TemporaryFileStorage', () => {
 			canUpdateAndInstallLibraries: false,
 		};
 		const filename1 = 'abc/def.txt';
-		const file1 = new TemporaryFile({
+		const file1 = new BaseEntityWithTimestamp({
 			filename: filename1,
 			ownedByUserId: user1.id,
 			expiresAt: tomorrow,
@@ -76,7 +76,7 @@ describe('TemporaryFileStorage', () => {
 			canUpdateAndInstallLibraries: false,
 		};
 		const filename2 = 'uvw/xyz.txt';
-		const file2 = new TemporaryFile({
+		const file2 = new BaseEntityWithTimestamp({
 			filename: filename2,
 			ownedByUserId: user2.id,
 			expiresAt: tomorrow,

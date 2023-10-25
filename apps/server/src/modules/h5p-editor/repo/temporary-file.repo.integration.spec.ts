@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, h5pTemporaryFileFactory } from '@shared/testing';
-import { TemporaryFile } from '../entity';
+import { BaseEntityWithTimestamp } from '../entity';
 import { TemporaryFileRepo } from './temporary-file.repo';
 
 describe('TemporaryFileRepo', () => {
@@ -12,7 +12,7 @@ describe('TemporaryFileRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [TemporaryFile] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [BaseEntityWithTimestamp] })],
 			providers: [TemporaryFileRepo],
 		}).compile();
 
@@ -29,7 +29,7 @@ describe('TemporaryFileRepo', () => {
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(TemporaryFile);
+		expect(repo.entityName).toBe(BaseEntityWithTimestamp);
 	});
 
 	describe('createTemporaryFile', () => {
