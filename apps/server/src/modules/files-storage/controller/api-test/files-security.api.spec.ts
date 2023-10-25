@@ -2,8 +2,6 @@ import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
-import { FilesStorageTestModule } from '@modules/files-storage';
-import { FileRecordListResponse, ScanResultParams } from '@modules/files-storage/controller/dto';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
@@ -20,6 +18,8 @@ import NodeClam from 'clamscan';
 import { Request } from 'express';
 import request from 'supertest';
 import { FileRecord, FileRecordParentType } from '../../entity';
+import { FilesStorageTestModule } from '../../files-storage-test.module';
+import { FileRecordListResponse, ScanResultParams } from '../dto';
 
 const baseRouteName = '/file-security';
 const scanResult: ScanResultParams = { virus_detected: false };
