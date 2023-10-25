@@ -39,8 +39,8 @@ spec:
         command: ['npm', 'run', 'nest:start:preview-generator-amqp:prod']
         resources:
           limits:
-            cpu: {{ AMQP_FILE_PREVIEW_CPU_LIMITS|default("1000m", true) }}
-            memory: {{ AMQP_FILE_PREVIEW_MEMORY_LIMITS|default("2500Mi", true) }}
+            cpu: {{ AMQP_FILE_PREVIEW_CPU_LIMITS|default("4000m", true) }}
+            memory: {{ AMQP_FILE_PREVIEW_MEMORY_LIMITS|default("4000Mi", true) }}
           requests:
             cpu: {{ AMQP_FILE_PREVIEW_CPU_REQUESTS|default("100m", true) }}
-            memory: {{ AMQP_FILE_PREVIEW_MEMORY_REQUESTS|default("50Mi", true) }}
+            memory: {{ AMQP_FILE_PREVIEW_MEMORY_REQUESTS|default("250Mi", true) }}
