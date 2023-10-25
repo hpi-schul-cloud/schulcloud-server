@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { NotAcceptable, Unprocessable } from '@feathersjs/errors';
 import {
 	ContentId,
 	IContentMetadata,
@@ -9,10 +10,10 @@ import {
 	LibraryName,
 	Permission,
 } from '@lumieducation/h5p-server';
-import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { HttpException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { FileDto } from '@src/modules/files-storage/dto';
 import { Readable } from 'stream';
+import { H5pFileDto } from '../controller/dto/h5p-file.dto';
 import { H5PContent } from '../entity';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { H5PContentRepo } from '../repo';
@@ -33,6 +34,31 @@ export class ContentStorage implements IContentStorage {
 		}
 	}
 
+	private async createOrUpdateContent(
+		contentId: ContentId,
+		user: LumiUserWithContentData,
+		metadata: IContentMetadata,
+		content: unknown
+	) {
+		let h5pContent: H5PContent;
+
+		if (contentId) {
+			h5pContent = await this.repo.findById(contentId);
+			h5pContent.metadata = metadata;
+			h5pContent.content = content;
+		} else {
+			h5pContent = new H5PContent({
+				parentType: user.contentParentType,
+				parentId: user.contentParentId,
+				creatorId: user.id,
+				schoolId: user.schoolId,
+				metadata,
+				content,
+			});
+		}
+		return h5pContent;
+	}
+
 	public async addContent(
 		metadata: IContentMetadata,
 		content: unknown,
@@ -42,28 +68,14 @@ export class ContentStorage implements IContentStorage {
 		try {
 			this.checkExtendedUserType(user);
 
-			let h5pContent: H5PContent;
-
-			if (contentId) {
-				h5pContent = await this.repo.findById(contentId);
-				h5pContent.metadata = metadata;
-				h5pContent.content = content;
-			} else {
-				h5pContent = new H5PContent({
-					parentType: user.contentParentType,
-					parentId: user.contentParentId,
-					creatorId: user.id,
-					schoolId: user.schoolId,
-					metadata,
-					content,
-				});
-			}
-
+			const h5pContent = await this.createOrUpdateContent(contentId as string, user, metadata, content);
 			await this.repo.save(h5pContent);
 
 			return h5pContent.id;
 		} catch (error) {
-			throw new InternalServerErrorException(error, 'ContentStorage:addContent');
+			throw new HttpException('message', 500, {
+				cause: new InternalServerErrorException(error as string, 'ContentStorage:addContent'),
+			});
 		}
 	}
 
@@ -76,7 +88,7 @@ export class ContentStorage implements IContentStorage {
 		}
 
 		const fullPath = this.getFilePath(contentId, filename);
-		const file: FileDto = {
+		const file: H5pFileDto = {
 			name: filename,
 			data: stream,
 			mimeType: 'application/json',
@@ -100,7 +112,9 @@ export class ContentStorage implements IContentStorage {
 
 			await Promise.all([this.repo.delete(h5pContent), ...fileDeletePromises]);
 		} catch (error) {
-			throw new InternalServerErrorException(error, 'ContentStorage:deleteContent');
+			throw new HttpException('message', 500, {
+				cause: new InternalServerErrorException(error as string, 'ContentStorage:addContent'),
+			});
 		}
 	}
 
@@ -201,7 +215,9 @@ export class ContentStorage implements IContentStorage {
 	public async listFiles(contentId: string, user?: ILumiUser): Promise<string[]> {
 		const contentExists = await this.contentExists(contentId);
 		if (!contentExists) {
-			throw new NotFoundException('Content could not be found');
+			throw new HttpException('message', 404, {
+				cause: new NotFoundException('Content could not be found'),
+			});
 		}
 
 		const path = this.getContentPath(contentId);
@@ -218,7 +234,9 @@ export class ContentStorage implements IContentStorage {
 				return false;
 			}
 
-			throw new InternalServerErrorException(err, 'ContentStorage:exists');
+			throw new HttpException('message', 500, {
+				cause: new InternalServerErrorException(err as string, 'ContentStorage:addContent'),
+			});
 		}
 
 		return true;
@@ -267,12 +285,16 @@ export class ContentStorage implements IContentStorage {
 		if (/^[a-zA-Z0-9/._-]*$/.test(filename) && !filename.includes('..') && !filename.startsWith('/')) {
 			return;
 		}
-		throw new Error(`Filename contains forbidden characters ${filename}`);
+		throw new HttpException('message', 406, {
+			cause: new NotAcceptable(`Filename contains forbidden characters ${filename}`),
+		});
 	}
 
 	private getContentPath(contentId: string): string {
 		if (!contentId) {
-			throw new Error('COULD_NOT_CREATE_PATH');
+			throw new HttpException('message', 406, {
+				cause: new Unprocessable('COULD_NOT_CREATE_PATH'),
+			});
 		}
 
 		const path = `h5p-content/${contentId}/`;
@@ -281,7 +303,9 @@ export class ContentStorage implements IContentStorage {
 
 	private getFilePath(contentId: string, filename: string): string {
 		if (!contentId || !filename) {
-			throw new Error('COULD_NOT_CREATE_PATH');
+			throw new HttpException('message', 406, {
+				cause: new Unprocessable('COULD_NOT_CREATE_PATH'),
+			});
 		}
 
 		const path = `${this.getContentPath(contentId)}${filename}`;

@@ -22,6 +22,7 @@ async function readStream(stream: Readable): Promise<string> {
 	});
 }
 
+jest.useFakeTimers();
 describe('LibraryStorage', () => {
 	let module: TestingModule;
 	let storage: LibraryStorage;

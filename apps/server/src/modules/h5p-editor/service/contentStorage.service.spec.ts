@@ -1,7 +1,7 @@
 import { HeadObjectCommandOutput } from '@aws-sdk/client-s3';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { IContentMetadata, ILibraryName, IUser, LibraryName } from '@lumieducation/h5p-server';
-import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IEntity } from '@shared/domain';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
@@ -206,7 +206,7 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN saving content fails', () => {
-			it('should throw an InternalServerErrorException', async () => {
+			it('should throw an HttpException', async () => {
 				const {
 					existingContent: { metadata, content },
 					user,
@@ -215,12 +215,12 @@ describe('ContentStorage', () => {
 
 				const addContentPromise = service.addContent(metadata, content, user);
 
-				await expect(addContentPromise).rejects.toThrow(InternalServerErrorException);
+				await expect(addContentPromise).rejects.toThrow(HttpException);
 			});
 		});
 
 		describe('WHEN finding content fails', () => {
-			it('should throw an InternalServerErrorException', async () => {
+			it('should throw an HttpException', async () => {
 				const {
 					existingContent: { metadata, content, id },
 					user,
@@ -229,7 +229,7 @@ describe('ContentStorage', () => {
 
 				const addContentPromise = service.addContent(metadata, content, user, id);
 
-				await expect(addContentPromise).rejects.toThrow(InternalServerErrorException);
+				await expect(addContentPromise).rejects.toThrow(HttpException);
 			});
 		});
 	});
@@ -381,35 +381,35 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN content does not exist', () => {
-			it('should throw InternalServerErrorException', async () => {
+			it('should throw HttpException', async () => {
 				const { content, user } = setup();
 				contentRepo.findById.mockRejectedValueOnce(new Error());
 
 				const deletePromise = service.deleteContent(content.id, user);
 
-				await expect(deletePromise).rejects.toThrow(InternalServerErrorException);
+				await expect(deletePromise).rejects.toThrow(HttpException);
 			});
 		});
 
 		describe('WHEN H5PContentRepo.delete throws an error', () => {
-			it('should throw InternalServerErrorException', async () => {
+			it('should throw HttpException', async () => {
 				const { content, user } = setup();
 				contentRepo.delete.mockRejectedValueOnce(new Error());
 
 				const deletePromise = service.deleteContent(content.id, user);
 
-				await expect(deletePromise).rejects.toThrow(InternalServerErrorException);
+				await expect(deletePromise).rejects.toThrow(HttpException);
 			});
 		});
 
 		describe('WHEN S3ClientAdapter.delete throws an error', () => {
-			it('should throw InternalServerErrorException', async () => {
+			it('should throw HttpException', async () => {
 				const { content, user } = setup();
 				s3ClientAdapter.delete.mockRejectedValueOnce(new Error());
 
 				const deletePromise = service.deleteContent(content.id, user);
 
-				await expect(deletePromise).rejects.toThrow(InternalServerErrorException);
+				await expect(deletePromise).rejects.toThrow(HttpException);
 			});
 		});
 	});
@@ -506,13 +506,13 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN S3ClientAdapter.head throws error', () => {
-			it('should throw InternalServerException', async () => {
+			it('should throw HttpException', async () => {
 				const { contentID, filename } = setup();
 				s3ClientAdapter.head.mockRejectedValueOnce(new Error());
 
 				const existsPromise = service.fileExists(contentID, filename);
 
-				await expect(existsPromise).rejects.toThrow(InternalServerErrorException);
+				await expect(existsPromise).rejects.toThrow(HttpException);
 			});
 		});
 
@@ -800,13 +800,13 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN content does not exist', () => {
-			it('should throw NotFoundException', async () => {
+			it('should throw HttpException', async () => {
 				const { content, user } = setup();
 				contentRepo.existsOne.mockResolvedValueOnce(false);
 
 				const listPromise = service.listFiles(content.id, user);
 
-				await expect(listPromise).rejects.toThrow(NotFoundException);
+				await expect(listPromise).rejects.toThrow(HttpException);
 			});
 		});
 
@@ -895,7 +895,7 @@ describe('ContentStorage', () => {
 				// Test private getContentPath using listFiles
 				contentRepo.existsOne.mockResolvedValueOnce(true);
 				const promise = service.listFiles('');
-				await expect(promise).rejects.toThrow('COULD_NOT_CREATE_PATH');
+				await expect(promise).rejects.toThrow(HttpException);
 			});
 		});
 
@@ -903,10 +903,10 @@ describe('ContentStorage', () => {
 			it('should throw error', async () => {
 				// Test private getFilePath using fileExists
 				const missingContentID = service.fileExists('', 'filename');
-				await expect(missingContentID).rejects.toThrow('COULD_NOT_CREATE_PATH');
+				await expect(missingContentID).rejects.toThrow(HttpException);
 
 				const missingFilename = service.fileExists('id', '');
-				await expect(missingFilename).rejects.toThrow('COULD_NOT_CREATE_PATH');
+				await expect(missingFilename).rejects.toThrow(HttpException);
 			});
 		});
 
@@ -914,13 +914,13 @@ describe('ContentStorage', () => {
 			it('should throw error', async () => {
 				// Test private checkFilename using deleteFile
 				const invalidChars = service.deleteFile('id', 'ex#ample.txt');
-				await expect(invalidChars).rejects.toThrow('Filename contains forbidden characters');
+				await expect(invalidChars).rejects.toThrow(HttpException);
 
 				const includesDoubleDot = service.deleteFile('id', '../test.txt');
-				await expect(includesDoubleDot).rejects.toThrow('Filename contains forbidden characters');
+				await expect(includesDoubleDot).rejects.toThrow(HttpException);
 
 				const startsWithSlash = service.deleteFile('id', '/example.txt');
-				await expect(startsWithSlash).rejects.toThrow('Filename contains forbidden characters');
+				await expect(startsWithSlash).rejects.toThrow(HttpException);
 			});
 		});
 	});
