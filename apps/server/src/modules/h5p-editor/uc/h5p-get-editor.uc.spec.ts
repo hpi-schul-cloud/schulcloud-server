@@ -9,7 +9,8 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { AuthorizationContextBuilder, AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { UserService } from '@src/modules/user';
 import { H5PContentRepo } from '../repo';
-import { H5PAjaxEndpointService, LibraryStorage } from '../service';
+import { LibraryStorage } from '../service';
+import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PEditorUc } from './h5p.uc';
 
 const createParams = () => {
@@ -48,7 +49,7 @@ describe('get H5P editor', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				H5PEditorUc,
-				H5PAjaxEndpointService,
+				H5PAjaxEndpointProvider,
 				{
 					provide: H5PEditor,
 					useValue: createMock<H5PEditor>(),

@@ -15,8 +15,8 @@ import { H5PEditorController } from './controller/h5p-editor.controller';
 import { H5PContent, InstalledLibrary, BaseEntityWithTimestamp } from './entity';
 import { config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
 import { H5PContentRepo, LibraryRepo, TemporaryFileRepo } from './repo';
-import { ContentStorage, H5PAjaxEndpointService, LibraryStorage, TemporaryFileStorage } from './service';
-import { H5PEditorProvider, H5PPlayerProvider } from './provider';
+import { ContentStorage, LibraryStorage, TemporaryFileStorage } from './service';
+import { H5PEditorProvider, H5PAjaxEndpointProvider, H5PPlayerProvider } from './provider';
 import { H5PEditorUc } from './uc/h5p.uc';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
@@ -55,7 +55,7 @@ const providers = [
 	TemporaryFileRepo,
 	H5PEditorProvider,
 	H5PPlayerProvider,
-	H5PAjaxEndpointService,
+	H5PAjaxEndpointProvider,
 	ContentStorage,
 	LibraryStorage,
 	TemporaryFileStorage,

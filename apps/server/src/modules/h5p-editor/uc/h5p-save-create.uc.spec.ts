@@ -7,7 +7,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException } from '@nestjs/common';
 import { AuthorizationContextBuilder, AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { UserService } from '@src/modules/user';
-import { H5PAjaxEndpointService, LibraryStorage } from '../service';
+import { LibraryStorage } from '../service';
+import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PEditorUc } from './h5p.uc';
 import { H5PContentParentType } from '../entity';
 import { H5PContentRepo } from '../repo';
@@ -41,7 +42,7 @@ describe('save or create H5P content', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				H5PEditorUc,
-				H5PAjaxEndpointService,
+				H5PAjaxEndpointProvider,
 				{
 					provide: H5PEditor,
 					useValue: createMock<H5PEditor>(),
