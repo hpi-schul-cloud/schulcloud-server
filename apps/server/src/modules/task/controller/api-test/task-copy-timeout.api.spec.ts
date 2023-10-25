@@ -1,3 +1,4 @@
+import { createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { EntityManager } from '@mikro-orm/mongodb';
@@ -13,6 +14,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { Request } from 'express';
 import request from 'supertest';
 
@@ -44,6 +46,8 @@ describe('Task copy (API)', () => {
 					return true;
 				},
 			})
+			.overrideProvider(FilesStorageClientAdapterService)
+			.useValue(createMock<FilesStorageClientAdapterService>())
 			.compile();
 
 		app = moduleFixture.createNestApplication();
