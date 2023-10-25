@@ -90,7 +90,7 @@
       namespace: "{{ NAMESPACE }}"
       template: preview-generator-deployment.yml.j2
 
-  - name: PreviewGeneratorConfigmap
+  - name: preview generator configmap
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
