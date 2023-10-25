@@ -1,6 +1,6 @@
 import WebSocket from 'ws';
 
-export class TestHelper {
+export class TestConnection {
 	public static getWsUrl = (gatewayPort: number): string => {
 		const wsUrl = `ws://localhost:${gatewayPort}`;
 		return wsUrl;

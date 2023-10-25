@@ -12,7 +12,7 @@ import { TldrawBoardRepo } from '../repo/tldraw-board.repo';
 import { TldrawWsService } from '../service';
 import { WsSharedDocDo } from './ws-shared-doc.do';
 import { TldrawWs } from '../controller';
-import { TestHelper } from '../helper/test-helper';
+import { TestConnection } from '../testing/test-connection';
 
 describe('WsSharedDocDo', () => {
 	let app: INestApplication;
@@ -20,7 +20,7 @@ describe('WsSharedDocDo', () => {
 	let service: TldrawWsService;
 
 	const gatewayPort = 3346;
-	const wsUrl = TestHelper.getWsUrl(gatewayPort);
+	const wsUrl = TestConnection.getWsUrl(gatewayPort);
 
 	jest.useFakeTimers();
 
@@ -51,7 +51,7 @@ describe('WsSharedDocDo', () => {
 
 	describe('ydoc client awareness change handler', () => {
 		const setup = async () => {
-			ws = await TestHelper.setupWs(wsUrl);
+			ws = await TestConnection.setupWs(wsUrl);
 
 			class MockAwareness {
 				on = jest.fn();

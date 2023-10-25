@@ -5,7 +5,7 @@ import { TextEncoder } from 'util';
 import { INestApplication } from '@nestjs/common';
 import { TldrawTestModule } from '../..';
 import { TldrawWs } from '../tldraw.ws';
-import { TestHelper } from '../../helper/test-helper';
+import { TestConnection } from '../../testing/test-connection';
 
 describe('WebSocketController (WsAdapter)', () => {
 	let app: INestApplication;
@@ -13,7 +13,7 @@ describe('WebSocketController (WsAdapter)', () => {
 	let ws: WebSocket;
 
 	const gatewayPort = 3346;
-	const wsUrl = TestHelper.getWsUrl(gatewayPort);
+	const wsUrl = TestConnection.getWsUrl(gatewayPort);
 	const clientMessageMock = 'test-message';
 
 	const getMessage = () => new TextEncoder().encode(clientMessageMock);
@@ -45,7 +45,7 @@ describe('WebSocketController (WsAdapter)', () => {
 			const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
 			jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValueOnce(1);
 
-			ws = await TestHelper.setupWs(wsUrl, 'TEST');
+			ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
 			const { buffer } = getMessage();
 
@@ -77,8 +77,8 @@ describe('WebSocketController (WsAdapter)', () => {
 	describe('when tldraw doc has multiple clients', () => {
 		const setup = async () => {
 			const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-			ws = await TestHelper.setupWs(wsUrl, 'TEST2');
-			const ws2 = await TestHelper.setupWs(wsUrl, 'TEST2');
+			ws = await TestConnection.setupWs(wsUrl, 'TEST2');
+			const ws2 = await TestConnection.setupWs(wsUrl, 'TEST2');
 
 			const { buffer } = getMessage();
 
@@ -106,7 +106,7 @@ describe('WebSocketController (WsAdapter)', () => {
 		const setup = async () => {
 			const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
 
-			ws = await TestHelper.setupWs(wsUrl);
+			ws = await TestConnection.setupWs(wsUrl);
 
 			return {
 				handleConnectionSpy,

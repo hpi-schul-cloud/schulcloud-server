@@ -13,7 +13,7 @@ import { TldrawBoardRepo } from './tldraw-board.repo';
 import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
 import { TldrawWsService } from '../service';
 import { TldrawWs } from '../controller';
-import { TestHelper } from '../helper/test-helper';
+import { TestConnection } from '../testing/test-connection';
 
 describe('TldrawBoardRepo', () => {
 	let app: INestApplication;
@@ -22,7 +22,7 @@ describe('TldrawBoardRepo', () => {
 	let service: TldrawWsService;
 
 	const gatewayPort = 3346;
-	const wsUrl = TestHelper.getWsUrl(gatewayPort);
+	const wsUrl = TestConnection.getWsUrl(gatewayPort);
 
 	jest.useFakeTimers();
 
@@ -66,7 +66,7 @@ describe('TldrawBoardRepo', () => {
 		describe('when document receives empty update', () => {
 			const setup = async () => {
 				const doc = new WsSharedDocDo('TEST2', service);
-				ws = await TestHelper.setupWs(wsUrl, 'TEST2');
+				ws = await TestConnection.setupWs(wsUrl, 'TEST2');
 				const wsSet = new Set();
 				wsSet.add(ws);
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -99,7 +99,7 @@ describe('TldrawBoardRepo', () => {
 			const setup = async () => {
 				const clientMessageMock = 'test-message';
 				const doc = new WsSharedDocDo('TEST', service);
-				ws = await TestHelper.setupWs(wsUrl, 'TEST');
+				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 				const wsSet = new Set();
 				wsSet.add(ws);
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -158,7 +158,7 @@ describe('TldrawBoardRepo', () => {
 		describe('when the difference between update and current drawing is more than 0', () => {
 			const setup = () => {
 				const calculateDiffSpy = jest.spyOn(YjsUtils, 'calculateDiff').mockImplementationOnce(() => 1);
-				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdate').mockImplementation(() => Promise.resolve(1));
+				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdate').mockResolvedValueOnce(Promise.resolve(1));
 
 				return {
 					calculateDiffSpy,
@@ -204,7 +204,7 @@ describe('TldrawBoardRepo', () => {
 
 	describe('flushDocument', () => {
 		const setup = () => {
-			const flushDocumentSpy = jest.spyOn(repo.mdb, 'flushDocument').mockImplementation(() => Promise.resolve());
+			const flushDocumentSpy = jest.spyOn(repo.mdb, 'flushDocument').mockResolvedValueOnce(Promise.resolve());
 
 			return { flushDocumentSpy };
 		};

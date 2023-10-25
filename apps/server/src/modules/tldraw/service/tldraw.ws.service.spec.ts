@@ -15,7 +15,7 @@ import { TldrawBoardRepo } from '@src/modules/tldraw/repo';
 import { TldrawWs } from '@src/modules/tldraw/controller';
 import { TldrawWsFactory } from '@shared/testing/factory/tldraw.ws.factory';
 import { TldrawWsService } from '.';
-import { TestHelper } from '../helper/test-helper';
+import { TestConnection } from '../testing/test-connection';
 
 jest.mock('y-protocols/awareness', () => {
 	const moduleMock: unknown = {
@@ -38,7 +38,7 @@ describe('TldrawWSService', () => {
 	let service: TldrawWsService;
 
 	const gatewayPort = 3346;
-	const wsUrl = TestHelper.getWsUrl(gatewayPort);
+	const wsUrl = TestConnection.getWsUrl(gatewayPort);
 
 	const delay = (ms: number) =>
 		new Promise((resolve) => {
@@ -87,7 +87,7 @@ describe('TldrawWSService', () => {
 	describe('send', () => {
 		describe('when client is not connected to WS', () => {
 			const setup = async () => {
-				ws = await TestHelper.setupWs(wsUrl);
+				ws = await TestConnection.setupWs(wsUrl);
 				const clientMessageMock = 'test-message';
 
 				const closeConSpy = jest.spyOn(service, 'closeConn').mockImplementationOnce(() => {});
@@ -151,7 +151,7 @@ describe('TldrawWSService', () => {
 
 		describe('when websocket has ready state 0', () => {
 			const setup = async () => {
-				ws = await TestHelper.setupWs(wsUrl);
+				ws = await TestConnection.setupWs(wsUrl);
 				const clientMessageMock = 'test-message';
 
 				const sendSpy = jest.spyOn(service, 'send');
@@ -184,7 +184,7 @@ describe('TldrawWSService', () => {
 
 		describe('when received message of specific type', () => {
 			const setup = async (messageValues: number[]) => {
-				ws = await TestHelper.setupWs(wsUrl, 'TEST');
+				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
 				const sendSpy = jest.spyOn(service, 'send');
 				const applyAwarenessUpdateSpy = jest.spyOn(AwarenessProtocol, 'applyAwarenessUpdate');
@@ -248,7 +248,7 @@ describe('TldrawWSService', () => {
 
 		describe('when error is thrown during receiving message', () => {
 			const setup = async () => {
-				ws = await TestHelper.setupWs(wsUrl);
+				ws = await TestConnection.setupWs(wsUrl);
 
 				const sendSpy = jest.spyOn(service, 'send');
 				jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementationOnce(() => {
@@ -278,7 +278,7 @@ describe('TldrawWSService', () => {
 
 		describe('when awareness states (clients) size is greater then one', () => {
 			const setup = async () => {
-				ws = await TestHelper.setupWs(wsUrl, 'TEST');
+				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
 				const doc = new WsSharedDocDo('TEST', service);
 				doc.awareness.states = new Map();
@@ -316,7 +316,7 @@ describe('TldrawWSService', () => {
 	describe('closeConn', () => {
 		describe('when trying to close already closed connection', () => {
 			const setup = async () => {
-				ws = await TestHelper.setupWs(wsUrl);
+				ws = await TestConnection.setupWs(wsUrl);
 
 				jest.spyOn(ws, 'close').mockImplementationOnce(() => {
 					throw new Error('some error');
@@ -338,7 +338,7 @@ describe('TldrawWSService', () => {
 
 		describe('when ping failed', () => {
 			const setup = async () => {
-				ws = await TestHelper.setupWs(wsUrl, 'TEST');
+				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
 				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockImplementationOnce(() => {});
 				const closeConnSpy = jest.spyOn(service, 'closeConn');
@@ -371,7 +371,7 @@ describe('TldrawWSService', () => {
 	describe('messageHandler', () => {
 		describe('when message is received', () => {
 			const setup = async (messageValues: number[]) => {
-				ws = await TestHelper.setupWs(wsUrl, 'TEST');
+				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
 				const messageHandlerSpy = jest.spyOn(service, 'messageHandler');
 				const readSyncMessageSpy = jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementationOnce((dec, enc) => {
