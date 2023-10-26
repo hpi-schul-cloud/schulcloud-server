@@ -9,9 +9,9 @@ metadata:
 spec:
   scaleTargetRef:
     name: preview-generator-deployment
-  idleReplicaCount: 1
-  minReplicaCount:  1
-  maxReplicaCount:  5
+  idleReplicaCount: {{ AMQP_FILE_PREVIEW_IDLE_REPLICA_COUNT|default("1", true) }}
+  minReplicaCount:  {{ AMQP_FILE_PREVIEW_MIN_REPLICA_COUNT|default("1", true) }}
+  maxReplicaCount:  {{ AMQP_FILE_PREVIEW_MAX_REPLICA_COUNT|default("5", true) }}
   triggers:
   - type: rabbitmq
     metadata:
