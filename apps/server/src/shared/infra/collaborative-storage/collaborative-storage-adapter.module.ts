@@ -6,9 +6,9 @@ import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/ne
 import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.strategy';
 import { LtiToolRepo } from '@shared/repo/ltitool/';
 import { LoggerModule } from '@src/core/logger';
-import { ToolModule } from '@src/modules/tool';
-import { PseudonymModule } from '@src/modules/pseudonym';
-import { UserModule } from '@src/modules/user';
+import { ToolModule } from '@modules/tool';
+import { PseudonymModule } from '@modules/pseudonym';
+import { UserModule } from '@modules/user';
 import { CollaborativeStorageAdapter } from './collaborative-storage.adapter';
 
 const storageStrategy: Provider = {

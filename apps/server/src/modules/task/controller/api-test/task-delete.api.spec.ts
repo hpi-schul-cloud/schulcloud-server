@@ -10,8 +10,8 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { ServerTestModule } from '@src/modules/server';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { ServerTestModule } from '@modules/server';
 
 const createStudent = () => {
 	const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({}, [

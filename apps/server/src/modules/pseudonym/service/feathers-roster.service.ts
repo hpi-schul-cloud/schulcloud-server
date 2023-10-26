@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Course, EntityId, Pseudonym, RoleName, RoleReference, UserDO } from '@shared/domain';
-import { CourseService } from '@src/modules/learnroom/service';
-import { ToolContextType } from '@src/modules/tool/common/enum';
-import { ContextExternalTool, ContextRef } from '@src/modules/tool/context-external-tool/domain';
-import { ContextExternalToolService } from '@src/modules/tool/context-external-tool/service';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { ExternalToolService } from '@src/modules/tool/external-tool/service';
-import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
-import { SchoolExternalToolService } from '@src/modules/tool/school-external-tool/service';
-import { UserService } from '@src/modules/user';
+import { CourseService } from '@modules/learnroom/service';
+import { ToolContextType } from '@modules/tool/common/enum';
+import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { ExternalToolService } from '@modules/tool/external-tool/service';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
+import { UserService } from '@modules/user';
 import { PseudonymService } from './pseudonym.service';
 
 interface UserMetdata {
@@ -179,12 +179,10 @@ export class FeathersRosterService {
 				);
 
 				for await (const contextExternalTool of contextExternalTools) {
-					const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(
+					const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
 						contextExternalTool.schoolToolRef.schoolToolId
 					);
-					const externalTool: ExternalTool = await this.externalToolService.findExternalToolById(
-						schoolExternalTool.toolId
-					);
+					const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 					const isRequiredTool: boolean = externalTool.id === externalToolId;
 
 					if (isRequiredTool) {

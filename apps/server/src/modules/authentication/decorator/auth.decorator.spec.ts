@@ -2,8 +2,8 @@
 import { Controller, ExecutionContext, ForbiddenException, Get, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { ServerTestModule } from '@src/modules/server/server.module';
+import { ICurrentUser } from '@modules/authentication';
+import { ServerTestModule } from '@modules/server/server.module';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 import { Authenticate, CurrentUser, JWT } from './auth.decorator';
 

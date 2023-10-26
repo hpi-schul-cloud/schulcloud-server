@@ -30,52 +30,39 @@ describe('AccountIdmToDtoMapperIdm', () => {
 		await module.close();
 	});
 
-	describe('mapToDto', () => {
-		describe('when mapping from entity to dto', () => {
-			const setup = () => {
-				const testIdmEntity: IdmAccount = {
-					id: 'id',
-					username: 'username',
-					email: 'email',
-					firstName: 'firstName',
-					lastName: 'lastName',
-					createdDate: new Date(),
-					attDbcAccountId: 'attDbcAccountId',
-					attDbcUserId: 'attDbcUserId',
-					attDbcSystemId: 'attDbcSystemId',
-				};
-				return testIdmEntity;
+	describe('when mapping from entity to dto', () => {
+		it('should map all fields', () => {
+			const testIdmEntity: IdmAccount = {
+				id: 'id',
+				username: 'username',
+				email: 'email',
+				firstName: 'firstName',
+				lastName: 'lastName',
+				createdDate: new Date(),
+				attDbcAccountId: 'attDbcAccountId',
+				attDbcUserId: 'attDbcUserId',
+				attDbcSystemId: 'attDbcSystemId',
 			};
+			const ret = mapper.mapToDto(testIdmEntity);
 
-			it('should map all fields', () => {
-				const testIdmEntity = setup();
-
-				const ret = mapper.mapToDto(testIdmEntity);
-
-				expect(ret).toEqual(
-					expect.objectContaining<Partial<AccountDto>>({
-						id: testIdmEntity.id,
-						idmReferenceId: undefined,
-						userId: testIdmEntity.attDbcUserId,
-						systemId: testIdmEntity.attDbcSystemId,
-						createdAt: testIdmEntity.createdDate,
-						updatedAt: testIdmEntity.createdDate,
-						username: testIdmEntity.username,
-					})
-				);
-			});
+			expect(ret).toEqual(
+				expect.objectContaining<Partial<AccountDto>>({
+					id: testIdmEntity.id,
+					idmReferenceId: undefined,
+					userId: testIdmEntity.attDbcUserId,
+					systemId: testIdmEntity.attDbcSystemId,
+					createdAt: testIdmEntity.createdDate,
+					updatedAt: testIdmEntity.createdDate,
+					username: testIdmEntity.username,
+				})
+			);
 		});
+
 		describe('when date is undefined', () => {
-			const setup = () => {
+			it('should use actual date', () => {
 				const testIdmEntity: IdmAccount = {
 					id: 'id',
 				};
-				return testIdmEntity;
-			};
-
-			it('should use actual date', () => {
-				const testIdmEntity = setup();
-
 				const ret = mapper.mapToDto(testIdmEntity);
 
 				expect(ret.createdAt).toEqual(now);
@@ -84,16 +71,10 @@ describe('AccountIdmToDtoMapperIdm', () => {
 		});
 
 		describe('when a fields value is missing', () => {
-			const setup = () => {
+			it('should fill with empty string', () => {
 				const testIdmEntity: IdmAccount = {
 					id: 'id',
 				};
-				return testIdmEntity;
-			};
-
-			it('should fill with empty string', () => {
-				const testIdmEntity = setup();
-
 				const ret = mapper.mapToDto(testIdmEntity);
 
 				expect(ret.username).toBe('');

@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { SystemFilterParams } from '@src/modules/system/controller/dto/system.filter.params';
+import { SystemFilterParams } from '@modules/system/controller/dto/system.filter.params';
 import { SystemDto } from '../service';
 import { SystemUc } from '../uc/system.uc';
 import { PublicSystemListResponse } from './dto/public-system-list.response';
