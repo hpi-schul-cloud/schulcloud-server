@@ -41,8 +41,8 @@ describe(`content element create (api)`, () => {
 		await app.close();
 	});
 
-	describe('with valid user', () => {
-		describe('when parent is a card', () => {
+	describe('when the parent of the element is a card node', () => {
+		describe('with valid user', () => {
 			const setup = async () => {
 				await cleanupCollections(em);
 
@@ -142,8 +142,78 @@ describe(`content element create (api)`, () => {
 				expect(response.statusCode).toEqual(400);
 			});
 		});
+		describe('with invalid user', () => {
+			describe('with teacher not belonging to course', () => {
+				const setup = async () => {
+					await cleanupCollections(em);
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-		describe('when parent is a submission item', () => {
+					const course = courseFactory.build({});
+					await em.persistAndFlush([teacherAccount, teacherUser, course]);
+
+					const columnBoardNode = columnBoardNodeFactory.buildWithId({
+						context: { id: course.id, type: BoardExternalReferenceType.Course },
+					});
+					const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+					const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+
+					await em.persistAndFlush([columnBoardNode, columnNode, cardNode]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(teacherAccount);
+
+					return { loggedInClient, columnBoardNode, columnNode, cardNode };
+				};
+
+				it('should return status 403', async () => {
+					const { cardNode, loggedInClient } = await setup();
+
+					const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.RICH_TEXT });
+
+					expect(response.statusCode).toEqual(403);
+				});
+			});
+
+			describe('with student belonging to course', () => {
+				describe('when the parent of the element is a card node', () => {
+					const setup = async () => {
+						await cleanupCollections(em);
+						const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+						const course = courseFactory.build({ students: [studentUser] });
+						await em.persistAndFlush([studentAccount, studentUser, course]);
+
+						const columnBoardNode = columnBoardNodeFactory.buildWithId({
+							context: { id: course.id, type: BoardExternalReferenceType.Course },
+						});
+						const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+						const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+
+						await em.persistAndFlush([columnBoardNode, columnNode, cardNode]);
+						em.clear();
+
+						const loggedInClient = await testApiClient.login(studentAccount);
+
+						return { loggedInClient, columnBoardNode, columnNode, cardNode };
+					};
+
+					it('should return status 403', async () => {
+						const { cardNode, loggedInClient } = await setup();
+
+						const response = await loggedInClient.post(`${cardNode.id}/elements`, {
+							type: ContentElementType.RICH_TEXT,
+						});
+
+						expect(response.statusCode).toEqual(403);
+					});
+				});
+				describe('when the parent of the element is a submission item', () => {});
+			});
+		});
+	});
+
+	describe('when the parent of the element is a submission item', () => {
+		describe('with user being the owner of the parent submission item', () => {
 			const setup = async () => {
 				await cleanupCollections(em);
 
@@ -159,7 +229,9 @@ describe(`content element create (api)`, () => {
 				});
 				const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 				const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-				const submissionElementContainerNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
+				const submissionElementContainerNode = submissionContainerElementNodeFactory.buildWithId({
+					parent: cardNode,
+				});
 				const submissionItemNode = submissionItemNodeFactory.buildWithId({
 					parent: submissionElementContainerNode,
 					userId: studentUser.id,
@@ -218,16 +290,74 @@ describe(`content element create (api)`, () => {
 
 				expect(response.statusCode).toEqual(400);
 			});
-		});
-	});
 
-	describe('with invalid user', () => {
-		describe('with teacher not belonging to course', () => {
+			it('should actually create the content element', async () => {
+				const { loggedInClient, submissionItemNode } = await setup();
+				const response = await loggedInClient.post(`${submissionItemNode.id}/elements`, {
+					type: ContentElementType.RICH_TEXT,
+				});
+
+				const elementId = (response.body as AnyContentElementResponse).id;
+
+				const result = await em.findOneOrFail(RichTextElementNode, elementId);
+				expect(result.id).toEqual(elementId);
+			});
+		});
+		describe('with user not being the owner of the parent submission item', () => {
 			const setup = async () => {
 				await cleanupCollections(em);
+
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				const course = courseFactory.build({ teachers: [teacherUser], students: [studentUser] });
+
+				await em.persistAndFlush([teacherAccount, teacherUser, studentAccount, studentUser, course]);
+
+				const columnBoardNode = columnBoardNodeFactory.buildWithId({
+					context: { id: course.id, type: BoardExternalReferenceType.Course },
+				});
+				const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+				const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+				const submissionElementContainerNode = submissionContainerElementNodeFactory.buildWithId({
+					parent: cardNode,
+				});
+				const submissionItemNode = submissionItemNodeFactory.buildWithId({
+					parent: submissionElementContainerNode,
+					userId: teacherUser.id,
+				});
+
+				await em.persistAndFlush([
+					columnBoardNode,
+					columnNode,
+					cardNode,
+					submissionElementContainerNode,
+					submissionItemNode,
+				]);
+				em.clear();
+
+				const loggedInClient = await testApiClientSubmission.login(studentAccount);
+
+				return { loggedInClient, cardNode, submissionItemNode };
+			};
+			it('should return status 403', async () => {
+				const { loggedInClient, submissionItemNode } = await setup();
+
+				const response = await loggedInClient.post(`${submissionItemNode.id}/elements`, {
+					type: ContentElementType.RICH_TEXT,
+				});
+
+				expect(response.statusCode).toEqual(403);
+			});
+		});
+		describe('with user not a student', () => {
+			const setup = async () => {
+				await cleanupCollections(em);
+
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				const course = courseFactory.build({});
+				const course = courseFactory.build({ teachers: [teacherUser] });
+
 				await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 				const columnBoardNode = columnBoardNodeFactory.buildWithId({
@@ -235,50 +365,80 @@ describe(`content element create (api)`, () => {
 				});
 				const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 				const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+				const submissionElementContainerNode = submissionContainerElementNodeFactory.buildWithId({
+					parent: cardNode,
+				});
+				const submissionItemNode = submissionItemNodeFactory.buildWithId({
+					parent: submissionElementContainerNode,
+					userId: teacherUser.id,
+				});
 
-				await em.persistAndFlush([columnBoardNode, columnNode, cardNode]);
+				await em.persistAndFlush([
+					columnBoardNode,
+					columnNode,
+					cardNode,
+					submissionElementContainerNode,
+					submissionItemNode,
+				]);
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await testApiClientSubmission.login(teacherAccount);
 
-				return { loggedInClient, columnBoardNode, columnNode, cardNode };
+				return { loggedInClient, cardNode, submissionItemNode };
 			};
-
 			it('should return status 403', async () => {
-				const { cardNode, loggedInClient } = await setup();
+				const { loggedInClient, submissionItemNode } = await setup();
 
-				const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.RICH_TEXT });
+				const response = await loggedInClient.post(`${submissionItemNode.id}/elements`, {
+					type: ContentElementType.RICH_TEXT,
+				});
 
 				expect(response.statusCode).toEqual(403);
 			});
 		});
-
-		describe('with student belonging to course', () => {
+		describe('with user not belonging to course', () => {
 			const setup = async () => {
 				await cleanupCollections(em);
+
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const course = courseFactory.build({ students: [studentUser] });
-				await em.persistAndFlush([studentAccount, studentUser, course]);
+				const course = courseFactory.build({ teachers: [teacherUser] });
+
+				await em.persistAndFlush([teacherAccount, teacherUser, studentAccount, studentUser, course]);
 
 				const columnBoardNode = columnBoardNodeFactory.buildWithId({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
 				});
 				const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 				const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+				const submissionElementContainerNode = submissionContainerElementNodeFactory.buildWithId({
+					parent: cardNode,
+				});
+				const submissionItemNode = submissionItemNodeFactory.buildWithId({
+					parent: submissionElementContainerNode,
+					userId: studentUser.id,
+				});
 
-				await em.persistAndFlush([columnBoardNode, columnNode, cardNode]);
+				await em.persistAndFlush([
+					columnBoardNode,
+					columnNode,
+					cardNode,
+					submissionElementContainerNode,
+					submissionItemNode,
+				]);
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await testApiClientSubmission.login(studentAccount);
 
-				return { loggedInClient, columnBoardNode, columnNode, cardNode };
+				return { loggedInClient, cardNode, submissionItemNode };
 			};
-
 			it('should return status 403', async () => {
-				const { cardNode, loggedInClient } = await setup();
+				const { loggedInClient, submissionItemNode } = await setup();
 
-				const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.RICH_TEXT });
+				const response = await loggedInClient.post(`${submissionItemNode.id}/elements`, {
+					type: ContentElementType.RICH_TEXT,
+				});
 
 				expect(response.statusCode).toEqual(403);
 			});

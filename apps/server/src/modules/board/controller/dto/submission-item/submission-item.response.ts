@@ -2,8 +2,6 @@ import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { TimestampsResponse } from '../timestamps.response';
 import { FileElementResponse, RichTextElementResponse } from '../element';
 
-// export SubmissionContentElementResponse = RichTextElementResponse | FileElementResponse;
-
 @ApiExtraModels(FileElementResponse, RichTextElementResponse)
 export class SubmissionItemResponse {
 	constructor({ id, timestamps, completed, userId, elements }: SubmissionItemResponse) {

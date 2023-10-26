@@ -256,86 +256,87 @@ describe(SubmissionItemUc.name, () => {
 		});
 	});
 
-	// write tests
 	describe('createElement', () => {
-		const setup = () => {
-			const user = userFactory.buildWithId();
-			const submissionItem = submissionItemFactory.build({
-				userId: user.id,
+		describe('when the user is a student', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const submissionItem = submissionItemFactory.build({
+					userId: user.id,
+				});
+
+				submissionItemService.findById.mockResolvedValue(submissionItem);
+
+				const element = richTextElementFactory.build();
+
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+					new BoardDoAuthorizable({
+						users: [{ userId: user.id, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT }],
+						id: submissionItem.id,
+					})
+				);
+
+				return { element, submissionItem, user };
+			};
+
+			it('should call service to find the submission item ', async () => {
+				const { element, submissionItem, user } = setup();
+				elementService.create.mockResolvedValueOnce(element);
+
+				await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
+				expect(submissionItemService.findById).toHaveBeenCalledWith(submissionItem.id);
 			});
 
-			submissionItemService.findById.mockResolvedValue(submissionItem);
+			it('should authorize', async () => {
+				const { element, submissionItem, user } = setup();
+				elementService.create.mockResolvedValueOnce(element);
 
-			const element = richTextElementFactory.build();
+				const boardDoAuthorizable = await boardDoAuthorizableService.getBoardAuthorizable(submissionItem);
 
-			boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-				new BoardDoAuthorizable({
-					users: [{ userId: user.id, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT }],
-					id: submissionItem.id,
-				})
-			);
+				await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
+				const context = { action: Action.read, requiredPermissions: [] };
+				expect(authorizationService.checkPermission).toBeCalledWith(user, boardDoAuthorizable, context);
+			});
 
-			return { element, submissionItem, user };
-		};
+			it('should throw if user is not creator of submission item', async () => {
+				const user2 = userFactory.buildWithId();
+				const { submissionItem } = setup();
 
-		it('should call service to find the submission item ', async () => {
-			const { element, submissionItem, user } = setup();
-			elementService.create.mockResolvedValueOnce(element);
+				await expect(uc.createElement(user2.id, submissionItem.id, ContentElementType.RICH_TEXT)).rejects.toThrow(
+					new ForbiddenException()
+				);
+			});
 
-			await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
-			expect(submissionItemService.findById).toHaveBeenCalledWith(submissionItem.id);
-		});
+			it('should throw if type is not file or rich text', async () => {
+				const { submissionItem, user } = setup();
+				await expect(uc.createElement(user.id, submissionItem.id, ContentElementType.LINK)).rejects.toThrow(
+					new BadRequestException()
+				);
+			});
 
-		it('should authorize', async () => {
-			const { element, submissionItem, user } = setup();
-			elementService.create.mockResolvedValueOnce(element);
+			it('should call service to create element', async () => {
+				const { element, submissionItem, user } = setup();
+				elementService.create.mockResolvedValueOnce(element);
 
-			const boardDoAuthorizable = await boardDoAuthorizableService.getBoardAuthorizable(submissionItem);
+				await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
+				expect(elementService.create).toHaveBeenCalledWith(submissionItem, ContentElementType.RICH_TEXT);
+			});
 
-			await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
-			const context = { action: Action.read, requiredPermissions: [] };
-			expect(authorizationService.checkPermission).toBeCalledWith(user, boardDoAuthorizable, context);
-		});
+			it('should return element', async () => {
+				const { element, submissionItem, user } = setup();
+				elementService.create.mockResolvedValueOnce(element);
 
-		it('should throw if user is not creator of submission item', async () => {
-			const user2 = userFactory.buildWithId();
-			const { submissionItem } = setup();
+				const returnedElement = await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
+				expect(returnedElement).toEqual(element);
+			});
 
-			await expect(uc.createElement(user2.id, submissionItem.id, ContentElementType.RICH_TEXT)).rejects.toThrow(
-				new ForbiddenException()
-			);
-		});
-
-		it('should throw if type is not file or rich text', async () => {
-			const { submissionItem, user } = setup();
-			await expect(uc.createElement(user.id, submissionItem.id, ContentElementType.LINK)).rejects.toThrow(
-				new BadRequestException()
-			);
-		});
-
-		it('should call service to create element', async () => {
-			const { element, submissionItem, user } = setup();
-			elementService.create.mockResolvedValueOnce(element);
-
-			await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
-			expect(elementService.create).toHaveBeenCalledWith(submissionItem, ContentElementType.RICH_TEXT);
-		});
-
-		it('should return element', async () => {
-			const { element, submissionItem, user } = setup();
-			elementService.create.mockResolvedValueOnce(element);
-
-			const returnedElement = await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
-			expect(returnedElement).toEqual(element);
-		});
-
-		it('should throw if element is not file or rich text', async () => {
-			const { submissionItem, user } = setup();
-			const otherElement = submissionContainerElementFactory.build();
-			elementService.create.mockResolvedValueOnce(otherElement);
-			await expect(uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT)).rejects.toThrow(
-				new UnprocessableEntityException()
-			);
+			it('should throw if element is not file or rich text', async () => {
+				const { submissionItem, user } = setup();
+				const otherElement = submissionContainerElementFactory.build();
+				elementService.create.mockResolvedValueOnce(otherElement);
+				await expect(uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT)).rejects.toThrow(
+					new UnprocessableEntityException()
+				);
+			});
 		});
 	});
 });
