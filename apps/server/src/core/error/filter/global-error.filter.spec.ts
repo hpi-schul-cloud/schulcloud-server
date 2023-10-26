@@ -1,7 +1,7 @@
 /* eslint-disable promise/valid-params */
 import { NotFound } from '@feathersjs/errors';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ArgumentsHost, BadRequestException, HttpStatus } from '@nestjs/common';
+import { ArgumentsHost, BadRequestException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BusinessError } from '@shared/common';
 import { ErrorLogger, ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
@@ -9,6 +9,7 @@ import { Response } from 'express';
 import util from 'util';
 import { ErrorResponse } from '../dto';
 import { ErrorLoggable } from '../loggable/error.loggable';
+import { ErrorUtils } from '../utils';
 import { GlobalErrorFilter } from './global-error.filter';
 
 class SampleBusinessError extends BusinessError {
@@ -35,6 +36,24 @@ class SampleLoggableException extends BadRequestException implements Loggable {
 			stack: this.stack,
 			data: {
 				testData: this.testData,
+			},
+		};
+
+		return message;
+	}
+}
+
+class LoggableExceptionWithCause extends InternalServerErrorException implements Loggable {
+	constructor(private readonly testValue: string, error?: unknown) {
+		super(ErrorUtils.createHttpExceptionOptions(error));
+	}
+
+	getLogMessage(): ErrorLogMessage {
+		const message: ErrorLogMessage = {
+			type: 'WITH_CAUSE',
+			stack: this.stack,
+			data: {
+				testValue: this.testValue,
 			},
 		};
 
@@ -304,24 +323,82 @@ describe('GlobalErrorFilter', () => {
 					).toBeCalledWith(expectedResponse);
 				});
 			});
+
+			describe('when error has a cause error', () => {
+				const setup = () => {
+					const causeError = new Error('Cause error');
+					const error = new LoggableExceptionWithCause('test', causeError);
+					const expectedResponse = new ErrorResponse(
+						'WITH_CAUSE',
+						'With Cause',
+						'Loggable Exception With Cause',
+						HttpStatus.INTERNAL_SERVER_ERROR
+					);
+
+					const argumentsHost = setupHttpArgumentsHost();
+
+					return { error, argumentsHost, expectedResponse };
+				};
+
+				it('should set response status appropriately', () => {
+					const { error, argumentsHost } = setup();
+
+					service.catch(error, argumentsHost);
+
+					expect(argumentsHost.switchToHttp().getResponse<Response>().status).toBeCalledWith(
+						HttpStatus.INTERNAL_SERVER_ERROR
+					);
+				});
+
+				it('should send appropriate error response', () => {
+					const { error, argumentsHost, expectedResponse } = setup();
+
+					service.catch(error, argumentsHost);
+
+					expect(
+						argumentsHost.switchToHttp().getResponse<Response>().status(HttpStatus.INTERNAL_SERVER_ERROR).json
+					).toBeCalledWith(expectedResponse);
+				});
+			});
 		});
 
 		describe('when context is rmq', () => {
-			const setup = () => {
-				const argumentsHost = createMock<ArgumentsHost>();
-				argumentsHost.getType.mockReturnValueOnce('rmq');
+			describe('Name of the group', () => {
+				const setup = () => {
+					const argumentsHost = createMock<ArgumentsHost>();
+					argumentsHost.getType.mockReturnValueOnce('rmq');
 
-				const error = new Error();
+					const error = new Error();
 
-				return { error, argumentsHost };
-			};
+					return { error, argumentsHost };
+				};
 
-			it('should return an RpcMessage with the error', () => {
-				const { error, argumentsHost } = setup();
+				it('should return an RpcMessage with the error', () => {
+					const { error, argumentsHost } = setup();
 
-				const result = service.catch(error, argumentsHost);
+					const result = service.catch(error, argumentsHost);
 
-				expect(result).toEqual({ message: undefined, error });
+					expect(result).toEqual({ message: undefined, error });
+				});
+			});
+
+			describe('when error is a LoggableError', () => {
+				const setup = () => {
+					const causeError = new Error('Cause error');
+					const error = new LoggableExceptionWithCause('test', causeError);
+					const argumentsHost = createMock<ArgumentsHost>();
+					argumentsHost.getType.mockReturnValueOnce('rmq');
+
+					return { error, argumentsHost };
+				};
+
+				it('should return appropriate error', () => {
+					const { error, argumentsHost } = setup();
+
+					const result = service.catch(error, argumentsHost);
+
+					expect(result).toEqual({ message: undefined, error });
+				});
 			});
 		});
 	});
