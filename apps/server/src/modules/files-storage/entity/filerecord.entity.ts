@@ -2,6 +2,7 @@ import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
+import path from 'path';
 import { v4 as uuid } from 'uuid';
 import { ErrorType } from '../error';
 import { PreviewInputMimeTypes } from '../interface/preview-input-mime-types.enum';
@@ -295,8 +296,8 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	}
 
 	public get fileNameWithoutExtension(): string {
-		const fileNameWithoutExtension = this.name.split('.')[0];
+		const filenameObj = path.parse(this.name);
 
-		return fileNameWithoutExtension;
+		return filenameObj.name;
 	}
 }

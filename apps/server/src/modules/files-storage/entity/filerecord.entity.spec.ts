@@ -816,5 +816,21 @@ describe('FileRecord Entity', () => {
 				expect(result).toEqual('file-name');
 			});
 		});
+
+		describe('WHEN file name starts with dot', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build({ name: '.file-name.jpg' });
+
+				return { fileRecord };
+			};
+
+			it('should return the correct file name without extension', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.fileNameWithoutExtension;
+
+				expect(result).toEqual('.file-name');
+			});
+		});
 	});
 });
