@@ -98,6 +98,12 @@ describe('File Record Helper', () => {
 
 			expect(result).toEqual('jpeg');
 		});
+
+		it('should throw error', () => {
+			const mimeType = 'image';
+
+			expect(() => getFormat(mimeType)).toThrowError(`could not get format from mime type: ${mimeType}`);
+		});
 	});
 
 	describe('getPreviewName is called', () => {
@@ -116,7 +122,7 @@ describe('File Record Helper', () => {
 			expect(result).toEqual(fileRecord.name);
 		});
 
-		it('should return preview name', () => {
+		it('should return preview name with format', () => {
 			const { fileRecord, outputFormat } = setup();
 
 			const result = getPreviewName(fileRecord, outputFormat);

@@ -1,3 +1,4 @@
+import { InternalServerErrorException } from '@nestjs/common';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { PreviewOutputMimeTypes } from '../interface';
@@ -43,17 +44,22 @@ export function createFileRecord(
 export function getFormat(mimeType: string): string {
 	const format = mimeType.split('/')[1];
 
+	if (!format) {
+		throw new InternalServerErrorException(`could not get format from mime type: ${mimeType}`);
+	}
+
 	return format;
 }
 
 export function getPreviewName(fileRecord: FileRecord, outputFormat?: PreviewOutputMimeTypes): string {
+	const { fileNameWithoutExtension, name } = fileRecord;
+
 	if (!outputFormat) {
-		return fileRecord.name;
+		return name;
 	}
 
-	const fileNameWithoutExtension = fileRecord.name.split('.')[0];
 	const format = getFormat(outputFormat);
-	const name = `${fileNameWithoutExtension}.${format}`;
+	const previewFileName = `${fileNameWithoutExtension}.${format}`;
 
-	return name;
+	return previewFileName;
 }

@@ -293,4 +293,10 @@ export class FileRecord extends BaseEntityWithTimestamps {
 
 		return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR;
 	}
+
+	public get fileNameWithoutExtension(): string {
+		const fileNameWithoutExtension = this.name.split('.')[0];
+
+		return fileNameWithoutExtension;
+	}
 }
