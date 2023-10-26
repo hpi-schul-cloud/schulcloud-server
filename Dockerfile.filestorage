@@ -1,7 +1,6 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
-# install base dependencies
 RUN apk add --no-cache \
   dpkg-dev \
   g++ \
@@ -31,34 +30,24 @@ RUN apk add --no-cache \
   libzip-dev \
   zstd-dev \
   meson \
-  ninja
-
-# install base dependencies (testing repository)
-RUN apk add --no-cache \
-  jbigkit-dev \
-  --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/
-
-# get and build libraqm
-WORKDIR /
-RUN git clone https://github.com/HOST-Oman/libraqm.git
-WORKDIR /libraqm
-RUN meson build
-RUN ninja -C build
-RUN ninja -C build install
-
-# get and build liblqr
-WORKDIR /
-RUN git clone https://github.com/carlobaldassi/liblqr.git
-WORKDIR /liblqr
-RUN ./configure
-RUN make -j 4
-RUN make install
-
-# get and build ImageMagick
-WORKDIR /
-RUN git clone --depth 1 --branch 7.1.0-54 https://github.com/ImageMagick/ImageMagick.git
-WORKDIR /ImageMagick
-RUN ./configure \
+  ninja && \
+apk add --no-cache jbigkit-dev --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ && \
+cd / && \
+git clone https://github.com/HOST-Oman/libraqm.git && \
+cd /libraqm  && \
+meson build && \
+ninja -C build && \
+ninja -C build install && \
+cd / && \
+git clone https://github.com/carlobaldassi/liblqr.git && \
+cd /liblqr && \
+./configure && \
+make -j 4 && \
+make install && \
+cd / && \
+git clone --depth 1 --branch 7.1.0-54 https://github.com/ImageMagick/ImageMagick.git && \
+cd /ImageMagick && \
+./configure \
   --with-bzlib=yes \
   --with-djvu=yes \
   --with-dps=yes \
@@ -93,16 +82,13 @@ RUN ./configure \
   --with-zip=yes \
   --with-zlib=yes \
   --with-zstd=yes \
-  --with-gcc-arch=native
-RUN make -j 4
-RUN make install
-RUN ldconfig /usr/local/lib
+  --with-gcc-arch=native && \
+make -j 4 && \
+make install && \
+ldconfig /usr/local/lib && \
+cd / && \
+rm -rf libraqm && \
+rm -rf liblqr && \
+rm -rf ImageMagick
 
-# clean up
-WORKDIR /
-RUN rm -rf libraqm
-RUN rm -rf liblqr
-RUN rm -rf ImageMagick
-
-# change back to original work directory
 WORKDIR /schulcloud-server
