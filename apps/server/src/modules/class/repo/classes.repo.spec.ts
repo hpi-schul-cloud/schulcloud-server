@@ -1,10 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
 import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { SchoolEntity } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, schoolFactory } from '@shared/testing';
-import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
 import { Class } from '../domain';
 import { ClassEntity } from '../entity';
 import { ClassesRepo } from './classes.repo';
@@ -48,6 +48,7 @@ describe(ClassesRepo.name, () => {
 				const classes: ClassEntity[] = classEntityFactory.buildListWithId(3, { schoolId: school.id });
 
 				await em.persistAndFlush(classes);
+				em.clear();
 
 				return {
 					school,
@@ -78,9 +79,13 @@ describe(ClassesRepo.name, () => {
 			const setup = async () => {
 				const testUser = new ObjectId();
 				const class1: ClassEntity = classEntityFactory.withUserIds([testUser, new ObjectId()]).buildWithId();
-				const class2: ClassEntity = classEntityFactory.withUserIds([testUser, new ObjectId()]).buildWithId();
+				const class2: ClassEntity = classEntityFactory
+					.withUserIds([new ObjectId()])
+					.buildWithId({ teacherIds: [testUser] });
 				const class3: ClassEntity = classEntityFactory.withUserIds([new ObjectId(), new ObjectId()]).buildWithId();
+
 				await em.persistAndFlush([class1, class2, class3]);
+				em.clear();
 
 				return {
 					class1,
@@ -112,7 +117,9 @@ describe(ClassesRepo.name, () => {
 				const class1: ClassEntity = classEntityFactory.withUserIds([testUser1, testUser2]).buildWithId();
 				const class2: ClassEntity = classEntityFactory.withUserIds([testUser1, testUser3]).buildWithId();
 				const class3: ClassEntity = classEntityFactory.withUserIds([testUser2, testUser3]).buildWithId();
+
 				await em.persistAndFlush([class1, class2, class3]);
+				em.clear();
 
 				return {
 					class1,

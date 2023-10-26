@@ -27,7 +27,7 @@ export class GroupUc {
 		private readonly schoolYearService: SchoolYearService
 	) {}
 
-	public async findAllClassesForSchool(
+	public async findAllClasses(
 		userId: EntityId,
 		schoolId: EntityId,
 		skip = 0,
@@ -45,15 +45,15 @@ export class GroupUc {
 		);
 
 		const canSeeFullList: boolean = this.authorizationService.hasAllPermissions(user, [
-			Permission.CLASS_LIST,
-			Permission.GROUP_LIST,
+			Permission.CLASS_FULL_ADMIN,
+			Permission.GROUP_FULL_ADMIN,
 		]);
 
 		let combinedClassInfo: ClassInfoDto[];
-		if(canSeeFullList {
+		if (canSeeFullList) {
 			combinedClassInfo = await this.findCombinedClassListForSchool(schoolId);
 		} else {
-			combinedClassInfo = await this.findCombinedClassListForUser(schoolId);
+			combinedClassInfo = await this.findCombinedClassListForUser(userId);
 		}
 
 		combinedClassInfo.sort((a: ClassInfoDto, b: ClassInfoDto): number =>
@@ -93,17 +93,17 @@ export class GroupUc {
 		const classes: Class[] = await this.classService.findClassesForSchool(schoolId);
 
 		const classInfosFromClasses: ClassInfoDto[] = await Promise.all(
-			classes.map(this.getClassInfoFromClass)
+			classes.map((clazz) => this.getClassInfoFromClass(clazz))
 		);
 
 		return classInfosFromClasses;
 	}
 
 	private async findClassesForUser(userId: EntityId): Promise<ClassInfoDto[]> {
-		const classes: Class[] = await this.classService.findClassesForUser(userId);
+		const classes: Class[] = await this.classService.findAllByUserId(userId);
 
 		const classInfosFromClasses: ClassInfoDto[] = await Promise.all(
-			classes.map(this.getClassInfoFromClass)
+			classes.map((clazz) => this.getClassInfoFromClass(clazz))
 		);
 
 		return classInfosFromClasses;

@@ -18,7 +18,9 @@ export class ClassesRepo {
 	}
 
 	async findAllByUserId(userId: EntityId): Promise<Class[]> {
-		const classes: ClassEntity[] = await this.em.find(ClassEntity, { userIds: new ObjectId(userId) });
+		const classes: ClassEntity[] = await this.em.find(ClassEntity, {
+			$or: [{ userIds: new ObjectId(userId) }, { teacherIds: new ObjectId(userId) }],
+		});
 
 		const mapped: Class[] = ClassMapper.mapToDOs(classes);
 

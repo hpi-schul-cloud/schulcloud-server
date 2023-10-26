@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
 import { Class } from '../domain';
 import { classFactory } from '../domain/testing/factory/class.factory';
 import { ClassesRepo } from '../repo';
@@ -68,6 +68,31 @@ describe(ClassService.name, () => {
 				const { schoolId, classes } = setup();
 
 				const result: Class[] = await service.findClassesForSchool(schoolId);
+
+				expect(result).toEqual(classes);
+			});
+		});
+	});
+
+	describe('findAllByUserId', () => {
+		describe('when the user has classes', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+
+				const classes: Class[] = classFactory.buildList(3);
+
+				classesRepo.findAllByUserId.mockResolvedValueOnce(classes);
+
+				return {
+					userId,
+					classes,
+				};
+			};
+
+			it('should return the classes', async () => {
+				const { userId, classes } = setup();
+
+				const result: Class[] = await service.findClassesForSchool(userId);
 
 				expect(result).toEqual(classes);
 			});
