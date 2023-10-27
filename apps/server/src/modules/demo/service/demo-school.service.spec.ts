@@ -1,11 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AccountService } from '@modules/account/services/account.service';
+import { CourseService } from '@modules/learnroom/service';
+import { FederalStateService, LegacySchoolService } from '@modules/legacy-school';
+import { FederalStateNames } from '@modules/legacy-school/types';
+import { LessonService } from '@modules/lesson/service';
+import { RoleService } from '@modules/role';
+import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, RoleName, UserDO } from '@shared/domain';
-import { FederalStateService, LegacySchoolService, RoleService, UserService } from '@src/modules';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { CourseService } from '@src/modules/learnroom/service';
-import { FederalStateNames } from '@src/modules/legacy-school/types';
-import { LessonService } from '@src/modules/lesson/service';
 import { CourseConfig, CreationProtocolEntityType, LessonConfig, SchoolConfig, UserConfig } from '../types';
 import { DemoSchoolService } from './demo-school.service';
 

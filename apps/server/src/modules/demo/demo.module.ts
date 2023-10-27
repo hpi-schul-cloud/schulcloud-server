@@ -1,6 +1,11 @@
+import { AccountModule } from '@modules/account';
+import { LearnroomModule } from '@modules/learnroom';
+import { LegacySchoolModule } from '@modules/legacy-school';
+import { LessonModule } from '@modules/lesson';
+import { RoleModule } from '@modules/role';
+import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { AccountModule, LearnroomModule, LegacySchoolModule, LessonModule, RoleModule, UserModule } from '..';
 import { DemoSchoolService } from './service/demo-school.service';
 
 @Module({

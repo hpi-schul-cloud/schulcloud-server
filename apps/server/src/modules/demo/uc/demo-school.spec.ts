@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { AuthorizationService } from '@modules/authorization';
 import { ForbiddenException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -7,7 +8,6 @@ import { ConsoleWriterService } from '@shared/infra/console';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
 import { DemoSchoolService } from '../service/demo-school.service';
 import { DemoSchoolUc } from './demo-school.uc';
 

@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ICurrentUser } from '@modules/authentication';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser } from '@src/modules/authentication';
 import { CreationProtocolEntityType } from '../types';
 import { DemoSchoolUc } from '../uc';
 import { DemoSchoolController } from './demo-school.controller';
