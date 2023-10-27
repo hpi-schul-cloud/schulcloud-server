@@ -14,7 +14,7 @@ import {
 } from '@shared/testing';
 import { ObjectID } from 'bson';
 import { Readable } from 'stream';
-import { H5PContent, H5PContentParentType, IH5PContentProperties, BaseEntityWithTimestamp } from '../../entity';
+import { H5PContent, H5PContentParentType, IH5PContentProperties, H5pEditorTempFile } from '../../entity';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from '../../service';
@@ -270,7 +270,7 @@ describe('H5PEditor Controller (api)', () => {
 					content: 'File Content',
 				};
 
-				const mockTempFile = new BaseEntityWithTimestamp({
+				const mockTempFile = new H5pEditorTempFile({
 					filename: mockFile.name,
 					ownedByUserId: studentUser.id,
 					expiresAt: new Date(),

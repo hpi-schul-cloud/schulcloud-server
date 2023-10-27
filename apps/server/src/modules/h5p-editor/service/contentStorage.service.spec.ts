@@ -5,9 +5,9 @@ import { HttpException, InternalServerErrorException, NotFoundException } from '
 import { Test, TestingModule } from '@nestjs/testing';
 import { IEntity } from '@shared/domain';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { GetFileResponse } from '@src/modules/files-storage/interface';
 import { ObjectID } from 'bson';
 import { Readable } from 'stream';
+import { GetH5PFileResponse } from '../controller/dto';
 import { H5PContent, H5PContentParentType, IH5PContentProperties } from '../entity';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { H5PContentRepo } from '../repo';
@@ -497,7 +497,8 @@ describe('ContentStorage', () => {
 		describe('WHEN file does not exist', () => {
 			it('should return false', async () => {
 				const { contentID, filename } = setup();
-				s3ClientAdapter.head.mockRejectedValueOnce(new NotFoundException('NoSuchKey'));
+				// s3ClientAdapter.head.mockRejectedValueOnce(new NotFoundException('NoSuchKey'));
+				s3ClientAdapter.get.mockRejectedValue(new NotFoundException('NoSuchKey'));
 
 				const exists = await service.fileExists(contentID, filename);
 
@@ -508,7 +509,7 @@ describe('ContentStorage', () => {
 		describe('WHEN S3ClientAdapter.head throws error', () => {
 			it('should throw HttpException', async () => {
 				const { contentID, filename } = setup();
-				s3ClientAdapter.head.mockRejectedValueOnce(new Error());
+				s3ClientAdapter.get.mockRejectedValueOnce(new Error());
 
 				const existsPromise = service.fileExists(contentID, filename);
 
@@ -623,7 +624,7 @@ describe('ContentStorage', () => {
 			const filename = 'testfile.txt';
 			const fileStream = Readable.from('content');
 			const contentID = new ObjectID().toString();
-			const fileResponse = createMock<GetFileResponse>({ data: fileStream });
+			const fileResponse = createMock<GetH5PFileResponse>({ data: fileStream });
 			const user = helpers.createUser();
 
 			const getError = new Error('Could not get file');

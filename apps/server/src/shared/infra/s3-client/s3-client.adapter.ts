@@ -11,7 +11,7 @@ import {
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { HttpException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ErrorUtils } from '@src/core/error/utils';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
@@ -206,9 +206,7 @@ export class S3ClientAdapter {
 
 			return result;
 		} catch (err) {
-			throw new HttpException('message', 500, {
-				cause: new InternalServerErrorException(err as string, 'S3ClientAdapter:listDirectory'),
-			});
+			throw new NotFoundException(null, ErrorUtils.createHttpExceptionOptions(err, 'S3ClientAdapter:listDirectory'));
 		}
 	}
 
@@ -258,13 +256,9 @@ export class S3ClientAdapter {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			if (err.message && err.message === 'NoSuchKey') {
 				this.logger.log(`could not find the file for head with id ${path}`);
-				throw new HttpException('message', 404, {
-					cause: new NotFoundException(err as string, 'NoSuchKey'),
-				});
+				throw new NotFoundException(null, ErrorUtils.createHttpExceptionOptions(err, 'NoSuchKey'));
 			}
-			throw new HttpException('message', 500, {
-				cause: new InternalServerErrorException(err as string, 'S3ClientAdapter:head'),
-			});
+			throw new InternalServerErrorException(null, ErrorUtils.createHttpExceptionOptions(err, 'S3ClientAdapter:head'));
 		}
 	}
 

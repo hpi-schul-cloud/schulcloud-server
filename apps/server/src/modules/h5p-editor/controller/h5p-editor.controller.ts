@@ -18,7 +18,7 @@ import {
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser, CurrentUser } from '@src/modules/authentication';
+import { ICurrentUser, CurrentUser } from '@modules/authentication';
 import { Request, Response } from 'express';
 import { Authenticate } from '@modules/authentication/decorator/auth.decorator';
 

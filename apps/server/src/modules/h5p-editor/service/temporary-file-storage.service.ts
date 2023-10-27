@@ -1,9 +1,9 @@
 import { ITemporaryFile, ITemporaryFileStorage, IUser } from '@lumieducation/h5p-server';
-import { Inject, Injectable, NotAcceptableException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, NotAcceptableException } from '@nestjs/common';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { ReadStream } from 'fs';
 import { Readable } from 'stream';
-import { BaseEntityWithTimestamp } from '../entity/base-entity-with-timestamp.entity';
+import { H5pEditorTempFile } from '../entity/base-entity-with-timestamp.entity';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { TemporaryFileRepo } from '../repo/temporary-file.repo';
 import { H5pFileDto } from '../controller/dto/h5p-file.dto';
@@ -21,7 +21,7 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		}
 	}
 
-	private getFileInfo(filename: string, userId: string): Promise<BaseEntityWithTimestamp> {
+	private getFileInfo(filename: string, userId: string): Promise<H5pEditorTempFile> {
 		this.checkFilename(filename);
 		return this.repo.findByUserAndFilename(userId, filename);
 	}
@@ -40,7 +40,7 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		return exists;
 	}
 
-	public async getFileStats(filename: string, user: IUser): Promise<BaseEntityWithTimestamp> {
+	public async getFileStats(filename: string, user: IUser): Promise<H5pEditorTempFile> {
 		return this.getFileInfo(filename, user.id);
 	}
 
@@ -89,13 +89,13 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		}
 
 		const path = this.getFilePath(user.id, filename);
-		let tempFile: BaseEntityWithTimestamp | undefined;
+		let tempFile: H5pEditorTempFile | undefined;
 		try {
 			tempFile = await this.repo.findByUserAndFilename(user.id, filename);
 			await this.s3Client.delete([path]);
 		} finally {
 			if (tempFile === undefined) {
-				tempFile = new BaseEntityWithTimestamp({
+				tempFile = new H5pEditorTempFile({
 					filename,
 					ownedByUserId: user.id,
 					expiresAt: expirationTime,
@@ -118,7 +118,7 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 
 	private getFilePath(userId: string, filename: string): string {
 		if (!userId || !filename) {
-			throw new Error('COULD_NOT_CREATE_PATH');
+			throw new ForbiddenException('COULD_NOT_CREATE_PATH');
 		}
 
 		const path = `h5p-tempfiles/${userId}/${filename}`;

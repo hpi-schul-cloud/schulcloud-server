@@ -1,10 +1,10 @@
-import { ITemporaryFileProperties, BaseEntityWithTimestamp } from '@src/modules/h5p-editor/entity';
+import { ITemporaryFileProperties, H5pEditorTempFile } from '@src/modules/h5p-editor/entity';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
 const oneDay = 24 * 60 * 60 * 1000;
 
-class H5PTemporaryFileFactory extends BaseFactory<BaseEntityWithTimestamp, ITemporaryFileProperties> {
+class H5PTemporaryFileFactory extends BaseFactory<H5pEditorTempFile, ITemporaryFileProperties> {
 	isExpired(): this {
 		const birthtime = new Date(Date.now() - oneDay * 2); // Created two days ago
 		const expiresAt = new Date(Date.now() - oneDay); // Expired yesterday
@@ -14,7 +14,7 @@ class H5PTemporaryFileFactory extends BaseFactory<BaseEntityWithTimestamp, ITemp
 	}
 }
 
-export const h5pTemporaryFileFactory = H5PTemporaryFileFactory.define(BaseEntityWithTimestamp, ({ sequence }) => {
+export const h5pTemporaryFileFactory = H5PTemporaryFileFactory.define(H5pEditorTempFile, ({ sequence }) => {
 	return {
 		filename: `File-${sequence}.txt`,
 		ownedByUserId: `user-${sequence}`,

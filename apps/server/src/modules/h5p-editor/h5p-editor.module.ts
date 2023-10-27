@@ -12,7 +12,7 @@ import { UserModule } from '@modules/user';
 import { S3ClientModule } from '@shared/infra/s3-client';
 import { AuthenticationModule } from '../authentication/authentication.module';
 import { H5PEditorController } from './controller/h5p-editor.controller';
-import { H5PContent, InstalledLibrary, BaseEntityWithTimestamp } from './entity';
+import { H5PContent, InstalledLibrary, H5pEditorTempFile } from './entity';
 import { config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
 import { H5PContentRepo, LibraryRepo, TemporaryFileRepo } from './repo';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from './service';
@@ -39,7 +39,7 @@ const imports = [
 		password: DB_PASSWORD,
 		user: DB_USERNAME,
 		// Needs ALL_ENTITIES for authorization
-		entities: [...ALL_ENTITIES, H5PContent, BaseEntityWithTimestamp, InstalledLibrary],
+		entities: [...ALL_ENTITIES, H5PContent, H5pEditorTempFile, InstalledLibrary],
 	}),
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),

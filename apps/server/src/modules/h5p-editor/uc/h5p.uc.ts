@@ -32,10 +32,10 @@ import { H5PErrorMapper } from '../mapper/h5p-error.mapper';
 @Injectable()
 export class H5PEditorUc {
 	constructor(
-		private h5pEditor: H5PEditor,
-		private h5pPlayer: H5PPlayer,
-		private h5pAjaxEndpoint: H5PAjaxEndpoint,
-		private libraryService: LibraryStorage,
+		private readonly h5pEditor: H5PEditor,
+		private readonly h5pPlayer: H5PPlayer,
+		private readonly h5pAjaxEndpoint: H5PAjaxEndpoint,
+		private readonly libraryService: LibraryStorage,
 		private readonly userService: UserService,
 		private readonly authorizationReferenceService: AuthorizationReferenceService,
 		private readonly h5pContentRepo: H5PContentRepo

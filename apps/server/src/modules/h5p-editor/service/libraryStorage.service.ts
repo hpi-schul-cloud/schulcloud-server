@@ -11,10 +11,10 @@ import {
 } from '@lumieducation/h5p-server';
 import { ConflictException, Inject, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { FileDto } from '@src/modules/files-storage/dto';
 import mime from 'mime';
 import path from 'node:path/posix';
 import { Readable } from 'stream';
+import { H5pFileDto } from '../controller/dto';
 import { InstalledLibrary } from '../entity/library.entity';
 import { H5P_LIBRARIES_S3_CONNECTION } from '../h5p-editor.config';
 import { LibraryRepo } from '../repo/library.repo';
@@ -65,7 +65,7 @@ export class LibraryStorage implements ILibraryStorage {
 		try {
 			await this.s3Client.create(
 				s3Key,
-				new FileDto({
+				new H5pFileDto({
 					name: s3Key,
 					mimeType: 'application/octet-stream',
 					data: dataStream,
@@ -220,7 +220,7 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 * @param file
 	 */
-	public async getFileAsJson(library: ILibraryName, file: string): Promise<any> {
+	public async getFileAsJson(library: ILibraryName, file: string): Promise<unknown> {
 		const content = await this.getFileAsString(library, file);
 		return JSON.parse(content) as unknown;
 	}
