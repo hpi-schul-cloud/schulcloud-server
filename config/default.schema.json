@@ -1342,6 +1342,11 @@
 					"description": "Number of simultaneously synchronized students, teachers and classes"
 				}
 			}
+		},
+		"FEATURE_DEMO_SCHOOLS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "allows the creation of demo schools, that are automatically deleted. As of 2023, deletion is not implemented yet, and the feature should not be activated on production"
 		}
 	},
 	"required": [],
