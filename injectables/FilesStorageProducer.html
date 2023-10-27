@@ -69,28 +69,18 @@
 
 
 
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../classes/RpcMessageProducer.html" target="_self" >RpcMessageProducer</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <h6><b>Properties</b></h6>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <ul class="index-list">
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Readonly</span>
-                                <a href="#timeout" >timeout</a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -101,16 +91,8 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#checkError" >checkError</a>
-                            </li>
-                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#copyFilesOfParent" >copyFilesOfParent</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#createRequest" >createRequest</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -119,6 +101,19 @@
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#listFilesOfParent" >listFilesOfParent</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#checkError" >checkError</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#createRequest" >createRequest</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#request" >request</a>
                             </li>
                         </ul>
                     </td>
@@ -138,12 +133,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, amqpConnection: AmqpConnection, configService: ConfigService<IFilesStorageClientConfig | >)</code>
+<code>constructor(amqpConnection: AmqpConnection, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, configService: ConfigService<IFilesStorageClientConfig | >)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -161,10 +156,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>logger</td>
+                                                        <td>amqpConnection</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
+                                                                    <code>AmqpConnection</code>
                                                         </td>
                                                   
                                                     <td>
@@ -173,10 +168,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>amqpConnection</td>
+                                                        <td>logger</td>
                                                   
                                                         <td>
-                                                                    <code>AmqpConnection</code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -214,75 +209,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="checkError"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>checkError</b></span>
-                        <a href="#checkError"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkError(response: <a href="../interfaces/RpcMessage.html" target="_self">RpcMessage&lt;&gt;</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="69"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:69</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>response</td>
-                                            <td>
-                                                            <code><a href="../interfaces/RpcMessage.html" target="_self" >RpcMessage&lt;&gt;</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="copyFilesOfParent"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -301,8 +227,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -352,87 +278,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createRequest"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>createRequest</b></span>
-                        <a href="#createRequest"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createRequest(event: <a href="../undefineds/FilesStorageEvents.html" target="_self">FilesStorageEvents</a>, payload: <a href="../entitys/FileRecord.html" target="_self">IFileRecordParams | ICopyFilesOfParentParams | EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="77"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:77</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>event</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#FilesStorageEvents" target="_self" >FilesStorageEvents</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>payload</td>
-                                            <td>
-                                                            <code><a href="../entitys/FileRecord.html" target="_self" >IFileRecordParams | ICopyFilesOfParentParams | EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >{ exchange: any; routingKey: FilesStorageEvents; payload: any; timeout: number; }</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="deleteFilesOfParent"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -451,8 +296,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:55</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -520,8 +365,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="43"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:43</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -567,43 +412,268 @@
             </tr>
         </tbody>
     </table>
-</section>
-            <section data-compodoc="block-properties">
-    
-    <h3 id="inputs">
-        Properties
-    </h3>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="timeout"></a>
+                    <a name="checkError"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Readonly</span>
-                        <span ><b>timeout</b></span>
-                        <a href="#timeout"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Protected</span>
+                        <span ><b>checkError</b></span>
+                        <a href="#checkError"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkError(response: <a href="../interfaces/RpcMessage.html" target="_self">RpcMessage&lt;T&gt;</a>)</code>
+                </td>
+            </tr>
 
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>0</code>
-                    </td>
-                </tr>
+
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:20</a></div>
+                            <div class="io-line">Inherited from         <code><a href="../classes/RpcMessageProducer.html" target="_self" >RpcMessageProducer</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/RpcMessageProducer.html#source" target="_self" >RpcMessageProducer:21</a></code>
+</div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>response</td>
+                                            <td>
+                                                            <code><a href="../interfaces/RpcMessage.html" target="_self" >RpcMessage&lt;T&gt;</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createRequest"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>createRequest</b></span>
+                        <a href="#createRequest"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createRequest(event: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, payload)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../classes/RpcMessageProducer.html" target="_self" >RpcMessageProducer</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/RpcMessageProducer.html#source" target="_self" >RpcMessageProducer:29</a></code>
+</div>
                         </td>
                     </tr>
 
 
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>payload</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>{ exchange: string; routingKey: string; payload: unknown; timeout: number; }</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="request"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>request</b></span>
+                        <a href="#request"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>request(event: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, payload)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../classes/RpcMessageProducer.html" target="_self" >RpcMessageProducer</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/RpcMessageProducer.html#source" target="_self" >RpcMessageProducer:12</a></code>
+</div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>payload</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
         </tbody>
     </table>
 </section>
@@ -616,7 +686,6 @@
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { EntityId } from &#x27;@shared/domain&#x27;;
-import { RpcMessage } from &#x27;@shared/infra/rabbitmq/rpc-message&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import {
 	FilesStorageEvents,
@@ -625,76 +694,46 @@ import {
 	ICopyFilesOfParentParams,
 	IFileDO,
 	IFileRecordParams,
+	RpcMessageProducer,
 } from &#x27;@src/shared/infra/rabbitmq&#x27;;
 import { IFilesStorageClientConfig } from &#x27;../interfaces&#x27;;
-import { ErrorMapper } from &#x27;../mapper/error.mapper&#x27;;
 
 @Injectable()
-export class FilesStorageProducer {
-	private readonly timeout &#x3D; 0;
-
+export class FilesStorageProducer extends RpcMessageProducer {
 	constructor(
+		protected readonly amqpConnection: AmqpConnection,
 		private readonly logger: LegacyLogger,
-		private readonly amqpConnection: AmqpConnection,
-		private readonly configService: ConfigService&lt;IFilesStorageClientConfig, true&gt;
+		protected readonly configService: ConfigService&lt;IFilesStorageClientConfig, true&gt;
 	) {
+		super(amqpConnection, FilesStorageExchange, configService.get(&#x27;INCOMING_REQUEST_TIMEOUT_COPY_API&#x27;));
 		this.logger.setContext(FilesStorageProducer.name);
-		this.timeout &#x3D; this.configService.get(&#x27;INCOMING_REQUEST_TIMEOUT_COPY_API&#x27;);
 	}
 
 	async copyFilesOfParent(payload: ICopyFilesOfParentParams): Promise&lt;ICopyFileDO[]&gt; {
 		this.logger.debug({ action: &#x27;copyFilesOfParent:started&#x27;, payload });
-		const response &#x3D; await this.amqpConnection.request&lt;RpcMessage&lt;ICopyFileDO[]&gt;&gt;(
-			this.createRequest(FilesStorageEvents.COPY_FILES_OF_PARENT, payload)
-		);
+		const response &#x3D; await this.request&lt;ICopyFileDO[]&gt;(FilesStorageEvents.COPY_FILES_OF_PARENT, payload);
 
 		this.logger.debug({ action: &#x27;copyFilesOfParent:finished&#x27;, payload });
 
-		this.checkError(response);
-		return response.message || [];
+		return response;
 	}
 
 	async listFilesOfParent(payload: IFileRecordParams): Promise&lt;IFileDO[]&gt; {
 		this.logger.debug({ action: &#x27;listFilesOfParent:started&#x27;, payload });
-		const response &#x3D; await this.amqpConnection.request&lt;RpcMessage&lt;IFileDO[]&gt;&gt;(
-			this.createRequest(FilesStorageEvents.LIST_FILES_OF_PARENT, payload)
-		);
+		const response &#x3D; await this.request&lt;IFileDO[]&gt;(FilesStorageEvents.LIST_FILES_OF_PARENT, payload);
 
 		this.logger.debug({ action: &#x27;listFilesOfParent:finished&#x27;, payload });
 
-		this.checkError(response);
-		return response.message || [];
+		return response;
 	}
 
 	async deleteFilesOfParent(payload: EntityId): Promise&lt;IFileDO[]&gt; {
 		this.logger.debug({ action: &#x27;deleteFilesOfParent:started&#x27;, payload });
-		const response &#x3D; await this.amqpConnection.request&lt;RpcMessage&lt;IFileDO[]&gt;&gt;(
-			this.createRequest(FilesStorageEvents.DELETE_FILES_OF_PARENT, payload)
-		);
+		const response &#x3D; await this.request&lt;IFileDO[]&gt;(FilesStorageEvents.DELETE_FILES_OF_PARENT, payload);
 
 		this.logger.debug({ action: &#x27;deleteFilesOfParent:finished&#x27;, payload });
 
-		this.checkError(response);
-		return response.message || [];
-	}
-
-	// need to be fixed with https://ticketsystem.dbildungscloud.de/browse/BC-2984
-	// mapRpcErrorResponseToDomainError should also removed with this ticket
-	private checkError(response: RpcMessage&lt;unknown&gt;) {
-		const { error } &#x3D; response;
-		if (error) {
-			const domainError &#x3D; ErrorMapper.mapRpcErrorResponseToDomainError(error);
-			throw domainError;
-		}
-	}
-
-	private createRequest(event: FilesStorageEvents, payload: IFileRecordParams | ICopyFilesOfParentParams | EntityId) {
-		return {
-			exchange: FilesStorageExchange,
-			routingKey: event,
-			payload,
-			timeout: this.timeout,
-		};
+		return response;
 	}
 }
 </code></pre>

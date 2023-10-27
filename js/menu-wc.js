@@ -916,13 +916,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/FilesStorageModule.html" data-type="entity-link" >FilesStorageModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-FilesStorageModule-fccdc3d8ff96ff002632101dccbe5cc74fabc0c04b5171e90876be50eb830c9b039ebce44fff82d3a398245777b12a965d8562798ace34b8dd5a3f66b8432537"' : 'data-bs-target="#xs-injectables-links-module-FilesStorageModule-fccdc3d8ff96ff002632101dccbe5cc74fabc0c04b5171e90876be50eb830c9b039ebce44fff82d3a398245777b12a965d8562798ace34b8dd5a3f66b8432537"' }>
+                                        'data-bs-target="#injectables-links-module-FilesStorageModule-59b3b8ba962a8eeee15f92d59d722f6e1b1a202ec86b190fc5e87685005f5540a023be373eeb6646d7e1c2c92ae3edb50c5d8e37967ef3a0a97f9c815b332db9"' : 'data-bs-target="#xs-injectables-links-module-FilesStorageModule-59b3b8ba962a8eeee15f92d59d722f6e1b1a202ec86b190fc5e87685005f5540a023be373eeb6646d7e1c2c92ae3edb50c5d8e37967ef3a0a97f9c815b332db9"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-FilesStorageModule-fccdc3d8ff96ff002632101dccbe5cc74fabc0c04b5171e90876be50eb830c9b039ebce44fff82d3a398245777b12a965d8562798ace34b8dd5a3f66b8432537"' :
-                                        'id="xs-injectables-links-module-FilesStorageModule-fccdc3d8ff96ff002632101dccbe5cc74fabc0c04b5171e90876be50eb830c9b039ebce44fff82d3a398245777b12a965d8562798ace34b8dd5a3f66b8432537"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-FilesStorageModule-59b3b8ba962a8eeee15f92d59d722f6e1b1a202ec86b190fc5e87685005f5540a023be373eeb6646d7e1c2c92ae3edb50c5d8e37967ef3a0a97f9c815b332db9"' :
+                                        'id="xs-injectables-links-module-FilesStorageModule-59b3b8ba962a8eeee15f92d59d722f6e1b1a202ec86b190fc5e87685005f5540a023be373eeb6646d7e1c2c92ae3edb50c5d8e37967ef3a0a97f9c815b332db9"' }>
                                         <li class="link">
                                             <a href="injectables/FileRecordRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >FileRecordRepo</a>
                                         </li>
@@ -1749,6 +1749,29 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="modules/OauthProviderServiceModule.html" data-type="entity-link" >OauthProviderServiceModule</a>
+                            </li>
+                            <li class="link">
+                                <a href="modules/PreviewGeneratorAMQPModule.html" data-type="entity-link" >PreviewGeneratorAMQPModule</a>
+                            </li>
+                            <li class="link">
+                                <a href="modules/PreviewGeneratorConsumerModule.html" data-type="entity-link" >PreviewGeneratorConsumerModule</a>
+                            </li>
+                            <li class="link">
+                                <a href="modules/PreviewGeneratorProducerModule.html" data-type="entity-link" >PreviewGeneratorProducerModule</a>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                        'data-bs-target="#injectables-links-module-PreviewGeneratorProducerModule-18b3b8c2e1ce5b569d6fbbb77fb10c0f29b5ee2761626e78c7c999ef41bb3702c87c55b09044c0cbf2145d51d2c2138d3c08136aacf07aa217241b44fa08e017"' : 'data-bs-target="#xs-injectables-links-module-PreviewGeneratorProducerModule-18b3b8c2e1ce5b569d6fbbb77fb10c0f29b5ee2761626e78c7c999ef41bb3702c87c55b09044c0cbf2145d51d2c2138d3c08136aacf07aa217241b44fa08e017"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-PreviewGeneratorProducerModule-18b3b8c2e1ce5b569d6fbbb77fb10c0f29b5ee2761626e78c7c999ef41bb3702c87c55b09044c0cbf2145d51d2c2138d3c08136aacf07aa217241b44fa08e017"' :
+                                        'id="xs-injectables-links-module-PreviewGeneratorProducerModule-18b3b8c2e1ce5b569d6fbbb77fb10c0f29b5ee2761626e78c7c999ef41bb3702c87c55b09044c0cbf2145d51d2c2138d3c08136aacf07aa217241b44fa08e017"' }>
+                                        <li class="link">
+                                            <a href="injectables/PreviewProducer.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >PreviewProducer</a>
+                                        </li>
+                                    </ul>
+                                </li>
                             </li>
                             <li class="link">
                                 <a href="modules/ProvisioningModule.html" data-type="entity-link" >ProvisioningModule</a>
@@ -3873,6 +3896,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/PatchVisibilityParams.html" data-type="entity-link" >PatchVisibilityParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/PreviewActionsLoggable.html" data-type="entity-link" >PreviewActionsLoggable</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/PreviewBuilder.html" data-type="entity-link" >PreviewBuilder</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/PreviewGeneratorBuilder.html" data-type="entity-link" >PreviewGeneratorBuilder</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/PreviewParams.html" data-type="entity-link" >PreviewParams</a>
                             </li>
                             <li class="link">
@@ -4000,6 +4032,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/RoomUrlParams.html" data-type="entity-link" >RoomUrlParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/RpcMessageProducer.html" data-type="entity-link" >RpcMessageProducer</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ScanResultDto.html" data-type="entity-link" >ScanResultDto</a>
@@ -4948,6 +4983,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/PermissionService.html" data-type="entity-link" >PermissionService</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/PreviewGeneratorConsumer.html" data-type="entity-link" >PreviewGeneratorConsumer</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/PreviewGeneratorService.html" data-type="entity-link" >PreviewGeneratorService</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/PseudonymService.html" data-type="entity-link" >PseudonymService</a>
                                 </li>
                                 <li class="link">
@@ -5747,7 +5788,22 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/PlainTextMailContent.html" data-type="entity-link" >PlainTextMailContent</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/PreviewConfig.html" data-type="entity-link" >PreviewConfig</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/PreviewFileOptions.html" data-type="entity-link" >PreviewFileOptions</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/PreviewFileParams.html" data-type="entity-link" >PreviewFileParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/PreviewModuleConfig.html" data-type="entity-link" >PreviewModuleConfig</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/PreviewOptions.html" data-type="entity-link" >PreviewOptions</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/PreviewResponseMessage.html" data-type="entity-link" >PreviewResponseMessage</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/ProviderConsentResponse.html" data-type="entity-link" >ProviderConsentResponse</a>

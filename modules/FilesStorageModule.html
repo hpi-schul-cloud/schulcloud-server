@@ -344,6 +344,7 @@ import { Module, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { ConfigModule } from &#x27;@nestjs/config&#x27;;
 import { ALL_ENTITIES } from &#x27;@shared/domain&#x27;;
 import { AntivirusModule } from &#x27;@shared/infra/antivirus/antivirus.module&#x27;;
+import { PreviewGeneratorProducerModule } from &#x27;@shared/infra/preview-generator&#x27;;
 import { RabbitMQWrapperModule } from &#x27;@shared/infra/rabbitmq/rabbitmq.module&#x27;;
 import { S3ClientModule } from &#x27;@shared/infra/s3-client&#x27;;
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from &#x27;@src/config&#x27;;
@@ -366,6 +367,7 @@ const imports &#x3D; [
 		port: Configuration.get(&#x27;CLAMAV__SERVICE_PORT&#x27;) as number,
 	}),
 	S3ClientModule.register([s3Config]),
+	PreviewGeneratorProducerModule,
 ];
 const providers &#x3D; [FilesStorageService, PreviewService, FileRecordRepo];
 

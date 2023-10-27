@@ -364,7 +364,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Readable } from &#x27;stream&#x27;;
-import type { DownloadFileParams, PreviewParams } from &#x27;../controller/dto&#x27;;
+import type { PreviewParams } from &#x27;../controller/dto&#x27;;
 import { FileRecord } from &#x27;../entity&#x27;;
 
 export interface GetFileResponse {
@@ -378,10 +378,11 @@ export interface GetFileResponse {
 
 export interface PreviewFileParams {
 	fileRecord: FileRecord;
-	downloadParams: DownloadFileParams;
 	previewParams: PreviewParams;
 	hash: string;
-	filePath: string;
+	originFilePath: string;
+	previewFilePath: string;
+	format: string;
 	bytesRange?: string;
 }
 </code></pre>

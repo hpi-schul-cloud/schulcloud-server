@@ -244,6 +244,7 @@
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { BadRequestException } from &#x27;@nestjs/common&#x27;;
 import { BaseEntityWithTimestamps, EntityId } from &#x27;@shared/domain&#x27;;
+import path from &#x27;path&#x27;;
 import { v4 as uuid } from &#x27;uuid&#x27;;
 import { ErrorType } from &#x27;../error&#x27;;
 import { PreviewInputMimeTypes } from &#x27;../interface/preview-input-mime-types.enum&#x27;;
@@ -534,6 +535,12 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		}
 
 		return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR;
+	}
+
+	public get fileNameWithoutExtension(): string {
+		const filenameObj &#x3D; path.parse(this.name);
+
+		return filenameObj.name;
 	}
 }
 </code></pre>

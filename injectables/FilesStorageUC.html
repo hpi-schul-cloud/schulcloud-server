@@ -412,8 +412,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="201"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:201</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="204"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:204</a></div>
                         </td>
                     </tr>
 
@@ -506,8 +506,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="221"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:221</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="224"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:224</a></div>
                         </td>
                     </tr>
 
@@ -600,8 +600,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="163"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:163</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="165"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:165</a></div>
                         </td>
                     </tr>
 
@@ -682,8 +682,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="171"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:171</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="174"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:174</a></div>
                         </td>
                     </tr>
 
@@ -1034,8 +1034,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="262"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:262</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="265"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:265</a></div>
                         </td>
                     </tr>
 
@@ -1182,8 +1182,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="245"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:245</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="248"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:248</a></div>
                         </td>
                     </tr>
 
@@ -1276,8 +1276,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="183"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:183</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="186"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:186</a></div>
                         </td>
                     </tr>
 
@@ -1358,8 +1358,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="190"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:190</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="193"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:193</a></div>
                         </td>
                     </tr>
 
@@ -1440,8 +1440,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="256"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:256</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="259"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:259</a></div>
                         </td>
                     </tr>
 
@@ -1774,12 +1774,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpService } from &#x27;@nestjs/axios&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContext } from &#x27;@modules/authorization&#x27;;
+import { AuthorizationReferenceService } from &#x27;@modules/authorization/domain&#x27;;
+import { HttpService } from &#x27;@nestjs/axios&#x27;;
 import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { Counted, EntityId } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { AuthorizationContext } from &#x27;@modules/authorization&#x27;;
-import { AuthorizationReferenceService } from &#x27;@modules/authorization/domain&#x27;;
 import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
 import busboy from &#x27;busboy&#x27;;
 import { Request } from &#x27;express&#x27;;
@@ -1930,7 +1930,9 @@ export class FilesStorageUC {
 
 		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.read);
 
-		const result &#x3D; this.previewService.getPreview(fileRecord, params, previewParams, bytesRange);
+		this.filesStorageService.checkFileName(fileRecord, params);
+
+		const result &#x3D; this.previewService.download(fileRecord, previewParams, bytesRange);
 
 		return result;
 	}
@@ -1938,8 +1940,9 @@ export class FilesStorageUC {
 	// delete
 	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise&lt;Counted&lt;FileRecord[]&gt;&gt; {
 		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.delete);
-		const [fileRecords, count] &#x3D; await this.filesStorageService.deleteFilesOfParent(params.parentId);
+		const [fileRecords, count] &#x3D; await this.filesStorageService.getFileRecordsOfParent(params.parentId);
 		await this.previewService.deletePreviews(fileRecords);
+		await this.filesStorageService.deleteFilesOfParent(fileRecords);
 
 		return [fileRecords, count];
 	}
@@ -1949,8 +1952,8 @@ export class FilesStorageUC {
 		const { parentType, parentId } &#x3D; fileRecord.getParentInfo();
 
 		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.delete);
-		await this.filesStorageService.delete([fileRecord]);
 		await this.previewService.deletePreviews([fileRecord]);
+		await this.filesStorageService.delete([fileRecord]);
 
 		return fileRecord;
 	}

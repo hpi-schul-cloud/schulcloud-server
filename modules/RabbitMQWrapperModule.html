@@ -81,7 +81,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AmqpConnectionManager, RabbitMQModule } from &#x27;@golevelup/nestjs-rabbitmq&#x27;;
 import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
 import { Global, Module, OnModuleDestroy } from &#x27;@nestjs/common&#x27;;
-import { FilesStorageExchange } from &#x27;./exchange&#x27;;
+import { FilesPreviewExchange, FilesStorageExchange } from &#x27;./exchange&#x27;;
 
 /**
  * https://www.npmjs.com/package/@golevelup/nestjs-rabbitmq#usage
@@ -106,6 +106,10 @@ const imports &#x3D; [
 			},
 			{
 				name: FilesStorageExchange,
+				type: &#x27;direct&#x27;,
+			},
+			{
+				name: FilesPreviewExchange,
 				type: &#x27;direct&#x27;,
 			},
 		],
