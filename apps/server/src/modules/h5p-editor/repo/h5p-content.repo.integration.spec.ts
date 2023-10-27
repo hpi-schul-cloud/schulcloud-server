@@ -66,6 +66,18 @@ describe('ContentRepo', () => {
 		});
 	});
 
+	describe('existsOne', () => {
+		it('should return true if entity exists', async () => {
+			const h5pContent = h5pContentFactory.build();
+			await em.persistAndFlush(h5pContent);
+
+			const result = await repo.existsOne(h5pContent.id);
+
+			expect(result).toBeDefined();
+			expect(result).toBeTruthy();
+		});
+	});
+
 	describe('deleteContent', () => {
 		it('should delete data', async () => {
 			const h5pContent = h5pContentFactory.build();
