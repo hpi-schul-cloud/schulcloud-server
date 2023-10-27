@@ -32,8 +32,8 @@ describe('ToolPermissionHelper', () => {
 	let helper: ToolPermissionHelper;
 
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let courseService: DeepMocked<CourseService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
+	let courseService: DeepMocked<CourseService>;
 	let contentElementService: DeepMocked<ContentElementService>;
 	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 
@@ -45,10 +45,6 @@ describe('ToolPermissionHelper', () => {
 				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
-				},
-				{
-					provide: CourseService,
-					useValue: createMock<CourseService>(),
 				},
 				{
 					provide: LegacySchoolService,
@@ -71,7 +67,6 @@ describe('ToolPermissionHelper', () => {
 
 		helper = module.get(ToolPermissionHelper);
 		authorizationService = module.get(AuthorizationService);
-		courseService = module.get(CourseService);
 		schoolService = module.get(LegacySchoolService);
 		courseService = module.get(CourseService);
 		contentElementService = module.get(ContentElementService);
