@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { DeletionLog } from '../domain/deletion-log.do';
@@ -9,17 +9,33 @@ import { DeletionLogMapper } from './mapper/deletion-log.mapper';
 export class DeletionLogRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findById(id: EntityId): Promise<DeletionLog> {
-		const deletionRequest: DeletionLogEntity = await this.em.findOneOrFail(DeletionLogEntity, { id });
+	get entityName() {
+		return DeletionLogEntity;
+	}
 
-		const mapped: DeletionLog = DeletionLogMapper.mapToDO(deletionRequest);
+	async findById(deletionLogId: EntityId): Promise<DeletionLog> {
+		const deletionLog: DeletionLogEntity = await this.em.findOneOrFail(DeletionLogEntity, {
+			id: deletionLogId,
+		});
+
+		const mapped: DeletionLog = DeletionLogMapper.mapToDO(deletionLog);
 
 		return mapped;
 	}
 
-	// create
+	async findAllByDeletionRequestId(deletionRequestId: EntityId): Promise<DeletionLog[]> {
+		const deletionLogEntities: DeletionLogEntity[] = await this.em.find(DeletionLogEntity, {
+			deletionRequestId: new ObjectId(deletionRequestId),
+		});
 
-	// update
+		const mapped: DeletionLog[] = DeletionLogMapper.mapToDOs(deletionLogEntities);
 
-	// delete
+		return mapped;
+	}
+
+	async create(deletionLog: DeletionLog): Promise<void> {
+		const deletionLogEntity: DeletionLogEntity = DeletionLogMapper.mapToEntity(deletionLog);
+		this.em.persist(deletionLogEntity);
+		await this.em.flush();
+	}
 }

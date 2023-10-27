@@ -1,12 +1,15 @@
 import { EntityId } from '@shared/domain/types';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { DeletionDomainModel } from './types/deletion-domain-model.enum';
+import { DeletionStatusModel } from './types/deletion-status-model.enum';
 
 export interface DeletionRequestProps extends AuthorizableObject {
 	createdAt?: Date;
 	updatedAt?: Date;
-	source?: string;
+	domain?: DeletionDomainModel;
 	deleteAfter?: Date;
-	userId?: EntityId;
+	itemId?: EntityId;
+	status?: DeletionStatusModel;
 }
 
 export class DeletionRequest extends DomainObject<DeletionRequestProps> {
@@ -18,15 +21,19 @@ export class DeletionRequest extends DomainObject<DeletionRequestProps> {
 		return this.props.updatedAt;
 	}
 
-	get source(): string | undefined {
-		return this.props.source;
+	get domain(): DeletionDomainModel | undefined {
+		return this.props.domain;
 	}
 
 	get deleteAfter(): Date | undefined {
 		return this.props.deleteAfter;
 	}
 
-	get userId(): EntityId | undefined {
-		return this.props.userId;
+	get itemId(): EntityId | undefined {
+		return this.props.itemId;
+	}
+
+	get status(): DeletionStatusModel | undefined {
+		return this.props.status;
 	}
 }

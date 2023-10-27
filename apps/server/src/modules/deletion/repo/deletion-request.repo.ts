@@ -9,27 +9,26 @@ import { DeletionRequestMapper } from './mapper/deletion-request.mapper';
 export class DeletionRequestRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findById(id: EntityId): Promise<DeletionRequest> {
-		const deletionRequest: DeletionRequestEntity = await this.em.findOneOrFail(DeletionRequestEntity, { id });
+	get entityName() {
+		return DeletionRequestEntity;
+	}
+
+	async findById(deletionRequestId: EntityId): Promise<DeletionRequest> {
+		const deletionRequest: DeletionRequestEntity = await this.em.findOneOrFail(DeletionRequestEntity, {
+			id: deletionRequestId,
+		});
 
 		const mapped: DeletionRequest = DeletionRequestMapper.mapToDO(deletionRequest);
 
 		return mapped;
 	}
 
-	// create
 	async create(deletionRequest: DeletionRequest): Promise<void> {
 		const deletionRequestEntity = DeletionRequestMapper.mapToEntity(deletionRequest);
-		await this.em.persistAndFlush(deletionRequestEntity);
+		this.em.persist(deletionRequestEntity);
+		await this.em.flush();
 	}
 
-	// update
-	async update(deletionRequest: DeletionRequest): Promise<void> {
-		const deletionRequestEntity = DeletionRequestMapper.mapToEntity(deletionRequest);
-		await this.em.persistAndFlush(deletionRequestEntity);
-	}
-
-	// find
 	async findAllItemsByDeletionDate(): Promise<DeletionRequest[]> {
 		const currentDate = new Date();
 		const itemsToDelete: DeletionRequestEntity[] = await this.em.find(DeletionRequestEntity, {
@@ -41,5 +40,22 @@ export class DeletionRequestRepo {
 		return mapped;
 	}
 
-	// delete
+	async update(deletionRequest: DeletionRequest): Promise<void> {
+		const deletionRequestEntity = DeletionRequestMapper.mapToEntity(deletionRequest);
+		await this.em.persistAndFlush(deletionRequestEntity);
+	}
+
+	async deleteById(deletionRequestId: EntityId): Promise<boolean> {
+		const entity: DeletionRequestEntity | null = await this.em.findOne(DeletionRequestEntity, {
+			id: deletionRequestId,
+		});
+
+		if (!entity) {
+			return false;
+		}
+
+		await this.em.removeAndFlush(entity);
+
+		return true;
+	}
 }

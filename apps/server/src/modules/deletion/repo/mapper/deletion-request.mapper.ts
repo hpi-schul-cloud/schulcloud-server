@@ -8,26 +8,22 @@ export class DeletionRequestMapper {
 			id: entity.id,
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
-			source: entity.source,
+			domain: entity.domain,
 			deleteAfter: entity.deleteAfter,
-			userId: entity.userId?.toHexString(),
+			itemId: entity.itemId,
+			status: entity.status,
 		});
 	}
 
 	static mapToEntity(domainObject: DeletionRequest): DeletionRequestEntity {
 		return new DeletionRequestEntity({
 			id: domainObject.id,
-			source: domainObject.source,
+			domain: domainObject.domain,
 			deleteAfter: domainObject.deleteAfter,
-			userId: new ObjectId(domainObject.userId),
+			itemId: new ObjectId(domainObject.itemId).toHexString(),
+			createdAt: domainObject.createdAt,
+			updatedAt: domainObject.updatedAt,
+			status: domainObject.status,
 		});
 	}
-
-	// static mapToDOs(entities: DeletionRequestEntity[]): DeletionRequest[] {
-	// 	return entities.map((entity) => this.mapToDOs(entity));
-	// }
-
-	// static mapToEntities(domainObjects: DeletionRequest[]): DeletionRequestEntity[] {
-	// 	return domainObjects.map((domainObject) => this.mapToEntities(domainObject));
-	// }
 }

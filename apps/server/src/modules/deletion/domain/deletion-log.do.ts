@@ -1,12 +1,15 @@
 import { EntityId } from '@shared/domain/types';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { DeletionDomainModel } from './types/deletion-domain-model.enum';
+import { DeletionOperationModel } from './types/deletion-operation-model.enum';
 
 export interface DeletionLogProps extends AuthorizableObject {
 	createdAt: Date;
 	updatedAt: Date;
-	scope?: string;
-	operation?: string;
-	docIds?: EntityId[];
+	domain?: DeletionDomainModel;
+	operation?: DeletionOperationModel;
+	modifiedCounter?: number;
+	deletedCounter?: number;
 	deletionRequestId?: EntityId;
 }
 
@@ -19,19 +22,23 @@ export class DeletionLog extends DomainObject<DeletionLogProps> {
 		return this.props.updatedAt;
 	}
 
-	get scope(): string | undefined {
-		return this.props.scope;
+	get domain(): DeletionDomainModel | undefined {
+		return this.props.domain;
 	}
 
-	get operation(): string | undefined {
+	get operation(): DeletionOperationModel | undefined {
 		return this.props.operation;
+	}
+
+	get modifiedCounter(): number | undefined {
+		return this.props.modifiedCounter;
+	}
+
+	get deletedCounter(): number | undefined {
+		return this.props.deletedCounter;
 	}
 
 	get deletionRequestId(): EntityId | undefined {
 		return this.props.deletionRequestId;
-	}
-
-	get docIds(): EntityId[] | undefined {
-		return this.props.docIds;
 	}
 }

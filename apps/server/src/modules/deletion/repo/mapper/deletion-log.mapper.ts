@@ -8,9 +8,10 @@ export class DeletionLogMapper {
 			id: entity.id,
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
-			scope: entity.scope,
+			domain: entity.domain,
 			operation: entity.operation,
-			docIds: entity.docIds?.map((docId) => docId.toHexString()),
+			modifiedCounter: entity.modifiedCounter,
+			deletedCounter: entity.deletedCounter,
 			deletionRequestId: entity.deletionRequestId?.toHexString(),
 		});
 	}
@@ -20,18 +21,19 @@ export class DeletionLogMapper {
 			id: domainObject.id,
 			createdAt: domainObject.createdAt,
 			updatedAt: domainObject.updatedAt,
-			scope: domainObject.scope,
+			domain: domainObject.domain,
 			operation: domainObject.operation,
-			docIds: domainObject.docIds?.map((docId) => new ObjectId(docId)),
+			modifiedCounter: domainObject.modifiedCounter,
+			deletedCounter: domainObject.deletedCounter,
 			deletionRequestId: new ObjectId(domainObject.deletionRequestId),
 		});
 	}
 
-	// static mapToDOs(entities: DeletionLogEntity[]): DeletionLog[] {
-	// 	return entities.map((entity) => this.mapToDO(entity));
-	// }
+	static mapToDOs(entities: DeletionLogEntity[]): DeletionLog[] {
+		return entities.map((entity) => this.mapToDO(entity));
+	}
 
-	// static mapToEntities(domainObjects: DeletionLog[]): DeletionLogEntity[] {
-	// 	return domainObjects.map((domainObject) => this.mapToEntity(domainObject));
-	// }
+	static mapToEntities(domainObjects: DeletionLog[]): DeletionLogEntity[] {
+		return domainObjects.map((domainObject) => this.mapToEntity(domainObject));
+	}
 }
