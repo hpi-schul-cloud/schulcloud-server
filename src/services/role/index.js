@@ -28,8 +28,8 @@ module.exports = function setup() {
 	userRoles.hooks(userRolesHooks);
 
 	app.use('/permissions/user', new UserPermissions());
-	const userPermissions = app.service('/permissions/user');
-	userPermissions.hooks(userPermissionsHooks);
+	//const userPermissions = app.service('/permissions/user');
+	//userPermissions.hooks(userPermissionsHooks);
 
 	app.use('/roles/:roleName/permissions', new PermissionService());
 	const permissionService = app.service('/roles/:roleName/permissions');
@@ -37,10 +37,8 @@ module.exports = function setup() {
 
 	app.use('/roles', service(options));
 	const roleService = app.service('/roles');
-	roleService.hooks({
-		before: hooks.before(),
-		after: hooks.after,
-	});
+
+	roleService.hooks(hooks);
 
 	definePermissions(
 		'TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT',

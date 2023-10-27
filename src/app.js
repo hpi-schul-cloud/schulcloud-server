@@ -1,12 +1,13 @@
 const express = require('@feathersjs/express');
-const feathers = require('@feathersjs/feathers');
+const { feathers } = require('@feathersjs/feathers');
+const { json, urlencoded, notFound } = require('@feathersjs/express');
 const configuration = require('@feathersjs/configuration');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const path = require('path');
 const favicon = require('serve-favicon');
 const compress = require('compression');
 const cors = require('cors');
-const rest = require('@feathersjs/express/rest');
+const rest = require('@feathersjs/express');
 const bodyParser = require('body-parser');
 const { ObjectId } = require('mongoose').Types;
 
@@ -51,6 +52,10 @@ const setupApp = async (orm) => {
 	initializeRedisClient();
 	rabbitMq.setup(app);
 
+	app.use(json());
+	app.use(urlencoded());
+	//app.use(notFound());
+	//app.use(errorHandler());
 	app
 		.use(compress())
 		.options('*', cors())
@@ -74,7 +79,7 @@ const setupApp = async (orm) => {
 		.get('/ping', (req, res) => {
 			res.send({ message: 'pong', timestamp: new Date().getTime() });
 		})
-		.configure(rest(handleResponseType))
+		//.configure(rest(handleResponseType))
 		.use((req, res, next) => {
 			// pass header into hooks.params
 			// todo: To create a fake requestId on this place is a temporary solution
