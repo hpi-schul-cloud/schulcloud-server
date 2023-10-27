@@ -63,10 +63,13 @@ export class GroupUc {
 		schoolId: string,
 		schoolYearQueryType: SchoolYearQueryType | undefined
 	): Promise<ClassInfoDto[]> {
-		const [classInfosFromClasses, classInfosFromGroups] = await Promise.all([
-			await this.findClassesForSchool(schoolId, schoolYearQueryType),
-			await this.findGroupsOfTypeClassForSchool(schoolId),
-		]);
+		let classInfosFromGroups: ClassInfoDto[] = [];
+
+		const classInfosFromClasses = await this.findClassesForSchool(schoolId, schoolYearQueryType);
+
+		if (schoolYearQueryType === SchoolYearQueryType.CURRENT_YEAR) {
+			classInfosFromGroups = await this.findGroupsOfTypeClassForSchool(schoolId);
+		}
 
 		const combinedClassInfo: ClassInfoDto[] = [...classInfosFromClasses, ...classInfosFromGroups];
 
@@ -80,29 +83,35 @@ export class GroupUc {
 		const classes: Class[] = await this.classService.findClassesForSchool(schoolId);
 		const currentYear: SchoolYearEntity = await this.schoolYearService.getCurrentSchoolYear();
 
-		const filteredClasses: Class[] = await Promise.all(
-			classes.filter(async (clazz: Class): Promise<boolean> => {
+		const classesWithSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[] = await Promise.all(
+			classes.map(async (clazz) => {
 				let schoolYear: SchoolYearEntity | undefined;
 				if (clazz.year) {
 					schoolYear = await this.schoolYearService.findById(clazz.year);
 				}
 
-				return this.isClassOfQueryType(currentYear, schoolYear, schoolYearQueryType);
+				return {
+					clazz,
+					schoolYear,
+				};
 			})
 		);
 
-		const classInfosFromClasses: ClassInfoDto[] = await Promise.all(
-			filteredClasses.map(async (clazz: Class): Promise<ClassInfoDto> => {
+		const filteredClassesForSchoolYear = classesWithSchoolYear.filter((classWithSchoolYear) =>
+			this.isClassOfQueryType(currentYear, classWithSchoolYear.schoolYear, schoolYearQueryType)
+		);
+
+		const classInfosFromClasses = await Promise.all(
+			filteredClassesForSchoolYear.map(async (classWithSchoolYear): Promise<ClassInfoDto> => {
 				const teachers: UserDO[] = await Promise.all(
-					clazz.teacherIds.map((teacherId: EntityId) => this.userService.findById(teacherId))
+					classWithSchoolYear.clazz.teacherIds.map((teacherId: EntityId) => this.userService.findById(teacherId))
 				);
 
-				let schoolYear: SchoolYearEntity | undefined;
-				if (clazz.year) {
-					schoolYear = await this.schoolYearService.findById(clazz.year);
-				}
-
-				const mapped: ClassInfoDto = GroupUcMapper.mapClassToClassInfoDto(clazz, teachers, schoolYear);
+				const mapped: ClassInfoDto = GroupUcMapper.mapClassToClassInfoDto(
+					classWithSchoolYear.clazz,
+					teachers,
+					classWithSchoolYear.schoolYear
+				);
 
 				return mapped;
 			})
