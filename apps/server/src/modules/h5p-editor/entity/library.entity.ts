@@ -188,7 +188,7 @@ export class InstalledLibrary extends BaseEntityWithTimestamps implements IInsta
 	@Property()
 	files: FileMetadata[];
 
-	private static simple_compare(a: number, b: number): number {
+	public static simple_compare(a: number, b: number): number {
 		if (a > b) {
 			return 1;
 		}
