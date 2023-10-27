@@ -1,6 +1,6 @@
 export interface IError extends Error {
 	status?: number;
-	message: never;
+	message: string;
 }
 export interface RpcMessage<T> {
 	message: T;
