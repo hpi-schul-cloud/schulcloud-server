@@ -132,14 +132,10 @@ export class CommonCartridgeExportService {
 		if (content.component === ComponentType.LERNSTORE) {
 			if (content.content && Array.isArray(content.content.resources) && content.content.resources.length > 0) {
 				content.content.resources.map((resource) => {
-					return {
-						...commonProps,
-						type:
-							version === CommonCartridgeVersion.V_1_3_0
-								? CommonCartridgeResourceType.WEB_LINK_V3
-								: CommonCartridgeResourceType.WEB_LINK_V1,
-						url: resource.url,
-					};
+					const url = resource.url;
+					return version === CommonCartridgeVersion.V_1_3_0
+						? { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V3, url }
+						: { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V1, url };
 				});
 			}
 		}
