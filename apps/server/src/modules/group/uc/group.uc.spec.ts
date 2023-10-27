@@ -28,6 +28,7 @@ import { GroupService } from '../service';
 import { ClassInfoDto, ResolvedGroupDto } from './dto';
 import { ClassRootType } from './dto/class-root-type';
 import { GroupUc } from './group.uc';
+import { SchoolYearQueryType } from '../controller/dto';
 
 describe('GroupUc', () => {
 	let module: TestingModule;
@@ -124,7 +125,7 @@ describe('GroupUc', () => {
 			it('should throw forbidden', async () => {
 				const { user, error } = setup();
 
-				const func = () => uc.findAllClassesForSchool(user.id, user.school.id);
+				const func = () => uc.findAllClassesForSchool(user.id, user.school.id, SchoolYearQueryType.CURRENT_YEAR);
 
 				await expect(func).rejects.toThrow(error);
 			});
@@ -154,11 +155,19 @@ describe('GroupUc', () => {
 					roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
 				});
 				const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
+				const nextSchoolYear: SchoolYearEntity = schoolYearFactory.buildWithId({
+					startDate: schoolYear.endDate,
+				});
 				const clazz: Class = classFactory.build({
 					name: 'A',
 					teacherIds: [teacherUser.id],
 					source: 'LDAP',
 					year: schoolYear.id,
+				});
+				const successorClass: Class = classFactory.build({
+					name: 'NEW',
+					teacherIds: [teacherUser.id],
+					year: nextSchoolYear.id,
 				});
 				const system: SystemDto = new SystemDto({
 					id: new ObjectId().toHexString(),
@@ -181,7 +190,7 @@ describe('GroupUc', () => {
 
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
-				classService.findClassesForSchool.mockResolvedValueOnce([clazz]);
+				classService.findClassesForSchool.mockResolvedValueOnce([clazz, successorClass]);
 				groupService.findClassesForSchool.mockResolvedValueOnce([group, groupWithSystem]);
 				systemService.findById.mockResolvedValue(system);
 				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
@@ -207,11 +216,13 @@ describe('GroupUc', () => {
 					throw new Error();
 				});
 				schoolYearService.findById.mockResolvedValue(schoolYear);
+				schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYear);
 
 				return {
 					teacherUser,
 					school,
 					clazz,
+					successorClass,
 					group,
 					groupWithSystem,
 					system,
@@ -222,7 +233,7 @@ describe('GroupUc', () => {
 			it('should check the required permissions', async () => {
 				const { teacherUser, school } = setup();
 
-				await uc.findAllClassesForSchool(teacherUser.id, teacherUser.school.id);
+				await uc.findAllClassesForSchool(teacherUser.id, teacherUser.school.id, SchoolYearQueryType.CURRENT_YEAR);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith<[User, LegacySchoolDo, AuthorizationContext]>(
 					teacherUser,
@@ -238,7 +249,11 @@ describe('GroupUc', () => {
 				it('should return all classes sorted by name', async () => {
 					const { teacherUser, clazz, group, groupWithSystem, system, schoolYear } = setup();
 
-					const result: Page<ClassInfoDto> = await uc.findAllClassesForSchool(teacherUser.id, teacherUser.school.id);
+					const result: Page<ClassInfoDto> = await uc.findAllClassesForSchool(
+						teacherUser.id,
+						teacherUser.school.id,
+						SchoolYearQueryType.CURRENT_YEAR
+					);
 
 					expect(result).toEqual<Page<ClassInfoDto>>({
 						data: [
@@ -280,6 +295,7 @@ describe('GroupUc', () => {
 					const result: Page<ClassInfoDto> = await uc.findAllClassesForSchool(
 						teacherUser.id,
 						teacherUser.school.id,
+						SchoolYearQueryType.CURRENT_YEAR,
 						undefined,
 						undefined,
 						'externalSourceName',
@@ -326,6 +342,7 @@ describe('GroupUc', () => {
 					const result: Page<ClassInfoDto> = await uc.findAllClassesForSchool(
 						teacherUser.id,
 						teacherUser.school.id,
+						SchoolYearQueryType.CURRENT_YEAR,
 						1,
 						1,
 						'name',
@@ -343,6 +360,48 @@ describe('GroupUc', () => {
 							},
 						],
 						total: 3,
+					});
+				});
+			});
+
+			describe('when querying for classes from next school year', () => {
+				it('should only return classes from next school year', async () => {
+					const { teacherUser, successorClass } = setup();
+
+					const result: Page<ClassInfoDto> = await uc.findAllClassesForSchool(
+						teacherUser.id,
+						teacherUser.school.id,
+						SchoolYearQueryType.NEXT_YEAR
+					);
+
+					expect(result).toEqual<Page<ClassInfoDto>>({
+						data: [
+							{
+								id: successorClass.id,
+								name: successorClass.name,
+								type: ClassRootType.CLASS,
+								teachers: [teacherUser.lastName],
+								studentCount: 0,
+							},
+						],
+						total: 1,
+					});
+				});
+			});
+
+			describe('when querying for archived classes', () => {
+				it('should only return classes from previous school years', async () => {
+					const { teacherUser } = setup();
+
+					const result: Page<ClassInfoDto> = await uc.findAllClassesForSchool(
+						teacherUser.id,
+						teacherUser.school.id,
+						SchoolYearQueryType.NEXT_YEAR
+					);
+
+					expect(result).toEqual<Page<ClassInfoDto>>({
+						data: [],
+						total: 0,
 					});
 				});
 			});
