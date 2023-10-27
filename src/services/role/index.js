@@ -38,7 +38,10 @@ module.exports = function setup() {
 	app.use('/roles', service(options));
 	const roleService = app.service('/roles');
 
-	roleService.hooks(hooks);
+	roleService.hooks({
+		before: hooks.before(),
+		after: hooks.after,
+	});
 
 	definePermissions(
 		'TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT',
