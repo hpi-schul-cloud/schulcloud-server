@@ -1,8 +1,8 @@
+import { LessonService } from '@modules/lesson/service';
+import { TaskService } from '@modules/task/service';
 import { Injectable } from '@nestjs/common';
 import { Course, EntityId, IComponentProperties, Task } from '@shared/domain';
-import { LessonService } from '@modules/lesson/service';
 import { ComponentType } from '@src/shared/domain/entity/lesson.entity';
-import { TaskService } from '@modules/task/service';
 import {
 	CommonCartridgeFileBuilder,
 	CommonCartridgeIntendedUseType,
@@ -11,8 +11,8 @@ import {
 	ICommonCartridgeResourceProps,
 	ICommonCartridgeWebContentResourceProps,
 } from '../common-cartridge';
-import { CourseService } from './course.service';
 import { createIdentifier } from '../common-cartridge/utils';
+import { CourseService } from './course.service';
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -127,6 +127,21 @@ export class CommonCartridgeExportService {
 						url: content.content.url,
 						title: content.content.description,
 				  };
+		}
+
+		if (content.component === ComponentType.LERNSTORE) {
+			if (content.content && Array.isArray(content.content.resources) && content.content.resources.length > 0) {
+				content.content.resources.map((resource) => {
+					return {
+						...commonProps,
+						type:
+							version === CommonCartridgeVersion.V_1_3_0
+								? CommonCartridgeResourceType.WEB_LINK_V3
+								: CommonCartridgeResourceType.WEB_LINK_V1,
+						url: resource.url,
+					};
+				});
+			}
 		}
 
 		return undefined;
