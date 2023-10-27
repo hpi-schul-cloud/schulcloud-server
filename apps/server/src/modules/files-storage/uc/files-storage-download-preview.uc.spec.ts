@@ -111,7 +111,7 @@ describe('FilesStorageUC', () => {
 				const previewFileResponse = TestHelper.createFileResponse();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				previewService.getPreview.mockResolvedValueOnce(previewFileResponse);
+				previewService.download.mockResolvedValueOnce(previewFileResponse);
 
 				return { fileDownloadParams, previewParams, userId, fileRecord, singleFileParams, previewFileResponse };
 			};
@@ -129,12 +129,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.downloadPreview(userId, fileDownloadParams, previewParams);
 
-				expect(previewService.getPreview).toHaveBeenCalledWith(
-					fileRecord,
-					fileDownloadParams,
-					previewParams,
-					undefined
-				);
+				expect(previewService.download).toHaveBeenCalledWith(fileRecord, previewParams, undefined);
 			});
 
 			it('should call checkPermission with correct params', async () => {
@@ -211,7 +206,7 @@ describe('FilesStorageUC', () => {
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
 				const error = new Error('test');
-				previewService.getPreview.mockRejectedValueOnce(error);
+				previewService.download.mockRejectedValueOnce(error);
 
 				return { fileDownloadParams, previewParams, userId, error };
 			};

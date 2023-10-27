@@ -7,6 +7,7 @@ import { courseFactory, fileRecordFactory, setupEntities } from '@shared/testing
 import { LegacyLogger } from '@src/core/logger';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { FilesStorageService } from '../service/files-storage.service';
+import { PreviewService } from '../service/preview.service';
 import { FileRecordResponse } from './dto';
 import { FilesStorageConsumer } from './files-storage.consumer';
 
@@ -32,6 +33,10 @@ describe('FilesStorageConsumer', () => {
 				{
 					provide: FilesStorageService,
 					useValue: createMock<FilesStorageService>(),
+				},
+				{
+					provide: PreviewService,
+					useValue: createMock<PreviewService>(),
 				},
 				{
 					provide: LegacyLogger,
@@ -165,9 +170,9 @@ describe('FilesStorageConsumer', () => {
 				const parentId = new ObjectId().toHexString();
 
 				const fileRecords = fileRecordFactory.buildList(3);
-				filesStorageService.deleteFilesOfParent.mockResolvedValue([fileRecords, fileRecords.length]);
+				filesStorageService.getFileRecordsOfParent.mockResolvedValue([fileRecords, fileRecords.length]);
 
-				return { parentId };
+				return { parentId, fileRecords };
 			};
 
 			it('should call filesStorageService.deleteFilesOfParent with params', async () => {
@@ -175,7 +180,15 @@ describe('FilesStorageConsumer', () => {
 
 				await service.deleteFilesOfParent(parentId);
 
-				expect(filesStorageService.deleteFilesOfParent).toBeCalledWith(parentId);
+				expect(filesStorageService.getFileRecordsOfParent).toBeCalledWith(parentId);
+			});
+
+			it('should call filesStorageService.deleteFilesOfParent with params', async () => {
+				const { parentId, fileRecords } = setup();
+
+				await service.deleteFilesOfParent(parentId);
+
+				expect(filesStorageService.deleteFilesOfParent).toBeCalledWith(fileRecords);
 			});
 
 			it('should return array instances of FileRecordResponse', async () => {
@@ -191,7 +204,7 @@ describe('FilesStorageConsumer', () => {
 			const setup = () => {
 				const parentId = new ObjectId().toHexString();
 
-				filesStorageService.deleteFilesOfParent.mockResolvedValue([[], 0]);
+				filesStorageService.getFileRecordsOfParent.mockResolvedValue([[], 0]);
 
 				return { parentId };
 			};
