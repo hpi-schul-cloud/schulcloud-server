@@ -1,5 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { EntityId } from '@shared/domain';
 import { Class } from '../domain';
 import { ClassEntity } from '../entity';
@@ -28,9 +29,34 @@ export class ClassesRepo {
 	}
 
 	async updateMany(classes: Class[]): Promise<void> {
-		const classesEntities = ClassMapper.mapToEntities(classes);
-		const referencedEntities = classesEntities.map((classEntity) => this.em.getReference(ClassEntity, classEntity.id));
+		const classMap: Map<string, Class> = new Map<string, Class>(
+			classes.map((clazz: Class): [string, Class] => [clazz.id, clazz])
+		);
 
-		await this.em.persistAndFlush(referencedEntities);
+		const existingEntities: ClassEntity[] = await this.em.find(ClassEntity, {
+			id: { $in: Array.from(classMap.keys()) },
+		});
+
+		if (existingEntities.length < classes.length) {
+			const missingEntityIds: string[] = Array.from(classMap.keys()).filter(
+				(classId) => !existingEntities.find((entity) => entity.id === classId)
+			);
+
+			throw new NotFoundLoggableException(Class.name, 'id', missingEntityIds.toString());
+		}
+
+		existingEntities.forEach((entity) => {
+			const updatedDomainObject: Class | undefined = classMap.get(entity.id);
+
+			if (!updatedDomainObject) {
+				return;
+			}
+
+			const updatedEntity: ClassEntity = ClassMapper.mapToEntity(updatedDomainObject);
+
+			this.em.assign(entity, updatedEntity);
+		});
+
+		await this.em.persistAndFlush(existingEntities);
 	}
 }

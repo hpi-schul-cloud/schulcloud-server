@@ -2,6 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
 import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { SchoolEntity } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, schoolFactory } from '@shared/testing';
@@ -109,7 +110,7 @@ describe(ClassesRepo.name, () => {
 	});
 
 	describe('updateMany', () => {
-		describe('When deleting user data from classes', () => {
+		describe('when deleting user data from classes', () => {
 			const setup = async () => {
 				const testUser1 = new ObjectId();
 				const testUser2 = new ObjectId();
@@ -149,6 +150,30 @@ describe(ClassesRepo.name, () => {
 
 				const result3 = await repo.findAllByUserId(testUser3.toHexString());
 				expect(result3).toHaveLength(2);
+			});
+		});
+
+		describe('when updating a class that does not exist', () => {
+			const setup = async () => {
+				const class1: ClassEntity = classEntityFactory.buildWithId();
+				const class2: ClassEntity = classEntityFactory.buildWithId();
+
+				await em.persistAndFlush([class1]);
+				em.clear();
+
+				return {
+					class1,
+					class2,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { class1, class2 } = await setup();
+
+				const updatedArray: ClassEntity[] = [class1, class2];
+				const domainObjectsArray: Class[] = ClassMapper.mapToDOs(updatedArray);
+
+				await expect(repo.updateMany(domainObjectsArray)).rejects.toThrow(NotFoundLoggableException);
 			});
 		});
 	});
