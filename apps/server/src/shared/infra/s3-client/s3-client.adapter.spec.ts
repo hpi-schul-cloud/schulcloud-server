@@ -597,6 +597,17 @@ describe('S3ClientAdapter', () => {
 				await expect(headPromise).rejects.toBeInstanceOf(HttpException);
 			});
 		});
+		describe('when file exist and failed', () => {
+			it('should throw InternalServerErrorException', async () => {
+				const { pathToFile } = setup();
+				// @ts-expect-error ignore parameter type of mock function
+				client.send.mockRejectedValueOnce(new Error('Dummy'));
+
+				const headPromise = service.head(pathToFile);
+
+				await expect(headPromise).rejects.toBeInstanceOf(InternalServerErrorException);
+			});
+		});
 	});
 
 	describe('list', () => {
