@@ -28,8 +28,8 @@ module.exports = function setup() {
 	userRoles.hooks(userRolesHooks);
 
 	app.use('/permissions/user', new UserPermissions());
-	//const userPermissions = app.service('/permissions/user');
-	//userPermissions.hooks(userPermissionsHooks);
+	const userPermissions = app.service('/permissions/user');
+	userPermissions.hooks(userPermissionsHooks);
 
 	app.use('/roles/:roleName/permissions', new PermissionService());
 	const permissionService = app.service('/roles/:roleName/permissions');
