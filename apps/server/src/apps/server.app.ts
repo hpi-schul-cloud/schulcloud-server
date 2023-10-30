@@ -22,8 +22,8 @@ import express from 'express';
 import { join } from 'path';
 
 // register source-map-support for debugging
+import { Logger } from '@src/core/logger/logger';
 import { install as sourceMapInstall } from 'source-map-support';
-import { Logger } from 'winston';
 import { AppStartLoggable } from './helpers/app-start-loggable';
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,

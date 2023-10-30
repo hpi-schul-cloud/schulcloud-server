@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { utilities, WinstonModule } from 'nest-winston';
-import winston, { Logger } from 'winston';
+import winston from 'winston';
 import { ErrorLogger } from './error-logger';
 import { ILoggerConfig } from './interfaces/logger-config';
 import { LegacyLogger } from './legacy-logger.service';
+import { Logger } from './logger';
 
 @Module({
 	imports: [
