@@ -53,8 +53,9 @@ module.exports = function setup() {
 			}
 		}
 	}
-
-	//app.use('/sync/userAccount', new UserAccountService());
+	// @TODO - i don't why but if i create a get methode it work without error
+	// @virgilchiriac we need to check this
+	app.use('/sync/userAccount', new UserAccountService(), { methods: [] });
 
 	app.use('/sync/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/sync', new SyncService());
