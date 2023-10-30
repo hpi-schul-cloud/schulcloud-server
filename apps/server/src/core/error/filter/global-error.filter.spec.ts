@@ -401,5 +401,24 @@ describe('GlobalErrorFilter', () => {
 				});
 			});
 		});
+
+		describe('when context is other than rmq and http', () => {
+			const setup = () => {
+				const argumentsHost = createMock<ArgumentsHost>();
+				argumentsHost.getType.mockReturnValueOnce('other');
+
+				const error = new Error();
+
+				return { error, argumentsHost };
+			};
+
+			it('should return undefined', () => {
+				const { error, argumentsHost } = setup();
+
+				const result = service.catch(error, argumentsHost);
+
+				expect(result).toBeUndefined();
+			});
+		});
 	});
 });
