@@ -1342,6 +1342,11 @@
 					"description": "Number of simultaneously synchronized students, teachers and classes"
 				}
 			}
+		},
+		"DELETION_INPUT_FILE_PATH":  {
+			"type": "string",
+			"default": "/data/data-to-delete.csv",
+			"description": "Path of an input file that contains all the references to the data that should be deleted."
 		}
 	},
 	"required": [],
