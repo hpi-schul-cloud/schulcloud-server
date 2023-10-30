@@ -43,7 +43,7 @@ class SampleLoggableException extends BadRequestException implements Loggable {
 	}
 }
 
-class LoggableExceptionWithCause extends InternalServerErrorException implements Loggable {
+class SampleLoggableExceptionWithCause extends InternalServerErrorException implements Loggable {
 	constructor(private readonly testValue: string, error?: unknown) {
 		super(ErrorUtils.createHttpExceptionOptions(error));
 	}
@@ -327,11 +327,11 @@ describe('GlobalErrorFilter', () => {
 			describe('when error has a cause error', () => {
 				const setup = () => {
 					const causeError = new Error('Cause error');
-					const error = new LoggableExceptionWithCause('test', causeError);
+					const error = new SampleLoggableExceptionWithCause('test', causeError);
 					const expectedResponse = new ErrorResponse(
-						'WITH_CAUSE',
-						'With Cause',
-						'Loggable Exception With Cause',
+						'SAMPLE_WITH_CAUSE',
+						'Sample With Cause',
+						'Sample Loggable Exception With Cause',
 						HttpStatus.INTERNAL_SERVER_ERROR
 					);
 
@@ -363,7 +363,7 @@ describe('GlobalErrorFilter', () => {
 		});
 
 		describe('when context is rmq', () => {
-			describe('Name of the group', () => {
+			describe('when error is unknown error', () => {
 				const setup = () => {
 					const argumentsHost = createMock<ArgumentsHost>();
 					argumentsHost.getType.mockReturnValueOnce('rmq');
@@ -385,7 +385,7 @@ describe('GlobalErrorFilter', () => {
 			describe('when error is a LoggableError', () => {
 				const setup = () => {
 					const causeError = new Error('Cause error');
-					const error = new LoggableExceptionWithCause('test', causeError);
+					const error = new SampleLoggableExceptionWithCause('test', causeError);
 					const argumentsHost = createMock<ArgumentsHost>();
 					argumentsHost.getType.mockReturnValueOnce('rmq');
 
