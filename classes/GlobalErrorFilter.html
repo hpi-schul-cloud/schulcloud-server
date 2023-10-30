@@ -294,8 +294,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -359,8 +359,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="54"
-                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:54</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -424,8 +424,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="78"
-                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:78</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="80"
+                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:80</a></div>
                         </td>
                     </tr>
 
@@ -493,8 +493,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="70"
-                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:70</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -562,8 +562,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="90"
-                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:90</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -631,8 +631,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="100"
-                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:100</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:102</a></div>
                         </td>
                     </tr>
 
@@ -670,8 +670,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -765,7 +765,9 @@ export class GlobalErrorFilter&lt;T extends IError | undefined&gt; implements Ex
 
 		if (contextType &#x3D;&#x3D;&#x3D; &#x27;http&#x27;) {
 			this.sendHttpResponse(error, host);
-		} else if (contextType &#x3D;&#x3D;&#x3D; &#x27;rmq&#x27;) {
+		}
+
+		if (contextType &#x3D;&#x3D;&#x3D; &#x27;rmq&#x27;) {
 			return { message: undefined, error };
 		}
 	}

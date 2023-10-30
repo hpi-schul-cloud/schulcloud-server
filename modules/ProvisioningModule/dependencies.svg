@@ -28,13 +28,13 @@
 <title>cluster_ProvisioningModule_providers</title>
 <polygon fill="none" stroke="black" points="861,-78 861,-130 2278,-130 2278,-78 861,-78"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_ProvisioningModule_exports</title>
-<polygon fill="none" stroke="black" points="717,-208 717,-260 867,-260 867,-208 717,-208"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_ProvisioningModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 853,-130 853,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_ProvisioningModule_exports</title>
+<polygon fill="none" stroke="black" points="717,-208 717,-260 867,-260 867,-208 717,-208"/>
 </g>
 <!-- AccountModule -->
 <g id="node1" class="node">
