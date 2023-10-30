@@ -1,30 +1,38 @@
 import { NotImplementedException } from '@nestjs/common';
-import { fileElementFactory, richTextElementFactory, submissionContainerElementFactory } from '@shared/testing';
-import { drawingElementFactory } from '@shared/testing/factory/domainobject/board/drawing-element.do.factory';
-import { DrawingElementResponse } from '@src/modules/board/controller/dto/element/drawing-element.response';
-import { FileElementResponse, RichTextElementResponse, SubmissionContainerElementResponse } from '../dto';
+import {
+	fileElementFactory,
+	drawingElementFactory,
+	linkElementFactory,
+	richTextElementFactory,
+	submissionContainerElementFactory,
+} from '@shared/testing';
+import {
+	FileElementResponse,
+	LinkElementResponse,
+	DrawingElementResponse,
+	RichTextElementResponse,
+	SubmissionContainerElementResponse,
+} from '../dto';
 import { ContentElementResponseFactory } from './content-element-response.factory';
 
 describe(ContentElementResponseFactory.name, () => {
-	const setup = () => {
-		const fileElement = fileElementFactory.build();
-		const richTextElement = richTextElementFactory.build();
-		const drawingElement = drawingElementFactory.build();
-		const submissionContainerElement = submissionContainerElementFactory.build();
-
-		return { fileElement, richTextElement, drawingElement, submissionContainerElement };
-	};
-
 	it('should return instance of FileElementResponse', () => {
-		const { fileElement } = setup();
+		const fileElement = fileElementFactory.build();
 
 		const result = ContentElementResponseFactory.mapToResponse(fileElement);
 
 		expect(result).toBeInstanceOf(FileElementResponse);
 	});
 
+	it('should return instance of LinkElementResponse', () => {
+		const linkElement = linkElementFactory.build();
+		const result = ContentElementResponseFactory.mapToResponse(linkElement);
+
+		expect(result).toBeInstanceOf(LinkElementResponse);
+	});
+
 	it('should return instance of RichTextElementResponse', () => {
-		const { richTextElement } = setup();
+		const richTextElement = richTextElementFactory.build();
 
 		const result = ContentElementResponseFactory.mapToResponse(richTextElement);
 
@@ -32,7 +40,7 @@ describe(ContentElementResponseFactory.name, () => {
 	});
 
 	it('should return instance of DrawingElementResponse', () => {
-		const { drawingElement } = setup();
+		const { drawingElement } = drawingElementFactory.build();
 
 		const result = ContentElementResponseFactory.mapToResponse(drawingElement);
 
@@ -40,7 +48,7 @@ describe(ContentElementResponseFactory.name, () => {
 	});
 
 	it('should return instance of SubmissionContainerElementResponse', () => {
-		const { submissionContainerElement } = setup();
+		const submissionContainerElement = submissionContainerElementFactory.build();
 
 		const result = ContentElementResponseFactory.mapToResponse(submissionContainerElement);
 

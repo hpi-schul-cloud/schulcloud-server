@@ -11,6 +11,8 @@ import {
 	ColumnBoardNode,
 	ColumnNode,
 	EntityId,
+	ExternalToolElement,
+	ExternalToolElementNodeEntity,
 	FileElement,
 	FileElementNode,
 	RichTextElement,
@@ -20,6 +22,9 @@ import {
 	SubmissionItem,
 	SubmissionItemNode,
 } from '@shared/domain';
+import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { LinkElementNode } from '@shared/domain/entity/boardnode/link-element-node.entity';
+import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { DrawingElementNode } from '@shared/domain/entity/boardnode/drawing-element-node.entity';
 import { BoardNodeRepo } from './board-node.repo';
@@ -98,12 +103,29 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		const boardNode = new FileElementNode({
 			id: fileElement.id,
 			caption: fileElement.caption,
+			alternativeText: fileElement.alternativeText,
 			parent: parentData?.boardNode,
 			position: parentData?.position,
 		});
 
 		this.createOrUpdateBoardNode(boardNode);
 		this.visitChildren(fileElement, boardNode);
+	}
+
+	visitLinkElement(linkElement: LinkElement): void {
+		const parentData = this.parentsMap.get(linkElement.id);
+
+		const boardNode = new LinkElementNode({
+			id: linkElement.id,
+			url: linkElement.url,
+			title: linkElement.title,
+			imageUrl: linkElement.imageUrl,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(linkElement, boardNode);
 	}
 
 	visitRichTextElement(richTextElement: RichTextElement): void {
@@ -141,9 +163,9 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 
 		const boardNode = new SubmissionContainerElementNode({
 			id: submissionContainerElement.id,
-			dueDate: submissionContainerElement.dueDate,
 			parent: parentData?.boardNode,
 			position: parentData?.position,
+			dueDate: submissionContainerElement.dueDate,
 		});
 
 		this.createOrUpdateBoardNode(boardNode);
@@ -162,6 +184,22 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 
 		this.createOrUpdateBoardNode(boardNode);
 		this.visitChildren(submission, boardNode);
+	}
+
+	visitExternalToolElement(externalToolElement: ExternalToolElement): void {
+		const parentData: ParentData | undefined = this.parentsMap.get(externalToolElement.id);
+
+		const boardNode: ExternalToolElementNodeEntity = new ExternalToolElementNodeEntity({
+			id: externalToolElement.id,
+			contextExternalTool: externalToolElement.contextExternalToolId
+				? this.em.getReference(ContextExternalToolEntity, externalToolElement.contextExternalToolId)
+				: undefined,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(externalToolElement, boardNode);
 	}
 
 	visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {

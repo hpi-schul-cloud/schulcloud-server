@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain';
+import { CopyFiles } from '@shared/infra/s3-client';
 import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
-import { ICopyFiles } from '../interface';
 
 export function createPath(schoolId: EntityId, fileRecordId: EntityId): string {
 	if (!schoolId || !fileRecordId) {
@@ -32,11 +32,11 @@ export function getPaths(fileRecords: FileRecord[]): string[] {
 	return paths;
 }
 
-export function createICopyFiles(sourceFile: FileRecord, targetFile: FileRecord): ICopyFiles {
-	const iCopyFiles = {
+export function createCopyFiles(sourceFile: FileRecord, targetFile: FileRecord): CopyFiles {
+	const copyFiles = {
 		sourcePath: createPath(sourceFile.getSchoolId(), sourceFile.id),
 		targetPath: createPath(targetFile.getSchoolId(), targetFile.id),
 	};
 
-	return iCopyFiles;
+	return copyFiles;
 }

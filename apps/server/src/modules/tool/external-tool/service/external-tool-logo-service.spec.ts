@@ -1,23 +1,22 @@
-import { of, throwError } from 'rxjs';
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { AxiosResponse } from 'axios';
-import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { axiosResponseFactory, externalToolFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { externalToolFactory } from '@shared/testing';
+import { of, throwError } from 'rxjs';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
+import { ExternalTool } from '../domain';
+import { ExternalToolLogo } from '../domain/external-tool-logo';
 import {
+	ExternalToolLogoFetchFailedLoggableException,
 	ExternalToolLogoFetchedLoggable,
 	ExternalToolLogoNotFoundLoggableException,
 	ExternalToolLogoSizeExceededLoggableException,
-	ExternalToolLogoFetchFailedLoggableException,
 	ExternalToolLogoWrongFileTypeLoggableException,
 } from '../loggable';
 import { ExternalToolLogoService } from './external-tool-logo.service';
-import { ExternalTool } from '../domain';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalToolService } from './external-tool.service';
-import { ExternalToolLogo } from '../domain/external-tool-logo';
 
 describe('ExternalToolLogoService', () => {
 	let module: TestingModule;
@@ -195,13 +194,13 @@ describe('ExternalToolLogoService', () => {
 				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
 
 				httpService.get.mockReturnValue(
-					of({
-						data: logoBuffer,
-						status: HttpStatus.OK,
-						statusText: 'OK',
-						headers: {},
-						config: {},
-					} as AxiosResponse<ArrayBuffer>)
+					of(
+						axiosResponseFactory.build({
+							data: logoBuffer,
+							status: HttpStatus.OK,
+							statusText: 'OK',
+						})
+					)
 				);
 
 				const logoUrl = 'https://logo.com/';

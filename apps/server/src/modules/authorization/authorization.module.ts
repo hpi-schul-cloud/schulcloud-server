@@ -6,14 +6,14 @@ import {
 	CourseRepo,
 	LessonRepo,
 	SchoolExternalToolRepo,
-	SchoolRepo,
+	LegacySchoolRepo,
 	SubmissionRepo,
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { SchoolModule } from '@src/modules/school';
+import { LegacySchoolModule } from '@src/modules/legacy-school';
 import { ToolModule } from '@src/modules/tool';
 import { BoardModule } from '../board';
 import { AuthorizationHelper } from './authorization.helper';
@@ -24,7 +24,13 @@ import { RuleManager } from './rule-manager';
 
 @Module({
 	// TODO: remove forwardRef to TooModule N21-1055
-	imports: [FeathersModule, LoggerModule, SchoolModule, forwardRef(() => ToolModule), forwardRef(() => BoardModule)],
+	imports: [
+		FeathersModule,
+		LoggerModule,
+		LegacySchoolModule,
+		forwardRef(() => ToolModule),
+		forwardRef(() => BoardModule),
+	],
 	providers: [
 		FeathersAuthorizationService,
 		FeathersAuthProvider,
@@ -35,7 +41,7 @@ import { RuleManager } from './rule-manager';
 		CourseRepo,
 		CourseGroupRepo,
 		TaskRepo,
-		SchoolRepo,
+		LegacySchoolRepo,
 		LessonRepo,
 		TeamsRepo,
 		SubmissionRepo,

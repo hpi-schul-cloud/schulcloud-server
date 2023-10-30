@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { StorageProvider } from '@shared/domain';
+import { StorageProviderEntity } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, storageProviderFactory } from '@shared/testing';
 import { StorageProviderRepo } from './storageprovider.repo';
@@ -30,7 +30,7 @@ describe('StorageProviderRepo', () => {
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(StorageProvider);
+		expect(repo.entityName).toBe(StorageProviderEntity);
 	});
 
 	describe('findAll', () => {

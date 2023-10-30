@@ -138,11 +138,14 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 
 	async determineSchoolYear() {
 		try {
-			if (this.options.schoolYear) {
-				return this.app.service('years').get(this.options.schoolYear);
-			}
 			const school = await this.app.service('schools').get(this.options.schoolId);
-			return this.app.service('years').get(school.currentYear);
+			let schoolYear = school.currentYear;
+			if (this.options.schoolYear) {
+				schoolYear = school.years.schoolYears.find(
+					(year) => year._id.toString() === this.options.schoolYear.toString()
+				);
+			}
+			return schoolYear;
 		} catch (err) {
 			this.logError('Cannot determine school year to import from params', {
 				paramSchoolYear: this.options.schoolYear,

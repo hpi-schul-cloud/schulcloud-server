@@ -259,6 +259,11 @@
 					"type": "string",
 					"default": "files-storage",
 					"description": "rabbitmq exchange name for antivirus"
+				},
+				"USE_STREAM_TO_ANTIVIRUS": {
+					"type": "boolean",
+					"default": false,
+					"description": "send file to antivirus by uploading"
 				}
 			}
 		},
@@ -454,6 +459,25 @@
 				}
 			}
 		},
+		"CLAMAV": {
+			"type": "object",
+			"description": "Properties of the ClamAV server",
+			"required": [],
+			"properties": {
+				"SERVICE_HOSTNAME": {
+					"type": "string",
+					"description": "IP of host to connect to TCP interface"
+				},
+				"SERVICE_PORT": {
+					"type": "number",
+					"description": "Port of host to use when connecting via TCP interface"
+				}
+			},
+			"default": {
+				"SERVICE_HOSTNAME": "localhost",
+				"SERVICE_PORT": 3310
+			}
+		},
 		"RABBITMQ_URI": {
 			"type": "string",
 			"format": "uri",
@@ -605,6 +629,11 @@
 			"default": "604800000",
 			"description": "Grace period before school admin cannot restart oauth migration anymore. Value is given in ms and default is 7 days"
 		},
+		"FEATURE_SANIS_GROUP_PROVISIONING_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Groups of type class also gets provisioned, when provisioning a user via oauth login."
+		},
 		"SC_TITLE": {
 			"type": "string",
 			"default": "dBildungscloud",
@@ -645,7 +674,17 @@
 		"FEATURE_SCHOOL_POLICY_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Custom School Policy can be uploaded by the school admin "
+			"description": "Enables uploading of school specific Privacy Policy on old admin page "
+		},
+		"FEATURE_SCHOOL_POLICY_ENABLED_NEW": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables uploading of school specific Privacy Policy on new admin page."
+		},
+		"FEATURE_SCHOOL_TERMS_OF_USE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables uploading of school specific Terms of Use on new admin page."
 		},
 		"ROCKETCHAT_SERVICE_ENABLED": {
 			"type": "boolean",
@@ -1035,6 +1074,11 @@
 			"default": false,
 			"description": "Enable submissions in column board."
 		},
+		"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable link elements in column board."
+		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
@@ -1257,6 +1301,11 @@
 			"default": false,
 			"description": "Enables the configuration of custom parameters for context external tools"
 		},
+		"FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables external tools on the column board"
+		},
 		"CTL_TOOLS": {
 			"type": "object",
 			"description": "CTL Tools properties",
@@ -1267,6 +1316,16 @@
 					"description": "Maximum size of the logo of an external tool in bytes"
 				}
 			}
+		},
+		"FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the new class list view"
+		},
+		"FEATURE_GROUPS_IN_COURSE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables groups of type class in courses"
 		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
@@ -1287,8 +1346,12 @@
 		"TLDRAW": {
 			"type": "object",
 			"description": "Tldraw managing variables.",
-			"required": ["PING_TIMEOUT", "GC_ENABLED", "DB_COLLECTION_NAME", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS"],
+			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_COLLECTION_NAME", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS"],
 			"properties": {
+				"SOCKET_PORT": {
+					"type": "number",
+					"description": "Web socket port for tldraw"
+				},
 				"PING_TIMEOUT": {
 					"type": "number",
 					"description": "Max time for waiting between calls for tldraw"
@@ -1311,12 +1374,18 @@
 				}
 			},
 			"default": {
-				"PING_TIMEOUT": 30000,
+				"SOCKET_PORT": 3345,
+				"PING_TIMEOUT": 10000,
 				"GC_ENABLED": true,
 				"DB_COLLECTION_NAME": "drawing",
 				"DB_FLUSH_SIZE": 400,
 				"DB_MULTIPLE_COLLECTIONS": false
 			}
+		},
+		"TLDRAW_DB_URL": {
+			"type": "string",
+			"default": "mongodb://127.0.0.1:27017/tldraw",
+			"description": "DB connection url"
 		},
 		"FEATURE_TLDRAW_ENABLED": {
 			"type": "boolean",

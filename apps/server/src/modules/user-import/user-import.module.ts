@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common';
-import { ImportUserRepo, SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { ImportUserRepo, LegacySchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
+import { LegacySchoolModule } from '@src/modules/legacy-school';
 import { AccountModule } from '../account';
 import { AuthorizationModule } from '../authorization';
-import { SchoolModule } from '../school';
 import { ImportUserController } from './controller/import-user.controller';
 import { UserImportUc } from './uc/user-import.uc';
 
 @Module({
-	imports: [LoggerModule, AccountModule, SchoolModule, AuthorizationModule],
+	imports: [LoggerModule, AccountModule, LegacySchoolModule, AuthorizationModule],
 	controllers: [ImportUserController],
-	providers: [UserImportUc, ImportUserRepo, SchoolRepo, SystemRepo, UserRepo],
+	providers: [UserImportUc, ImportUserRepo, LegacySchoolRepo, SystemRepo, UserRepo],
 	exports: [],
 })
 /**

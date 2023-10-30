@@ -1,8 +1,8 @@
-import { OidcConfig, System } from '@shared/domain';
+import { OidcConfig, SystemEntity } from '@shared/domain';
 import { OidcConfigDto } from '@src/modules/system/service/dto/oidc-config.dto';
 
 export class SystemOidcMapper {
-	static mapFromEntityToDto(entity: System): OidcConfigDto | undefined {
+	static mapFromEntityToDto(entity: SystemEntity): OidcConfigDto | undefined {
 		if (entity.oidcConfig) {
 			return SystemOidcMapper.mapFromOidcConfigEntityToDto(entity.id, entity.oidcConfig);
 		}
@@ -23,7 +23,7 @@ export class SystemOidcMapper {
 		});
 	}
 
-	static mapFromEntitiesToDtos(entities: System[]): OidcConfigDto[] {
+	static mapFromEntitiesToDtos(entities: SystemEntity[]): OidcConfigDto[] {
 		return entities
 			.map((entity) => this.mapFromEntityToDto(entity))
 			.filter((entity): entity is OidcConfigDto => entity !== undefined);

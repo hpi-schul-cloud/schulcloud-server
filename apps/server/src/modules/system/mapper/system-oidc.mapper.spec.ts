@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { System } from '@shared/domain';
+import { SystemEntity } from '@shared/domain';
 import { systemFactory } from '@shared/testing';
 import { SystemOidcMapper } from '@src/modules/system/mapper/system-oidc.mapper';
 
@@ -42,7 +42,10 @@ describe('SystemOidcMapper', () => {
 
 	describe('mapFromEntitiesToDtos', () => {
 		it('should map all given entities', () => {
-			const systemEntities: System[] = [systemFactory.withOidcConfig().build(), systemFactory.withOidcConfig().build()];
+			const systemEntities: SystemEntity[] = [
+				systemFactory.withOidcConfig().build(),
+				systemFactory.withOidcConfig().build(),
+			];
 
 			const result = SystemOidcMapper.mapFromEntitiesToDtos(systemEntities);
 
@@ -51,7 +54,7 @@ describe('SystemOidcMapper', () => {
 
 		it('should map oidc config only config if exists', () => {
 			const systemEntity = systemFactory.withOidcConfig().build();
-			const systemEntities: System[] = [systemEntity, systemFactory.withOauthConfig().build()];
+			const systemEntities: SystemEntity[] = [systemEntity, systemFactory.withOauthConfig().build()];
 
 			const results = SystemOidcMapper.mapFromEntitiesToDtos(systemEntities);
 

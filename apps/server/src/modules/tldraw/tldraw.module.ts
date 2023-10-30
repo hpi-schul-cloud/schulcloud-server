@@ -3,6 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME, TLDRAW_DB_URL } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
+import { TldrawBoardRepo } from './repo';
+import { TldrawWsService } from './service';
+import { TldrawWs } from './controller';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { TldrawDrawing } from '@src/modules/tldraw/entities';
 import { TldrawService } from '@src/modules/tldraw/service/tldraw.service';
@@ -22,21 +25,21 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 
 @Module({
 	imports: [
-		AuthorizationModule,
-		AuthenticationModule,
-		CoreModule,
-		RabbitMQWrapperTestModule,
-		MikroOrmModule.forRoot({
-			...defaultMikroOrmOptions,
-			type: 'mongo',
-			clientUrl: TLDRAW_DB_URL,
-			password: DB_PASSWORD,
-			user: DB_USERNAME,
-			entities: [TldrawDrawing],
-		}),
-		ConfigModule.forRoot(createConfigModuleOptions(config)),
-	],
-	providers: [Logger, TldrawService, TldrawRepo],
+	AuthorizationModule,
+	AuthenticationModule,
+	CoreModule,
+	RabbitMQWrapperTestModule,
+	MikroOrmModule.forRoot({
+		...defaultMikroOrmOptions,
+		type: 'mongo',
+		clientUrl: TLDRAW_DB_URL,
+		password: DB_PASSWORD,
+		user: DB_USERNAME,
+		entities: [TldrawDrawing],
+	}),
+	ConfigModule.forRoot(createConfigModuleOptions(config)),
+],
+	providers: [Logger, TldrawWs, TldrawWsService, TldrawBoardRepo],
 	controllers: [TldrawController],
 })
 export class TldrawModule {}

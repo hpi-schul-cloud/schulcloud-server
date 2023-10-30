@@ -70,6 +70,7 @@
 	"VIDEOCONFERENCE_HOST": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
 	"VIDEOCONFERENCE_SALT": "ThisIsNOTaRealSaltThisIsNOTaRealSaltThisIsNOTaRealSalt1234567890",
 	"TLDRAW": {
+		"SOCKET_PORT": 3346,
 		"PING_TIMEOUT": 1,
 		"GC_ENABLED": true,
 		"DB_COLLECTION_NAME": "drawing",

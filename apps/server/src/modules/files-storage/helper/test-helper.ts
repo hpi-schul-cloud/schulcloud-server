@@ -1,8 +1,9 @@
+import { GetFile } from '@shared/infra/s3-client';
 import { Readable } from 'stream';
-import { IGetFile, IGetFileResponse } from '../interface';
+import { GetFileResponse } from '../interface';
 
 export class TestHelper {
-	public static createFile = (contentRange?: string): IGetFile => {
+	public static createFile = (contentRange?: string): GetFile => {
 		const text = 'testText';
 		const readable = Readable.from(text);
 
@@ -17,7 +18,7 @@ export class TestHelper {
 		return fileResponse;
 	};
 
-	public static createFileResponse = (contentRange?: string): IGetFileResponse => {
+	public static createFileResponse = (contentRange?: string): GetFileResponse => {
 		const name = 'testName';
 		const file = this.createFile(contentRange);
 		const fileResponse = { ...file, name };

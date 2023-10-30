@@ -3,16 +3,20 @@ import { AnyBoardDo } from '@shared/domain';
 import { DrawingElementResponseMapper } from '@src/modules/board/controller/mapper/drawing-element-response.mapper';
 import { AnyContentElementResponse } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
+import { ExternalToolElementResponseMapper } from './external-tool-element-response.mapper';
 import { FileElementResponseMapper } from './file-element-response.mapper';
+import { LinkElementResponseMapper } from './link-element-response.mapper';
 import { RichTextElementResponseMapper } from './rich-text-element-response.mapper';
 import { SubmissionContainerElementResponseMapper } from './submission-container-element-response.mapper';
 
 export class ContentElementResponseFactory {
 	private static mappers: BaseResponseMapper[] = [
 		FileElementResponseMapper.getInstance(),
+		LinkElementResponseMapper.getInstance(),
 		RichTextElementResponseMapper.getInstance(),
 		DrawingElementResponseMapper.getInstance(),
 		SubmissionContainerElementResponseMapper.getInstance(),
+		ExternalToolElementResponseMapper.getInstance(),
 	];
 
 	static mapToResponse(element: AnyBoardDo): AnyContentElementResponse {

@@ -3,11 +3,12 @@ import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConverterUtil } from '@shared/common';
+import { axiosResponseFactory } from '@shared/testing';
+import { ErrorUtils } from '@src/core/error/utils';
 import { AxiosResponse } from 'axios';
 import crypto, { Hash } from 'crypto';
 import { of } from 'rxjs';
 import { URLSearchParams } from 'url';
-import { ErrorUtils } from '@src/core/error/utils';
 import { BbbSettings, IBbbSettings } from './bbb-settings.interface';
 import { BBBService } from './bbb.service';
 import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig, BBBRole, GuestPolicy } from './request';
@@ -78,15 +79,10 @@ const createBBBJoinConfig = (): BBBJoinConfig => {
 };
 
 type BBBResponseType = BBBCreateResponse | BBBMeetingInfoResponse | BBBBaseResponse;
-const createAxiosResponse = (data: BBBResponse<BBBResponseType>): AxiosResponse<BBBResponse<BBBResponseType>> => {
-	return {
-		data: data ?? {},
-		status: 0,
-		statusText: '',
-		headers: {},
-		config: {},
-	};
-};
+const createAxiosResponse = (data: BBBResponse<BBBResponseType>) =>
+	axiosResponseFactory.build({
+		data,
+	});
 
 class BBBServiceTest extends BBBService {
 	public superToParams(object: BBBCreateConfig | BBBBaseMeetingConfig): URLSearchParams {

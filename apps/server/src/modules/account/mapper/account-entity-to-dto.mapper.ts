@@ -19,6 +19,8 @@ export class AccountEntityToDtoMapper {
 		});
 	}
 
+	// TODO: use Counted<Account[]> instead of [Account[], number]
+	// TODO: adjust naming of accountEntities
 	static mapSearchResult(accountEntities: [Account[], number]): Counted<AccountDto[]> {
 		const foundAccounts = accountEntities[0];
 		const accountDtos: AccountDto[] = AccountEntityToDtoMapper.mapAccountsToDto(foundAccounts);

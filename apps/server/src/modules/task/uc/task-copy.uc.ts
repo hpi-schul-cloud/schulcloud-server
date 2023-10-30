@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Course, EntityId, Lesson, User } from '@shared/domain';
+import { Course, EntityId, LessonEntity, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import {
 	Action,
@@ -77,7 +77,7 @@ export class TaskCopyUC {
 		return destinationCourse;
 	}
 
-	private async getDestinationLesson(lessonId: string | undefined, user: User): Promise<Lesson | undefined> {
+	private async getDestinationLesson(lessonId: string | undefined, user: User): Promise<LessonEntity | undefined> {
 		if (lessonId === undefined) {
 			return undefined;
 		}
