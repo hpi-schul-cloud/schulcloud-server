@@ -22,5 +22,6 @@
 			"@src/*": ["apps/server/src/*"],
 			"@modules/*": ["apps/server/src/modules/*"],
 		},
+		"skipLibCheck": true,
 	}
 }
