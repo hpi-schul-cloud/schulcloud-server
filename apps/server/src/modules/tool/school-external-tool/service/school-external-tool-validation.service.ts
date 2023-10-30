@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
-import { CommonToolValidationService } from '../../common/service';
-import { ExternalTool } from '../../external-tool/domain';
-import { ExternalToolService } from '../../external-tool/service';
-import { SchoolExternalTool } from '../domain';
+import { ValidationError } from '@shared/common/error/validation.error';
+import { CommonToolValidationService } from '../../common/service/common-tool-validation.service';
+import { ExternalTool } from '../../external-tool/domain/external-tool.do';
+import { ExternalToolService } from '../../external-tool/service/external-tool.service';
+import { SchoolExternalTool } from '../domain/school-external-tool.do';
 
 @Injectable()
 export class SchoolExternalToolValidationService {

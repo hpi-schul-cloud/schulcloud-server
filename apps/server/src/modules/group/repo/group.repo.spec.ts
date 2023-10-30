@@ -1,18 +1,21 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalSource, SchoolEntity, UserDO, User } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import {
-	cleanupCollections,
-	groupEntityFactory,
-	groupFactory,
-	roleFactory,
-	schoolFactory,
-	userDoFactory,
-	userFactory,
-} from '@shared/testing';
-import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
-import { GroupEntity, GroupEntityTypes } from '../entity';
+import { ExternalSource } from '@shared/domain/domainobject/external-source';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { groupFactory } from '@shared/testing/factory/domainobject/groups/group.factory';
+import { groupEntityFactory } from '@shared/testing/factory/group-entity.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { Group, GroupProps } from '../domain/group';
+import { GroupTypes } from '../domain/group-types';
+import { GroupUser } from '../domain/group-user';
+import { GroupEntity, GroupEntityTypes } from '../entity/group.entity';
 import { GroupRepo } from './group.repo';
 
 describe('GroupRepo', () => {

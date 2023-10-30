@@ -1,18 +1,14 @@
-import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
-import {
-	ProviderConsentResponse,
-	ProviderConsentSessionResponse,
-	ProviderLoginResponse,
-	ProviderOauthClient,
-	ProviderRedirectResponse,
-} from '@shared/infra/oauth-provider/dto';
-import {
-	ConsentResponse,
-	ConsentSessionResponse,
-	LoginResponse,
-	OauthClientResponse,
-	RedirectResponse,
-} from '@src/modules/oauth-provider/controller/dto/';
+import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto/interface/oauth-client.interface';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
+import { ProviderConsentResponse } from '@shared/infra/oauth-provider/dto/response/consent.response';
+import { ProviderLoginResponse } from '@shared/infra/oauth-provider/dto/response/login.response';
+import { ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto/response/redirect.response';
+import { ConsentSessionResponse } from '../controller/dto/response/consent-session.response';
+import { ConsentResponse } from '../controller/dto/response/consent.response';
+import { LoginResponse } from '../controller/dto/response/login.response';
+import { OauthClientResponse } from '../controller/dto/response/oauth-client.response';
+import { RedirectResponse } from '../controller/dto/response/redirect.response';
+import { OauthProviderResponseMapper } from './oauth-provider-response.mapper';
 
 describe('OauthProviderResponseMapper', () => {
 	let mapper: OauthProviderResponseMapper;

@@ -1,10 +1,12 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property, Unique } from '@mikro-orm/core';
 
 import { InternalServerErrorException } from '@nestjs/common';
-import { EntityId } from '../types';
+import { EntityId } from '../types/entity-id';
 import { BaseEntityWithTimestamps } from './base.entity';
+
 import type { CourseGroup } from './coursegroup.entity';
 import { SchoolEntity } from './school.entity';
+
 import type { Task } from './task.entity';
 import type { User } from './user.entity';
 

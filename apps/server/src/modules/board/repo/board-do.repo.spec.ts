@@ -3,30 +3,26 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	AnyBoardDo,
-	BoardExternalReferenceType,
-	Card,
-	CardNode,
-	Column,
-	ColumnBoard,
-	RichTextElementNode,
-} from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import {
-	cardFactory,
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardFactory,
-	columnBoardNodeFactory,
-	columnFactory,
-	columnNodeFactory,
-	courseFactory,
-	fileElementFactory,
-	richTextElementFactory,
-	richTextElementNodeFactory,
-} from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { Card } from '@shared/domain/domainobject/board/card.do';
+import { ColumnBoard } from '@shared/domain/domainobject/board/column-board.do';
+import { Column } from '@shared/domain/domainobject/board/column.do';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
+import { CardNode } from '@shared/domain/entity/boardnode/card-node.entity';
+import { RichTextElementNode } from '@shared/domain/entity/boardnode/rich-text-element-node.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { cardNodeFactory } from '@shared/testing/factory/boardnode/card-node.factory';
+import { columnBoardNodeFactory } from '@shared/testing/factory/boardnode/column-board-node.factory';
+import { columnNodeFactory } from '@shared/testing/factory/boardnode/column-node.factory';
+import { richTextElementNodeFactory } from '@shared/testing/factory/boardnode/rich-text-element-node.factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { cardFactory } from '@shared/testing/factory/domainobject/board/card.do.factory';
+import { columnBoardFactory } from '@shared/testing/factory/domainobject/board/column-board.do.factory';
+import { columnFactory } from '@shared/testing/factory/domainobject/board/column.do.factory';
+import { fileElementFactory } from '@shared/testing/factory/domainobject/board/file-element.do.factory';
+import { richTextElementFactory } from '@shared/testing/factory/domainobject/board/rich-text-element.do.factory';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client/service/files-storage-client.service';
 import { BoardDoRepo } from './board-do.repo';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';

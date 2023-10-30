@@ -1,7 +1,7 @@
-import { EntityId } from '@shared/domain';
-import { CopyFiles } from '@shared/infra/s3-client';
-import { FileRecord } from '../entity';
-import { ErrorType } from '../error';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { CopyFiles } from '@shared/infra/s3-client/interfaces';
+import { FileRecord } from '../entity/filerecord.entity';
+import { ErrorType } from '../error/error-status.enum';
 
 export function createPath(schoolId: EntityId, fileRecordId: EntityId): string {
 	if (!schoolId || !fileRecordId) {

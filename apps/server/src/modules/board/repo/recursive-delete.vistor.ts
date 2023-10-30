@@ -1,20 +1,18 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import {
-	AnyBoardDo,
-	BoardCompositeVisitorAsync,
-	BoardNode,
-	Card,
-	Column,
-	ColumnBoard,
-	ExternalToolElement,
-	FileElement,
-	RichTextElement,
-	SubmissionContainerElement,
-	SubmissionItem,
-} from '@shared/domain';
+import { Card } from '@shared/domain/domainobject/board/card.do';
+import { ColumnBoard } from '@shared/domain/domainobject/board/column-board.do';
+import { Column } from '@shared/domain/domainobject/board/column.do';
+import { ExternalToolElement } from '@shared/domain/domainobject/board/external-tool-element.do';
+import { FileElement } from '@shared/domain/domainobject/board/file-element.do';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { RichTextElement } from '@shared/domain/domainobject/board/rich-text-element.do';
+import { SubmissionContainerElement } from '@shared/domain/domainobject/board/submission-container-element.do';
+import { SubmissionItem } from '@shared/domain/domainobject/board/submission-item.do';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
+import { BoardCompositeVisitorAsync } from '@shared/domain/domainobject/board/types/board-composite-visitor';
+import { BoardNode } from '@shared/domain/entity/boardnode/boardnode.entity';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client/service/files-storage-client.service';
 
 @Injectable()
 export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {

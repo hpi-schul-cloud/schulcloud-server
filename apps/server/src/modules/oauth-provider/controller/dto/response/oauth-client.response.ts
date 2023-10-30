@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { Optional } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsOptional, IsString } from 'class-validator';
 
 export class OauthClientResponse {

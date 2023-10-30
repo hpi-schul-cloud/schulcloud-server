@@ -1,4 +1,4 @@
-import { IUserLoginMigration, UserLoginMigrationEntity } from '../../domain/entity/user-login-migration.entity';
+import { IUserLoginMigration, UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { BaseFactory } from './base.factory';
 import { schoolFactory } from './school.factory';
 import { systemFactory } from './system.factory';

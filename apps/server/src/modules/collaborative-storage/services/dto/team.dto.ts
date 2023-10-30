@@ -1,9 +1,9 @@
-import { EntityId } from '@shared/domain';
-
 /**
  * TODO
  * This DTO and all associated functionality should be moved to a general teams module once it has been created
  */
+
+import { EntityId } from '@shared/domain/types/entity-id';
 
 export class TeamDto {
 	id: EntityId;

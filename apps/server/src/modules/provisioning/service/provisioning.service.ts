@@ -1,15 +1,16 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
+import { SystemService } from '@src/modules/system/service/system.service';
+import { OauthDataStrategyInputDto } from '../dto/oauth-data-strategy-input.dto';
+import { OauthDataDto } from '../dto/oauth-data.dto';
+import { ProvisioningSystemDto } from '../dto/provisioning-system.dto';
+import { ProvisioningDto } from '../dto/provisioning.dto';
 import { ProvisioningSystemInputMapper } from '../mapper/provisioning-system-input.mapper';
-import {
-	IservProvisioningStrategy,
-	OidcMockProvisioningStrategy,
-	ProvisioningStrategy,
-	SanisProvisioningStrategy,
-} from '../strategy';
+import { ProvisioningStrategy } from '../strategy/base.strategy';
+import { IservProvisioningStrategy } from '../strategy/iserv/iserv.strategy';
+import { OidcMockProvisioningStrategy } from '../strategy/oidc-mock/oidc-mock.strategy';
+import { SanisProvisioningStrategy } from '../strategy/sanis/sanis.strategy';
 
 @Injectable()
 export class ProvisioningService {

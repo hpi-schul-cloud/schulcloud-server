@@ -1,4 +1,4 @@
-import { GuardAgainst } from '@shared/common';
+import { GuardAgainst } from './guard-against';
 
 describe('GuardAgainst', () => {
 	describe('nullOrUndefined', () => {

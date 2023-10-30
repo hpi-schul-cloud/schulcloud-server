@@ -1,21 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import {
-	BoardDoRule,
-	ContextExternalToolRule,
-	CourseGroupRule,
-	CourseRule,
-	LessonRule,
-	SchoolExternalToolRule,
-	LegacySchoolRule,
-	SubmissionRule,
-	TaskRule,
-	TeamRule,
-	UserRule,
-} from '@shared/domain/rules';
+import { BoardDoRule } from '@shared/domain/rules/board-do.rule';
+import { ContextExternalToolRule } from '@shared/domain/rules/context-external-tool.rule';
+import { CourseGroupRule } from '@shared/domain/rules/course-group.rule';
+import { CourseRule } from '@shared/domain/rules/course.rule';
+import { LegacySchoolRule } from '@shared/domain/rules/legacy-school.rule';
+import { LessonRule } from '@shared/domain/rules/lesson.rule';
+import { SchoolExternalToolRule } from '@shared/domain/rules/school-external-tool.rule';
+import { SubmissionRule } from '@shared/domain/rules/submission.rule';
+import { TaskRule } from '@shared/domain/rules/task.rule';
+import { TeamRule } from '@shared/domain/rules/team.rule';
 import { UserLoginMigrationRule } from '@shared/domain/rules/user-login-migration.rule';
-import { courseFactory, setupEntities, userFactory } from '@shared/testing';
+import { UserRule } from '@shared/domain/rules/user.rule';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { AuthorizationContextBuilder } from './authorization-context.builder';
 import { RuleManager } from './rule-manager';
 

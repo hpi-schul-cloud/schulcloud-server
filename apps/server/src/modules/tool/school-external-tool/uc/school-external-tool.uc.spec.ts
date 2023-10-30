@@ -1,12 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, Permission, User } from '@shared/domain';
-import { schoolExternalToolFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationContextBuilder } from '@src/modules/authorization';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
-import { ContextExternalToolService } from '../../context-external-tool/service';
-import { SchoolExternalTool } from '../domain';
-import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
+import { ContextExternalToolService } from '../../context-external-tool/service/context-external-tool.service';
+import { SchoolExternalTool } from '../domain/school-external-tool.do';
+import { SchoolExternalToolValidationService } from '../service/school-external-tool-validation.service';
+import { SchoolExternalToolService } from '../service/school-external-tool.service';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 import { SchoolExternalToolUc } from './school-external-tool.uc';
 

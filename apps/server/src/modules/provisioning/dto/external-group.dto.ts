@@ -1,4 +1,4 @@
-import { GroupTypes } from '@src/modules/group';
+import { GroupTypes } from '@src/modules/group/domain/group-types';
 import { ExternalGroupUserDto } from './external-group-user.dto';
 
 export class ExternalGroupDto {

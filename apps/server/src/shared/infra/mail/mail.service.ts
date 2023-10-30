@@ -1,6 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Inject, Injectable } from '@nestjs/common';
-
 import { Mail } from './mail.interface';
 
 interface MailServiceOptions {

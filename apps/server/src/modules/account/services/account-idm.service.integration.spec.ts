@@ -1,18 +1,19 @@
-import { v1 } from 'uuid';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IdmAccount } from '@shared/domain';
+import { IdmAccount } from '@shared/domain/interface/account';
+import { IdentityManagementModule } from '@shared/infra/identity-management/identity-management.module';
+import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
-import { AccountSaveDto } from '@src/modules/account/services/dto';
-import { LoggerModule } from '@src/core/logger';
-import { IdentityManagementModule } from '@shared/infra/identity-management';
-import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
+import { LoggerModule } from '@src/core/logger/logger.module';
+import { v1 } from 'uuid';
+import { AccountIdmToDtoMapper } from '../mapper/account-idm-to-dto.mapper.abstract';
+import { AccountIdmToDtoMapperDb } from '../mapper/account-idm-to-dto.mapper.db';
 import { AccountServiceIdm } from './account-idm.service';
-import { AbstractAccountService } from './account.service.abstract';
 import { AccountLookupService } from './account-lookup.service';
+import { AbstractAccountService } from './account.service.abstract';
+import { AccountSaveDto } from './dto/account-save.dto';
 
 describe('AccountIdmService Integration', () => {
 	let module: TestingModule;

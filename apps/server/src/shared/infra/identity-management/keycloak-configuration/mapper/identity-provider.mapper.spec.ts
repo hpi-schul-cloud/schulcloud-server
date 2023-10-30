@@ -2,8 +2,9 @@ import { createMock } from '@golevelup/ts-jest';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { OidcConfigDto } from '@src/modules/system/service';
+import { DefaultEncryptionService } from '@shared/infra/encryption/encryption.interface';
+import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryption.service';
+import { OidcConfigDto } from '@src/modules/system/service/dto/oidc-config.dto';
 import { OidcIdentityProviderMapper } from './identity-provider.mapper';
 
 describe('OidcIdentityProviderMapper', () => {

@@ -1,4 +1,4 @@
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types/entity-id';
 
 export class OauthLoginStateDto {
 	state: string;

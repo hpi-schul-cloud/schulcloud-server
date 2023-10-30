@@ -3,16 +3,15 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { StorageProviderEntity, SystemEntity } from '@shared/domain';
-import { DatabaseManagementService } from '@shared/infra/database';
-import {
-	DefaultEncryptionService,
-	LdapEncryptionService,
-	SymetricKeyEncryptionService,
-} from '@shared/infra/encryption';
-import { FileSystemAdapter } from '@shared/infra/file-system';
-import { setupEntities } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { StorageProviderEntity } from '@shared/domain/entity/storageprovider.entity';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { DatabaseManagementService } from '@shared/infra/database/management/database-management.service';
+import { DefaultEncryptionService, LdapEncryptionService } from '@shared/infra/encryption/encryption.interface';
+import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryption.service';
+import { FileSystemAdapter } from '@shared/infra/file-system/file-system.adapter';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+
 import { ObjectId } from 'mongodb';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';

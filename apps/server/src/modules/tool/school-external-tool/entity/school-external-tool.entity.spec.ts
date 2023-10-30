@@ -1,12 +1,14 @@
-import { schoolFactory, setupEntities } from '@shared/testing';
 import { schoolExternalToolEntityFactory } from '@shared/testing/factory/school-external-tool-entity.factory';
-import {
-	BasicToolConfigEntity,
-	CustomParameterEntity,
-	ExternalToolEntity,
-	ExternalToolConfigEntity,
-} from '../../external-tool/entity';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '../../common/enum';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { CustomParameterLocation } from '../../common/enum/custom-parameter-location.enum';
+import { CustomParameterScope } from '../../common/enum/custom-parameter-scope.enum';
+import { CustomParameterType } from '../../common/enum/custom-parameter-type.enum';
+import { ToolConfigType } from '../../common/enum/tool-config-type.enum';
+import { BasicToolConfigEntity } from '../../external-tool/entity/config/basic-tool-config.entity';
+import { ExternalToolConfigEntity } from '../../external-tool/entity/config/external-tool-config.entity';
+import { CustomParameterEntity } from '../../external-tool/entity/custom-parameter/custom-parameter.entity';
+import { ExternalToolEntity } from '../../external-tool/entity/external-tool.entity';
 import { SchoolExternalToolEntity } from './school-external-tool.entity';
 
 describe('SchoolExternalToolEntity', () => {

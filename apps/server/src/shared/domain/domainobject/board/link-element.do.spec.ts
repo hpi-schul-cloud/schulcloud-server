@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
-import { linkElementFactory } from '@shared/testing';
+import { linkElementFactory } from '@shared/testing/factory/domainobject/board/link-element.do.factory';
 import { LinkElement } from './link-element.do';
-import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types/board-composite-visitor';
 
 describe(LinkElement.name, () => {
 	describe('when trying to add a child to a link element', () => {

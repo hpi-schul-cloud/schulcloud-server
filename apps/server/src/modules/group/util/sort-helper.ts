@@ -1,4 +1,4 @@
-import { SortOrder } from '@shared/domain';
+import { SortOrder } from '@shared/domain/interface/find-options';
 
 export class SortHelper {
 	public static genericSortFunction<T>(a: T, b: T, sortOrder: SortOrder): number {

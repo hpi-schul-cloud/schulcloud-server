@@ -1,17 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo, RoleName, RoleReference, User, UserDO } from '@shared/domain';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { RoleReference } from '@shared/domain/domainobject/role-reference';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { User } from '@shared/domain/entity/user.entity';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { UserService } from '@src/modules/user';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { OAuthSSOError } from '@src/modules/oauth/loggable/oauth-sso.error';
+import { UserService } from '@src/modules/user/service/user.service';
+
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthSSOError } from '@src/modules/oauth/loggable';
-import {
-	ExternalSchoolDto,
-	ExternalUserDto,
-	OauthDataDto,
-	OauthDataStrategyInputDto,
-	ProvisioningDto,
-} from '../../dto';
+import { ExternalSchoolDto } from '../../dto/external-school.dto';
+import { ExternalUserDto } from '../../dto/external-user.dto';
+import { OauthDataStrategyInputDto } from '../../dto/oauth-data-strategy-input.dto';
+import { OauthDataDto } from '../../dto/oauth-data.dto';
+import { ProvisioningDto } from '../../dto/provisioning.dto';
 import { ProvisioningStrategy } from '../base.strategy';
 import { IservMapper } from './iserv-do.mapper';
 

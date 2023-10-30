@@ -1,22 +1,21 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	AcceptConsentRequestBody,
-	AcceptLoginRequestBody,
-	IntrospectResponse,
-	ProviderConsentResponse,
-	ProviderLoginResponse,
-	ProviderOauthClient,
-	ProviderRedirectResponse,
-	RejectRequestBody,
-} from '@shared/infra/oauth-provider/dto';
-import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
-import { HydraAdapter } from '@shared/infra/oauth-provider/hydra/hydra.adapter';
-import { axiosResponseFactory } from '@shared/testing';
+import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
+
 import { AxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'axios';
 import { of } from 'rxjs';
+import { ProviderOauthClient } from '../dto/interface/oauth-client.interface';
+import { AcceptConsentRequestBody } from '../dto/request/accept-consent-request.body';
+import { AcceptLoginRequestBody } from '../dto/request/accept-login-request.body';
+import { RejectRequestBody } from '../dto/request/reject-request.body';
+import { ProviderConsentSessionResponse } from '../dto/response/consent-session.response';
+import { ProviderConsentResponse } from '../dto/response/consent.response';
+import { IntrospectResponse } from '../dto/response/introspect.response';
+import { ProviderLoginResponse } from '../dto/response/login.response';
+import { ProviderRedirectResponse } from '../dto/response/redirect.response';
+import { HydraAdapter } from './hydra.adapter';
 import resetAllMocks = jest.resetAllMocks;
 
 class HydraAdapterSpec extends HydraAdapter {

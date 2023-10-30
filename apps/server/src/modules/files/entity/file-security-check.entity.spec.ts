@@ -1,5 +1,5 @@
 import { validate as validateUUID } from 'uuid';
-import { FileSecurityCheckStatus } from '../domain';
+import { FileSecurityCheckStatus } from '../domain/types/file-security-check-status.enum';
 import { FileSecurityCheckEntity } from './file-security-check.entity';
 
 describe(FileSecurityCheckEntity.name, () => {

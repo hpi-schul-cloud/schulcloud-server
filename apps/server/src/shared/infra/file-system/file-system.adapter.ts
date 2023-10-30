@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { promises as fsp, existsSync } from 'fs';
+import { existsSync, promises as fsp } from 'fs';
 import os from 'os';
 import path from 'path';
 

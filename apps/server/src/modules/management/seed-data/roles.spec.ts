@@ -1,5 +1,3 @@
-import { RoleName } from '@shared/domain';
-import { setupEntities } from '@shared/testing';
 import * as roleModule from './roles';
 
 describe('Role seed data generation', () => {

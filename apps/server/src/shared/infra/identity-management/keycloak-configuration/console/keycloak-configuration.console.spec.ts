@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConsoleWriterService } from '@shared/infra/console';
-import { LegacyLogger } from '@src/core/logger';
+import { ConsoleWriterService } from '@shared/infra/console/console-writer/console-writer.service';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
 import { KeycloakConsole } from './keycloak-configuration.console';
 

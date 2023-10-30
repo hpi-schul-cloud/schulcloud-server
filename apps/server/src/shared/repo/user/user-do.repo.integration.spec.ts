@@ -1,33 +1,26 @@
 import { createMock } from '@golevelup/ts-jest';
+import { UserQuery } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError } from '@shared/common';
-import {
-	IFindOptions,
-	IUserProperties,
-	LanguageType,
-	Role,
-	RoleName,
-	SchoolEntity,
-	SortOrder,
-	SystemEntity,
-	User,
-} from '@shared/domain';
+import { EntityNotFoundError } from '@shared/common/error/entity-not-found.error';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import {
-	cleanupCollections,
-	roleFactory,
-	schoolFactory,
-	systemFactory,
-	userDoFactory,
-	userFactory,
-} from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
-import { UserQuery } from '@src/modules/user/service/user-query.type';
+import { Role } from '@shared/domain/entity/role.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { IUserProperties, LanguageType, User } from '@shared/domain/entity/user.entity';
+import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { systemFactory } from '@shared/testing/factory/system.factory';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { UserDORepo } from './user-do.repo';
 
 describe('UserRepo', () => {
 	let module: TestingModule;

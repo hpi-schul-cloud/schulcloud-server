@@ -1,18 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecordParentType } from '@shared/infra/rabbitmq';
-import {
-	columnBoardFactory,
-	columnFactory,
-	externalToolElementFactory,
-	fileElementFactory,
-	linkElementFactory,
-	setupEntities,
-	submissionContainerElementFactory,
-	submissionItemFactory,
-} from '@shared/testing';
-import { FileDto, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { columnBoardFactory } from '@shared/testing/factory/domainobject/board/column-board.do.factory';
+import { columnFactory } from '@shared/testing/factory/domainobject/board/column.do.factory';
+import { externalToolElementFactory } from '@shared/testing/factory/domainobject/board/external-tool.do.factory';
+import { fileElementFactory } from '@shared/testing/factory/domainobject/board/file-element.do.factory';
+import { linkElementFactory } from '@shared/testing/factory/domainobject/board/link-element.do.factory';
+import { submissionContainerElementFactory } from '@shared/testing/factory/domainobject/board/submission-container-element.do.factory';
+import { submissionItemFactory } from '@shared/testing/factory/domainobject/board/submission-item.do.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client/service/files-storage-client.service';
+import { FileDto } from '@src/modules/files-storage/dto/file.dto';
+import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
 
 describe(RecursiveDeleteVisitor.name, () => {

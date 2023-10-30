@@ -1,17 +1,26 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain/domainobject/board';
-import { setupEntities, userFactory } from '@shared/testing';
-import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
-import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
+import {
+	BoardDoAuthorizable,
+	BoardRoles,
+	UserRoleEnum,
+} from '@shared/domain/domainobject/board/types/board-do-authorizable';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import { cardFactory } from '@shared/testing/factory/domainobject/board/card.do.factory';
+import { columnBoardFactory } from '@shared/testing/factory/domainobject/board/column-board.do.factory';
+import { columnFactory } from '@shared/testing/factory/domainobject/board/column.do.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+
 import { ObjectId } from 'bson';
-import { ContentElementService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 import { CardService } from '../service/card.service';
 import { ColumnBoardService } from '../service/column-board.service';
 import { ColumnService } from '../service/column.service';
+import { ContentElementService } from '../service/content-element.service';
 import { BoardUc } from './board.uc';
 
 describe(BoardUc.name, () => {

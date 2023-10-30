@@ -1,6 +1,4 @@
 import { Builder } from 'xml2js';
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from './common-cartridge-enums';
-import { CommonCartridgeLtiResource, ICommonCartridgeLtiResourceProps } from './common-cartridge-lti-resource';
 
 describe('CommonCartridgeLtiResource', () => {
 	const propsVersion1: ICommonCartridgeLtiResourceProps = {

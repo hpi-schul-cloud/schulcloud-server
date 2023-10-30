@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CustomParameterEntry } from '../../common/domain';
+import { CustomParameterEntry } from '../../common/domain/custom-parameter-entry.do';
 import { ToolStatusResponseMapper } from '../../common/mapper/tool-status-response.mapper';
-import { ToolConfigurationStatusResponse } from '../../context-external-tool/controller/dto';
-import {
-	CustomParameterEntryResponse,
-	SchoolExternalToolResponse,
-	SchoolExternalToolSearchListResponse,
-} from '../controller/dto';
-import { SchoolExternalTool } from '../domain';
+import { ToolConfigurationStatusResponse } from '../../context-external-tool/controller/dto/tool-configuration-status.response';
+import { CustomParameterEntryResponse } from '../controller/dto/custom-parameter-entry.response';
+import { SchoolExternalToolSearchListResponse } from '../controller/dto/school-external-tool-search-list.response';
+import { SchoolExternalToolResponse } from '../controller/dto/school-external-tool.response';
+import { SchoolExternalTool } from '../domain/school-external-tool.do';
 
 @Injectable()
 export class SchoolExternalToolResponseMapper {

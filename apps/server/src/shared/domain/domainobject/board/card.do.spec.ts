@@ -1,12 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
-import {
-	cardFactory,
-	externalToolElementFactory,
-	richTextElementFactory,
-	submissionContainerElementFactory,
-} from '@shared/testing';
+import { cardFactory } from '@shared/testing/factory/domainobject/board/card.do.factory';
+import { externalToolElementFactory } from '@shared/testing/factory/domainobject/board/external-tool.do.factory';
+import { richTextElementFactory } from '@shared/testing/factory/domainobject/board/rich-text-element.do.factory';
+import { submissionContainerElementFactory } from '@shared/testing/factory/domainobject/board/submission-container-element.do.factory';
 import { Card } from './card.do';
-import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types/board-composite-visitor';
 
 describe(Card.name, () => {
 	describe('isAllowedAsChild', () => {

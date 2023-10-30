@@ -1,9 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { AnyBoardDo, AnyContentElementDo, Card, ContentElementType, EntityId } from '@shared/domain';
-import { LegacyLogger } from '@src/core/logger';
+import { Card } from '@shared/domain/domainobject/board/card.do';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
+import { AnyContentElementDo } from '@shared/domain/domainobject/board/types/any-content-element-do';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Action } from '@src/modules/authorization/types/action.enum';
-import { BoardDoAuthorizableService, CardService, ContentElementService } from '../service';
+import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
+import { CardService } from '../service/card.service';
+import { ContentElementService } from '../service/content-element.service';
 
 @Injectable()
 export class CardUc {

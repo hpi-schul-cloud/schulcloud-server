@@ -1,12 +1,15 @@
 import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { BaseDO, EntityId, User } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { ErrorUtils } from '@src/core/error/utils';
+import { BaseDO } from '@shared/domain/domainobject/base.do';
+import { User } from '@shared/domain/entity/user.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { ErrorUtils } from '@src/core/error/utils/error.utils';
 import { AuthorizationHelper } from './authorization.helper';
 import { ForbiddenLoggableException } from './errors/forbidden.loggable-exception';
 import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
-import { AuthorizableReferenceType, AuthorizationContext } from './types';
+import { AuthorizableReferenceType } from './types/allowed-authorization-object-type.enum';
+import { AuthorizationContext } from './types/authorization-context.interface';
 
 @Injectable()
 export class AuthorizationService {

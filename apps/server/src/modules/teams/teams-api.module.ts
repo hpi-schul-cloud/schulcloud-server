@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { TeamsModule } from '@src/modules/teams/teams.module';
+import { TeamsModule } from './teams.module';
 
 @Module({
 	imports: [TeamsModule],

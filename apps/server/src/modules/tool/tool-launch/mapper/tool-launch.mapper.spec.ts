@@ -1,7 +1,11 @@
-import { ToolLaunchRequestResponse } from '../controller/dto';
-import { LaunchRequestMethod, PropertyLocation, ToolLaunchDataType, ToolLaunchRequest } from '../types';
+import { CustomParameterLocation } from '../../common/enum/custom-parameter-location.enum';
+import { ToolConfigType } from '../../common/enum/tool-config-type.enum';
+import { ToolLaunchRequestResponse } from '../controller/dto/tool-launch-request.response';
+import { LaunchRequestMethod } from '../types/launch-request-method';
+import { PropertyLocation } from '../types/property-location';
+import { ToolLaunchDataType } from '../types/tool-launch-data-type';
+import { ToolLaunchRequest } from '../types/tool-launch-request';
 import { ToolLaunchMapper } from './tool-launch.mapper';
-import { CustomParameterLocation, ToolConfigType } from '../../common/enum';
 
 describe('ToolLaunchMapper', () => {
 	describe('mapToParameterLocation', () => {

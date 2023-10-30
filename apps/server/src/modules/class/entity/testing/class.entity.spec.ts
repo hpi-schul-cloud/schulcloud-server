@@ -1,8 +1,9 @@
 /* eslint-disable no-new */
-import { setupEntities } from '@shared/testing';
-import { classEntityFactory } from '@src/modules/class/entity/testing/factory/class.entity.factory';
+
 import { ObjectId } from '@mikro-orm/mongodb';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { ClassEntity } from '../class.entity';
+import { classEntityFactory } from './factory/class.entity.factory';
 
 describe(ClassEntity.name, () => {
 	beforeAll(async () => {

@@ -1,7 +1,9 @@
 // All user accounts are organized by school in a single array
 
-import { IRoleProperties, Permission, Role, RoleName } from '@shared/domain';
-import { roleFactory } from '@shared/testing';
+import { IRoleProperties, Role } from '@shared/domain/entity/role.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { roleFactory } from '@shared/testing/factory/role.factory';
 import { DeepPartial } from 'fishery';
 
 type SeedRoleProperties = Omit<IRoleProperties, 'roles'> & {

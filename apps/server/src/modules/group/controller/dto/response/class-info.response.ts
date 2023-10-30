@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ClassRootType } from '../../../uc/dto/class-root-type';
+import { ClassRootType } from '@src/modules/group/uc/dto/class-root-type';
 
 export class ClassInfoResponse {
 	@ApiProperty()

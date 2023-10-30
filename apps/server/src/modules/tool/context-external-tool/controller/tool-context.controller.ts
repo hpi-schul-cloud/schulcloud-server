@@ -10,21 +10,20 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { ValidationError } from '@shared/common';
-import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ValidationError } from '@shared/common/error/validation.error';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ContextExternalTool } from '../domain';
-import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from '../mapper';
-import { ContextExternalToolUc } from '../uc';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ContextExternalTool } from '../domain/context-external-tool.do';
+import { ContextExternalToolRequestMapper } from '../mapper/context-external-tool-request.mapper';
+import { ContextExternalToolResponseMapper } from '../mapper/context-external-tool-response.mapper';
+import { ContextExternalToolUc } from '../uc/context-external-tool.uc';
 import { ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
-import {
-	ContextExternalToolContextParams,
-	ContextExternalToolIdParams,
-	ContextExternalToolPostParams,
-	ContextExternalToolResponse,
-	ContextExternalToolSearchListResponse,
-} from './dto';
+import { ContextExternalToolContextParams } from './dto/context-external-tool-context.params';
+import { ContextExternalToolIdParams } from './dto/context-external-tool-id.params';
+import { ContextExternalToolPostParams } from './dto/context-external-tool-post.params';
+import { ContextExternalToolSearchListResponse } from './dto/context-external-tool-search-list.response';
+import { ContextExternalToolResponse } from './dto/context-external-tool.response';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

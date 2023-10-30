@@ -1,15 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { contextExternalToolFactory } from '@shared/testing/factory/domainobject/tool/context-external-tool.factory';
 import {
-	contextExternalToolFactory,
 	customParameterFactory,
 	externalToolFactory,
-	schoolExternalToolFactory,
-} from '@shared/testing';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ExternalTool } from '../../external-tool/domain';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { CustomParameter } from '../domain';
-import { CustomParameterScope, CustomParameterType } from '../enum';
+} from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { ContextExternalTool } from '../../context-external-tool/domain/context-external-tool.do';
+import { ExternalTool } from '../../external-tool/domain/external-tool.do';
+import { SchoolExternalTool } from '../../school-external-tool/domain/school-external-tool.do';
+import { CustomParameter } from '../domain/custom-parameter.do';
+import { CustomParameterScope } from '../enum/custom-parameter-scope.enum';
+import { CustomParameterType } from '../enum/custom-parameter-type.enum';
 import { CommonToolValidationService } from './common-tool-validation.service';
 
 describe('CommonToolValidationService', () => {

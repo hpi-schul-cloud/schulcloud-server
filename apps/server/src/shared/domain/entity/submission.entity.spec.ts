@@ -1,13 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
-import {
-	courseGroupFactory,
-	schoolFactory,
-	setupEntities,
-	submissionFactory,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
+import { courseGroupFactory } from '@shared/testing/factory/coursegroup.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { submissionFactory } from '@shared/testing/factory/submission.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { Submission } from './submission.entity';
 
 describe('Submission entity', () => {

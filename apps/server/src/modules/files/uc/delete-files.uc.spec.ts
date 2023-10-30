@@ -1,14 +1,15 @@
 import { S3Client } from '@aws-sdk/client-s3';
-import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { StorageProviderRepo } from '@shared/repo/storageprovider/storageprovider.repo';
+import { storageProviderFactory } from '@shared/testing/factory/storageprovider.factory';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { ObjectId } from 'bson';
-import { StorageProviderRepo } from '@shared/repo/storageprovider';
-import { storageProviderFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { fileEntityFactory } from '../entity/testing/factory/file-entity.factory';
+import { filePermissionEntityFactory } from '../entity/testing/factory/file-permission-entity.factory';
+import { FilesRepo } from '../repo/files.repo';
 import { DeleteFilesUc } from './delete-files.uc';
-import { FilesRepo } from '../repo';
-import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
 
 describe(DeleteFilesUc.name, () => {
 	let service: DeleteFilesUc;

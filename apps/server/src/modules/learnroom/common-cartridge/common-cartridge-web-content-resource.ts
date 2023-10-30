@@ -1,10 +1,10 @@
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
-import { ICommonCartridgeFile } from './common-cartridge-file.interface';
 import {
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from './common-cartridge-enums';
+import { ICommonCartridgeFile } from './common-cartridge-file.interface';
 
 export type ICommonCartridgeWebContentResourceProps = {
 	type: CommonCartridgeResourceType.WEB_CONTENT;

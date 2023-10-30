@@ -2,32 +2,37 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, EntityId, SchoolEntity, SystemEntity, User } from '@shared/domain';
+import { Account } from '@shared/domain/entity/account.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
+import { User } from '@shared/domain/entity/user.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
-import {
-	accountFactory,
-	cleanupCollections,
-	mapUserToCurrentUser,
-	schoolFactory,
-	systemFactory,
-	userFactory,
-} from '@shared/testing';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { accountFactory } from '@shared/testing/factory/account.factory';
 import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { systemFactory } from '@shared/testing/factory/system.factory';
 import { userLoginMigrationFactory } from '@shared/testing/factory/user-login-migration.factory';
-import { ICurrentUser } from '@src/modules/authentication';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { mapUserToCurrentUser } from '@shared/testing/map-user-to-current-user';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/response';
-import { ServerTestModule } from '@src/modules/server';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { SanisRole } from '@src/modules/provisioning/strategy/sanis/response/sanis-role';
+import { SanisResponse } from '@src/modules/provisioning/strategy/sanis/response/sanis.response';
+import { ServerTestModule } from '@src/modules/server/server.module';
+
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { UUID } from 'bson';
 import { Request } from 'express';
 import request, { Response } from 'supertest';
 import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
-import { OauthTokenResponse } from '../../service/dto';
-import { AuthorizationParams, SSOLoginQuery } from '../dto';
+import { OauthTokenResponse } from '../../service/dto/oauth-token.response';
+import { AuthorizationParams } from '../dto/authorization.params';
+import { SSOLoginQuery } from '../dto/sso-login.query';
 
 jest.mock('jwks-rsa', () => () => {
 	return {

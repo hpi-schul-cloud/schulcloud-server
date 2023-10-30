@@ -1,6 +1,3 @@
-import { SanisGroupRole, SanisSonstigeGruppenzugehoerigeResponse } from '../strategy/sanis/response';
-import { GroupRoleUnknownLoggable } from './group-role-unknown.loggable';
-
 describe('GroupRoleUnknownLoggable', () => {
 	describe('constructor', () => {
 		const setup = () => {

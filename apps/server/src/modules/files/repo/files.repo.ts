@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
 import { EntityDictionary } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { FileOwnerModel } from '../domain';
-import { FileEntity } from '../entity';
+import { FileOwnerModel } from '../domain/types/file-owner-model.enum';
+import { FileEntity } from '../entity/file.entity';
 
 @Injectable()
 export class FilesRepo extends BaseRepo<FileEntity> {

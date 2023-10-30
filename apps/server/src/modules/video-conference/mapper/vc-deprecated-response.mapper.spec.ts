@@ -1,11 +1,14 @@
-import { Permission } from '@shared/domain';
-import { BBBBaseResponse } from '../bbb';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { BBBBaseResponse } from '../bbb/response/bbb-base.response';
 import {
 	DeprecatedVideoConferenceInfoResponse,
 	DeprecatedVideoConferenceJoinResponse,
 	VideoConferenceBaseResponse,
 } from '../controller/dto/response/video-conference-deprecated.response';
-import { VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
+import { VideoConference } from '../uc/dto/video-conference';
+import { VideoConferenceInfo } from '../uc/dto/video-conference-info';
+import { VideoConferenceJoin } from '../uc/dto/video-conference-join';
+import { VideoConferenceState } from '../uc/dto/video-conference-state.enum';
 import { VideoConferenceResponseDeprecatedMapper } from './vc-deprecated-response.mapper';
 
 /**

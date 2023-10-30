@@ -1,7 +1,8 @@
-import { contextExternalToolFactory, customParameterFactory } from '@shared/testing';
+import { contextExternalToolFactory } from '@shared/testing/factory/domainobject/tool/context-external-tool.factory';
+import { customParameterFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { CustomParameter } from '../../common/domain/custom-parameter.do';
+import { ContextExternalTool } from '../../context-external-tool/domain/context-external-tool.do';
 import { MissingToolParameterValueLoggableException } from './missing-tool-parameter-value.loggable-exception';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { CustomParameter } from '../../common/domain';
 
 describe('MissingToolParameterValueLoggableException', () => {
 	describe('getLogMessage', () => {

@@ -9,11 +9,11 @@ import {
 	OneToOne,
 	Property,
 } from '@mikro-orm/core';
-import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { BaseEntity } from './base.entity';
+import { FederalStateEntity } from './federal-state.entity';
 import { SchoolYearEntity } from './schoolyear.entity';
 import { SystemEntity } from './system.entity';
-import { FederalStateEntity } from './federal-state.entity';
+import { UserLoginMigrationEntity } from './user-login-migration.entity';
 
 export enum SchoolFeatures {
 	ROCKET_CHAT = 'rocketChat',

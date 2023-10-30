@@ -1,20 +1,20 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { BaseDO, EntityId, User } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import {
-	CourseGroupRepo,
-	CourseRepo,
-	LessonRepo,
-	SchoolExternalToolRepo,
-	LegacySchoolRepo,
-	SubmissionRepo,
-	TaskRepo,
-	TeamsRepo,
-	UserRepo,
-} from '@shared/repo';
-import { BoardDoAuthorizableService } from '@src/modules/board/service';
-import { ContextExternalToolAuthorizableService } from '@src/modules/tool/context-external-tool/service';
-import { AuthorizableReferenceType } from './types';
+import { BaseDO } from '@shared/domain/domainobject/base.do';
+import { User } from '@shared/domain/entity/user.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { CourseRepo } from '@shared/repo/course/course.repo';
+import { CourseGroupRepo } from '@shared/repo/coursegroup/coursegroup.repo';
+import { LessonRepo } from '@shared/repo/lesson/lesson.repo';
+import { LegacySchoolRepo } from '@shared/repo/school/legacy-school.repo';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
+import { SubmissionRepo } from '@shared/repo/submission/submission.repo';
+import { TaskRepo } from '@shared/repo/task/task.repo';
+import { TeamsRepo } from '@shared/repo/teams/teams.repo';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { BoardDoAuthorizableService } from '../board/service/board-do-authorizable.service';
+import { ContextExternalToolAuthorizableService } from '../tool/context-external-tool/service/context-external-tool-authorizable.service';
+import { AuthorizableReferenceType } from './types/allowed-authorization-object-type.enum';
 
 // replace later with general "base" do-repo
 type RepoType =

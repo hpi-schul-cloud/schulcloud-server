@@ -1,5 +1,7 @@
-import { Card } from '@shared/domain';
-import { CardResponse, TimestampsResponse, VisibilitySettingsResponse } from '../dto';
+import { Card } from '@shared/domain/domainobject/board/card.do';
+import { CardResponse } from '../dto/card/card.response';
+import { VisibilitySettingsResponse } from '../dto/card/visibility-settings.response';
+import { TimestampsResponse } from '../dto/timestamps.response';
 import { ContentElementResponseFactory } from './content-element-response.factory';
 
 export class CardResponseMapper {

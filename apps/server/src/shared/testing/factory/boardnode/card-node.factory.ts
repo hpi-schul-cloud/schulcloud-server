@@ -1,5 +1,6 @@
 /* istanbul ignore file */
-import { CardNode, CardNodeProps } from '@shared/domain';
+
+import { CardNode, CardNodeProps } from '@shared/domain/entity/boardnode/card-node.entity';
 import { BaseFactory } from '../base.factory';
 
 export const cardNodeFactory = BaseFactory.define<CardNode, CardNodeProps>(CardNode, ({ sequence }) => {

@@ -1,8 +1,3 @@
-import { OAuthTokenDto } from '../interface';
-import { OAuthGrantType } from '../interface/oauth-grant-type.enum';
-import { AuthenticationCodeGrantTokenRequest } from '../service/dto';
-import { TokenRequestMapper } from './token-request.mapper';
-
 describe('TokenRequestMapper', () => {
 	describe('createAuthenticationCodeGrantTokenRequestPayload', () => {
 		it('should map the Payload to dto', () => {

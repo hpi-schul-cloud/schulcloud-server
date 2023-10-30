@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
-import type { DownloadFileParams, PreviewParams } from '../controller/dto';
-import { FileRecord } from '../entity';
+import { DownloadFileParams, PreviewParams } from '../controller/dto/file-storage.params';
+import { FileRecord } from '../entity/filerecord.entity';
 
 export interface GetFileResponse {
 	data: Readable;

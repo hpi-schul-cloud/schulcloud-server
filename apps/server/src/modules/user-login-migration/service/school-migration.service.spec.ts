@@ -2,15 +2,20 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ValidationError } from '@shared/common';
-import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { Page } from '@shared/domain/domainobject/page';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject/user-login-migration.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
-import { legacySchoolDoFactory, setupEntities, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser } from '@src/modules/authentication';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { UserService } from '@src/modules/user';
-import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/legacy-school.factory';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { UserService } from '@src/modules/user/service/user.service';
+import { OAuthMigrationError } from '../error/oauth-migration.error';
 import { SchoolMigrationService } from './school-migration.service';
 
 describe('SchoolMigrationService', () => {

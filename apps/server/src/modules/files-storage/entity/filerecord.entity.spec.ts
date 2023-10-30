@@ -1,8 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { ErrorType } from '../error';
-import { PreviewInputMimeTypes } from '../interface';
+import { fileRecordFactory } from '@shared/testing/factory/filerecord.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { ErrorType } from '../error/error-status.enum';
+import { PreviewInputMimeTypes } from '../interface/preview-input-mime-types.enum';
 import {
 	FileRecord,
 	FileRecordParentType,

@@ -1,7 +1,16 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExternalSource, ExternalSourceEntity, Role, SchoolEntity, SystemEntity, User } from '@shared/domain';
-import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
-import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupUserEntity, GroupValidPeriodEntity } from '../entity';
+import { ExternalSource } from '@shared/domain/domainobject/external-source';
+import { ExternalSourceEntity } from '@shared/domain/entity/external-source.entity';
+import { Role } from '@shared/domain/entity/role.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { Group, GroupProps } from '../domain/group';
+import { GroupTypes } from '../domain/group-types';
+import { GroupUser } from '../domain/group-user';
+import { GroupUserEntity } from '../entity/group-user.entity';
+import { GroupValidPeriodEntity } from '../entity/group-valid-period.entity';
+import { GroupEntity, GroupEntityProps, GroupEntityTypes } from '../entity/group.entity';
 
 const GroupEntityTypesToGroupTypesMapping: Record<GroupEntityTypes, GroupTypes> = {
 	[GroupEntityTypes.CLASS]: GroupTypes.CLASS,

@@ -1,40 +1,37 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder, SortOrderMap } from '@shared/domain';
-
+import { SortOrder, SortOrderMap } from '@shared/domain/interface/find-options';
 import {
 	basicToolConfigFactory,
 	customParameterFactory,
 	externalToolFactory,
 	lti11ToolConfigFactory,
 	oauth2ToolConfigFactory,
-} from '@shared/testing';
-import { CustomParameter } from '../../common/domain';
-import {
-	CustomParameterLocation,
-	CustomParameterLocationParams,
-	CustomParameterScope,
-	CustomParameterScopeTypeParams,
-	CustomParameterType,
-	CustomParameterTypeParams,
-	LtiMessageType,
-	LtiPrivacyPermission,
-	TokenEndpointAuthMethod,
-	ToolConfigType,
-} from '../../common/enum';
-import { ExternalToolSearchQuery } from '../../common/interface';
-import {
-	BasicToolConfigParams,
-	CustomParameterPostParams,
-	ExternalToolCreateParams,
-	ExternalToolSearchParams,
-	ExternalToolSortBy,
-	ExternalToolUpdateParams,
-	Lti11ToolConfigCreateParams,
-	Lti11ToolConfigUpdateParams,
-	Oauth2ToolConfigCreateParams,
-	SortExternalToolParams,
-} from '../controller/dto';
-import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+} from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { CustomParameter } from '../../common/domain/custom-parameter.do';
+import { CustomParameterLocation } from '../../common/enum/custom-parameter-location.enum';
+import { CustomParameterScope } from '../../common/enum/custom-parameter-scope.enum';
+import { CustomParameterType } from '../../common/enum/custom-parameter-type.enum';
+import { LtiMessageType } from '../../common/enum/lti-message-type.enum';
+import { LtiPrivacyPermission } from '../../common/enum/lti-privacy-permission.enum';
+import { CustomParameterLocationParams } from '../../common/enum/request-response/custom-parameter-location.enum';
+import { CustomParameterScopeTypeParams } from '../../common/enum/request-response/custom-parameter-scope-type.enum';
+import { CustomParameterTypeParams } from '../../common/enum/request-response/custom-parameter-type.enum';
+import { TokenEndpointAuthMethod } from '../../common/enum/token-endpoint-auth-method.enum';
+import { ToolConfigType } from '../../common/enum/tool-config-type.enum';
+import { ExternalToolSearchQuery } from '../../common/interface/external-tool-search-query';
+import { BasicToolConfigParams } from '../controller/dto/request/config/basic-tool-config.params';
+import { Lti11ToolConfigCreateParams } from '../controller/dto/request/config/lti11-tool-config-create.params';
+import { Lti11ToolConfigUpdateParams } from '../controller/dto/request/config/lti11-tool-config-update.params';
+import { Oauth2ToolConfigCreateParams } from '../controller/dto/request/config/oauth2-tool-config-create.params';
+import { CustomParameterPostParams } from '../controller/dto/request/custom-parameter.params';
+import { ExternalToolCreateParams } from '../controller/dto/request/external-tool-create.params';
+import { ExternalToolSearchParams } from '../controller/dto/request/external-tool-search.params';
+import { ExternalToolSortBy, SortExternalToolParams } from '../controller/dto/request/external-tool-sort.params';
+import { ExternalToolUpdateParams } from '../controller/dto/request/external-tool-update.params';
+import { BasicToolConfig } from '../domain/config/basic-tool-config.do';
+import { Lti11ToolConfig } from '../domain/config/lti11-tool-config.do';
+import { Oauth2ToolConfig } from '../domain/config/oauth2-tool-config.do';
+import { ExternalTool } from '../domain/external-tool.do';
 import { ExternalToolRequestMapper } from './external-tool-request.mapper';
 
 describe('ExternalToolRequestMapper', () => {

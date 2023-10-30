@@ -1,15 +1,18 @@
 import { Module } from '@nestjs/common';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { CacheWrapperModule } from '@shared/infra/cache';
-import { IdentityManagementModule } from '@shared/infra/identity-management';
-import { LegacySchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
-import { AccountModule } from '@src/modules/account';
-import { OauthModule } from '@src/modules/oauth/oauth.module';
-import { RoleModule } from '@src/modules/role';
-import { SystemModule } from '@src/modules/system';
+import { CacheWrapperModule } from '@shared/infra/cache/cache.module';
+import { IdentityManagementModule } from '@shared/infra/identity-management/identity-management.module';
+import { LegacySchoolRepo } from '@shared/repo/school/legacy-school.repo';
+import { SystemRepo } from '@shared/repo/system/system.repo';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { LoggerModule } from '@src/core/logger/logger.module';
+
 import { Algorithm, SignOptions } from 'jsonwebtoken';
+import { AccountModule } from '../account/account.module';
+import { OauthModule } from '../oauth/oauth.module';
+import { RoleModule } from '../role/role.module';
+import { SystemModule } from '../system/system.module';
 import { jwtConstants } from './constants';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';

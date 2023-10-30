@@ -4,7 +4,7 @@ import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
 import { RichTextElement } from './rich-text-element.do';
 import { SubmissionContainerElement } from './submission-container-element.do';
-import { ContentElementType } from './types';
+import { ContentElementType } from './types/content-elements.enum';
 
 describe(ContentElementFactory.name, () => {
 	describe('build', () => {

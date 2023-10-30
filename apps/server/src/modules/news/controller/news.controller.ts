@@ -1,18 +1,15 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { PaginationParams } from '@shared/controller';
-import { ICurrentUser } from '@src/modules/authentication';
+import { PaginationParams } from '@shared/controller/dto/pagination.params';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { NewsMapper } from '../mapper/news.mapper';
 import { NewsUc } from '../uc/news.uc';
-import {
-	CreateNewsParams,
-	FilterNewsParams,
-	NewsListResponse,
-	NewsResponse,
-	NewsUrlParams,
-	UpdateNewsParams,
-} from './dto';
+import { CreateNewsParams } from './dto/create-news.params';
+import { FilterNewsParams } from './dto/filter-news.params';
+import { NewsListResponse, NewsResponse } from './dto/news.response';
+import { NewsUrlParams } from './dto/news.url.params';
+import { UpdateNewsParams } from './dto/update-news.params';
 
 @ApiTags('News')
 @Authenticate('jwt')

@@ -1,18 +1,26 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LtiPrivacyPermission, LtiRoleType, Pseudonym, RoleName, User, UserDO } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { TeamRolePermissionsDto } from '@shared/infra/collaborative-storage/dto/team-role-permissions.dto';
-import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
-import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.strategy';
-import { LtiToolRepo } from '@shared/repo';
-import { ltiToolDOFactory, pseudonymFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { Pseudonym } from '@shared/domain/domainobject/pseudonym.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { LtiToolRepo } from '@shared/repo/ltitool/ltitool.repo';
+import { ltiToolDOFactory } from '@shared/testing/factory/domainobject/lti-tool.factory';
+import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
-import { PseudonymService } from '@src/modules/pseudonym';
-import { ExternalToolService } from '@src/modules/tool/external-tool/service';
-import { UserService } from '@src/modules/user';
+import { PseudonymService } from '@src/modules/pseudonym/service/pseudonym.service';
+import { ExternalToolService } from '@src/modules/tool/external-tool/service/external-tool.service';
+import { UserService } from '@src/modules/user/service/user.service';
+import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
+import { NextcloudClient } from './nextcloud.client';
+import { NextcloudStrategy } from './nextcloud.strategy';
 
 class NextcloudStrategySpec extends NextcloudStrategy {
 	static specGenerateGroupId(dto: TeamRolePermissionsDto): string {

@@ -1,4 +1,6 @@
-import { EntityId, Permission, RoleName } from '@shared/domain';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
 
 export class RoleDto {
 	id?: EntityId;

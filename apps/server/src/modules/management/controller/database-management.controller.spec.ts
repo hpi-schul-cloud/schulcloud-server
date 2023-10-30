@@ -1,6 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DatabaseManagementUc } from '../uc/database-management.uc';
-import { DatabaseManagementController } from './database-management.controller';
 
 describe('DatabaseManagementController', () => {
 	let controller: DatabaseManagementController;

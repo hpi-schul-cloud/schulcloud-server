@@ -13,23 +13,26 @@ import {
 } from '@nestjs/common';
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ISession } from '@shared/domain/types/session';
-import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser } from '@src/modules/authentication';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
-import { UserMigrationResponse } from '@src/modules/oauth/controller/dto/user-migration.response';
-import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
-import { MigrationDto } from '@src/modules/user-login-migration/service/dto';
+import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
+
 import { CookieOptions, Request, Response } from 'express';
+import { OAuthTokenDto } from '../interface/oauth-token.dto';
 import { OAuthSSOError } from '../loggable/oauth-sso.error';
-import { OAuthTokenDto } from '../interface';
 import { OauthLoginStateMapper } from '../mapper/oauth-login-state.mapper';
 import { UserMigrationMapper } from '../mapper/user-migration.mapper';
-import { OAuthProcessDto } from '../service/dto';
-import { OauthUc } from '../uc';
+import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OauthLoginStateDto } from '../uc/dto/oauth-login-state.dto';
-import { AuthorizationParams, SSOLoginQuery, SystemIdParams } from './dto';
+import { HydraOauthUc } from '../uc/hydra-oauth.uc';
+import { OauthUc } from '../uc/oauth.uc';
+import { AuthorizationParams } from './dto/authorization.params';
+import { SSOLoginQuery } from './dto/sso-login.query';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
+import { SystemIdParams } from './dto/system-id.params';
+import { UserMigrationResponse } from './dto/user-migration.response';
 
 @ApiTags('SSO')
 @Controller('sso')

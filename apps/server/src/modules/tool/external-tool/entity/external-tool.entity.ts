@@ -1,8 +1,9 @@
 import { Embedded, Entity, Property, Unique } from '@mikro-orm/core';
-
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { CustomParameterEntity } from './custom-parameter';
-import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } from './config';
+import { BasicToolConfigEntity } from './config/basic-tool-config.entity';
+import { Lti11ToolConfigEntity } from './config/lti11-tool-config.entity';
+import { Oauth2ToolConfigEntity } from './config/oauth2-tool-config.entity';
+import { CustomParameterEntity } from './custom-parameter/custom-parameter.entity';
 
 export type IExternalToolProperties = Readonly<Omit<ExternalToolEntity, keyof BaseEntityWithTimestamps>>;
 

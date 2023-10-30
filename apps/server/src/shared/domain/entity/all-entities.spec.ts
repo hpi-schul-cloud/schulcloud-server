@@ -1,8 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { ALL_ENTITIES } from '.';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { ALL_ENTITIES } from './all-entities';
 
 describe('BaseRepo', () => {
 	let orm: MikroORM;

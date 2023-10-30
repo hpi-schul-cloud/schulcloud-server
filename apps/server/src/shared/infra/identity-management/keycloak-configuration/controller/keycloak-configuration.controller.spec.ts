@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { NodeEnvType } from '@src/modules/server/server.config';
 import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
 import { KeycloakManagementController } from './keycloak-configuration.controller';

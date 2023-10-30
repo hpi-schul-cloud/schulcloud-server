@@ -1,14 +1,15 @@
 import { Controller, Get, HttpStatus, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PaginationParams } from '@shared/controller';
-import { Page } from '@shared/domain';
-import { ErrorResponse } from '@src/core/error/dto';
-import { ICurrentUser } from '@src/modules/authentication';
+import { PaginationParams } from '@shared/controller/dto/pagination.params';
+import { Page } from '@shared/domain/domainobject/page';
+import { ErrorResponse } from '@src/core/error/dto/error.response';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { GroupUc } from '../uc';
-import { ClassInfoDto } from '../uc/dto';
-import { ClassInfoSearchListResponse, ClassSortParams } from './dto';
-import { GroupResponseMapper } from './mapper';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ClassInfoDto } from '../uc/dto/class-info.dto';
+import { GroupUc } from '../uc/group.uc';
+import { ClassSortParams } from './dto/request/class-sort-params';
+import { ClassInfoSearchListResponse } from './dto/response/class-info-search-list.response';
+import { GroupResponseMapper } from './mapper/group-response.mapper';
 
 @ApiTags('Group')
 @Authenticate('jwt')

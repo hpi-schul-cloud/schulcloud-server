@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Card } from '@shared/domain/domainobject/board/card.do';
+import { ContentElementFactory } from '@shared/domain/domainobject/board/content-element.factory';
 import {
 	AnyContentElementDo,
-	Card,
-	ContentElementFactory,
-	ContentElementType,
-	EntityId,
 	isAnyContentElement,
-} from '@shared/domain';
-import { AnyElementContentBody } from '../controller/dto';
-import { BoardDoRepo } from '../repo';
+} from '@shared/domain/domainobject/board/types/any-content-element-do';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { AnyElementContentBody } from '../controller/dto/element/update-element-content.body.params';
+import { BoardDoRepo } from '../repo/board-do.repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
 import { OpenGraphProxyService } from './open-graph-proxy.service';

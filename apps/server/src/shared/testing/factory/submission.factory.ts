@@ -1,4 +1,4 @@
-import { ISubmissionProperties, Submission } from '@shared/domain';
+import { ISubmissionProperties, Submission } from '@shared/domain/entity/submission.entity';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 import { schoolFactory } from './school.factory';

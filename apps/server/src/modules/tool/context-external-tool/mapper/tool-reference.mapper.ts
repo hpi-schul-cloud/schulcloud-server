@@ -1,6 +1,7 @@
-import { ToolConfigurationStatus } from '../../common/enum';
-import { ExternalTool } from '../../external-tool/domain';
-import { ContextExternalTool, ToolReference } from '../domain';
+import { ToolConfigurationStatus } from '../../common/enum/tool-configuration-status';
+import { ExternalTool } from '../../external-tool/domain/external-tool.do';
+import { ContextExternalTool } from '../domain/context-external-tool.do';
+import { ToolReference } from '../domain/tool-reference';
 
 export class ToolReferenceMapper {
 	static mapToToolReference(

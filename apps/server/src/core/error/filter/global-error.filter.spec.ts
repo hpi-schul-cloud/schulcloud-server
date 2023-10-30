@@ -3,11 +3,14 @@ import { NotFound } from '@feathersjs/errors';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ArgumentsHost, BadRequestException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BusinessError } from '@shared/common';
-import { ErrorLogger, ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { BusinessError } from '@shared/common/error/business.error';
+import { ErrorLogger } from '@src/core/logger/error-logger';
+import { Loggable } from '@src/core/logger/interfaces/loggable';
+import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@src/core/logger/types/logging.types';
+
 import { Response } from 'express';
 import util from 'util';
-import { ErrorResponse } from '../dto';
+import { ErrorResponse } from '../dto/error.response';
 import { ErrorLoggable } from '../loggable/error.loggable';
 import { GlobalErrorFilter } from './global-error.filter';
 

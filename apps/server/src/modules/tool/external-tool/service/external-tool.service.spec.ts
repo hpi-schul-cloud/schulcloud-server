@@ -1,20 +1,25 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, Page, SortOrder } from '@shared/domain';
-import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { OauthProviderService } from '@shared/infra/oauth-provider';
-import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
-import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { Page } from '@shared/domain/domainobject/page';
+import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption/encryption.interface';
+import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto/interface/oauth-client.interface';
+import { OauthProviderService } from '@shared/infra/oauth-provider/oauth-provider.service';
+import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool/context-external-tool.repo';
+import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
 import {
 	externalToolFactory,
 	lti11ToolConfigFactory,
 	oauth2ToolConfigFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { LegacyLogger } from '@src/core/logger';
-import { ExternalToolSearchQuery } from '../../common/interface';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { ExternalToolSearchQuery } from '../../common/interface/external-tool-search-query';
+import { SchoolExternalTool } from '../../school-external-tool/domain/school-external-tool.do';
+import { Lti11ToolConfig } from '../domain/config/lti11-tool-config.do';
+import { Oauth2ToolConfig } from '../domain/config/oauth2-tool-config.do';
+import { ExternalTool } from '../domain/external-tool.do';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolVersionService } from './external-tool-version.service';
 import { ExternalToolService } from './external-tool.service';

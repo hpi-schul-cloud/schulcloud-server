@@ -1,7 +1,7 @@
-import { EntityId } from './entity-id';
 import type { Course } from '../entity/course.entity';
 import type { SchoolEntity } from '../entity/school.entity';
 import type { TeamEntity } from '../entity/team.entity';
+import { EntityId } from './entity-id';
 
 export enum NewsTargetModel {
 	'School' = 'schools',

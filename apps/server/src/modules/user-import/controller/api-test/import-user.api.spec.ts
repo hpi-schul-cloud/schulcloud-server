@@ -2,48 +2,36 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PaginationParams } from '@shared/controller';
-import {
-	ImportUser,
-	MatchCreator,
-	Permission,
-	RoleName,
-	SchoolEntity,
-	SchoolFeatures,
-	SortOrder,
-	SystemEntity,
-	User,
-} from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
-import {
-	cleanupCollections,
-	importUserFactory,
-	mapUserToCurrentUser,
-	roleFactory,
-	schoolFactory,
-	systemFactory,
-	userFactory,
-} from '@shared/testing';
+import { PaginationParams } from '@shared/controller/dto/pagination.params';
+import { ImportUser, MatchCreator } from '@shared/domain/entity/import-user.entity';
+import { SchoolEntity, SchoolFeatures } from '@shared/domain/entity/school.entity';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { SortOrder } from '@shared/domain/interface/find-options';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { importUserFactory } from '@shared/testing/factory/import-user.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { systemFactory } from '@shared/testing/factory/system.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { mapUserToCurrentUser } from '@shared/testing/map-user-to-current-user';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import {
-	FilterImportUserParams,
-	FilterMatchType,
-	FilterRoleType,
-	FilterUserParams,
-	ImportUserListResponse,
-	ImportUserResponse,
-	ImportUserSortOrder,
-	MatchType,
-	SortImportUserParams,
-	UpdateFlagParams,
-	UpdateMatchParams,
-	UserMatchListResponse,
-	UserMatchResponse,
-	UserRole,
-} from '@src/modules/user-import/controller/dto';
+
 import { Request } from 'express';
 import request from 'supertest';
+import { FilterImportUserParams, FilterMatchType, FilterRoleType } from '../dto/filter-import-user.params';
+import { FilterUserParams } from '../dto/filter-user.params';
+import { ImportUserListResponse, ImportUserResponse } from '../dto/import-user.response';
+import { MatchType } from '../dto/match-type';
+import { ImportUserSortOrder, SortImportUserParams } from '../dto/sort-import-user.params';
+import { UpdateFlagParams } from '../dto/update-flag.params';
+import { UpdateMatchParams } from '../dto/update-match.params';
+import { UserMatchListResponse, UserMatchResponse } from '../dto/user-match.response';
+import { UserRole } from '../dto/user-role';
 
 describe('ImportUser Controller (API)', () => {
 	let app: INestApplication;

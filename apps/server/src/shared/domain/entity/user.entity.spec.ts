@@ -1,8 +1,12 @@
 import { MikroORM } from '@mikro-orm/core';
-import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+
 import { ObjectId } from 'bson';
-import { Role } from '.';
-import { Permission } from '..';
+import { Role } from './role.entity';
 import { User } from './user.entity';
 
 describe('User Entity', () => {

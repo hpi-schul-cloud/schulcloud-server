@@ -1,6 +1,6 @@
 import { Entity, Enum, Property, Unique } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain/types';
+import { EntityId } from '../types/entity-id';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export type ILtiToolProperties = Readonly<Omit<LtiTool, keyof BaseEntityWithTimestamps>>;

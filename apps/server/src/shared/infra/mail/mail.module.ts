@@ -1,4 +1,4 @@
-import { Module, DynamicModule } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { MailService } from './mail.service';
 
 interface MailModuleOptions {

@@ -1,7 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { fileElementFactory } from '@shared/testing';
+import { fileElementFactory } from '@shared/testing/factory/domainobject/board/file-element.do.factory';
 import { FileElementNode } from './file-element-node.entity';
-import { BoardDoBuilder, BoardNodeType } from './types';
+import { BoardDoBuilder } from './types/board-do.builder';
+import { BoardNodeType } from './types/board-node-type';
 
 describe(FileElementNode.name, () => {
 	describe('when trying to create a file element', () => {

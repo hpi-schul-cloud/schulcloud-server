@@ -1,17 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, UserRoleEnum } from '@shared/domain';
 import {
-	fileElementFactory,
-	setupEntities,
-	submissionContainerElementFactory,
-	submissionItemFactory,
-	userFactory,
-} from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
+	BoardDoAuthorizable,
+	BoardRoles,
+	UserRoleEnum,
+} from '@shared/domain/domainobject/board/types/board-do-authorizable';
+import { fileElementFactory } from '@shared/testing/factory/domainobject/board/file-element.do.factory';
+import { submissionContainerElementFactory } from '@shared/testing/factory/domainobject/board/submission-container-element.do.factory';
+import { submissionItemFactory } from '@shared/testing/factory/domainobject/board/submission-item.do.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { Logger } from '@src/core/logger/logger';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Action } from '@src/modules/authorization/types/action.enum';
-import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
+import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
+import { ContentElementService } from '../service/content-element.service';
+import { SubmissionItemService } from '../service/submission-item.service';
 import { SubmissionItemUc } from './submission-item.uc';
 
 describe(SubmissionItemUc.name, () => {

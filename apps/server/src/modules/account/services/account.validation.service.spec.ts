@@ -1,9 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, Role, RoleName } from '@shared/domain';
-import { UserRepo } from '@shared/repo';
-import { accountFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Role } from '@shared/domain/entity/role.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { accountFactory } from '@shared/testing/factory/account.factory';
+import { systemFactory } from '@shared/testing/factory/system.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { ObjectId } from 'bson';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountValidationService } from './account.validation.service';
 

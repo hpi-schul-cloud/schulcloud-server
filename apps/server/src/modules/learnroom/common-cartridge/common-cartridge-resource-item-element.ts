@@ -1,4 +1,7 @@
 import { Builder } from 'xml2js';
+import { ICommonCartridgeElement } from './common-cartridge-element.interface';
+import { CommonCartridgeResourceType } from './common-cartridge-enums';
+import { ICommonCartridgeFile } from './common-cartridge-file.interface';
 import { CommonCartridgeLtiResource, ICommonCartridgeLtiResourceProps } from './common-cartridge-lti-resource';
 import {
 	CommonCartridgeWebContentResource,
@@ -8,9 +11,6 @@ import {
 	CommonCartridgeWebLinkResourceElement,
 	ICommonCartridgeWebLinkResourceProps,
 } from './common-cartridge-web-link-resource';
-import { ICommonCartridgeElement } from './common-cartridge-element.interface';
-import { ICommonCartridgeFile } from './common-cartridge-file.interface';
-import { CommonCartridgeResourceType } from './common-cartridge-enums';
 
 export type ICommonCartridgeResourceProps =
 	| ICommonCartridgeLtiResourceProps

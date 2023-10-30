@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationResponse } from '@shared/controller';
-import { EntityId } from '@shared/domain';
+import { PaginationResponse } from '@shared/controller/dto/pagination.response';
+import { EntityId } from '@shared/domain/types/entity-id';
 
 export class CourseMetadataResponse {
 	constructor(

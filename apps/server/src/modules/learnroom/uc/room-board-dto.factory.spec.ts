@@ -2,19 +2,23 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, Course, LessonEntity, Task, TaskWithStatusVo, User } from '@shared/domain';
+import { Course } from '@shared/domain/entity/course.entity';
+import { Board } from '@shared/domain/entity/legacy-board/board.entity';
+import { LessonEntity } from '@shared/domain/entity/lesson.entity';
+import { Task, TaskWithStatusVo } from '@shared/domain/entity/task.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { boardFactory } from '@shared/testing/factory/board.factory';
 import {
-	boardFactory,
 	columnboardBoardElementFactory,
-	courseFactory,
 	lessonBoardElementFactory,
-	lessonFactory,
-	setupEntities,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization';
-import { LessonMetaData } from '../types';
+} from '@shared/testing/factory/boardelement.factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { LessonMetaData } from '../types/room-board.types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
 

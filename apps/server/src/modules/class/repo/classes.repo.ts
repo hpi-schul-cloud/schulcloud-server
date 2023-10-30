@@ -1,9 +1,9 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { Class } from '../domain';
-import { ClassEntity } from '../entity';
-import { ClassMapper } from './mapper';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { Class } from '../domain/class.do';
+import { ClassEntity } from '../entity/class.entity';
+import { ClassMapper } from './mapper/class.mapper';
 
 @Injectable()
 export class ClassesRepo {

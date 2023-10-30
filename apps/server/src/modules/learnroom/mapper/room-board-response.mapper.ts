@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Course, TaskWithStatusVo } from '@shared/domain';
-import {
-	BoardElementResponse,
-	BoardLessonResponse,
-	BoardTaskResponse,
-	SingleColumnBoardResponse,
-} from '../controller/dto';
+import { Course } from '@shared/domain/entity/course.entity';
+import { TaskWithStatusVo } from '@shared/domain/entity/task.entity';
 import { BoardColumnBoardResponse } from '../controller/dto/single-column-board/board-column-board.response';
-import { ColumnBoardMetaData, LessonMetaData, RoomBoardDTO, RoomBoardElementTypes } from '../types';
+import { BoardElementResponse } from '../controller/dto/single-column-board/board-element.response';
+import { BoardLessonResponse } from '../controller/dto/single-column-board/board-lesson.response';
+import { BoardTaskResponse } from '../controller/dto/single-column-board/board-task.response';
+import { SingleColumnBoardResponse } from '../controller/dto/single-column-board/board.response';
+import { ColumnBoardMetaData, LessonMetaData, RoomBoardDTO, RoomBoardElementTypes } from '../types/room-board.types';
 import { BoardTaskStatusMapper } from './board-taskStatus.mapper';
 
 @Injectable()

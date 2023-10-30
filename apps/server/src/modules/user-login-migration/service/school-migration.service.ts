@@ -1,12 +1,16 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
-import { Page, LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain';
-import { UserLoginMigrationRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { UserService } from '@src/modules/user';
+import { ValidationError } from '@shared/common/error/validation.error';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { Page } from '@shared/domain/domainobject/page';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject/user-login-migration.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { UserService } from '@src/modules/user/service/user.service';
+
 import { performance } from 'perf_hooks';
-import { OAuthMigrationError } from '../error';
+import { OAuthMigrationError } from '../error/oauth-migration.error';
 
 @Injectable()
 export class SchoolMigrationService {

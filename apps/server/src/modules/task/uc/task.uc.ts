@@ -1,19 +1,20 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import {
-	Counted,
-	Course,
-	EntityId,
-	IPagination,
-	ITaskStatus,
-	LessonEntity,
-	Permission,
-	SortOrder,
-	TaskWithStatusVo,
-	User,
-} from '@shared/domain';
-import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
-import { Action, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { TaskService } from '../service';
+import { Course } from '@shared/domain/entity/course.entity';
+import { LessonEntity } from '@shared/domain/entity/lesson.entity';
+import { TaskWithStatusVo } from '@shared/domain/entity/task.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { IPagination, SortOrder } from '@shared/domain/interface/find-options';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { Counted } from '@shared/domain/types/counted';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { ITaskStatus } from '@shared/domain/types/task.types';
+import { CourseRepo } from '@shared/repo/course/course.repo';
+import { LessonRepo } from '@shared/repo/lesson/lesson.repo';
+import { TaskRepo } from '@shared/repo/task/task.repo';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { TaskService } from '../service/task.service';
 
 @Injectable()
 export class TaskUC {

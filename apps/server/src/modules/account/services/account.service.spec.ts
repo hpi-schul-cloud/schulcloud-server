@@ -1,13 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IServerConfig } from '@src/modules/server';
-import { LegacyLogger } from '../../../core/logger';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { IServerConfig } from '@src/modules/server/server.config';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AccountValidationService } from './account.validation.service';
-import { AccountDto, AccountSaveDto } from './dto';
+import { AccountSaveDto } from './dto/account-save.dto';
+import { AccountDto } from './dto/account.dto';
 
 describe('AccountService', () => {
 	let module: TestingModule;

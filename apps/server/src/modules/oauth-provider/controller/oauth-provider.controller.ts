@@ -1,36 +1,33 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
-import { OauthProviderLoginFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.login-flow.uc';
-import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
-import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
-import {
-	ProviderConsentResponse,
-	ProviderLoginResponse,
-	ProviderOauthClient,
-	ProviderRedirectResponse,
-} from '@shared/infra/oauth-provider/dto';
-import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
-import { ICurrentUser } from '@src/modules/authentication';
-import { OauthProviderClientCrudUc } from '@src/modules/oauth-provider/uc/oauth-provider.client-crud.uc';
-import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
-import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
+
 import { ApiTags } from '@nestjs/swagger';
+import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto/interface/oauth-client.interface';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
+import { ProviderConsentResponse } from '@shared/infra/oauth-provider/dto/response/consent.response';
+import { ProviderLoginResponse } from '@shared/infra/oauth-provider/dto/response/login.response';
+import { ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto/response/redirect.response';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { OauthProviderResponseMapper } from '../mapper/oauth-provider-response.mapper';
+import { OauthProviderClientCrudUc } from '../uc/oauth-provider.client-crud.uc';
+import { OauthProviderConsentFlowUc } from '../uc/oauth-provider.consent-flow.uc';
+import { OauthProviderLoginFlowUc } from '../uc/oauth-provider.login-flow.uc';
+import { OauthProviderLogoutFlowUc } from '../uc/oauth-provider.logout-flow.uc';
 import { OauthProviderUc } from '../uc/oauth-provider.uc';
-import {
-	AcceptQuery,
-	ChallengeParams,
-	ConsentRequestBody,
-	ConsentSessionResponse,
-	IdParams,
-	ListOauthClientsParams,
-	LoginRequestBody,
-	LoginResponse,
-	OauthClientBody,
-	OauthClientResponse,
-	RevokeConsentParams,
-} from './dto';
+import { AcceptQuery } from './dto/request/accept.query';
+import { ChallengeParams } from './dto/request/challenge.params';
+import { ConsentRequestBody } from './dto/request/consent-request.body';
+import { IdParams } from './dto/request/id.params';
+import { ListOauthClientsParams } from './dto/request/list-oauth-clients.params';
+import { LoginRequestBody } from './dto/request/login-request.body';
+import { OauthClientBody } from './dto/request/oauth-client.body';
+import { RevokeConsentParams } from './dto/request/revoke-consent.params';
+import { ConsentSessionResponse } from './dto/response/consent-session.response';
+import { ConsentResponse } from './dto/response/consent.response';
+import { LoginResponse } from './dto/response/login.response';
+import { OauthClientResponse } from './dto/response/oauth-client.response';
+import { RedirectResponse } from './dto/response/redirect.response';
 
 @Controller('oauth2')
 @ApiTags('Oauth2')

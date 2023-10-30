@@ -3,12 +3,13 @@ import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRep
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpModule } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IdmAccount, IdmAccountUpdate } from '@shared/domain';
-import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
-import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
-import { ServerModule } from '@src/modules/server';
+import { IdmAccount, IdmAccountUpdate } from '@shared/domain/interface/account';
+import { ServerModule } from '@src/modules/server/server.module';
+
 import { v1 } from 'uuid';
 import { IdentityManagementService } from '../../identity-management.service';
+import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { KeycloakModule } from '../keycloak.module';
 import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
 
 describe('KeycloakIdentityManagementService Integration', () => {

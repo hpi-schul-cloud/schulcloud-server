@@ -2,17 +2,24 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConverterUtil } from '@shared/common';
-import { axiosResponseFactory } from '@shared/testing';
-import { ErrorUtils } from '@src/core/error/utils';
+import { ConverterUtil } from '@shared/common/utils/converter.util';
+import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
+import { ErrorUtils } from '@src/core/error/utils/error.utils';
+
 import { AxiosResponse } from 'axios';
 import crypto, { Hash } from 'crypto';
 import { of } from 'rxjs';
 import { URLSearchParams } from 'url';
 import { BbbSettings, IBbbSettings } from './bbb-settings.interface';
 import { BBBService } from './bbb.service';
-import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig, BBBRole, GuestPolicy } from './request';
-import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
+import { BBBBaseMeetingConfig } from './request/bbb-base-meeting.config';
+import { BBBCreateConfig, GuestPolicy } from './request/bbb-create.config';
+import { BBBJoinConfig, BBBRole } from './request/bbb-join.config';
+import { BBBBaseResponse } from './response/bbb-base.response';
+import { BBBCreateResponse } from './response/bbb-create.response';
+import { BBBMeetingInfoResponse } from './response/bbb-meeting-info.response';
+import { BBBStatus } from './response/bbb-status.enum';
+import { BBBResponse } from './response/bbb.response';
 
 const createBBBCreateResponse = (): BBBResponse<BBBCreateResponse> => {
 	return {

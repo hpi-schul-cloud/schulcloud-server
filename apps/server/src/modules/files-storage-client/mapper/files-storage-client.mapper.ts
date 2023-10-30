@@ -1,7 +1,12 @@
-import { LessonEntity, Submission, Task } from '@shared/domain';
-import { FileRecordParentType } from '@shared/infra/rabbitmq';
-import { CopyFileDto, FileDto } from '../dto';
-import { EntitiesWithFiles, ICopyFileDomainObjectProps, IFileDomainObjectProps } from '../interfaces';
+import { LessonEntity } from '@shared/domain/entity/lesson.entity';
+import { Submission } from '@shared/domain/entity/submission.entity';
+import { Task } from '@shared/domain/entity/task.entity';
+import { FileRecordParentType } from '@shared/infra/rabbitmq/exchange/files-storage';
+import { CopyFileDto } from '../dto/copy-file.dto';
+import { FileDto } from '../dto/file.dto';
+import { ICopyFileDomainObjectProps } from '../interfaces/copy-file-domain-object-props';
+import { IFileDomainObjectProps } from '../interfaces/file-domain-object-props';
+import { EntitiesWithFiles } from '../interfaces/types';
 
 export class FilesStorageClientMapper {
 	static mapfileRecordListResponseToDomainFilesDto(fileRecordListResponse: IFileDomainObjectProps[]): FileDto[] {

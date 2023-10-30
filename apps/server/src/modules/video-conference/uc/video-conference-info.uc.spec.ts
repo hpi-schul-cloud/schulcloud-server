@@ -1,17 +1,28 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UserService } from '@src/modules/user';
-import { userDoFactory } from '@shared/testing';
-import { Permission, UserDO, VideoConferenceDO, VideoConferenceScope } from '@shared/domain';
+import { Test, TestingModule } from '@nestjs/testing';
+
 import { ObjectId } from 'bson';
-import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
+
 import { ForbiddenException } from '@nestjs/common';
-import { BBBService, VideoConferenceService } from '../service';
-import { BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';
-import { IScopeInfo, VideoConferenceInfo, VideoConferenceState } from './dto';
-import { VideoConferenceInfoUc } from './video-conference-info.uc';
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { VideoConferenceDO } from '@shared/domain/domainobject/video-conference.do';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { VideoConferenceScope } from '@shared/domain/interface/video-conference-scope.enum';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
+import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
+import { UserService } from '@src/modules/user/service/user.service';
+import { BBBService } from '../bbb/bbb.service';
+import { BBBRole } from '../bbb/request/bbb-join.config';
+import { BBBMeetingInfoResponse } from '../bbb/response/bbb-meeting-info.response';
+import { BBBStatus } from '../bbb/response/bbb-status.enum';
+import { BBBResponse } from '../bbb/response/bbb.response';
 import { ErrorStatus } from '../error/error-status.enum';
+import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface/video-conference-options.interface';
+import { VideoConferenceService } from '../service/video-conference.service';
+import { IScopeInfo } from './dto/scope-info.interface';
+import { VideoConferenceInfo } from './dto/video-conference-info';
+import { VideoConferenceState } from './dto/video-conference-state.enum';
+import { VideoConferenceInfoUc } from './video-conference-info.uc';
 
 describe('VideoConferenceInfoUc', () => {
 	let module: TestingModule;

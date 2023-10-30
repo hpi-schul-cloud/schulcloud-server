@@ -1,23 +1,22 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Permission, RoleName, User } from '@shared/domain';
-import {
-	accountFactory,
-	roleFactory,
-	schoolFactory,
-	userFactory,
-	TestApiClient,
-	cleanupCollections,
-} from '@shared/testing';
-import {
-	AccountByIdBodyParams,
-	AccountSearchQueryParams,
-	AccountSearchType,
-	PatchMyAccountParams,
-	PatchMyPasswordParams,
-} from '@src/modules/account/controller/dto';
+import { Account } from '@shared/domain/entity/account.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { accountFactory } from '@shared/testing/factory/account.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { TestApiClient } from '@shared/testing/test-api-client';
 import { ServerTestModule } from '@src/modules/server/server.module';
+import { AccountByIdBodyParams } from '../dto/account-by-id.body.params';
+import { AccountSearchType } from '../dto/account-search-type';
+import { AccountSearchQueryParams } from '../dto/account-search.query.params';
+import { PatchMyAccountParams } from '../dto/patch-my-account.params';
+import { PatchMyPasswordParams } from '../dto/patch-my-password.params';
 
 describe('Account Controller (API)', () => {
 	const basePath = '/account';

@@ -1,7 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { SystemEntity } from '@shared/domain';
-import { ErrorUtils } from '@src/core/error/utils';
-import { LegacyLogger } from '@src/core/logger';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { ErrorUtils } from '@src/core/error/utils/error.utils';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+
 import { Client, createClient } from 'ldapjs';
 import { LdapConnectionError } from '../errors/ldap-connection.error';
 

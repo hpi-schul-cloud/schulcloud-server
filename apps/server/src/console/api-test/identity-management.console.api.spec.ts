@@ -1,7 +1,8 @@
 import { INestApplicationContext } from '@nestjs/common';
-import { ServerConsoleModule } from '@src/console/console.module';
+
 import { CommanderError } from 'commander';
 import { BootstrapConsole, ConsoleService } from 'nestjs-console';
+import { ServerConsoleModule } from '../console.module';
 import { execute, TestBootstrapConsole } from './test-bootstrap.console';
 
 describe.skip('IdentityManagementConsole (API)', () => {

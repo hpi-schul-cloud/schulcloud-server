@@ -1,13 +1,15 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType, BoardNode, Course, EntityId, InputFormat } from '@shared/domain';
-import { ConsoleWriterService } from '@shared/infra/console';
-import {
-	cardNodeFactory,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	richTextElementNodeFactory,
-} from '@shared/testing';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
+import { BoardNode } from '@shared/domain/entity/boardnode/boardnode.entity';
+import { Course } from '@shared/domain/entity/course.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { InputFormat } from '@shared/domain/types/input-format.types';
+import { ConsoleWriterService } from '@shared/infra/console/console-writer/console-writer.service';
+import { cardNodeFactory } from '@shared/testing/factory/boardnode/card-node.factory';
+import { columnBoardNodeFactory } from '@shared/testing/factory/boardnode/column-board-node.factory';
+import { columnNodeFactory } from '@shared/testing/factory/boardnode/column-node.factory';
+import { richTextElementNodeFactory } from '@shared/testing/factory/boardnode/rich-text-element-node.factory';
 
 @Injectable()
 export class BoardManagementUc {

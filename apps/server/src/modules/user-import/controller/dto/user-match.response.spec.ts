@@ -1,4 +1,6 @@
-import { MatchType, UserRole, UserMatchListResponse, UserMatchResponse } from '.';
+import { MatchType } from './match-type';
+import { UserMatchListResponse, UserMatchResponse } from './user-match.response';
+import { UserRole } from './user-role';
 
 describe('[UserMatchReponse]', () => {
 	const constructorProps: UserMatchResponse = {

@@ -1,8 +1,8 @@
-import { ApiValidationError } from '@shared/common';
-import { getMetadataStorage } from 'class-validator';
 import { ValidationError } from '@nestjs/common';
-import { Loggable } from '../../logger/interfaces';
-import { ErrorLogMessage, ValidationErrorLogMessage } from '../../logger/types';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
+import { Loggable } from '@src/core/logger/interfaces/loggable';
+import { ErrorLogMessage, ValidationErrorLogMessage } from '@src/core/logger/types/logging.types';
+import { getMetadataStorage } from 'class-validator';
 import { ErrorUtils } from '../utils/error.utils';
 
 export class ErrorLoggable implements Loggable {

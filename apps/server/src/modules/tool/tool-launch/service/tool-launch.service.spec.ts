@@ -1,27 +1,30 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { contextExternalToolFactory } from '@shared/testing/factory/domainobject/tool/context-external-tool.factory';
 import {
 	basicToolConfigFactory,
-	contextExternalToolFactory,
 	externalToolFactory,
-	schoolExternalToolFactory,
-} from '@shared/testing';
-import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
-import { CommonToolService } from '../../common/service';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { BasicToolConfig, ExternalTool } from '../../external-tool/domain';
-import { ExternalToolService } from '../../external-tool/service';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ToolStatusOutdatedLoggableException } from '../error';
-import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
-import {
-	BasicToolLaunchStrategy,
-	IToolLaunchParams,
-	Lti11ToolLaunchStrategy,
-	OAuth2ToolLaunchStrategy,
-} from './strategy';
+} from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { ToolConfigType } from '../../common/enum/tool-config-type.enum';
+import { ToolConfigurationStatus } from '../../common/enum/tool-configuration-status';
+import { CommonToolService } from '../../common/service/common-tool.service';
+import { ContextExternalTool } from '../../context-external-tool/domain/context-external-tool.do';
+import { BasicToolConfig } from '../../external-tool/domain/config/basic-tool-config.do';
+import { ExternalTool } from '../../external-tool/domain/external-tool.do';
+import { ExternalToolService } from '../../external-tool/service/external-tool.service';
+import { SchoolExternalTool } from '../../school-external-tool/domain/school-external-tool.do';
+import { SchoolExternalToolService } from '../../school-external-tool/service/school-external-tool.service';
+import { ToolStatusOutdatedLoggableException } from '../error/tool-status-outdated.loggable-exception';
+import { LaunchRequestMethod } from '../types/launch-request-method';
+import { ToolLaunchData } from '../types/tool-launch-data';
+import { ToolLaunchDataType } from '../types/tool-launch-data-type';
+import { ToolLaunchRequest } from '../types/tool-launch-request';
+import { BasicToolLaunchStrategy } from './strategy/basic-tool-launch.strategy';
+import { Lti11ToolLaunchStrategy } from './strategy/lti11-tool-launch.strategy';
+import { OAuth2ToolLaunchStrategy } from './strategy/oauth2-tool-launch.strategy';
+import { IToolLaunchParams } from './strategy/tool-launch-params.interface';
 import { ToolLaunchService } from './tool-launch.service';
 
 describe('ToolLaunchService', () => {

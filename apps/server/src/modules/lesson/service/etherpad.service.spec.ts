@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { FeathersServiceProvider } from '@shared/infra/feathers/feathers-service.provider';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { EtherpadService } from './etherpad.service';
 
 describe('Etherpad service', () => {

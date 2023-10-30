@@ -1,20 +1,15 @@
-import { CustomParameter } from '@src/modules/tool/common/domain';
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	LtiMessageType,
-	LtiPrivacyPermission,
-	TokenEndpointAuthMethod,
-	ToolConfigType,
-} from '@src/modules/tool/common/enum';
-import {
-	BasicToolConfig,
-	ExternalTool,
-	ExternalToolProps,
-	Lti11ToolConfig,
-	Oauth2ToolConfig,
-} from '@src/modules/tool/external-tool/domain';
+import { LtiPrivacyPermission } from '@shared/domain/entity/ltitool.entity';
+import { CustomParameter } from '@src/modules/tool/common/domain/custom-parameter.do';
+import { CustomParameterLocation } from '@src/modules/tool/common/enum/custom-parameter-location.enum';
+import { CustomParameterScope } from '@src/modules/tool/common/enum/custom-parameter-scope.enum';
+import { CustomParameterType } from '@src/modules/tool/common/enum/custom-parameter-type.enum';
+import { LtiMessageType } from '@src/modules/tool/common/enum/lti-message-type.enum';
+import { TokenEndpointAuthMethod } from '@src/modules/tool/common/enum/token-endpoint-auth-method.enum';
+import { ToolConfigType } from '@src/modules/tool/common/enum/tool-config-type.enum';
+import { BasicToolConfig } from '@src/modules/tool/external-tool/domain/config/basic-tool-config.do';
+import { Lti11ToolConfig } from '@src/modules/tool/external-tool/domain/config/lti11-tool-config.do';
+import { Oauth2ToolConfig } from '@src/modules/tool/external-tool/domain/config/oauth2-tool-config.do';
+import { ExternalTool, ExternalToolProps } from '@src/modules/tool/external-tool/domain/external-tool.do';
 import { DeepPartial } from 'fishery';
 import { DoBaseFactory } from '../do-base.factory';
 

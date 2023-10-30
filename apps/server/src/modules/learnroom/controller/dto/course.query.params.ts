@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, Matches } from 'class-validator';
-import { CommonCartridgeVersion } from '../../common-cartridge';
+import { CommonCartridgeVersion } from '../../common-cartridge/common-cartridge-enums';
 
 export class CourseQueryParams {
 	@IsString()

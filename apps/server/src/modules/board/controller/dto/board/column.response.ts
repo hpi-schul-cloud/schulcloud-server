@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DecodeHtmlEntities } from '@shared/controller';
-import { CardSkeletonResponse } from './card-skeleton.response';
+import { DecodeHtmlEntities } from '@shared/controller/transformer/decode-html-entities.transformer';
 import { TimestampsResponse } from '../timestamps.response';
+import { CardSkeletonResponse } from './card-skeleton.response';
 
 export class ColumnResponse {
 	constructor({ id, title, cards, timestamps }: ColumnResponse) {

@@ -1,5 +1,5 @@
-import { BBBJoinConfigBuilder } from './bbb-join-config.builder';
 import { BBBJoinConfig, BBBRole } from '../request/bbb-join.config';
+import { BBBJoinConfigBuilder } from './bbb-join-config.builder';
 
 describe('BBBJoinConfigBuilder', () => {
 	it('should build generic bbb joinConfig with all attributes', () => {

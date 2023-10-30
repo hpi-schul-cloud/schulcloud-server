@@ -1,17 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain';
-import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@shared/testing/factory';
-import { AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school/service';
-import { LegacySchoolUc } from '@src/modules/legacy-school/uc';
-import {
-	SchoolMigrationService,
-	UserLoginMigrationRevertService,
-	UserLoginMigrationService,
-} from '@src/modules/user-login-migration';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject/user-login-migration.do';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/legacy-school.factory';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { SchoolMigrationService } from '@src/modules/user-login-migration/service/school-migration.service';
+import { UserLoginMigrationRevertService } from '@src/modules/user-login-migration/service/user-login-migration-revert.service';
+import { UserLoginMigrationService } from '@src/modules/user-login-migration/service/user-login-migration.service';
+import { LegacySchoolService } from '../service/legacy-school.service';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
+import { LegacySchoolUc } from './legacy-school.uc';
 
 describe('LegacySchoolUc', () => {
 	let module: TestingModule;

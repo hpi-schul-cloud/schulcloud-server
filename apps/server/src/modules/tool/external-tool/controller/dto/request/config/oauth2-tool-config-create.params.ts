@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { TokenEndpointAuthMethod } from '@src/modules/tool/common/enum/token-endpoint-auth-method.enum';
+import { ToolConfigType } from '@src/modules/tool/common/enum/tool-config-type.enum';
 import { IsArray, IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
-import { TokenEndpointAuthMethod, ToolConfigType } from '../../../../../common/enum';
 import { ExternalToolConfigCreateParams } from './external-tool-config.params';
 
 export class Oauth2ToolConfigCreateParams extends ExternalToolConfigCreateParams {

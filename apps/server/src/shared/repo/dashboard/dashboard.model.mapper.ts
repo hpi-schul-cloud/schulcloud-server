@@ -1,16 +1,11 @@
-import { wrap, EntityManager } from '@mikro-orm/core';
+import { EntityManager, wrap } from '@mikro-orm/core';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import {
-	DashboardEntity,
-	GridElement,
-	GridElementWithPosition,
-	ILearnroom,
-	LearnroomTypes,
-	DashboardGridElementModel,
-	DashboardModelEntity,
-	Course,
-	User,
-} from '@shared/domain';
+import { Course } from '@shared/domain/entity/course.entity';
+import { DashboardEntity, GridElement, GridElementWithPosition } from '@shared/domain/entity/dashboard.entity';
+import { DashboardGridElementModel, DashboardModelEntity } from '@shared/domain/entity/dashboard.model.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { ILearnroom } from '@shared/domain/interface/learnroom';
+import { LearnroomTypes } from '@shared/domain/types/learnroom.types';
 
 @Injectable()
 export class DashboardModelMapper {

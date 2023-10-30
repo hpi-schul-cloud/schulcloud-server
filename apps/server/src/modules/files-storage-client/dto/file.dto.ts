@@ -1,6 +1,6 @@
-import { EntityId } from '@shared/domain';
-import { FileRecordParentType } from '@shared/infra/rabbitmq';
-import { IFileDomainObjectProps } from '../interfaces';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { FileRecordParentType } from '@shared/infra/rabbitmq/exchange/files-storage';
+import { IFileDomainObjectProps } from '../interfaces/file-domain-object-props';
 
 export class FileDto {
 	id: EntityId;

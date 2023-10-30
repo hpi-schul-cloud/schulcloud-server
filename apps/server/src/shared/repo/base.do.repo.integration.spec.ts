@@ -1,12 +1,15 @@
+import { Entity, EntityName, Property } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Entity, EntityName, Property } from '@mikro-orm/core';
-import { BaseDO, BaseEntityWithTimestamps } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+
 import { Injectable } from '@nestjs/common';
-import { BaseDORepo } from '@shared/repo/base.do.repo';
-import { LegacyLogger } from '@src/core/logger';
+
 import { createMock } from '@golevelup/ts-jest';
+import { BaseDO } from '@shared/domain/domainobject/base.do';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { BaseDORepo } from './base.do.repo';
 
 describe('BaseDORepo', () => {
 	@Entity()

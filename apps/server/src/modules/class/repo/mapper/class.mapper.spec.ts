@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Class } from '../../domain';
 import { ClassSourceOptions } from '../../domain/class-source-options.do';
+import { Class } from '../../domain/class.do';
 import { classFactory } from '../../domain/testing/factory/class.factory';
-import { ClassEntity } from '../../entity';
+import { ClassEntity } from '../../entity/class.entity';
 import { classEntityFactory } from '../../entity/testing/factory/class.entity.factory';
 import { ClassMapper } from './class.mapper';
 

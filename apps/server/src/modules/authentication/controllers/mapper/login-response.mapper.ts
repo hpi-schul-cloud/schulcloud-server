@@ -1,5 +1,6 @@
-import { LoginDto } from '../../uc/dto';
-import { LoginResponse, OauthLoginResponse } from '../dto';
+import { LoginDto } from '../../uc/dto/login.dto';
+import { LoginResponse } from '../dto/login.response';
+import { OauthLoginResponse } from '../dto/oauth-login.response';
 
 export class LoginResponseMapper {
 	static mapToLoginResponse(loginDto: LoginDto): LoginResponse {

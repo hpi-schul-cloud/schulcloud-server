@@ -1,5 +1,6 @@
 import { INestApplication } from '@nestjs/common';
-import { Account } from '@shared/domain';
+import { Account } from '@shared/domain/entity/account.entity';
+
 import supertest, { Response } from 'supertest';
 import { defaultTestPassword } from './factory/account.factory';
 

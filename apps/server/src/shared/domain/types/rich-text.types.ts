@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { sanitizeRichText } from '../../controller/transformer/sanitize-html.transformer';
+import { sanitizeRichText } from '@shared/controller/transformer/sanitize-html.transformer';
 import { InputFormat } from './input-format.types';
 
 export class RichText {

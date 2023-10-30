@@ -1,5 +1,5 @@
 import { plainToClass } from 'class-transformer';
-import { SingleValueToArrayTransformer } from './index';
+import { SingleValueToArrayTransformer } from './single-value-to-array.transformer';
 
 describe('ToBooleanTransformer Decorator', () => {
 	describe('when transform a string to boolean', () => {

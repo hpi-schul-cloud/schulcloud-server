@@ -1,6 +1,6 @@
 import { NotImplementedException } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
-import { StringToBoolean } from './index';
+import { StringToBoolean } from './string-to-boolean.transformer';
 
 describe('ToBooleanTransformer Decorator', () => {
 	describe('when transform a string to boolean', () => {

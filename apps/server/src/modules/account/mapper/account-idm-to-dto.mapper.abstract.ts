@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IdmAccount } from '@shared/domain';
+import { IdmAccount } from '@shared/domain/interface/account';
 import { AccountDto } from '../services/dto/account.dto';
 
 @Injectable()

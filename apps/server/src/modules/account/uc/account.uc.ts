@@ -1,33 +1,37 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-	AuthorizationError,
-	EntityNotFoundError,
-	ForbiddenOperationError,
-	ValidationError,
-} from '@shared/common/error';
-import { Account, EntityId, Permission, PermissionService, Role, RoleName, SchoolEntity, User } from '@shared/domain';
-import { UserRepo } from '@shared/repo';
-// TODO: module internals should be imported with relative paths
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto/account.dto';
-
+import { AuthorizationError } from '@shared/common/error/authorization.error';
+import { EntityNotFoundError } from '@shared/common/error/entity-not-found.error';
+import { ForbiddenOperationError } from '@shared/common/error/forbidden-operation.error';
+import { ValidationError } from '@shared/common/error/validation.error';
+import { Account } from '@shared/domain/entity/account.entity';
+import { Role } from '@shared/domain/entity/role.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { PermissionService } from '@shared/domain/service/permission.service';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { UserRepo } from '@shared/repo/user/user.repo';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+
+// TODO: module internals should be imported with relative paths
+
 import { ObjectId } from 'bson';
 import { IAccountConfig } from '../account-config';
-import {
-	AccountByIdBodyParams,
-	AccountByIdParams,
-	AccountResponse,
-	AccountSearchListResponse,
-	AccountSearchQueryParams,
-	AccountSearchType,
-	PatchMyAccountParams,
-} from '../controller/dto';
-import { AccountResponseMapper } from '../mapper';
+import { AccountByIdBodyParams } from '../controller/dto/account-by-id.body.params';
+import { AccountByIdParams } from '../controller/dto/account-by-id.params';
+import { AccountSearchListResponse } from '../controller/dto/account-search-list.response';
+import { AccountSearchType } from '../controller/dto/account-search-type';
+import { AccountSearchQueryParams } from '../controller/dto/account-search.query.params';
+import { AccountResponse } from '../controller/dto/account.response';
+import { PatchMyAccountParams } from '../controller/dto/patch-my-account.params';
+import { AccountResponseMapper } from '../mapper/account-response.mapper';
+import { AccountService } from '../services/account.service';
 import { AccountValidationService } from '../services/account.validation.service';
-import { AccountSaveDto } from '../services/dto';
+import { AccountSaveDto } from '../services/dto/account-save.dto';
+import { AccountDto } from '../services/dto/account.dto';
 
 type UserPreferences = {
 	// first login completed

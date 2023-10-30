@@ -3,17 +3,25 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AntivirusService } from '@shared/infra/antivirus';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { S3ClientAdapter } from '@shared/infra/s3-client/s3-client.adapter';
+import { fileRecordFactory } from '@shared/testing/factory/filerecord.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+
 import _ from 'lodash';
-import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
-import { ErrorType } from '../error';
+import {
+	FileRecordParams,
+	RenameFileParams,
+	ScanResultParams,
+	SingleFileParams,
+} from '../controller/dto/file-storage.params';
+import { FileRecord, FileRecordParentType } from '../entity/filerecord.entity';
+import { ErrorType } from '../error/error-status.enum';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
-import { FileRecordMapper, FilesStorageMapper } from '../mapper';
-import { FileRecordRepo } from '../repo';
+import { FileRecordMapper } from '../mapper/file-record.mapper';
+import { FilesStorageMapper } from '../mapper/files-storage.mapper';
+import { FileRecordRepo } from '../repo/filerecord.repo';
 import { FilesStorageService } from './files-storage.service';
 
 const buildFileRecordsWithParams = () => {

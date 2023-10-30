@@ -1,5 +1,7 @@
 /* istanbul ignore file */
-import { InputFormat, RichTextElement, RichTextElementProps } from '@shared/domain';
+
+import { RichTextElement, RichTextElementProps } from '@shared/domain/domainobject/board/rich-text-element.do';
+import { InputFormat } from '@shared/domain/types/input-format.types';
 import { ObjectId } from 'bson';
 import { BaseFactory } from '../../base.factory';
 

@@ -1,7 +1,7 @@
 import { Builder } from 'xml2js';
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
-import { ICommonCartridgeFile } from './common-cartridge-file.interface';
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from './common-cartridge-enums';
+import { ICommonCartridgeFile } from './common-cartridge-file.interface';
 
 export type ICommonCartridgeLtiResourceProps = {
 	type: CommonCartridgeResourceType.LTI;

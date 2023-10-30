@@ -1,5 +1,6 @@
-import { ExternalSource } from '@shared/domain';
-import { Group, GroupProps, GroupTypes } from '@src/modules/group/domain';
+import { ExternalSource } from '@shared/domain/domainobject/external-source';
+import { Group, GroupProps } from '@src/modules/group/domain/group';
+import { GroupTypes } from '@src/modules/group/domain/group-types';
 import { ObjectId } from 'bson';
 import { DomainObjectFactory } from '../domain-object.factory';
 

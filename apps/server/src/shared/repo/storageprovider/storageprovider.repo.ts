@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { StorageProviderEntity } from '@shared/domain';
+import { StorageProviderEntity } from '@shared/domain/entity/storageprovider.entity';
 import { BaseRepo } from '../base.repo';
 
 @Injectable()

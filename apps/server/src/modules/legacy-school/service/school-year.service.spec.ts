@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolYearEntity } from '@shared/domain';
-import { setupEntities } from '@shared/testing';
+import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
-import { SchoolYearRepo } from '../repo';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { SchoolYearRepo } from '../repo/schoolyear.repo';
 import { SchoolYearService } from './school-year.service';
 
 describe('SchoolYearService', () => {

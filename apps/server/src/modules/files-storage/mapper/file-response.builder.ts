@@ -1,5 +1,5 @@
-import { GetFile } from '@shared/infra/s3-client';
-import { GetFileResponse } from '../interface';
+import { GetFile } from '@shared/infra/s3-client/interfaces';
+import { GetFileResponse } from '../interface/interfaces';
 
 export class FileResponseBuilder {
 	public static build(file: GetFile, name: string): GetFileResponse {

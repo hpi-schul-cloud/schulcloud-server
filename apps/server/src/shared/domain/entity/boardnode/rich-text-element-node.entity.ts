@@ -1,8 +1,9 @@
 import { Entity, Property } from '@mikro-orm/core';
-import { AnyBoardDo } from '@shared/domain/domainobject';
-import { InputFormat } from '@shared/domain/types';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
+import { InputFormat } from '@shared/domain/types/input-format.types';
 import { BoardNode, BoardNodeProps } from './boardnode.entity';
-import { BoardDoBuilder, BoardNodeType } from './types';
+import { BoardDoBuilder } from './types/board-do.builder';
+import { BoardNodeType } from './types/board-node-type';
 
 @Entity({ discriminatorValue: BoardNodeType.RICH_TEXT_ELEMENT })
 export class RichTextElementNode extends BoardNode {

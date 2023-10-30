@@ -1,15 +1,13 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
-import {
-	cleanupCollections,
-	courseFactory,
-	taskFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { UserAndAccountTestFactory } from '@shared/testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@shared/testing/test-api-client';
+import { ServerTestModule } from '@src/modules/server/server.module';
 
 const createStudent = () => {
 	const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({}, [

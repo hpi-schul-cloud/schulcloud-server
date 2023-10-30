@@ -1,14 +1,15 @@
 import { BadRequestException } from '@nestjs/common';
-import { MatchCreator, MatchCreatorScope, RoleName, SortOrder } from '@shared/domain';
-import { importUserFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import {
-	FilterImportUserParams,
-	FilterMatchType,
-	FilterRoleType,
-	ImportUserSortOrder,
-	SortImportUserParams,
-	UserMatchResponse,
-} from '../controller/dto';
+import { MatchCreator } from '@shared/domain/entity/import-user.entity';
+import { SortOrder } from '@shared/domain/interface/find-options';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { MatchCreatorScope } from '@shared/domain/types/importuser.types';
+import { importUserFactory } from '@shared/testing/factory/import-user.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { FilterImportUserParams, FilterMatchType, FilterRoleType } from '../controller/dto/filter-import-user.params';
+import { ImportUserSortOrder, SortImportUserParams } from '../controller/dto/sort-import-user.params';
+import { UserMatchResponse } from '../controller/dto/user-match.response';
 import { ImportUserMapper } from './import-user.mapper';
 import { ImportUserMatchMapper } from './match.mapper';
 import { RoleNameMapper } from './role-name.mapper';

@@ -1,7 +1,10 @@
-import { StringValidator } from '@shared/common';
-import { INameMatch, MatchCreator, User } from '@shared/domain';
-import { UserRole, UserMatchResponse } from '../controller/dto';
+import { StringValidator } from '@shared/common/validator/string.validator';
+import { MatchCreator } from '@shared/domain/entity/import-user.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { INameMatch } from '@shared/domain/types/importuser.types';
 import { FilterUserParams } from '../controller/dto/filter-user.params';
+import { UserMatchResponse } from '../controller/dto/user-match.response';
+import { UserRole } from '../controller/dto/user-role';
 import { ImportUserMatchMapper } from './match.mapper';
 
 export class UserMatchMapper {

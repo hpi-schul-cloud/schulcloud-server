@@ -1,13 +1,15 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { EntityId, Permission } from '@shared/domain';
-import { LegacyLogger } from '@src/core/logger';
-import { Action, AuthorizationService } from '@src/modules/authorization';
-import { CopyStatus } from '@src/modules/copy-helper';
-import { CourseCopyService } from '@src/modules/learnroom';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LessonCopyService } from '@src/modules/lesson/service';
-import { TaskCopyService } from '@src/modules/task/service';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { CopyStatus } from '@src/modules/copy-helper/types/copy.types';
+import { CourseCopyService } from '@src/modules/learnroom/service/course-copy.service';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { LessonCopyService } from '@src/modules/lesson/service/lesson-copy.service';
+import { TaskCopyService } from '@src/modules/task/service/task-copy.service';
 import {
 	ShareTokenContext,
 	ShareTokenContextType,
@@ -15,9 +17,10 @@ import {
 	ShareTokenParentType,
 	ShareTokenPayload,
 } from '../domainobject/share-token.do';
-import { ShareTokenContextTypeMapper, ShareTokenParentTypeMapper } from '../mapper';
-import { ShareTokenService } from '../service';
-import { ShareTokenInfoDto } from './dto';
+import { ShareTokenContextTypeMapper } from '../mapper/context-type.mapper';
+import { ShareTokenParentTypeMapper } from '../mapper/parent-type.mapper';
+import { ShareTokenService } from '../service/share-token.service';
+import { ShareTokenInfoDto } from './dto/share-token-info.dto';
 
 @Injectable()
 export class ShareTokenUC {

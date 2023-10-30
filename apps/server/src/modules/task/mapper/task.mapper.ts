@@ -1,5 +1,10 @@
-import { InputFormat, ITaskCreate, ITaskUpdate, RichText, TaskWithStatusVo } from '@shared/domain';
-import { TaskCreateParams, TaskResponse, TaskUpdateParams } from '../controller/dto';
+import { TaskWithStatusVo } from '@shared/domain/entity/task.entity';
+import { InputFormat } from '@shared/domain/types/input-format.types';
+import { RichText } from '@shared/domain/types/rich-text.types';
+import { ITaskUpdate, ITaskCreate } from '@shared/domain/types/task.types';
+import { TaskCreateParams } from '../controller/dto/task-create.params';
+import { TaskUpdateParams } from '../controller/dto/task-update.params';
+import { TaskResponse } from '../controller/dto/task.response';
 import { TaskStatusMapper } from './task-status.mapper';
 
 export class TaskMapper {

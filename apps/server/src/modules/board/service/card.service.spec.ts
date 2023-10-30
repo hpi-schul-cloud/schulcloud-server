@@ -1,14 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Card, ContentElementType } from '@shared/domain';
-import { setupEntities } from '@shared/testing';
-import {
-	cardFactory,
-	columnBoardFactory,
-	columnFactory,
-	richTextElementFactory,
-} from '@shared/testing/factory/domainobject';
-import { BoardDoRepo } from '../repo';
+import { Card } from '@shared/domain/domainobject/board/card.do';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import { cardFactory } from '@shared/testing/factory/domainobject/board/card.do.factory';
+import { columnBoardFactory } from '@shared/testing/factory/domainobject/board/column-board.do.factory';
+import { columnFactory } from '@shared/testing/factory/domainobject/board/column.do.factory';
+import { richTextElementFactory } from '@shared/testing/factory/domainobject/board/rich-text-element.do.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { BoardDoRepo } from '../repo/board-do.repo';
 import { BoardDoService } from './board-do.service';
 import { CardService } from './card.service';
 import { ContentElementService } from './content-element.service';

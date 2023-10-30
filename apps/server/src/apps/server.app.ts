@@ -5,29 +5,32 @@ import { MikroORM } from '@mikro-orm/core';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
-import { Mail, MailService } from '@shared/infra/mail';
-import { LegacyLogger, Logger } from '@src/core/logger';
+import { Mail } from '@shared/infra/mail/mail.interface';
+import { MailService } from '@shared/infra/mail/mail.service';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { AccountService } from '@src/modules/account/services/account.service';
-import { TeamService } from '@src/modules/teams/service/team.service';
 import { AccountValidationService } from '@src/modules/account/services/account.validation.service';
 import { AccountUc } from '@src/modules/account/uc/account.uc';
 import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/collaborative-storage.uc';
-import { GroupService } from '@src/modules/group';
-import { RocketChatService } from '@src/modules/rocketchat';
-import { ServerModule } from '@src/modules/server';
+import { GroupService } from '@src/modules/group/service/group.service';
+import { FeathersRosterService } from '@src/modules/pseudonym/service/feathers-roster.service';
+import { RocketChatService } from '@src/modules/rocketchat/rocket-chat.service';
+import { ServerModule } from '@src/modules/server/server.module';
+import { TeamService } from '@src/modules/teams/service/team.service';
+
 import express from 'express';
 import { join } from 'path';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
-import { FeathersRosterService } from '@src/modules/pseudonym';
-import legacyAppPromise = require('../../../../src/app');
-
+import { Logger } from 'winston';
 import { AppStartLoggable } from './helpers/app-start-loggable';
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
 } from './helpers/prometheus-metrics';
+
+import legacyAppPromise = require('../../../../src/app');
 
 async function bootstrap() {
 	sourceMapInstall();

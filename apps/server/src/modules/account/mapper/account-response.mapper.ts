@@ -1,6 +1,6 @@
-import { Account } from '@shared/domain';
-import { AccountDto } from '@src/modules/account/services/dto/account.dto';
-import { AccountResponse } from '../controller/dto';
+import { Account } from '@shared/domain/entity/account.entity';
+import { AccountResponse } from '../controller/dto/account.response';
+import { AccountDto } from '../services/dto/account.dto';
 
 export class AccountResponseMapper {
 	// TODO: remove this one

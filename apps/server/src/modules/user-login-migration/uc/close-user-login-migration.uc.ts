@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { EntityId, Permission, User, UserLoginMigrationDO } from '@shared/domain';
-import { Action, AuthorizationService } from '@src/modules/authorization';
-import {
-	UserLoginMigrationGracePeriodExpiredLoggableException,
-	UserLoginMigrationNotFoundLoggableException,
-} from '../error';
-import { SchoolMigrationService, UserLoginMigrationRevertService, UserLoginMigrationService } from '../service';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject/user-login-migration.do';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { UserLoginMigrationGracePeriodExpiredLoggableException } from '../error/user-login-migration-grace-period-expired-loggable.exception';
+import { UserLoginMigrationNotFoundLoggableException } from '../error/user-login-migration-not-found.loggable-exception';
+import { SchoolMigrationService } from '../service/school-migration.service';
+import { UserLoginMigrationRevertService } from '../service/user-login-migration-revert.service';
+import { UserLoginMigrationService } from '../service/user-login-migration.service';
 
 @Injectable()
 export class CloseUserLoginMigrationUc {

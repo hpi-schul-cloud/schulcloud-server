@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { defaultVideoConferenceOptions } from '@src/modules/video-conference/interface/video-conference-options.interface';
 import { IsBoolean, IsOptional, IsUrl } from 'class-validator';
-import { defaultVideoConferenceOptions } from '../../../interface';
 
 export class VideoConferenceCreateParams {
 	@ApiPropertyOptional({ default: defaultVideoConferenceOptions.everyAttendeeJoinsMuted })

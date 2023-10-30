@@ -1,8 +1,7 @@
 import express, { Express } from 'express';
 import client from 'prom-client';
-
-import { createAPIResponseTimeMetricMiddleware } from './middleware';
 import { createPrometheusMetricsHandler } from './handler';
+import { createAPIResponseTimeMetricMiddleware } from './middleware';
 
 export const createPrometheusMetricsApp = (
 	metricsRoute: string,

@@ -1,5 +1,3 @@
-import { passwordPattern } from './password-pattern';
-
 describe('password patter', () => {
 	it('should accept a valid password', () => {
 		expect(passwordPattern.test('Asdf 1ds df!')).toBe(true);

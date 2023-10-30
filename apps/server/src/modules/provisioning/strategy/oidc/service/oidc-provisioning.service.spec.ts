@@ -1,30 +1,38 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UnprocessableEntityException } from '@nestjs/common';
+import { Logger, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalSource, LegacySchoolDo, RoleName, RoleReference, SchoolFeatures } from '@shared/domain';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception/not-found.loggable-exception';
+import { ExternalSource } from '@shared/domain/domainobject/external-source';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { RoleReference } from '@shared/domain/domainobject/role-reference';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import {
-	externalGroupDtoFactory,
-	federalStateFactory,
-	groupFactory,
-	roleDtoFactory,
-	legacySchoolDoFactory,
-	schoolYearFactory,
-	userDoFactory,
-	roleFactory,
-} from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { SchoolFeatures } from '@shared/domain/entity/school.entity';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { groupFactory } from '@shared/testing/factory/domainobject/groups/group.factory';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/legacy-school.factory';
+import { externalGroupDtoFactory } from '@shared/testing/factory/external-group-dto.factory';
+import { federalStateFactory } from '@shared/testing/factory/federal-state.factory';
+import { roleDtoFactory } from '@shared/testing/factory/role-dto.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
 import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountSaveDto } from '@src/modules/account/services/dto';
-import { Group, GroupService } from '@src/modules/group';
-import { RoleService } from '@src/modules/role';
+import { AccountSaveDto } from '@src/modules/account/services/dto/account-save.dto';
+import { Group } from '@src/modules/group/domain/group';
+import { GroupService } from '@src/modules/group/service/group.service';
+import { FederalStateService } from '@src/modules/legacy-school/service/federal-state.service';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { SchoolYearService } from '@src/modules/legacy-school/service/school-year.service';
+import { ExternalGroupDto } from '@src/modules/provisioning/dto/external-group.dto';
+import { ExternalSchoolDto } from '@src/modules/provisioning/dto/external-school.dto';
+import { ExternalUserDto } from '@src/modules/provisioning/dto/external-user.dto';
+import { SchoolForGroupNotFoundLoggable } from '@src/modules/provisioning/loggable/school-for-group-not-found.loggable';
+import { UserForGroupNotFoundLoggable } from '@src/modules/provisioning/loggable/user-for-group-not-found.loggable';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { FederalStateService, LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
-import { UserService } from '@src/modules/user';
+import { RoleService } from '@src/modules/role/service/role.service';
+import { UserService } from '@src/modules/user/service/user.service';
+
 import CryptoJS from 'crypto-js';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';
-import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 import { OidcProvisioningService } from './oidc-provisioning.service';
 
 jest.mock('crypto-js');

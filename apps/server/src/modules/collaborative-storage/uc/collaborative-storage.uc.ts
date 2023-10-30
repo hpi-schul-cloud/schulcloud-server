@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CollaborativeStorageService } from '@src/modules/collaborative-storage/services/collaborative-storage.service';
-import { TeamPermissionsMapper } from '@src/modules/collaborative-storage/mapper/team-permissions.mapper';
-import { TeamDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
 import { TeamPermissionsBody } from '../controller/dto/team-permissions.body.params';
 import { TeamRoleDto } from '../controller/dto/team-role.params';
+import { TeamPermissionsMapper } from '../mapper/team-permissions.mapper';
+import { CollaborativeStorageService } from '../services/collaborative-storage.service';
+import { TeamDto } from '../services/dto/team.dto';
 
 @Injectable()
 export class CollaborativeStorageUc {

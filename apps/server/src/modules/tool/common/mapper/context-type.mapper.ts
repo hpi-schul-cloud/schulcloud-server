@@ -1,5 +1,5 @@
-import { AuthorizableReferenceType } from '@src/modules/authorization/types';
-import { ToolContextType } from '../enum';
+import { AuthorizableReferenceType } from '@src/modules/authorization/types/allowed-authorization-object-type.enum';
+import { ToolContextType } from '../enum/tool-context-type.enum';
 
 const typeMapping: Record<ToolContextType, AuthorizableReferenceType> = {
 	[ToolContextType.COURSE]: AuthorizableReferenceType.Course,

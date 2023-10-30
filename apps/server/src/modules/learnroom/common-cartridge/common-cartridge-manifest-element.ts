@@ -1,8 +1,8 @@
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
-import { CommonCartridgeMetadataElement, ICommonCartridgeMetadataProps } from './common-cartridge-metadata-element';
+import { CommonCartridgeVersion } from './common-cartridge-enums';
+import { ICommonCartridgeMetadataProps, CommonCartridgeMetadataElement } from './common-cartridge-metadata-element';
 import { CommonCartridgeOrganizationWrapperElement } from './common-cartridge-organization-wrapper-element';
 import { CommonCartridgeResourceWrapperElement } from './common-cartridge-resource-wrapper-element';
-import { CommonCartridgeVersion } from './common-cartridge-enums';
 
 export type ICommonCartridgeManifestProps = {
 	identifier: string;

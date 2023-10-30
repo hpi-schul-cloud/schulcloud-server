@@ -2,13 +2,14 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser } from '@src/modules/authentication';
-import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+
 import { Request } from 'express';
-import { OauthSSOController } from './oauth-sso.controller';
+import { HydraOauthUc } from '../uc/hydra-oauth.uc';
+import { OauthUc } from '../uc/oauth.uc';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
-import { OauthUc } from '../uc';
+import { OauthSSOController } from './oauth-sso.controller';
 
 describe('OAuthController', () => {
 	let module: TestingModule;

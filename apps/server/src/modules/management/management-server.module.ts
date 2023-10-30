@@ -1,10 +1,10 @@
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
-import { ALL_ENTITIES } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { ALL_ENTITIES } from '@shared/domain/entity/all-entities';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { DB_URL, DB_PASSWORD, DB_USERNAME } from '@src/config/database.config';
 import { ManagementModule } from './management.module';
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

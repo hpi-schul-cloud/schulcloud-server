@@ -1,13 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { RoleName, User } from '@shared/domain';
-import { IdentityManagementOauthService } from '@shared/infra/identity-management';
-import { UserRepo } from '@shared/repo';
-import { accountFactory, setupEntities, userFactory } from '@shared/testing';
-import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { IServerConfig } from '@src/modules/server';
+import { User } from '@shared/domain/entity/user.entity';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { IdentityManagementOauthService } from '@shared/infra/identity-management/identity-management-oauth.service';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { accountFactory } from '@shared/testing/factory/account.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { AccountEntityToDtoMapper } from '@src/modules/account/mapper/account-entity-to-dto.mapper';
+import { AccountDto } from '@src/modules/account/services/dto/account.dto';
+import { IServerConfig } from '@src/modules/server/server.config';
+
 import bcrypt from 'bcryptjs';
 import { AuthenticationService } from '../services/authentication.service';
 import { LocalStrategy } from './local.strategy';

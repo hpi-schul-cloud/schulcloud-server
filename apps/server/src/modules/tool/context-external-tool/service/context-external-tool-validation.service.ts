@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
-import { CommonToolValidationService } from '../../common/service';
-import { ExternalTool } from '../../external-tool/domain';
-import { ExternalToolService } from '../../external-tool/service';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ContextExternalTool } from '../domain';
+import { ValidationError } from '@shared/common/error/validation.error';
+import { CommonToolValidationService } from '../../common/service/common-tool-validation.service';
+import { ExternalTool } from '../../external-tool/domain/external-tool.do';
+import { ExternalToolService } from '../../external-tool/service/external-tool.service';
+import { SchoolExternalTool } from '../../school-external-tool/domain/school-external-tool.do';
+import { SchoolExternalToolService } from '../../school-external-tool/service/school-external-tool.service';
+import { ContextExternalTool } from '../domain/context-external-tool.do';
 import { ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
 import { ContextExternalToolService } from './context-external-tool.service';
 

@@ -1,18 +1,29 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { EntityId, Page, Permission, LegacySchoolDo, User, UserLoginMigrationDO } from '@shared/domain';
-import { LegacyLogger } from '@src/core/logger';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception/not-found.loggable-exception';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { Page } from '@shared/domain/domainobject/page';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject/user-login-migration.do';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
-import { Action, AuthorizationService } from '@src/modules/authorization';
-import { OAuthTokenDto } from '@src/modules/oauth';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { OAuthTokenDto } from '@src/modules/oauth/interface/oauth-token.dto';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
-import { ProvisioningService } from '@src/modules/provisioning';
-import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { OAuthMigrationError, SchoolMigrationError, UserLoginMigrationError } from '../error';
+import { OauthDataDto } from '@src/modules/provisioning/dto/oauth-data.dto';
+import { ProvisioningService } from '@src/modules/provisioning/service/provisioning.service';
+import { OAuthMigrationError } from '../error/oauth-migration.error';
+import { SchoolMigrationError } from '../error/school-migration.error';
+import { UserLoginMigrationError } from '../error/user-login-migration.error';
 import { PageTypes } from '../interface/page-types.enum';
-import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
-import { MigrationDto, PageContentDto } from '../service/dto';
-import { UserLoginMigrationQuery } from './dto';
+import { MigrationDto } from '../service/dto/migration.dto';
+import { PageContentDto } from '../service/dto/page-content.dto';
+import { SchoolMigrationService } from '../service/school-migration.service';
+import { UserLoginMigrationService } from '../service/user-login-migration.service';
+import { UserMigrationService } from '../service/user-migration.service';
+import { UserLoginMigrationQuery } from './dto/user-login-migration-query';
 
 @Injectable()
 export class UserLoginMigrationUc {

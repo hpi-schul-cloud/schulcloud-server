@@ -1,10 +1,17 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MatchCreator, SortOrder, SystemEntity, User } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, importUserFactory, roleFactory, schoolFactory, userFactory } from '@shared/testing';
+import { MatchCreator } from '@shared/domain/entity/import-user.entity';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { SortOrder } from '@shared/domain/interface/find-options';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { importUserFactory } from '@shared/testing/factory/import-user.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
 import { systemFactory } from '@shared/testing/factory/system.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
 import { UserRepo } from './user.repo';
 
 describe('user repo', () => {

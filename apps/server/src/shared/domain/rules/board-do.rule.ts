@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action, AuthorizationContext, Rule } from '@src/modules/authorization/types';
-import { BoardDoAuthorizable, BoardRoles } from '../domainobject';
-import { User } from '../entity';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { AuthorizationContext } from '@src/modules/authorization/types/authorization-context.interface';
+import { Rule } from '@src/modules/authorization/types/rule.interface';
+import { BoardDoAuthorizable, BoardRoles } from '../domainobject/board/types/board-do-authorizable';
+import { User } from '../entity/user.entity';
 
 @Injectable()
 export class BoardDoRule implements Rule {

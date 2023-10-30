@@ -1,12 +1,15 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { ContextExternalTool } from '../../../context-external-tool/domain';
-import { ExternalTool } from '../../../external-tool/domain';
-import { SchoolExternalTool } from '../../../school-external-tool/domain';
-import { LaunchRequestMethod, PropertyData } from '../../types';
+import { contextExternalToolFactory } from '@shared/testing/factory/domainobject/tool/context-external-tool.factory';
+import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { ContextExternalTool } from '@src/modules/tool/context-external-tool/domain/context-external-tool.do';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain/external-tool.do';
+import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain/school-external-tool.do';
+import { LaunchRequestMethod } from '../../types/launch-request-method';
+import { PropertyData } from '../../types/property-data';
 import { OAuth2ToolLaunchStrategy } from './oauth2-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 

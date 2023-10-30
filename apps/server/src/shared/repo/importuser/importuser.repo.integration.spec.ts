@@ -1,19 +1,18 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cleanupCollections, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 
 import { MikroORM, NotFoundError } from '@mikro-orm/core';
-import {
-	IImportUserRoleName,
-	ImportUser,
-	MatchCreator,
-	MatchCreatorScope,
-	RoleName,
-	SchoolEntity,
-	User,
-} from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { ImportUserRepo } from '.';
+import { IImportUserRoleName, ImportUser, MatchCreator } from '@shared/domain/entity/import-user.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { MatchCreatorScope } from '@shared/domain/types/importuser.types';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { importUserFactory } from '@shared/testing/factory/import-user.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { ImportUserRepo } from './importuser.repo';
 
 describe('ImportUserRepo', () => {
 	let module: TestingModule;

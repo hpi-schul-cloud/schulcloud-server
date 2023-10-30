@@ -1,6 +1,6 @@
-import { EntityId } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { OauthConfigDto } from './oauth-config.dto';
 
 export class SystemDto {
 	id?: EntityId;

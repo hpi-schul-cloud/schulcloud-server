@@ -1,5 +1,5 @@
-import request from 'supertest';
 import express, { Request, Response } from 'express';
+import request from 'supertest';
 import {
 	apiResponseTimeMetricHistogram,
 	createAPIResponseTimeMetricMiddleware,

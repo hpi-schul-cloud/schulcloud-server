@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
+import { EntityId } from '@shared/domain/types/entity-id';
 
 export type CopyStatus = {
 	id?: string;

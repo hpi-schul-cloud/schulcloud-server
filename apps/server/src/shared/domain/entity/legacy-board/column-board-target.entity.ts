@@ -1,6 +1,7 @@
 import { Entity, Property } from '@mikro-orm/core';
-import { ILearnroomElement } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { ILearnroomElement } from '@shared/domain/interface/learnroom';
+import { EntityId } from '@shared/domain/types/entity-id';
+
 import { ObjectId } from 'bson';
 import { BaseEntityWithTimestamps } from '../base.entity';
 

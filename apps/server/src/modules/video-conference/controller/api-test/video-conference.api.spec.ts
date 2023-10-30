@@ -1,35 +1,32 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Account,
-	Course,
-	Permission,
-	Role,
-	RoleName,
-	SchoolEntity,
-	SchoolFeatures,
-	TargetModels,
-	User,
-	VideoConference,
-	VideoConferenceScope,
-} from '@shared/domain';
-import {
-	accountFactory,
-	cleanupCollections,
-	courseFactory,
-	roleFactory,
-	schoolFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-	userFactory,
-} from '@shared/testing';
+import { Account } from '@shared/domain/entity/account.entity';
+import { Course } from '@shared/domain/entity/course.entity';
+import { Role } from '@shared/domain/entity/role.entity';
+import { SchoolEntity, SchoolFeatures } from '@shared/domain/entity/school.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { TargetModels } from '@shared/domain/entity/video-conference.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { VideoConferenceScope } from '@shared/domain/interface/video-conference-scope.enum';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { accountFactory } from '@shared/testing/factory/account.factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { UserAndAccountTestFactory } from '@shared/testing/factory/user-and-account.test.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
-import { ServerTestModule } from '@src/modules/server';
+import { TestApiClient } from '@shared/testing/test-api-client';
+import { ServerTestModule } from '@src/modules/server/server.module';
+
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
-import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
+import { VideoConference } from '../../uc/dto/video-conference';
+import { VideoConferenceCreateParams } from '../dto/request/video-conference-create.params';
+import { VideoConferenceJoinResponse } from '../dto/response/video-conference-join.response';
 
 describe('VideoConferenceController (API)', () => {
 	let app: INestApplication;

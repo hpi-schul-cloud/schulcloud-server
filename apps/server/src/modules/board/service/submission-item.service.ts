@@ -1,10 +1,13 @@
-import { ObjectId } from 'bson';
 import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
-
-import { EntityId, isSubmissionContainerElement, SubmissionContainerElement, SubmissionItem } from '@shared/domain';
-import { ValidationError } from '@shared/common';
-
-import { BoardDoRepo } from '../repo';
+import { ValidationError } from '@shared/common/error/validation.error';
+import {
+	isSubmissionContainerElement,
+	SubmissionContainerElement,
+} from '@shared/domain/domainobject/board/submission-container-element.do';
+import { SubmissionItem } from '@shared/domain/domainobject/board/submission-item.do';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { ObjectId } from 'bson';
+import { BoardDoRepo } from '../repo/board-do.repo';
 import { BoardDoService } from './board-do.service';
 
 @Injectable()

@@ -1,17 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course } from '@shared/domain';
-import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
-import {
-	boardFactory,
-	courseFactory,
-	courseGroupFactory,
-	schoolFactory,
-	setupEntities,
-	userFactory,
-} from '@shared/testing';
-import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
-import { LessonCopyService } from '@src/modules/lesson/service';
+import { Course } from '@shared/domain/entity/course.entity';
+import { BoardRepo } from '@shared/repo/board/board.repo';
+import { CourseRepo } from '@shared/repo/course/course.repo';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { boardFactory } from '@shared/testing/factory/board.factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { courseGroupFactory } from '@shared/testing/factory/coursegroup.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { CopyHelperService } from '@src/modules/copy-helper/service/copy-helper.service';
+import { CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper/types/copy.types';
+import { LessonCopyService } from '@src/modules/lesson/service/lesson-copy.service';
 import { BoardCopyService } from './board-copy.service';
 import { CourseCopyService } from './course-copy.service';
 import { RoomsService } from './rooms.service';

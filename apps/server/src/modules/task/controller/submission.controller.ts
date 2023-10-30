@@ -1,10 +1,12 @@
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { SubmissionMapper } from '../mapper';
-import { SubmissionUc } from '../uc';
-import { SubmissionStatusListResponse, SubmissionUrlParams, TaskUrlParams } from './dto';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { SubmissionMapper } from '../mapper/submission.mapper';
+import { SubmissionUc } from '../uc/submission.uc';
+import { SubmissionStatusListResponse } from './dto/submission.response';
+import { SubmissionUrlParams } from './dto/submission.url.params';
+import { TaskUrlParams } from './dto/task.url.params';
 
 @ApiTags('Submission')
 @Authenticate('jwt')

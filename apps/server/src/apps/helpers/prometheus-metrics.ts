@@ -1,11 +1,10 @@
+import { createPrometheusMetricsApp } from '@shared/infra/metrics/prometheus/app';
+import { PrometheusMetricsConfig } from '@shared/infra/metrics/prometheus/config';
+import { createAPIResponseTimeMetricMiddleware } from '@shared/infra/metrics/prometheus/middleware';
+import { Loggable } from '@src/core/logger/interfaces/loggable';
+import { LogMessage } from '@src/core/logger/types/logging.types';
 import { Express } from 'express';
-
-import {
-	PrometheusMetricsConfig,
-	createAPIResponseTimeMetricMiddleware,
-	createPrometheusMetricsApp,
-} from '@shared/infra/metrics';
-import { LogMessage, Loggable, Logger } from '@src/core/logger';
+import { Logger } from 'winston';
 import { AppStartLoggable } from './app-start-loggable';
 
 export const enum PrometheusMetricsSetupState {

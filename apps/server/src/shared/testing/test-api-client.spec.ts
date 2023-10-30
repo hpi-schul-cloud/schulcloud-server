@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { ObjectId } from 'bson';
-import { accountFactory } from './factory';
+import { accountFactory } from './factory/account.factory';
 import { TestApiClient } from './test-api-client';
 
 @Controller('')

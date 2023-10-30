@@ -1,4 +1,4 @@
-import { ScanStatus } from '../../entity';
+import { ScanStatus } from '../../entity/filerecord.entity';
 
 export class ScanResultDto {
 	status: ScanStatus;

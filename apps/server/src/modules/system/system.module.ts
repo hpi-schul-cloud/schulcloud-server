@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { IdentityManagementModule } from '@shared/infra/identity-management/identity-management.module';
-import { SystemRepo } from '@shared/repo';
-import { SystemService } from '@src/modules/system/service/system.service';
+import { SystemRepo } from '@shared/repo/system/system.repo';
 import { SystemOidcService } from './service/system-oidc.service';
+import { SystemService } from './service/system.service';
 
 @Module({
 	imports: [IdentityManagementModule],

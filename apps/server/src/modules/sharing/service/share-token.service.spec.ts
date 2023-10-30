@@ -1,10 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, lessonFactory, setupEntities, shareTokenFactory, taskFactory } from '@shared/testing';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LessonService } from '@src/modules/lesson/service';
-import { TaskService } from '@src/modules/task/service';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { shareTokenFactory } from '@shared/testing/factory/share-token.do.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { LessonService } from '@src/modules/lesson/service/lesson.service';
+import { TaskService } from '@src/modules/task/service/task.service';
+
 import { ObjectId } from 'bson';
 import { ShareTokenContextType, ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenRepo } from '../repo/share-token.repo';

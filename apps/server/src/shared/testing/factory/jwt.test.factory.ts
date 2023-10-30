@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
+import jwt from 'jsonwebtoken';
 
 const keyPair: KeyPairKeyObjectResult = crypto.generateKeyPairSync('rsa', { modulusLength: 4096 });
 const publicKey: string | Buffer = keyPair.publicKey.export({ type: 'pkcs1', format: 'pem' });

@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import {
-	AnyBoardDo,
-	BoardExternalReference,
-	Card,
-	Column,
-	ColumnBoard,
-	ContentElementType,
-	EntityId,
-} from '@shared/domain';
-import { LegacyLogger } from '@src/core/logger';
+import { Card } from '@shared/domain/domainobject/board/card.do';
+import { ColumnBoard } from '@shared/domain/domainobject/board/column-board.do';
+import { Column } from '@shared/domain/domainobject/board/column.do';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
+import { BoardExternalReference } from '@shared/domain/domainobject/board/types/board-external-reference';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Action } from '@src/modules/authorization/types/action.enum';
-import { CardService, ColumnBoardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
+import { CardService } from '../service/card.service';
+import { ColumnBoardService } from '../service/column-board.service';
+import { ColumnService } from '../service/column.service';
 
 @Injectable()
 export class BoardUc {

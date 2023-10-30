@@ -4,7 +4,8 @@ import { FileElement } from './file-element.do';
 import { LinkElement } from './link-element.do';
 import { RichTextElement } from './rich-text-element.do';
 import { SubmissionContainerElement } from './submission-container-element.do';
-import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
+import { AnyBoardDo } from './types/any-board-do';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types/board-composite-visitor';
 
 export class Card extends BoardComposite<CardProps> {
 	get title(): string {

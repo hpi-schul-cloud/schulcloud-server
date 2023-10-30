@@ -1,21 +1,30 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { EntityId, LegacySchoolDo, OauthConfig, SchoolFeatures, UserDO } from '@shared/domain';
-import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { LegacyLogger } from '@src/core/logger';
-import { ProvisioningService } from '@src/modules/provisioning';
-import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { SystemService } from '@src/modules/system';
-import { SystemDto } from '@src/modules/system/service';
-import { UserService } from '@src/modules/user';
-import { MigrationCheckService, UserMigrationService } from '@src/modules/user-login-migration';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { SchoolFeatures } from '@shared/domain/entity/school.entity';
+import { OauthConfig } from '@shared/domain/entity/system.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption/encryption.interface';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { OauthDataDto } from '@src/modules/provisioning/dto/oauth-data.dto';
+import { ProvisioningService } from '@src/modules/provisioning/service/provisioning.service';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { SystemService } from '@src/modules/system/service/system.service';
+import { MigrationCheckService } from '@src/modules/user-login-migration/service/migration-check.service';
+import { UserMigrationService } from '@src/modules/user-login-migration/service/user-migration.service';
+import { UserService } from '@src/modules/user/service/user.service';
+
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthSSOError, SSOErrorCode, UserNotFoundAfterProvisioningLoggableException } from '../loggable';
-import { OAuthTokenDto } from '../interface';
+import { OAuthTokenDto } from '../interface/oauth-token.dto';
+import { OAuthSSOError } from '../loggable/oauth-sso.error';
+import { SSOErrorCode } from '../loggable/sso-error-code.enum';
+import { UserNotFoundAfterProvisioningLoggableException } from '../loggable/user-not-found-after-provisioning.loggable-exception';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
-import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
+import { AuthenticationCodeGrantTokenRequest } from './dto/authentication-code-grant-token.request';
+import { OauthTokenResponse } from './dto/oauth-token.response';
 import { OauthAdapterService } from './oauth-adapter.service';
 
 @Injectable()

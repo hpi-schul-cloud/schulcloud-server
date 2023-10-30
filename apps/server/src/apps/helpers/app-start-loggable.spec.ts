@@ -1,5 +1,3 @@
-import { AppStartLoggable } from './app-start-loggable';
-
 describe('AppStartLoggable', () => {
 	describe('getLogMessage', () => {
 		const expectedMessage = 'Successfully started listening...';

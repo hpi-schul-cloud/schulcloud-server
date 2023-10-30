@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { MigrationResponse } from '../controller/dto';
+import { MigrationResponse } from '../controller/dto/migration.response';
 import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
 
 @Injectable()

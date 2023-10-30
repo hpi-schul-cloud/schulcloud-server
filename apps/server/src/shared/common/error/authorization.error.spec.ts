@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { AuthorizationError } from '@shared/common';
+import { AuthorizationError } from './authorization.error';
 
 describe('AuthorizationError', () => {
 	it('should be possible to create', () => {

@@ -1,47 +1,43 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
-import {
-	Course,
-	EntityId,
-	Permission,
-	RoleName,
-	SchoolFeatures,
-	TeamEntity,
-	TeamUserEntity,
-	UserDO,
-	VideoConferenceDO,
-	VideoConferenceOptionsDO,
-} from '@shared/domain';
-import { VideoConferenceScope } from '@shared/domain/interface';
-import { CalendarService } from '@shared/infra/calendar';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject/video-conference.do';
+import { Course } from '@shared/domain/entity/course.entity';
+import { SchoolFeatures } from '@shared/domain/entity/school.entity';
+import { TeamEntity, TeamUserEntity } from '@shared/domain/entity/team.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { VideoConferenceScope } from '@shared/domain/interface/video-conference-scope.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
-import { TeamsRepo } from '@shared/repo';
+import { CalendarService } from '@shared/infra/calendar/service/calendar.service';
+import { TeamsRepo } from '@shared/repo/teams/teams.repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
-import { ICurrentUser } from '@src/modules/authentication';
-import {
-	Action,
-	AuthorizableReferenceType,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@src/modules/authorization';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { UserService } from '@src/modules/user';
-import {
-	BBBBaseMeetingConfig,
-	BBBBaseResponse,
-	BBBCreateConfigBuilder,
-	BBBCreateResponse,
-	BBBJoinConfigBuilder,
-	BBBMeetingInfoResponse,
-	BBBResponse,
-	BBBRole,
-	BBBService,
-	GuestPolicy,
-} from '../bbb';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { AuthorizableReferenceType } from '@src/modules/authorization/types/allowed-authorization-object-type.enum';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { UserService } from '@src/modules/user/service/user.service';
+import { BBBService } from '../bbb/bbb.service';
+import { BBBCreateConfigBuilder } from '../bbb/builder/bbb-create-config.builder';
+import { BBBJoinConfigBuilder } from '../bbb/builder/bbb-join-config.builder';
+import { BBBBaseMeetingConfig } from '../bbb/request/bbb-base-meeting.config';
+import { GuestPolicy } from '../bbb/request/bbb-create.config';
+import { BBBRole } from '../bbb/request/bbb-join.config';
+import { BBBBaseResponse } from '../bbb/response/bbb-base.response';
+import { BBBCreateResponse } from '../bbb/response/bbb-create.response';
+import { BBBMeetingInfoResponse } from '../bbb/response/bbb-meeting-info.response';
+import { BBBResponse } from '../bbb/response/bbb.response';
 import { ErrorStatus } from '../error/error-status.enum';
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
-import { IScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
+import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface/video-conference-options.interface';
+import { IScopeInfo } from './dto/scope-info.interface';
+import { VideoConference } from './dto/video-conference';
+import { VideoConferenceInfo } from './dto/video-conference-info';
+import { VideoConferenceJoin } from './dto/video-conference-join';
+import { VideoConferenceState } from './dto/video-conference-state.enum';
 
 const PermissionMapping = {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,

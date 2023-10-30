@@ -1,6 +1,7 @@
-import { NotFoundException, BadRequestException } from '@nestjs/common';
-import { EntityId, LearnroomMetadata } from '@shared/domain/types';
-import { ILearnroom } from '@shared/domain/interface';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { ILearnroom } from '../interface/learnroom';
+import { EntityId } from '../types/entity-id';
+import { LearnroomMetadata } from '../types/learnroom.types';
 
 const defaultColumns = 4;
 

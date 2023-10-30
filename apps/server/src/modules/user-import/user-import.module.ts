@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ImportUserRepo, LegacySchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
-import { LegacySchoolModule } from '@src/modules/legacy-school';
-import { AccountModule } from '../account';
-import { AuthorizationModule } from '../authorization';
+import { ImportUserRepo } from '@shared/repo/importuser/importuser.repo';
+import { LegacySchoolRepo } from '@shared/repo/school/legacy-school.repo';
+import { SystemRepo } from '@shared/repo/system/system.repo';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { LoggerModule } from '@src/core/logger/logger.module';
+import { AccountModule } from '../account/account.module';
+import { AuthorizationModule } from '../authorization/authorization.module';
+import { LegacySchoolModule } from '../legacy-school/legacy-school.module';
 import { ImportUserController } from './controller/import-user.controller';
 import { UserImportUc } from './uc/user-import.uc';
 

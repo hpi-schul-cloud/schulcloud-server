@@ -4,14 +4,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
-import {
-	ExternalUserDto,
-	OauthDataDto,
-	OauthDataStrategyInputDto,
-	ProvisioningDto,
-	ProvisioningSystemDto,
-} from '../dto';
-import { IservProvisioningStrategy, OidcMockProvisioningStrategy, SanisProvisioningStrategy } from '../strategy';
+import { ExternalUserDto } from '../dto/external-user.dto';
+import { OauthDataStrategyInputDto } from '../dto/oauth-data-strategy-input.dto';
+import { OauthDataDto } from '../dto/oauth-data.dto';
+import { ProvisioningSystemDto } from '../dto/provisioning-system.dto';
+import { ProvisioningDto } from '../dto/provisioning.dto';
+import { IservProvisioningStrategy } from '../strategy/iserv/iserv.strategy';
+import { OidcMockProvisioningStrategy } from '../strategy/oidc-mock/oidc-mock.strategy';
+import { SanisProvisioningStrategy } from '../strategy/sanis/sanis.strategy';
 import { ProvisioningService } from './provisioning.service';
 
 describe('ProvisioningService', () => {

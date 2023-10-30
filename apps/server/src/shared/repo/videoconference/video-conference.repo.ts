@@ -1,9 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { IVideoConferenceProperties, VideoConferenceDO } from '@shared/domain';
-import { TargetModels, VideoConference } from '@shared/domain/entity/video-conference.entity';
-import { VideoConferenceScope } from '@shared/domain/interface';
-import { BaseDORepo } from '@shared/repo/base.do.repo';
+
 import { EntityName, Loaded } from '@mikro-orm/core';
+import { VideoConferenceDO } from '@shared/domain/domainobject/video-conference.do';
+import {
+	IVideoConferenceProperties,
+	TargetModels,
+	VideoConference,
+} from '@shared/domain/entity/video-conference.entity';
+import { VideoConferenceScope } from '@shared/domain/interface/video-conference-scope.enum';
+import { BaseDORepo } from '../base.do.repo';
 
 const TargetModelsMapping = {
 	[VideoConferenceScope.EVENT]: TargetModels.EVENTS,

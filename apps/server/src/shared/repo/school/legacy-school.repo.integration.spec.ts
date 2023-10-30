@@ -3,26 +3,24 @@ import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
 import {
 	ISchoolProperties,
-	LegacySchoolDo,
 	SchoolEntity,
 	SchoolRolePermission,
 	SchoolRoles,
-	SchoolYearEntity,
-	SystemEntity,
-	UserLoginMigrationEntity,
-} from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import {
-	legacySchoolDoFactory,
-	schoolFactory,
-	schoolYearFactory,
-	systemFactory,
-	userLoginMigrationFactory,
-} from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
-import { LegacySchoolRepo } from '..';
+} from '@shared/domain/entity/school.entity';
+import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/legacy-school.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
+import { systemFactory } from '@shared/testing/factory/system.factory';
+import { userLoginMigrationFactory } from '@shared/testing/factory/user-login-migration.factory';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { LegacySchoolRepo } from './legacy-school.repo';
 
 describe('LegacySchoolRepo', () => {
 	let module: TestingModule;

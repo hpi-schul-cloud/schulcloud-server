@@ -1,22 +1,21 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
-import {
-	cleanupCollections,
-	courseFactory,
-	lessonFactory,
-	mapUserToCurrentUser,
-	roleFactory,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { mapUserToCurrentUser } from '@shared/testing/map-user-to-current-user';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import { TaskListResponse } from '@src/modules/task/controller/dto';
+
 import { Request } from 'express';
 import request from 'supertest';
+import { TaskListResponse } from '../dto/task.response';
 
 class API {
 	app: INestApplication;

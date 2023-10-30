@@ -10,32 +10,27 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { Page, UserLoginMigrationDO } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
+import { Page } from '@shared/domain/domainobject/page';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject/user-login-migration.do';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
-import {
-	SchoolNumberMissingLoggableException,
-	UserLoginMigrationAlreadyClosedLoggableException,
-	UserLoginMigrationGracePeriodExpiredLoggableException,
-	UserLoginMigrationNotFoundLoggableException,
-} from '../error';
-import { UserLoginMigrationMapper } from '../mapper';
-import {
-	CloseUserLoginMigrationUc,
-	RestartUserLoginMigrationUc,
-	StartUserLoginMigrationUc,
-	ToggleUserLoginMigrationUc,
-	UserLoginMigrationQuery,
-	UserLoginMigrationUc,
-} from '../uc';
-import {
-	UserLoginMigrationResponse,
-	UserLoginMigrationSearchListResponse,
-	UserLoginMigrationSearchParams,
-} from './dto';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { SchoolNumberMissingLoggableException } from '../error/school-number-missing.loggable-exception';
+import { UserLoginMigrationAlreadyClosedLoggableException } from '../error/user-login-migration-already-closed.loggable-exception';
+import { UserLoginMigrationGracePeriodExpiredLoggableException } from '../error/user-login-migration-grace-period-expired-loggable.exception';
+import { UserLoginMigrationNotFoundLoggableException } from '../error/user-login-migration-not-found.loggable-exception';
+import { UserLoginMigrationMapper } from '../mapper/user-login-migration.mapper';
+import { CloseUserLoginMigrationUc } from '../uc/close-user-login-migration.uc';
+import { UserLoginMigrationQuery } from '../uc/dto/user-login-migration-query';
+import { RestartUserLoginMigrationUc } from '../uc/restart-user-login-migration.uc';
+import { StartUserLoginMigrationUc } from '../uc/start-user-login-migration.uc';
+import { ToggleUserLoginMigrationUc } from '../uc/toggle-user-login-migration.uc';
+import { UserLoginMigrationUc } from '../uc/user-login-migration.uc';
 import { Oauth2MigrationParams } from './dto/oauth2-migration.params';
 import { SchoolIdParams } from './dto/request/school-id.params';
 import { UserLoginMigrationMandatoryParams } from './dto/request/user-login-migration-mandatory.params';
+import { UserLoginMigrationSearchParams } from './dto/request/user-login-migration-search.params';
+import { UserLoginMigrationSearchListResponse } from './dto/response/user-login-migration-search-list.response';
+import { UserLoginMigrationResponse } from './dto/response/user-login-migration.response';
 
 @ApiTags('UserLoginMigration')
 @Controller('user-login-migrations')

@@ -2,19 +2,23 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Card } from '@shared/domain/domainobject/board/card.do';
+import { ColumnBoard } from '@shared/domain/domainobject/board/column-board.do';
+import { ContentElementFactory } from '@shared/domain/domainobject/board/content-element.factory';
+import { RichTextElement } from '@shared/domain/domainobject/board/rich-text-element.do';
 import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
-	Card,
-	ColumnBoard,
-	ContentElementFactory,
-	InputFormat,
-	RichTextElement,
-} from '@shared/domain';
-import { columnBoardNodeFactory, setupEntities } from '@shared/testing';
-import { columnBoardFactory, columnFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
+} from '@shared/domain/domainobject/board/types/board-external-reference';
+import { InputFormat } from '@shared/domain/types/input-format.types';
+import { columnBoardNodeFactory } from '@shared/testing/factory/boardnode/column-board-node.factory';
+import { columnBoardFactory } from '@shared/testing/factory/domainobject/board/column-board.do.factory';
+import { columnFactory } from '@shared/testing/factory/domainobject/board/column.do.factory';
+import { richTextElementFactory } from '@shared/testing/factory/domainobject/board/rich-text-element.do.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+
 import { ObjectId } from 'bson';
-import { BoardDoRepo } from '../repo';
+import { BoardDoRepo } from '../repo/board-do.repo';
 import { BoardDoService } from './board-do.service';
 import { ColumnBoardService } from './column-board.service';
 

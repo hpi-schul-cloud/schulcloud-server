@@ -2,24 +2,24 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
-import { Permission, Submission } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
-import {
-	cleanupCollections,
-	courseGroupFactory,
-	mapUserToCurrentUser,
-	roleFactory,
-	submissionFactory,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@src/modules';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
+import { Submission } from '@shared/domain/entity/submission.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { courseGroupFactory } from '@shared/testing/factory/coursegroup.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { submissionFactory } from '@shared/testing/factory/submission.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { mapUserToCurrentUser } from '@shared/testing/map-user-to-current-user';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client/service/files-storage-client.service';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import { SubmissionStatusListResponse } from '@src/modules/task/controller/dto/submission.response';
+
 import { Request } from 'express';
 import request from 'supertest';
+import { SubmissionStatusListResponse } from '../dto/submission.response';
 
 class API {
 	app: INestApplication;

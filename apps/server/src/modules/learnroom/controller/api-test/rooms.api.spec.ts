@@ -3,25 +3,27 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, Course, Permission, Task } from '@shared/domain';
-import {
-	boardFactory,
-	cleanupCollections,
-	courseFactory,
-	lessonFactory,
-	mapUserToCurrentUser,
-	roleFactory,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
+import { Course } from '@shared/domain/entity/course.entity';
+import { Board } from '@shared/domain/entity/legacy-board/board.entity';
+import { Task } from '@shared/domain/entity/task.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { boardFactory } from '@shared/testing/factory/board.factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { mapUserToCurrentUser } from '@shared/testing/map-user-to-current-user';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { CopyApiResponse } from '@src/modules/copy-helper';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { SingleColumnBoardResponse } from '@src/modules/learnroom/controller/dto';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { CopyApiResponse } from '@src/modules/copy-helper/dto/copy.response';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client/service/files-storage-client.service';
 import { ServerTestModule } from '@src/modules/server/server.module';
+
 import { Request } from 'express';
 import request from 'supertest';
+import { SingleColumnBoardResponse } from '../dto/single-column-board/board.response';
 
 describe('Rooms Controller (API)', () => {
 	let app: INestApplication;

@@ -1,5 +1,7 @@
-import { FileRecordListResponse, FileRecordResponse, ScanResultDto, ScanResultParams } from '../controller/dto';
-import { FileRecord, ScanStatus } from '../entity';
+import { ScanResultParams } from '../controller/dto/file-storage.params';
+import { FileRecordListResponse, FileRecordResponse } from '../controller/dto/file-storage.response';
+import { ScanResultDto } from '../controller/dto/scan-result.dto';
+import { FileRecord, ScanStatus } from '../entity/filerecord.entity';
 
 export class FileRecordMapper {
 	static mapToFileRecordResponse(fileRecord: FileRecord): FileRecordResponse {

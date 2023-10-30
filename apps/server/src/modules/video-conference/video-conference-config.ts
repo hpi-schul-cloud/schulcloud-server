@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { IBbbSettings } from './bbb';
-import { IVideoConferenceSettings } from './interface';
+import { IBbbSettings } from './bbb/bbb-settings.interface';
+import { IVideoConferenceSettings } from './interface/video-conference-settings.interface';
 
 export default class VideoConferenceConfiguration {
 	static bbb: IBbbSettings = {

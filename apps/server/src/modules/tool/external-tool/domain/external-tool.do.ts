@@ -1,8 +1,11 @@
 import { BaseDO } from '@shared/domain/domainobject/base.do';
-import { ToolVersion } from '../../common/interface';
-import { Oauth2ToolConfig, BasicToolConfig, Lti11ToolConfig, ExternalToolConfig } from './config';
-import { CustomParameter } from '../../common/domain';
-import { ToolConfigType } from '../../common/enum';
+import { CustomParameter } from '../../common/domain/custom-parameter.do';
+import { ToolConfigType } from '../../common/enum/tool-config-type.enum';
+import { ToolVersion } from '../../common/interface/tool-version.interface';
+import { BasicToolConfig } from './config/basic-tool-config.do';
+import { ExternalToolConfig } from './config/external-tool-config.do';
+import { Lti11ToolConfig } from './config/lti11-tool-config.do';
+import { Oauth2ToolConfig } from './config/oauth2-tool-config.do';
 
 export interface ExternalToolProps {
 	id?: string;

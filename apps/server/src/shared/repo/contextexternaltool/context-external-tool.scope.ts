@@ -1,7 +1,7 @@
-import { Scope } from '@shared/repo';
-import { EntityId } from '@shared/domain';
-import { ToolContextType } from '@src/modules/tool/common/enum';
-import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { Scope } from '@shared/repo/scope';
+import { ToolContextType } from '@src/modules/tool/common/enum/tool-context-type.enum';
+import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity/context-external-tool.entity';
 
 export class ContextExternalToolScope extends Scope<ContextExternalToolEntity> {
 	byId(id: EntityId | undefined): ContextExternalToolScope {

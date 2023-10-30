@@ -1,10 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { LoggerModule } from '@src/core/logger';
+
 import { ConfigModule } from '@nestjs/config';
+import { ImportUserRepo } from '@shared/repo/importuser/importuser.repo';
+import { SystemRepo } from '@shared/repo/system/system.repo';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { LoggerModule } from '@src/core/logger/logger.module';
+import { AccountService } from '@src/modules/account/services/account.service';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
 import { UserImportUc } from '../uc/user-import.uc';
 import { ImportUserController } from './import-user.controller';
 

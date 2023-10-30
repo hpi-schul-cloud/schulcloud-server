@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { DecodeHtmlEntities } from '@shared/controller';
+import { DecodeHtmlEntities } from '@shared/controller/transformer/decode-html-entities.transformer';
 import { BoardTaskStatusResponse } from './board-task-status.response';
 
 export class BoardTaskResponse {

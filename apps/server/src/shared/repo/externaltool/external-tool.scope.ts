@@ -1,5 +1,5 @@
 import { Scope } from '@shared/repo/scope';
-import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity/external-tool.entity';
 
 export class ExternalToolScope extends Scope<ExternalToolEntity> {
 	byName(name: string | undefined): this {

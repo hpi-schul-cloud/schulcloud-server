@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ClassSourceOptions } from '../class-source-options.do';
 import { Class } from '../class.do';
 import { classFactory } from './factory/class.factory';
-import { ClassSourceOptions } from '../class-source-options.do';
 
 describe(Class.name, () => {
 	describe('constructor', () => {

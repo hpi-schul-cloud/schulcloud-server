@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DecodeHtmlEntities } from '@shared/controller';
+import { DecodeHtmlEntities } from '@shared/controller/transformer/decode-html-entities.transformer';
 import { BoardElementResponse } from './board-element.response';
 
 // TODO: this and DashboardResponse should be combined

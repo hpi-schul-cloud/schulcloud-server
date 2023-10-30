@@ -1,16 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ValidationError } from '@shared/common';
 import {
 	customParameterFactory,
 	externalToolFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { CustomParameter } from '../../common/domain';
-import { CustomParameterScope, CustomParameterType } from '../../common/enum';
-import { CommonToolValidationService } from '../../common/service';
-import { ExternalTool } from '../domain';
+import { ValidationError } from 'class-validator';
+import { CustomParameter } from '../../common/domain/custom-parameter.do';
+import { CustomParameterScope } from '../../common/enum/custom-parameter-scope.enum';
+import { CustomParameterType } from '../../common/enum/custom-parameter-type.enum';
+import { CommonToolValidationService } from '../../common/service/common-tool-validation.service';
+import { ExternalTool } from '../domain/external-tool.do';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
-import { ExternalToolService } from './index';
+import { ExternalToolService } from './external-tool.service';
 
 describe('ExternalToolParameterValidationService', () => {
 	let module: TestingModule;

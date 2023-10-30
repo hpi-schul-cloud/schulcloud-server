@@ -7,20 +7,21 @@ import {
 	NotImplementedException,
 	UnprocessableEntityException,
 } from '@nestjs/common';
+import { ErrorUtils } from '@src/core/error/utils/error.utils';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { parseInt } from 'lodash';
+import { firstValueFrom, Observable } from 'rxjs';
 import {
-	GroupUsers,
 	GroupfoldersCreated,
 	GroupfoldersFolder,
+	GroupUsers,
 	Meta,
 	NextcloudGroups,
 	OcsResponse,
 	SuccessfulRes,
-} from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.interface';
-import { ErrorUtils } from '@src/core/error/utils';
-import { LegacyLogger } from '@src/core/logger';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { parseInt } from 'lodash';
-import { Observable, firstValueFrom } from 'rxjs';
+} from './nextcloud.interface';
 
 @Injectable()
 export class NextcloudClient {

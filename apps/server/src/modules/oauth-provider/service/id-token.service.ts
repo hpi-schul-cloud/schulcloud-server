@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { LtiToolDO, Pseudonym, TeamEntity, UserDO } from '@shared/domain';
-import { TeamsRepo } from '@shared/repo';
-import { PseudonymService } from '@src/modules/pseudonym';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { UserService } from '@src/modules/user';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { Pseudonym } from '@shared/domain/domainobject/pseudonym.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { TeamEntity } from '@shared/domain/entity/team.entity';
+import { TeamsRepo } from '@shared/repo/teams/teams.repo';
+import { PseudonymService } from '@src/modules/pseudonym/service/pseudonym.service';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain/external-tool.do';
+import { UserService } from '@src/modules/user/service/user.service';
 import { IdTokenCreationLoggableException } from '../error/id-token-creation-exception.loggable';
-import { GroupNameIdTuple, IdToken, OauthScope } from '../interface';
+import { IdToken, GroupNameIdTuple } from '../interface/id-token';
+import { OauthScope } from '../interface/oauth-scope.enum';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 
 @Injectable()

@@ -1,5 +1,6 @@
-import { UserLoginMigrationDO } from '@shared/domain';
-import { UserLoginMigrationResponse, UserLoginMigrationSearchParams } from '../controller/dto';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject/user-login-migration.do';
+import { UserLoginMigrationSearchParams } from '../controller/dto/request/user-login-migration-search.params';
+import { UserLoginMigrationResponse } from '../controller/dto/response/user-login-migration.response';
 import { UserLoginMigrationQuery } from '../uc/dto/user-login-migration-query';
 
 export class UserLoginMigrationMapper {

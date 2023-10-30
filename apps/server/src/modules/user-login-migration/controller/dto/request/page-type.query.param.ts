@@ -1,6 +1,6 @@
-import { IsEnum, IsMongoId } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { PageTypes } from '../../../interface/page-types.enum';
+import { PageTypes } from '@src/modules/user-login-migration/interface/page-types.enum';
+import { IsEnum, IsMongoId } from 'class-validator';
 
 export class PageContentQueryParams {
 	@ApiProperty({ description: 'The Type of Page that is displayed', type: PageTypes })

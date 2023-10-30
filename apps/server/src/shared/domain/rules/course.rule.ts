@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Course, User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action, AuthorizationContext, Rule } from '@src/modules/authorization/types';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { AuthorizationContext } from '@src/modules/authorization/types/authorization-context.interface';
+import { Rule } from '@src/modules/authorization/types/rule.interface';
+import { Course } from '../entity/course.entity';
+import { User } from '../entity/user.entity';
 
 @Injectable()
 export class CourseRule implements Rule {

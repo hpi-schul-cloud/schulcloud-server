@@ -1,16 +1,12 @@
 import { NotImplementedException } from '@nestjs/common';
-import {
-	fileElementFactory,
-	linkElementFactory,
-	richTextElementFactory,
-	submissionContainerElementFactory,
-} from '@shared/testing';
-import {
-	FileElementResponse,
-	LinkElementResponse,
-	RichTextElementResponse,
-	SubmissionContainerElementResponse,
-} from '../dto';
+import { fileElementFactory } from '@shared/testing/factory/domainobject/board/file-element.do.factory';
+import { linkElementFactory } from '@shared/testing/factory/domainobject/board/link-element.do.factory';
+import { richTextElementFactory } from '@shared/testing/factory/domainobject/board/rich-text-element.do.factory';
+import { submissionContainerElementFactory } from '@shared/testing/factory/domainobject/board/submission-container-element.do.factory';
+import { FileElementResponse } from '../dto/element/file-element.response';
+import { LinkElementResponse } from '../dto/element/link-element.response';
+import { RichTextElementResponse } from '../dto/element/rich-text-element.response';
+import { SubmissionContainerElementResponse } from '../dto/element/submission-container-element.response';
 import { ContentElementResponseFactory } from './content-element-response.factory';
 
 describe(ContentElementResponseFactory.name, () => {

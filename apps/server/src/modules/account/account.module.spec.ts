@@ -1,8 +1,10 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
 import { AccountModule } from './account.module';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb, AccountIdmToDtoMapperIdm } from './mapper';
+import { AccountIdmToDtoMapper } from './mapper/account-idm-to-dto.mapper.abstract';
+import { AccountIdmToDtoMapperDb } from './mapper/account-idm-to-dto.mapper.db';
+import { AccountIdmToDtoMapperIdm } from './mapper/account-idm-to-dto.mapper.idm';
 import { AccountService } from './services/account.service';
 import { AccountValidationService } from './services/account.validation.service';
 

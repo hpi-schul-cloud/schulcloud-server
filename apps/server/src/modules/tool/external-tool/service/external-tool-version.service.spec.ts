@@ -1,8 +1,13 @@
-import { customParameterFactory, externalToolFactory } from '@shared/testing/factory/domainobject/tool';
+import {
+	customParameterFactory,
+	externalToolFactory,
+} from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { CustomParameter } from '../../common/domain/custom-parameter.do';
+import { CustomParameterLocation } from '../../common/enum/custom-parameter-location.enum';
+import { CustomParameterScope } from '../../common/enum/custom-parameter-scope.enum';
+import { CustomParameterType } from '../../common/enum/custom-parameter-type.enum';
+import { ExternalTool } from '../domain/external-tool.do';
 import { ExternalToolVersionService } from './external-tool-version.service';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../common/enum';
-import { CustomParameter } from '../../common/domain';
-import { ExternalTool } from '../domain';
 
 describe('ExternalToolVersionService', () => {
 	let service: ExternalToolVersionService;

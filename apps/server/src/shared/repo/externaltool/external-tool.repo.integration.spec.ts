@@ -1,28 +1,27 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, Page, SortOrder } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
-import { cleanupCollections, externalToolEntityFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
-import { ExternalToolSearchQuery } from '@src/modules/tool';
-import { CustomParameter } from '@src/modules/tool/common/domain';
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	LtiMessageType,
-	LtiPrivacyPermission,
-	ToolConfigType,
-} from '@src/modules/tool/common/enum';
-import {
-	BasicToolConfig,
-	ExternalTool,
-	Lti11ToolConfig,
-	Oauth2ToolConfig,
-} from '@src/modules/tool/external-tool/domain';
-import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
+import { Page } from '@shared/domain/domainobject/page';
+import { LtiPrivacyPermission } from '@shared/domain/entity/ltitool.entity';
+import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { externalToolEntityFactory } from '@shared/testing/factory/external-tool-entity.factory';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { CustomParameter } from '@src/modules/tool/common/domain/custom-parameter.do';
+import { CustomParameterLocation } from '@src/modules/tool/common/enum/custom-parameter-location.enum';
+import { CustomParameterScope } from '@src/modules/tool/common/enum/custom-parameter-scope.enum';
+import { CustomParameterType } from '@src/modules/tool/common/enum/custom-parameter-type.enum';
+import { LtiMessageType } from '@src/modules/tool/common/enum/lti-message-type.enum';
+import { ToolConfigType } from '@src/modules/tool/common/enum/tool-config-type.enum';
+import { ExternalToolSearchQuery } from '@src/modules/tool/common/interface/external-tool-search-query';
+import { BasicToolConfig } from '@src/modules/tool/external-tool/domain/config/basic-tool-config.do';
+import { Lti11ToolConfig } from '@src/modules/tool/external-tool/domain/config/lti11-tool-config.do';
+import { Oauth2ToolConfig } from '@src/modules/tool/external-tool/domain/config/oauth2-tool-config.do';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain/external-tool.do';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity/external-tool.entity';
+import { ExternalToolRepo } from './external-tool.repo';
+import { ExternalToolRepoMapper } from './external-tool.repo.mapper';
 
 describe('ExternalToolRepo', () => {
 	let module: TestingModule;

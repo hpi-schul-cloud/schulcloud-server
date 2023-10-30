@@ -22,30 +22,34 @@ import {
 	UseInterceptors,
 } from '@nestjs/common';
 import { ApiConsumes, ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
-import { PaginationParams } from '@shared/controller';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
+import { RequestLoggingInterceptor } from '@shared/common/interceptor/request-logging.interceptor';
+import { PaginationParams } from '@shared/controller/dto/pagination.params';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+
 import { Request, Response } from 'express';
-import { GetFileResponse } from '../interface';
-import { FilesStorageMapper } from '../mapper';
+import { GetFileResponse } from '../interface/interfaces';
 import { FileRecordMapper } from '../mapper/file-record.mapper';
-import { FilesStorageUC } from '../uc';
+import { FilesStorageMapper } from '../mapper/files-storage.mapper';
+import { FilesStorageUC } from '../uc/files-storage.uc';
 import {
-	CopyFileListResponse,
 	CopyFileParams,
-	CopyFileResponse,
 	CopyFilesOfParentParams,
 	DownloadFileParams,
 	FileParams,
-	FileRecordListResponse,
 	FileRecordParams,
-	FileRecordResponse,
 	FileUrlParams,
 	PreviewParams,
 	RenameFileParams,
 	SingleFileParams,
-} from './dto';
+} from './dto/file-storage.params';
+import {
+	CopyFileListResponse,
+	CopyFileResponse,
+	FileRecordListResponse,
+	FileRecordResponse,
+} from './dto/file-storage.response';
 
 @ApiTags('file')
 @Authenticate('jwt')

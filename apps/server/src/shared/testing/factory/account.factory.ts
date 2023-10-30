@@ -1,6 +1,8 @@
 /* istanbul ignore file */
-import { Account, EntityId, IdmAccountProperties, User } from '@shared/domain';
 
+import { Account, IdmAccountProperties } from '@shared/domain/entity/account.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';

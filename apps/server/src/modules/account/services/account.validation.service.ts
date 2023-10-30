@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { UserRepo } from '@shared/repo';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { UserRepo } from '@shared/repo/user/user.repo';
 import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
 import { AccountRepo } from '../repo/account.repo';
 

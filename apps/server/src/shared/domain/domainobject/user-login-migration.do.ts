@@ -1,4 +1,4 @@
-import { EntityId } from '../types';
+import { EntityId } from '../types/entity-id';
 import { BaseDO } from './base.do';
 
 export class UserLoginMigrationDO extends BaseDO {

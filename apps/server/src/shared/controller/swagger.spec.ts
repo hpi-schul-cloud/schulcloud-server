@@ -1,6 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { ServerTestModule } from '@src/modules/server';
+import { ServerTestModule } from '@src/modules/server/server.module';
+
 import request from 'supertest';
 import { enableOpenApiDocs } from './swagger';
 

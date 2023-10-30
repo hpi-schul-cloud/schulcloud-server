@@ -2,13 +2,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain';
-import { setupEntities } from '@shared/testing';
-import { classEntityFactory } from '@src/modules/class/entity/testing/factory/class.entity.factory';
-import { Class } from '../domain';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { Class } from '../domain/class.do';
 import { classFactory } from '../domain/testing/factory/class.factory';
-import { ClassesRepo } from '../repo';
-import { ClassMapper } from '../repo/mapper';
+import { classEntityFactory } from '../entity/testing/factory/class.entity.factory';
+import { ClassesRepo } from '../repo/classes.repo';
+import { ClassMapper } from '../repo/mapper/class.mapper';
 import { ClassService } from './class.service';
 
 describe(ClassService.name, () => {

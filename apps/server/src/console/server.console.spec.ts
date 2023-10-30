@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConsoleWriterService } from '@shared/infra/console';
+import { ConsoleWriterService } from '@shared/infra/console/console-writer/console-writer.service';
 import { ServerConsoleModule } from './console.module';
 import { ServerConsole } from './server.console';
 

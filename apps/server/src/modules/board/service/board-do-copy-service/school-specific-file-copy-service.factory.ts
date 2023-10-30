@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client/service/files-storage-client.service';
 import {
 	SchoolSpecificFileCopyService,
 	SchoolSpecificFileCopyServiceProps,

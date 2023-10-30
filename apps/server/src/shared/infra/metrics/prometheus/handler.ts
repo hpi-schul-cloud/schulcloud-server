@@ -1,4 +1,4 @@
-import { RequestHandler, Request, Response } from 'express';
+import { Request, RequestHandler, Response } from 'express';
 import client from 'prom-client';
 
 export const createPrometheusMetricsHandler = (): RequestHandler => (_req: Request, res: Response) => {

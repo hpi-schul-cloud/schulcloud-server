@@ -4,8 +4,9 @@ import { AxiosResponse } from 'axios';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
-import { OAuthSSOError } from '../loggable';
-import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
+import { OAuthSSOError } from '../loggable/oauth-sso.error';
+import { AuthenticationCodeGrantTokenRequest } from './dto/authentication-code-grant-token.request';
+import { OauthTokenResponse } from './dto/oauth-token.response';
 
 @Injectable()
 export class OauthAdapterService {

@@ -1,5 +1,8 @@
-import { LegacySchoolDo, RoleName, UserDO } from '@shared/domain';
-import { ExternalSchoolDto, ExternalUserDto } from '../../dto';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { ExternalSchoolDto } from '../../dto/external-school.dto';
+import { ExternalUserDto } from '../../dto/external-user.dto';
 
 export class IservMapper {
 	static mapToExternalSchoolDto(schoolDO: LegacySchoolDo): ExternalSchoolDto {

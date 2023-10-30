@@ -1,4 +1,4 @@
-###
+ ###
 # curl -u -H OCS-APIRequest:true -H Accept:application/json https://nextcloud-nbc.dbildungscloud.dev//ocs/v1.php/cloud/groups?search=SchulcloudNextcloud-5e1dc275322ce040a850b14b&format=json
 GET http://nextcloud.localhost:9090/ocs/v1.php/cloud/groups?search=SchulcloudNextcloud-62c442819b713d61c0a84f31
 Authorization: Basic {{NEXTCLOUD_ADMIN_USER}} {{NEXTCLOUD_ADMIN_PASS}}

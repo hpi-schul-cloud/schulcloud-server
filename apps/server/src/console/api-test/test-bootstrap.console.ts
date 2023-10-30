@@ -1,7 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConsoleWriterService } from '@shared/infra/console';
+import { ConsoleWriterService } from '@shared/infra/console/console-writer/console-writer.service';
 import { DatabaseManagementUc } from '@src/modules/management/uc/database-management.uc';
+
 import { AbstractBootstrapConsole, BootstrapConsole } from 'nestjs-console';
 
 export class TestBootstrapConsole extends AbstractBootstrapConsole<TestingModule> {

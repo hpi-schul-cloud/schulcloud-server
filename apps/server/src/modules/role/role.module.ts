@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { RoleRepo } from '@shared/repo';
-import { RoleService } from '@src/modules/role/service/role.service';
-import { RoleUc } from '@src/modules/role/uc/role.uc';
+import { RoleRepo } from '@shared/repo/role/role.repo';
+import { RoleService } from './service/role.service';
+import { RoleUc } from './uc/role.uc';
 
 @Module({
 	providers: [RoleRepo, RoleService, RoleUc],

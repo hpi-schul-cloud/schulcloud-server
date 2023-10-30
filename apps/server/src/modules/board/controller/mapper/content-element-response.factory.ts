@@ -1,6 +1,6 @@
 import { NotImplementedException } from '@nestjs/common';
-import { AnyBoardDo } from '@shared/domain';
-import { AnyContentElementResponse } from '../dto';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
+import { AnyContentElementResponse } from '../dto/element/any-content-element.response';
 import { BaseResponseMapper } from './base-mapper.interface';
 import { ExternalToolElementResponseMapper } from './external-tool-element-response.mapper';
 import { FileElementResponseMapper } from './file-element-response.mapper';

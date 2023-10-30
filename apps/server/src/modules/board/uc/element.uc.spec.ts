@@ -1,18 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, InputFormat } from '@shared/domain';
-import {
-	fileElementFactory,
-	richTextElementFactory,
-	setupEntities,
-	submissionContainerElementFactory,
-	submissionItemFactory,
-	userFactory,
-} from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
+import { BoardDoAuthorizable } from '@shared/domain/domainobject/board/types/board-do-authorizable';
+import { InputFormat } from '@shared/domain/types/input-format.types';
+import { fileElementFactory } from '@shared/testing/factory/domainobject/board/file-element.do.factory';
+import { richTextElementFactory } from '@shared/testing/factory/domainobject/board/rich-text-element.do.factory';
+import { submissionContainerElementFactory } from '@shared/testing/factory/domainobject/board/submission-container-element.do.factory';
+import { submissionItemFactory } from '@shared/testing/factory/domainobject/board/submission-item.do.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { Logger } from '@src/core/logger/logger';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+
 import { ObjectId } from 'bson';
-import { BoardDoAuthorizableService, ContentElementService } from '../service';
+import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
+import { ContentElementService } from '../service/content-element.service';
 import { SubmissionItemService } from '../service/submission-item.service';
 import { ElementUc } from './element.uc';
 

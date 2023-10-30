@@ -1,5 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { ErrorLogMessage, Loggable } from '@src/core/logger';
+import { Loggable } from '@src/core/logger/interfaces/loggable';
+import { ErrorLogMessage } from '@src/core/logger/types/logging.types';
 
 export class IdTokenCreationLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(private readonly clientId: string, private readonly userId?: string) {

@@ -1,9 +1,12 @@
-import { RoleName, SchoolYearEntity, UserDO } from '@shared/domain';
-import { Class } from '@src/modules/class/domain';
-import { SystemDto } from '@src/modules/system';
-import { Group } from '../../domain';
-import { ClassInfoDto, ResolvedGroupUser } from '../dto';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { Class } from '@src/modules/class/domain/class.do';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { Group } from '../../domain/group';
+import { ClassInfoDto } from '../dto/class-info.dto';
 import { ClassRootType } from '../dto/class-root-type';
+import { ResolvedGroupUser } from '../dto/resolved-group-user';
 
 export class GroupUcMapper {
 	public static mapGroupToClassInfoDto(

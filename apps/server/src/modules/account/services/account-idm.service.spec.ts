@@ -1,16 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError } from '@shared/common';
-import { IdmAccount } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { IdentityManagementOauthService, IdentityManagementService } from '@shared/infra/identity-management';
+
 import { NotImplementedException } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+
 import { ConfigModule } from '@nestjs/config';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
+import { EntityNotFoundError } from '@shared/common/error/entity-not-found.error';
+import { IdmAccount } from '@shared/domain/interface/account';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { IdentityManagementOauthService } from '@shared/infra/identity-management/identity-management-oauth.service';
+import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
+import { LoggerModule } from '@src/core/logger/logger.module';
+import { AccountIdmToDtoMapper } from '../mapper/account-idm-to-dto.mapper.abstract';
+import { AccountIdmToDtoMapperDb } from '../mapper/account-idm-to-dto.mapper.db';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountLookupService } from './account-lookup.service';
-import { AccountDto, AccountSaveDto } from './dto';
+import { AccountSaveDto } from './dto/account-save.dto';
+import { AccountDto } from './dto/account.dto';
 
 describe('AccountIdmService', () => {
 	let module: TestingModule;

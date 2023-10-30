@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { SystemEntity, SystemTypeEnum } from '@shared/domain';
-import { BaseRepo } from '@shared/repo/base.repo';
-import { SystemScope } from '@shared/repo/system/system-scope';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { SystemTypeEnum } from '@shared/domain/types/system.type';
+import { BaseRepo } from '../base.repo';
+import { SystemScope } from './system-scope';
 
 @Injectable()
 export class SystemRepo extends BaseRepo<SystemEntity> {

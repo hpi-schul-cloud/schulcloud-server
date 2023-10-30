@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { EntityNotFoundError } from '@shared/common';
-import { EntityId, SystemEntity, SystemTypeEnum } from '@shared/domain';
+import { EntityNotFoundError } from '@shared/common/error/entity-not-found.error';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { SystemTypeEnum } from '@shared/domain/types/system.type';
 import { IdentityManagementOauthService } from '@shared/infra/identity-management/identity-management-oauth.service';
-import { SystemRepo } from '@shared/repo';
-import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { SystemRepo } from '@shared/repo/system/system.repo';
+import { SystemMapper } from '../mapper/system.mapper';
+import { SystemDto } from './dto/system.dto';
 
 @Injectable()
 export class SystemService {

@@ -1,19 +1,19 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, UserDO } from '@shared/domain';
-import { UserService } from '@src/modules/user';
-import {
-	BBBBaseMeetingConfig,
-	BBBCreateConfigBuilder,
-	BBBMeetingInfoResponse,
-	BBBResponse,
-	BBBRole,
-	BBBService,
-	GuestPolicy,
-} from '../bbb';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { UserService } from '@src/modules/user/service/user.service';
+import { BBBService } from '../bbb/bbb.service';
+import { BBBCreateConfigBuilder } from '../bbb/builder/bbb-create-config.builder';
+import { BBBBaseMeetingConfig } from '../bbb/request/bbb-base-meeting.config';
+import { GuestPolicy } from '../bbb/request/bbb-create.config';
+import { BBBRole } from '../bbb/request/bbb-join.config';
+import { BBBMeetingInfoResponse } from '../bbb/response/bbb-meeting-info.response';
+import { BBBResponse } from '../bbb/response/bbb.response';
 import { ErrorStatus } from '../error/error-status.enum';
-import { VideoConferenceOptions } from '../interface';
-import { VideoConferenceService } from '../service';
-import { IScopeInfo, ScopeRef } from './dto';
+import { VideoConferenceOptions } from '../interface/video-conference-options.interface';
+import { VideoConferenceService } from '../service/video-conference.service';
+import { IScopeInfo } from './dto/scope-info.interface';
+import { ScopeRef } from './dto/scope-ref';
 
 @Injectable()
 export class VideoConferenceCreateUc {

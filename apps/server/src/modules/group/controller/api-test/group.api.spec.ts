@@ -1,23 +1,28 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, RoleName, SchoolEntity, SchoolYearEntity, SortOrder, SystemEntity, User } from '@shared/domain';
-import {
-	groupEntityFactory,
-	roleFactory,
-	schoolFactory,
-	schoolYearFactory,
-	systemFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-	userFactory,
-} from '@shared/testing';
-import { ClassEntity } from '@src/modules/class/entity';
+import { Role } from '@shared/domain/entity/role.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { SortOrder } from '@shared/domain/interface/find-options';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { groupEntityFactory } from '@shared/testing/factory/group-entity.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
+import { systemFactory } from '@shared/testing/factory/system.factory';
+import { UserAndAccountTestFactory } from '@shared/testing/factory/user-and-account.test.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { TestApiClient } from '@shared/testing/test-api-client';
+import { ClassEntity } from '@src/modules/class/entity/class.entity';
 import { classEntityFactory } from '@src/modules/class/entity/testing/factory/class.entity.factory';
-import { ServerTestModule } from '@src/modules/server';
-import { GroupEntity, GroupEntityTypes } from '../../entity';
+import { ServerTestModule } from '@src/modules/server/server.module';
+import { GroupEntity, GroupEntityTypes } from '../../entity/group.entity';
 import { ClassRootType } from '../../uc/dto/class-root-type';
-import { ClassInfoSearchListResponse, ClassSortBy } from '../dto';
+import { ClassSortBy } from '../dto/request/class-sort-params';
+import { ClassInfoSearchListResponse } from '../dto/response/class-info-search-list.response';
 
 const baseRouteName = '/groups';
 

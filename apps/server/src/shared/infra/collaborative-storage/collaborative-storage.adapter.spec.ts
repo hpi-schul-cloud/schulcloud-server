@@ -1,12 +1,12 @@
 import { createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain';
-import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage/collaborative-storage.adapter';
-import { CollaborativeStorageAdapterMapper } from '@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
-import { ICollaborativeStorageStrategy } from '@shared/infra/collaborative-storage/strategy/base.interface.strategy';
-import { LegacyLogger } from '@src/core/logger';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { TeamDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
+import { CollaborativeStorageAdapter } from './collaborative-storage.adapter';
+import { CollaborativeStorageAdapterMapper } from './mapper/collaborative-storage-adapter.mapper';
+import { ICollaborativeStorageStrategy } from './strategy/base.interface.strategy';
 
 class TestStrategy implements ICollaborativeStorageStrategy {
 	baseURL: string;

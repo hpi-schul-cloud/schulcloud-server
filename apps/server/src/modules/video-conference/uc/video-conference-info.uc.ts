@@ -1,12 +1,21 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain';
-import { ErrorStatus } from '@src/modules/video-conference/error/error-status.enum';
-import { UserService } from '@src/modules/user';
-import { BBBBaseMeetingConfig, BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBService } from '../bbb';
-import { IScopeInfo, ScopeRef, VideoConferenceInfo, VideoConferenceState } from './dto';
-import { VideoConferenceService } from '../service';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject/video-conference.do';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { UserService } from '@src/modules/user/service/user.service';
+import { BBBService } from '../bbb/bbb.service';
+import { BBBBaseMeetingConfig } from '../bbb/request/bbb-base-meeting.config';
+import { BBBRole } from '../bbb/request/bbb-join.config';
+import { BBBMeetingInfoResponse } from '../bbb/response/bbb-meeting-info.response';
+import { BBBResponse } from '../bbb/response/bbb.response';
+import { ErrorStatus } from '../error/error-status.enum';
+import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface/video-conference-options.interface';
 import { PermissionMapping } from '../mapper/video-conference.mapper';
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { VideoConferenceService } from '../service/video-conference.service';
+import { IScopeInfo } from './dto/scope-info.interface';
+import { ScopeRef } from './dto/scope-ref';
+import { VideoConferenceInfo } from './dto/video-conference-info';
+import { VideoConferenceState } from './dto/video-conference-state.enum';
 
 @Injectable()
 export class VideoConferenceInfoUc {

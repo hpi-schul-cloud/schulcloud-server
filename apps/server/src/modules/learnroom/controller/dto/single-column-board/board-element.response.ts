@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { RoomBoardElementTypes } from '@src/modules/learnroom/types';
+import { RoomBoardElementTypes } from '@src/modules/learnroom/types/room-board.types';
 import { BoardColumnBoardResponse } from './board-column-board.response';
 import { BoardLessonResponse } from './board-lesson.response';
 import { BoardTaskResponse } from './board-task.response';

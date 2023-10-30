@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { SanitizeHtml } from '@shared/controller/transformer/sanitize-html.transformer';
 import { IsString } from 'class-validator';
-import { SanitizeHtml } from '@shared/controller';
 
 export class RenameBodyParams {
 	@IsString()

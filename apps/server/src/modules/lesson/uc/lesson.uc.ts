@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Permission } from '@shared/domain';
-import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { LessonService } from '../service';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { LessonService } from '../service/lesson.service';
 
 @Injectable()
 export class LessonUC {

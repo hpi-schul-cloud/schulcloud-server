@@ -1,6 +1,8 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Module } from '@nestjs/common';
-import { LegacyLogger, LoggerModule } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { LoggerModule } from '@src/core/logger/logger.module';
+
 import { createClient, RedisClient } from 'redis';
 import { REDIS_CLIENT } from './interface/redis.constants';
 

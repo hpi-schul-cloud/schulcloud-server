@@ -1,5 +1,5 @@
-import { Pseudonym } from '@shared/domain';
-import { PseudonymResponse } from '../controller/dto';
+import { Pseudonym } from '@shared/domain/domainobject/pseudonym.do';
+import { PseudonymResponse } from '../controller/dto/pseudonym.response';
 
 export class PseudonymMapper {
 	static mapToResponse(pseudonym: Pseudonym): PseudonymResponse {

@@ -1,11 +1,12 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { setupEntities } from '@shared/testing';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { FileEntity } from '../entity/file.entity';
+import { fileEntityFactory } from '../entity/testing/factory/file-entity.factory';
+import { filePermissionEntityFactory } from '../entity/testing/factory/file-permission-entity.factory';
+import { FilesRepo } from '../repo/files.repo';
 import { FilesService } from './files.service';
-import { FilesRepo } from '../repo';
-import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
-import { FileEntity } from '../entity';
 
 describe(FilesService.name, () => {
 	let module: TestingModule;

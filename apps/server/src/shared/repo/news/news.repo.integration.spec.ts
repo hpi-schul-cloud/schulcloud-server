@@ -1,18 +1,20 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { News, NewsTargetModel, SortOrder } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { News } from '@shared/domain/entity/news.entity';
+import { SortOrder } from '@shared/domain/interface/find-options';
+import { NewsTargetModel } from '@shared/domain/types/news.types';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
 import {
 	courseNewsFactory,
-	schoolNewsFactory,
-	teamNewsFactory,
-	cleanupCollections,
 	courseUnpublishedNewsFactory,
+	schoolNewsFactory,
 	schoolUnpublishedNewsFactory,
+	teamNewsFactory,
 	teamUnpublishedNewsFactory,
-	userFactory,
-} from '@shared/testing';
+} from '@shared/testing/factory/news.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
 import { NewsRepo } from './news.repo';
 
 describe('NewsRepo', () => {

@@ -1,5 +1,5 @@
-import { ConsoleWriterService } from '@shared/infra/console';
-import { LegacyLogger } from '@src/core/logger';
+import { ConsoleWriterService } from '@shared/infra/console/console-writer/console-writer.service';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { Command, CommandOption, Console } from 'nestjs-console';
 import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
 

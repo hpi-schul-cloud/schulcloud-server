@@ -1,14 +1,12 @@
-import {
-	AcceptConsentRequestBody,
-	AcceptLoginRequestBody,
-	IntrospectResponse,
-	ProviderConsentResponse,
-	ProviderConsentSessionResponse,
-	ProviderLoginResponse,
-	ProviderOauthClient,
-	ProviderRedirectResponse,
-	RejectRequestBody,
-} from './dto';
+import { ProviderOauthClient } from './dto/interface/oauth-client.interface';
+import { AcceptConsentRequestBody } from './dto/request/accept-consent-request.body';
+import { AcceptLoginRequestBody } from './dto/request/accept-login-request.body';
+import { RejectRequestBody } from './dto/request/reject-request.body';
+import { ProviderConsentSessionResponse } from './dto/response/consent-session.response';
+import { ProviderConsentResponse } from './dto/response/consent.response';
+import { IntrospectResponse } from './dto/response/introspect.response';
+import { ProviderLoginResponse } from './dto/response/login.response';
+import { ProviderRedirectResponse } from './dto/response/redirect.response';
 
 export abstract class OauthProviderService {
 	abstract getLoginRequest(challenge: string): Promise<ProviderLoginResponse>;

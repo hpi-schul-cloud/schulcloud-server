@@ -3,18 +3,19 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpModule } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthConfig } from '@shared/domain';
-import { axiosResponseFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
-import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
-import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
-import { OAuthService } from '@src/modules/oauth/service/oauth.service';
+import { OauthConfig } from '@shared/domain/entity/system.entity';
+import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+
 import { AxiosResponse } from 'axios';
-import { HydraOauthUc } from '.';
-import { AuthorizationParams } from '../controller/dto';
+import { AuthorizationParams } from '../controller/dto/authorization.params';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
+import { OAuthTokenDto } from '../interface/oauth-token.dto';
 import { OAuthSSOError } from '../loggable/oauth-sso.error';
-import { OAuthTokenDto } from '../interface';
+import { HydraRedirectDto } from '../service/dto/hydra.redirect.dto';
+import { HydraSsoService } from '../service/hydra.service';
+import { OAuthService } from '../service/oauth.service';
+import { HydraOauthUc } from './hydra-oauth.uc';
 
 class HydraOauthUcSpec extends HydraOauthUc {
 	public validateStatusSpec = (status: number) => this.validateStatus(status);

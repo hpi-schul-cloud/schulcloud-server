@@ -1,8 +1,11 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Counted, EntityId } from '@shared/domain';
-import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
+import { Counted } from '@shared/domain/types/counted';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { AuthorizationContext } from '@src/modules/authorization/types/authorization-context.interface';
+
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
 import { Request } from 'express';
@@ -10,7 +13,6 @@ import { firstValueFrom } from 'rxjs';
 import internal from 'stream';
 import {
 	CopyFileParams,
-	CopyFileResponse,
 	CopyFilesOfParentParams,
 	DownloadFileParams,
 	FileRecordParams,
@@ -19,12 +21,14 @@ import {
 	RenameFileParams,
 	ScanResultParams,
 	SingleFileParams,
-} from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
-import { ErrorType } from '../error';
+} from '../controller/dto/file-storage.params';
+import { CopyFileResponse } from '../controller/dto/file-storage.response';
+import { FileRecord, FileRecordParentType } from '../entity/filerecord.entity';
+import { ErrorType } from '../error/error-status.enum';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
-import { GetFileResponse } from '../interface';
-import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
+import { GetFileResponse } from '../interface/interfaces';
+import { FileDtoBuilder } from '../mapper/file-dto.builder';
+import { FilesStorageMapper } from '../mapper/files-storage.mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
 

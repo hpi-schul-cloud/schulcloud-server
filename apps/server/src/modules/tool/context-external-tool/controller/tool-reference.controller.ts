@@ -1,16 +1,14 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ToolReference } from '../domain';
-import { ContextExternalToolResponseMapper } from '../mapper';
-import { ToolReferenceUc } from '../uc';
-import {
-	ContextExternalToolContextParams,
-	ContextExternalToolIdParams,
-	ToolReferenceListResponse,
-	ToolReferenceResponse,
-} from './dto';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ToolReference } from '../domain/tool-reference';
+import { ContextExternalToolResponseMapper } from '../mapper/context-external-tool-response.mapper';
+import { ToolReferenceUc } from '../uc/tool-reference.uc';
+import { ContextExternalToolContextParams } from './dto/context-external-tool-context.params';
+import { ContextExternalToolIdParams } from './dto/context-external-tool-id.params';
+import { ToolReferenceListResponse } from './dto/tool-reference-list.response';
+import { ToolReferenceResponse } from './dto/tool-reference.response';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

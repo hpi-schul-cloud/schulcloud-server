@@ -1,9 +1,12 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, SchoolEntity, SystemEntity, UserLoginMigrationDO } from '@shared/domain';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject/user-login-migration.do';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
 import { IUserLoginMigration, UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
-import { LegacyLogger } from '@src/core/logger';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { BaseDORepo } from '../base.do.repo';
 
 @Injectable()

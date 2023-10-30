@@ -1,6 +1,6 @@
 import { ObjectId } from 'bson';
 import { DomainObject } from './domain-object';
-import { EntityId } from './types';
+import { EntityId } from './types/entity-id';
 
 interface MyDomainObjectProps {
 	id: EntityId;

@@ -1,31 +1,27 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
-import {
-	BoardNodeType,
-	CardNode,
-	ColumnBoardNode,
-	ColumnNode,
-	ExternalToolElementNodeEntity,
-	FileElementNode,
-	LinkElementNode,
-	RichTextElementNode,
-	SubmissionContainerElementNode,
-	SubmissionItemNode,
-} from '@shared/domain';
-import {
-	cardFactory,
-	columnBoardFactory,
-	columnBoardNodeFactory,
-	columnFactory,
-	contextExternalToolEntityFactory,
-	externalToolElementFactory,
-	fileElementFactory,
-	linkElementFactory,
-	richTextElementFactory,
-	setupEntities,
-	submissionContainerElementFactory,
-	submissionItemFactory,
-} from '@shared/testing';
+import { CardNode } from '@shared/domain/entity/boardnode/card-node.entity';
+import { ColumnBoardNode } from '@shared/domain/entity/boardnode/column-board-node.entity';
+import { ColumnNode } from '@shared/domain/entity/boardnode/column-node.entity';
+import { ExternalToolElementNodeEntity } from '@shared/domain/entity/boardnode/external-tool-element-node.entity';
+import { FileElementNode } from '@shared/domain/entity/boardnode/file-element-node.entity';
+import { LinkElementNode } from '@shared/domain/entity/boardnode/link-element-node.entity';
+import { RichTextElementNode } from '@shared/domain/entity/boardnode/rich-text-element-node.entity';
+import { SubmissionContainerElementNode } from '@shared/domain/entity/boardnode/submission-container-element-node.entity';
+import { SubmissionItemNode } from '@shared/domain/entity/boardnode/submission-item-node.entity';
+import { BoardNodeType } from '@shared/domain/entity/boardnode/types/board-node-type';
+import { columnBoardNodeFactory } from '@shared/testing/factory/boardnode/column-board-node.factory';
+import { contextExternalToolEntityFactory } from '@shared/testing/factory/context-external-tool-entity.factory';
+import { cardFactory } from '@shared/testing/factory/domainobject/board/card.do.factory';
+import { columnBoardFactory } from '@shared/testing/factory/domainobject/board/column-board.do.factory';
+import { columnFactory } from '@shared/testing/factory/domainobject/board/column.do.factory';
+import { externalToolElementFactory } from '@shared/testing/factory/domainobject/board/external-tool.do.factory';
+import { fileElementFactory } from '@shared/testing/factory/domainobject/board/file-element.do.factory';
+import { linkElementFactory } from '@shared/testing/factory/domainobject/board/link-element.do.factory';
+import { richTextElementFactory } from '@shared/testing/factory/domainobject/board/rich-text-element.do.factory';
+import { submissionContainerElementFactory } from '@shared/testing/factory/domainobject/board/submission-container-element.do.factory';
+import { submissionItemFactory } from '@shared/testing/factory/domainobject/board/submission-item.do.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveSaveVisitor } from './recursive-save.visitor';
 

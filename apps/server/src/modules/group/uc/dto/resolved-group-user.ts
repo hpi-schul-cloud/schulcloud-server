@@ -1,4 +1,4 @@
-import { UserDO } from '@shared/domain';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 
 export class ResolvedGroupUser {

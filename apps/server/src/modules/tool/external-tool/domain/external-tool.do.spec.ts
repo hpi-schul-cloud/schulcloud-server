@@ -1,4 +1,4 @@
-import { externalToolFactory } from '@shared/testing';
+import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { ExternalTool } from './external-tool.do';
 
 describe('ExternalTool', () => {

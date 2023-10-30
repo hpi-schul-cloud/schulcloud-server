@@ -1,8 +1,3 @@
-import { Account } from '@shared/domain';
-import { AccountDto } from '@src/modules/account/services/dto/account.dto';
-import { accountDtoFactory, accountFactory } from '@shared/testing';
-import { AccountResponseMapper } from '.';
-
 describe('AccountResponseMapper', () => {
 	describe('mapToResponseFromEntity', () => {
 		describe('When mapping AccountEntity to AccountResponse', () => {

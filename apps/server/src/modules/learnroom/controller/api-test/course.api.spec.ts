@@ -1,10 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
-import { cleanupCollections, courseFactory, UserAndAccountTestFactory, TestApiClient } from '@shared/testing';
-import { CourseMetadataListResponse } from '@src/modules/learnroom/controller/dto';
-import { ServerTestModule } from '@src/modules/server/server.module';
 
 const createStudent = () => {
 	const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({}, [Permission.COURSE_VIEW]);

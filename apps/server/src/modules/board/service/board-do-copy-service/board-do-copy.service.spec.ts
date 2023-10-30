@@ -1,37 +1,29 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Card, isCard } from '@shared/domain/domainobject/board/card.do';
+import { ColumnBoard, isColumnBoard } from '@shared/domain/domainobject/board/column-board.do';
+import { Column, isColumn } from '@shared/domain/domainobject/board/column.do';
+import { ExternalToolElement, isExternalToolElement } from '@shared/domain/domainobject/board/external-tool-element.do';
+import { FileElement, isFileElement } from '@shared/domain/domainobject/board/file-element.do';
+import { isLinkElement, LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { isRichTextElement, RichTextElement } from '@shared/domain/domainobject/board/rich-text-element.do';
 import {
-	Card,
-	Column,
-	ColumnBoard,
-	ExternalToolElement,
-	FileElement,
-	isCard,
-	isColumn,
-	isColumnBoard,
-	isExternalToolElement,
-	isFileElement,
-	isLinkElement,
-	isRichTextElement,
 	isSubmissionContainerElement,
-	LinkElement,
-	RichTextElement,
 	SubmissionContainerElement,
-} from '@shared/domain';
-import { FileRecordParentType } from '@shared/infra/rabbitmq';
-import {
-	cardFactory,
-	columnBoardFactory,
-	columnFactory,
-	externalToolElementFactory,
-	fileElementFactory,
-	linkElementFactory,
-	richTextElementFactory,
-	setupEntities,
-	submissionContainerElementFactory,
-	submissionItemFactory,
-} from '@shared/testing';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
+} from '@shared/domain/domainobject/board/submission-container-element.do';
+import { cardFactory } from '@shared/testing/factory/domainobject/board/card.do.factory';
+import { columnBoardFactory } from '@shared/testing/factory/domainobject/board/column-board.do.factory';
+import { columnFactory } from '@shared/testing/factory/domainobject/board/column.do.factory';
+import { externalToolElementFactory } from '@shared/testing/factory/domainobject/board/external-tool.do.factory';
+import { fileElementFactory } from '@shared/testing/factory/domainobject/board/file-element.do.factory';
+import { linkElementFactory } from '@shared/testing/factory/domainobject/board/link-element.do.factory';
+import { richTextElementFactory } from '@shared/testing/factory/domainobject/board/rich-text-element.do.factory';
+import { submissionContainerElementFactory } from '@shared/testing/factory/domainobject/board/submission-container-element.do.factory';
+import { submissionItemFactory } from '@shared/testing/factory/domainobject/board/submission-item.do.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper/types/copy.types';
+import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
+
 import { ObjectId } from 'bson';
 import { BoardDoCopyService } from './board-do-copy.service';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, TeamEntity } from '@shared/domain';
-import { TeamsRepo } from '@shared/repo';
+import { TeamEntity } from '@shared/domain/entity/team.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { TeamsRepo } from '@shared/repo/teams/teams.repo';
 
 @Injectable()
 export class TeamService {

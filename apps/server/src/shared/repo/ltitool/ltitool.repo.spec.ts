@@ -2,14 +2,13 @@ import { createMock } from '@golevelup/ts-jest';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ILtiToolProperties, LtiTool } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { LtiToolRepo } from '@shared/repo/ltitool/ltitool.repo';
-import { cleanupCollections } from '@shared/testing';
+import { ILtiToolProperties, LtiPrivacyPermission, LtiRoleType, LtiTool } from '@shared/domain/entity/ltitool.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
 import { ltiToolFactory } from '@shared/testing/factory/ltitool.factory';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { LtiToolRepo } from './ltitool.repo';
 
 class LtiToolRepoSpec extends LtiToolRepo {
 	mapEntityToDOSpec(entity: LtiTool): LtiToolDO {

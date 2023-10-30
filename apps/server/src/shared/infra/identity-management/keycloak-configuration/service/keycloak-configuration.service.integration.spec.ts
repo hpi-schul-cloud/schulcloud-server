@@ -4,11 +4,12 @@ import AuthenticationExecutionExportRepresentation from '@keycloak/keycloak-admi
 import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
 import { SystemRepo } from '@shared/repo/system/system.repo';
-import { systemFactory } from '@shared/testing/factory';
-import { LoggerModule } from '@src/core/logger';
+import { systemFactory } from '@shared/testing/factory/system.factory';
+import { LoggerModule } from '@src/core/logger/logger.module';
 import { SystemService } from '@src/modules/system/service/system.service';
+
 import { v1 } from 'uuid';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';

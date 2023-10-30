@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ValidateNested, IsNumber, Min, IsOptional } from 'class-validator';
+import { IsNumber, IsOptional, Min, ValidateNested } from 'class-validator';
 
 /**
  * DTO for Updating the position of a Dashboard Element.

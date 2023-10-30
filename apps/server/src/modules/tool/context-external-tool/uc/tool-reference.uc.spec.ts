@@ -1,14 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
-import { contextExternalToolFactory, externalToolFactory } from '@shared/testing';
-import { AuthorizationContextBuilder } from '@src/modules/authorization';
-import { ToolConfigurationStatus, ToolContextType } from '../../common/enum';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { contextExternalToolFactory } from '@shared/testing/factory/domainobject/tool/context-external-tool.factory';
+import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
+import { ToolConfigurationStatus } from '../../common/enum/tool-configuration-status';
+import { ToolContextType } from '../../common/enum/tool-context-type.enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
-import { ExternalTool } from '../../external-tool/domain';
-import { ContextExternalTool, ToolReference } from '../domain';
-import { ContextExternalToolService, ToolReferenceService } from '../service';
+import { ExternalTool } from '../../external-tool/domain/external-tool.do';
+import { ContextExternalTool } from '../domain/context-external-tool.do';
+import { ToolReference } from '../domain/tool-reference';
+import { ContextExternalToolService } from '../service/context-external-tool.service';
+import { ToolReferenceService } from '../service/tool-reference.service';
 import { ToolReferenceUc } from './tool-reference.uc';
 
 describe('ToolReferenceUc', () => {

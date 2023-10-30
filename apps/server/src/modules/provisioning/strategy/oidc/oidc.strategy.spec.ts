@@ -1,19 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, RoleName, UserDO } from '@shared/domain';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { legacySchoolDoFactory, userDoFactory } from '@shared/testing';
+
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/legacy-school.factory';
 import { externalGroupDtoFactory } from '@shared/testing/factory/external-group-dto.factory';
-import {
-	ExternalSchoolDto,
-	ExternalUserDto,
-	OauthDataDto,
-	OauthDataStrategyInputDto,
-	ProvisioningDto,
-	ProvisioningSystemDto,
-} from '../../dto';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
+import { ExternalSchoolDto } from '../../dto/external-school.dto';
+import { ExternalUserDto } from '../../dto/external-user.dto';
+import { OauthDataStrategyInputDto } from '../../dto/oauth-data-strategy-input.dto';
+import { OauthDataDto } from '../../dto/oauth-data.dto';
+import { ProvisioningSystemDto } from '../../dto/provisioning-system.dto';
+import { ProvisioningDto } from '../../dto/provisioning.dto';
 import { OidcProvisioningStrategy } from './oidc.strategy';
 import { OidcProvisioningService } from './service/oidc-provisioning.service';
 

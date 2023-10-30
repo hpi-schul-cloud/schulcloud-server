@@ -4,17 +4,21 @@ import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-ad
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, IdmAccount } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { IdentityManagementModule } from '@shared/infra/identity-management';
+import { Account } from '@shared/domain/entity/account.entity';
+import { IdmAccount } from '@shared/domain/interface/account';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { IdentityManagementModule } from '@shared/infra/identity-management/identity-management.module';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
-import { UserRepo } from '@shared/repo';
-import { accountFactory, cleanupCollections } from '@shared/testing';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { accountFactory } from '@shared/testing/factory/account.factory';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+
 import { ObjectId } from 'bson';
 import { v1 } from 'uuid';
-import { LegacyLogger } from '../../../core/logger';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
+import { AccountIdmToDtoMapper } from '../mapper/account-idm-to-dto.mapper.abstract';
+import { AccountIdmToDtoMapperDb } from '../mapper/account-idm-to-dto.mapper.db';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
@@ -22,7 +26,8 @@ import { AccountLookupService } from './account-lookup.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
-import { AccountDto, AccountSaveDto } from './dto';
+import { AccountSaveDto } from './dto/account-save.dto';
+import { AccountDto } from './dto/account.dto';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;

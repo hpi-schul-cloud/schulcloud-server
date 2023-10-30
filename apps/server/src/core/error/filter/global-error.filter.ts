@@ -1,15 +1,18 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
-import { ApiValidationError, BusinessError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
+import { BusinessError } from '@shared/common/error/business.error';
 import { IError, RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
-import { ErrorLogger, Loggable } from '@src/core/logger';
+import { ErrorLogger } from '@src/core/logger/error-logger';
+import { Loggable } from '@src/core/logger/interfaces/loggable';
 import { LoggingUtils } from '@src/core/logger/logging.utils';
 import { Response } from 'express';
 import _ from 'lodash';
 import util from 'util';
-import { ApiValidationErrorResponse, ErrorResponse } from '../dto';
-import { FeathersError } from '../interface';
+import { ApiValidationErrorResponse } from '../dto/api-validation-error.response';
+import { ErrorResponse } from '../dto/error.response';
+import { FeathersError } from '../interface/feathers-error.interface';
 import { ErrorLoggable } from '../loggable/error.loggable';
-import { ErrorUtils } from '../utils';
+import { ErrorUtils } from '../utils/error.utils';
 
 @Catch()
 export class GlobalErrorFilter<T extends IError | undefined> implements ExceptionFilter<T> {

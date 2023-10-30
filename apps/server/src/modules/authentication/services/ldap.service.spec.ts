@@ -1,9 +1,9 @@
 import { createMock } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SystemEntity } from '@shared/domain';
-import { systemFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { systemFactory } from '@shared/testing/factory/system.factory';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { LdapService } from './ldap.service';
 
 const mockClient = {

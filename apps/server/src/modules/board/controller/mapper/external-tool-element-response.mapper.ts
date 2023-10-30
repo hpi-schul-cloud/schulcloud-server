@@ -1,5 +1,7 @@
-import { ContentElementType, ExternalToolElement } from '@shared/domain';
-import { ExternalToolElementContent, ExternalToolElementResponse, TimestampsResponse } from '../dto';
+import { ExternalToolElement } from '@shared/domain/domainobject/board/external-tool-element.do';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import { ExternalToolElementResponse, ExternalToolElementContent } from '../dto/element/external-tool-element.response';
+import { TimestampsResponse } from '../dto/timestamps.response';
 import { BaseResponseMapper } from './base-mapper.interface';
 
 export class ExternalToolElementResponseMapper implements BaseResponseMapper {

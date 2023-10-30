@@ -1,14 +1,14 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
-import { SchoolEntity } from '@shared/domain/entity/school.entity';
-import { InputFormat } from '@shared/domain/types/input-format.types';
-import type { IEntityWithSchool } from '../interface';
+import { IEntityWithSchool } from '../interface/entity';
 import type { ILearnroomElement } from '../interface/learnroom';
 import type { EntityId } from '../types/entity-id';
+import { InputFormat } from '../types/input-format.types';
 import type { ITaskProperties, ITaskStatus } from '../types/task.types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { LessonEntity } from './lesson.entity';
+import { SchoolEntity } from './school.entity';
 import type { Submission } from './submission.entity';
 import { User } from './user.entity';
 

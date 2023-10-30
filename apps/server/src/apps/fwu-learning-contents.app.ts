@@ -2,15 +2,15 @@
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
+import { enableOpenApiDocs } from '@shared/controller/swagger';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { FwuLearningContentsModule } from '@src/modules/fwu-learning-contents/fwu-learning-contents.module';
 import express from 'express';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { LegacyLogger } from '@src/core/logger';
-import { FwuLearningContentsModule } from '@src/modules/fwu-learning-contents';
-import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 
 async function bootstrap() {
 	sourceMapInstall();

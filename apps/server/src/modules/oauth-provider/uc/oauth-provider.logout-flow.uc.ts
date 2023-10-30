@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { OauthProviderService } from '@shared/infra/oauth-provider';
-import { ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto';
+import { ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto/response/redirect.response';
+import { OauthProviderService } from '@shared/infra/oauth-provider/oauth-provider.service';
 
 @Injectable()
 export class OauthProviderLogoutFlowUc {

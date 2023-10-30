@@ -1,23 +1,24 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UnauthorizedException } from '@nestjs/common';
+import { Logger, UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, RoleName, SystemEntity, User } from '@shared/domain';
-import { LegacySchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
-import {
-	accountDtoFactory,
-	defaultTestPassword,
-	defaultTestPasswordHash,
-	legacySchoolDoFactory,
-	schoolFactory,
-	setupEntities,
-	systemFactory,
-	userFactory,
-} from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { LdapAuthorizationBodyParams } from '../controllers/dto';
-import { ICurrentUser } from '../interface';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { LegacySchoolRepo } from '@shared/repo/school/legacy-school.repo';
+import { SystemRepo } from '@shared/repo/system/system.repo';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { accountDtoFactory } from '@shared/testing/factory/account-dto.factory';
+import { defaultTestPassword, defaultTestPasswordHash } from '@shared/testing/factory/account.factory';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/legacy-school.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { systemFactory } from '@shared/testing/factory/system.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { AccountDto } from '@src/modules/account/services/dto/account.dto';
+import { LdapAuthorizationBodyParams } from '../controllers/dto/ldap-authorization.body.params';
+import { ICurrentUser } from '../interface/user';
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapService } from '../services/ldap.service';
 import { LdapStrategy } from './ldap.strategy';

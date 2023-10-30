@@ -1,5 +1,5 @@
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
-import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types/board-composite-visitor';
 
 export class LinkElement extends BoardComposite<LinkElementProps> {
 	get url(): string {

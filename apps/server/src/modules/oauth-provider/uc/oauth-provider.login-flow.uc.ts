@@ -1,18 +1,22 @@
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { Permission, Pseudonym, User, UserDO } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { OauthProviderService } from '@shared/infra/oauth-provider';
-import {
-	AcceptLoginRequestBody,
-	ProviderLoginResponse,
-	ProviderRedirectResponse,
-} from '@shared/infra/oauth-provider/dto';
-import { AuthorizationService } from '@src/modules/authorization';
-import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@src/modules/oauth-provider/controller/dto';
-import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
-import { PseudonymService } from '@src/modules/pseudonym/service';
-import { ExternalTool, Oauth2ToolConfig } from '@src/modules/tool/external-tool/domain';
-import { UserService } from '@src/modules/user';
+import { Pseudonym } from '@shared/domain/domainobject/pseudonym.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { AcceptLoginRequestBody } from '@shared/infra/oauth-provider/dto/request/accept-login-request.body';
+import { ProviderLoginResponse } from '@shared/infra/oauth-provider/dto/response/login.response';
+import { ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto/response/redirect.response';
+import { OauthProviderService } from '@shared/infra/oauth-provider/oauth-provider.service';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { PseudonymService } from '@src/modules/pseudonym/service/pseudonym.service';
+import { Oauth2ToolConfig } from '@src/modules/tool/external-tool/domain/config/oauth2-tool-config.do';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain/external-tool.do';
+import { UserService } from '@src/modules/user/service/user.service';
+import { AcceptQuery } from '../controller/dto/request/accept.query';
+import { LoginRequestBody } from '../controller/dto/request/login-request.body';
+import { OAuthRejectableBody } from '../controller/dto/request/oauth-rejectable.body';
+import { OauthProviderRequestMapper } from '../mapper/oauth-provider-request.mapper';
 import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
 
 @Injectable()

@@ -1,17 +1,15 @@
 import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import {
-	AnyBoardDo,
-	EntityId,
-	isSubmissionContainerElement,
-	isSubmissionItem,
-	SubmissionItem,
-	UserBoardRoles,
-	UserRoleEnum,
-} from '@shared/domain';
-import { Logger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
+import { isSubmissionContainerElement } from '@shared/domain/domainobject/board/submission-container-element.do';
+import { isSubmissionItem, SubmissionItem } from '@shared/domain/domainobject/board/submission-item.do';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
+import { UserBoardRoles, UserRoleEnum } from '@shared/domain/domainobject/board/types/board-do-authorizable';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { Logger } from '@src/core/logger/logger';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Action } from '@src/modules/authorization/types/action.enum';
-import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
+import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
+import { ContentElementService } from '../service/content-element.service';
+import { SubmissionItemService } from '../service/submission-item.service';
 
 @Injectable()
 export class SubmissionItemUc {

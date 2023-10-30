@@ -1,5 +1,7 @@
 import { Embeddable, Enum, Property } from '@mikro-orm/core';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../../common/enum';
+import { CustomParameterLocation } from '@src/modules/tool/common/enum/custom-parameter-location.enum';
+import { CustomParameterScope } from '@src/modules/tool/common/enum/custom-parameter-scope.enum';
+import { CustomParameterType } from '@src/modules/tool/common/enum/custom-parameter-type.enum';
 
 @Embeddable()
 export class CustomParameterEntity {

@@ -1,15 +1,23 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UserService } from '@src/modules/user';
-import { userDoFactory } from '@shared/testing';
-import { UserDO, VideoConferenceScope } from '@shared/domain';
-import { ObjectId } from 'bson';
+import { Test, TestingModule } from '@nestjs/testing';
+
 import { ForbiddenException } from '@nestjs/common';
-import { BBBService, VideoConferenceService } from '../service';
-import { BBBBaseResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';
-import { IScopeInfo, VideoConference, VideoConferenceState } from './dto';
-import { VideoConferenceEndUc } from './video-conference-end.uc';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { VideoConferenceScope } from '@shared/domain/interface/video-conference-scope.enum';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
+import { UserService } from '@src/modules/user/service/user.service';
+import { ObjectId } from 'bson';
+import { BBBService } from '../bbb/bbb.service';
+import { BBBRole } from '../bbb/request/bbb-join.config';
+import { BBBBaseResponse } from '../bbb/response/bbb-base.response';
+import { BBBStatus } from '../bbb/response/bbb-status.enum';
+import { BBBResponse } from '../bbb/response/bbb.response';
 import { ErrorStatus } from '../error/error-status.enum';
+import { VideoConferenceService } from '../service/video-conference.service';
+import { IScopeInfo } from './dto/scope-info.interface';
+import { VideoConference } from './dto/video-conference';
+import { VideoConferenceState } from './dto/video-conference-state.enum';
+import { VideoConferenceEndUc } from './video-conference-end.uc';
 
 describe('VideoConferenceEndUc', () => {
 	let module: TestingModule;

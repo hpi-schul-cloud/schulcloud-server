@@ -9,21 +9,16 @@ import {
 	IComponentProperties,
 	IComponentTextProperties,
 	LessonEntity,
-	Material,
-} from '@shared/domain';
-import { LessonRepo } from '@shared/repo';
-import {
-	CopyDictionary,
-	CopyElementType,
-	CopyHelperService,
-	CopyStatus,
-	CopyStatusEnum,
-} from '@src/modules/copy-helper';
-import { CopyFilesService } from '@src/modules/files-storage-client';
-import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
+} from '@shared/domain/entity/lesson.entity';
+import { Material } from '@shared/domain/entity/materials.entity';
+import { LessonRepo } from '@shared/repo/lesson/lesson.repo';
+import { CopyHelperService } from '@src/modules/copy-helper/service/copy-helper.service';
+import { CopyDictionary, CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper/types/copy.types';
+import { CopyFilesService, FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
 import { TaskCopyService } from '@src/modules/task/service/task-copy.service';
+
 import { randomBytes } from 'crypto';
-import { LessonCopyParams } from '../types';
+import { LessonCopyParams } from '../types/lesson-copy.params';
 import { EtherpadService } from './etherpad.service';
 import { NexboardService } from './nexboard.service';
 

@@ -1,12 +1,10 @@
-import {
-	ColumnboardBoardElement,
-	ColumnBoardTarget,
-	EntityId,
-	LessonEntity,
-	LessonBoardElement,
-	Task,
-	TaskBoardElement,
-} from '@shared/domain';
+import { ColumnboardBoardElement } from '@shared/domain/entity/legacy-board/column-board-boardelement';
+import { ColumnBoardTarget } from '@shared/domain/entity/legacy-board/column-board-target.entity';
+import { LessonBoardElement } from '@shared/domain/entity/legacy-board/lesson-boardelement.entity';
+import { TaskBoardElement } from '@shared/domain/entity/legacy-board/task-boardelement.entity';
+import { LessonEntity } from '@shared/domain/entity/lesson.entity';
+import { Task } from '@shared/domain/entity/task.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { ObjectId } from 'bson';
 import { BaseFactory } from './base.factory';
 import { lessonFactory } from './lesson.factory';

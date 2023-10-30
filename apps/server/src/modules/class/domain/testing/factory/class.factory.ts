@@ -1,8 +1,8 @@
-import { DoBaseFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { DoBaseFactory } from '@shared/testing/factory/domainobject/do-base.factory';
 import { DeepPartial } from 'fishery';
-import { Class, ClassProps } from '../../class.do';
 import { ClassSourceOptions } from '../../class-source-options.do';
+import { Class, ClassProps } from '../../class.do';
 
 class ClassFactory extends DoBaseFactory<Class, ClassProps> {
 	withUserIds(userIds: string[]): this {

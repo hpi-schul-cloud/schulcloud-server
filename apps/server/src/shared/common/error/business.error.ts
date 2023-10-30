@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ErrorResponse } from '@src/core/error/dto/error.response';
-import { IErrorType } from '@src/core/error/interface';
+import { IErrorType } from '@src/core/error/interface/error-type.interface';
 
 /**
  * Abstract base class for business errors, errors that are handled

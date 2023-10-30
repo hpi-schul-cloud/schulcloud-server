@@ -1,18 +1,18 @@
 import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
+import { EntityNotFoundError } from '@shared/common/error/entity-not-found.error';
+import { ForbiddenOperationError } from '@shared/common/error/forbidden-operation.error';
+import { ValidationError } from '@shared/common/error/validation.error';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { AccountUc } from '../uc/account.uc';
-import {
-	AccountByIdBodyParams,
-	AccountByIdParams,
-	AccountResponse,
-	AccountSearchListResponse,
-	AccountSearchQueryParams,
-	PatchMyAccountParams,
-	PatchMyPasswordParams,
-} from './dto';
+import { AccountByIdBodyParams } from './dto/account-by-id.body.params';
+import { AccountByIdParams } from './dto/account-by-id.params';
+import { AccountSearchListResponse } from './dto/account-search-list.response';
+import { AccountSearchQueryParams } from './dto/account-search.query.params';
+import { AccountResponse } from './dto/account.response';
+import { PatchMyAccountParams } from './dto/patch-my-account.params';
+import { PatchMyPasswordParams } from './dto/patch-my-password.params';
 
 @ApiTags('Account')
 @Authenticate('jwt')

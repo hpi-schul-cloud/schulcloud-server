@@ -1,7 +1,7 @@
-import { CommonCartridgeVersion, CommonCartridgeResourceType } from './common-cartridge-enums';
+import { CommonCartridgeResourceType, CommonCartridgeVersion } from './common-cartridge-enums';
 import {
-	ICommonCartridgeWebContentResourceProps,
 	CommonCartridgeWebContentResource,
+	ICommonCartridgeWebContentResourceProps,
 } from './common-cartridge-web-content-resource';
 
 describe('CommonCartridgeWebContentResource', () => {

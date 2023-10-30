@@ -1,8 +1,12 @@
 import { Module } from '@nestjs/common';
-import { FederalStateRepo, LegacySchoolRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
-import { SchoolYearRepo } from './repo';
-import { FederalStateService, LegacySchoolService, SchoolValidationService, SchoolYearService } from './service';
+import { FederalStateRepo } from '@shared/repo/federalstate/federal-state.repo';
+import { LegacySchoolRepo } from '@shared/repo/school/legacy-school.repo';
+import { LoggerModule } from '@src/core/logger/logger.module';
+import { SchoolYearRepo } from './repo/schoolyear.repo';
+import { FederalStateService } from './service/federal-state.service';
+import { LegacySchoolService } from './service/legacy-school.service';
+import { SchoolYearService } from './service/school-year.service';
+import { SchoolValidationService } from './service/validation/school-validation.service';
 
 /**
  * @deprecated because it uses the deprecated LegacySchoolDo.

@@ -1,11 +1,11 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { SystemFilterParams } from '@src/modules/system/controller/dto/system.filter.params';
-import { SystemDto } from '../service';
+import { SystemDto } from '../service/dto/system.dto';
 import { SystemUc } from '../uc/system.uc';
 import { PublicSystemListResponse } from './dto/public-system-list.response';
 import { PublicSystemResponse } from './dto/public-system-response';
 import { SystemIdParams } from './dto/system-id.params';
+import { SystemFilterParams } from './dto/system.filter.params';
 import { SystemResponseMapper } from './mapper/system-response.mapper';
 
 @ApiTags('Systems')

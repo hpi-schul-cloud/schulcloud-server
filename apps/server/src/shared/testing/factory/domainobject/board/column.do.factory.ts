@@ -1,5 +1,6 @@
 /* istanbul ignore file */
-import { Column, ColumnProps } from '@shared/domain';
+
+import { Column, ColumnProps } from '@shared/domain/domainobject/board/column.do';
 import { ObjectId } from 'bson';
 import { BaseFactory } from '../../base.factory';
 

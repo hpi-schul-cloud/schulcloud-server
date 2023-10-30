@@ -1,6 +1,11 @@
 import { MikroORM } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
-import { courseFactory, courseGroupFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { courseGroupFactory } from '@shared/testing/factory/coursegroup.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+
 import { ObjectId } from 'bson';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';

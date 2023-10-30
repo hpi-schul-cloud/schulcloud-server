@@ -1,19 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, Page } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject/page';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { contextExternalToolFactory } from '@shared/testing/factory/domainobject/tool/context-external-tool.factory';
 import {
-	contextExternalToolFactory,
 	customParameterFactory,
 	externalToolFactory,
-	schoolExternalToolFactory,
-	setupEntities,
-} from '@shared/testing';
-import { CustomParameter } from '../../common/domain';
-import { CustomParameterScope } from '../../common/enum';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
+} from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { CustomParameter } from '../../common/domain/custom-parameter.do';
+import { CustomParameterScope } from '../../common/enum/custom-parameter-scope.enum';
+import { ContextExternalTool } from '../../context-external-tool/domain/context-external-tool.do';
+import { SchoolExternalTool } from '../../school-external-tool/domain/school-external-tool.do';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
-import { ExternalTool } from '../domain';
-import { ContextExternalToolTemplateInfo } from '../uc';
+import { ExternalTool } from '../domain/external-tool.do';
+import { ContextExternalToolTemplateInfo } from '../uc/dto/external-tool-configuration.types';
 import { ExternalToolConfigurationService } from './external-tool-configuration.service';
 
 describe('ExternalToolConfigurationService', () => {

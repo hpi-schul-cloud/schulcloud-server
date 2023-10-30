@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
-import { TeamsRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
-import { LtiToolModule } from '@src/modules/lti-tool';
-import { PseudonymModule } from '@src/modules/pseudonym';
-import { ToolModule } from '@src/modules/tool';
-import { ToolConfigModule } from '@src/modules/tool/tool-config.module';
-import { UserModule } from '@src/modules/user';
+import { OauthProviderServiceModule } from '@shared/infra/oauth-provider/oauth-provider-service.module';
+import { TeamsRepo } from '@shared/repo/teams/teams.repo';
+import { LoggerModule } from '@src/core/logger/logger.module';
+import { LtiToolModule } from '../lti-tool/lti-tool.module';
+import { PseudonymModule } from '../pseudonym/pseudonym.module';
+import { ToolConfigModule } from '../tool/tool-config.module';
+import { ToolModule } from '../tool/tool.module';
+import { UserModule } from '../user/user.module';
 import { IdTokenService } from './service/id-token.service';
 import { OauthProviderLoginFlowService } from './service/oauth-provider.login-flow.service';
 

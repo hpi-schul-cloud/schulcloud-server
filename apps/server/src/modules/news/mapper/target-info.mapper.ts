@@ -1,4 +1,4 @@
-import { NewsTarget } from '@shared/domain';
+import { NewsTarget } from '@shared/domain/types/news.types';
 import { TargetInfoResponse } from '../controller/dto/target-info.response';
 
 export class TargetInfoMapper {

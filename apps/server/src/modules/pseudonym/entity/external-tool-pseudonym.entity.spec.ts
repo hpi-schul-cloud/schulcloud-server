@@ -1,6 +1,6 @@
-import { setupEntities } from '@shared/testing';
-import { externalToolPseudonymEntityFactory } from '@shared/testing/factory/external-tool-pseudonym.factory';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { externalToolPseudonymEntityFactory } from '@shared/testing/factory/external-tool-pseudonym.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { ExternalToolPseudonymEntity } from './external-tool-pseudonym.entity';
 
 describe('ExternalToolPseudonymEntity', () => {

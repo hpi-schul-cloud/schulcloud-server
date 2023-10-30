@@ -1,5 +1,6 @@
-import { ITaskProperties, Task } from '@shared/domain';
-import { User } from '@shared/domain/entity';
+import { Task } from '@shared/domain/entity/task.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { ITaskProperties } from '@shared/domain/types/task.types';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 import { schoolFactory } from './school.factory';

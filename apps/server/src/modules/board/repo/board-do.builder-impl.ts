@@ -1,30 +1,26 @@
 import { NotImplementedException } from '@nestjs/common';
-import type {
-	BoardDoBuilder,
-	BoardNode,
-	CardNode,
-	ColumnBoardNode,
-	ColumnNode,
-	ExternalToolElementNodeEntity,
-	FileElementNode,
-	LinkElementNode,
-	RichTextElementNode,
-	SubmissionContainerElementNode,
-	SubmissionItemNode,
-} from '@shared/domain';
-import {
-	AnyBoardDo,
-	BoardNodeType,
-	Card,
-	Column,
-	ColumnBoard,
-	ExternalToolElement,
-	FileElement,
-	LinkElement,
-	RichTextElement,
-	SubmissionContainerElement,
-	SubmissionItem,
-} from '@shared/domain';
+import { Card } from '@shared/domain/domainobject/board/card.do';
+import { ColumnBoard } from '@shared/domain/domainobject/board/column-board.do';
+import { Column } from '@shared/domain/domainobject/board/column.do';
+import { ExternalToolElement } from '@shared/domain/domainobject/board/external-tool-element.do';
+import { FileElement } from '@shared/domain/domainobject/board/file-element.do';
+import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { RichTextElement } from '@shared/domain/domainobject/board/rich-text-element.do';
+import { SubmissionContainerElement } from '@shared/domain/domainobject/board/submission-container-element.do';
+import { SubmissionItem } from '@shared/domain/domainobject/board/submission-item.do';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
+import { BoardNode } from '@shared/domain/entity/boardnode/boardnode.entity';
+import { CardNode } from '@shared/domain/entity/boardnode/card-node.entity';
+import { ColumnBoardNode } from '@shared/domain/entity/boardnode/column-board-node.entity';
+import { ColumnNode } from '@shared/domain/entity/boardnode/column-node.entity';
+import { ExternalToolElementNodeEntity } from '@shared/domain/entity/boardnode/external-tool-element-node.entity';
+import { FileElementNode } from '@shared/domain/entity/boardnode/file-element-node.entity';
+import { LinkElementNode } from '@shared/domain/entity/boardnode/link-element-node.entity';
+import { RichTextElementNode } from '@shared/domain/entity/boardnode/rich-text-element-node.entity';
+import { SubmissionContainerElementNode } from '@shared/domain/entity/boardnode/submission-container-element-node.entity';
+import { SubmissionItemNode } from '@shared/domain/entity/boardnode/submission-item-node.entity';
+import { BoardDoBuilder } from '@shared/domain/entity/boardnode/types/board-do.builder';
+import { BoardNodeType } from '@shared/domain/entity/boardnode/types/board-node-type';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};

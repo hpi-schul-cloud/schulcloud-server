@@ -1,7 +1,7 @@
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { Inject } from '@nestjs/common';
-import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { OidcConfigDto } from '@src/modules/system/service';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption/encryption.interface';
+import { OidcConfigDto } from '@src/modules/system/service/dto/oidc-config.dto';
 
 export class OidcIdentityProviderMapper {
 	constructor(@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService) {}

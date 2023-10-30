@@ -2,7 +2,8 @@
 	This permission set is based on the current state of dBildungscloud.
 	Last Update: 2023-03-21
 */
-import { Permission } from '@shared/domain';
+
+import { Permission } from '@shared/domain/interface/permission.enum';
 
 export const userPermissions = [
 	Permission.BASE_VIEW,

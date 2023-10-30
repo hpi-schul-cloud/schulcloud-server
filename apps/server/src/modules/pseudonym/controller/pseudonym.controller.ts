@@ -6,13 +6,13 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Pseudonym } from '@shared/domain';
+import { Pseudonym } from '@shared/domain/domainobject/pseudonym.do';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { PseudonymMapper } from '../mapper/pseudonym.mapper';
-import { PseudonymUc } from '../uc';
-import { PseudonymResponse } from './dto';
+import { PseudonymUc } from '../uc/pseudonym.uc';
 import { PseudonymParams } from './dto/pseudonym-params';
+import { PseudonymResponse } from './dto/pseudonym.response';
 
 @ApiTags('Pseudonym')
 @Authenticate('jwt')

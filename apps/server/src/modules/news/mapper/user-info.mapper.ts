@@ -1,5 +1,5 @@
-import { User } from '@shared/domain';
-import { UserInfoResponse } from '../controller/dto';
+import { User } from '@shared/domain/entity/user.entity';
+import { UserInfoResponse } from '../controller/dto/user-info.response';
 
 export class UserInfoMapper {
 	static mapToResponse(user: User): UserInfoResponse {

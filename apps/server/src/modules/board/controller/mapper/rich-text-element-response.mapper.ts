@@ -1,6 +1,7 @@
-import { ContentElementType, RichTextElement } from '@shared/domain';
-import { TimestampsResponse } from '../dto';
-import { RichTextElementContent, RichTextElementResponse } from '../dto/element/rich-text-element.response';
+import { RichTextElement } from '@shared/domain/domainobject/board/rich-text-element.do';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import { RichTextElementResponse, RichTextElementContent } from '../dto/element/rich-text-element.response';
+import { TimestampsResponse } from '../dto/timestamps.response';
 import { BaseResponseMapper } from './base-mapper.interface';
 
 export class RichTextElementResponseMapper implements BaseResponseMapper {

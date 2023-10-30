@@ -1,14 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { OAuthSSOError } from '@src/modules/oauth/loggable/oauth-sso.error';
+
 import jwt from 'jsonwebtoken';
-import { OAuthSSOError } from '@src/modules/oauth/loggable';
-import {
-	ExternalUserDto,
-	OauthDataDto,
-	OauthDataStrategyInputDto,
-	ProvisioningDto,
-	ProvisioningSystemDto,
-} from '../../dto';
+import { ExternalUserDto } from '../../dto/external-user.dto';
+import { OauthDataStrategyInputDto } from '../../dto/oauth-data-strategy-input.dto';
+import { OauthDataDto } from '../../dto/oauth-data.dto';
+import { ProvisioningSystemDto } from '../../dto/provisioning-system.dto';
+import { ProvisioningDto } from '../../dto/provisioning.dto';
 import { OidcMockProvisioningStrategy } from './oidc-mock.strategy';
 
 jest.mock('jsonwebtoken');

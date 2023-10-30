@@ -1,8 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { StorageProviderEntity } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, storageProviderFactory } from '@shared/testing';
+import { StorageProviderEntity } from '@shared/domain/entity/storageprovider.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { storageProviderFactory } from '@shared/testing/factory/storageprovider.factory';
 import { StorageProviderRepo } from './storageprovider.repo';
 
 describe('StorageProviderRepo', () => {

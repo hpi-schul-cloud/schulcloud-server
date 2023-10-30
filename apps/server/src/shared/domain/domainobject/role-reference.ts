@@ -1,5 +1,5 @@
-import { RoleName } from '../interface';
-import { EntityId } from '../types';
+import { RoleName } from '../interface/rolename.enum';
+import { EntityId } from '../types/entity-id';
 
 export class RoleReference {
 	id: EntityId;

@@ -1,7 +1,9 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cardFactory, columnFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
-import { BoardDoRepo } from '../repo';
+import { cardFactory } from '@shared/testing/factory/domainobject/board/card.do.factory';
+import { columnFactory } from '@shared/testing/factory/domainobject/board/column.do.factory';
+import { richTextElementFactory } from '@shared/testing/factory/domainobject/board/rich-text-element.do.factory';
+import { BoardDoRepo } from '../repo/board-do.repo';
 import { BoardDoService } from './board-do.service';
 
 describe(BoardDoService.name, () => {

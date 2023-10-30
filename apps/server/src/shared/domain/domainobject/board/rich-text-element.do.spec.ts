@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
-import { richTextElementFactory } from '@shared/testing';
+import { richTextElementFactory } from '@shared/testing/factory/domainobject/board/rich-text-element.do.factory';
 import { RichTextElement } from './rich-text-element.do';
-import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types/board-composite-visitor';
 
 describe(RichTextElement.name, () => {
 	describe('when trying to add a child to a rich text element', () => {

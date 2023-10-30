@@ -1,14 +1,21 @@
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ConverterUtil } from '@shared/common/utils';
-import { ErrorUtils } from '@src/core/error/utils';
+import { ConverterUtil } from '@shared/common/utils/converter.util';
+import { ErrorUtils } from '@src/core/error/utils/error.utils';
+
 import { AxiosResponse } from 'axios';
 import crypto from 'crypto';
-import { Observable, firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { URL, URLSearchParams } from 'url';
 import { BbbSettings, IBbbSettings } from './bbb-settings.interface';
-import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig } from './request';
-import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
+import { BBBBaseMeetingConfig } from './request/bbb-base-meeting.config';
+import { BBBCreateConfig } from './request/bbb-create.config';
+import { BBBJoinConfig } from './request/bbb-join.config';
+import { BBBBaseResponse } from './response/bbb-base.response';
+import { BBBCreateResponse } from './response/bbb-create.response';
+import { BBBMeetingInfoResponse } from './response/bbb-meeting-info.response';
+import { BBBStatus } from './response/bbb-status.enum';
+import { BBBResponse } from './response/bbb.response';
 
 @Injectable()
 export class BBBService {

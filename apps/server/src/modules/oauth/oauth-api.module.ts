@@ -1,15 +1,16 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
-import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { ProvisioningModule } from '@src/modules/provisioning';
-import { LegacySchoolModule } from '@src/modules/legacy-school';
-import { SystemModule } from '@src/modules/system';
-import { UserModule } from '@src/modules/user';
-import { UserLoginMigrationModule } from '@src/modules/user-login-migration';
+import { LoggerModule } from '@src/core/logger/logger.module';
+import { AuthenticationModule } from '../authentication/authentication.module';
+import { AuthorizationModule } from '../authorization/authorization.module';
+import { LegacySchoolModule } from '../legacy-school/legacy-school.module';
+import { ProvisioningModule } from '../provisioning/provisioning.module';
+import { SystemModule } from '../system/system.module';
+import { UserLoginMigrationModule } from '../user-login-migration/user-login-migration.module';
+import { UserModule } from '../user/user.module';
 import { OauthSSOController } from './controller/oauth-sso.controller';
 import { OauthModule } from './oauth.module';
-import { HydraOauthUc, OauthUc } from './uc';
+import { HydraOauthUc } from './uc/hydra-oauth.uc';
+import { OauthUc } from './uc/oauth.uc';
 
 @Module({
 	imports: [

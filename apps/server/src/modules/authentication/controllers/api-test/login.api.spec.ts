@@ -1,17 +1,28 @@
 import { EntityManager } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, RoleName, SchoolEntity, SystemEntity, User } from '@shared/domain';
-import { accountFactory, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
-import { SSOErrorCode } from '@src/modules/oauth/loggable';
-import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
+import { Account } from '@shared/domain/entity/account.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { accountFactory } from '@shared/testing/factory/account.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { systemFactory } from '@shared/testing/factory/system.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { SSOErrorCode } from '@src/modules/oauth/loggable/sso-error-code.enum';
+import { OauthTokenResponse } from '@src/modules/oauth/service/dto/oauth-token.response';
 import { ServerTestModule } from '@src/modules/server/server.module';
+
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
-import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, OauthLoginResponse } from '../dto';
+import { LdapAuthorizationBodyParams } from '../dto/ldap-authorization.body.params';
+import { LocalAuthorizationBodyParams } from '../dto/local-authorization.body.params';
+import { OauthLoginResponse } from '../dto/oauth-login.response';
 
 const ldapAccountUserName = 'ldapAccountUserName';
 const mockUserLdapDN = 'mockUserLdapDN';

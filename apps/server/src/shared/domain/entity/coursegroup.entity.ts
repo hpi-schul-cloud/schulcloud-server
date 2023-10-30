@@ -1,10 +1,12 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
-import { IEntityWithSchool } from '../interface';
-import { EntityId } from '../types';
+import { IEntityWithSchool } from '../interface/entity';
+import { EntityId } from '../types/entity-id';
 import { BaseEntityWithTimestamps } from './base.entity';
+
 import type { Course } from './course.entity';
 import type { ILessonParent } from './lesson.entity';
 import { SchoolEntity } from './school.entity';
+
 import type { ITaskParent } from './task.entity';
 import type { User } from './user.entity';
 

@@ -1,6 +1,8 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { Column, ColumnBoard } from '@shared/domain';
-import { BoardResponse, TimestampsResponse } from '../dto';
+import { ColumnBoard } from '@shared/domain/domainobject/board/column-board.do';
+import { Column } from '@shared/domain/domainobject/board/column.do';
+import { BoardResponse } from '../dto/board/board.response';
+import { TimestampsResponse } from '../dto/timestamps.response';
 import { ColumnResponseMapper } from './column-response.mapper';
 
 export class BoardResponseMapper {

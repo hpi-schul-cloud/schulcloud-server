@@ -1,8 +1,8 @@
 import { Builder } from 'xml2js';
-import { CommonCartridgeVersion, CommonCartridgeResourceType } from './common-cartridge-enums';
+import { CommonCartridgeResourceType, CommonCartridgeVersion } from './common-cartridge-enums';
 import {
-	ICommonCartridgeWebLinkResourceProps,
 	CommonCartridgeWebLinkResourceElement,
+	ICommonCartridgeWebLinkResourceProps,
 } from './common-cartridge-web-link-resource';
 
 describe('CommonCartridgeWebLinkResourceElement', () => {

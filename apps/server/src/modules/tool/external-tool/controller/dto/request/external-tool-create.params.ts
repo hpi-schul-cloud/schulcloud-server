@@ -1,13 +1,11 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
+import { ToolConfigType } from '@src/modules/tool/common/enum/tool-config-type.enum';
 import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { ToolConfigType } from '../../../../common/enum';
-import {
-	BasicToolConfigParams,
-	ExternalToolConfigCreateParams,
-	Lti11ToolConfigCreateParams,
-	Oauth2ToolConfigCreateParams,
-} from './config';
+import { BasicToolConfigParams } from './config/basic-tool-config.params';
+import { ExternalToolConfigCreateParams } from './config/external-tool-config.params';
+import { Lti11ToolConfigCreateParams } from './config/lti11-tool-config-create.params';
+import { Oauth2ToolConfigCreateParams } from './config/oauth2-tool-config-create.params';
 import { CustomParameterPostParams } from './custom-parameter.params';
 
 @ApiExtraModels(Lti11ToolConfigCreateParams, Oauth2ToolConfigCreateParams, BasicToolConfigParams)

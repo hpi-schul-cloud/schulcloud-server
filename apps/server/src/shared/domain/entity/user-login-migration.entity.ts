@@ -1,7 +1,7 @@
 import { Entity, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
-import { SchoolEntity } from '@shared/domain/entity/school.entity';
-import { SystemEntity } from '@shared/domain/entity/system.entity';
 import { BaseEntityWithTimestamps } from './base.entity';
+import { SchoolEntity } from './school.entity';
+import { SystemEntity } from './system.entity';
 
 export type IUserLoginMigration = Readonly<Omit<UserLoginMigrationEntity, keyof BaseEntityWithTimestamps>>;
 

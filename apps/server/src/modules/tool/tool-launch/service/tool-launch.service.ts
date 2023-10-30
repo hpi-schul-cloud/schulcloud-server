@@ -1,21 +1,21 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
-import { CommonToolService } from '../../common/service';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ExternalTool } from '../../external-tool/domain';
-import { ExternalToolService } from '../../external-tool/service';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ToolStatusOutdatedLoggableException } from '../error';
-import { ToolLaunchMapper } from '../mapper';
-import { ToolLaunchData, ToolLaunchRequest } from '../types';
-import {
-	BasicToolLaunchStrategy,
-	IToolLaunchStrategy,
-	Lti11ToolLaunchStrategy,
-	OAuth2ToolLaunchStrategy,
-} from './strategy';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { ToolConfigType } from '../../common/enum/tool-config-type.enum';
+import { ToolConfigurationStatus } from '../../common/enum/tool-configuration-status';
+import { CommonToolService } from '../../common/service/common-tool.service';
+import { ContextExternalTool } from '../../context-external-tool/domain/context-external-tool.do';
+import { ExternalTool } from '../../external-tool/domain/external-tool.do';
+import { ExternalToolService } from '../../external-tool/service/external-tool.service';
+import { SchoolExternalTool } from '../../school-external-tool/domain/school-external-tool.do';
+import { SchoolExternalToolService } from '../../school-external-tool/service/school-external-tool.service';
+import { ToolStatusOutdatedLoggableException } from '../error/tool-status-outdated.loggable-exception';
+import { ToolLaunchMapper } from '../mapper/tool-launch.mapper';
+import { ToolLaunchData } from '../types/tool-launch-data';
+import { ToolLaunchRequest } from '../types/tool-launch-request';
+import { BasicToolLaunchStrategy } from './strategy/basic-tool-launch.strategy';
+import { Lti11ToolLaunchStrategy } from './strategy/lti11-tool-launch.strategy';
+import { OAuth2ToolLaunchStrategy } from './strategy/oauth2-tool-launch.strategy';
+import { IToolLaunchStrategy } from './strategy/tool-launch-strategy.interface';
 
 @Injectable()
 export class ToolLaunchService {

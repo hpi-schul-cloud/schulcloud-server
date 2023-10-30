@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DecodeHtmlEntities } from '@shared/controller';
+import { DecodeHtmlEntities } from '@shared/controller/transformer/decode-html-entities.transformer';
 
 export class BoardColumnBoardResponse {
 	constructor({ id, columnBoardId, title, published, createdAt, updatedAt }: BoardColumnBoardResponse) {

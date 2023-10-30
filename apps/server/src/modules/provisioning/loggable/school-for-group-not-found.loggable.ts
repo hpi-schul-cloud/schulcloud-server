@@ -1,5 +1,6 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
-import { ExternalGroupDto } from '../dto';
+import { Loggable } from '@src/core/logger/interfaces/loggable';
+import { LogMessage, ErrorLogMessage, ValidationErrorLogMessage } from '@src/core/logger/types/logging.types';
+import { ExternalGroupDto } from '../dto/external-group.dto';
 
 export class SchoolForGroupNotFoundLoggable implements Loggable {
 	constructor(private readonly group: ExternalGroupDto) {}

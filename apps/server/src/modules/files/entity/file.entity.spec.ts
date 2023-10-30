@@ -1,9 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { setupEntities, storageProviderFactory } from '@shared/testing';
-import { FileOwnerModel } from '@src/modules/files/domain';
-import { fileEntityFactory, filePermissionEntityFactory } from './testing';
-import { FileEntity } from './file.entity';
+import { storageProviderFactory } from '@shared/testing/factory/storageprovider.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { FileOwnerModel } from '../domain/types/file-owner-model.enum';
 import { FileSecurityCheckEntity } from './file-security-check.entity';
+import { FileEntity } from './file.entity';
+import { fileEntityFactory } from './testing/factory/file-entity.factory';
+import { filePermissionEntityFactory } from './testing/factory/file-permission-entity.factory';
 
 describe(FileEntity.name, () => {
 	const storageProvider = storageProviderFactory.buildWithId();

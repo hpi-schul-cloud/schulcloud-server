@@ -1,20 +1,19 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, SubmissionItemNode } from '@shared/domain';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	submissionContainerElementNodeFactory,
-	submissionItemNodeFactory,
-} from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
-import { SubmissionItemResponse } from '../dto';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
+import { SubmissionItemNode } from '@shared/domain/entity/boardnode/submission-item-node.entity';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { cardNodeFactory } from '@shared/testing/factory/boardnode/card-node.factory';
+import { columnBoardNodeFactory } from '@shared/testing/factory/boardnode/column-board-node.factory';
+import { columnNodeFactory } from '@shared/testing/factory/boardnode/column-node.factory';
+import { submissionContainerElementNodeFactory } from '@shared/testing/factory/boardnode/submission-container-element-node.factory';
+import { submissionItemNodeFactory } from '@shared/testing/factory/boardnode/submission-item-node.factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { UserAndAccountTestFactory } from '@shared/testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@shared/testing/test-api-client';
+import { ServerTestModule } from '@src/modules/server/server.module';
+import { SubmissionItemResponse } from '../dto/submission-item/submission-item.response';
 
 const baseRouteName = '/board-submissions';
 describe('submission item update (api)', () => {

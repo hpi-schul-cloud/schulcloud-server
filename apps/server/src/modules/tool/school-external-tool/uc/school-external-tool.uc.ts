@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Permission } from '@shared/domain';
-import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
+import { AuthorizationContext } from '@src/modules/authorization/types/authorization-context.interface';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
-import { ContextExternalToolService } from '../../context-external-tool/service';
-import { SchoolExternalTool } from '../domain';
-import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
+import { ContextExternalToolService } from '../../context-external-tool/service/context-external-tool.service';
+import { SchoolExternalTool } from '../domain/school-external-tool.do';
+import { SchoolExternalToolValidationService } from '../service/school-external-tool-validation.service';
+import { SchoolExternalToolService } from '../service/school-external-tool.service';
 import { SchoolExternalToolDto, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 
 @Injectable()

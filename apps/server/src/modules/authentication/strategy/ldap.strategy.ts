@@ -1,14 +1,19 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { LegacySchoolDo, SystemEntity, User } from '@shared/domain';
-import { LegacySchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { LegacySchoolRepo } from '@shared/repo/school/legacy-school.repo';
+import { SystemRepo } from '@shared/repo/system/system.repo';
+import { UserRepo } from '@shared/repo/user/user.repo';
 import { ErrorLoggable } from '@src/core/error/loggable/error.loggable';
-import { Logger } from '@src/core/logger';
-import { AccountDto } from '@src/modules/account/services/dto';
+import { Logger } from '@src/core/logger/logger';
+import { AccountDto } from '@src/modules/account/services/dto/account.dto';
+
 import { Strategy } from 'passport-custom';
-import { LdapAuthorizationBodyParams } from '../controllers/dto';
-import { ICurrentUser } from '../interface';
-import { CurrentUserMapper } from '../mapper';
+import { LdapAuthorizationBodyParams } from '../controllers/dto/ldap-authorization.body.params';
+import { ICurrentUser } from '../interface/user';
+import { CurrentUserMapper } from '../mapper/current-user.mapper';
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapService } from '../services/ldap.service';
 

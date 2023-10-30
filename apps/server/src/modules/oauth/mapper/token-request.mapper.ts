@@ -1,6 +1,7 @@
-import { OAuthTokenDto } from '../interface';
 import { OAuthGrantType } from '../interface/oauth-grant-type.enum';
-import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from '../service/dto';
+import { OAuthTokenDto } from '../interface/oauth-token.dto';
+import { AuthenticationCodeGrantTokenRequest } from '../service/dto/authentication-code-grant-token.request';
+import { OauthTokenResponse } from '../service/dto/oauth-token.response';
 
 export class TokenRequestMapper {
 	static createAuthenticationCodeGrantTokenRequestPayload(

@@ -1,18 +1,17 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
-import {
-	PrometheusMetricsConfig,
-	createAPIResponseTimeMetricMiddleware,
-	createPrometheusMetricsApp,
-} from '@shared/infra/metrics';
-import { Logger } from '@src/core/logger';
+import { createPrometheusMetricsApp } from '@shared/infra/metrics/prometheus/app';
+import { PrometheusMetricsConfig } from '@shared/infra/metrics/prometheus/config';
+import { createAPIResponseTimeMetricMiddleware } from '@shared/infra/metrics/prometheus/middleware';
+
 import express, { Express, NextFunction, Request, RequestHandler, Response } from 'express';
+import { Logger } from 'winston';
 import {
-	PrometheusMetricsSetupState,
-	PrometheusMetricsSetupStateLoggable,
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
+	PrometheusMetricsSetupState,
+	PrometheusMetricsSetupStateLoggable,
 } from './prometheus-metrics';
 
 jest.mock('@shared/infra/metrics', () => {

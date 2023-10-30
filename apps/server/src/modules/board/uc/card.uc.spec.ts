@@ -1,13 +1,22 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain';
-import { setupEntities, userFactory } from '@shared/testing';
-import { cardFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
-import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
+import {
+	BoardDoAuthorizable,
+	BoardRoles,
+	UserRoleEnum,
+} from '@shared/domain/domainobject/board/types/board-do-authorizable';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import { cardFactory } from '@shared/testing/factory/domainobject/board/card.do.factory';
+import { richTextElementFactory } from '@shared/testing/factory/domainobject/board/rich-text-element.do.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+
 import { ObjectId } from 'bson';
-import { BoardDoAuthorizableService, ContentElementService } from '../service';
+import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 import { CardService } from '../service/card.service';
+import { ContentElementService } from '../service/content-element.service';
 import { CardUc } from './card.uc';
 
 describe(CardUc.name, () => {

@@ -1,9 +1,9 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
-import { type UserDO } from '@shared/domain';
-import { Group, GroupProps } from '../domain';
-import { GroupEntity, GroupEntityProps, GroupEntityTypes } from '../entity';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { Group, GroupProps } from '../domain/group';
+import { GroupEntity, GroupEntityProps, GroupEntityTypes } from '../entity/group.entity';
 import { GroupDomainMapper } from './group-domain.mapper';
 
 @Injectable()

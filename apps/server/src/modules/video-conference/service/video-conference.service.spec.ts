@@ -1,38 +1,44 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
-import {
-	Course,
-	EntityId,
-	Permission,
-	RoleName,
-	SchoolFeatures,
-	TeamUserEntity,
-	UserDO,
-	VideoConferenceDO,
-	VideoConferenceScope,
-} from '@shared/domain';
-import { CalendarEventDto, CalendarService } from '@shared/infra/calendar';
-import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import {
-	AuthorizableReferenceType,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { UserService } from '@src/modules/user';
-import { courseFactory, roleFactory, setupEntities, userDoFactory } from '@shared/testing';
-import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
+import { Test, TestingModule } from '@nestjs/testing';
+
 import { ObjectId } from 'bson';
-import { teamFactory } from '@shared/testing/factory/team.factory';
+
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { VideoConferenceDO } from '@shared/domain/domainobject/video-conference.do';
+import { Course } from '@shared/domain/entity/course.entity';
+import { SchoolFeatures } from '@shared/domain/entity/school.entity';
+import { TeamUserEntity } from '@shared/domain/entity/team.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { VideoConferenceScope } from '@shared/domain/interface/video-conference-scope.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
+import { CalendarService } from '@shared/infra/calendar/service/calendar.service';
+import { TeamsRepo } from '@shared/repo/teams/teams.repo';
+import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { teamFactory } from '@shared/testing/factory/team.factory';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
-import { CourseService } from '@src/modules/learnroom/service';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
+import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { AuthorizableReferenceType } from '@src/modules/authorization/types/allowed-authorization-object-type.enum';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { UserService } from '@src/modules/user/service/user.service';
+import { BBBRole } from '../bbb/request/bbb-join.config';
+import { ErrorStatus } from '../error/error-status.enum';
+import { VideoConferenceOptions } from '../interface/video-conference-options.interface';
+import { IVideoConferenceSettings, VideoConferenceSettings } from '../interface/video-conference-settings.interface';
+import { IScopeInfo } from '../uc/dto/scope-info.interface';
+import { ScopeRef } from '../uc/dto/scope-ref';
+import { VideoConferenceState } from '../uc/dto/video-conference-state.enum';
 import { VideoConferenceService } from './video-conference.service';
-import { ErrorStatus } from '../error';
-import { BBBRole } from '../bbb';
-import { IScopeInfo, ScopeRef, VideoConferenceState } from '../uc/dto';
-import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
 
 describe('VideoConferenceService', () => {
 	let service: DeepMocked<VideoConferenceService>;

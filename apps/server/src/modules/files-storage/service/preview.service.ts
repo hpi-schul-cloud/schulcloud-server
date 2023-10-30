@@ -1,16 +1,19 @@
 import { Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { LegacyLogger } from '@src/core/logger';
+import { S3ClientAdapter } from '@shared/infra/s3-client/s3-client.adapter';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+
 import { subClass } from 'gm';
 import { PassThrough } from 'stream';
-import { DownloadFileParams, PreviewParams } from '../controller/dto';
-import { FileRecord, PreviewStatus } from '../entity';
-import { ErrorType } from '../error';
+import { DownloadFileParams, PreviewParams } from '../controller/dto/file-storage.params';
+import { FileRecord, PreviewStatus } from '../entity/filerecord.entity';
+import { ErrorType } from '../error/error-status.enum';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
-import { createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
-import { GetFileResponse, PreviewFileParams } from '../interface';
+import { createPreviewNameHash } from '../helper/file-name';
+import { createPreviewDirectoryPath, createPreviewFilePath } from '../helper/path';
+import { GetFileResponse, PreviewFileParams } from '../interface/interfaces';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
-import { FileDtoBuilder, FileResponseBuilder } from '../mapper';
+import { FileDtoBuilder } from '../mapper/file-dto.builder';
+import { FileResponseBuilder } from '../mapper/file-response.builder';
 import { FilesStorageService } from './files-storage.service';
 
 @Injectable()

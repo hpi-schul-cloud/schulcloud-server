@@ -1,29 +1,41 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Page, Permission, LegacySchoolDo, SystemEntity, User, UserLoginMigrationDO } from '@shared/domain';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception/not-found.loggable-exception';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { Page } from '@shared/domain/domainobject/page';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject/user-login-migration.do';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import {
-	legacySchoolDoFactory,
-	setupEntities,
-	systemFactory,
-	userFactory,
-	userLoginMigrationDOFactory,
-} from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/legacy-school.factory';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
+import { systemFactory } from '@shared/testing/factory/system.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
-import { Action, AuthorizationService } from '@src/modules/authorization';
-import { OAuthTokenDto } from '@src/modules/oauth';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { OAuthTokenDto } from '@src/modules/oauth/interface/oauth-token.dto';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
-import { ProvisioningService } from '@src/modules/provisioning';
-import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
-import { LegacySchoolService } from '@src/modules/legacy-school';
+import { ExternalSchoolDto } from '@src/modules/provisioning/dto/external-school.dto';
+import { ExternalUserDto } from '@src/modules/provisioning/dto/external-user.dto';
+import { OauthDataDto } from '@src/modules/provisioning/dto/oauth-data.dto';
+import { ProvisioningSystemDto } from '@src/modules/provisioning/dto/provisioning-system.dto';
+import { ProvisioningService } from '@src/modules/provisioning/service/provisioning.service';
 import { Oauth2MigrationParams } from '../controller/dto/oauth2-migration.params';
-import { OAuthMigrationError, SchoolMigrationError, UserLoginMigrationError } from '../error';
+import { OAuthMigrationError } from '../error/oauth-migration.error';
+import { SchoolMigrationError } from '../error/school-migration.error';
+import { UserLoginMigrationError } from '../error/user-login-migration.error';
 import { PageTypes } from '../interface/page-types.enum';
-import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
-import { MigrationDto, PageContentDto } from '../service/dto';
+import { MigrationDto } from '../service/dto/migration.dto';
+import { PageContentDto } from '../service/dto/page-content.dto';
+import { SchoolMigrationService } from '../service/school-migration.service';
+import { UserLoginMigrationService } from '../service/user-login-migration.service';
+import { UserMigrationService } from '../service/user-migration.service';
 import { UserLoginMigrationUc } from './user-login-migration.uc';
 
 describe('UserLoginMigrationUc', () => {

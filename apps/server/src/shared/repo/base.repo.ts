@@ -1,8 +1,9 @@
 import { EntityName, FilterQuery } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BaseEntity } from '@shared/domain/entity';
-import { EntityId } from '@shared/domain/types';
+import { BaseEntity } from '@shared/domain/entity/base.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+
 import { ObjectId } from 'bson';
 
 /**

@@ -1,5 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
-import { ContentElementType, InputFormat } from '@shared/domain';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import { InputFormat } from '@shared/domain/types/input-format.types';
+
 import { Type } from 'class-transformer';
 import { IsDate, IsEnum, IsMongoId, IsOptional, IsString, ValidateNested } from 'class-validator';
 

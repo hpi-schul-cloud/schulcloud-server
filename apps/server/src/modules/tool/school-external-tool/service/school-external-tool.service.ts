@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { SchoolExternalToolRepo } from '@shared/repo';
-import { ToolConfigurationStatus } from '../../common/enum';
-import { ExternalTool } from '../../external-tool/domain';
-import { ExternalToolService } from '../../external-tool/service';
-import { SchoolExternalTool } from '../domain';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
+import { ToolConfigurationStatus } from '../../common/enum/tool-configuration-status';
+import { ExternalTool } from '../../external-tool/domain/external-tool.do';
+import { ExternalToolService } from '../../external-tool/service/external-tool.service';
+import { SchoolExternalTool } from '../domain/school-external-tool.do';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 
 @Injectable()

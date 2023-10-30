@@ -1,5 +1,6 @@
+import { TokenEndpointAuthMethod } from '@src/modules/tool/common/enum/token-endpoint-auth-method.enum';
+import { ToolConfigType } from '@src/modules/tool/common/enum/tool-config-type.enum';
 import { ExternalToolConfig } from './external-tool-config.do';
-import { TokenEndpointAuthMethod, ToolConfigType } from '../../../common/enum';
 
 export class Oauth2ToolConfig extends ExternalToolConfig {
 	clientId: string;

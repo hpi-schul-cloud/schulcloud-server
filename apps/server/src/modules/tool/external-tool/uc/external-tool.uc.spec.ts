@@ -1,20 +1,25 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, Permission, SortOrder, User } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
-import { setupEntities, userFactory } from '@shared/testing';
+import { User } from '@shared/domain/entity/user.entity';
+import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
+import { Permission } from '@shared/domain/interface/permission.enum';
 import {
 	externalToolFactory,
 	oauth2ToolConfigFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { ICurrentUser } from '@src/modules/authentication';
-import { AuthorizationService } from '@src/modules/authorization';
-import { ExternalToolSearchQuery } from '../../common/interface';
-import { ExternalTool, Oauth2ToolConfig } from '../domain';
-import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
-
-import { ExternalToolUpdate } from './dto';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { ExternalToolSearchQuery } from '../../common/interface/external-tool-search-query';
+import { Oauth2ToolConfig } from '../domain/config/oauth2-tool-config.do';
+import { ExternalTool } from '../domain/external-tool.do';
+import { ExternalToolLogoService } from '../service/external-tool-logo.service';
+import { ExternalToolValidationService } from '../service/external-tool-validation.service';
+import { ExternalToolService } from '../service/external-tool.service';
+import { ExternalToolUpdate } from './dto/external-tool.types';
 import { ExternalToolUc } from './external-tool.uc';
 
 describe('ExternalToolUc', () => {

@@ -1,11 +1,12 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { CoreModule } from '@src/core';
-import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { FileSecurityController, FilesStorageController } from './controller';
+import { CoreModule } from '@src/core/core.module';
+import { AuthenticationModule } from '../authentication/authentication.module';
+import { AuthorizationModule } from '../authorization/authorization.module';
+import { FileSecurityController } from './controller/file-security.controller';
+import { FilesStorageController } from './controller/files-storage.controller';
 import { FilesStorageModule } from './files-storage.module';
-import { FilesStorageUC } from './uc';
+import { FilesStorageUC } from './uc/files-storage.uc';
 
 @Module({
 	imports: [AuthorizationModule, FilesStorageModule, AuthenticationModule, CoreModule, HttpModule],

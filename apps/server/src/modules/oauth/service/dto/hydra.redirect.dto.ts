@@ -1,5 +1,5 @@
-import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { CookiesDto } from './cookies.dto';
 
 export class HydraRedirectDto {
 	constructor(props: HydraRedirectDto) {

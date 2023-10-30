@@ -1,7 +1,3 @@
-import { AcceptLoginRequestBody } from '@shared/infra/oauth-provider/dto';
-import { LoginRequestBody } from '../controller/dto';
-import { OauthProviderRequestMapper } from './oauth-provider-request.mapper';
-
 describe('OauthProviderRequestMapper', () => {
 	describe('mapCreateAcceptLoginRequestBody', () => {
 		it('should create the AcceptLoginRequestBody', () => {

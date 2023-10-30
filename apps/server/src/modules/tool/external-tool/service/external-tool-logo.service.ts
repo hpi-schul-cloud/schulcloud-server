@@ -1,19 +1,18 @@
 import { HttpService } from '@nestjs/axios';
 import { HttpException, Inject } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { Logger } from '@src/core/logger';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { Logger } from '@src/core/logger/logger';
+
 import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
-import { ExternalTool } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
-import {
-	ExternalToolLogoFetchedLoggable,
-	ExternalToolLogoFetchFailedLoggableException,
-	ExternalToolLogoNotFoundLoggableException,
-	ExternalToolLogoSizeExceededLoggableException,
-	ExternalToolLogoWrongFileTypeLoggableException,
-} from '../loggable';
+import { ExternalTool } from '../domain/external-tool.do';
+import { ExternalToolLogoFetchFailedLoggableException } from '../loggable/external-tool-logo-fetch-failed-loggable-exception';
+import { ExternalToolLogoFetchedLoggable } from '../loggable/external-tool-logo-fetched-loggable';
+import { ExternalToolLogoNotFoundLoggableException } from '../loggable/external-tool-logo-not-found-loggable-exception';
+import { ExternalToolLogoSizeExceededLoggableException } from '../loggable/external-tool-logo-size-exceeded-loggable-exception';
+import { ExternalToolLogoWrongFileTypeLoggableException } from '../loggable/external-tool-logo-wrong-file-type-loggable-exception';
 import { ExternalToolService } from './external-tool.service';
 
 const contentTypeDetector: Record<string, string> = {

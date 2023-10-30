@@ -1,35 +1,39 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import {
-	Account,
-	EntityId,
-	Permission,
-	PermissionService,
-	Role,
-	RoleName,
-	SchoolRolePermission,
-	SchoolRoles,
-	User,
-} from '@shared/domain';
-import { UserRepo } from '@shared/repo';
-import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { AuthorizationError } from '@shared/common/error/authorization.error';
+import { EntityNotFoundError } from '@shared/common/error/entity-not-found.error';
+import { ForbiddenOperationError } from '@shared/common/error/forbidden-operation.error';
+import { Account } from '@shared/domain/entity/account.entity';
+import { Role } from '@shared/domain/entity/role.entity';
+import { SchoolRolePermission, SchoolRoles } from '@shared/domain/entity/school.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { PermissionService } from '@shared/domain/service/permission.service';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { accountFactory } from '@shared/testing/factory/account.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { systemFactory } from '@shared/testing/factory/system.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountSaveDto } from '@src/modules/account/services/dto';
-import { AccountDto } from '@src/modules/account/services/dto/account.dto';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+
 import { ObjectId } from 'bson';
-import {
-	AccountByIdBodyParams,
-	AccountByIdParams,
-	AccountSearchListResponse,
-	AccountSearchQueryParams,
-	AccountSearchType,
-} from '../controller/dto';
-import { AccountEntityToDtoMapper, AccountResponseMapper } from '../mapper';
+import { ValidationError } from 'class-validator';
+import { AccountByIdBodyParams } from '../controller/dto/account-by-id.body.params';
+import { AccountByIdParams } from '../controller/dto/account-by-id.params';
+import { AccountSearchListResponse } from '../controller/dto/account-search-list.response';
+import { AccountSearchType } from '../controller/dto/account-search-type';
+import { AccountSearchQueryParams } from '../controller/dto/account-search.query.params';
+import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
+import { AccountResponseMapper } from '../mapper/account-response.mapper';
+import { AccountService } from '../services/account.service';
 import { AccountValidationService } from '../services/account.validation.service';
+import { AccountSaveDto } from '../services/dto/account-save.dto';
+import { AccountDto } from '../services/dto/account.dto';
 import { AccountUc } from './account.uc';
 
 describe('AccountUc', () => {

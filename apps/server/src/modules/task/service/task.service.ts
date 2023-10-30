@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Counted, EntityId, IFindOptions, Task } from '@shared/domain';
-import { TaskRepo } from '@shared/repo';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { Task } from '@shared/domain/entity/task.entity';
+import { IFindOptions } from '@shared/domain/interface/find-options';
+import { Counted } from '@shared/domain/types/counted';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { TaskRepo } from '@shared/repo/task/task.repo';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client/service/files-storage-client.service';
 import { SubmissionService } from './submission.service';
 
 @Injectable()

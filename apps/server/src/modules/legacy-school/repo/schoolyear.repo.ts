@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SchoolYearEntity } from '@shared/domain';
+import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
 import { BaseRepo } from '@shared/repo/base.repo';
 
 @Injectable()

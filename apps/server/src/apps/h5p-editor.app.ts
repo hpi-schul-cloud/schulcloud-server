@@ -2,15 +2,15 @@
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
+import { enableOpenApiDocs } from '@shared/controller/swagger';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { H5PEditorModule } from '@src/modules/h5p-editor/h5p-editor.module';
 import express from 'express';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { LegacyLogger } from '@src/core/logger';
-import { H5PEditorModule } from '@src/modules/h5p-editor';
-import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 
 async function bootstrap() {
 	sourceMapInstall();

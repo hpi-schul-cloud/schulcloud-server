@@ -1,9 +1,10 @@
-import { CollaborativeStorageController } from '@src/modules/collaborative-storage/controller/collaborative-storage.controller';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/collaborative-storage.uc';
+
 import { createMock } from '@golevelup/ts-jest';
-import { ICurrentUser } from '@src/modules/authentication';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { CollaborativeStorageUc } from '../uc/collaborative-storage.uc';
+import { CollaborativeStorageController } from './collaborative-storage.controller';
 
 describe('CollaborativeStorage Controller', () => {
 	let module: TestingModule;

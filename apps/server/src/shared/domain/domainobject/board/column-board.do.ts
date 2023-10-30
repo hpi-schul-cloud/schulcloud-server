@@ -1,6 +1,8 @@
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import { Column } from './column.do';
-import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardExternalReference } from './types';
+import { AnyBoardDo } from './types/any-board-do';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types/board-composite-visitor';
+import { BoardExternalReference } from './types/board-external-reference';
 
 export class ColumnBoard extends BoardComposite<ColumnBoardProps> {
 	get title(): string {

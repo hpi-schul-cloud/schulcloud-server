@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AnyBoardDo } from '@shared/domain';
-import { CopyStatus } from '@src/modules/copy-helper';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
+import { CopyStatus } from '@src/modules/copy-helper/types/copy.types';
 import { RecursiveCopyVisitor } from './recursive-copy.visitor';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 

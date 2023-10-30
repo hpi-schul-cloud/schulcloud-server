@@ -1,5 +1,5 @@
-import { SystemEntity } from '@shared/domain';
-import { Scope } from '../scope';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { Scope } from '@shared/repo/scope';
 
 export class SystemScope extends Scope<SystemEntity> {
 	withLdapConfig(): SystemScope {

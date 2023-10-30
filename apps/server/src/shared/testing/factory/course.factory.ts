@@ -1,9 +1,7 @@
+import { Course, ICourseProperties } from '@shared/domain/entity/course.entity';
 import { DeepPartial } from 'fishery';
-
-import { Course, ICourseProperties } from '@shared/domain';
-
-import { schoolFactory } from './school.factory';
 import { BaseFactory } from './base.factory';
+import { schoolFactory } from './school.factory';
 import { userFactory } from './user.factory';
 
 const oneDay = 24 * 60 * 60 * 1000;

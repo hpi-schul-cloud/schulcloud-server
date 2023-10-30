@@ -1,5 +1,5 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types/entity-id';
 
 export enum BoardRoles {
 	EDITOR = 'editor',

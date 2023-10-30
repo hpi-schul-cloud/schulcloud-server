@@ -1,6 +1,6 @@
+import { EntityId } from '@shared/domain/types/entity-id';
 import { Scope } from '@shared/repo/scope';
-import { EntityId } from '@shared/domain';
-import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
+import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity/school-external-tool.entity';
 
 export class SchoolExternalToolScope extends Scope<SchoolExternalToolEntity> {
 	bySchoolId(schoolId: EntityId | undefined): this {

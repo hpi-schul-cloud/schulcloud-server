@@ -1,26 +1,27 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board } from '@shared/domain';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
-import { BoardRepo } from '@shared/repo';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
+import { Board } from '@shared/domain/entity/legacy-board/board.entity';
+import { BoardRepo } from '@shared/repo/board/board.repo';
+import { boardFactory } from '@shared/testing/factory/board.factory';
 import {
-	boardFactory,
 	columnboardBoardElementFactory,
-	columnBoardFactory,
 	columnBoardTargetFactory,
-	courseFactory,
 	lessonBoardElementFactory,
-	lessonFactory,
-	setupEntities,
 	taskBoardElementFactory,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+} from '@shared/testing/factory/boardelement.factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { columnBoardFactory } from '@shared/testing/factory/domainobject/board/column-board.do.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { ColumnBoardCopyService } from '@src/modules/board/service/column-board-copy.service';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
-import { LessonCopyService } from '@src/modules/lesson/service';
-import { TaskCopyService } from '@src/modules/task/service';
+import { CopyHelperService } from '@src/modules/copy-helper/service/copy-helper.service';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper/types/copy.types';
+import { LessonCopyService } from '@src/modules/lesson/service/lesson-copy.service';
+import { TaskCopyService } from '@src/modules/task/service/task-copy.service';
 import { BoardCopyService } from './board-copy.service';
 
 describe('board copy service', () => {

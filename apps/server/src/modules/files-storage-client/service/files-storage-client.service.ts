@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { LegacyLogger } from '@src/core/logger';
-import { CopyFileDto, FileDto } from '../dto';
-import { IFileRequestInfo } from '../interfaces';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { CopyFileDto } from '../dto/copy-file.dto';
+import { FileDto } from '../dto/file.dto';
 import { ICopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
-import { FilesStorageClientMapper } from '../mapper';
+import { IFileRequestInfo } from '../interfaces/file-request-info';
+import { FilesStorageClientMapper } from '../mapper/files-storage-client.mapper';
 import { FilesStorageProducer } from './files-storage.producer';
 
 @Injectable()

@@ -1,7 +1,11 @@
-import { MatchCreator, RoleName } from '@shared/domain';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { MatchType, UserRole } from '../controller/dto';
+import { MatchCreator } from '@shared/domain/entity/import-user.entity';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { FilterUserParams } from '../controller/dto/filter-user.params';
+import { MatchType } from '../controller/dto/match-type';
+import { UserRole } from '../controller/dto/user-role';
 import { ImportUserMatchMapper } from './match.mapper';
 import { UserMatchMapper } from './user-match.mapper';
 

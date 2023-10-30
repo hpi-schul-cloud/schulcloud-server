@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Permission, Submission, User } from '@shared/domain';
-import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { SubmissionService } from '../service';
+import { Submission } from '@shared/domain/entity/submission.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { SubmissionService } from '../service/submission.service';
 
 @Injectable()
 export class SubmissionUc {

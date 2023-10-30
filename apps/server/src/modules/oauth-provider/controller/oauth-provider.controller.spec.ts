@@ -1,32 +1,29 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
+
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
-import {
-	AcceptQuery,
-	ChallengeParams,
-	ConsentRequestBody,
-	ConsentResponse,
-	ConsentSessionResponse,
-	LoginRequestBody,
-	LoginResponse,
-	OauthClientBody,
-	OauthClientResponse,
-	RedirectResponse,
-} from '@src/modules/oauth-provider/controller/dto';
-import {
-	ProviderConsentResponse,
-	ProviderConsentSessionResponse,
-	ProviderLoginResponse,
-	ProviderRedirectResponse,
-} from '@shared/infra/oauth-provider/dto';
-import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
-import { ICurrentUser } from '@src/modules/authentication';
-import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
-import { OauthProviderController } from './oauth-provider.controller';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
+import { ProviderConsentResponse } from '@shared/infra/oauth-provider/dto/response/consent.response';
+import { ProviderLoginResponse } from '@shared/infra/oauth-provider/dto/response/login.response';
+import { ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto/response/redirect.response';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { OauthProviderResponseMapper } from '../mapper/oauth-provider-response.mapper';
 import { OauthProviderClientCrudUc } from '../uc/oauth-provider.client-crud.uc';
+import { OauthProviderConsentFlowUc } from '../uc/oauth-provider.consent-flow.uc';
 import { OauthProviderLoginFlowUc } from '../uc/oauth-provider.login-flow.uc';
+import { OauthProviderLogoutFlowUc } from '../uc/oauth-provider.logout-flow.uc';
+import { OauthProviderUc } from '../uc/oauth-provider.uc';
+import { AcceptQuery } from './dto/request/accept.query';
+import { ChallengeParams } from './dto/request/challenge.params';
+import { ConsentRequestBody } from './dto/request/consent-request.body';
+import { LoginRequestBody } from './dto/request/login-request.body';
+import { OauthClientBody } from './dto/request/oauth-client.body';
+import { ConsentSessionResponse } from './dto/response/consent-session.response';
+import { ConsentResponse } from './dto/response/consent.response';
+import { LoginResponse } from './dto/response/login.response';
+import { OauthClientResponse } from './dto/response/oauth-client.response';
+import { RedirectResponse } from './dto/response/redirect.response';
+import { OauthProviderController } from './oauth-provider.controller';
 
 describe('OauthProviderController', () => {
 	let module: TestingModule;

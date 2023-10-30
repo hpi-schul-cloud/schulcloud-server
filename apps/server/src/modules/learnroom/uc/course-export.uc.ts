@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Permission } from '@shared/domain';
-import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
-import { CommonCartridgeVersion } from '../common-cartridge';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { AuthorizableReferenceType } from '@src/modules/authorization/types/allowed-authorization-object-type.enum';
+import { CommonCartridgeVersion } from '../common-cartridge/common-cartridge-enums';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 
 @Injectable()

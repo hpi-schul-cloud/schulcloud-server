@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Permission } from '@shared/domain';
-import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
+import { AuthorizationContext } from '@src/modules/authorization/types/authorization-context.interface';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ContextExternalToolService } from '../../context-external-tool/service';
-import { ToolLaunchService } from '../service';
-import { ToolLaunchData, ToolLaunchRequest } from '../types';
+import { ContextExternalTool } from '../../context-external-tool/domain/context-external-tool.do';
+import { ContextExternalToolService } from '../../context-external-tool/service/context-external-tool.service';
+import { ToolLaunchService } from '../service/tool-launch.service';
+import { ToolLaunchData } from '../types/tool-launch-data';
+import { ToolLaunchRequest } from '../types/tool-launch-request';
 
 @Injectable()
 export class ToolLaunchUc {

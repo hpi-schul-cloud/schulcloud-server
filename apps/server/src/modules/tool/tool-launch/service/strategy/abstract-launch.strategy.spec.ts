@@ -2,37 +2,36 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, EntityId, LegacySchoolDo } from '@shared/domain';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { Course } from '@shared/domain/entity/course.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/legacy-school.factory';
+import { contextExternalToolFactory } from '@shared/testing/factory/domainobject/tool/context-external-tool.factory';
 import {
-	contextExternalToolFactory,
-	courseFactory,
 	customParameterFactory,
 	externalToolFactory,
-	legacySchoolDoFactory,
-	schoolExternalToolFactory,
-	setupEntities,
-} from '@shared/testing';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { CustomParameterEntry } from '../../../common/domain';
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	ToolContextType,
-} from '../../../common/enum';
-import { ContextExternalTool } from '../../../context-external-tool/domain';
-import { ExternalTool } from '../../../external-tool/domain';
-import { SchoolExternalTool } from '../../../school-external-tool/domain';
-import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
-import {
-	LaunchRequestMethod,
-	PropertyData,
-	PropertyLocation,
-	ToolLaunchData,
-	ToolLaunchDataType,
-	ToolLaunchRequest,
-} from '../../types';
+} from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { CustomParameterEntry } from '@src/modules/tool/common/domain/custom-parameter-entry.do';
+import { CustomParameterLocation } from '@src/modules/tool/common/enum/custom-parameter-location.enum';
+import { CustomParameterScope } from '@src/modules/tool/common/enum/custom-parameter-scope.enum';
+import { CustomParameterType } from '@src/modules/tool/common/enum/custom-parameter-type.enum';
+import { ToolContextType } from '@src/modules/tool/common/enum/tool-context-type.enum';
+import { ContextExternalTool } from '@src/modules/tool/context-external-tool/domain/context-external-tool.do';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain/external-tool.do';
+import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain/school-external-tool.do';
+import { MissingToolParameterValueLoggableException } from '../../error/missing-tool-parameter-value.loggable-exception';
+import { ParameterTypeNotImplementedLoggableException } from '../../error/parameter-type-not-implemented.loggable-exception';
+import { LaunchRequestMethod } from '../../types/launch-request-method';
+import { PropertyData } from '../../types/property-data';
+import { PropertyLocation } from '../../types/property-location';
+import { ToolLaunchData } from '../../types/tool-launch-data';
+import { ToolLaunchDataType } from '../../types/tool-launch-data-type';
+import { ToolLaunchRequest } from '../../types/tool-launch-request';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 

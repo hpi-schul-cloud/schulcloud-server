@@ -1,17 +1,16 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable } from '@nestjs/common';
-import {
-	BoardExternalReference,
-	Card,
-	Column,
-	ColumnBoard,
-	ContentElementFactory,
-	ContentElementType,
-	EntityId,
-	RichTextElement,
-} from '@shared/domain';
+import { Card } from '@shared/domain/domainobject/board/card.do';
+import { ColumnBoard } from '@shared/domain/domainobject/board/column-board.do';
+import { Column } from '@shared/domain/domainobject/board/column.do';
+import { ContentElementFactory } from '@shared/domain/domainobject/board/content-element.factory';
+import { RichTextElement } from '@shared/domain/domainobject/board/rich-text-element.do';
+import { BoardExternalReference } from '@shared/domain/domainobject/board/types/board-external-reference';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+
 import { ObjectId } from 'bson';
-import { BoardDoRepo } from '../repo';
+import { BoardDoRepo } from '../repo/board-do.repo';
 import { BoardDoService } from './board-do.service';
 
 @Injectable()

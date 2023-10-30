@@ -1,8 +1,9 @@
 import { QueryOrderMap } from '@mikro-orm/core';
-import { LtiTool, SortOrder, SortOrderMap } from '@shared/domain';
-import { ExternalToolSortingMapper } from '@shared/repo';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
+import { LtiTool } from '@shared/domain/entity/ltitool.entity';
+import { SortOrder, SortOrderMap } from '@shared/domain/interface/find-options';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain/external-tool.do';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity/external-tool.entity';
+import { ExternalToolSortingMapper } from './external-tool-sorting.mapper';
 
 describe('ExternalToolSortingMapper', () => {
 	describe('mapDOSortOrderToQueryOrder', () => {

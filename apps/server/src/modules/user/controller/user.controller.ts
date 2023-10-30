@@ -1,10 +1,12 @@
 import { Body, Controller, Get, Patch } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ResolvedUserMapper } from '../mapper';
-import { UserUc } from '../uc';
-import { ChangeLanguageParams, ResolvedUserResponse, SuccessfulResponse } from './dto';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ResolvedUserMapper } from '../mapper/resolved-user.mapper';
+import { UserUc } from '../uc/user.uc';
+import { ResolvedUserResponse } from './dto/resolved-user.response';
+import { ChangeLanguageParams } from './dto/user.params';
+import { SuccessfulResponse } from './dto/user.response';
 
 @ApiTags('User')
 @Authenticate('jwt')

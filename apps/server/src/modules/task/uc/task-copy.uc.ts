@@ -1,16 +1,20 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Course, EntityId, LessonEntity, User } from '@shared/domain';
-import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
-import {
-	Action,
-	AuthorizableReferenceType,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@src/modules/authorization';
-import { CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
-import { TaskCopyService } from '../service';
-import { TaskCopyParentParams } from '../types';
+import { Course } from '@shared/domain/entity/course.entity';
+import { LessonEntity } from '@shared/domain/entity/lesson.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { CourseRepo } from '@shared/repo/course/course.repo';
+import { LessonRepo } from '@shared/repo/lesson/lesson.repo';
+import { TaskRepo } from '@shared/repo/task/task.repo';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { AuthorizableReferenceType } from '@src/modules/authorization/types/allowed-authorization-object-type.enum';
+import { CopyHelperService } from '@src/modules/copy-helper/service/copy-helper.service';
+import { CopyStatus } from '@src/modules/copy-helper/types/copy.types';
+import { TaskCopyService } from '../service/task-copy.service';
+import { TaskCopyParentParams } from '../types/task-copy-parent.params';
 
 @Injectable()
 export class TaskCopyUC {

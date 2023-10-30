@@ -2,12 +2,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain';
-import { externalToolFactory, ltiToolDOFactory, pseudonymFactory, userDoFactory } from '@shared/testing/factory';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { PseudonymSearchQuery } from '../domain';
-import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
-import { PseudonymService } from './pseudonym.service';
 
 describe('PseudonymService', () => {
 	let module: TestingModule;

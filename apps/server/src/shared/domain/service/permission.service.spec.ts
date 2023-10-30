@@ -1,10 +1,12 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { PermissionService } from '.';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { Role } from '../entity/role.entity';
-import { Permission } from '../interface';
+import { PermissionService } from './permission.service';
 
 describe('resolvePermissions', () => {
 	let module: TestingModule;

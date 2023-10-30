@@ -1,8 +1,9 @@
 import { FilterQuery } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { Task } from '@shared/domain/entity';
-import { IFindOptions, SortOrder } from '@shared/domain/interface';
-import { Counted, EntityId } from '@shared/domain/types';
+import { Task } from '@shared/domain/entity/task.entity';
+import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
+import { Counted } from '@shared/domain/types/counted';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { BaseRepo } from '../base.repo';
 import { TaskScope } from './task-scope';
 

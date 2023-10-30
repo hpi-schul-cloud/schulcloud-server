@@ -1,20 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import {
-	Counted,
-	EntityId,
-	ICreateNews,
-	IFindOptions,
-	INewsScope,
-	IUpdateNews,
-	News,
-	NewsTargetModel,
-	Permission,
-	SortOrder,
-} from '@shared/domain';
-import { NewsRepo, NewsTargetFilter } from '@shared/repo';
-import { CrudOperation } from '@shared/types';
-import { Logger } from '@src/core/logger';
-import { FeathersAuthorizationService } from '@src/modules/authorization';
+import { News } from '@shared/domain/entity/news.entity';
+import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { Counted } from '@shared/domain/types/counted';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { ICreateNews, INewsScope, IUpdateNews, NewsTargetModel } from '@shared/domain/types/news.types';
+import { NewsTargetFilter } from '@shared/repo/news/news-target-filter';
+import { NewsRepo } from '@shared/repo/news/news.repo';
+import { CrudOperation } from '@shared/types/crud-operation.enum';
+import { Logger } from '@src/core/logger/logger';
+import { FeathersAuthorizationService } from '@src/modules/authorization/feathers/feathers-authorization.service';
 import { NewsCrudOperationLoggable } from '../loggable/news-crud-operation.loggable';
 
 type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;

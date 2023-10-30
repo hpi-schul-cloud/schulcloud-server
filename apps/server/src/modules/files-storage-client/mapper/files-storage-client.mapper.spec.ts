@@ -1,7 +1,3 @@
-import { FileRecordParentType } from '@shared/infra/rabbitmq';
-import { ICopyFileDomainObjectProps, IFileDomainObjectProps } from '../interfaces';
-import { FilesStorageClientMapper } from './files-storage-client.mapper';
-
 describe('FilesStorageClientMapper', () => {
 	describe('fileDto mapper', () => {
 		const record = {

@@ -13,26 +13,26 @@ import {
 	Query,
 } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { BoardUc, CardUc } from '../uc';
-import {
-	AnyContentElementResponse,
-	CardIdsParams,
-	CardListResponse,
-	CardUrlParams,
-	CreateContentElementBodyParams,
-	ExternalToolElementResponse,
-	FileElementResponse,
-	LinkElementResponse,
-	MoveCardBodyParams,
-	RenameBodyParams,
-	RichTextElementResponse,
-	SubmissionContainerElementResponse,
-} from './dto';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { BoardUc } from '../uc/board.uc';
+import { CardUc } from '../uc/card.uc';
+import { MoveCardBodyParams } from './dto/board/move-card.body.params';
+import { RenameBodyParams } from './dto/board/rename.body.params';
 import { SetHeightBodyParams } from './dto/board/set-height.body.params';
-import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
+import { CardUrlParams } from './dto/card.url.params';
+import { CardIdsParams } from './dto/card/card-ids.params';
+import { CardListResponse } from './dto/card/card-list.response';
+import { AnyContentElementResponse } from './dto/element/any-content-element.response';
+import { CreateContentElementBodyParams } from './dto/element/create-content-element.body.params';
+import { ExternalToolElementResponse } from './dto/element/external-tool-element.response';
+import { FileElementResponse } from './dto/element/file-element.response';
+import { LinkElementResponse } from './dto/element/link-element.response';
+import { RichTextElementResponse } from './dto/element/rich-text-element.response';
+import { SubmissionContainerElementResponse } from './dto/element/submission-container-element.response';
+import { CardResponseMapper } from './mapper/card-response.mapper';
+import { ContentElementResponseFactory } from './mapper/content-element-response.factory';
 
 @ApiTags('Board Card')
 @Authenticate('jwt')

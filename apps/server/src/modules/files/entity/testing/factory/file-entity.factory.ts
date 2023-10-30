@@ -1,7 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseFactory, storageProviderFactory } from '@shared/testing';
-import { FileEntity, FileEntityProps } from '../..';
-import { FileOwnerModel } from '../../../domain';
+import { BaseFactory } from '@shared/testing/factory/base.factory';
+import { storageProviderFactory } from '@shared/testing/factory/storageprovider.factory';
+import { FileOwnerModel } from '@src/modules/files/domain/types/file-owner-model.enum';
+import { FileEntity, FileEntityProps } from '../../file.entity';
 import { filePermissionEntityFactory } from './file-permission-entity.factory';
 
 export const fileEntityFactory = BaseFactory.define<FileEntity, FileEntityProps>(FileEntity, ({ sequence }) => {

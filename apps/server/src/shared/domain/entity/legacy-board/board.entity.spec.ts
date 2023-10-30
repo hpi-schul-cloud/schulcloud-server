@@ -1,16 +1,16 @@
 import { BadRequestException } from '@nestjs/common';
+import { boardFactory } from '@shared/testing/factory/board.factory';
 import {
-	boardFactory,
 	columnboardBoardElementFactory,
-	columnBoardFactory,
 	columnBoardTargetFactory,
-	courseFactory,
 	lessonBoardElementFactory,
-	lessonFactory,
-	setupEntities,
 	taskBoardElementFactory,
-	taskFactory,
-} from '@shared/testing';
+} from '@shared/testing/factory/boardelement.factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { columnBoardFactory } from '@shared/testing/factory/domainobject/board/column-board.do.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 
 describe('Board Entity', () => {
 	beforeAll(async () => {

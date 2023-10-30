@@ -1,18 +1,19 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain';
-import { Logger } from '@src/core/logger';
-import { GroupTypes } from '@src/modules/group';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { Logger } from '@src/core/logger/logger';
+import { GroupTypes } from '@src/modules/group/domain/group-types';
+
 import { UUID } from 'bson';
-import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
-import {
-	SanisGroupRole,
-	SanisGroupType,
-	SanisGruppenResponse,
-	SanisPersonenkontextResponse,
-	SanisResponse,
-	SanisRole,
-} from './response';
+import { ExternalGroupDto } from '../../dto/external-group.dto';
+import { ExternalSchoolDto } from '../../dto/external-school.dto';
+import { ExternalUserDto } from '../../dto/external-user.dto';
+import { SanisGroupRole } from './response/sanis-group-role';
+import { SanisGroupType } from './response/sanis-group-type';
+import { SanisGruppenResponse } from './response/sanis-gruppen-response';
+import { SanisPersonenkontextResponse } from './response/sanis-personenkontext-response';
+import { SanisRole } from './response/sanis-role';
+import { SanisResponse } from './response/sanis.response';
 import { SanisResponseMapper } from './sanis-response.mapper';
 
 describe('SanisResponseMapper', () => {

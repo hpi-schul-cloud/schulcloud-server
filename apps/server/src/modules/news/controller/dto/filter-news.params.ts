@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { StringToBoolean } from '@shared/controller/transformer/string-to-boolean.transformer';
+import { NewsTargetModel } from '@shared/domain/types/news.types';
 import { IsBoolean, IsEnum, IsMongoId, IsOptional, IsString } from 'class-validator';
-import { StringToBoolean } from '@shared/controller/transformer';
-import { NewsTargetModel } from '@shared/domain';
 
 export class FilterNewsParams {
 	@IsOptional()

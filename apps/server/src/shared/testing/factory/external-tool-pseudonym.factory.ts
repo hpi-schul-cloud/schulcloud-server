@@ -1,6 +1,9 @@
-import { BaseFactory } from '@shared/testing/factory/base.factory';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ExternalToolPseudonymEntity, IExternalToolPseudonymEntityProps } from '@src/modules/pseudonym/entity';
+import {
+	ExternalToolPseudonymEntity,
+	IExternalToolPseudonymEntityProps,
+} from '@src/modules/pseudonym/entity/external-tool-pseudonym.entity';
+import { BaseFactory } from './base.factory';
 
 export const externalToolPseudonymEntityFactory = BaseFactory.define<
 	ExternalToolPseudonymEntity,

@@ -1,4 +1,5 @@
-import { columnBoardTargetFactory, setupEntities } from '@shared/testing';
+import { columnBoardTargetFactory } from '@shared/testing/factory/boardelement.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { ObjectId } from 'bson';
 import { ColumnBoardTarget } from './column-board-target.entity';
 

@@ -1,9 +1,5 @@
 import AdmZip from 'adm-zip';
 import { parseStringPromise } from 'xml2js';
-import { CommonCartridgeFileBuilder, ICommonCartridgeFileBuilderOptions } from './common-cartridge-file-builder';
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from './common-cartridge-enums';
-import { ICommonCartridgeOrganizationProps } from './common-cartridge-organization-item-element';
-import { ICommonCartridgeResourceProps } from './common-cartridge-resource-item-element';
 
 describe('CommonCartridgeFileBuilder', () => {
 	let archive: AdmZip;

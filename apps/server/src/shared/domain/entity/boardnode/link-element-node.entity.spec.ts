@@ -1,7 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { linkElementFactory } from '@shared/testing';
+import { linkElementFactory } from '@shared/testing/factory/domainobject/board/link-element.do.factory';
 import { LinkElementNode } from './link-element-node.entity';
-import { BoardDoBuilder, BoardNodeType } from './types';
+import { BoardDoBuilder } from './types/board-do.builder';
+import { BoardNodeType } from './types/board-node-type';
 
 describe(LinkElementNode.name, () => {
 	describe('when trying to create a link element', () => {

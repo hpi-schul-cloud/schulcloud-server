@@ -1,6 +1,9 @@
-import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { FileRecordListResponse, FileRecordResponse, ScanResultDto, ScanResultParams } from '../controller/dto';
-import { FileRecord, ScanStatus } from '../entity';
+import { fileRecordFactory } from '@shared/testing/factory/filerecord.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { ScanResultParams } from '../controller/dto/file-storage.params';
+import { FileRecordListResponse, FileRecordResponse } from '../controller/dto/file-storage.response';
+import { ScanResultDto } from '../controller/dto/scan-result.dto';
+import { FileRecord, ScanStatus } from '../entity/filerecord.entity';
 import { FileRecordMapper } from './file-record.mapper';
 
 describe('FilesStorageMapper', () => {

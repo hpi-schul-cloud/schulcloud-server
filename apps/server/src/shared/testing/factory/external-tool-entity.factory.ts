@@ -1,19 +1,17 @@
+import { LtiPrivacyPermission } from '@shared/domain/entity/ltitool.entity';
+import { CustomParameterLocation } from '@src/modules/tool/common/enum/custom-parameter-location.enum';
+import { CustomParameterScope } from '@src/modules/tool/common/enum/custom-parameter-scope.enum';
+import { CustomParameterType } from '@src/modules/tool/common/enum/custom-parameter-type.enum';
+import { LtiMessageType } from '@src/modules/tool/common/enum/lti-message-type.enum';
+import { ToolConfigType } from '@src/modules/tool/common/enum/tool-config-type.enum';
+import { BasicToolConfigEntity } from '@src/modules/tool/external-tool/entity/config/basic-tool-config.entity';
+import { Lti11ToolConfigEntity } from '@src/modules/tool/external-tool/entity/config/lti11-tool-config.entity';
+import { Oauth2ToolConfigEntity } from '@src/modules/tool/external-tool/entity/config/oauth2-tool-config.entity';
+import { CustomParameterEntity } from '@src/modules/tool/external-tool/entity/custom-parameter/custom-parameter.entity';
 import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	LtiMessageType,
-	LtiPrivacyPermission,
-	ToolConfigType,
-} from '@src/modules/tool/common/enum';
-import {
-	BasicToolConfigEntity,
-	CustomParameterEntity,
 	ExternalToolEntity,
 	IExternalToolProperties,
-	Lti11ToolConfigEntity,
-	Oauth2ToolConfigEntity,
-} from '@src/modules/tool/external-tool/entity';
+} from '@src/modules/tool/external-tool/entity/external-tool.entity';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 

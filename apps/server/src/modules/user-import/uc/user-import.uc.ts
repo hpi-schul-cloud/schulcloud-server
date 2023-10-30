@@ -1,37 +1,32 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { UserAlreadyAssignedToImportUserError } from '@shared/common';
-import {
-	Account,
-	Counted,
-	EntityId,
-	IFindOptions,
-	IImportUserScope,
-	ImportUser,
-	INameMatch,
-	LegacySchoolDo,
-	MatchCreator,
-	MatchCreatorScope,
-	Permission,
-	SchoolFeatures,
-	SystemEntity,
-	User,
-} from '@shared/domain';
-import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { UserAlreadyAssignedToImportUserError } from '@shared/common/error/user-already-assigned-to-import-user.business-error';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { Account } from '@shared/domain/entity/account.entity';
+import { ImportUser, MatchCreator } from '@shared/domain/entity/import-user.entity';
+import { SchoolFeatures } from '@shared/domain/entity/school.entity';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { IFindOptions } from '@shared/domain/interface/find-options';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { Counted } from '@shared/domain/types/counted';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { IImportUserScope, INameMatch, MatchCreatorScope } from '@shared/domain/types/importuser.types';
+import { ImportUserRepo } from '@shared/repo/importuser/importuser.repo';
+import { SystemRepo } from '@shared/repo/system/system.repo';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { Logger } from '@src/core/logger/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
+import { AccountSaveDto } from '@src/modules/account/services/dto/account-save.dto';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
-import { AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { AccountSaveDto } from '../../account/services/dto';
-import {
-	MigrationMayBeCompleted,
-	MigrationMayNotBeCompleted,
-	SchoolIdDoesNotMatchWithUserSchoolId,
-	SchoolInUserMigrationEndLoggable,
-	SchoolInUserMigrationStartLoggable,
-	UserMigrationIsNotEnabled,
-} from '../loggable';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { MigrationMayNotBeCompleted } from '../loggable/migration-is-not-completed.loggable';
+import { MigrationMayBeCompleted } from '../loggable/migration-may-be-completed.loggable';
+import { SchoolIdDoesNotMatchWithUserSchoolId } from '../loggable/school-id-does-not-match-with-user-school-id.loggable';
+import { SchoolInUserMigrationEndLoggable } from '../loggable/school-in-user-migration-end.loggable';
+import { SchoolInUserMigrationStartLoggable } from '../loggable/school-in-user-migration-start.loggable';
+import { UserMigrationIsNotEnabled } from '../loggable/user-migration-not-enable.loggable';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,

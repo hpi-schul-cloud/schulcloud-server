@@ -1,11 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Permission, User } from '@shared/domain';
-import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { ToolContextType } from '../../common/enum';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { AuthorizationContext } from '@src/modules/authorization/types/authorization-context.interface';
+import { ToolContextType } from '../../common/enum/tool-context-type.enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
-import { ContextExternalTool, ContextRef } from '../domain';
-import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
+import { ContextExternalTool } from '../domain/context-external-tool.do';
+import { ContextRef } from '../domain/context-ref';
+import { ContextExternalToolValidationService } from '../service/context-external-tool-validation.service';
+import { ContextExternalToolService } from '../service/context-external-tool.service';
 import { ContextExternalToolDto } from './dto/context-external-tool.types';
 
 @Injectable()

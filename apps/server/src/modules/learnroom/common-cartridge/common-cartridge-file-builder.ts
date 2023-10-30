@@ -1,16 +1,16 @@
 import AdmZip from 'adm-zip';
 import { Builder } from 'xml2js';
-import { CommonCartridgeVersion } from './common-cartridge-enums';
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
+import { CommonCartridgeVersion } from './common-cartridge-enums';
 import { CommonCartridgeManifestElement } from './common-cartridge-manifest-element';
-import {
-	CommonCartridgeResourceItemElement,
-	ICommonCartridgeResourceProps,
-} from './common-cartridge-resource-item-element';
 import {
 	CommonCartridgeOrganizationItemElement,
 	ICommonCartridgeOrganizationProps,
 } from './common-cartridge-organization-item-element';
+import {
+	CommonCartridgeResourceItemElement,
+	ICommonCartridgeResourceProps,
+} from './common-cartridge-resource-item-element';
 
 export type ICommonCartridgeFileBuilderOptions = {
 	identifier: string;

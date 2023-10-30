@@ -1,12 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { contextExternalToolFactory } from '@shared/testing';
+import { contextExternalToolFactory } from '@shared/testing/factory/domainobject/tool/context-external-tool.factory';
+
 import { ObjectId } from 'bson';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ContextExternalToolService } from '../../context-external-tool/service';
-import { ToolLaunchService } from '../service';
-import { ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
+import { ContextExternalTool } from '../../context-external-tool/domain/context-external-tool.do';
+import { ContextExternalToolService } from '../../context-external-tool/service/context-external-tool.service';
+import { ToolLaunchService } from '../service/tool-launch.service';
+import { ToolLaunchData } from '../types/tool-launch-data';
+import { ToolLaunchDataType } from '../types/tool-launch-data-type';
+import { ToolLaunchRequest } from '../types/tool-launch-request';
 import { ToolLaunchUc } from './tool-launch.uc';
 
 describe('ToolLaunchUc', () => {

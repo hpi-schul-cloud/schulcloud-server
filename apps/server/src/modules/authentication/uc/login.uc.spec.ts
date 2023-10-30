@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthenticationService } from '../services/authentication.service';
-import { LoginDto } from './dto';
+import { LoginDto } from './dto/login.dto';
 import { LoginUc } from './login.uc';
 
 describe('LoginUc', () => {

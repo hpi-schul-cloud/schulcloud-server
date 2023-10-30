@@ -1,13 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, LegacySchoolDo, User, UserLoginMigrationDO } from '@shared/domain';
-import { legacySchoolDoFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { SchoolNumberMissingLoggableException, UserLoginMigrationAlreadyClosedLoggableException } from '../error';
-import { UserLoginMigrationService } from '../service';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject/user-login-migration.do';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/legacy-school.factory';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { Logger } from '@src/core/logger/logger';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { SchoolNumberMissingLoggableException } from '../error/school-number-missing.loggable-exception';
+import { UserLoginMigrationAlreadyClosedLoggableException } from '../error/user-login-migration-already-closed.loggable-exception';
+import { UserLoginMigrationService } from '../service/user-login-migration.service';
 import { StartUserLoginMigrationUc } from './start-user-login-migration.uc';
 
 describe('StartUserLoginMigrationUc', () => {

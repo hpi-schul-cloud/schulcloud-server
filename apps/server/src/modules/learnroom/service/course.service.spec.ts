@@ -1,9 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course } from '@shared/domain';
-import { CourseRepo, UserRepo } from '@shared/repo';
-import { courseFactory, setupEntities, userFactory } from '@shared/testing';
-import { CourseService } from './course.service';
 
 describe('CourseService', () => {
 	let module: TestingModule;

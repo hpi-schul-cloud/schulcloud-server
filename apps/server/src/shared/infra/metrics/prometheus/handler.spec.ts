@@ -1,7 +1,6 @@
 import express from 'express';
 import client from 'prom-client';
 import request from 'supertest';
-
 import { createPrometheusMetricsHandler } from './handler';
 
 describe('createPrometheusMetricsHandler', () => {

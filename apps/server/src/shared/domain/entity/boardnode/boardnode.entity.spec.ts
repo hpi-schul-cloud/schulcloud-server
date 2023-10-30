@@ -1,5 +1,7 @@
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { cardNodeFactory, columnBoardNodeFactory, setupEntities } from '@shared/testing';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
+import { cardNodeFactory } from '@shared/testing/factory/boardnode/card-node.factory';
+import { columnBoardNodeFactory } from '@shared/testing/factory/boardnode/column-board-node.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { BoardNode } from './boardnode.entity';
 import { ColumnBoardNode } from './column-board-node.entity';
 

@@ -1,8 +1,10 @@
 import { Controller, Get, HttpStatus, INestApplication, NestInterceptor } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RequestTimeout, TimeoutInterceptor } from '@shared/common';
+
 import request from 'supertest';
+import { RequestTimeout } from '../decorators/timeout.decorator';
+import { TimeoutInterceptor } from './timeout.interceptor';
 
 const delay = (ms: number) =>
 	new Promise((resolve) => {

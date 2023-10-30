@@ -1,9 +1,9 @@
-import { BaseFactory } from '@shared/testing/factory/base.factory';
 import {
 	IVideoConferenceProperties,
 	TargetModels,
 	VideoConference,
 } from '@shared/domain/entity/video-conference.entity';
+import { BaseFactory } from './base.factory';
 
 export const videoConferenceFactory = BaseFactory.define<VideoConference, IVideoConferenceProperties>(
 	VideoConference,

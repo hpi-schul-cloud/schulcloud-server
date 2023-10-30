@@ -3,19 +3,17 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { AxiosResponse, Method, RawAxiosRequestHeaders } from 'axios';
 import QueryString from 'qs';
-import { Observable, firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { URL } from 'url';
-import {
-	AcceptConsentRequestBody,
-	AcceptLoginRequestBody,
-	IntrospectResponse,
-	ProviderConsentResponse,
-	ProviderLoginResponse,
-	ProviderOauthClient,
-	ProviderRedirectResponse,
-	RejectRequestBody,
-} from '../dto';
+import { ProviderOauthClient } from '../dto/interface/oauth-client.interface';
+import { AcceptConsentRequestBody } from '../dto/request/accept-consent-request.body';
+import { AcceptLoginRequestBody } from '../dto/request/accept-login-request.body';
+import { RejectRequestBody } from '../dto/request/reject-request.body';
 import { ProviderConsentSessionResponse } from '../dto/response/consent-session.response';
+import { ProviderConsentResponse } from '../dto/response/consent.response';
+import { IntrospectResponse } from '../dto/response/introspect.response';
+import { ProviderLoginResponse } from '../dto/response/login.response';
+import { ProviderRedirectResponse } from '../dto/response/redirect.response';
 import { OauthProviderService } from '../oauth-provider.service';
 
 @Injectable()

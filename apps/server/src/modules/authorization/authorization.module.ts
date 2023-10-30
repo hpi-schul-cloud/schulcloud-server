@@ -1,24 +1,23 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { ALL_RULES } from '@shared/domain/rules';
-import { FeathersModule } from '@shared/infra/feathers';
-import {
-	CourseGroupRepo,
-	CourseRepo,
-	LessonRepo,
-	SchoolExternalToolRepo,
-	LegacySchoolRepo,
-	SubmissionRepo,
-	TaskRepo,
-	TeamsRepo,
-	UserRepo,
-} from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
-import { LegacySchoolModule } from '@src/modules/legacy-school';
-import { ToolModule } from '@src/modules/tool';
-import { BoardModule } from '../board';
+import { ALL_RULES } from '@shared/domain/rules/all-rules';
+import { FeathersModule } from '@shared/infra/feathers/feathers.module';
+import { CourseRepo } from '@shared/repo/course/course.repo';
+import { CourseGroupRepo } from '@shared/repo/coursegroup/coursegroup.repo';
+import { LessonRepo } from '@shared/repo/lesson/lesson.repo';
+import { LegacySchoolRepo } from '@shared/repo/school/legacy-school.repo';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
+import { SubmissionRepo } from '@shared/repo/submission/submission.repo';
+import { TaskRepo } from '@shared/repo/task/task.repo';
+import { TeamsRepo } from '@shared/repo/teams/teams.repo';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { LoggerModule } from '@src/core/logger/logger.module';
+import { BoardModule } from '../board/board.module';
+import { LegacySchoolModule } from '../legacy-school/legacy-school.module';
+import { ToolModule } from '../tool/tool.module';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
-import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
+import { FeathersAuthProvider } from './feathers/feathers-auth.provider';
+import { FeathersAuthorizationService } from './feathers/feathers-authorization.service';
 import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
 

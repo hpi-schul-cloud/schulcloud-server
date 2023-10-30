@@ -1,26 +1,22 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-
-import { PaginationParams } from '@shared/controller';
-import { IFindOptions, ImportUser, User } from '@shared/domain';
+import { PaginationParams } from '@shared/controller/dto/pagination.params';
+import { ImportUser } from '@shared/domain/entity/import-user.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { IFindOptions } from '@shared/domain/interface/find-options';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ICurrentUser } from '@src/modules/authentication';
-
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { ImportUserMapper } from '../mapper/import-user.mapper';
 import { UserMatchMapper } from '../mapper/user-match.mapper';
 import { UserImportUc } from '../uc/user-import.uc';
-
-import {
-	FilterImportUserParams,
-	FilterUserParams,
-	ImportUserListResponse,
-	ImportUserResponse,
-	ImportUserUrlParams,
-	SortImportUserParams,
-	UpdateFlagParams,
-	UpdateMatchParams,
-	UserMatchListResponse,
-} from './dto';
+import { FilterImportUserParams } from './dto/filter-import-user.params';
+import { FilterUserParams } from './dto/filter-user.params';
+import { ImportUserListResponse, ImportUserResponse } from './dto/import-user.response';
+import { ImportUserUrlParams } from './dto/import-user.url.params';
+import { SortImportUserParams } from './dto/sort-import-user.params';
+import { UpdateFlagParams } from './dto/update-flag.params';
+import { UpdateMatchParams } from './dto/update-match.params';
+import { UserMatchListResponse } from './dto/user-match.response';
 
 @ApiTags('UserImport')
 @Authenticate('jwt')

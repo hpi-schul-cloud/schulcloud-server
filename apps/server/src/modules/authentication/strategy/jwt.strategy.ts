@@ -2,9 +2,9 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { jwtConstants } from '../constants';
-import { ICurrentUser } from '../interface';
 import { JwtPayload } from '../interface/jwt-payload';
-import { CurrentUserMapper } from '../mapper';
+import { ICurrentUser } from '../interface/user';
+import { CurrentUserMapper } from '../mapper/current-user.mapper';
 import { JwtExtractor } from './jwt-extractor';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
 

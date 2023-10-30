@@ -1,12 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { VideoConferenceScope } from '@shared/domain/interface';
-import { ICurrentUser } from '@src/modules/authentication';
-import { BBBBaseResponse, BBBCreateResponse } from '../bbb';
-import { defaultVideoConferenceOptions } from '../interface';
-import { VideoConferenceDeprecatedUc } from '../uc';
-import { VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
+import { VideoConferenceScope } from '@shared/domain/interface/video-conference-scope.enum';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { BBBBaseResponse } from '../bbb/response/bbb-base.response';
+import { BBBCreateResponse } from '../bbb/response/bbb-create.response';
+import { defaultVideoConferenceOptions } from '../interface/video-conference-options.interface';
+import { VideoConference } from '../uc/dto/video-conference';
+import { VideoConferenceInfo } from '../uc/dto/video-conference-info';
+import { VideoConferenceJoin } from '../uc/dto/video-conference-join';
+import { VideoConferenceState } from '../uc/dto/video-conference-state.enum';
+import { VideoConferenceDeprecatedUc } from '../uc/video-conference-deprecated.uc';
 import {
 	DeprecatedVideoConferenceInfoResponse,
 	DeprecatedVideoConferenceJoinResponse,

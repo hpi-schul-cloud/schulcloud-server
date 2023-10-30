@@ -1,8 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { submissionItemFactory } from '@shared/testing';
+import { submissionItemFactory } from '@shared/testing/factory/domainobject/board/submission-item.do.factory';
+
 import { ObjectId } from 'bson';
 import { SubmissionItemNode } from './submission-item-node.entity';
-import { BoardDoBuilder, BoardNodeType } from './types';
+import { BoardDoBuilder } from './types/board-do.builder';
+import { BoardNodeType } from './types/board-node-type';
 
 describe(SubmissionItemNode.name, () => {
 	describe('when trying to create a submission container element', () => {

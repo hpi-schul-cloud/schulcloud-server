@@ -11,30 +11,31 @@ import {
 	Put,
 } from '@nestjs/common';
 import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { CardUc } from '../uc';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { CardUc } from '../uc/card.uc';
 import { ElementUc } from '../uc/element.uc';
+import { ContentElementUrlParams } from './dto/board/content-element.url.params';
+import { MoveContentElementBody } from './dto/card/move-content-element.body.params';
+import { AnyContentElementResponse } from './dto/element/any-content-element.response';
+import { ExternalToolElementResponse } from './dto/element/external-tool-element.response';
+import { FileElementResponse } from './dto/element/file-element.response';
+import { LinkElementResponse } from './dto/element/link-element.response';
+import { RichTextElementResponse } from './dto/element/rich-text-element.response';
+import { SubmissionContainerElementResponse } from './dto/element/submission-container-element.response';
 import {
-	AnyContentElementResponse,
-	ContentElementUrlParams,
-	CreateSubmissionItemBodyParams,
 	ExternalToolElementContentBody,
-	ExternalToolElementResponse,
 	FileElementContentBody,
-	FileElementResponse,
 	LinkElementContentBody,
-	LinkElementResponse,
-	MoveContentElementBody,
 	RichTextElementContentBody,
-	RichTextElementResponse,
 	SubmissionContainerElementContentBody,
-	SubmissionContainerElementResponse,
-	SubmissionItemResponse,
 	UpdateElementContentBodyParams,
-} from './dto';
-import { ContentElementResponseFactory, SubmissionItemResponseMapper } from './mapper';
+} from './dto/element/update-element-content.body.params';
+import { CreateSubmissionItemBodyParams } from './dto/submission-item/create-submission-item.body.params';
+import { SubmissionItemResponse } from './dto/submission-item/submission-item.response';
+import { ContentElementResponseFactory } from './mapper/content-element-response.factory';
+import { SubmissionItemResponseMapper } from './mapper/submission-item-response.mapper';
 
 @ApiTags('Board Element')
 @Authenticate('jwt')

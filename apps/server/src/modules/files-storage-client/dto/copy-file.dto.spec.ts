@@ -1,5 +1,3 @@
-import { CopyFileDto } from './copy-file.dto';
-
 describe('CopyFileDto', () => {
 	it('Should create well formed copy file dto.', () => {
 		const id = 'id123';

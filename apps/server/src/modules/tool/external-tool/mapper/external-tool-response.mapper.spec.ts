@@ -4,28 +4,27 @@ import {
 	externalToolFactory,
 	lti11ToolConfigFactory,
 	oauth2ToolConfigFactory,
-} from '@shared/testing';
-import { CustomParameter } from '../../common/domain';
-import {
-	CustomParameterLocation,
-	CustomParameterLocationParams,
-	CustomParameterScope,
-	CustomParameterScopeTypeParams,
-	CustomParameterType,
-	CustomParameterTypeParams,
-	LtiMessageType,
-	LtiPrivacyPermission,
-	TokenEndpointAuthMethod,
-	ToolConfigType,
-} from '../../common/enum';
-import {
-	BasicToolConfigResponse,
-	CustomParameterResponse,
-	ExternalToolResponse,
-	Lti11ToolConfigResponse,
-	Oauth2ToolConfigResponse,
-} from '../controller/dto';
-import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+} from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { CustomParameter } from '../../common/domain/custom-parameter.do';
+import { CustomParameterLocation } from '../../common/enum/custom-parameter-location.enum';
+import { CustomParameterScope } from '../../common/enum/custom-parameter-scope.enum';
+import { CustomParameterType } from '../../common/enum/custom-parameter-type.enum';
+import { LtiMessageType } from '../../common/enum/lti-message-type.enum';
+import { LtiPrivacyPermission } from '../../common/enum/lti-privacy-permission.enum';
+import { CustomParameterLocationParams } from '../../common/enum/request-response/custom-parameter-location.enum';
+import { CustomParameterScopeTypeParams } from '../../common/enum/request-response/custom-parameter-scope-type.enum';
+import { CustomParameterTypeParams } from '../../common/enum/request-response/custom-parameter-type.enum';
+import { TokenEndpointAuthMethod } from '../../common/enum/token-endpoint-auth-method.enum';
+import { ToolConfigType } from '../../common/enum/tool-config-type.enum';
+import { BasicToolConfigResponse } from '../controller/dto/response/config/basic-tool-config.response';
+import { Lti11ToolConfigResponse } from '../controller/dto/response/config/lti11-tool-config.response';
+import { Oauth2ToolConfigResponse } from '../controller/dto/response/config/oauth2-tool-config.response';
+import { CustomParameterResponse } from '../controller/dto/response/custom-parameter.response';
+import { ExternalToolResponse } from '../controller/dto/response/external-tool.response';
+import { BasicToolConfig } from '../domain/config/basic-tool-config.do';
+import { Lti11ToolConfig } from '../domain/config/lti11-tool-config.do';
+import { Oauth2ToolConfig } from '../domain/config/oauth2-tool-config.do';
+import { ExternalTool } from '../domain/external-tool.do';
 import { ExternalToolResponseMapper } from './external-tool-response.mapper';
 
 describe('ExternalToolResponseMapper', () => {

@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { SortingParams } from '@shared/controller';
+import { SortingParams } from '@shared/controller/dto/sorting.params';
+
 import { IsEnum, IsOptional } from 'class-validator';
 
 export enum ClassSortBy {

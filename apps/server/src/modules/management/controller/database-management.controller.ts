@@ -1,4 +1,4 @@
-import { Controller, Param, Post, All, Query } from '@nestjs/common';
+import { All, Controller, Param, Post, Query } from '@nestjs/common';
 import { DatabaseManagementUc } from '../uc/database-management.uc';
 
 @Controller('management/database')

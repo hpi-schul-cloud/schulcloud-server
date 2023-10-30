@@ -1,27 +1,23 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { sanitizeRichText } from '@shared/controller';
-import {
-	BoardExternalReferenceType,
-	ContentElementType,
-	FileElementNode,
-	InputFormat,
-	RichTextElementNode,
-	SubmissionContainerElementNode,
-} from '@shared/domain';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	fileElementNodeFactory,
-	richTextElementNodeFactory,
-	submissionContainerElementNodeFactory,
-} from '@shared/testing';
+import { sanitizeRichText } from '@shared/controller/transformer/sanitize-html.transformer';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import { FileElementNode } from '@shared/domain/entity/boardnode/file-element-node.entity';
+import { RichTextElementNode } from '@shared/domain/entity/boardnode/rich-text-element-node.entity';
+import { SubmissionContainerElementNode } from '@shared/domain/entity/boardnode/submission-container-element-node.entity';
+import { InputFormat } from '@shared/domain/types/input-format.types';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { cardNodeFactory } from '@shared/testing/factory/boardnode/card-node.factory';
+import { columnBoardNodeFactory } from '@shared/testing/factory/boardnode/column-board-node.factory';
+import { columnNodeFactory } from '@shared/testing/factory/boardnode/column-node.factory';
+import { fileElementNodeFactory } from '@shared/testing/factory/boardnode/file-element-node.factory';
+import { richTextElementNodeFactory } from '@shared/testing/factory/boardnode/rich-text-element-node.factory';
+import { submissionContainerElementNodeFactory } from '@shared/testing/factory/boardnode/submission-container-element-node.factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { UserAndAccountTestFactory } from '@shared/testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@shared/testing/test-api-client';
 import { ServerTestModule } from '@src/modules/server/server.module';
 
 describe(`content element update content (api)`, () => {

@@ -1,30 +1,21 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import {
-	CourseNews,
-	INewsProperties,
-	News,
-	SchoolEntity,
-	SchoolNews,
-	TeamEntity,
-	TeamNews,
-	User,
-	NewsTargetModel,
-	INewsScope,
-	ICreateNews,
-	IUpdateNews,
-	NewsTarget,
-} from '@shared/domain';
-import { courseFactory, schoolFactory, userFactory, setupEntities } from '@shared/testing';
-import { NewsMapper } from './news.mapper';
-import {
-	CreateNewsParams,
-	FilterNewsParams,
-	NewsResponse,
-	SchoolInfoResponse,
-	UpdateNewsParams,
-	UserInfoResponse,
-} from '../controller/dto';
+import { CourseNews, INewsProperties, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { TeamEntity } from '@shared/domain/entity/team.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { ICreateNews, INewsScope, IUpdateNews, NewsTarget, NewsTargetModel } from '@shared/domain/types/news.types';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { CreateNewsParams } from '../controller/dto/create-news.params';
+import { FilterNewsParams } from '../controller/dto/filter-news.params';
+import { NewsResponse } from '../controller/dto/news.response';
+import { SchoolInfoResponse } from '../controller/dto/school-info.response';
 import { TargetInfoResponse } from '../controller/dto/target-info.response';
+import { UpdateNewsParams } from '../controller/dto/update-news.params';
+import { UserInfoResponse } from '../controller/dto/user-info.response';
+import { NewsMapper } from './news.mapper';
 
 const getTargetModel = (news: News): NewsTargetModel => {
 	if (news instanceof SchoolNews) {

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { LoggerModule } from '@src/core/logger';
-import { AccountModule } from '@src/modules/account';
-import { RoleModule } from '@src/modules/role/role.module';
-import { LegacySchoolModule } from '@src/modules/legacy-school';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { LoggerModule } from '@src/core/logger/logger.module';
+import { AccountModule } from '../account/account.module';
+import { LegacySchoolModule } from '../legacy-school/legacy-school.module';
+import { RoleModule } from '../role/role.module';
 import { UserService } from './service/user.service';
 
 @Module({

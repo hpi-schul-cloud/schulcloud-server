@@ -1,8 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { InputFormat } from '@shared/domain/types';
-import { richTextElementFactory } from '@shared/testing';
+import { InputFormat } from '@shared/domain/types/input-format.types';
+import { richTextElementFactory } from '@shared/testing/factory/domainobject/board/rich-text-element.do.factory';
 import { RichTextElementNode } from './rich-text-element-node.entity';
-import { BoardDoBuilder, BoardNodeType } from './types';
+import { BoardDoBuilder } from './types/board-do.builder';
+import { BoardNodeType } from './types/board-node-type';
 
 describe(RichTextElementNode.name, () => {
 	describe('when trying to create a rich text element', () => {

@@ -2,32 +2,35 @@ import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Course, Permission, SchoolEntity, User } from '@shared/domain';
-import {
-	accountFactory,
-	contextExternalToolEntityFactory,
-	courseFactory,
-	customParameterFactory,
-	externalToolEntityFactory,
-	schoolExternalToolEntityFactory,
-	schoolFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-	userFactory,
-} from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
-import { CustomParameterTypeParams } from '@src/modules/tool/common/enum';
+import { Account } from '@shared/domain/entity/account.entity';
+import { Course } from '@shared/domain/entity/course.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { accountFactory } from '@shared/testing/factory/account.factory';
+import { contextExternalToolEntityFactory } from '@shared/testing/factory/context-external-tool-entity.factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { customParameterFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { externalToolEntityFactory } from '@shared/testing/factory/external-tool-entity.factory';
+import { schoolExternalToolEntityFactory } from '@shared/testing/factory/school-external-tool-entity.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { UserAndAccountTestFactory } from '@shared/testing/factory/user-and-account.test.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { TestApiClient } from '@shared/testing/test-api-client';
+import { ServerTestModule } from '@src/modules/server/server.module';
+import { CustomParameterLocationParams } from '@src/modules/tool/common/enum/request-response/custom-parameter-location.enum';
+import { CustomParameterScopeTypeParams } from '@src/modules/tool/common/enum/request-response/custom-parameter-scope-type.enum';
+import { CustomParameterTypeParams } from '@src/modules/tool/common/enum/request-response/custom-parameter-type.enum';
+import { ContextExternalToolType } from '@src/modules/tool/context-external-tool/entity/context-external-tool-type.enum';
+import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity/context-external-tool.entity';
+import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity/school-external-tool.entity';
+
 import { Response } from 'supertest';
-import { CustomParameterLocationParams, CustomParameterScopeTypeParams } from '../../../common/enum';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
-import { ExternalToolEntity } from '../../entity';
-import {
-	ContextExternalToolConfigurationTemplateListResponse,
-	ContextExternalToolConfigurationTemplateResponse,
-	SchoolExternalToolConfigurationTemplateListResponse,
-	SchoolExternalToolConfigurationTemplateResponse,
-} from '../dto';
+import { ExternalToolEntity } from '../../entity/external-tool.entity';
+import { ContextExternalToolConfigurationTemplateListResponse } from '../dto/response/context-external-tool-configuration-template-list.response';
+import { ContextExternalToolConfigurationTemplateResponse } from '../dto/response/context-external-tool-configuration-template.response';
+import { SchoolExternalToolConfigurationTemplateListResponse } from '../dto/response/school-external-tool-configuration-template-list.response';
+import { SchoolExternalToolConfigurationTemplateResponse } from '../dto/response/school-external-tool-configuration-template.response';
 
 describe('ToolConfigurationController (API)', () => {
 	let app: INestApplication;

@@ -1,21 +1,20 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { type SchoolEntity } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
-import {
-	cleanupCollections,
-	externalToolEntityFactory,
-	schoolExternalToolEntityFactory,
-	schoolFactory,
-} from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+
 import { createMock } from '@golevelup/ts-jest';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { externalToolEntityFactory } from '@shared/testing/factory/external-tool-entity.factory';
+import { schoolExternalToolEntityFactory } from '@shared/testing/factory/school-external-tool-entity.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { CustomParameterEntry } from '@src/modules/tool/common/domain/custom-parameter-entry.do';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity/external-tool.entity';
+import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain/school-external-tool.do';
+import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity/school-external-tool.entity';
 import { SchoolExternalToolQuery } from '@src/modules/tool/school-external-tool/uc/dto/school-external-tool.types';
-import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
-import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
-import { CustomParameterEntry } from '@src/modules/tool/common/domain';
-import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
+import { ExternalToolRepoMapper } from '../externaltool/external-tool.repo.mapper';
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
 
 describe('SchoolExternalToolRepo', () => {

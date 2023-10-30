@@ -1,7 +1,13 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InputFormat, ITaskStatus, ITaskUpdate, Task, TaskParentDescriptions } from '@shared/domain';
-import { setupEntities, taskFactory } from '@shared/testing';
-import { TaskCreateParams, TaskResponse, TaskStatusResponse, TaskUpdateParams } from '../controller/dto';
+import { Task, TaskParentDescriptions } from '@shared/domain/entity/task.entity';
+import { InputFormat } from '@shared/domain/types/input-format.types';
+import { ITaskStatus, ITaskUpdate } from '@shared/domain/types/task.types';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { TaskCreateParams } from '../controller/dto/task-create.params';
+import { TaskStatusResponse } from '../controller/dto/task-status.response';
+import { TaskUpdateParams } from '../controller/dto/task-update.params';
+import { TaskResponse } from '../controller/dto/task.response';
 import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (

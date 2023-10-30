@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ContentElementType, InputFormat } from '@shared/domain';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import { InputFormat } from '@shared/domain/types/input-format.types';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class RichTextElementContent {

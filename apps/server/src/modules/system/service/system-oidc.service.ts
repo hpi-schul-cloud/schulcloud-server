@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { EntityNotFoundError } from '@shared/common';
-import { EntityId, SystemEntity, SystemTypeEnum } from '@shared/domain';
-import { SystemRepo } from '@shared/repo';
-import { SystemOidcMapper } from '@src/modules/system/mapper/system-oidc.mapper';
-import { OidcConfigDto } from './dto';
+import { EntityNotFoundError } from '@shared/common/error/entity-not-found.error';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { SystemTypeEnum } from '@shared/domain/types/system.type';
+import { SystemRepo } from '@shared/repo/system/system.repo';
+import { SystemOidcMapper } from '../mapper/system-oidc.mapper';
+import { OidcConfigDto } from './dto/oidc-config.dto';
 
 @Injectable()
 export class SystemOidcService {

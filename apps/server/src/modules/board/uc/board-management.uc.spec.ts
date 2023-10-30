@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConsoleWriterService } from '@shared/infra/console';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { courseFactory } from '@shared/testing';
+import { ConsoleWriterService } from '@shared/infra/console/console-writer/console-writer.service';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { courseFactory } from '@shared/testing/factory/course.factory';
 import { BoardManagementUc } from '@src/modules/management/uc/board-management.uc';
 
 describe(BoardManagementUc.name, () => {

@@ -1,8 +1,9 @@
-import { EntityId } from '@shared/domain';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { fileRecordFactory } from '@shared/testing/factory/filerecord.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { ObjectId } from 'bson';
-import { createFileRecord, markForDelete, unmarkForDelete } from '.';
-import { FileRecord } from '../entity';
+import { FileRecord } from '../entity/filerecord.entity';
+import { createFileRecord, markForDelete, unmarkForDelete } from './file-record';
 
 describe('File Record Helper', () => {
 	const setupFileRecords = () => {

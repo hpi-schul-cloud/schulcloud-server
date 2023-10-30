@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PrivacyProtect } from '@shared/controller';
+import { PrivacyProtect } from '@shared/controller/validator/privacy-protect.validator';
+
 import { IsEmail, IsOptional, IsString, Matches } from 'class-validator';
 import { passwordPattern } from './password-pattern';
 

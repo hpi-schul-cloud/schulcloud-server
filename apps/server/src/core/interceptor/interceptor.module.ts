@@ -1,7 +1,9 @@
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { IInterceptorConfig, TimeoutInterceptor } from '@shared/common';
+
 import { ConfigService } from '@nestjs/config';
+import { IInterceptorConfig } from '@shared/common/interceptor/interfaces/interceptor-config';
+import { TimeoutInterceptor } from '@shared/common/interceptor/timeout.interceptor';
 
 /** *********************************************
  * Global Interceptor setup

@@ -1,6 +1,6 @@
-import { schoolExternalToolEntityFactory } from '@shared/testing';
-import { ToolContextType } from '@src/modules/tool/common/enum';
-import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
+import { schoolExternalToolEntityFactory } from '@shared/testing/factory/school-external-tool-entity.factory';
+import { ToolContextType } from '@src/modules/tool/common/enum/tool-context-type.enum';
+import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity/school-external-tool.entity';
 import { ContextExternalToolScope } from './context-external-tool.scope';
 
 describe('CourseExternalToolScope', () => {

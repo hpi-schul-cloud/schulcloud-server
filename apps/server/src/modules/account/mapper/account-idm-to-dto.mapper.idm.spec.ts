@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { IdmAccount } from '@shared/domain';
-import { AccountDto } from '../services/dto';
+import { IdmAccount } from '@shared/domain/interface/account';
+import { AccountDto } from '../services/dto/account.dto';
 import { AccountIdmToDtoMapper } from './account-idm-to-dto.mapper.abstract';
 import { AccountIdmToDtoMapperIdm } from './account-idm-to-dto.mapper.idm';
 

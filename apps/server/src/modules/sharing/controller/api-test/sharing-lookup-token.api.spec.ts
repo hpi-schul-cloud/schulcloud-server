@@ -1,25 +1,25 @@
-import { Request } from 'express';
-import request from 'supertest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
-import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
-import {
-	cleanupCollections,
-	courseFactory,
-	mapUserToCurrentUser,
-	roleFactory,
-	schoolFactory,
-	userFactory,
-} from '@shared/testing';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { mapUserToCurrentUser } from '@shared/testing/map-user-to-current-user';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@src/modules/server';
-import { ShareTokenService } from '../../service';
-import { ShareTokenInfoResponse, ShareTokenResponse, ShareTokenUrlParams } from '../dto';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ServerTestModule } from '@src/modules/server/server.module';
+import { Request } from 'express';
+import request from 'supertest';
 import { ShareTokenContext, ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';
+import { ShareTokenService } from '../../service/share-token.service';
+import { ShareTokenInfoResponse } from '../dto/share-token-info.reponse';
+import { ShareTokenResponse } from '../dto/share-token.response';
+import { ShareTokenUrlParams } from '../dto/share-token.url.params';
 
 const baseRouteName = '/sharetoken';
 

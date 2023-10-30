@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '@src/modules/authorization';
+import { LoggerModule } from '@src/core/logger/logger.module';
+import { AuthorizationModule } from '../authorization/authorization.module';
+import { LearnroomModule } from '../learnroom/learnroom.module';
+import { LessonModule } from '../lesson/lesson.module';
+import { TaskModule } from '../task/task.module';
 import { ShareTokenController } from './controller/share-token.controller';
-import { ShareTokenUC } from './uc';
-import { ShareTokenService, TokenGenerator } from './service';
 import { ShareTokenRepo } from './repo/share-token.repo';
-import { LessonModule } from '../lesson';
-import { LearnroomModule } from '../learnroom';
-import { TaskModule } from '../task';
+import { ShareTokenService } from './service/share-token.service';
+import { TokenGenerator } from './service/token-generator.service';
+import { ShareTokenUC } from './uc/share-token.uc';
 
 @Module({
 	imports: [AuthorizationModule, LoggerModule, LearnroomModule, LessonModule, TaskModule],

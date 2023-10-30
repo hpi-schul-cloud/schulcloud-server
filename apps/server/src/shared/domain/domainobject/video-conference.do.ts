@@ -1,4 +1,4 @@
-import { VideoConferenceScope } from '@shared/domain/interface/video-conference-scope.enum';
+import { VideoConferenceScope } from '../interface/video-conference-scope.enum';
 import { BaseDO } from './base.do';
 
 export class VideoConferenceOptionsDO {

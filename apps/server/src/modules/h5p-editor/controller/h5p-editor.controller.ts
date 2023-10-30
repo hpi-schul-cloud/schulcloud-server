@@ -1,6 +1,6 @@
 import { BadRequestException, Controller, ForbiddenException, Get, InternalServerErrorException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 
 // Dummy html response so we can test i-frame integration

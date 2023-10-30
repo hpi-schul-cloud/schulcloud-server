@@ -1,7 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { BaseEntity, EntityId, NewsTargetModel } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { FeathersServiceProvider } from '@shared/infra/feathers';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { BaseEntity } from '@shared/domain/entity/base.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { NewsTargetModel } from '@shared/domain/types/news.types';
+import { FeathersServiceProvider } from '@shared/infra/feathers/feathers-service.provider';
 
 interface User {
 	_id: ObjectId;

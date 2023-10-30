@@ -1,11 +1,17 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, SchoolFeatures, SystemTypeEnum, UserDO, UserLoginMigrationDO } from '@shared/domain';
-import { UserLoginMigrationRepo } from '@shared/repo';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { SystemDto, SystemService } from '@src/modules/system';
-import { UserService } from '@src/modules/user';
-import { UserLoginMigrationNotFoundLoggableException } from '../error';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject/user-login-migration.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { SchoolFeatures } from '@shared/domain/entity/school.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { SystemTypeEnum } from '@shared/domain/types/system.type';
+import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { SystemService } from '@src/modules/system/service/system.service';
+import { UserService } from '@src/modules/user/service/user.service';
+import { UserLoginMigrationNotFoundLoggableException } from '../error/user-login-migration-not-found.loggable-exception';
 import { SchoolMigrationService } from './school-migration.service';
 
 @Injectable()

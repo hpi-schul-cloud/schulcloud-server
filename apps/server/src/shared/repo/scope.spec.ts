@@ -1,6 +1,6 @@
 import { Entity, Property } from '@mikro-orm/core';
+import { Scope } from '@shared/repo/scope';
 import { EmptyResultQuery } from './query/empty-result.query';
-import { Scope } from './scope';
 
 export interface ITestEntityProperties {
 	name: string;

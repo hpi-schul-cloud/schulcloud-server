@@ -1,17 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthProviderService } from '@shared/infra/oauth-provider/index';
+
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AcceptQuery, ConsentRequestBody } from '@src/modules/oauth-provider/controller/dto';
-import {
-	AcceptConsentRequestBody,
-	ProviderConsentResponse,
-	ProviderRedirectResponse,
-} from '@shared/infra/oauth-provider/dto';
-import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
-import { ICurrentUser } from '@src/modules/authentication';
+
 import { ForbiddenException } from '@nestjs/common';
-import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
-import { IdToken } from '@src/modules/oauth-provider/interface/id-token';
+import { AcceptConsentRequestBody } from '@shared/infra/oauth-provider/dto/request/accept-consent-request.body';
+import { ProviderConsentResponse } from '@shared/infra/oauth-provider/dto/response/consent.response';
+import { ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto/response/redirect.response';
+import { OauthProviderService } from '@shared/infra/oauth-provider/oauth-provider.service';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { AcceptQuery } from '../controller/dto/request/accept.query';
+import { ConsentRequestBody } from '../controller/dto/request/consent-request.body';
+import { IdToken } from '../interface/id-token';
+import { IdTokenService } from '../service/id-token.service';
+import { OauthProviderConsentFlowUc } from './oauth-provider.consent-flow.uc';
 
 describe('OauthProviderConsentFlowUc', () => {
 	let module: TestingModule;

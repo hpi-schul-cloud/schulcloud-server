@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Board, ColumnboardBoardElement, Course, EntityId, LessonBoardElement, TaskBoardElement } from '@shared/domain';
+import { Course } from '@shared/domain/entity/course.entity';
+import { Board } from '@shared/domain/entity/legacy-board/board.entity';
+import { ColumnboardBoardElement } from '@shared/domain/entity/legacy-board/column-board-boardelement';
+import { LessonBoardElement } from '@shared/domain/entity/legacy-board/lesson-boardelement.entity';
+import { TaskBoardElement } from '@shared/domain/entity/legacy-board/task-boardelement.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { BaseRepo } from '../base.repo';
 
 @Injectable()

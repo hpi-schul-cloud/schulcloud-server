@@ -1,7 +1,8 @@
-import { schoolExternalToolFactory } from '@shared/testing/factory';
-import { ToolConfigurationStatusResponse } from '../../context-external-tool/controller/dto';
-import { SchoolExternalToolResponse, SchoolExternalToolSearchListResponse } from '../controller/dto';
-import { SchoolExternalTool } from '../domain';
+import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { ToolConfigurationStatusResponse } from '../../context-external-tool/controller/dto/tool-configuration-status.response';
+import { SchoolExternalToolSearchListResponse } from '../controller/dto/school-external-tool-search-list.response';
+import { SchoolExternalToolResponse } from '../controller/dto/school-external-tool.response';
+import { SchoolExternalTool } from '../domain/school-external-tool.do';
 import { SchoolExternalToolResponseMapper } from './school-external-tool-response.mapper';
 
 describe('SchoolExternalToolResponseMapper', () => {

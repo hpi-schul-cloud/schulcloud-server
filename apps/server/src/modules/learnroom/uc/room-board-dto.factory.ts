@@ -1,19 +1,15 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable } from '@nestjs/common';
-import {
-	Board,
-	BoardElement,
-	BoardElementType,
-	ColumnboardBoardElement,
-	ColumnBoardTarget,
-	Course,
-	ITaskStatus,
-	LessonEntity,
-	Permission,
-	Task,
-	TaskWithStatusVo,
-	User,
-} from '@shared/domain';
+import { Course } from '@shared/domain/entity/course.entity';
+import { Board } from '@shared/domain/entity/legacy-board/board.entity';
+import { BoardElement, BoardElementType } from '@shared/domain/entity/legacy-board/boardelement.entity';
+import { ColumnboardBoardElement } from '@shared/domain/entity/legacy-board/column-board-boardelement';
+import { ColumnBoardTarget } from '@shared/domain/entity/legacy-board/column-board-target.entity';
+import { LessonEntity } from '@shared/domain/entity/lesson.entity';
+import { Task, TaskWithStatusVo } from '@shared/domain/entity/task.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { ITaskStatus } from '@shared/domain/types/task.types';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Action } from '@src/modules/authorization/types/action.enum';
 import {

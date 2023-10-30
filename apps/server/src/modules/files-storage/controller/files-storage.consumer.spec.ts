@@ -2,12 +2,15 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ALL_ENTITIES, EntityId } from '@shared/domain';
-import { courseFactory, fileRecordFactory, setupEntities } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { ALL_ENTITIES } from '@shared/domain/entity/all-entities';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { fileRecordFactory } from '@shared/testing/factory/filerecord.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { FileRecord, FileRecordParentType } from '../entity/filerecord.entity';
 import { FilesStorageService } from '../service/files-storage.service';
-import { FileRecordResponse } from './dto';
+import { FileRecordResponse } from './dto/file-storage.response';
 import { FilesStorageConsumer } from './files-storage.consumer';
 
 describe('FilesStorageConsumer', () => {

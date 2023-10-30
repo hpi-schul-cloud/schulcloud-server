@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { S3Config } from '@shared/infra/s3-client';
+import { S3Config } from '@shared/infra/s3-client/interfaces';
 
 export const FWU_CONTENT_S3_CONNECTION = 'FWU_CONTENT_S3_CONNECTION';
 

@@ -1,8 +1,11 @@
 import { createMock } from '@golevelup/ts-jest';
-import { columnBoardFactory, columnFactory } from '@shared/testing';
+import { columnBoardFactory } from '@shared/testing/factory/domainobject/board/column-board.do.factory';
+import { columnFactory } from '@shared/testing/factory/domainobject/board/column.do.factory';
+
 import { ObjectId } from 'bson';
 import { ColumnBoard } from './column-board.do';
-import { BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardExternalReferenceType } from './types';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types/board-composite-visitor';
+import { BoardExternalReferenceType } from './types/board-external-reference';
 
 describe(ColumnBoard.name, () => {
 	describe('isAllowedAsChild', () => {

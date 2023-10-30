@@ -1,29 +1,25 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	ContentElementFactory,
-	ContentElementType,
-	FileElement,
-	InputFormat,
-	RichTextElement,
-	SubmissionContainerElement,
-} from '@shared/domain';
-import { setupEntities } from '@shared/testing';
-import {
-	cardFactory,
-	fileElementFactory,
-	linkElementFactory,
-	richTextElementFactory,
-	submissionContainerElementFactory,
-} from '@shared/testing/factory/domainobject';
+import { ContentElementFactory } from '@shared/domain/domainobject/board/content-element.factory';
+import { FileElement } from '@shared/domain/domainobject/board/file-element.do';
+import { RichTextElement } from '@shared/domain/domainobject/board/rich-text-element.do';
+import { SubmissionContainerElement } from '@shared/domain/domainobject/board/submission-container-element.do';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import { InputFormat } from '@shared/domain/types/input-format.types';
+import { cardFactory } from '@shared/testing/factory/domainobject/board/card.do.factory';
+import { fileElementFactory } from '@shared/testing/factory/domainobject/board/file-element.do.factory';
+import { linkElementFactory } from '@shared/testing/factory/domainobject/board/link-element.do.factory';
+import { richTextElementFactory } from '@shared/testing/factory/domainobject/board/rich-text-element.do.factory';
+import { submissionContainerElementFactory } from '@shared/testing/factory/domainobject/board/submission-container-element.do.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import {
 	FileContentBody,
 	LinkContentBody,
 	RichTextContentBody,
 	SubmissionContainerContentBody,
-} from '../controller/dto';
-import { BoardDoRepo } from '../repo';
+} from '../controller/dto/element/update-element-content.body.params';
+import { BoardDoRepo } from '../repo/board-do.repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
 import { OpenGraphProxyService } from './open-graph-proxy.service';

@@ -1,5 +1,5 @@
-import { Submission } from '@shared/domain';
-import { SubmissionStatusResponse } from '../controller/dto';
+import { Submission } from '@shared/domain/entity/submission.entity';
+import { SubmissionStatusResponse } from '../controller/dto/submission.response';
 
 export class SubmissionMapper {
 	static mapToStatusResponse(submission: Submission): SubmissionStatusResponse {

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ClassService } from './service';
-import { ClassesRepo } from './repo';
+import { ClassesRepo } from './repo/classes.repo';
+import { ClassService } from './service/class.service';
 
 @Module({
 	providers: [ClassService, ClassesRepo],

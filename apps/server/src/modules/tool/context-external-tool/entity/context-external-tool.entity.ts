@@ -1,7 +1,7 @@
 import { Embedded, Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { CustomParameterEntryEntity } from '../../common/entity';
-import { SchoolExternalToolEntity } from '../../school-external-tool/entity';
+import { CustomParameterEntryEntity } from '../../common/entity/custom-parameter-entry.entity';
+import { SchoolExternalToolEntity } from '../../school-external-tool/entity/school-external-tool.entity';
 import { ContextExternalToolType } from './context-external-tool-type.enum';
 
 export interface IContextExternalToolProperties {

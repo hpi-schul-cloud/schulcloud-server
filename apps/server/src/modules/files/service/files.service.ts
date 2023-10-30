@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { FilesRepo } from '../repo';
-import { FileEntity } from '../entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { FileEntity } from '../entity/file.entity';
+import { FilesRepo } from '../repo/files.repo';
 
 @Injectable()
 export class FilesService {

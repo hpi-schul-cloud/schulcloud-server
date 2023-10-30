@@ -2,27 +2,26 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
-import { LessonRepo } from '@shared/repo';
-
-import {
-	courseFactory,
-	lessonFactory,
-	schoolFactory,
-	setupEntities,
-	shareTokenFactory,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
-import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
-import { CourseCopyService } from '@src/modules/learnroom';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LessonCopyService } from '@src/modules/lesson/service';
-import { TaskCopyService } from '@src/modules/task/service';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { LessonRepo } from '@shared/repo/lesson/lesson.repo';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { shareTokenFactory } from '@shared/testing/factory/share-token.do.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { AuthorizableReferenceType } from '@src/modules/authorization/types/allowed-authorization-object-type.enum';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper/types/copy.types';
+import { CourseCopyService } from '@src/modules/learnroom/service/course-copy.service';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { LessonCopyService } from '@src/modules/lesson/service/lesson-copy.service';
+import { TaskCopyService } from '@src/modules/task/service/task-copy.service';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
-import { ShareTokenService } from '../service';
+import { ShareTokenService } from '../service/share-token.service';
 import { ShareTokenUC } from './share-token.uc';
 
 describe('ShareTokenUC', () => {

@@ -1,8 +1,9 @@
-import { EntityId, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
-import { DoBaseFactory } from './domainobject';
+import { DoBaseFactory } from './domainobject/do-base.factory';
 
 class UserDoFactory extends DoBaseFactory<UserDO, UserDO> {
 	withRoles(roles: { id: EntityId; name: RoleName }[]) {

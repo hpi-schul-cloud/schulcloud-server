@@ -1,5 +1,9 @@
-import { CustomParameterEntry, ToolConfigurationStatus } from '@src/modules/tool/common/domain';
-import { SchoolExternalTool, SchoolExternalToolProps } from '@src/modules/tool/school-external-tool/domain';
+import { CustomParameterEntry } from '@src/modules/tool/common/domain/custom-parameter-entry.do';
+import { ToolConfigurationStatus } from '@src/modules/tool/common/enum/tool-configuration-status';
+import {
+	SchoolExternalTool,
+	SchoolExternalToolProps,
+} from '@src/modules/tool/school-external-tool/domain/school-external-tool.do';
 import { DeepPartial } from 'fishery';
 import { DoBaseFactory } from '../do-base.factory';
 

@@ -1,7 +1,7 @@
 import { PrimaryKey, Property, SerializedPrimaryKey } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import type { AuthorizableObject } from '../domain-object';
-import type { IEntity } from '../interface';
+import { IEntity } from '../interface/entity';
 
 export abstract class BaseEntity implements IEntity, AuthorizableObject {
 	@PrimaryKey()

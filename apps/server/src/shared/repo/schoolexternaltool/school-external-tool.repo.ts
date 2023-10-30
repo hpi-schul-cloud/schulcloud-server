@@ -1,15 +1,18 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { SchoolEntity } from '@shared/domain';
-import { BaseDORepo } from '@shared/repo/base.do.repo';
-import { LegacyLogger } from '@src/core/logger';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity/external-tool.entity';
+import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain/school-external-tool.do';
+import {
+	ISchoolExternalToolProperties,
+	SchoolExternalToolEntity,
+} from '@src/modules/tool/school-external-tool/entity/school-external-tool.entity';
 import { SchoolExternalToolQuery } from '@src/modules/tool/school-external-tool/uc/dto/school-external-tool.types';
-import { ISchoolExternalToolProperties, SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
-import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
-import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
+import { BaseDORepo } from '../base.do.repo';
+import { ExternalToolRepoMapper } from '../externaltool/external-tool.repo.mapper';
 import { SchoolExternalToolScope } from './school-external-tool.scope';
-import { ExternalToolRepoMapper } from '../externaltool';
 
 @Injectable()
 export class SchoolExternalToolRepo extends BaseDORepo<

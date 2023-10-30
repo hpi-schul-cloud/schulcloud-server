@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MongoMemoryDatabaseModule } from '../mongo-memory-database/mongo-memory-database.module';
 import { DatabaseManagementModule } from './database-management.module';
 import { DatabaseManagementService } from './database-management.service';
 

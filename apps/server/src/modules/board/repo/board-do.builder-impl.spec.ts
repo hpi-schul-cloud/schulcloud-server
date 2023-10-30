@@ -1,15 +1,15 @@
-import { BoardNodeType, ExternalToolElement, LinkElement } from '@shared/domain';
-import {
-	cardNodeFactory,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	externalToolElementNodeFactory,
-	fileElementNodeFactory,
-	linkElementNodeFactory,
-	richTextElementNodeFactory,
-	setupEntities,
-	submissionContainerElementNodeFactory,
-} from '@shared/testing';
+import { ExternalToolElement } from '@shared/domain/domainobject/board/external-tool-element.do';
+import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { BoardNodeType } from '@shared/domain/entity/boardnode/types/board-node-type';
+import { cardNodeFactory } from '@shared/testing/factory/boardnode/card-node.factory';
+import { columnBoardNodeFactory } from '@shared/testing/factory/boardnode/column-board-node.factory';
+import { columnNodeFactory } from '@shared/testing/factory/boardnode/column-node.factory';
+import { externalToolElementNodeFactory } from '@shared/testing/factory/boardnode/external-tool-element-node.factory';
+import { fileElementNodeFactory } from '@shared/testing/factory/boardnode/file-element-node.factory';
+import { linkElementNodeFactory } from '@shared/testing/factory/boardnode/link-element-node.factory';
+import { richTextElementNodeFactory } from '@shared/testing/factory/boardnode/rich-text-element-node.factory';
+import { submissionContainerElementNodeFactory } from '@shared/testing/factory/boardnode/submission-container-element-node.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
 
 describe(BoardDoBuilderImpl.name, () => {

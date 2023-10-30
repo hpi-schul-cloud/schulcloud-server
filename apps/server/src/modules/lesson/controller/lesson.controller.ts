@@ -1,9 +1,9 @@
 import { Controller, Delete, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { LessonUC } from '../uc';
-import { LessonUrlParams } from './dto';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { LessonUC } from '../uc/lesson.uc';
+import { LessonUrlParams } from './dto/lesson.url.params';
 
 @ApiTags('Lesson')
 @Authenticate('jwt')

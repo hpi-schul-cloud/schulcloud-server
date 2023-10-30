@@ -1,6 +1,7 @@
 import { Collection } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { Role, User } from '@shared/domain/entity';
+import { Role } from '@shared/domain/entity/role.entity';
+import { User } from '@shared/domain/entity/user.entity';
 
 @Injectable()
 export class AuthorizationHelper {

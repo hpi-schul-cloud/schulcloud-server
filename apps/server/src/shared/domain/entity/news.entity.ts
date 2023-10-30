@@ -1,11 +1,13 @@
 import { Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
+import { EntityId } from '../types/entity-id';
+import { NewsTarget, NewsTargetModel } from '../types/news.types';
 import { BaseEntityWithTimestamps } from './base.entity';
+
 import type { Course } from './course.entity';
 import { SchoolEntity } from './school.entity';
+
 import type { TeamEntity } from './team.entity';
 import type { User } from './user.entity';
-import { NewsTarget, NewsTargetModel } from '../types/news.types';
-import { EntityId } from '../types';
 
 export interface INewsProperties {
 	title: string;

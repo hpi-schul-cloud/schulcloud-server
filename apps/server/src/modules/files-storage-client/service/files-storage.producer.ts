@@ -1,9 +1,7 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId } from '@shared/domain';
-import { RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
-import { LegacyLogger } from '@src/core/logger';
+import { EntityId } from '@shared/domain/types/entity-id';
 import {
 	FilesStorageEvents,
 	FilesStorageExchange,
@@ -11,8 +9,10 @@ import {
 	ICopyFilesOfParentParams,
 	IFileDO,
 	IFileRecordParams,
-} from '@src/shared/infra/rabbitmq';
-import { IFilesStorageClientConfig } from '../interfaces';
+} from '@shared/infra/rabbitmq/exchange/files-storage';
+import { RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { IFilesStorageClientConfig } from '../interfaces/files-storage-client-config';
 import { ErrorMapper } from '../mapper/error.mapper';
 
 @Injectable()

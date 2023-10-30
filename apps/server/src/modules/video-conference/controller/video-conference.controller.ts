@@ -1,19 +1,23 @@
 import { Body, Controller, Get, HttpStatus, Param, Put, Req } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+
 import { Request } from 'express';
-import { InvalidOriginForLogoutUrlLoggableException } from '../error';
-import { VideoConferenceOptions } from '../interface';
+import { InvalidOriginForLogoutUrlLoggableException } from '../error/invalid-origin-for-logout-url.loggable-exception';
+import { VideoConferenceOptions } from '../interface/video-conference-options.interface';
 import { VideoConferenceMapper } from '../mapper/video-conference.mapper';
-import { VideoConferenceCreateUc, VideoConferenceEndUc, VideoConferenceInfoUc, VideoConferenceJoinUc } from '../uc';
-import { ScopeRef, VideoConferenceInfo, VideoConferenceJoin } from '../uc/dto';
-import {
-	VideoConferenceCreateParams,
-	VideoConferenceInfoResponse,
-	VideoConferenceJoinResponse,
-	VideoConferenceScopeParams,
-} from './dto';
+import { ScopeRef } from '../uc/dto/scope-ref';
+import { VideoConferenceInfo } from '../uc/dto/video-conference-info';
+import { VideoConferenceJoin } from '../uc/dto/video-conference-join';
+import { VideoConferenceCreateUc } from '../uc/video-conference-create.uc';
+import { VideoConferenceEndUc } from '../uc/video-conference-end.uc';
+import { VideoConferenceInfoUc } from '../uc/video-conference-info.uc';
+import { VideoConferenceJoinUc } from '../uc/video-conference-join.uc';
+import { VideoConferenceCreateParams } from './dto/request/video-conference-create.params';
+import { VideoConferenceScopeParams } from './dto/request/video-conference-scope.params';
+import { VideoConferenceInfoResponse } from './dto/response/video-conference-info.response';
+import { VideoConferenceJoinResponse } from './dto/response/video-conference-join.response';
 
 @ApiTags('VideoConference')
 @Authenticate('jwt')

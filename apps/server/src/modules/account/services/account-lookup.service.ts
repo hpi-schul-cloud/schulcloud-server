@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId } from '@shared/domain';
-import { IdentityManagementService } from '@shared/infra/identity-management';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import { IServerConfig } from '@src/modules/server/server.config';
+
 import { ObjectId } from 'bson';
 
 /**

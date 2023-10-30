@@ -2,16 +2,15 @@ import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { LessonEntity } from '@shared/domain';
-import {
-	courseFactory,
-	courseGroupFactory,
-	lessonFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { ServerTestModule } from '@src/modules/server';
+import { LessonEntity } from '@shared/domain/entity/lesson.entity';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { courseGroupFactory } from '@shared/testing/factory/coursegroup.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { UserAndAccountTestFactory } from '@shared/testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@shared/testing/test-api-client';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client/service/files-storage-client.service';
+import { ServerTestModule } from '@src/modules/server/server.module';
+
 import { ObjectId } from 'bson';
 
 describe('Lesson Controller (API) - delete', () => {

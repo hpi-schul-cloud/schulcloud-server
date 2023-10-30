@@ -1,13 +1,17 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { Account, Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { Account } from '@shared/domain/entity/account.entity';
+import { Role } from '@shared/domain/entity/role.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
-import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
-import { CoreModule } from '@src/core';
-import { LoggerModule } from '@src/core/logger';
-import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
-import { AuthorizationModule } from '@src/modules/authorization';
+import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
+import { CoreModule } from '@src/core/core.module';
+import { LoggerModule } from '@src/core/logger/logger.module';
 import { AuthenticationApiModule } from '../authentication/authentication-api.module';
+import { AuthenticationModule } from '../authentication/authentication.module';
+import { AuthorizationModule } from '../authorization/authorization.module';
 import { H5PEditorModule } from './h5p-editor.module';
 
 const imports = [

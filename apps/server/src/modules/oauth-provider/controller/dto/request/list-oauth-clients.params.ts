@@ -1,5 +1,5 @@
-import { IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 
 export class ListOauthClientsParams {
 	@IsNumber()

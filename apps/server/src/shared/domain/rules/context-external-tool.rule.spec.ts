@@ -1,21 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	contextExternalToolEntityFactory,
-	roleFactory,
-	schoolExternalToolEntityFactory,
-	schoolFactory,
-	setupEntities,
-	userFactory,
-} from '@shared/testing';
-
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { contextExternalToolEntityFactory } from '@shared/testing/factory/context-external-tool-entity.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolExternalToolEntityFactory } from '@shared/testing/factory/school-external-tool-entity.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action } from '@src/modules/authorization/types';
-import { ContextExternalTool } from '@src/modules/tool/context-external-tool/domain';
-import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
-import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
-import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
-import { Role, User } from '../entity';
-import { Permission } from '../interface';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { ContextExternalTool } from '@src/modules/tool/context-external-tool/domain/context-external-tool.do';
+import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity/context-external-tool.entity';
+import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain/school-external-tool.do';
+import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity/school-external-tool.entity';
+import { Role } from '../entity/role.entity';
+import { User } from '../entity/user.entity';
 import { ContextExternalToolRule } from './context-external-tool.rule';
 
 describe('ContextExternalToolRule', () => {

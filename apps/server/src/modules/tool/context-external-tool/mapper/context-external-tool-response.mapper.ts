@@ -1,7 +1,10 @@
 import { ToolStatusResponseMapper } from '../../common/mapper/tool-status-response.mapper';
-import { CustomParameterEntryParam, CustomParameterEntryResponse } from '../../school-external-tool/controller/dto';
-import { ContextExternalToolResponse, ToolReferenceResponse } from '../controller/dto';
-import { ContextExternalTool, ToolReference } from '../domain';
+import { CustomParameterEntryParam } from '../../school-external-tool/controller/dto/custom-parameter-entry.params';
+import { CustomParameterEntryResponse } from '../../school-external-tool/controller/dto/custom-parameter-entry.response';
+import { ContextExternalToolResponse } from '../controller/dto/context-external-tool.response';
+import { ToolReferenceResponse } from '../controller/dto/tool-reference.response';
+import { ContextExternalTool } from '../domain/context-external-tool.do';
+import { ToolReference } from '../domain/tool-reference';
 
 export class ContextExternalToolResponseMapper {
 	static mapContextExternalToolResponse(contextExternalTool: ContextExternalTool): ContextExternalToolResponse {

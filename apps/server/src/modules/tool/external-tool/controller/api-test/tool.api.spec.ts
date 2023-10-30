@@ -2,26 +2,25 @@ import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
-import {
-	cleanupCollections,
-	externalToolEntityFactory,
-	externalToolFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { externalToolEntityFactory } from '@shared/testing/factory/external-tool-entity.factory';
+import { UserAndAccountTestFactory } from '@shared/testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@shared/testing/test-api-client';
+import { ServerTestModule } from '@src/modules/server/server.module';
+import { CustomParameterLocationParams } from '@src/modules/tool/common/enum/request-response/custom-parameter-location.enum';
+import { CustomParameterScopeTypeParams } from '@src/modules/tool/common/enum/request-response/custom-parameter-scope-type.enum';
+import { CustomParameterTypeParams } from '@src/modules/tool/common/enum/request-response/custom-parameter-type.enum';
+import { ToolConfigType } from '@src/modules/tool/common/enum/tool-config-type.enum';
+
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
-import {
-	CustomParameterLocationParams,
-	CustomParameterScopeTypeParams,
-	CustomParameterTypeParams,
-	ToolConfigType,
-} from '../../../common/enum';
-import { ExternalToolEntity } from '../../entity';
-import { ExternalToolCreateParams, ExternalToolResponse, ExternalToolSearchListResponse } from '../dto';
+import { ExternalToolEntity } from '../../entity/external-tool.entity';
+import { ExternalToolCreateParams } from '../dto/request/external-tool-create.params';
+import { ExternalToolSearchListResponse } from '../dto/response/external-tool-search-list.response';
+import { ExternalToolResponse } from '../dto/response/external-tool.response';
 
 describe('ToolController (API)', () => {
 	let app: INestApplication;

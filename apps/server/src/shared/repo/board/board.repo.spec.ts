@@ -1,17 +1,14 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, LessonEntity, Task } from '@shared/domain';
-import {
-	courseFactory,
-	boardFactory,
-	lessonBoardElementFactory,
-	lessonFactory,
-	taskBoardElementFactory,
-	cleanupCollections,
-} from '@shared/testing';
-
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-
+import { Board } from '@shared/domain/entity/legacy-board/board.entity';
+import { LessonEntity } from '@shared/domain/entity/lesson.entity';
+import { Task } from '@shared/domain/entity/task.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { boardFactory } from '@shared/testing/factory/board.factory';
+import { lessonBoardElementFactory, taskBoardElementFactory } from '@shared/testing/factory/boardelement.factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
 import { BoardRepo } from './board.repo';
 
 describe('BoardRepo', () => {

@@ -2,16 +2,18 @@ import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
+import { LanguageType } from '@shared/domain/entity/user.entity';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { mapUserToCurrentUser } from '@shared/testing/map-user-to-current-user';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
-
-import { ApiValidationError } from '@shared/common';
-import { LanguageType } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
-import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@src/modules/server/server.module';
-import { ResolvedUserResponse } from '@src/modules/user/controller/dto';
+import { ResolvedUserResponse } from '../dto/resolved-user.response';
 
 const baseRouteName = '/user/me';
 

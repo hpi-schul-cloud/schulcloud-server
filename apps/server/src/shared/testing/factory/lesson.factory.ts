@@ -1,5 +1,5 @@
-import { Course, IComponentProperties, ILessonProperties, LessonEntity } from '@shared/domain';
-
+import { Course } from '@shared/domain/entity/course.entity';
+import { IComponentProperties, ILessonProperties, LessonEntity } from '@shared/domain/entity/lesson.entity';
 import { BaseFactory } from './base.factory';
 import { courseFactory } from './course.factory';
 

@@ -1,8 +1,8 @@
 import { INestApplicationContext } from '@nestjs/common';
+import { ConsoleWriterService } from '@shared/infra/console/console-writer/console-writer.service';
 
 import { BootstrapConsole, ConsoleService } from 'nestjs-console';
-import { ServerConsoleModule } from '@src/console/console.module';
-import { ConsoleWriterService } from '@shared/infra/console';
+import { ServerConsoleModule } from '../console.module';
 import { execute, TestBootstrapConsole } from './test-bootstrap.console';
 
 describe('ServerConsole (API)', () => {

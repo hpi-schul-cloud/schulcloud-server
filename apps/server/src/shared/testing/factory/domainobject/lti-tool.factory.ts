@@ -1,4 +1,5 @@
-import { LtiPrivacyPermission, LtiToolDO } from '@shared/domain';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { LtiPrivacyPermission } from '@shared/domain/entity/ltitool.entity';
 import { DoBaseFactory } from './do-base.factory';
 
 export const ltiToolDOFactory = DoBaseFactory.define<LtiToolDO, LtiToolDO>(LtiToolDO, ({ sequence }) => {

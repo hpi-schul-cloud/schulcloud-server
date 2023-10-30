@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { AuthorizableObject, DomainObject } from '../../../shared/domain/domain-object';
+import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { ClassSourceOptions } from './class-source-options.do';
 
 export interface ClassProps extends AuthorizableObject {

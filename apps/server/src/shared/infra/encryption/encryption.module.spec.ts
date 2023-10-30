@@ -1,6 +1,7 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DefaultEncryptionService, EncryptionModule, IEncryptionService, LdapEncryptionService } from '.';
+import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from './encryption.interface';
+import { EncryptionModule } from './encryption.module';
 
 describe('EncryptionModule', () => {
 	let module: TestingModule;

@@ -1,14 +1,16 @@
 import { Body, Controller, ForbiddenException, Get, HttpCode, NotFoundException, Param, Patch } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { SubmissionsResponse } from '@src/modules/board/controller/dto/submission-item/submissions.response';
-import { CardUc } from '../uc';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { CardUc } from '../uc/card.uc';
 import { ElementUc } from '../uc/element.uc';
 import { SubmissionItemUc } from '../uc/submission-item.uc';
-import { SubmissionContainerUrlParams, SubmissionItemUrlParams, UpdateSubmissionItemBodyParams } from './dto';
-import { SubmissionItemResponseMapper } from './mapper';
+import { SubmissionContainerUrlParams } from './dto/submission-item/submission-container.url.params';
+import { SubmissionItemUrlParams } from './dto/submission-item/submission-item.url.params';
+import { SubmissionsResponse } from './dto/submission-item/submissions.response';
+import { UpdateSubmissionItemBodyParams } from './dto/submission-item/update-submission-item.body.params';
+import { SubmissionItemResponseMapper } from './mapper/submission-item-response.mapper';
 
 @ApiTags('Board Submission')
 @Authenticate('jwt')

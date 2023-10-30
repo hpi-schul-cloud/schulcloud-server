@@ -3,22 +3,26 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { axiosResponseFactory, setupEntities } from '@shared/testing';
-import { GroupTypes } from '@src/modules/group';
+import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { GroupTypes } from '@src/modules/group/domain/group-types';
+
 import { UUID } from 'bson';
 import { of } from 'rxjs';
-import {
-	ExternalGroupDto,
-	ExternalSchoolDto,
-	ExternalUserDto,
-	OauthDataDto,
-	OauthDataStrategyInputDto,
-	ProvisioningSystemDto,
-} from '../../dto';
+import { ExternalGroupDto } from '../../dto/external-group.dto';
+import { ExternalSchoolDto } from '../../dto/external-school.dto';
+import { ExternalUserDto } from '../../dto/external-user.dto';
+import { OauthDataStrategyInputDto } from '../../dto/oauth-data-strategy-input.dto';
+import { OauthDataDto } from '../../dto/oauth-data.dto';
+import { ProvisioningSystemDto } from '../../dto/provisioning-system.dto';
 import { OidcProvisioningService } from '../oidc/service/oidc-provisioning.service';
-import { SanisGroupRole, SanisGroupType, SanisGruppenResponse, SanisResponse, SanisRole } from './response';
+import { SanisGroupRole } from './response/sanis-group-role';
+import { SanisGroupType } from './response/sanis-group-type';
+import { SanisGruppenResponse } from './response/sanis-gruppen-response';
+import { SanisRole } from './response/sanis-role';
+import { SanisResponse } from './response/sanis.response';
 import { SanisResponseMapper } from './sanis-response.mapper';
 import { SanisProvisioningStrategy } from './sanis.strategy';
 

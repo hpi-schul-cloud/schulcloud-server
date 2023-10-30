@@ -1,7 +1,3 @@
-import { setupEntities, submissionFactory } from '@shared/testing';
-import { SubmissionStatusResponse } from '../controller/dto';
-import { SubmissionMapper } from './submission.mapper';
-
 describe('Submission Mapper', () => {
 	beforeAll(async () => {
 		await setupEntities();

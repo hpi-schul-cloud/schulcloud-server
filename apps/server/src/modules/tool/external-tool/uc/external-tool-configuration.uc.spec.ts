@@ -2,23 +2,27 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Page, Permission } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject/page';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { contextExternalToolFactory } from '@shared/testing/factory/domainobject/tool/context-external-tool.factory';
 import {
-	contextExternalToolFactory,
 	customParameterFactory,
 	externalToolFactory,
-	schoolExternalToolFactory,
-	setupEntities,
-} from '@shared/testing';
-import { AuthorizationContextBuilder } from '@src/modules/authorization';
-import { CustomParameterScope, ToolContextType } from '../../common/enum';
+} from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
+import { CustomParameterScope } from '../../common/enum/custom-parameter-scope.enum';
+import { ToolContextType } from '../../common/enum/tool-context-type.enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ContextExternalToolService } from '../../context-external-tool/service';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ExternalTool } from '../domain';
-import { ExternalToolConfigurationService, ExternalToolLogoService, ExternalToolService } from '../service';
+import { ContextExternalTool } from '../../context-external-tool/domain/context-external-tool.do';
+import { ContextExternalToolService } from '../../context-external-tool/service/context-external-tool.service';
+import { SchoolExternalTool } from '../../school-external-tool/domain/school-external-tool.do';
+import { SchoolExternalToolService } from '../../school-external-tool/service/school-external-tool.service';
+import { ExternalTool } from '../domain/external-tool.do';
+import { ExternalToolConfigurationService } from '../service/external-tool-configuration.service';
+import { ExternalToolLogoService } from '../service/external-tool-logo.service';
+import { ExternalToolService } from '../service/external-tool.service';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
 
 describe('ExternalToolConfigurationUc', () => {

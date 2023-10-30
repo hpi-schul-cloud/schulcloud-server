@@ -11,13 +11,16 @@ import {
 	Put,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { BoardUc } from '../uc';
-import { CardResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams } from './dto';
-import { CardResponseMapper } from './mapper';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { BoardUc } from '../uc/board.uc';
+import { ColumnUrlParams } from './dto/board/column.url.params';
+import { MoveColumnBodyParams } from './dto/board/move-column.body.params';
+import { RenameBodyParams } from './dto/board/rename.body.params';
+import { CardResponse } from './dto/card/card.response';
 import { CreateCardBodyParams } from './dto/card/create-card.body.params';
+import { CardResponseMapper } from './mapper/card-response.mapper';
 
 @ApiTags('Board Column')
 @Authenticate('jwt')

@@ -1,19 +1,17 @@
-import {
-	AnyBoardDo,
-	BoardCompositeVisitorAsync,
-	Card,
-	Column,
-	ColumnBoard,
-	EntityId,
-	ExternalToolElement,
-	FileElement,
-	RichTextElement,
-	SubmissionContainerElement,
-	SubmissionItem,
-} from '@shared/domain';
+import { Card } from '@shared/domain/domainobject/board/card.do';
+import { ColumnBoard } from '@shared/domain/domainobject/board/column-board.do';
+import { Column } from '@shared/domain/domainobject/board/column.do';
+import { ExternalToolElement } from '@shared/domain/domainobject/board/external-tool-element.do';
+import { FileElement } from '@shared/domain/domainobject/board/file-element.do';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
-import { FileRecordParentType } from '@shared/infra/rabbitmq';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
+import { RichTextElement } from '@shared/domain/domainobject/board/rich-text-element.do';
+import { SubmissionContainerElement } from '@shared/domain/domainobject/board/submission-container-element.do';
+import { SubmissionItem } from '@shared/domain/domainobject/board/submission-item.do';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
+import { BoardCompositeVisitorAsync } from '@shared/domain/domainobject/board/types/board-composite-visitor';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper/types/copy.types';
+import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { ObjectId } from 'bson';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 

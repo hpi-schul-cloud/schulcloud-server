@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { EntityId, type UserDO } from '@shared/domain';
-import { AuthorizationLoaderServiceGeneric } from '@src/modules/authorization';
-import { Group } from '../domain';
-import { GroupRepo } from '../repo';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception/not-found.loggable-exception';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { AuthorizationLoaderServiceGeneric } from '@src/modules/authorization/types/authorization-loader-service';
+import { Group } from '../domain/group';
+import { GroupRepo } from '../repo/group.repo';
 
 @Injectable()
 export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {

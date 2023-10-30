@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { FeathersServiceProvider } from '@shared/infra/feathers/feathers-service.provider';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 
 export type PadResponse = { data: { padID: string } };
 

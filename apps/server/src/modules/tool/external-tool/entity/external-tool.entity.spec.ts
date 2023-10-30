@@ -1,14 +1,14 @@
-import { setupEntities } from '@shared/testing';
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	LtiMessageType,
-	LtiPrivacyPermission,
-	ToolConfigType,
-} from '../../common/enum';
-import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } from './config';
-import { CustomParameterEntity } from './custom-parameter';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { CustomParameterLocation } from '../../common/enum/custom-parameter-location.enum';
+import { CustomParameterScope } from '../../common/enum/custom-parameter-scope.enum';
+import { CustomParameterType } from '../../common/enum/custom-parameter-type.enum';
+import { LtiMessageType } from '../../common/enum/lti-message-type.enum';
+import { LtiPrivacyPermission } from '../../common/enum/lti-privacy-permission.enum';
+import { ToolConfigType } from '../../common/enum/tool-config-type.enum';
+import { BasicToolConfigEntity } from './config/basic-tool-config.entity';
+import { Lti11ToolConfigEntity } from './config/lti11-tool-config.entity';
+import { Oauth2ToolConfigEntity } from './config/oauth2-tool-config.entity';
+import { CustomParameterEntity } from './custom-parameter/custom-parameter.entity';
 import { ExternalToolEntity } from './external-tool.entity';
 
 describe('ExternalToolEntity', () => {

@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { Class } from '../domain';
-import { ClassesRepo } from '../repo';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { Class } from '../domain/class.do';
+import { ClassesRepo } from '../repo/classes.repo';
 
 @Injectable()
 export class ClassService {

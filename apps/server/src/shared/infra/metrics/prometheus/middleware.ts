@@ -1,6 +1,6 @@
+import { Request, RequestHandler, Response } from 'express';
 import client from 'prom-client';
 import responseTime from 'response-time';
-import { Request, RequestHandler, Response } from 'express';
 
 class RequestInfo {
 	method: string;

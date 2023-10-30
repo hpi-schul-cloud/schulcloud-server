@@ -1,5 +1,6 @@
 import { UnprocessableEntityException } from '@nestjs/common';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { Loggable } from '@src/core/logger/interfaces/loggable';
+import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@src/core/logger/types/logging.types';
 
 export class SchoolNumberDuplicateLoggableException extends UnprocessableEntityException implements Loggable {
 	constructor(private readonly officialSchoolNumber: string) {

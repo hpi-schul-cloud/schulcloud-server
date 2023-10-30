@@ -2,18 +2,19 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
 import { Inject, InternalServerErrorException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { OauthConfig } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { LtiToolRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
-import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
-import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
+import { OauthConfig } from '@shared/domain/entity/system.entity';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption/encryption.interface';
+import { LtiToolRepo } from '@shared/repo/ltitool/ltitool.repo';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { nanoid } from 'nanoid';
 import QueryString from 'qs';
-import { Observable, firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
+import { AuthorizationParams } from '../controller/dto/authorization.params';
+import { CookiesDto } from './dto/cookies.dto';
+import { HydraRedirectDto } from './dto/hydra.redirect.dto';
 
 @Injectable()
 export class HydraSsoService {
@@ -61,8 +62,8 @@ export class HydraSsoService {
 		}
 
 		const headerCookies: string = isHydra
-			? localDto.cookies.hydraCookies.join('; ')
-			: localDto.cookies.localCookies.join('; ');
+			? localDto.cookies.hydraCookies.join(';  ')
+			: localDto.cookies.localCookies.join(';  ');
 
 		localDto.axiosConfig.headers = {
 			Referer: localDto.referer,
@@ -81,7 +82,7 @@ export class HydraSsoService {
 		const { hydraCookies } = cookies;
 
 		setCookies.forEach((item: string): void => {
-			const cookie: string = item.split(';')[0];
+			const cookie: string = item.split('; ')[0];
 			if (cookie.startsWith('oauth2') && !hydraCookies.includes(cookie)) {
 				hydraCookies.push(cookie);
 			} else if (!localCookies.includes(cookie)) {

@@ -1,12 +1,12 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
-import { CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { LessonCopyApiParams } from '@src/modules/learnroom/controller/dto/lesson/lesson-copy.params';
-import { LessonCopyParentParams } from '@src/modules/lesson';
+import { LessonCopyParentParams } from '@src/modules/lesson/types/lesson-copy-parent.params';
 import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
-import { TaskCopyParentParams } from '@src/modules/task/types';
+import { TaskCopyParentParams } from '@src/modules/task/types/task-copy-parent.params';
 import { CopyApiResponse } from '../dto/copy.response';
+import { CopyElementType, CopyStatusEnum } from '../types/copy.types';
 import { CopyMapper } from './copy.mapper';
 
 describe('copy mapper', () => {

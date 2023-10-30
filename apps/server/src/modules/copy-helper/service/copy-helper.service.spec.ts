@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, setupEntities } from '@shared/testing';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types/copy.types';
 import { CopyHelperService } from './copy-helper.service';
 

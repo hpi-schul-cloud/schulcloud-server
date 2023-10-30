@@ -1,5 +1,5 @@
 import { ValidationError } from '@nestjs/common';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
 import { ErrorResponse } from './error.response';
 import { ValidationErrorDetailResponse } from './validation-error-detail.response';
 

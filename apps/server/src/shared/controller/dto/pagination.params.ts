@@ -1,5 +1,5 @@
-import { IsInt, Max, Min } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsInt, Max, Min } from 'class-validator';
 
 export class PaginationParams {
 	@IsInt()

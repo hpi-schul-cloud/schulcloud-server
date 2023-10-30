@@ -1,9 +1,10 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
+import { FilesStorageAMQPModule } from '@src/modules/files-storage/files-storage-amqp.module';
 
 // register source-map-support for debugging
-import { FilesStorageAMQPModule } from '@src/modules/files-storage';
+
 import { install as sourceMapInstall } from 'source-map-support';
 
 async function bootstrap() {

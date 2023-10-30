@@ -10,20 +10,21 @@ import {
 	Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError, RequestTimeout } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
+import { RequestTimeout } from '@shared/common/decorators/timeout.decorator';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { CopyApiResponse, CopyMapper } from '@src/modules/copy-helper';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { CopyApiResponse } from '@src/modules/copy-helper/dto/copy.response';
+import { CopyMapper } from '@src/modules/copy-helper/mapper/copy.mapper';
 import { serverConfig } from '@src/modules/server/server.config';
-import { ShareTokenInfoResponseMapper, ShareTokenResponseMapper } from '../mapper';
-import { ShareTokenUC } from '../uc';
-import {
-	ShareTokenBodyParams,
-	ShareTokenImportBodyParams,
-	ShareTokenInfoResponse,
-	ShareTokenResponse,
-	ShareTokenUrlParams,
-} from './dto';
+import { ShareTokenInfoResponseMapper } from '../mapper/share-token-info-response.mapper';
+import { ShareTokenResponseMapper } from '../mapper/share-token-response.mapper';
+import { ShareTokenUC } from '../uc/share-token.uc';
+import { ShareTokenImportBodyParams } from './dto/share-token-import.body.params';
+import { ShareTokenInfoResponse } from './dto/share-token-info.reponse';
+import { ShareTokenBodyParams } from './dto/share-token.body.params';
+import { ShareTokenResponse } from './dto/share-token.response';
+import { ShareTokenUrlParams } from './dto/share-token.url.params';
 
 @ApiTags('ShareToken')
 @Authenticate('jwt')

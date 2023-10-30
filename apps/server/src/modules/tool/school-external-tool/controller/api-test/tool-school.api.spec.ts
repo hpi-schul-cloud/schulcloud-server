@@ -1,27 +1,26 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Permission, SchoolEntity, User } from '@shared/domain';
-import {
-	accountFactory,
-	externalToolEntityFactory,
-	schoolExternalToolEntityFactory,
-	schoolFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-	userFactory,
-} from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
-import { ToolConfigurationStatusResponse } from '../../../context-external-tool/controller/dto/tool-configuration-status.response';
-import { ExternalToolEntity } from '../../../external-tool/entity';
-import { SchoolExternalToolEntity } from '../../entity';
-import {
-	CustomParameterEntryParam,
-	SchoolExternalToolPostParams,
-	SchoolExternalToolResponse,
-	SchoolExternalToolSearchListResponse,
-	SchoolExternalToolSearchParams,
-} from '../dto';
+import { Account } from '@shared/domain/entity/account.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { accountFactory } from '@shared/testing/factory/account.factory';
+import { externalToolEntityFactory } from '@shared/testing/factory/external-tool-entity.factory';
+import { schoolExternalToolEntityFactory } from '@shared/testing/factory/school-external-tool-entity.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { UserAndAccountTestFactory } from '@shared/testing/factory/user-and-account.test.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { TestApiClient } from '@shared/testing/test-api-client';
+import { ServerTestModule } from '@src/modules/server/server.module';
+import { ToolConfigurationStatusResponse } from '@src/modules/tool/context-external-tool/controller/dto/tool-configuration-status.response';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity/external-tool.entity';
+import { SchoolExternalToolEntity } from '../../entity/school-external-tool.entity';
+import { CustomParameterEntryParam } from '../dto/custom-parameter-entry.params';
+import { SchoolExternalToolPostParams } from '../dto/school-external-tool-post.params';
+import { SchoolExternalToolSearchListResponse } from '../dto/school-external-tool-search-list.response';
+import { SchoolExternalToolSearchParams } from '../dto/school-external-tool-search.params';
+import { SchoolExternalToolResponse } from '../dto/school-external-tool.response';
 
 describe('ToolSchoolController (API)', () => {
 	let app: INestApplication;

@@ -2,16 +2,17 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AntivirusService } from '@shared/infra/antivirus';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
-import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { S3ClientAdapter } from '@shared/infra/s3-client/s3-client.adapter';
+import { fileRecordFactory } from '@shared/testing/factory/filerecord.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { FileRecordParams } from '../controller/dto/file-storage.params';
+import { FileRecord, FileRecordParentType, ScanStatus } from '../entity/filerecord.entity';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
-import { createCopyFiles } from '../helper';
-import { CopyFileResponseBuilder } from '../mapper';
-import { FileRecordRepo } from '../repo';
+import { createCopyFiles } from '../helper/path';
+import { CopyFileResponseBuilder } from '../mapper/copy-file-response.builder';
+import { FileRecordRepo } from '../repo/filerecord.repo';
 import { FilesStorageService } from './files-storage.service';
 
 const buildFileRecordsWithParams = () => {

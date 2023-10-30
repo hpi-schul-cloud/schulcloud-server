@@ -1,6 +1,6 @@
-import { ICalendarEvent } from '@shared/infra/calendar/interface/calendar-event.interface';
 import { Injectable } from '@nestjs/common';
-import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
+import { CalendarEventDto } from '../dto/calendar-event.dto';
+import { ICalendarEvent } from '../interface/calendar-event.interface';
 
 @Injectable()
 export class CalendarMapper {

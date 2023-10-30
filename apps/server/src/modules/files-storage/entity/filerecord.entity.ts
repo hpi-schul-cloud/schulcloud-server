@@ -1,9 +1,11 @@
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
-import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+
 import { v4 as uuid } from 'uuid';
-import { ErrorType } from '../error';
+import { ErrorType } from '../error/error-status.enum';
 import { PreviewInputMimeTypes } from '../interface/preview-input-mime-types.enum';
 
 export enum ScanStatus {

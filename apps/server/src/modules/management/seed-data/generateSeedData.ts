@@ -1,4 +1,4 @@
-import { BaseEntity } from '@shared/domain';
+import { BaseEntity } from '@shared/domain/entity/base.entity';
 import { generateFederalStates } from './federalstates';
 import { generateRole } from './roles';
 import { generateSchools } from './schools';

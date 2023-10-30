@@ -1,5 +1,8 @@
-import { importUserFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import { MatchCreator } from '.';
+import { importUserFactory } from '@shared/testing/factory/import-user.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { MatchCreator } from './import-user.entity';
 
 describe('ImportUser entity', () => {
 	beforeAll(async () => {

@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error/validation.error';
+
 import { isNaN } from 'lodash';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ExternalTool } from '../../external-tool/domain';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { CustomParameter, CustomParameterEntry } from '../domain';
-import { CustomParameterScope, CustomParameterType } from '../enum';
+import { ContextExternalTool } from '../../context-external-tool/domain/context-external-tool.do';
+import { ExternalTool } from '../../external-tool/domain/external-tool.do';
+import { SchoolExternalTool } from '../../school-external-tool/domain/school-external-tool.do';
+import { CustomParameterEntry } from '../domain/custom-parameter-entry.do';
+import { CustomParameter } from '../domain/custom-parameter.do';
+import { CustomParameterScope } from '../enum/custom-parameter-scope.enum';
+import { CustomParameterType } from '../enum/custom-parameter-type.enum';
 
 export type ValidatableTool = SchoolExternalTool | ContextExternalTool;
 

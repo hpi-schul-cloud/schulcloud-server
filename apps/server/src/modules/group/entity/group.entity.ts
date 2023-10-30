@@ -2,7 +2,7 @@ import { Embedded, Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { ExternalSourceEntity } from '@shared/domain/entity/external-source.entity';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
-import { EntityId } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { GroupUserEntity } from './group-user.entity';
 import { GroupValidPeriodEntity } from './group-valid-period.entity';
 

@@ -1,16 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContextExternalToolRepo } from '@shared/repo';
-import {
-	contextExternalToolFactory,
-	legacySchoolDoFactory,
-	schoolExternalToolFactory,
-} from '@shared/testing/factory/domainobject';
-import { AuthorizationService } from '@src/modules/authorization';
-import { ToolContextType } from '../../common/enum';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ContextExternalTool, ContextRef } from '../domain';
+import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool/context-external-tool.repo';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/legacy-school.factory';
+import { contextExternalToolFactory } from '@shared/testing/factory/domainobject/tool/context-external-tool.factory';
+import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { ToolContextType } from '../../common/enum/tool-context-type.enum';
+import { SchoolExternalTool } from '../../school-external-tool/domain/school-external-tool.do';
+import { ContextExternalTool } from '../domain/context-external-tool.do';
+import { ContextRef } from '../domain/context-ref';
 import { ContextExternalToolService } from './context-external-tool.service';
 
 describe('ContextExternalToolService', () => {

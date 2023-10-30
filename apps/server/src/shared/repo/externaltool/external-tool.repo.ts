@@ -1,13 +1,20 @@
 import { EntityName, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { IFindOptions, IPagination, Page, SortOrder } from '@shared/domain';
-import { BaseDORepo, ExternalToolRepoMapper, ExternalToolSortingMapper, Scope } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
-import { ToolConfigType } from '@src/modules/tool/common/enum';
-import { ExternalToolSearchQuery } from '@src/modules/tool/common/interface';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { ExternalToolEntity, IExternalToolProperties } from '@src/modules/tool/external-tool/entity';
+import { Page } from '@shared/domain/domainobject/page';
+import { IFindOptions, IPagination, SortOrder } from '@shared/domain/interface/find-options';
+import { Scope } from '@shared/repo/scope';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { ToolConfigType } from '@src/modules/tool/common/enum/tool-config-type.enum';
+import { ExternalToolSearchQuery } from '@src/modules/tool/common/interface/external-tool-search-query';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain/external-tool.do';
+import {
+	ExternalToolEntity,
+	IExternalToolProperties,
+} from '@src/modules/tool/external-tool/entity/external-tool.entity';
+import { BaseDORepo } from '../base.do.repo';
+import { ExternalToolSortingMapper } from './external-tool-sorting.mapper';
+import { ExternalToolRepoMapper } from './external-tool.repo.mapper';
 import { ExternalToolScope } from './external-tool.scope';
 
 @Injectable()

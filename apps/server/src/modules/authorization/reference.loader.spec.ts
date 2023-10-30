@@ -2,23 +2,23 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain';
-import {
-	CourseGroupRepo,
-	CourseRepo,
-	LessonRepo,
-	SchoolExternalToolRepo,
-	LegacySchoolRepo,
-	SubmissionRepo,
-	TaskRepo,
-	TeamsRepo,
-	UserRepo,
-} from '@shared/repo';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { BoardDoAuthorizableService } from '@src/modules/board';
-import { ContextExternalToolAuthorizableService } from '@src/modules/tool/context-external-tool/service/context-external-tool-authorizable.service';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { CourseRepo } from '@shared/repo/course/course.repo';
+import { CourseGroupRepo } from '@shared/repo/coursegroup/coursegroup.repo';
+import { LessonRepo } from '@shared/repo/lesson/lesson.repo';
+import { LegacySchoolRepo } from '@shared/repo/school/legacy-school.repo';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
+import { SubmissionRepo } from '@shared/repo/submission/submission.repo';
+import { TaskRepo } from '@shared/repo/task/task.repo';
+import { TeamsRepo } from '@shared/repo/teams/teams.repo';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { BoardDoAuthorizableService } from '../board/service/board-do-authorizable.service';
+import { ContextExternalToolAuthorizableService } from '../tool/context-external-tool/service/context-external-tool-authorizable.service';
 import { ReferenceLoader } from './reference.loader';
-import { AuthorizableReferenceType } from './types';
+import { AuthorizableReferenceType } from './types/allowed-authorization-object-type.enum';
 
 describe('reference.loader', () => {
 	let service: ReferenceLoader;

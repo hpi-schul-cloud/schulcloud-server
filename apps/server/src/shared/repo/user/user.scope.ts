@@ -1,5 +1,6 @@
-import { Scope } from '@shared/repo';
-import { EntityId, User } from '@shared/domain';
+import { User } from '@shared/domain/entity/user.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { Scope } from '@shared/repo/scope';
 
 export class UserScope extends Scope<User> {
 	isOutdated(isOutdated?: boolean): UserScope {

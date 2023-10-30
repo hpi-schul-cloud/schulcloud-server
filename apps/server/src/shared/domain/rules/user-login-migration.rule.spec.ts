@@ -1,11 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { schoolFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
-import { Action, AuthorizationContext } from '@src/modules/authorization';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { UserLoginMigrationDO } from '../domainobject';
-import { Permission } from '../interface';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { AuthorizationContext } from '@src/modules/authorization/types/authorization-context.interface';
+import { UserLoginMigrationDO } from '../domainobject/user-login-migration.do';
 import { UserLoginMigrationRule } from './user-login-migration.rule';
 
 describe('UserLoginMigrationRule', () => {

@@ -1,6 +1,6 @@
 import { Embeddable, Embedded, Entity, Enum, Property } from '@mikro-orm/core';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { EntityId } from '../types';
+import { SystemProvisioningStrategy } from '../interface/system-provisioning.strategy';
+import { EntityId } from '../types/entity-id';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface ISystemProperties {

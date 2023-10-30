@@ -1,14 +1,12 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ColumnBoardNode } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import {
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	richTextElementNodeFactory,
-} from '@shared/testing';
+import { ColumnBoardNode } from '@shared/domain/entity/boardnode/column-board-node.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { cardNodeFactory } from '@shared/testing/factory/boardnode/card-node.factory';
+import { columnBoardNodeFactory } from '@shared/testing/factory/boardnode/column-board-node.factory';
+import { columnNodeFactory } from '@shared/testing/factory/boardnode/column-node.factory';
+import { richTextElementNodeFactory } from '@shared/testing/factory/boardnode/rich-text-element-node.factory';
 import { BoardNodeRepo } from './board-node.repo';
 
 describe('BoardNodeRepo', () => {

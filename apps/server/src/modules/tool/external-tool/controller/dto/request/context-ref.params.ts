@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { ToolContextType } from '@src/modules/tool/common/enum/tool-context-type.enum';
+
 import { IsEnum, IsMongoId } from 'class-validator';
-import { ToolContextType } from '../../../../common/enum';
 
 export class ContextRefParams {
 	@IsEnum(ToolContextType)

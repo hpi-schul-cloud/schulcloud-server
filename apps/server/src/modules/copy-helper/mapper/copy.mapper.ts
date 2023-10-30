@@ -1,8 +1,10 @@
-import { EntityId, LessonEntity, Task } from '@shared/domain';
+import { LessonEntity } from '@shared/domain/entity/lesson.entity';
+import { Task } from '@shared/domain/entity/task.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { LessonCopyApiParams } from '@src/modules/learnroom/controller/dto/lesson/lesson-copy.params';
-import { LessonCopyParentParams } from '@src/modules/lesson/types';
+import { LessonCopyParentParams } from '@src/modules/lesson/types/lesson-copy-parent.params';
 import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
-import { TaskCopyParentParams } from '@src/modules/task/types';
+import { TaskCopyParentParams } from '@src/modules/task/types/task-copy-parent.params';
 import { CopyApiResponse } from '../dto/copy.response';
 import { CopyStatus, CopyStatusEnum } from '../types/copy.types';
 

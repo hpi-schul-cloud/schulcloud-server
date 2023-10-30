@@ -1,13 +1,17 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { EntityNotFoundError } from '@shared/common';
-import { IdentityManagementOauthService, IdentityManagementService } from '@shared/infra/identity-management';
-import { Counted, EntityId, IdmAccount, IdmAccountUpdate } from '@shared/domain';
-import { LegacyLogger } from '@src/core/logger';
-import { AccountIdmToDtoMapper } from '../mapper';
+import { EntityNotFoundError } from '@shared/common/error/entity-not-found.error';
+import { IdmAccount, IdmAccountUpdate } from '@shared/domain/interface/account';
+import { Counted } from '@shared/domain/types/counted';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { IdentityManagementOauthService } from '@shared/infra/identity-management/identity-management-oauth.service';
+import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { AccountIdmToDtoMapper } from '../mapper/account-idm-to-dto.mapper.abstract';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { AccountDto, AccountSaveDto } from './dto';
+import { AccountSaveDto } from './dto/account-save.dto';
+import { AccountDto } from './dto/account.dto';
 
 @Injectable()
 export class AccountServiceIdm extends AbstractAccountService {

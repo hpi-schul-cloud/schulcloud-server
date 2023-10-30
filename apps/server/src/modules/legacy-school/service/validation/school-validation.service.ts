@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo } from '@shared/domain';
-import { LegacySchoolRepo } from '@shared/repo';
-import { SchoolNumberDuplicateLoggableException } from '../../error';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { LegacySchoolRepo } from '@shared/repo/school/legacy-school.repo';
+import { SchoolNumberDuplicateLoggableException } from '../../error/school-number-duplicate.loggable-exception';
 
 @Injectable()
 export class SchoolValidationService {

@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { Permission, LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain';
-import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
-import {
-	SchoolMigrationService,
-	UserLoginMigrationRevertService,
-	UserLoginMigrationService,
-} from '@src/modules/user-login-migration';
-import { LegacySchoolService } from '../service';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject/user-login-migration.do';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { AuthorizableReferenceType } from '@src/modules/authorization/types/allowed-authorization-object-type.enum';
+import { SchoolMigrationService } from '@src/modules/user-login-migration/service/school-migration.service';
+import { UserLoginMigrationRevertService } from '@src/modules/user-login-migration/service/user-login-migration-revert.service';
+import { UserLoginMigrationService } from '@src/modules/user-login-migration/service/user-login-migration.service';
+import { LegacySchoolService } from '../service/legacy-school.service';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
 
 /**

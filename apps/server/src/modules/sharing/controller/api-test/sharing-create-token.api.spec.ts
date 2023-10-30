@@ -1,24 +1,23 @@
-import { Request } from 'express';
-import request from 'supertest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
-import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
-import {
-	cleanupCollections,
-	courseFactory,
-	mapUserToCurrentUser,
-	roleFactory,
-	schoolFactory,
-	userFactory,
-} from '@shared/testing';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { mapUserToCurrentUser } from '@shared/testing/map-user-to-current-user';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import { ShareTokenBodyParams, ShareTokenResponse } from '../dto';
+import { Request } from 'express';
+import request from 'supertest';
 import { ShareTokenParentType } from '../../domainobject/share-token.do';
+import { ShareTokenBodyParams } from '../dto/share-token.body.params';
+import { ShareTokenResponse } from '../dto/share-token.response';
 
 const baseRouteName = '/sharetoken';
 

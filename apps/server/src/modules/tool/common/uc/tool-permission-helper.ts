@@ -1,10 +1,14 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, User } from '@shared/domain';
-import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ContextTypeMapper } from '../mapper';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { User } from '@shared/domain/entity/user.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { AuthorizableReferenceType } from '@src/modules/authorization/types/allowed-authorization-object-type.enum';
+import { AuthorizationContext } from '@src/modules/authorization/types/authorization-context.interface';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { ContextExternalTool } from '../../context-external-tool/domain/context-external-tool.do';
+import { SchoolExternalTool } from '../../school-external-tool/domain/school-external-tool.do';
+import { ContextTypeMapper } from '../mapper/context-type.mapper';
 
 @Injectable()
 export class ToolPermissionHelper {

@@ -1,15 +1,13 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain';
-import {
-	cleanupCollections,
-	columnBoardNodeFactory,
-	courseFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { columnBoardNodeFactory } from '@shared/testing/factory/boardnode/column-board-node.factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { UserAndAccountTestFactory } from '@shared/testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@shared/testing/test-api-client';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import { BoardContextResponse } from '../dto/board/board-context.reponse';
 
 const baseRouteName = '/boards';

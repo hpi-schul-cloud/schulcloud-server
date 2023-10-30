@@ -1,32 +1,31 @@
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 import {
+	ApiBadRequestResponse,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
-	ApiResponse,
 	ApiOkResponse,
-	ApiBadRequestResponse,
+	ApiOperation,
+	ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
-	ApiOperation,
 } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Post, Query, Put, HttpCode, HttpStatus } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
-import { LegacyLogger } from '@src/core/logger';
+import { ValidationError } from '@shared/common/error/validation.error';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { SchoolExternalToolRequestMapper, SchoolExternalToolResponseMapper } from '../mapper';
-import { ExternalToolSearchListResponse } from '../../external-tool/controller/dto';
-import {
-	SchoolExternalToolIdParams,
-	SchoolExternalToolPostParams,
-	SchoolExternalToolResponse,
-	SchoolExternalToolSearchListResponse,
-	SchoolExternalToolSearchParams,
-} from './dto';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ExternalToolSearchListResponse } from '../../external-tool/controller/dto/response/external-tool-search-list.response';
+import { SchoolExternalTool } from '../domain/school-external-tool.do';
+import { SchoolExternalToolRequestMapper } from '../mapper/school-external-tool-request.mapper';
+import { SchoolExternalToolResponseMapper } from '../mapper/school-external-tool-response.mapper';
 import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
-import { SchoolExternalToolUc } from '../uc';
-import { SchoolExternalTool } from '../domain';
+import { SchoolExternalToolUc } from '../uc/school-external-tool.uc';
+import { SchoolExternalToolIdParams } from './dto/school-external-tool-id.params';
+import { SchoolExternalToolPostParams } from './dto/school-external-tool-post.params';
+import { SchoolExternalToolSearchListResponse } from './dto/school-external-tool-search-list.response';
+import { SchoolExternalToolSearchParams } from './dto/school-external-tool-search.params';
+import { SchoolExternalToolResponse } from './dto/school-external-tool.response';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

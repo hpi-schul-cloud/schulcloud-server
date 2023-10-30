@@ -1,16 +1,18 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { RequestTimeout } from '@shared/common';
-import { PaginationParams } from '@shared/controller/';
-import { ICurrentUser } from '@src/modules/authentication';
+import { RequestTimeout } from '@shared/common/decorators/timeout.decorator';
+import { PaginationParams } from '@shared/controller/dto/pagination.params';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { CopyApiResponse, CopyMapper } from '@src/modules/copy-helper';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { CopyApiResponse } from '@src/modules/copy-helper/dto/copy.response';
+import { CopyMapper } from '@src/modules/copy-helper/mapper/copy.mapper';
 import { serverConfig } from '@src/modules/server/server.config';
-import { TaskMapper } from '../mapper';
+import { TaskMapper } from '../mapper/task.mapper';
 import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskUC } from '../uc/task.uc';
-import { TaskListResponse, TaskResponse, TaskUrlParams } from './dto';
 import { TaskCopyApiParams } from './dto/task-copy.params';
+import { TaskListResponse, TaskResponse } from './dto/task.response';
+import { TaskUrlParams } from './dto/task.url.params';
 
 @ApiTags('Task')
 @Authenticate('jwt')

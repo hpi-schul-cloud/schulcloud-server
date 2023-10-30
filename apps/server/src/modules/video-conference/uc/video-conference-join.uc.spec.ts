@@ -1,16 +1,24 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UserService } from '@src/modules/user';
-import { userDoFactory } from '@shared/testing';
-import { Permission, UserDO, VideoConferenceDO, VideoConferenceScope } from '@shared/domain';
-import { ObjectId } from 'bson';
+import { Test, TestingModule } from '@nestjs/testing';
+
 import { ForbiddenException } from '@nestjs/common';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { VideoConferenceDO } from '@shared/domain/domainobject/video-conference.do';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { VideoConferenceScope } from '@shared/domain/interface/video-conference-scope.enum';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
-import { BBBService, VideoConferenceService } from '../service';
-import { VideoConferenceOptions } from '../interface';
-import { BBBJoinConfig, BBBJoinResponse, BBBResponse, BBBRole } from '../bbb';
-import { VideoConferenceJoin, VideoConferenceState } from './dto';
+import { UserService } from '@src/modules/user/service/user.service';
+import { ObjectId } from 'bson';
+import { BBBService } from '../bbb/bbb.service';
+import { BBBJoinConfig, BBBRole } from '../bbb/request/bbb-join.config';
+import { BBBJoinResponse } from '../bbb/response/bbb-join.response';
+import { BBBResponse } from '../bbb/response/bbb.response';
 import { ErrorStatus } from '../error/error-status.enum';
+import { VideoConferenceOptions } from '../interface/video-conference-options.interface';
+import { VideoConferenceService } from '../service/video-conference.service';
+import { VideoConferenceJoin } from './dto/video-conference-join';
+import { VideoConferenceState } from './dto/video-conference-state.enum';
 import { VideoConferenceJoinUc } from './video-conference-join.uc';
 
 describe('VideoConferenceJoinUc', () => {

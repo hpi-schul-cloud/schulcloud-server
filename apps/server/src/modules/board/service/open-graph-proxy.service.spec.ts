@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
+import { setupEntities } from '@shared/testing/setup-entities';
+
 import { ImageObject } from 'open-graph-scraper/dist/lib/types';
 import { OpenGraphProxyService } from './open-graph-proxy.service';
 

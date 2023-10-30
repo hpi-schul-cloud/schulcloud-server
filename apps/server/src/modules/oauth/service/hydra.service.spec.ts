@@ -4,18 +4,21 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LtiPrivacyPermission, LtiRoleType, OauthConfig } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { LtiToolRepo } from '@shared/repo';
-import { axiosResponseFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
-import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
-import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
-import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
+import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
+import { OauthConfig } from '@shared/domain/entity/system.entity';
+import { DefaultEncryptionService } from '@shared/infra/encryption/encryption.interface';
+import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryption.service';
+import { LtiToolRepo } from '@shared/repo/ltitool/ltitool.repo';
+import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
+import { CookiesDto } from './dto/cookies.dto';
+import { HydraRedirectDto } from './dto/hydra.redirect.dto';
+import { HydraSsoService } from './hydra.service';
 
 class HydraOauthSsoSpec extends HydraSsoService {
 	public processCookiesSpec(setCookies: string[], cookie: CookiesDto): CookiesDto {

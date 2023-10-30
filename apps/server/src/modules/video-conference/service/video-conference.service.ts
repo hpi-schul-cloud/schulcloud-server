@@ -1,34 +1,32 @@
 import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
-import {
-	Course,
-	EntityId,
-	Permission,
-	RoleName,
-	RoleReference,
-	SchoolFeatures,
-	TeamEntity,
-	TeamUserEntity,
-	UserDO,
-	VideoConferenceDO,
-	VideoConferenceOptionsDO,
-	VideoConferenceScope,
-} from '@shared/domain';
-import { CalendarEventDto, CalendarService } from '@shared/infra/calendar';
-import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import {
-	Action,
-	AuthorizableReferenceType,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@src/modules/authorization';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { UserService } from '@src/modules/user';
-import { BBBRole } from '../bbb';
-import { ErrorStatus } from '../error';
-import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
+import { RoleReference } from '@shared/domain/domainobject/role-reference';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject/video-conference.do';
+import { Course } from '@shared/domain/entity/course.entity';
+import { SchoolFeatures } from '@shared/domain/entity/school.entity';
+import { TeamEntity, TeamUserEntity } from '@shared/domain/entity/team.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { VideoConferenceScope } from '@shared/domain/interface/video-conference-scope.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
+import { CalendarService } from '@shared/infra/calendar/service/calendar.service';
+import { TeamsRepo } from '@shared/repo/teams/teams.repo';
+import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { AuthorizableReferenceType } from '@src/modules/authorization/types/allowed-authorization-object-type.enum';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { UserService } from '@src/modules/user/service/user.service';
+import { BBBRole } from '../bbb/request/bbb-join.config';
+import { ErrorStatus } from '../error/error-status.enum';
+import { VideoConferenceOptions } from '../interface/video-conference-options.interface';
+import { IVideoConferenceSettings, VideoConferenceSettings } from '../interface/video-conference-settings.interface';
 import { PermissionScopeMapping } from '../mapper/video-conference.mapper';
-import { IScopeInfo, VideoConferenceState } from '../uc/dto';
+import { IScopeInfo } from '../uc/dto/scope-info.interface';
+import { VideoConferenceState } from '../uc/dto/video-conference-state.enum';
 
 @Injectable()
 export class VideoConferenceService {

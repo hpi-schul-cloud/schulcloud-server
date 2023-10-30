@@ -1,9 +1,15 @@
-import { ValidationError } from '@shared/common';
-import { Permission, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { roleFactory, schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { ICurrentUser, OauthCurrentUser } from '../interface';
-import { CreateJwtPayload, JwtPayload } from '../interface/jwt-payload';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { ValidationError } from 'class-validator';
+import { JwtPayload } from 'jsonwebtoken';
+import { CreateJwtPayload } from '../interface/jwt-payload';
+import { ICurrentUser, OauthCurrentUser } from '../interface/user';
 import { CurrentUserMapper } from './current-user.mapper';
 
 describe('CurrentUserMapper', () => {

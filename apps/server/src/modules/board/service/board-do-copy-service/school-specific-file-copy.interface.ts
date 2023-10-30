@@ -1,6 +1,6 @@
-import { EntityId } from '@shared/domain';
-import { CopyFileDto } from '@src/modules/files-storage-client/dto';
-import { FileRecordParentType } from '@src/modules/files-storage/entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { FileRecordParentType } from '@shared/infra/rabbitmq/exchange/files-storage';
+import { CopyFileDto } from '@src/modules/files-storage-client/dto/copy-file.dto';
 
 export type SchoolSpecificFileCopyServiceCopyParams = {
 	sourceParentId: EntityId;

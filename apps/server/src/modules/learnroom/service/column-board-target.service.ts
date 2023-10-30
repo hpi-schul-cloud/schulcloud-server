@@ -1,8 +1,9 @@
 import { FilterQuery } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { ColumnBoardTarget, EntityId } from '@shared/domain';
-import { ColumnBoardService } from '@src/modules/board';
+import { ColumnBoardTarget } from '@shared/domain/entity/legacy-board/column-board-target.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { ColumnBoardService } from '@src/modules/board/service/column-board.service';
 
 @Injectable()
 export class ColumnBoardTargetService {

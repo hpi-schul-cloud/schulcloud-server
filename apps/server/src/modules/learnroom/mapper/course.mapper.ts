@@ -1,5 +1,5 @@
-import { Course } from '@shared/domain';
-import { CourseMetadataResponse } from '../controller/dto';
+import { Course } from '@shared/domain/entity/course.entity';
+import { CourseMetadataResponse } from '../controller/dto/course-metadata.response';
 
 export class CourseMapper {
 	static mapToMetadataResponse(course: Course): CourseMetadataResponse {

@@ -1,6 +1,6 @@
-import { LtiPrivacyPermission, LtiTool } from '@shared/domain';
-import { setupEntities } from '@shared/testing';
 import { ltiToolFactory } from '@shared/testing/factory/ltitool.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LtiPrivacyPermission, LtiTool } from './ltitool.entity';
 
 describe('Ltitool Entity', () => {
 	beforeAll(async () => {

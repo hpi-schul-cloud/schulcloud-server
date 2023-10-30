@@ -1,8 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
-import { submissionContainerElementFactory, submissionItemFactory } from '@shared/testing';
+import { submissionContainerElementFactory } from '@shared/testing/factory/domainobject/board/submission-container-element.do.factory';
+import { submissionItemFactory } from '@shared/testing/factory/domainobject/board/submission-item.do.factory';
+
 import { ObjectId } from 'bson';
 import { SubmissionItem } from './submission-item.do';
-import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types/board-composite-visitor';
 
 describe(SubmissionItem.name, () => {
 	describe('when trying to add a child to a submission item element', () => {

@@ -1,26 +1,29 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, Permission, SchoolEntity } from '@shared/domain';
-import {
-	basicToolConfigFactory,
-	contextExternalToolFactory,
-	contextExternalToolEntityFactory,
-	courseFactory,
-	externalToolEntityFactory,
-	schoolExternalToolEntityFactory,
-	schoolFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
+import { Course } from '@shared/domain/entity/course.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { contextExternalToolEntityFactory } from '@shared/testing/factory/context-external-tool-entity.factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { contextExternalToolFactory } from '@shared/testing/factory/domainobject/tool/context-external-tool.factory';
+import { basicToolConfigFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { externalToolEntityFactory } from '@shared/testing/factory/external-tool-entity.factory';
+import { schoolExternalToolEntityFactory } from '@shared/testing/factory/school-external-tool-entity.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { UserAndAccountTestFactory } from '@shared/testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@shared/testing/test-api-client';
+import { ServerTestModule } from '@src/modules/server/server.module';
+import { ToolConfigType } from '@src/modules/tool/common/enum/tool-config-type.enum';
+import { ContextExternalToolType } from '@src/modules/tool/context-external-tool/entity/context-external-tool-type.enum';
+import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity/context-external-tool.entity';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity/external-tool.entity';
+import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity/school-external-tool.entity';
+
 import { Response } from 'supertest';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
-import { LaunchRequestMethod } from '../../types';
-import { ToolLaunchRequestResponse, ToolLaunchParams } from '../dto';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
-import { ExternalToolEntity } from '../../../external-tool/entity';
-import { ToolConfigType } from '../../../common/enum';
+import { LaunchRequestMethod } from '../../types/launch-request-method';
+import { ToolLaunchRequestResponse } from '../dto/tool-launch-request.response';
+import { ToolLaunchParams } from '../dto/tool-launch.params';
 
 describe('ToolLaunchController (API)', () => {
 	let app: INestApplication;

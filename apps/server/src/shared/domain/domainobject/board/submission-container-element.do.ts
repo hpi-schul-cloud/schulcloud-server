@@ -1,6 +1,7 @@
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import { SubmissionItem } from './submission-item.do';
-import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
+import { AnyBoardDo } from './types/any-board-do';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types/board-composite-visitor';
 
 export class SubmissionContainerElement extends BoardComposite<SubmissionContainerElementProps> {
 	get dueDate(): Date | null {

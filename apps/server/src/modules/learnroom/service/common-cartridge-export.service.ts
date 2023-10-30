@@ -1,18 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { Course, EntityId, IComponentProperties, Task } from '@shared/domain';
-import { LessonService } from '@src/modules/lesson/service';
-import { ComponentType } from '@src/shared/domain/entity/lesson.entity';
-import { TaskService } from '@src/modules/task/service';
+import { Course } from '@shared/domain/entity/course.entity';
+import { ComponentType, IComponentProperties } from '@shared/domain/entity/lesson.entity';
+import { Task } from '@shared/domain/entity/task.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { LessonService } from '@src/modules/lesson/service/lesson.service';
+import { TaskService } from '@src/modules/task/service/task.service';
 import {
-	CommonCartridgeFileBuilder,
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
-	ICommonCartridgeResourceProps,
-	ICommonCartridgeWebContentResourceProps,
-} from '../common-cartridge';
-import { CourseService } from './course.service';
+} from '../common-cartridge/common-cartridge-enums';
+import { CommonCartridgeFileBuilder } from '../common-cartridge/common-cartridge-file-builder';
+import { ICommonCartridgeResourceProps } from '../common-cartridge/common-cartridge-resource-item-element';
+import { ICommonCartridgeWebContentResourceProps } from '../common-cartridge/common-cartridge-web-content-resource';
 import { createIdentifier } from '../common-cartridge/utils';
+import { CourseService } from './course.service';
 
 @Injectable()
 export class CommonCartridgeExportService {

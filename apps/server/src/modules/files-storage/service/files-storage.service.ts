@@ -7,37 +7,36 @@ import {
 	NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Counted, EntityId } from '@shared/domain';
-import { AntivirusService } from '@shared/infra/antivirus';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { LegacyLogger } from '@src/core/logger';
+import { Counted } from '@shared/domain/types/counted';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { S3ClientAdapter } from '@shared/infra/s3-client/s3-client.adapter';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import {
-	CopyFileResponse,
 	CopyFilesOfParentParams,
 	DownloadFileParams,
 	FileRecordParams,
 	RenameFileParams,
 	ScanResultParams,
 	SingleFileParams,
-} from '../controller/dto';
-import { FileDto } from '../dto';
-import { FileRecord, ScanStatus } from '../entity';
-import { ErrorType } from '../error';
+} from '../controller/dto/file-storage.params';
+import { CopyFileResponse } from '../controller/dto/file-storage.response';
+import { FileDto } from '../dto/file.dto';
+import { FileRecord, ScanStatus } from '../entity/filerecord.entity';
+import { ErrorType } from '../error/error-status.enum';
 import { FILES_STORAGE_S3_CONNECTION, IFileStorageConfig } from '../files-storage.config';
-import {
-	createCopyFiles,
-	createFileRecord,
-	createPath,
-	getPaths,
-	markForDelete,
-	resolveFileNameDuplicates,
-	unmarkForDelete,
-} from '../helper';
-import { GetFileResponse } from '../interface';
-import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../mapper';
-import { FileRecordRepo } from '../repo';
+import { resolveFileNameDuplicates } from '../helper/file-name';
+import { createFileRecord, markForDelete, unmarkForDelete } from '../helper/file-record';
+import { createCopyFiles, createPath, getPaths } from '../helper/path';
+import { GetFileResponse } from '../interface/interfaces';
+import { CopyFileResponseBuilder } from '../mapper/copy-file-response.builder';
+import { FileRecordMapper } from '../mapper/file-record.mapper';
+import { FileResponseBuilder } from '../mapper/file-response.builder';
+import { FilesStorageMapper } from '../mapper/files-storage.mapper';
+import { FileRecordRepo } from '../repo/filerecord.repo';
 
 @Injectable()
 export class FilesStorageService {

@@ -3,15 +3,17 @@ import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ALL_ENTITIES } from '@shared/domain';
+import { ALL_ENTITIES } from '@shared/domain/entity/all-entities';
 import { ConsoleWriterModule } from '@shared/infra/console/console-writer/console-writer.module';
 import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
-import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
-import { FilesModule } from '@src/modules/files';
-import { FileEntity } from '@src/modules/files/entity';
-import { FileRecord } from '@src/modules/files-storage/entity';
+import { createConfigModuleOptions } from '@src/config/config-module-options';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config/database.config';
+import { FileRecord } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileEntity } from '@src/modules/files/entity/file.entity';
+import { FilesModule } from '@src/modules/files/files.module';
 import { ManagementModule } from '@src/modules/management/management.module';
-import { serverConfig } from '@src/modules/server';
+import { serverConfig } from '@src/modules/server/server.config';
+
 import { ConsoleModule } from 'nestjs-console';
 import { ServerConsole } from './server.console';
 

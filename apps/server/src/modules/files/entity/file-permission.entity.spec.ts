@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { FilePermissionReferenceModel } from '../domain';
+import { FilePermissionReferenceModel } from '../domain/types/file-permission-reference-model.enum';
 import { FilePermissionEntity } from './file-permission.entity';
 
 describe(FilePermissionEntity.name, () => {

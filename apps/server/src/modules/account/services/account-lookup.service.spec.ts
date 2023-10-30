@@ -1,10 +1,10 @@
-import { ObjectId } from 'bson';
-import { v1 } from 'uuid';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IdmAccount } from '@shared/domain';
-import { IdentityManagementService } from '@shared/infra/identity-management';
+import { IdmAccount } from '@shared/domain/interface/account';
+import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
+import { ObjectId } from 'bson';
+import { v1 } from 'uuid';
 import { AccountLookupService } from './account-lookup.service';
 
 describe('AccountLookupService', () => {

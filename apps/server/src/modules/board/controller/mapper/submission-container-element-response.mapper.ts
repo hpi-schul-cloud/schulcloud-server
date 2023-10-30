@@ -1,5 +1,10 @@
-import { ContentElementType, SubmissionContainerElement } from '@shared/domain';
-import { SubmissionContainerElementContent, SubmissionContainerElementResponse, TimestampsResponse } from '../dto';
+import { SubmissionContainerElement } from '@shared/domain/domainobject/board/submission-container-element.do';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import {
+	SubmissionContainerElementResponse,
+	SubmissionContainerElementContent,
+} from '../dto/element/submission-container-element.response';
+import { TimestampsResponse } from '../dto/timestamps.response';
 import { BaseResponseMapper } from './base-mapper.interface';
 
 export class SubmissionContainerElementResponseMapper implements BaseResponseMapper {

@@ -1,9 +1,10 @@
-import { EntityId } from '@shared/domain';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { fileRecordFactory } from '@shared/testing/factory/filerecord.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { ObjectId } from 'bson';
-import { createCopyFiles, createPath, createPreviewDirectoryPath, createPreviewFilePath, getPaths } from '.';
-import { FileRecord } from '../entity';
-import { ErrorType } from '../error';
+import { FileRecord } from '../entity/filerecord.entity';
+import { ErrorType } from '../error/error-status.enum';
+import { createCopyFiles, createPath, createPreviewDirectoryPath, createPreviewFilePath, getPaths } from './path';
 
 describe('Path Helper', () => {
 	beforeAll(async () => {

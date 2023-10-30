@@ -1,21 +1,21 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import {
-	cleanupCollections,
-	externalToolEntityFactory,
-	externalToolPseudonymEntityFactory,
-	schoolFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { Response } from 'supertest';
-import { SchoolEntity } from '@shared/domain';
-import { ServerTestModule } from '@src/modules/server';
-import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
+
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { externalToolEntityFactory } from '@shared/testing/factory/external-tool-entity.factory';
+import { externalToolPseudonymEntityFactory } from '@shared/testing/factory/external-tool-pseudonym.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { UserAndAccountTestFactory } from '@shared/testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@shared/testing/test-api-client';
+import { ServerTestModule } from '@src/modules/server/server.module';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity/external-tool.entity';
 import { UUID } from 'bson';
-import { ExternalToolPseudonymEntity } from '../../entity';
-import { PseudonymResponse } from '../dto';
+import { ExternalToolPseudonymEntity } from '../../entity/external-tool-pseudonym.entity';
+import { PseudonymResponse } from '../dto/pseudonym.response';
 
 describe('PseudonymController (API)', () => {
 	let app: INestApplication;

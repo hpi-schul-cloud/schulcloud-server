@@ -1,17 +1,20 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ValidationError } from '@shared/common';
-import { Counted } from '@shared/domain';
+import { ValidationError } from '@shared/common/error/validation.error';
+import { Counted } from '@shared/domain/types/counted';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { IServerConfig } from '@src/modules/server/server.config';
+
 import { isEmail, validateOrReject } from 'class-validator';
-import { LegacyLogger } from '../../../core/logger'; // TODO: use path alias
-// TODO: account needs to define its own config, which is made available for the server
-import { IServerConfig } from '../../server/server.config';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
-import { AccountDto, AccountSaveDto } from './dto';
+import { AccountSaveDto } from './dto/account-save.dto';
+import { AccountDto } from './dto/account.dto';
+// TODO: use path alias
+// TODO: account needs to define its own config, which is made available for the server
 
 /* TODO: extract a service that contains all things required by feathers,
 which is responsible for the additionally required validation 

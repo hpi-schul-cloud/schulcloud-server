@@ -1,12 +1,14 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { InputFormat } from '@shared/domain/types';
+import { InputFormat } from '@shared/domain/types/input-format.types';
+
 import { ObjectId } from 'bson';
 import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
 import { LinkElement } from './link-element.do';
 import { RichTextElement } from './rich-text-element.do';
 import { SubmissionContainerElement } from './submission-container-element.do';
-import { AnyContentElementDo, ContentElementType } from './types';
+import { AnyContentElementDo } from './types/any-content-element-do';
+import { ContentElementType } from './types/content-elements.enum';
 
 @Injectable()
 export class ContentElementFactory {

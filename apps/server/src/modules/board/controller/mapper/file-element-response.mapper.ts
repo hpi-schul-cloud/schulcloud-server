@@ -1,5 +1,7 @@
-import { ContentElementType, FileElement } from '@shared/domain';
-import { FileElementContent, FileElementResponse, TimestampsResponse } from '../dto';
+import { FileElement } from '@shared/domain/domainobject/board/file-element.do';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import { FileElementResponse, FileElementContent } from '../dto/element/file-element.response';
+import { TimestampsResponse } from '../dto/timestamps.response';
 import { BaseResponseMapper } from './base-mapper.interface';
 
 export class FileElementResponseMapper implements BaseResponseMapper {

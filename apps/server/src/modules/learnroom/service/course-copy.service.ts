@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Course, EntityId, User } from '@shared/domain';
-import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
+import { Course } from '@shared/domain/entity/course.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { BoardRepo } from '@shared/repo/board/board.repo';
+import { CourseRepo } from '@shared/repo/course/course.repo';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { CopyHelperService } from '@src/modules/copy-helper/service/copy-helper.service';
+import { CopyStatus, CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper/types/copy.types';
 import { BoardCopyService } from './board-copy.service';
 import { RoomsService } from './rooms.service';
 

@@ -2,26 +2,27 @@ import { createMock } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
-import { EntityId, Permission } from '@shared/domain';
-import { AntivirusService } from '@shared/infra/antivirus';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
-import {
-	cleanupCollections,
-	fileRecordFactory,
-	mapUserToCurrentUser,
-	roleFactory,
-	schoolFactory,
-	userFactory,
-} from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { S3ClientAdapter } from '@shared/infra/s3-client/s3-client.adapter';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { fileRecordFactory } from '@shared/testing/factory/filerecord.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { mapUserToCurrentUser } from '@shared/testing/map-user-to-current-user';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FILES_STORAGE_S3_CONNECTION, FilesStorageTestModule } from '@src/modules/files-storage';
-import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+
 import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
-import { FileRecordParentType, PreviewStatus } from '../../entity';
+import { FileRecordParentType, PreviewStatus } from '../../entity/filerecord.entity';
+import { FilesStorageTestModule } from '../../files-storage-test.module';
+import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
+import { FileRecordListResponse, FileRecordResponse } from '../dto/file-storage.response';
 import { availableParentTypes } from './mocks';
 
 const baseRouteName = '/file/restore';

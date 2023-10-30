@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Class } from '../../domain';
 import { ClassSourceOptions } from '../../domain/class-source-options.do';
-import { ClassEntity } from '../../entity';
+import { Class } from '../../domain/class.do';
+import { ClassEntity } from '../../entity/class.entity';
 
 export class ClassMapper {
 	private static mapToDO(entity: ClassEntity): Class {

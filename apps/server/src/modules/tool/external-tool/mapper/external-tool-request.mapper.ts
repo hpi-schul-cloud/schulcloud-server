@@ -1,25 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { SortOrderMap } from '@shared/domain';
-import {
-	CustomParameterLocation,
-	CustomParameterLocationParams,
-	CustomParameterScope,
-	CustomParameterScopeTypeParams,
-	CustomParameterType,
-	CustomParameterTypeParams,
-} from '../../common/enum';
-import {
-	BasicToolConfigParams,
-	CustomParameterPostParams,
-	ExternalToolCreateParams,
-	ExternalToolSearchParams,
-	ExternalToolUpdateParams,
-	Lti11ToolConfigCreateParams,
-	Lti11ToolConfigUpdateParams,
-	Oauth2ToolConfigCreateParams,
-	Oauth2ToolConfigUpdateParams,
-	SortExternalToolParams,
-} from '../controller/dto';
+import { SortOrderMap } from '@shared/domain/interface/find-options';
+import { CustomParameterLocation } from '../../common/enum/custom-parameter-location.enum';
+import { CustomParameterScope } from '../../common/enum/custom-parameter-scope.enum';
+import { CustomParameterType } from '../../common/enum/custom-parameter-type.enum';
+import { CustomParameterLocationParams } from '../../common/enum/request-response/custom-parameter-location.enum';
+import { CustomParameterScopeTypeParams } from '../../common/enum/request-response/custom-parameter-scope-type.enum';
+import { CustomParameterTypeParams } from '../../common/enum/request-response/custom-parameter-type.enum';
+import { ExternalToolSearchQuery } from '../../common/interface/external-tool-search-query';
+import { BasicToolConfigParams } from '../controller/dto/request/config/basic-tool-config.params';
+import { Lti11ToolConfigCreateParams } from '../controller/dto/request/config/lti11-tool-config-create.params';
+import { Lti11ToolConfigUpdateParams } from '../controller/dto/request/config/lti11-tool-config-update.params';
+import { Oauth2ToolConfigCreateParams } from '../controller/dto/request/config/oauth2-tool-config-create.params';
+import { Oauth2ToolConfigUpdateParams } from '../controller/dto/request/config/oauth2-tool-config-update.params';
+import { CustomParameterPostParams } from '../controller/dto/request/custom-parameter.params';
+import { ExternalToolCreateParams } from '../controller/dto/request/external-tool-create.params';
+import { ExternalToolSearchParams } from '../controller/dto/request/external-tool-search.params';
+import { SortExternalToolParams } from '../controller/dto/request/external-tool-sort.params';
+import { ExternalToolUpdateParams } from '../controller/dto/request/external-tool-update.params';
+import { ExternalTool } from '../domain/external-tool.do';
 import {
 	BasicToolConfigDto,
 	CustomParameterDto,
@@ -29,9 +27,7 @@ import {
 	Lti11ToolConfigUpdate,
 	Oauth2ToolConfigCreate,
 	Oauth2ToolConfigUpdate,
-} from '../uc';
-import { ExternalTool } from '../domain';
-import { ExternalToolSearchQuery } from '../../common/interface';
+} from '../uc/dto/external-tool.types';
 
 const scopeMapping: Record<CustomParameterScopeTypeParams, CustomParameterScope> = {
 	[CustomParameterScopeTypeParams.GLOBAL]: CustomParameterScope.GLOBAL,

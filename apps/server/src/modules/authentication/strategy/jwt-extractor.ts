@@ -1,6 +1,6 @@
+import cookie from 'cookie';
 import { Request } from 'express';
 import { JwtFromRequestFunction } from 'passport-jwt';
-import cookie from 'cookie';
 
 export class JwtExtractor {
 	static fromCookie(name: string): JwtFromRequestFunction {

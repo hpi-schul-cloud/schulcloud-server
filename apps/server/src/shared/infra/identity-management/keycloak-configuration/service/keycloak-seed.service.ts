@@ -1,13 +1,14 @@
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { Inject } from '@nestjs/common';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+
 import fs from 'node:fs/promises';
+import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { IJsonAccount } from '../interface/json-account.interface';
 import { IJsonUser } from '../interface/json-user.interface';
-import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import {
-	KeycloakConfigurationInputFiles,
 	IKeycloakConfigurationInputFiles,
+	KeycloakConfigurationInputFiles,
 } from '../interface/keycloak-configuration-input-files.interface';
 
 export class KeycloakSeedService {

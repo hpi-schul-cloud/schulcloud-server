@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationResponse } from '@shared/controller';
+import { PaginationResponse } from '@shared/controller/dto/pagination.response';
+
 import { IsMongoId } from 'class-validator';
 import { MatchType } from './match-type';
 import { UserRole } from './user-role';

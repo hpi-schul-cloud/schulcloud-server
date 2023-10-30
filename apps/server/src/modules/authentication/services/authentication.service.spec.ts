@@ -4,10 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { ICurrentUser } from '@src/modules/authentication';
+import { AccountDto } from '@src/modules/account/services/dto/account.dto';
+
 import jwt from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
+import { ICurrentUser } from '../interface/user';
 import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
 import { AuthenticationService } from './authentication.service';
 

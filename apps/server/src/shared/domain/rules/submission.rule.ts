@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Submission, User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action, AuthorizationContext, Rule } from '@src/modules/authorization/types';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { AuthorizationContext } from '@src/modules/authorization/types/authorization-context.interface';
+import { Rule } from '@src/modules/authorization/types/rule.interface';
+import { Submission } from '../entity/submission.entity';
+import { User } from '../entity/user.entity';
 import { TaskRule } from './task.rule';
 
 @Injectable()

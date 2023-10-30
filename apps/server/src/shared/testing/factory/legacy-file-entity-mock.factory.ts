@@ -1,5 +1,5 @@
-import { Factory } from 'fishery';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Factory } from 'fishery';
 
 export const legacyFileEntityMockFactory = Factory.define<{ id: string; name: string }>(({ sequence }) => {
 	return {

@@ -1,4 +1,4 @@
-import { ToolConfigurationStatus } from '../../common/enum';
+import { ToolConfigurationStatus } from '../../common/enum/tool-configuration-status';
 
 export class ToolReference {
 	contextToolId: string;

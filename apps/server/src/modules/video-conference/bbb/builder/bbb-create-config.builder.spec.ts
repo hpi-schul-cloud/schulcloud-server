@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { BBBCreateConfigBuilder } from './bbb-create-config.builder';
 import { BBBCreateConfig, GuestPolicy } from '../request/bbb-create.config';
+import { BBBCreateConfigBuilder } from './bbb-create-config.builder';
 
 describe('BBBCreateConfigBuilder', () => {
 	const SC_DOMAIN = 'server origin name';

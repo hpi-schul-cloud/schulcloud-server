@@ -1,29 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import {
-	Board,
-	BoardElement,
-	BoardElementType,
-	BoardExternalReferenceType,
-	ColumnBoard,
-	ColumnboardBoardElement,
-	ColumnBoardTarget,
-	Course,
-	isColumnBoardTarget,
-	isLesson,
-	isTask,
-	LessonEntity,
-	LessonBoardElement,
-	Task,
-	TaskBoardElement,
-	User,
-} from '@shared/domain';
-import { BoardRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { ColumnBoard } from '@shared/domain/domainobject/board/column-board.do';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
+import { Course } from '@shared/domain/entity/course.entity';
+import { Board } from '@shared/domain/entity/legacy-board/board.entity';
+import { BoardElement, BoardElementType } from '@shared/domain/entity/legacy-board/boardelement.entity';
+import { ColumnboardBoardElement } from '@shared/domain/entity/legacy-board/column-board-boardelement';
+import { ColumnBoardTarget, isColumnBoardTarget } from '@shared/domain/entity/legacy-board/column-board-target.entity';
+import { LessonBoardElement } from '@shared/domain/entity/legacy-board/lesson-boardelement.entity';
+import { TaskBoardElement } from '@shared/domain/entity/legacy-board/task-boardelement.entity';
+import { isLesson, LessonEntity } from '@shared/domain/entity/lesson.entity';
+import { isTask, Task } from '@shared/domain/entity/task.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { BoardRepo } from '@shared/repo/board/board.repo';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { ColumnBoardCopyService } from '@src/modules/board/service/column-board-copy.service';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
-import { getResolvedValues } from '@src/modules/files-storage/helper';
-import { LessonCopyService } from '@src/modules/lesson/service';
-import { TaskCopyService } from '@src/modules/task/service';
+import { CopyHelperService } from '@src/modules/copy-helper/service/copy-helper.service';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper/types/copy.types';
+import { getResolvedValues } from '@src/modules/files-storage/helper/promise';
+import { LessonCopyService } from '@src/modules/lesson/service/lesson-copy.service';
+import { TaskCopyService } from '@src/modules/task/service/task-copy.service';
+
 import { sortBy } from 'lodash';
 
 type BoardCopyParams = {

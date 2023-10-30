@@ -1,8 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TaskRepo } from '@shared/repo';
-import { setupEntities, submissionFactory, taskFactory } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { TaskRepo } from '@shared/repo/task/task.repo';
+import { submissionFactory } from '@shared/testing/factory/submission.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client/service/files-storage-client.service';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
 

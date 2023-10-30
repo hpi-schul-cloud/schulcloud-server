@@ -1,7 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { SanitizeHtml } from '@shared/controller';
+import { SanitizeHtml } from '@shared/controller/transformer/sanitize-html.transformer';
+import { InputFormat } from '@shared/domain/types/input-format.types';
+
 import { IsDate, IsOptional, IsString } from 'class-validator';
-import { InputFormat } from '@shared/domain';
 
 /**
  * DTO for Updating a news document.

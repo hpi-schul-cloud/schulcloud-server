@@ -1,10 +1,10 @@
-import { BaseFactory } from '@shared/testing/factory/base.factory';
-import { CustomParameterEntryEntity } from '@src/modules/tool/common/entity';
+import { CustomParameterEntryEntity } from '@src/modules/tool/common/entity/custom-parameter-entry.entity';
+import { ContextExternalToolType } from '@src/modules/tool/context-external-tool/entity/context-external-tool-type.enum';
 import {
 	ContextExternalToolEntity,
-	ContextExternalToolType,
 	IContextExternalToolProperties,
-} from '@src/modules/tool/context-external-tool/entity';
+} from '@src/modules/tool/context-external-tool/entity/context-external-tool.entity';
+import { BaseFactory } from './base.factory';
 import { courseFactory } from './course.factory';
 import { schoolExternalToolEntityFactory } from './school-external-tool-entity.factory';
 

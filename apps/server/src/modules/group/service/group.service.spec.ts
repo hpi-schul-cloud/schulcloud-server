@@ -1,11 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { groupFactory, userDoFactory } from '@shared/testing';
-import { UserDO } from '@shared/domain';
-import { Group } from '../domain';
-import { GroupRepo } from '../repo';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception/not-found.loggable-exception';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { groupFactory } from '@shared/testing/factory/domainobject/groups/group.factory';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
+import { Group } from '../domain/group';
+import { GroupRepo } from '../repo/group.repo';
 import { GroupService } from './group.service';
 
 describe('GroupService', () => {

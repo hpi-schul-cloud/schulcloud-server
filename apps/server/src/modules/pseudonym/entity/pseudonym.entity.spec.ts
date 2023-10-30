@@ -1,6 +1,6 @@
-import { setupEntities } from '@shared/testing';
-import { pseudonymEntityFactory } from '@shared/testing/factory/pseudonym.factory';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { pseudonymEntityFactory } from '@shared/testing/factory/pseudonym.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { PseudonymEntity } from './pseudonym.entity';
 
 describe('Pseudonym Entity', () => {

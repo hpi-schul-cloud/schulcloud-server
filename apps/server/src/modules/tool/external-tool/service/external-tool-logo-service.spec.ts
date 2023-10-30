@@ -1,20 +1,20 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, DeepMocked, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { axiosResponseFactory, externalToolFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
+import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { Logger } from '@src/core/logger/logger';
+
 import { of, throwError } from 'rxjs';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
-import { ExternalTool } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
-import {
-	ExternalToolLogoFetchedLoggable,
-	ExternalToolLogoFetchFailedLoggableException,
-	ExternalToolLogoNotFoundLoggableException,
-	ExternalToolLogoSizeExceededLoggableException,
-	ExternalToolLogoWrongFileTypeLoggableException,
-} from '../loggable';
+import { ExternalTool } from '../domain/external-tool.do';
+import { ExternalToolLogoFetchFailedLoggableException } from '../loggable/external-tool-logo-fetch-failed-loggable-exception';
+import { ExternalToolLogoFetchedLoggable } from '../loggable/external-tool-logo-fetched-loggable';
+import { ExternalToolLogoNotFoundLoggableException } from '../loggable/external-tool-logo-not-found-loggable-exception';
+import { ExternalToolLogoSizeExceededLoggableException } from '../loggable/external-tool-logo-size-exceeded-loggable-exception';
+import { ExternalToolLogoWrongFileTypeLoggableException } from '../loggable/external-tool-logo-wrong-file-type-loggable-exception';
 import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolService } from './external-tool.service';
 

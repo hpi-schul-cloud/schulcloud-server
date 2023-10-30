@@ -1,5 +1,3 @@
-import { ClassSourceOptions } from '../class-source-options.do';
-
 describe(ClassSourceOptions.name, () => {
 	describe('constructor', () => {
 		describe('When a contructor is called', () => {

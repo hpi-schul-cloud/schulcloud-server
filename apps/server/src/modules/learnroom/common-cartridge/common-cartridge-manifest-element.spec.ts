@@ -1,7 +1,3 @@
-import { CommonCartridgeManifestElement } from './common-cartridge-manifest-element';
-import { CommonCartridgeVersion } from './common-cartridge-enums';
-import { ICommonCartridgeMetadataProps } from './common-cartridge-metadata-element';
-
 describe('CommonCartridgeManifestElement', () => {
 	const metadataPropsV3: ICommonCartridgeMetadataProps = {
 		version: CommonCartridgeVersion.V_1_3_0,

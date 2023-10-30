@@ -1,21 +1,24 @@
 import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, UserDO } from '@shared/domain';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { ISession } from '@shared/domain/types/session';
-import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser } from '@src/modules/authentication';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
-import { ProvisioningService } from '@src/modules/provisioning';
-import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { SystemService } from '@src/modules/system';
+import { OauthDataDto } from '@src/modules/provisioning/dto/oauth-data.dto';
+import { ProvisioningService } from '@src/modules/provisioning/service/provisioning.service';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { UserService } from '@src/modules/user';
-import { UserMigrationService } from '@src/modules/user-login-migration';
-import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
-import { MigrationDto } from '@src/modules/user-login-migration/service/dto';
+import { SystemService } from '@src/modules/system/service/system.service';
+import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
+import { SchoolMigrationService } from '@src/modules/user-login-migration/service/school-migration.service';
+import { UserMigrationService } from '@src/modules/user-login-migration/service/user-migration.service';
+import { UserService } from '@src/modules/user/service/user.service';
+
 import { nanoid } from 'nanoid';
-import { AuthorizationParams } from '../controller/dto';
-import { OAuthTokenDto } from '../interface';
-import { OAuthProcessDto } from '../service/dto';
+import { AuthorizationParams } from '../controller/dto/authorization.params';
+import { OAuthTokenDto } from '../interface/oauth-token.dto';
+import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
 import { OauthLoginStateDto } from './dto/oauth-login-state.dto';
 

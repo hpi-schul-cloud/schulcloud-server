@@ -1,12 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { EntityId, Page } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject/page';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { CustomParameter } from '../../common/domain/custom-parameter.do';
+import { CustomParameterScope } from '../../common/enum/custom-parameter-scope.enum';
+import { ContextExternalTool } from '../../context-external-tool/domain/context-external-tool.do';
+import { SchoolExternalTool } from '../../school-external-tool/domain/school-external-tool.do';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
-import { ExternalTool } from '../domain';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { CustomParameterScope } from '../../common/enum';
-import { CustomParameter } from '../../common/domain';
-import { ContextExternalToolTemplateInfo } from '../uc/dto';
+import { ExternalTool } from '../domain/external-tool.do';
+import { ContextExternalToolTemplateInfo } from '../uc/dto/external-tool-configuration.types';
 
 @Injectable()
 export class ExternalToolConfigurationService {

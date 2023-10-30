@@ -1,6 +1,6 @@
-import { InputFormat } from '@shared/domain/types';
+import { InputFormat } from '@shared/domain/types/input-format.types';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
-import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types/board-composite-visitor';
 
 export class RichTextElement extends BoardComposite<RichTextElementProps> {
 	get text(): string {

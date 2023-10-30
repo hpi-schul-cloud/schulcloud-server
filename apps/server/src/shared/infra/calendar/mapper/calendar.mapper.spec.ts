@@ -1,6 +1,6 @@
-import { ICalendarEvent } from '@shared/infra/calendar/interface/calendar-event.interface';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CalendarMapper } from '@shared/infra/calendar/mapper/calendar.mapper';
+import { ICalendarEvent } from '../interface/calendar-event.interface';
+import { CalendarMapper } from './calendar.mapper';
 
 describe('CalendarMapper', () => {
 	let module: TestingModule;

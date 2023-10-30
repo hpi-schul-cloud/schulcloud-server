@@ -1,10 +1,19 @@
 import { DeepPartial } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, RoleName } from '@shared/domain/interface';
-import { courseFactory, lessonFactory, roleFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { CourseGroupRule, CourseRule, LessonRule, TaskRule } from '.';
-import { Action } from '../../../modules/authorization/types/action.enum';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { RoleName } from '../interface/rolename.enum';
+import { CourseGroupRule } from './course-group.rule';
+import { CourseRule } from './course.rule';
+import { LessonRule } from './lesson.rule';
+import { TaskRule } from './task.rule';
 
 describe('TaskRule', () => {
 	let service: TaskRule;

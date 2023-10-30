@@ -1,4 +1,5 @@
-import { Counted, IdmAccount, IdmAccountUpdate } from '@shared/domain';
+import { IdmAccount, IdmAccountUpdate } from '@shared/domain/interface/account';
+import { Counted } from '@shared/domain/types/counted';
 
 export type SearchOptions = {
 	exact?: boolean;

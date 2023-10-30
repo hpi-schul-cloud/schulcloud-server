@@ -1,4 +1,4 @@
-import { OAuthSSOError } from '@src/modules/oauth/loggable';
+import { OAuthSSOError } from '@src/modules/oauth/loggable/oauth-sso.error';
 
 export class OAuthMigrationError extends OAuthSSOError {
 	readonly message: string;

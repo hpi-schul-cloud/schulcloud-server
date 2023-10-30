@@ -1,10 +1,9 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cleanupCollections, fileRecordFactory } from '@shared/testing';
-
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-
-import { FileRecord, FileRecordParentType } from '../entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { fileRecordFactory } from '@shared/testing/factory/filerecord.factory';
+import { FileRecord, FileRecordParentType } from '../entity/filerecord.entity';
 import { FileRecordRepo } from './filerecord.repo';
 
 const sortFunction = (a: string, b: string) => a.localeCompare(b);

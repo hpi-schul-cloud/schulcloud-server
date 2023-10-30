@@ -1,23 +1,25 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { contextExternalToolEntityFactory } from '@shared/testing/factory/context-external-tool-entity.factory';
+import { contextExternalToolFactory } from '@shared/testing/factory/domainobject/tool/context-external-tool.factory';
+import { schoolExternalToolEntityFactory } from '@shared/testing/factory/school-external-tool-entity.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { CustomParameterEntry } from '@src/modules/tool/common/domain/custom-parameter-entry.do';
+import { ToolContextType } from '@src/modules/tool/common/enum/tool-context-type.enum';
 import {
-	cleanupCollections,
-	contextExternalToolEntityFactory,
-	contextExternalToolFactory,
-	schoolExternalToolEntityFactory,
-	schoolFactory,
-} from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
-import { CustomParameterEntry } from '@src/modules/tool/common/domain';
-import { ToolContextType } from '@src/modules/tool/common/enum';
-import { ContextExternalTool, ContextExternalToolProps } from '@src/modules/tool/context-external-tool/domain';
-import { ContextExternalToolEntity, ContextExternalToolType } from '@src/modules/tool/context-external-tool/entity';
+	ContextExternalTool,
+	ContextExternalToolProps,
+} from '@src/modules/tool/context-external-tool/domain/context-external-tool.do';
+import { ContextExternalToolType } from '@src/modules/tool/context-external-tool/entity/context-external-tool-type.enum';
+import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity/context-external-tool.entity';
 import { ContextExternalToolQuery } from '@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types';
-import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
+import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity/school-external-tool.entity';
+import { ExternalToolRepoMapper } from '../externaltool/external-tool.repo.mapper';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
 
 describe('ContextExternalToolRepo', () => {

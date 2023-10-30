@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+
 import { ConfigModule } from '@nestjs/config';
-import { IdentityManagementService } from './identity-management.service';
+import { MongoMemoryDatabaseModule } from '../database/mongo-memory-database/mongo-memory-database.module';
 import { IdentityManagementModule } from './identity-management.module';
+import { IdentityManagementService } from './identity-management.service';
 
 describe('IdentityManagementModule', () => {
 	let module: TestingModule;

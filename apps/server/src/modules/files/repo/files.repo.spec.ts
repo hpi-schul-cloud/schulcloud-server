@@ -1,9 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { StorageProviderEntity } from '@shared/domain';
-import { FileEntity } from '../entity';
-import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
+import { StorageProviderEntity } from '@shared/domain/entity/storageprovider.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { FileEntity } from '../entity/file.entity';
+import { fileEntityFactory } from '../entity/testing/factory/file-entity.factory';
+import { filePermissionEntityFactory } from '../entity/testing/factory/file-permission-entity.factory';
 import { FilesRepo } from './files.repo';
 
 describe(FilesRepo.name, () => {

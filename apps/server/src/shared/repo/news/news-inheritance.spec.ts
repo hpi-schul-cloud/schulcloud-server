@@ -1,9 +1,9 @@
 import { Collection, Entity, Enum, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BaseEntityWithTimestamps } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections } from '@shared/testing';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
 
 @Entity({ tableName: 'users' })
 class User extends BaseEntityWithTimestamps {

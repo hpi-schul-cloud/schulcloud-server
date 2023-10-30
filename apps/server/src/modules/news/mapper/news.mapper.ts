@@ -1,6 +1,10 @@
-import { News, ICreateNews, INewsScope, IUpdateNews, NewsTargetModel } from '@shared/domain';
-import { LogMessageData } from '@src/core/logger';
-import { CreateNewsParams, FilterNewsParams, NewsResponse, UpdateNewsParams } from '../controller/dto';
+import { News } from '@shared/domain/entity/news.entity';
+import { INewsScope, NewsTargetModel, ICreateNews, IUpdateNews } from '@shared/domain/types/news.types';
+import { LogMessageData } from '@src/core/logger/types/logging.types';
+import { CreateNewsParams } from '../controller/dto/create-news.params';
+import { FilterNewsParams } from '../controller/dto/filter-news.params';
+import { NewsResponse } from '../controller/dto/news.response';
+import { UpdateNewsParams } from '../controller/dto/update-news.params';
 import { SchoolInfoMapper } from './school-info.mapper';
 import { TargetInfoMapper } from './target-info.mapper';
 import { UserInfoMapper } from './user-info.mapper';

@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { CustomParameterEntryResponse } from '../../../school-external-tool/controller/dto';
-import { ToolContextType } from '../../../common/enum';
+import { ToolContextType } from '@src/modules/tool/common/enum/tool-context-type.enum';
+import { CustomParameterEntryResponse } from '@src/modules/tool/school-external-tool/controller/dto/custom-parameter-entry.response';
 
 export class ContextExternalToolResponse {
 	@ApiProperty()

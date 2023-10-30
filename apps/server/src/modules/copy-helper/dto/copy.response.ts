@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper/types/copy.types';
+import { CopyElementType, CopyStatusEnum } from '../types/copy.types';
 
 /**
  * DTO for returning a copy status document via api.

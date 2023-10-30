@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
 import xml2json from '@hendt/xml2json';
+import { Injectable } from '@nestjs/common';
 
 /**
  * This class encapsulates

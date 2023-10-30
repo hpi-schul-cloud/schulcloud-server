@@ -1,20 +1,24 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course } from '@shared/domain/entity/course.entity';
 import {
 	ComponentType,
-	Course,
 	IComponentProperties,
 	IComponentTextProperties,
 	LessonEntity,
-	Task,
-} from '@shared/domain';
-import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
-import { CommonCartridgeExportService } from '@src/modules/learnroom/service/common-cartridge-export.service';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LessonService } from '@src/modules/lesson/service';
+} from '@shared/domain/entity/lesson.entity';
+import { Task } from '@shared/domain/entity/task.entity';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LessonService } from '@src/modules/lesson/service/lesson.service';
 import { TaskService } from '@src/modules/task/service/task.service';
+
 import AdmZip from 'adm-zip';
-import { CommonCartridgeVersion } from '../common-cartridge';
+import { CommonCartridgeVersion } from '../common-cartridge/common-cartridge-enums';
+import { CommonCartridgeExportService } from './common-cartridge-export.service';
+import { CourseService } from './course.service';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;

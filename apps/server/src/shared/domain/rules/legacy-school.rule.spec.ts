@@ -1,8 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
-import { roleFactory, legacySchoolDoFactory, setupEntities, userFactory } from '@shared/testing';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/legacy-school.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action } from '@src/modules/authorization/types';
+
+import { Action } from '@src/modules/authorization/types/action.enum';
 import { ObjectID } from 'bson';
 import { LegacySchoolRule } from './legacy-school.rule';
 

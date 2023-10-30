@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationResponse } from '@shared/controller';
-import { NewsTargetModel } from '@shared/domain';
+import { PaginationResponse } from '@shared/controller/dto/pagination.response';
+import { NewsTargetModel } from '@shared/domain/types/news.types';
 import { SchoolInfoResponse } from './school-info.response';
 import { TargetInfoResponse } from './target-info.response';
 import { UserInfoResponse } from './user-info.response';

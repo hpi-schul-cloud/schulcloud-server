@@ -1,5 +1,9 @@
-import { SubmissionItem, UserBoardRoles } from '@shared/domain';
-import { SubmissionItemResponse, SubmissionsResponse, TimestampsResponse, UserDataResponse } from '../dto';
+import { SubmissionItem } from '@shared/domain/domainobject/board/submission-item.do';
+import { UserBoardRoles } from '@shared/domain/domainobject/board/types/board-do-authorizable';
+import { SubmissionItemResponse } from '../dto/submission-item/submission-item.response';
+import { SubmissionsResponse } from '../dto/submission-item/submissions.response';
+import { TimestampsResponse } from '../dto/timestamps.response';
+import { UserDataResponse } from '../dto/user-data.response';
 
 export class SubmissionItemResponseMapper {
 	private static instance: SubmissionItemResponseMapper;

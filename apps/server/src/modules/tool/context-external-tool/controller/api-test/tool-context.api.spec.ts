@@ -1,32 +1,37 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Course, Permission, SchoolEntity, User } from '@shared/domain';
+import { Account } from '@shared/domain/entity/account.entity';
+import { Course } from '@shared/domain/entity/course.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { accountFactory } from '@shared/testing/factory/account.factory';
+import { contextExternalToolEntityFactory } from '@shared/testing/factory/context-external-tool-entity.factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
 import {
-	accountFactory,
-	contextExternalToolEntityFactory,
-	courseFactory,
 	customParameterEntityFactory,
 	externalToolEntityFactory,
-	roleFactory,
-	schoolExternalToolEntityFactory,
-	schoolFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-	userFactory,
-} from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
+} from '@shared/testing/factory/external-tool-entity.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolExternalToolEntityFactory } from '@shared/testing/factory/school-external-tool-entity.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { UserAndAccountTestFactory } from '@shared/testing/factory/user-and-account.test.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { TestApiClient } from '@shared/testing/test-api-client';
+import { ServerTestModule } from '@src/modules/server/server.module';
+import { CustomParameterScope } from '@src/modules/tool/common/enum/custom-parameter-scope.enum';
+import { ToolContextType } from '@src/modules/tool/common/enum/tool-context-type.enum';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity/external-tool.entity';
+import { CustomParameterEntryResponse } from '@src/modules/tool/school-external-tool/controller/dto/custom-parameter-entry.response';
+import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity/school-external-tool.entity';
+
 import { ObjectId } from 'bson';
-import { CustomParameterScope, ToolContextType } from '../../../common/enum';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
-import {
-	ContextExternalToolPostParams,
-	ContextExternalToolResponse,
-	ContextExternalToolSearchListResponse,
-} from '../dto';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
-import { ExternalToolEntity } from '../../../external-tool/entity';
-import { CustomParameterEntryResponse } from '../../../school-external-tool/controller/dto';
+import { ContextExternalToolType } from '../../entity/context-external-tool-type.enum';
+import { ContextExternalToolEntity } from '../../entity/context-external-tool.entity';
+import { ContextExternalToolPostParams } from '../dto/context-external-tool-post.params';
+import { ContextExternalToolSearchListResponse } from '../dto/context-external-tool-search-list.response';
+import { ContextExternalToolResponse } from '../dto/context-external-tool.response';
 
 describe('ToolContextController (API)', () => {
 	let app: INestApplication;

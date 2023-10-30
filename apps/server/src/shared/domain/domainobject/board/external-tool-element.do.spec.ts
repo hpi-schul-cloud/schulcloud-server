@@ -1,8 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { externalToolElementFactory } from '@shared/testing';
+import { externalToolElementFactory } from '@shared/testing/factory/domainobject/board/external-tool.do.factory';
 import { ExternalToolElement } from './external-tool-element.do';
-import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types/board-composite-visitor';
 
 describe(ExternalToolElement.name, () => {
 	describe('when trying to add a child to a external tool element', () => {

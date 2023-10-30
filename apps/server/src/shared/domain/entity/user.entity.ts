@@ -1,5 +1,5 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
-import { IEntityWithSchool } from '../interface';
+import { IEntityWithSchool } from '../interface/entity';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { Role } from './role.entity';
 import { SchoolEntity } from './school.entity';

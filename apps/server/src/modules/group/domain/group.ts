@@ -1,5 +1,7 @@
-import { EntityId, ExternalSource, type UserDO } from '@shared/domain';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { ExternalSource } from '@shared/domain/domainobject/external-source';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { GroupTypes } from './group-types';
 import { GroupUser } from './group-user';
 

@@ -1,11 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, setupEntities, shareTokenFactory } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { shareTokenFactory } from '@shared/testing/factory/share-token.do.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper/types/copy.types';
 import { ShareTokenParentType } from '../domainobject/share-token.do';
-import { ShareTokenUC } from '../uc';
-import { ShareTokenInfoDto } from '../uc/dto';
+import { ShareTokenInfoDto } from '../uc/dto/share-token-info.dto';
+import { ShareTokenUC } from '../uc/share-token.uc';
 import { ShareTokenController } from './share-token.controller';
 
 describe('ShareTokenController', () => {

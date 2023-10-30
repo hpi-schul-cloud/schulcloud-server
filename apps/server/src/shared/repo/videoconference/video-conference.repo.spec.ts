@@ -1,21 +1,22 @@
-import { VideoConferenceRepo } from '@shared/repo';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections } from '@shared/testing';
+
+import { NotFoundError } from '@mikro-orm/core';
+
+import { createMock } from '@golevelup/ts-jest';
+import { VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject/video-conference.do';
 import {
 	IVideoConferenceProperties,
 	TargetModels,
 	VideoConference,
-	VideoConferenceDO,
 	VideoConferenceOptions,
-	VideoConferenceOptionsDO,
-} from '@shared/domain';
+} from '@shared/domain/entity/video-conference.entity';
+import { VideoConferenceScope } from '@shared/domain/interface/video-conference-scope.enum';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
-import { NotFoundError } from '@mikro-orm/core';
-import { VideoConferenceScope } from '@shared/domain/interface';
-import { createMock } from '@golevelup/ts-jest';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { VideoConferenceRepo } from './video-conference.repo';
 
 class VideoConferenceRepoSpec extends VideoConferenceRepo {
 	mapEntityToDOSpec(entity: VideoConference): VideoConferenceDO {

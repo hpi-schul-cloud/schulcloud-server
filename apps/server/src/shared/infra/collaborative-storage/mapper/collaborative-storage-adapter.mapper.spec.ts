@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain';
-import { CollaborativeStorageAdapterMapper } from '@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { CollaborativeStorageAdapterMapper } from './collaborative-storage-adapter.mapper';
 
 describe('TeamStorage Mapper', () => {
 	let module: TestingModule;

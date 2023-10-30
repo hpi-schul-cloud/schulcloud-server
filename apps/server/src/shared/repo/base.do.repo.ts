@@ -1,8 +1,10 @@
 import { EntityName, FilterQuery } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BaseDO, BaseEntity, baseEntityProperties, EntityId } from '@shared/domain';
-import { LegacyLogger } from '@src/core/logger';
+import { BaseDO } from '@shared/domain/domainobject/base.do';
+import { BaseEntity, baseEntityProperties } from '@shared/domain/entity/base.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 
 @Injectable()
 export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {

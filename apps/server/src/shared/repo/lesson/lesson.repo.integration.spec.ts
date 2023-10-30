@@ -1,10 +1,12 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentType, IComponentProperties, LessonEntity } from '@shared/domain';
-import { cleanupCollections, courseFactory, lessonFactory, materialFactory, taskFactory } from '@shared/testing';
-
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-
+import { ComponentType, IComponentProperties, LessonEntity } from '@shared/domain/entity/lesson.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { materialFactory } from '@shared/testing/factory/material.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
 import { LessonRepo } from './lesson.repo';
 
 describe('LessonRepo', () => {

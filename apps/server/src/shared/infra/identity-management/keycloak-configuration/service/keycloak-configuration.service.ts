@@ -7,7 +7,7 @@ import ProtocolMapperRepresentation from '@keycloak/keycloak-admin-client/lib/de
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IServerConfig } from '@src/modules/server/server.config';
-import { OidcConfigDto } from '@src/modules/system/service';
+import { OidcConfigDto } from '@src/modules/system/service/dto/oidc-config.dto';
 import { SystemOidcService } from '@src/modules/system/service/system-oidc.service';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';

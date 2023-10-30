@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { RabbitMQWrapperTestModule } from '../rabbitmq';
+import { RabbitMQWrapperTestModule } from '../rabbitmq/rabbitmq.module';
 import { AntivirusModule } from './antivirus.module';
 import { AntivirusService } from './antivirus.service';
 

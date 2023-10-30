@@ -1,20 +1,24 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError } from '@shared/common';
-import { Account, EntityId } from '@shared/domain';
+import { EntityNotFoundError } from '@shared/common/error/entity-not-found.error';
+import { Account } from '@shared/domain/entity/account.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
-import { accountFactory, setupEntities, userFactory } from '@shared/testing';
-import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { IServerConfig } from '@src/modules/server';
+import { accountFactory } from '@shared/testing/factory/account.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { IServerConfig } from '@src/modules/server/server.config';
+
 import bcrypt from 'bcryptjs';
-import { LegacyLogger } from '../../../core/logger';
+import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
+import { AccountDto } from './dto/account.dto';
 
 describe('AccountDbService', () => {
 	let module: TestingModule;

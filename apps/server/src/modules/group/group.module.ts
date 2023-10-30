@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { GroupRepo } from './repo';
-import { GroupService } from './service';
+import { GroupRepo } from './repo/group.repo';
+import { GroupService } from './service/group.service';
 
 @Module({
 	providers: [GroupRepo, GroupService],

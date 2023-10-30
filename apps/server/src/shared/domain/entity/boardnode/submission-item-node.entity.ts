@@ -1,8 +1,9 @@
 import { Entity, Property } from '@mikro-orm/core';
-import { EntityId } from '@shared/domain';
-import { AnyBoardDo } from '../../domainobject';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { BoardNode, BoardNodeProps } from './boardnode.entity';
-import { BoardDoBuilder, BoardNodeType } from './types';
+import { BoardDoBuilder } from './types/board-do.builder';
+import { BoardNodeType } from './types/board-node-type';
 
 @Entity({ discriminatorValue: BoardNodeType.SUBMISSION_ITEM })
 export class SubmissionItemNode extends BoardNode {

@@ -1,22 +1,26 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LtiToolDO, Permission, Pseudonym, UserDO } from '@shared/domain';
-import { OauthProviderService } from '@shared/infra/oauth-provider';
-import { ProviderLoginResponse, ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto';
-import {
-	externalToolFactory,
-	ltiToolDOFactory,
-	pseudonymFactory,
-	setupEntities,
-	userDoFactory,
-	userFactory,
-} from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization';
-import { PseudonymService } from '@src/modules/pseudonym';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { UserService } from '@src/modules/user';
-import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '../controller/dto';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { Pseudonym } from '@shared/domain/domainobject/pseudonym.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { ProviderLoginResponse } from '@shared/infra/oauth-provider/dto/response/login.response';
+import { ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto/response/redirect.response';
+import { OauthProviderService } from '@shared/infra/oauth-provider/oauth-provider.service';
+import { ltiToolDOFactory } from '@shared/testing/factory/domainobject/lti-tool.factory';
+import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
+import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { PseudonymService } from '@src/modules/pseudonym/service/pseudonym.service';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain/external-tool.do';
+import { UserService } from '@src/modules/user/service/user.service';
+import { AcceptQuery } from '../controller/dto/request/accept.query';
+import { LoginRequestBody } from '../controller/dto/request/login-request.body';
+import { OAuthRejectableBody } from '../controller/dto/request/oauth-rejectable.body';
 import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
 import { OauthProviderLoginFlowUc } from './oauth-provider.login-flow.uc';
 

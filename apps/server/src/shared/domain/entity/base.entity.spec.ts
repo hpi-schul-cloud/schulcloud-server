@@ -1,5 +1,6 @@
 import { Entity } from '@mikro-orm/core';
-import { setupEntities } from '@shared/testing';
+import { setupEntities } from '@shared/testing/setup-entities';
+
 import { ObjectId } from 'mongodb';
 import { BaseEntity } from './base.entity';
 

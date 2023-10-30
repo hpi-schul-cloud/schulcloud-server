@@ -6,12 +6,14 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { MigrationMapper } from '../mapper/migration.mapper';
 import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
-import { LegacySchoolUc } from '../uc';
-import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
+import { LegacySchoolUc } from '../uc/legacy-school.uc';
+import { MigrationBody } from './dto/migration.body';
+import { MigrationResponse } from './dto/migration.response';
+import { SchoolParams } from './dto/school.params';
 
 /**
  * @deprecated because it uses the deprecated LegacySchoolDo.

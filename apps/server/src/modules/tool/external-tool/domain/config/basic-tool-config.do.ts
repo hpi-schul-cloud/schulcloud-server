@@ -1,4 +1,4 @@
-import { ToolConfigType } from '../../../common/enum';
+import { ToolConfigType } from '@src/modules/tool/common/enum/tool-config-type.enum';
 import { ExternalToolConfig } from './external-tool-config.do';
 
 export class BasicToolConfig extends ExternalToolConfig {

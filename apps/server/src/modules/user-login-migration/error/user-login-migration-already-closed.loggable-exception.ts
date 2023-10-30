@@ -1,6 +1,7 @@
 import { UnprocessableEntityException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { Loggable } from '@src/core/logger/interfaces/loggable';
+import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@src/core/logger/types/logging.types';
 
 export class UserLoginMigrationAlreadyClosedLoggableException extends UnprocessableEntityException implements Loggable {
 	constructor(private readonly userLoginMigrationId: EntityId, private readonly closedAt: Date) {

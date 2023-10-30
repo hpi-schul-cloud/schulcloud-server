@@ -1,20 +1,23 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PaginationParams } from '@shared/controller';
-import { ITaskStatus, Permission, SortOrder } from '@shared/domain';
-import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
-import {
-	courseFactory,
-	lessonFactory,
-	roleFactory,
-	setupEntities,
-	submissionFactory,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
-import { Action, AuthorizationService } from '@src/modules/authorization';
-import { TaskService } from '../service';
+import { PaginationParams } from '@shared/controller/dto/pagination.params';
+import { SortOrder } from '@shared/domain/interface/find-options';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { ITaskStatus } from '@shared/domain/types/task.types';
+import { CourseRepo } from '@shared/repo/course/course.repo';
+import { LessonRepo } from '@shared/repo/lesson/lesson.repo';
+import { TaskRepo } from '@shared/repo/task/task.repo';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { submissionFactory } from '@shared/testing/factory/submission.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { TaskService } from '../service/task.service';
 import { TaskUC } from './task.uc';
 
 describe('TaskUC', () => {

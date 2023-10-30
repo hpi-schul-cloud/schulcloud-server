@@ -9,11 +9,13 @@ import { Realms } from '@keycloak/keycloak-admin-client/lib/resources/realms';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SystemEntity, SystemTypeEnum } from '@shared/domain';
-import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { systemFactory } from '@shared/testing';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { SystemTypeEnum } from '@shared/domain/types/system.type';
+import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryption.service';
+import { systemFactory } from '@shared/testing/factory/system.factory';
 import { SystemOidcMapper } from '@src/modules/system/mapper/system-oidc.mapper';
 import { SystemOidcService } from '@src/modules/system/service/system-oidc.service';
+
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { v1 } from 'uuid';

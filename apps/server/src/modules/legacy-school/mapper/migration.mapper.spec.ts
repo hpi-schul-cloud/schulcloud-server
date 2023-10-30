@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MigrationResponse } from '../controller/dto';
+import { MigrationResponse } from '../controller/dto/migration.response';
 import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
 import { MigrationMapper } from './migration.mapper';
 

@@ -1,4 +1,4 @@
-import { Entity, Property, Index } from '@mikro-orm/core';
+import { Entity, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from './base.entity';
 

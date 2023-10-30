@@ -1,5 +1,6 @@
 import { Collection, Entity, ManyToMany, Property, Unique } from '@mikro-orm/core';
-import { Permission, RoleName } from '../interface';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { RoleName } from '../interface/rolename.enum';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface IRoleProperties {

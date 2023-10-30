@@ -1,6 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Counted, EntityId } from '@shared/domain';
-import { AccountDto, AccountSaveDto } from './dto';
+import { Counted } from '@shared/domain/types/counted';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { AccountSaveDto } from './dto/account-save.dto';
+import { AccountDto } from './dto/account.dto';
 
 // TODO: split functions which are only needed for feathers
 

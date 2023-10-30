@@ -1,11 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, Pseudonym, SchoolEntity, User } from '@shared/domain';
-import { legacySchoolDoFactory, pseudonymFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+
 import { ForbiddenException } from '@nestjs/common';
-import { Action, AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { PseudonymService } from '../service';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { Pseudonym } from '@shared/domain/domainobject/pseudonym.do';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/legacy-school.factory';
+import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { PseudonymService } from '../service/pseudonym.service';
 import { PseudonymUc } from './pseudonym.uc';
 
 describe('PseudonymUc', () => {

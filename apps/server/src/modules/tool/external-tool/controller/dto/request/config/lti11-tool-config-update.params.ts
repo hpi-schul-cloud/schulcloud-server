@@ -1,6 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { LtiPrivacyPermission } from '@shared/domain/entity/ltitool.entity';
+import { LtiMessageType } from '@src/modules/tool/common/enum/lti-message-type.enum';
+import { ToolConfigType } from '@src/modules/tool/common/enum/tool-config-type.enum';
 import { IsEnum, IsLocale, IsOptional, IsString } from 'class-validator';
-import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../../../../common/enum';
 import { ExternalToolConfigCreateParams } from './external-tool-config.params';
 
 export class Lti11ToolConfigUpdateParams extends ExternalToolConfigCreateParams {

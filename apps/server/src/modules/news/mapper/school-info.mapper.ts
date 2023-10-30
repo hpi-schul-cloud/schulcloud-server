@@ -1,5 +1,5 @@
-import { SchoolEntity } from '@shared/domain';
-import { SchoolInfoResponse } from '../controller/dto';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { SchoolInfoResponse } from '../controller/dto/school-info.response';
 
 export class SchoolInfoMapper {
 	static mapToResponse(schoolInfo: SchoolEntity): SchoolInfoResponse {

@@ -3,21 +3,24 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AntivirusService } from '@shared/infra/antivirus';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { S3ClientAdapter } from '@shared/infra/s3-client/s3-client.adapter';
+import { fileRecordFactory } from '@shared/testing/factory/filerecord.factory';
 import { readableStreamWithFileTypeFactory } from '@shared/testing/factory/readable-stream-with-file-type.factory';
-import { LegacyLogger } from '@src/core/logger';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+
 import { MimeType } from 'file-type';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
-import { FileRecordParams } from '../controller/dto';
-import { FileDto } from '../dto';
-import { FileRecord, FileRecordParentType } from '../entity';
-import { ErrorType } from '../error';
+import { FileRecordParams } from '../controller/dto/file-storage.params';
+import { FileDto } from '../dto/file.dto';
+import { FileRecord, FileRecordParentType } from '../entity/filerecord.entity';
+import { ErrorType } from '../error/error-status.enum';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
-import { createFileRecord, resolveFileNameDuplicates } from '../helper';
-import { FileRecordRepo } from '../repo';
+import { resolveFileNameDuplicates } from '../helper/file-name';
+import { createFileRecord } from '../helper/file-record';
+import { FileRecordRepo } from '../repo/filerecord.repo';
 import { FilesStorageService } from './files-storage.service';
 
 jest.mock('file-type-cjs/file-type-cjs-index', () => {

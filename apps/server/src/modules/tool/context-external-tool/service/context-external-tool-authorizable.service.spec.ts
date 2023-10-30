@@ -1,10 +1,12 @@
-import { contextExternalToolFactory, legacySchoolDoFactory, schoolExternalToolFactory } from '@shared/testing';
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ContextExternalToolRepo } from '@shared/repo';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool/context-external-tool.repo';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/legacy-school.factory';
+import { contextExternalToolFactory } from '@shared/testing/factory/domainobject/tool/context-external-tool.factory';
+import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { SchoolExternalTool } from '../../school-external-tool/domain/school-external-tool.do';
+import { ContextExternalTool } from '../domain/context-external-tool.do';
 import { ContextExternalToolAuthorizableService } from './context-external-tool-authorizable.service';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ContextExternalTool } from '../domain';
 
 describe('ContextExternalToolAuthorizableService', () => {
 	let module: TestingModule;

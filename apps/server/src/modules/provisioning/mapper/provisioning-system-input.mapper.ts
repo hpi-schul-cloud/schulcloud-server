@@ -1,6 +1,6 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { ProvisioningSystemDto } from '../dto';
+import { ProvisioningSystemDto } from '../dto/provisioning-system.dto';
 
 export class ProvisioningSystemInputMapper {
 	static mapToInternal(dto: SystemDto) {

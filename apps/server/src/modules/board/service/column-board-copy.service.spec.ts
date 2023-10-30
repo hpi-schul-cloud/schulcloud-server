@@ -1,16 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, ColumnBoard, UserDO } from '@shared/domain';
-import { CourseRepo } from '@shared/repo';
-import { columnBoardFactory, courseFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
-import { UserService } from '@src/modules/user';
-import { BoardDoRepo } from '../repo';
-import {
-	BoardDoCopyService,
-	SchoolSpecificFileCopyService,
-	SchoolSpecificFileCopyServiceFactory,
-} from './board-do-copy-service';
+import { ColumnBoard } from '@shared/domain/domainobject/board/column-board.do';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { CourseRepo } from '@shared/repo/course/course.repo';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { columnBoardFactory } from '@shared/testing/factory/domainobject/board/column-board.do.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper/types/copy.types';
+import { UserService } from '@src/modules/user/service/user.service';
+import { BoardDoRepo } from '../repo/board-do.repo';
+import { BoardDoCopyService } from './board-do-copy-service/board-do-copy.service';
+import { SchoolSpecificFileCopyServiceFactory } from './board-do-copy-service/school-specific-file-copy-service.factory';
+import { SchoolSpecificFileCopyService } from './board-do-copy-service/school-specific-file-copy.interface';
 import { ColumnBoardCopyService } from './column-board-copy.service';
 
 describe('column board copy service', () => {

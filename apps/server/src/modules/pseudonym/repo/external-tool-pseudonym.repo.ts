@@ -1,9 +1,15 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions, IPagination, Page, Pseudonym } from '@shared/domain';
-import { Scope } from '@shared/repo';
-import { PseudonymSearchQuery } from '../domain';
-import { ExternalToolPseudonymEntity, IExternalToolPseudonymEntityProps } from '../entity';
+import { Page } from '@shared/domain/domainobject/page';
+import { Pseudonym } from '@shared/domain/domainobject/pseudonym.do';
+import { IFindOptions, IPagination } from '@shared/domain/interface/find-options';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { Scope } from '@shared/repo/scope';
+import { PseudonymSearchQuery } from '../domain/pseudonym-search-query';
+import {
+	ExternalToolPseudonymEntity,
+	IExternalToolPseudonymEntityProps,
+} from '../entity/external-tool-pseudonym.entity';
 import { PseudonymScope } from '../entity/pseudonym.scope';
 
 @Injectable()

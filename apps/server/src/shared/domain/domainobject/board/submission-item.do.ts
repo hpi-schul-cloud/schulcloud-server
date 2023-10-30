@@ -1,6 +1,7 @@
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
-import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
+import { AnyBoardDo } from './types/any-board-do';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types/board-composite-visitor';
 
 export class SubmissionItem extends BoardComposite<SubmissionItemProps> {
 	get completed(): boolean {

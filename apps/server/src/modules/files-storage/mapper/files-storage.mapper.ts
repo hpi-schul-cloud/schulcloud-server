@@ -1,15 +1,11 @@
 import { NotImplementedException, StreamableFile } from '@nestjs/common';
-import { AuthorizableReferenceType } from '@src/modules/authorization';
+import { AuthorizableReferenceType } from '@src/modules/authorization/types/allowed-authorization-object-type.enum';
+
 import { plainToClass } from 'class-transformer';
-import {
-	DownloadFileParams,
-	FileRecordListResponse,
-	FileRecordParams,
-	FileRecordResponse,
-	SingleFileParams,
-} from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
-import { GetFileResponse } from '../interface';
+import { DownloadFileParams, FileRecordParams, SingleFileParams } from '../controller/dto/file-storage.params';
+import { FileRecordListResponse, FileRecordResponse } from '../controller/dto/file-storage.response';
+import { FileRecord, FileRecordParentType } from '../entity/filerecord.entity';
+import { GetFileResponse } from '../interface/interfaces';
 
 export class FilesStorageMapper {
 	static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AuthorizableReferenceType {

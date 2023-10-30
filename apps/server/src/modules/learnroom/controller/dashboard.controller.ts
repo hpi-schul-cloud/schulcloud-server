@@ -1,10 +1,13 @@
 import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { DashboardMapper } from '../mapper/dashboard.mapper';
 import { DashboardUc } from '../uc/dashboard.uc';
-import { DashboardResponse, DashboardUrlParams, MoveElementParams, PatchGroupParams } from './dto';
+import { DashboardResponse } from './dto/dashboard.response';
+import { DashboardUrlParams } from './dto/dashboard.url.params';
+import { MoveElementParams } from './dto/move-element.body.params';
+import { PatchGroupParams } from './dto/patch-group.params';
 
 @ApiTags('Dashboard')
 @Authenticate('jwt')

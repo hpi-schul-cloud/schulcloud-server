@@ -1,13 +1,11 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import {
-	courseFactory,
-	courseGroupFactory,
-	lessonFactory,
-	materialFactory,
-	setupEntities,
-	taskFactory,
-} from '../../testing';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { courseGroupFactory } from '@shared/testing/factory/coursegroup.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { materialFactory } from '@shared/testing/factory/material.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { ComponentType, IComponentProperties } from './lesson.entity';
 import { Material } from './materials.entity';
 import { Task } from './task.entity';

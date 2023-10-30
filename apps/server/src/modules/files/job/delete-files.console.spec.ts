@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@src/core/logger';
-import { DeleteFilesUc } from '../uc';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { DeleteFilesUc } from '../uc/delete-files.uc';
 import { DeleteFilesConsole } from './delete-files.console';
 
 describe('DeleteFilesConsole', () => {

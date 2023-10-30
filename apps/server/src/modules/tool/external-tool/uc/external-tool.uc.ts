@@ -1,10 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions, Page, Permission, User } from '@shared/domain';
-import { AuthorizationService } from '@src/modules/authorization';
-import { ExternalToolSearchQuery } from '../../common/interface';
-import { ExternalTool, ExternalToolConfig } from '../domain';
-import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
-import { ExternalToolCreate, ExternalToolUpdate } from './dto';
+import { Page } from '@shared/domain/domainobject/page';
+import { User } from '@shared/domain/entity/user.entity';
+import { IFindOptions } from '@shared/domain/interface/find-options';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { ExternalToolSearchQuery } from '../../common/interface/external-tool-search-query';
+import { ExternalToolConfig } from '../domain/config/external-tool-config.do';
+import { ExternalTool } from '../domain/external-tool.do';
+import { ExternalToolLogoService } from '../service/external-tool-logo.service';
+import { ExternalToolValidationService } from '../service/external-tool-validation.service';
+import { ExternalToolService } from '../service/external-tool.service';
+import { ExternalToolCreate, ExternalToolUpdate } from './dto/external-tool.types';
 
 @Injectable()
 export class ExternalToolUc {

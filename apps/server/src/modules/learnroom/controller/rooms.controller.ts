@@ -1,23 +1,22 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { RequestTimeout } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
+import { RequestTimeout } from '@shared/common/decorators/timeout.decorator';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { CopyApiResponse, CopyMapper } from '@src/modules/copy-helper';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { CopyApiResponse } from '@src/modules/copy-helper/dto/copy.response';
+import { CopyMapper } from '@src/modules/copy-helper/mapper/copy.mapper';
 import { serverConfig } from '@src/modules/server/server.config';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { CourseCopyUC } from '../uc/course-copy.uc';
 import { LessonCopyUC } from '../uc/lesson-copy.uc';
 import { RoomsUc } from '../uc/rooms.uc';
-import {
-	LessonCopyApiParams,
-	LessonUrlParams,
-	PatchOrderParams,
-	PatchVisibilityParams,
-	RoomElementUrlParams,
-	RoomUrlParams,
-	SingleColumnBoardResponse,
-} from './dto';
+import { LessonCopyApiParams } from './dto/lesson/lesson-copy.params';
+import { LessonUrlParams } from './dto/lesson/lesson.url.params';
+import { PatchOrderParams } from './dto/patch-order.params';
+import { PatchVisibilityParams } from './dto/patch-visibility.params';
+import { RoomElementUrlParams } from './dto/room-element.url.params';
+import { RoomUrlParams } from './dto/room.url.params';
+import { SingleColumnBoardResponse } from './dto/single-column-board/board.response';
 
 @ApiTags('Rooms')
 @Authenticate('jwt')

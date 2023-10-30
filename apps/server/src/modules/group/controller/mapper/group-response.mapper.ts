@@ -1,6 +1,7 @@
-import { Page } from '@shared/domain';
-import { ClassInfoDto } from '../../uc/dto';
-import { ClassInfoResponse, ClassInfoSearchListResponse } from '../dto';
+import { Page } from '@shared/domain/domainobject/page';
+import { ClassInfoDto } from '../../uc/dto/class-info.dto';
+import { ClassInfoSearchListResponse } from '../dto/response/class-info-search-list.response';
+import { ClassInfoResponse } from '../dto/response/class-info.response';
 
 export class GroupResponseMapper {
 	static mapToClassInfosToListResponse(

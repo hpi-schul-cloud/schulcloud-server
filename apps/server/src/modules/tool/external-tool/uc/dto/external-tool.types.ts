@@ -1,5 +1,7 @@
-import { BasicToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from '../../domain';
-import { CustomParameter } from '../../../common/domain';
+import { CustomParameter } from '@src/modules/tool/common/domain/custom-parameter.do';
+import { BasicToolConfig } from '../../domain/config/basic-tool-config.do';
+import { Lti11ToolConfig } from '../../domain/config/lti11-tool-config.do';
+import { Oauth2ToolConfig } from '../../domain/config/oauth2-tool-config.do';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 

@@ -1,15 +1,16 @@
-import { Permission, VideoConferenceScope } from '@shared/domain';
-import { AuthorizableReferenceType } from '@src/modules/authorization';
-import { BBBRole } from '../bbb';
-import {
-	VideoConferenceCreateParams,
-	VideoConferenceInfoResponse,
-	VideoConferenceJoinResponse,
-	VideoConferenceStateResponse,
-} from '../controller/dto';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { VideoConferenceScope } from '@shared/domain/interface/video-conference-scope.enum';
+import { AuthorizableReferenceType } from '@src/modules/authorization/types/allowed-authorization-object-type.enum';
+import { BBBRole } from '../bbb/request/bbb-join.config';
+import { VideoConferenceCreateParams } from '../controller/dto/request/video-conference-create.params';
+import { VideoConferenceInfoResponse } from '../controller/dto/response/video-conference-info.response';
+import { VideoConferenceJoinResponse } from '../controller/dto/response/video-conference-join.response';
 import { VideoConferenceOptionsResponse } from '../controller/dto/response/video-conference-options.response';
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
-import { VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
+import { VideoConferenceStateResponse } from '../controller/dto/response/video-conference-state.response';
+import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface/video-conference-options.interface';
+import { VideoConferenceInfo } from '../uc/dto/video-conference-info';
+import { VideoConferenceJoin } from '../uc/dto/video-conference-join';
+import { VideoConferenceState } from '../uc/dto/video-conference-state.enum';
 
 export const PermissionMapping = {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,

@@ -1,7 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Card, Column, ContentElementType, EntityId } from '@shared/domain';
+import { Card } from '@shared/domain/domainobject/board/card.do';
+import { Column } from '@shared/domain/domainobject/board/column.do';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+
 import { ObjectId } from 'bson';
-import { BoardDoRepo } from '../repo';
+import { BoardDoRepo } from '../repo/board-do.repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
 

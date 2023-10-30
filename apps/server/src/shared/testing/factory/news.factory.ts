@@ -1,4 +1,4 @@
-import { SchoolNews, CourseNews, TeamNews, INewsProperties } from '@shared/domain';
+import { CourseNews, INewsProperties, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
 import { BaseFactory } from './base.factory';
 import { courseFactory } from './course.factory';
 import { schoolFactory } from './school.factory';

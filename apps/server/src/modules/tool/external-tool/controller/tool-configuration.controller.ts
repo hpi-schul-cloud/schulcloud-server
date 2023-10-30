@@ -7,21 +7,20 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ExternalTool } from '../domain';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ExternalTool } from '../domain/external-tool.do';
 import { ToolConfigurationMapper } from '../mapper/tool-configuration.mapper';
-import { ContextExternalToolTemplateInfo, ExternalToolConfigurationUc } from '../uc';
-import {
-	ContextExternalToolConfigurationTemplateListResponse,
-	ContextExternalToolConfigurationTemplateResponse,
-	ContextExternalToolIdParams,
-	ContextRefParams,
-	SchoolExternalToolConfigurationTemplateListResponse,
-	SchoolExternalToolConfigurationTemplateResponse,
-	SchoolExternalToolIdParams,
-	SchoolIdParams,
-} from './dto';
+import { ContextExternalToolTemplateInfo } from '../uc/dto/external-tool-configuration.types';
+import { ExternalToolConfigurationUc } from '../uc/external-tool-configuration.uc';
+import { ContextExternalToolIdParams } from './dto/request/context-external-tool-id.params';
+import { ContextRefParams } from './dto/request/context-ref.params';
+import { SchoolExternalToolIdParams } from './dto/request/school-external-tool-id.params';
+import { SchoolIdParams } from './dto/request/school-id.params';
+import { ContextExternalToolConfigurationTemplateListResponse } from './dto/response/context-external-tool-configuration-template-list.response';
+import { ContextExternalToolConfigurationTemplateResponse } from './dto/response/context-external-tool-configuration-template.response';
+import { SchoolExternalToolConfigurationTemplateListResponse } from './dto/response/school-external-tool-configuration-template-list.response';
+import { SchoolExternalToolConfigurationTemplateResponse } from './dto/response/school-external-tool-configuration-template.response';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

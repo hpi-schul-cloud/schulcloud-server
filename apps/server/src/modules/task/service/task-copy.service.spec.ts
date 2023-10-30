@@ -1,18 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Task } from '@shared/domain/entity';
-import { TaskRepo } from '@shared/repo';
-import {
-	courseFactory,
-	lessonFactory,
-	schoolFactory,
-	setupEntities,
-	taskFactory,
-	userFactory,
-	legacyFileEntityMockFactory,
-} from '@shared/testing';
-import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
-import { CopyFilesService } from '@src/modules/files-storage-client';
+import { Task } from '@shared/domain/entity/task.entity';
+import { TaskRepo } from '@shared/repo/task/task.repo';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { legacyFileEntityMockFactory } from '@shared/testing/factory/legacy-file-entity-mock.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { CopyHelperService } from '@src/modules/copy-helper/service/copy-helper.service';
+import { CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper/types/copy.types';
+import { CopyFilesService } from '@src/modules/files-storage-client/service/copy-files.service';
 import { TaskCopyService } from './task-copy.service';
 
 describe('task copy service', () => {

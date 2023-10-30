@@ -1,13 +1,13 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { ALL_ENTITIES } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { ALL_ENTITIES } from '@shared/domain/entity/all-entities';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
-import { CoreModule } from '@src/core';
-import { LoggerModule } from '@src/core/logger';
-import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { FileRecord } from './entity';
+import { CoreModule } from '@src/core/core.module';
+import { LoggerModule } from '@src/core/logger/logger.module';
+import { AuthenticationModule } from '../authentication/authentication.module';
+import { AuthorizationModule } from '../authorization/authorization.module';
+import { FileRecord } from './entity/filerecord.entity';
 import { FilesStorageApiModule } from './files-storage-api.module';
 
 const imports = [

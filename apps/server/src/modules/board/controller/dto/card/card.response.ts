@@ -1,13 +1,11 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
-import { DecodeHtmlEntities } from '@shared/controller';
-import {
-	AnyContentElementResponse,
-	ExternalToolElementResponse,
-	FileElementResponse,
-	LinkElementResponse,
-	RichTextElementResponse,
-	SubmissionContainerElementResponse,
-} from '../element';
+import { DecodeHtmlEntities } from '@shared/controller/transformer/decode-html-entities.transformer';
+import { AnyContentElementResponse } from '../element/any-content-element.response';
+import { ExternalToolElementResponse } from '../element/external-tool-element.response';
+import { FileElementResponse } from '../element/file-element.response';
+import { LinkElementResponse } from '../element/link-element.response';
+import { RichTextElementResponse } from '../element/rich-text-element.response';
+import { SubmissionContainerElementResponse } from '../element/submission-container-element.response';
 import { TimestampsResponse } from '../timestamps.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
 

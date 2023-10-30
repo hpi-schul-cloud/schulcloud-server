@@ -1,20 +1,35 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, ExternalSource, FederalStateEntity, SchoolFeatures, SchoolYearEntity } from '@shared/domain';
-import { LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
-import { Logger } from '@src/core/logger';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception/not-found.loggable-exception';
+import { ExternalSource } from '@shared/domain/domainobject/external-source';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { RoleReference } from '@shared/domain/domainobject/role-reference';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { FederalStateEntity } from '@shared/domain/entity/federal-state.entity';
+import { SchoolFeatures } from '@shared/domain/entity/school.entity';
+import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { Logger } from '@src/core/logger/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountSaveDto } from '@src/modules/account/services/dto';
-import { Group, GroupService, GroupUser } from '@src/modules/group';
-import { FederalStateService, LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
-import { FederalStateNames } from '@src/modules/legacy-school/types';
-import { RoleService } from '@src/modules/role';
+import { AccountSaveDto } from '@src/modules/account/services/dto/account-save.dto';
+import { Group } from '@src/modules/group/domain/group';
+import { GroupUser } from '@src/modules/group/domain/group-user';
+import { GroupService } from '@src/modules/group/service/group.service';
+import { FederalStateService } from '@src/modules/legacy-school/service/federal-state.service';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { SchoolYearService } from '@src/modules/legacy-school/service/school-year.service';
+import { FederalStateNames } from '@src/modules/legacy-school/types/federal-state-names.enum';
+import { ExternalGroupUserDto } from '@src/modules/provisioning/dto/external-group-user.dto';
+import { ExternalGroupDto } from '@src/modules/provisioning/dto/external-group.dto';
+import { ExternalSchoolDto } from '@src/modules/provisioning/dto/external-school.dto';
+import { ExternalUserDto } from '@src/modules/provisioning/dto/external-user.dto';
+import { SchoolForGroupNotFoundLoggable } from '@src/modules/provisioning/loggable/school-for-group-not-found.loggable';
+import { UserForGroupNotFoundLoggable } from '@src/modules/provisioning/loggable/user-for-group-not-found.loggable';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { UserService } from '@src/modules/user';
+import { RoleService } from '@src/modules/role/service/role.service';
+import { UserService } from '@src/modules/user/service/user.service';
+
 import { ObjectId } from 'bson';
 import CryptoJS from 'crypto-js';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';
-import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 
 @Injectable()
 export class OidcProvisioningService {

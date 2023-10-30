@@ -1,6 +1,6 @@
 import { ObjectId } from 'bson';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
-import { AnyBoardDo } from './types';
+import { AnyBoardDo } from './types/any-board-do';
 
 class BoardObject extends BoardComposite<BoardCompositeProps> {
 	isAllowedAsChild(): boolean {

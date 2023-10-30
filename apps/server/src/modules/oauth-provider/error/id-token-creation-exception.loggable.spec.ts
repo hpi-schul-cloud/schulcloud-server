@@ -1,5 +1,3 @@
-import { IdTokenCreationLoggableException } from './id-token-creation-exception.loggable';
-
 describe('IdTokenCreationExceptionLoggable', () => {
 	describe('constructor', () => {
 		const setup = () => {

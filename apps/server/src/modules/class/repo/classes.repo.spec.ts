@@ -1,14 +1,15 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
-import { SchoolEntity } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, schoolFactory } from '@shared/testing';
-import { classEntityFactory } from '@src/modules/class/entity/testing/factory/class.entity.factory';
-import { Class } from '../domain';
-import { ClassEntity } from '../entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { Class } from '../domain/class.do';
+import { ClassEntity } from '../entity/class.entity';
+import { classEntityFactory } from '../entity/testing/factory/class.entity.factory';
 import { ClassesRepo } from './classes.repo';
-import { ClassMapper } from './mapper';
+import { ClassMapper } from './mapper/class.mapper';
 
 describe(ClassesRepo.name, () => {
 	let module: TestingModule;

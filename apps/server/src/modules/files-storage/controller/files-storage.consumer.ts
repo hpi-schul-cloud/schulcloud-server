@@ -1,13 +1,18 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types/entity-id';
+import {
+	FilesStorageEvents,
+	FilesStorageExchange,
+	ICopyFileDO,
+	IFileDO,
+} from '@shared/infra/rabbitmq/exchange/files-storage';
 import { RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
-import { LegacyLogger } from '@src/core/logger';
-import { FilesStorageEvents, FilesStorageExchange, ICopyFileDO, IFileDO } from '@src/shared/infra/rabbitmq';
-import { FilesStorageMapper } from '../mapper';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { FilesStorageMapper } from '../mapper/files-storage.mapper';
 import { FilesStorageService } from '../service/files-storage.service';
-import { CopyFilesOfParentPayload, FileRecordParams } from './dto';
+import { CopyFilesOfParentPayload, FileRecordParams } from './dto/file-storage.params';
 
 @Injectable()
 export class FilesStorageConsumer {

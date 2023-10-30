@@ -1,6 +1,6 @@
-import { GetFile } from '@shared/infra/s3-client';
+import { GetFile } from '@shared/infra/s3-client/interfaces';
 import { Readable } from 'stream';
-import { GetFileResponse } from '../interface';
+import { GetFileResponse } from '../interface/interfaces';
 
 export class TestHelper {
 	public static createFile = (contentRange?: string): GetFile => {

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { OauthProviderService } from '@shared/infra/oauth-provider';
-import { EntityId } from '@shared/domain';
-import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
+import { OauthProviderService } from '@shared/infra/oauth-provider/oauth-provider.service';
 
 @Injectable()
 export class OauthProviderUc {

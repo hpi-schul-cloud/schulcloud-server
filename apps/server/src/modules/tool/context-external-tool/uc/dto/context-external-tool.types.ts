@@ -1,5 +1,6 @@
-import { ContextExternalToolProps, ContextRef } from '../../domain';
-import { SchoolExternalToolRefDO } from '../../../school-external-tool/domain';
+import { SchoolExternalToolRefDO } from '@src/modules/tool/school-external-tool/domain/school-external-tool-ref.do';
+import { ContextExternalToolProps } from '../../domain/context-external-tool.do';
+import { ContextRef } from '../../domain/context-ref';
 
 export type ContextExternalToolDto = ContextExternalToolProps;
 

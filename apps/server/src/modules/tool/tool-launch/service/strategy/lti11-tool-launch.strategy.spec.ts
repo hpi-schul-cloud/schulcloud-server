@@ -1,25 +1,31 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Pseudonym, RoleName, UserDO } from '@shared/domain';
-import {
-	contextExternalToolFactory,
-	externalToolFactory,
-	schoolExternalToolFactory,
-	userDoFactory,
-} from '@shared/testing';
+import { Pseudonym } from '@shared/domain/domainobject/pseudonym.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { LtiPrivacyPermission } from '@shared/domain/entity/ltitool.entity';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
 import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { PseudonymService } from '@src/modules/pseudonym/service';
-import { UserService } from '@src/modules/user';
+import { contextExternalToolFactory } from '@shared/testing/factory/domainobject/tool/context-external-tool.factory';
+import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { PseudonymService } from '@src/modules/pseudonym/service/pseudonym.service';
+import { LtiMessageType } from '@src/modules/tool/common/enum/lti-message-type.enum';
+import { LtiRole } from '@src/modules/tool/common/enum/lti-role.enum';
+import { ToolContextType } from '@src/modules/tool/common/enum/tool-context-type.enum';
+import { ContextExternalTool } from '@src/modules/tool/context-external-tool/domain/context-external-tool.do';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain/external-tool.do';
+import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain/school-external-tool.do';
+import { UserService } from '@src/modules/user/service/user.service';
+
 import { ObjectId } from 'bson';
 import { Authorization } from 'oauth-1.0a';
-import { LtiMessageType, LtiPrivacyPermission, LtiRole, ToolContextType } from '../../../common/enum';
-import { ContextExternalTool } from '../../../context-external-tool/domain';
-import { ExternalTool } from '../../../external-tool/domain';
-import { SchoolExternalTool } from '../../../school-external-tool/domain';
-import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
+import { LaunchRequestMethod } from '../../types/launch-request-method';
+import { PropertyData } from '../../types/property-data';
+import { PropertyLocation } from '../../types/property-location';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';

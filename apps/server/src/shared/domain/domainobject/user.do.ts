@@ -1,5 +1,5 @@
-import { LanguageType } from '@shared/domain/entity';
-import { EntityId } from '@shared/domain/types';
+import { LanguageType } from '../entity/user.entity';
+import { EntityId } from '../types/entity-id';
 import { BaseDO } from './base.do';
 import { RoleReference } from './role-reference';
 

@@ -10,11 +10,13 @@ import {
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { ErrorUtils } from '@src/core/error/utils';
-import { LegacyLogger } from '@src/core/logger';
+import { ErrorUtils } from '@src/core/error/utils/error.utils';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { S3Config } from '@src/modules/fwu-learning-contents/interface/config';
+
 import { Readable } from 'stream';
 import { S3_CLIENT, S3_CONFIG } from './constants';
-import { CopyFiles, File, GetFile, S3Config } from './interface';
+import { CopyFiles, File, GetFile } from './interfaces';
 
 @Injectable()
 export class S3ClientAdapter {

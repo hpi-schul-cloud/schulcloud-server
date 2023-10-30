@@ -1,14 +1,15 @@
 import { S3Client, S3ServiceException } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ErrorUtils } from '@src/core/error/utils';
-import { LegacyLogger } from '@src/core/logger';
+import { ErrorUtils } from '@src/core/error/utils/error.utils';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { FileDto } from '@src/modules/files-storage/dto/file.dto';
+import { S3Config } from '@src/modules/fwu-learning-contents/interface/config';
+
 import { Readable } from 'node:stream';
-import { FileDto } from '../../../modules/files-storage/dto';
 import { S3_CLIENT, S3_CONFIG } from './constants';
-import { S3Config } from './interface';
 import { S3ClientAdapter } from './s3-client.adapter';
 
 const createParameter = () => {

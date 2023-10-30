@@ -1,13 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@src/core/logger';
+
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
+import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
+import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
-import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
-import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
-import { KeycloakMigrationService } from './keycloak-migration.service';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { KeycloakMigrationService } from './keycloak-migration.service';
 
 describe('KeycloakMigrationService', () => {
 	let module: TestingModule;

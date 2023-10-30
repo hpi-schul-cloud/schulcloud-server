@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, Pseudonym, User } from '@shared/domain';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { PseudonymService } from '../service';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception/not-found.loggable-exception';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { Pseudonym } from '@shared/domain/domainobject/pseudonym.do';
+import { User } from '@shared/domain/entity/user.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { PseudonymService } from '../service/pseudonym.service';
 
 @Injectable()
 export class PseudonymUc {

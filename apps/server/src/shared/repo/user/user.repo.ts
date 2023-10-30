@@ -1,19 +1,16 @@
 import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { StringValidator } from '@shared/common';
-import {
-	Counted,
-	EntityId,
-	IFindOptions,
-	ImportUser,
-	INameMatch,
-	Role,
-	SchoolEntity,
-	SortOrder,
-	User,
-} from '@shared/domain';
-import { BaseRepo } from '@shared/repo/base.repo';
+import { StringValidator } from '@shared/common/validator/string.validator';
+import { ImportUser } from '@shared/domain/entity/import-user.entity';
+import { Role } from '@shared/domain/entity/role.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
+import { Counted } from '@shared/domain/types/counted';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { INameMatch } from '@shared/domain/types/importuser.types';
+import { BaseRepo } from '../base.repo';
 import { MongoPatterns } from '../mongo.patterns';
 
 @Injectable()

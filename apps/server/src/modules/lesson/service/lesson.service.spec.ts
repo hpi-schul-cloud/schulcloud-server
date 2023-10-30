@@ -1,10 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LessonRepo } from '@shared/repo';
-import { lessonFactory, setupEntities } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ComponentType, IComponentProperties } from '@shared/domain';
+import { ComponentType, IComponentProperties } from '@shared/domain/entity/lesson.entity';
+import { LessonRepo } from '@shared/repo/lesson/lesson.repo';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client/service/files-storage-client.service';
 import { LessonService } from './lesson.service';
 
 describe('LessonService', () => {

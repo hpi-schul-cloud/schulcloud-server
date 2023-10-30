@@ -1,9 +1,9 @@
 import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
-import { AnyBoardDo } from '../../domainobject';
-import { EntityId } from '../../types';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { BaseEntityWithTimestamps } from '../base.entity';
-import { BoardDoBuilder } from './types';
+import { BoardDoBuilder } from './types/board-do.builder';
 import { BoardNodeType } from './types/board-node-type';
 
 const PATH_SEPARATOR = ',';

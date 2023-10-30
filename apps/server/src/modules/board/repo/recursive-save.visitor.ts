@@ -1,30 +1,28 @@
 import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import {
-	AnyBoardDo,
-	BoardCompositeVisitor,
-	BoardNode,
-	Card,
-	CardNode,
-	Column,
-	ColumnBoard,
-	ColumnBoardNode,
-	ColumnNode,
-	EntityId,
-	ExternalToolElement,
-	ExternalToolElementNodeEntity,
-	FileElement,
-	FileElementNode,
-	RichTextElement,
-	RichTextElementNode,
-	SubmissionContainerElement,
-	SubmissionContainerElementNode,
-	SubmissionItem,
-	SubmissionItemNode,
-} from '@shared/domain';
+import { Card } from '@shared/domain/domainobject/board/card.do';
+import { ColumnBoard } from '@shared/domain/domainobject/board/column-board.do';
+import { Column } from '@shared/domain/domainobject/board/column.do';
+import { ExternalToolElement } from '@shared/domain/domainobject/board/external-tool-element.do';
+import { FileElement } from '@shared/domain/domainobject/board/file-element.do';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { RichTextElement } from '@shared/domain/domainobject/board/rich-text-element.do';
+import { SubmissionContainerElement } from '@shared/domain/domainobject/board/submission-container-element.do';
+import { SubmissionItem } from '@shared/domain/domainobject/board/submission-item.do';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
+import { BoardCompositeVisitor } from '@shared/domain/domainobject/board/types/board-composite-visitor';
+import { BoardNode } from '@shared/domain/entity/boardnode/boardnode.entity';
+import { CardNode } from '@shared/domain/entity/boardnode/card-node.entity';
+import { ColumnBoardNode } from '@shared/domain/entity/boardnode/column-board-node.entity';
+import { ColumnNode } from '@shared/domain/entity/boardnode/column-node.entity';
+import { ExternalToolElementNodeEntity } from '@shared/domain/entity/boardnode/external-tool-element-node.entity';
+import { FileElementNode } from '@shared/domain/entity/boardnode/file-element-node.entity';
 import { LinkElementNode } from '@shared/domain/entity/boardnode/link-element-node.entity';
-import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
+import { RichTextElementNode } from '@shared/domain/entity/boardnode/rich-text-element-node.entity';
+import { SubmissionContainerElementNode } from '@shared/domain/entity/boardnode/submission-container-element-node.entity';
+import { SubmissionItemNode } from '@shared/domain/entity/boardnode/submission-item-node.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity/context-external-tool.entity';
 import { BoardNodeRepo } from './board-node.repo';
 
 type ParentData = {

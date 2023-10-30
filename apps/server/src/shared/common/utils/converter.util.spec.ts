@@ -1,4 +1,4 @@
-import { ConverterUtil } from '@shared/common';
+import { ConverterUtil } from './converter.util';
 
 class TestObject {
 	test: string;

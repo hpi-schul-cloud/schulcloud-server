@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
+import { ConsoleWriterService } from '@shared/infra/console/console-writer/console-writer.service';
 import { Command, Console } from 'nestjs-console';
-import { ConsoleWriterService } from '@shared/infra/console';
 
 @Console({ command: 'server', description: 'sample server console' })
 export class ServerConsole {

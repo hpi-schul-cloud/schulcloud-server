@@ -1,21 +1,23 @@
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { BaseDO, User } from '@shared/domain';
-import { AuthorizableObject } from '@shared/domain/domain-object'; // fix import when it is avaible
-import {
-	BoardDoRule,
-	CourseGroupRule,
-	CourseRule,
-	LessonRule,
-	SchoolExternalToolRule,
-	LegacySchoolRule,
-	SubmissionRule,
-	TaskRule,
-	TeamRule,
-	UserRule,
-} from '@shared/domain/rules';
+import { AuthorizableObject } from '@shared/domain/domain-object';
+import { BaseDO } from '@shared/domain/domainobject/base.do';
+import { User } from '@shared/domain/entity/user.entity';
+import { BoardDoRule } from '@shared/domain/rules/board-do.rule';
 import { ContextExternalToolRule } from '@shared/domain/rules/context-external-tool.rule';
+import { CourseGroupRule } from '@shared/domain/rules/course-group.rule';
+import { CourseRule } from '@shared/domain/rules/course.rule';
+import { LegacySchoolRule } from '@shared/domain/rules/legacy-school.rule';
+import { LessonRule } from '@shared/domain/rules/lesson.rule';
+import { SchoolExternalToolRule } from '@shared/domain/rules/school-external-tool.rule';
+import { SubmissionRule } from '@shared/domain/rules/submission.rule';
+import { TaskRule } from '@shared/domain/rules/task.rule';
+import { TeamRule } from '@shared/domain/rules/team.rule';
 import { UserLoginMigrationRule } from '@shared/domain/rules/user-login-migration.rule';
-import { AuthorizationContext, Rule } from './types';
+import { UserRule } from '@shared/domain/rules/user.rule';
+import { AuthorizationContext } from './types/authorization-context.interface';
+import { Rule } from './types/rule.interface';
+
+// fix import when it is avaible
 
 @Injectable()
 export class RuleManager {

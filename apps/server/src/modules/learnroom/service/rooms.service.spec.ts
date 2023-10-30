@@ -3,13 +3,6 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReference, BoardExternalReferenceType, EntityId } from '@shared/domain';
-import { BoardRepo, LessonRepo } from '@shared/repo';
-import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@src/modules/board';
-import { TaskService } from '@src/modules/task/service';
-import { ColumnBoardTargetService } from './column-board-target.service';
-import { RoomsService } from './rooms.service';
 
 describe('rooms service', () => {
 	let module: TestingModule;

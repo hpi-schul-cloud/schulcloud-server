@@ -2,11 +2,17 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { StorageProviderEntity, SystemEntity } from '@shared/domain';
-import { DatabaseManagementService } from '@shared/infra/database';
-import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from '@shared/infra/encryption';
-import { FileSystemAdapter } from '@shared/infra/file-system';
-import { LegacyLogger } from '@src/core/logger';
+import { StorageProviderEntity } from '@shared/domain/entity/storageprovider.entity';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { DatabaseManagementService } from '@shared/infra/database/management/database-management.service';
+import {
+	DefaultEncryptionService,
+	IEncryptionService,
+	LdapEncryptionService,
+} from '@shared/infra/encryption/encryption.interface';
+import { FileSystemAdapter } from '@shared/infra/file-system/file-system.adapter';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';

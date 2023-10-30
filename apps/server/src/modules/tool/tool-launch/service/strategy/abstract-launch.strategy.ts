@@ -1,21 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { Course, EntityId, LegacySchoolDo } from '@shared/domain';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LegacySchoolService } from '@src/modules/legacy-school';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { Course } from '@shared/domain/entity/course.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { CustomParameterEntry } from '@src/modules/tool/common/domain/custom-parameter-entry.do';
+import { CustomParameter } from '@src/modules/tool/common/domain/custom-parameter.do';
+import { CustomParameterLocation } from '@src/modules/tool/common/enum/custom-parameter-location.enum';
+import { CustomParameterScope } from '@src/modules/tool/common/enum/custom-parameter-scope.enum';
+import { CustomParameterType } from '@src/modules/tool/common/enum/custom-parameter-type.enum';
+import { ToolContextType } from '@src/modules/tool/common/enum/tool-context-type.enum';
+import { ContextExternalTool } from '@src/modules/tool/context-external-tool/domain/context-external-tool.do';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain/external-tool.do';
+import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain/school-external-tool.do';
+
 import { URLSearchParams } from 'url';
-import { CustomParameter, CustomParameterEntry } from '../../../common/domain';
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	ToolContextType,
-} from '../../../common/enum';
-import { ContextExternalTool } from '../../../context-external-tool/domain';
-import { ExternalTool } from '../../../external-tool/domain';
-import { SchoolExternalTool } from '../../../school-external-tool/domain';
-import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
-import { ToolLaunchMapper } from '../../mapper';
-import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, ToolLaunchRequest } from '../../types';
+import { MissingToolParameterValueLoggableException } from '../../error/missing-tool-parameter-value.loggable-exception';
+import { ParameterTypeNotImplementedLoggableException } from '../../error/parameter-type-not-implemented.loggable-exception';
+import { ToolLaunchMapper } from '../../mapper/tool-launch.mapper';
+import { LaunchRequestMethod } from '../../types/launch-request-method';
+import { PropertyData } from '../../types/property-data';
+import { PropertyLocation } from '../../types/property-location';
+import { ToolLaunchData } from '../../types/tool-launch-data';
+import { ToolLaunchRequest } from '../../types/tool-launch-request';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
 

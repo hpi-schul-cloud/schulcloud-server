@@ -1,5 +1,4 @@
 import request from 'supertest';
-
 import { createPrometheusMetricsApp } from './app';
 
 describe('createPrometheusMetricsApp', () => {

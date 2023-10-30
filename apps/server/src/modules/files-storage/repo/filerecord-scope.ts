@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain';
-import { Scope } from '@shared/repo';
-import { FileRecord } from '../entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { Scope } from '@shared/repo/scope';
+import { FileRecord } from '../entity/filerecord.entity';
 
 export class FileRecordScope extends Scope<FileRecord> {
 	byParentId(parentId: EntityId): FileRecordScope {

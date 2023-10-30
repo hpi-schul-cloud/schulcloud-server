@@ -1,15 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { userDoFactory } from '@shared/testing';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
 import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { OAuthTokenDto } from '@src/modules/oauth';
+import { AccountDto } from '@src/modules/account/services/dto/account.dto';
+import { OAuthTokenDto } from '@src/modules/oauth/interface/oauth-token.dto';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { SchoolInMigrationError } from '../errors/school-in-migration.error';
-import { ICurrentUser, OauthCurrentUser } from '../interface';
+import { ICurrentUser, OauthCurrentUser } from '../interface/user';
 import { Oauth2Strategy } from './oauth2.strategy';
 
 describe('Oauth2Strategy', () => {

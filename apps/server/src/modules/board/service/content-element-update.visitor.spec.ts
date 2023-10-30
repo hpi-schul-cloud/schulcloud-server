@@ -1,17 +1,19 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InputFormat } from '@shared/domain';
+import { InputFormat } from '@shared/domain/types/input-format.types';
+import { cardFactory } from '@shared/testing/factory/domainobject/board/card.do.factory';
+import { columnBoardFactory } from '@shared/testing/factory/domainobject/board/column-board.do.factory';
+import { columnFactory } from '@shared/testing/factory/domainobject/board/column.do.factory';
+import { externalToolElementFactory } from '@shared/testing/factory/domainobject/board/external-tool.do.factory';
+import { fileElementFactory } from '@shared/testing/factory/domainobject/board/file-element.do.factory';
+import { linkElementFactory } from '@shared/testing/factory/domainobject/board/link-element.do.factory';
+import { richTextElementFactory } from '@shared/testing/factory/domainobject/board/rich-text-element.do.factory';
+import { submissionContainerElementFactory } from '@shared/testing/factory/domainobject/board/submission-container-element.do.factory';
+import { submissionItemFactory } from '@shared/testing/factory/domainobject/board/submission-item.do.factory';
 import {
-	cardFactory,
-	columnBoardFactory,
-	columnFactory,
-	externalToolElementFactory,
-	fileElementFactory,
-	linkElementFactory,
-	richTextElementFactory,
-	submissionContainerElementFactory,
-	submissionItemFactory,
-} from '@shared/testing';
-import { ExternalToolContentBody, FileContentBody, RichTextContentBody } from '../controller/dto';
+	ExternalToolContentBody,
+	FileContentBody,
+	RichTextContentBody,
+} from '../controller/dto/element/update-element-content.body.params';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
 import { OpenGraphProxyService } from './open-graph-proxy.service';
 

@@ -1,10 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { StringToBoolean } from '@shared/controller';
-import { EntityId } from '@shared/domain';
-import { ScanResult } from '@shared/infra/antivirus';
+import { StringToBoolean } from '@shared/controller/transformer/string-to-boolean.transformer';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { ScanResult } from '@shared/infra/antivirus/interfaces/antivirus';
+
 import { Allow, IsBoolean, IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { FileRecordParentType } from '../../entity';
-import { PreviewOutputMimeTypes, PreviewWidth } from '../../interface';
+import { FileRecordParentType } from '../../entity/filerecord.entity';
+import { PreviewOutputMimeTypes } from '../../interface/preview-output-mime-types.enum';
+import { PreviewWidth } from '../../interface/preview-width.enum';
 
 export class FileRecordParams {
 	@ApiProperty()

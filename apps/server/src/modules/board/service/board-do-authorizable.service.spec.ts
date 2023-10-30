@@ -1,10 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, BoardRoles, UserRoleEnum } from '@shared/domain';
-import { CourseRepo } from '@shared/repo';
-import { courseFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
-import { BoardDoRepo } from '../repo';
+import { BoardRoles, UserRoleEnum } from '@shared/domain/domainobject/board/types/board-do-authorizable';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
+import { CourseRepo } from '@shared/repo/course/course.repo';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { columnBoardFactory } from '@shared/testing/factory/domainobject/board/column-board.do.factory';
+import { columnFactory } from '@shared/testing/factory/domainobject/board/column.do.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { BoardDoRepo } from '../repo/board-do.repo';
 import { BoardDoAuthorizableService } from './board-do-authorizable.service';
 
 describe(BoardDoAuthorizableService.name, () => {

@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
-import { CopyFileDto } from '../dto';
-import { EntityWithEmbeddedFiles } from '../interfaces';
-import { CopyFilesOfParentParamBuilder, FileParamBuilder } from '../mapper';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { CopyHelperService } from '@src/modules/copy-helper/service/copy-helper.service';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper/types/copy.types';
+import { CopyFileDto } from '../dto/copy-file.dto';
+import { EntityWithEmbeddedFiles } from '../interfaces/types';
+import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
+import { FileParamBuilder } from '../mapper/files-storage-param.builder';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 
 const FILE_COULD_NOT_BE_COPIED_HINT = 'fileCouldNotBeCopied';

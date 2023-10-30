@@ -1,5 +1,5 @@
-import { SchoolExternalTool } from '../../../school-external-tool/domain';
-import { ExternalTool } from '../../domain';
+import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain/school-external-tool.do';
+import { ExternalTool } from '../../domain/external-tool.do';
 
 export type ContextExternalToolTemplateInfo = {
 	externalTool: ExternalTool;

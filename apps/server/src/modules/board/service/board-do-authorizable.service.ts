@@ -1,18 +1,18 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { ColumnBoard } from '@shared/domain/domainobject/board/column-board.do';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
 import {
-	AnyBoardDo,
 	BoardDoAuthorizable,
-	BoardExternalReferenceType,
 	BoardRoles,
-	ColumnBoard,
-	Course,
-	EntityId,
 	UserBoardRoles,
 	UserRoleEnum,
-} from '@shared/domain';
-import { CourseRepo } from '@shared/repo';
-import { AuthorizationLoaderService } from '@src/modules/authorization';
-import { BoardDoRepo } from '../repo';
+} from '@shared/domain/domainobject/board/types/board-do-authorizable';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
+import { Course } from '@shared/domain/entity/course.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { CourseRepo } from '@shared/repo/course/course.repo';
+import { AuthorizationLoaderService } from '@src/modules/authorization/types/authorization-loader-service';
+import { BoardDoRepo } from '../repo/board-do.repo';
 
 @Injectable()
 export class BoardDoAuthorizableService implements AuthorizationLoaderService {

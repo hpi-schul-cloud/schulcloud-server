@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { LaunchRequestMethod, PropertyData } from '../../types';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { LaunchRequestMethod } from '../../types/launch-request-method';
+import { PropertyData } from '../../types/property-data';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 

@@ -1,23 +1,18 @@
 import { EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { EntityNotFoundError } from '@shared/common';
-import {
-	EntityId,
-	IFindOptions,
-	IPagination,
-	IUserProperties,
-	Role,
-	SchoolEntity,
-	SortOrder,
-	SortOrderMap,
-	SystemEntity,
-	User,
-} from '@shared/domain';
-import { RoleReference } from '@shared/domain/domainobject';
+import { EntityNotFoundError } from '@shared/common/error/entity-not-found.error';
 import { Page } from '@shared/domain/domainobject/page';
+import { RoleReference } from '@shared/domain/domainobject/role-reference';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { BaseDORepo, Scope } from '@shared/repo';
+import { Role } from '@shared/domain/entity/role.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { IUserProperties, User } from '@shared/domain/entity/user.entity';
+import { IFindOptions, IPagination, SortOrder, SortOrderMap } from '@shared/domain/interface/find-options';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { UserQuery } from '@src/modules/user/service/user-query.type';
+import { BaseDORepo } from '../base.do.repo';
+import { Scope } from '../scope';
 import { UserScope } from './user.scope';
 
 @Injectable()

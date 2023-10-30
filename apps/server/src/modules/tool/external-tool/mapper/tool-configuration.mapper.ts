@@ -1,11 +1,9 @@
-import {
-	ContextExternalToolConfigurationTemplateListResponse,
-	ContextExternalToolConfigurationTemplateResponse,
-	SchoolExternalToolConfigurationTemplateListResponse,
-	SchoolExternalToolConfigurationTemplateResponse,
-} from '../controller/dto';
-import { ExternalTool } from '../domain';
-import { ContextExternalToolTemplateInfo } from '../uc';
+import { ContextExternalToolConfigurationTemplateListResponse } from '../controller/dto/response/context-external-tool-configuration-template-list.response';
+import { ContextExternalToolConfigurationTemplateResponse } from '../controller/dto/response/context-external-tool-configuration-template.response';
+import { SchoolExternalToolConfigurationTemplateListResponse } from '../controller/dto/response/school-external-tool-configuration-template-list.response';
+import { SchoolExternalToolConfigurationTemplateResponse } from '../controller/dto/response/school-external-tool-configuration-template.response';
+import { ExternalTool } from '../domain/external-tool.do';
+import { ContextExternalToolTemplateInfo } from '../uc/dto/external-tool-configuration.types';
 import { ExternalToolResponseMapper } from './external-tool-response.mapper';
 
 export class ToolConfigurationMapper {

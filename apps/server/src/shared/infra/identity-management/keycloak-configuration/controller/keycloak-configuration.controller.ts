@@ -1,5 +1,5 @@
 import { Controller, Post, ServiceUnavailableException } from '@nestjs/common';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
 
 @Controller('management/idm')

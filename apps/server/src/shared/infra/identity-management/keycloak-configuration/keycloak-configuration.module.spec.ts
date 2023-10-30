@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+
 import { ConfigModule } from '@nestjs/config';
-import { KeycloakConfigurationModule } from './keycloak-configuration.module';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
 import { KeycloakConsole } from './console/keycloak-configuration.console';
+import { KeycloakConfigurationModule } from './keycloak-configuration.module';
 import { KeycloakConfigurationService } from './service/keycloak-configuration.service';
 import { KeycloakSeedService } from './service/keycloak-seed.service';
 

@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { SingleValueToArrayTransformer } from '@shared/controller';
+import { SingleValueToArrayTransformer } from '@shared/controller/transformer/single-value-to-array.transformer';
+
 import { IsArray, IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export enum FilterMatchType {

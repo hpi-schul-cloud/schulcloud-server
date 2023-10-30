@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Column, ColumnBoard, EntityId } from '@shared/domain';
+import { ColumnBoard } from '@shared/domain/domainobject/board/column-board.do';
+import { Column } from '@shared/domain/domainobject/board/column.do';
+import { EntityId } from '@shared/domain/types/entity-id';
+
 import { ObjectId } from 'bson';
-import { BoardDoRepo } from '../repo';
+import { BoardDoRepo } from '../repo/board-do.repo';
 import { BoardDoService } from './board-do.service';
 
 @Injectable()

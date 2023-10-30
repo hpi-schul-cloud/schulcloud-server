@@ -1,10 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, UserLoginMigrationDO } from '@shared/domain';
-import { setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
-import { Action, AuthorizationService } from '@src/modules/authorization';
-import { UserLoginMigrationNotFoundLoggableException } from '../error';
-import { SchoolMigrationService, UserLoginMigrationRevertService, UserLoginMigrationService } from '../service';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject/user-login-migration.do';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { UserLoginMigrationNotFoundLoggableException } from '../error/user-login-migration-not-found.loggable-exception';
+import { SchoolMigrationService } from '../service/school-migration.service';
+import { UserLoginMigrationRevertService } from '../service/user-login-migration-revert.service';
+import { UserLoginMigrationService } from '../service/user-login-migration.service';
 import { CloseUserLoginMigrationUc } from './close-user-login-migration.uc';
 
 describe('CloseUserLoginMigrationUc', () => {

@@ -1,8 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SchoolFeatures } from '@shared/domain';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { setupEntities, userLoginMigrationDOFactory } from '@shared/testing';
+import { Test, TestingModule } from '@nestjs/testing';
+import { SchoolFeatures } from '@shared/domain/entity/school.entity';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
 import { UserLoginMigrationRevertService } from './user-login-migration-revert.service';
 import { UserLoginMigrationService } from './user-login-migration.service';
 

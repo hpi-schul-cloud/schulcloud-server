@@ -1,16 +1,16 @@
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
+import { ColumnBoard, isColumnBoard } from '@shared/domain/domainobject/board/column-board.do';
 import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
-	ColumnBoard,
-	EntityId,
-	isColumnBoard,
-} from '@shared/domain';
-import { CourseRepo } from '@shared/repo';
-import { CopyStatus } from '@src/modules/copy-helper';
-import { UserService } from '@src/modules/user';
-import { BoardDoRepo } from '../repo';
-import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './board-do-copy-service';
+} from '@shared/domain/domainobject/board/types/board-external-reference';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { CourseRepo } from '@shared/repo/course/course.repo';
+import { CopyStatus } from '@src/modules/copy-helper/types/copy.types';
+import { UserService } from '@src/modules/user/service/user.service';
+import { BoardDoRepo } from '../repo/board-do.repo';
+import { BoardDoCopyService } from './board-do-copy-service/board-do-copy.service';
+import { SchoolSpecificFileCopyServiceFactory } from './board-do-copy-service/school-specific-file-copy-service.factory';
 
 @Injectable()
 export class ColumnBoardCopyService {

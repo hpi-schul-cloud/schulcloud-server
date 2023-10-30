@@ -1,7 +1,7 @@
-import { ExternalUserDto } from './external-user.dto';
-import { ExternalSchoolDto } from './external-school.dto';
-import { ProvisioningSystemDto } from './provisioning-system.dto';
 import { ExternalGroupDto } from './external-group.dto';
+import { ExternalSchoolDto } from './external-school.dto';
+import { ExternalUserDto } from './external-user.dto';
+import { ProvisioningSystemDto } from './provisioning-system.dto';
 
 export class OauthDataDto {
 	system: ProvisioningSystemDto;

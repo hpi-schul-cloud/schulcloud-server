@@ -1,10 +1,14 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, EntityId, SortOrder } from '@shared/domain';
-
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, courseFactory, courseGroupFactory, userFactory } from '@shared/testing';
+import { Course } from '@shared/domain/entity/course.entity';
+import { SortOrder } from '@shared/domain/interface/find-options';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { courseGroupFactory } from '@shared/testing/factory/coursegroup.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
 import { CourseRepo } from './course.repo';
 
 const checkEqualIds = (arr1: { id: EntityId }[], arr2: { id: EntityId }[]): boolean => {

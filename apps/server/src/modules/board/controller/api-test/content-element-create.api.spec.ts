@@ -1,18 +1,19 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, ContentElementType, RichTextElementNode } from '@shared/domain';
-import {
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import { RichTextElementNode } from '@shared/domain/entity/boardnode/rich-text-element-node.entity';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { cardNodeFactory } from '@shared/testing/factory/boardnode/card-node.factory';
+import { columnBoardNodeFactory } from '@shared/testing/factory/boardnode/column-board-node.factory';
+import { columnNodeFactory } from '@shared/testing/factory/boardnode/column-node.factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { UserAndAccountTestFactory } from '@shared/testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@shared/testing/test-api-client';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import { AnyContentElementResponse, SubmissionContainerElementResponse } from '../dto';
+import { AnyContentElementResponse } from '../dto/element/any-content-element.response';
+import { SubmissionContainerElementResponse } from '../dto/element/submission-container-element.response';
 
 const baseRouteName = '/cards';
 

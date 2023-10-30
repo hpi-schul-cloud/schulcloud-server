@@ -1,5 +1,5 @@
-import { IsEnum, IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEnum, IsOptional } from 'class-validator';
 
 enum SortOrder {
 	asc = 'asc',

@@ -1,6 +1,8 @@
-import { RoleReference, UserDO } from '@shared/domain';
-import { groupFactory, roleFactory, userDoFactory } from '@shared/testing';
-
+import { RoleReference } from '@shared/domain/domainobject/role-reference';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { groupFactory } from '@shared/testing/factory/domainobject/groups/group.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
 import { ObjectId } from 'bson';
 import { Group } from './group';
 import { GroupUser } from './group-user';

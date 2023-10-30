@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AnyBoardDo } from '@shared/domain';
-import { BoardDoRepo } from '../repo';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
+import { BoardDoRepo } from '../repo/board-do.repo';
 
 @Injectable()
 export class BoardDoService {

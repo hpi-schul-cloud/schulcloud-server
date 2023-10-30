@@ -1,21 +1,20 @@
 import { UnprocessableEntityException } from '@nestjs/common';
-import { CustomParameter, CustomParameterEntry } from '@src/modules/tool/common/domain';
-import { CustomParameterEntryEntity } from '@src/modules/tool/common/entity';
-import { ToolConfigType } from '@src/modules/tool/common/enum';
+import { CustomParameterEntry } from '@src/modules/tool/common/domain/custom-parameter-entry.do';
+import { CustomParameter } from '@src/modules/tool/common/domain/custom-parameter.do';
+import { CustomParameterEntryEntity } from '@src/modules/tool/common/entity/custom-parameter-entry.entity';
+import { ToolConfigType } from '@src/modules/tool/common/enum/tool-config-type.enum';
+import { BasicToolConfig } from '@src/modules/tool/external-tool/domain/config/basic-tool-config.do';
+import { Lti11ToolConfig } from '@src/modules/tool/external-tool/domain/config/lti11-tool-config.do';
+import { Oauth2ToolConfig } from '@src/modules/tool/external-tool/domain/config/oauth2-tool-config.do';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain/external-tool.do';
+import { BasicToolConfigEntity } from '@src/modules/tool/external-tool/entity/config/basic-tool-config.entity';
+import { Lti11ToolConfigEntity } from '@src/modules/tool/external-tool/entity/config/lti11-tool-config.entity';
+import { Oauth2ToolConfigEntity } from '@src/modules/tool/external-tool/entity/config/oauth2-tool-config.entity';
+import { CustomParameterEntity } from '@src/modules/tool/external-tool/entity/custom-parameter/custom-parameter.entity';
 import {
-	BasicToolConfig,
-	ExternalTool,
-	Lti11ToolConfig,
-	Oauth2ToolConfig,
-} from '@src/modules/tool/external-tool/domain';
-import {
-	BasicToolConfigEntity,
-	CustomParameterEntity,
 	ExternalToolEntity,
 	IExternalToolProperties,
-	Lti11ToolConfigEntity,
-	Oauth2ToolConfigEntity,
-} from '@src/modules/tool/external-tool/entity';
+} from '@src/modules/tool/external-tool/entity/external-tool.entity';
 
 // TODO: maybe rename because of usage in external tool repo and school external tool repo
 export class ExternalToolRepoMapper {

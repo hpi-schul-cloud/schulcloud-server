@@ -1,6 +1,6 @@
-import { IsBoolean } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { StringToBoolean } from '@shared/controller/index';
+import { StringToBoolean } from '@shared/controller/transformer/string-to-boolean.transformer';
+import { IsBoolean } from 'class-validator';
 
 export class AcceptQuery {
 	@IsBoolean()

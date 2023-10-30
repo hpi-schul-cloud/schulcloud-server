@@ -1,7 +1,3 @@
-import { FileRecordParentType } from '@shared/infra/rabbitmq';
-import { lessonFactory, setupEntities, taskFactory } from '@shared/testing';
-import { FileParamBuilder } from './files-storage-param.builder';
-
 describe('FileParamBuilder', () => {
 	beforeAll(async () => {
 		await setupEntities();

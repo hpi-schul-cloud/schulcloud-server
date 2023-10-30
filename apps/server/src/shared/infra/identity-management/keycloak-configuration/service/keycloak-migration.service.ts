@@ -1,8 +1,8 @@
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { Injectable } from '@nestjs/common';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto';
+import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 
 @Injectable()

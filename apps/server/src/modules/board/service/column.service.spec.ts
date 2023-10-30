@@ -1,9 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Column } from '@shared/domain';
-import { setupEntities } from '@shared/testing';
-import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
-import { BoardDoRepo } from '../repo';
+import { Column } from '@shared/domain/domainobject/board/column.do';
+import { columnBoardFactory } from '@shared/testing/factory/domainobject/board/column-board.do.factory';
+import { columnFactory } from '@shared/testing/factory/domainobject/board/column.do.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { BoardDoRepo } from '../repo/board-do.repo';
 import { BoardDoService } from './board-do.service';
 import { ColumnService } from './column.service';
 

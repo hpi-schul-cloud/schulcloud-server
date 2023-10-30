@@ -1,17 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import {
-	contextExternalToolFactory,
-	legacySchoolDoFactory,
-	schoolExternalToolFactory,
-	setupEntities,
-} from '@shared/testing';
-import { Permission, LegacySchoolDo } from '@shared/domain';
-import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { ContextExternalTool } from '../../context-external-tool/domain';
+import { Test, TestingModule } from '@nestjs/testing';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/legacy-school.factory';
+import { contextExternalToolFactory } from '@shared/testing/factory/domainobject/tool/context-external-tool.factory';
+import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { AuthorizationContext } from '@src/modules/authorization/types/authorization-context.interface';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { ContextExternalTool } from '../../context-external-tool/domain/context-external-tool.do';
+import { SchoolExternalTool } from '../../school-external-tool/domain/school-external-tool.do';
 import { ToolPermissionHelper } from './tool-permission-helper';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
 
 describe('ToolPermissionHelper', () => {
 	let module: TestingModule;

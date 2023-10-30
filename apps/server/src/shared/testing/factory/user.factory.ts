@@ -1,5 +1,10 @@
 /* istanbul ignore file */
-import { IUserProperties, Permission, Role, RoleName, User } from '@shared/domain';
+
+import { Role } from '@shared/domain/entity/role.entity';
+import { IUserProperties, User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+
 import { DeepPartial } from 'fishery';
 import _ from 'lodash';
 import { adminPermissions, studentPermissions, teacherPermissions, userPermissions } from '../user-role-permissions';

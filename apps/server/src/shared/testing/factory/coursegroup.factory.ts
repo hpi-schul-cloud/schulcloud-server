@@ -1,7 +1,7 @@
-import { CourseGroup, ICourseGroupProperties } from '@shared/domain';
+import { CourseGroup, ICourseGroupProperties } from '@shared/domain/entity/coursegroup.entity';
 import { DeepPartial } from 'fishery';
-import { courseFactory } from './course.factory';
 import { BaseFactory } from './base.factory';
+import { courseFactory } from './course.factory';
 import { userFactory } from './user.factory';
 
 class CourseGroupFactory extends BaseFactory<CourseGroup, ICourseGroupProperties> {

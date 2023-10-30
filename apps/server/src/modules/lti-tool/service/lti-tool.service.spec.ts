@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LtiToolDO } from '@shared/domain';
-import { LtiToolRepo } from '@shared/repo';
-import { ltiToolDOFactory } from '@shared/testing';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { LtiToolRepo } from '@shared/repo/ltitool/ltitool.repo';
+import { ltiToolDOFactory } from '@shared/testing/factory/domainobject/lti-tool.factory';
 import { LtiToolService } from './lti-tool.service';
 
 describe('LtiToolService', () => {

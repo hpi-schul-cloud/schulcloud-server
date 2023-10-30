@@ -2,8 +2,7 @@ import { Inject, Injectable, Scope } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import util from 'util';
 import { Logger as WinstonLogger } from 'winston';
-import { RequestLoggingBody } from './interfaces';
-import { ILegacyLogger } from './interfaces/legacy-logger.interface';
+import { ILegacyLogger, RequestLoggingBody } from './interfaces/legacy-logger.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 /**

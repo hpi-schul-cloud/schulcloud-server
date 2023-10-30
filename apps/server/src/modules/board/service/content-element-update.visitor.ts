@@ -1,19 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { sanitizeRichText } from '@shared/controller';
-import {
-	AnyBoardDo,
-	BoardCompositeVisitorAsync,
-	Card,
-	Column,
-	ColumnBoard,
-	ExternalToolElement,
-	FileElement,
-	InputFormat,
-	RichTextElement,
-	SubmissionContainerElement,
-	SubmissionItem,
-} from '@shared/domain';
+import { sanitizeRichText } from '@shared/controller/transformer/sanitize-html.transformer';
+import { Card } from '@shared/domain/domainobject/board/card.do';
+import { ColumnBoard } from '@shared/domain/domainobject/board/column-board.do';
+import { Column } from '@shared/domain/domainobject/board/column.do';
+import { ExternalToolElement } from '@shared/domain/domainobject/board/external-tool-element.do';
+import { FileElement } from '@shared/domain/domainobject/board/file-element.do';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { RichTextElement } from '@shared/domain/domainobject/board/rich-text-element.do';
+import { SubmissionContainerElement } from '@shared/domain/domainobject/board/submission-container-element.do';
+import { SubmissionItem } from '@shared/domain/domainobject/board/submission-item.do';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
+import { BoardCompositeVisitorAsync } from '@shared/domain/domainobject/board/types/board-composite-visitor';
+import { InputFormat } from '@shared/domain/types/input-format.types';
 import {
 	AnyElementContentBody,
 	ExternalToolContentBody,
@@ -21,7 +19,7 @@ import {
 	LinkContentBody,
 	RichTextContentBody,
 	SubmissionContainerContentBody,
-} from '../controller/dto';
+} from '../controller/dto/element/update-element-content.body.params';
 import { OpenGraphProxyService } from './open-graph-proxy.service';
 
 @Injectable()

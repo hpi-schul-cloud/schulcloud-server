@@ -1,11 +1,11 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamPermissionsBody } from '@src/modules/collaborative-storage/controller/dto/team-permissions.body.params';
-import { TeamRoleDto } from '@src/modules/collaborative-storage/controller/dto/team-role.params';
-import { TeamPermissionsMapper } from '@src/modules/collaborative-storage/mapper/team-permissions.mapper';
-import { CollaborativeStorageService } from '@src/modules/collaborative-storage/services/collaborative-storage.service';
-import { TeamDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
-import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/collaborative-storage.uc';
+import { TeamPermissionsBody } from '../controller/dto/team-permissions.body.params';
+import { TeamRoleDto } from '../controller/dto/team-role.params';
+import { TeamPermissionsMapper } from '../mapper/team-permissions.mapper';
+import { CollaborativeStorageService } from '../services/collaborative-storage.service';
+import { TeamDto } from '../services/dto/team.dto';
+import { CollaborativeStorageUc } from './collaborative-storage.uc';
 
 describe('TeamStorageUc', () => {
 	let module: TestingModule;

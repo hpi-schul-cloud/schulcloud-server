@@ -1,22 +1,28 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, RoleName, User, UserDO } from '@shared/domain';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { User } from '@shared/domain/entity/user.entity';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { legacySchoolDoFactory, schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { UserService } from '@src/modules/user';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/legacy-school.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { OAuthSSOError } from '@src/modules/oauth/loggable/oauth-sso.error';
+import { RoleDto } from '@src/modules/role/service/dto/role.dto';
+import { UserService } from '@src/modules/user/service/user.service';
+
 import jwt from 'jsonwebtoken';
-import { OAuthSSOError } from '@src/modules/oauth/loggable';
-import { RoleDto } from '../../../role/service/dto/role.dto';
-import {
-	ExternalSchoolDto,
-	ExternalUserDto,
-	OauthDataDto,
-	OauthDataStrategyInputDto,
-	ProvisioningDto,
-	ProvisioningSystemDto,
-} from '../../dto';
+import { ExternalSchoolDto } from '../../dto/external-school.dto';
+import { ExternalUserDto } from '../../dto/external-user.dto';
+import { OauthDataStrategyInputDto } from '../../dto/oauth-data-strategy-input.dto';
+import { OauthDataDto } from '../../dto/oauth-data.dto';
+import { ProvisioningSystemDto } from '../../dto/provisioning-system.dto';
+import { ProvisioningDto } from '../../dto/provisioning.dto';
 import { IservProvisioningStrategy } from './iserv.strategy';
 
 jest.mock('jsonwebtoken');

@@ -1,16 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	DashboardEntity,
-	EntityId,
-	GridElement,
-	GridPosition,
-	LearnroomMetadata,
-	LearnroomTypes,
-} from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
+import { DashboardEntity, GridElement, GridPosition } from '@shared/domain/entity/dashboard.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types/learnroom.types';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardController } from './dashboard.controller';
-import { DashboardResponse } from './dto';
+import { DashboardResponse } from './dto/dashboard.response';
 
 const learnroomMock = (id: string, name: string) => {
 	return {

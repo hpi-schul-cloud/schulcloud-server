@@ -9,9 +9,10 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
-import { LegacyLogger } from '@src/core/logger';
-import { API_VERSION_PATH, FilesStorageApiModule } from '@src/modules/files-storage';
-import { enableOpenApiDocs } from '@src/shared/controller/swagger';
+import { enableOpenApiDocs } from '@shared/controller/swagger';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { FilesStorageApiModule } from '@src/modules/files-storage/files-storage-api.module';
+import { API_VERSION_PATH } from '@src/modules/files-storage/files-storage.const';
 
 async function bootstrap() {
 	sourceMapInstall();

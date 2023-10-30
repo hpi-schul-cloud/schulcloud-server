@@ -1,15 +1,14 @@
-import {
-	AcceptConsentRequestBody,
-	ProviderConsentResponse,
-	ProviderRedirectResponse,
-	RejectRequestBody,
-} from '@shared/infra/oauth-provider/dto';
-import { AcceptQuery, ConsentRequestBody } from '@src/modules/oauth-provider/controller/dto';
-import { ICurrentUser } from '@src/modules/authentication';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
-import { OauthProviderService } from '@shared/infra/oauth-provider';
-import { IdToken } from '@src/modules/oauth-provider/interface/id-token';
+import { AcceptConsentRequestBody } from '@shared/infra/oauth-provider/dto/request/accept-consent-request.body';
+import { RejectRequestBody } from '@shared/infra/oauth-provider/dto/request/reject-request.body';
+import { ProviderConsentResponse } from '@shared/infra/oauth-provider/dto/response/consent.response';
+import { ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto/response/redirect.response';
+import { OauthProviderService } from '@shared/infra/oauth-provider/oauth-provider.service';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { AcceptQuery } from '../controller/dto/request/accept.query';
+import { ConsentRequestBody } from '../controller/dto/request/consent-request.body';
+import { IdToken } from '../interface/id-token';
+import { IdTokenService } from '../service/id-token.service';
 
 @Injectable()
 export class OauthProviderConsentFlowUc {

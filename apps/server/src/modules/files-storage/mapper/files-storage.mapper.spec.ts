@@ -1,14 +1,10 @@
 import { NotImplementedException } from '@nestjs/common';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { AuthorizableReferenceType } from '@src/modules/authorization';
-import {
-	DownloadFileParams,
-	FileRecordListResponse,
-	FileRecordParams,
-	FileRecordResponse,
-	SingleFileParams,
-} from '../controller/dto';
-import { FileRecord, FileRecordParentType, PreviewStatus } from '../entity';
+import { fileRecordFactory } from '@shared/testing/factory/filerecord.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { AuthorizableReferenceType } from '@src/modules/authorization/types/allowed-authorization-object-type.enum';
+import { DownloadFileParams, FileRecordParams, SingleFileParams } from '../controller/dto/file-storage.params';
+import { FileRecordListResponse, FileRecordResponse } from '../controller/dto/file-storage.response';
+import { FileRecord, FileRecordParentType, PreviewStatus } from '../entity/filerecord.entity';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {

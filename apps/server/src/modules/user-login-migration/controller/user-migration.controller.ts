@@ -1,9 +1,10 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { PageContentMapper } from '../mapper';
-import { PageContentDto } from '../service/dto';
+import { PageContentMapper } from '../mapper/page-content.mapper';
+import { PageContentDto } from '../service/dto/page-content.dto';
 import { UserLoginMigrationUc } from '../uc/user-login-migration.uc';
-import { PageContentQueryParams, PageContentResponse } from './dto';
+import { PageContentQueryParams } from './dto/request/page-type.query.param';
+import { PageContentResponse } from './dto/response/page-content.response';
 
 @ApiTags('UserMigration')
 @Controller('user-migration')

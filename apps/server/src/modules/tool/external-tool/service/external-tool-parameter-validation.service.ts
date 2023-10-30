@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
-import { CustomParameter } from '../../common/domain';
-import { autoParameters, CustomParameterScope } from '../../common/enum';
-import { CommonToolValidationService } from '../../common/service';
-import { ExternalTool } from '../domain';
+import { ValidationError } from '@shared/common/error/validation.error';
+import { CustomParameter } from '../../common/domain/custom-parameter.do';
+import { CustomParameterScope } from '../../common/enum/custom-parameter-scope.enum';
+import { autoParameters } from '../../common/enum/custom-parameter-type.enum';
+import { CommonToolValidationService } from '../../common/service/common-tool-validation.service';
+import { ExternalTool } from '../domain/external-tool.do';
 import { ExternalToolService } from './external-tool.service';
 
 @Injectable()

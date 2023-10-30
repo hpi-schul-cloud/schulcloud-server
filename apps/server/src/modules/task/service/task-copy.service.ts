@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { Course, LessonEntity, Task, User } from '@shared/domain/entity';
-import { TaskRepo } from '@shared/repo';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
-import { CopyFilesService } from '@src/modules/files-storage-client';
-import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
+import { Course } from '@shared/domain/entity/course.entity';
+import { LessonEntity } from '@shared/domain/entity/lesson.entity';
+import { Task } from '@shared/domain/entity/task.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { TaskRepo } from '@shared/repo/task/task.repo';
+import { CopyHelperService } from '@src/modules/copy-helper/service/copy-helper.service';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper/types/copy.types';
+import { CopyFilesService, FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
 
 type TaskCopyParams = {
 	originalTaskId: EntityId;

@@ -10,28 +10,30 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { ValidationError } from '@shared/common';
-import { PaginationParams } from '@shared/controller';
-import { IFindOptions, Page } from '@shared/domain';
-import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ValidationError } from '@shared/common/error/validation.error';
+import { PaginationParams } from '@shared/controller/dto/pagination.params';
+import { Page } from '@shared/domain/domainobject/page';
+import { IFindOptions } from '@shared/domain/interface/find-options';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+
 import { Response } from 'express';
-import { ExternalToolSearchQuery } from '../../common/interface';
-import { ExternalTool } from '../domain';
+import { ExternalToolSearchQuery } from '../../common/interface/external-tool-search-query';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
-import { ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
-import { ExternalToolLogoService } from '../service';
-import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate } from '../uc';
-import {
-	ExternalToolCreateParams,
-	ExternalToolIdParams,
-	ExternalToolResponse,
-	ExternalToolSearchListResponse,
-	ExternalToolSearchParams,
-	ExternalToolUpdateParams,
-	SortExternalToolParams,
-} from './dto';
+import { ExternalTool } from '../domain/external-tool.do';
+import { ExternalToolRequestMapper } from '../mapper/external-tool-request.mapper';
+import { ExternalToolResponseMapper } from '../mapper/external-tool-response.mapper';
+import { ExternalToolLogoService } from '../service/external-tool-logo.service';
+import { ExternalToolCreate, ExternalToolUpdate } from '../uc/dto/external-tool.types';
+import { ExternalToolUc } from '../uc/external-tool.uc';
+import { ExternalToolCreateParams } from './dto/request/external-tool-create.params';
+import { ExternalToolIdParams } from './dto/request/external-tool-id.params';
+import { ExternalToolSearchParams } from './dto/request/external-tool-search.params';
+import { SortExternalToolParams } from './dto/request/external-tool-sort.params';
+import { ExternalToolUpdateParams } from './dto/request/external-tool-update.params';
+import { ExternalToolSearchListResponse } from './dto/response/external-tool-search-list.response';
+import { ExternalToolResponse } from './dto/response/external-tool.response';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

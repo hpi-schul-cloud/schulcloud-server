@@ -1,8 +1,8 @@
-import { AuthorizationLoaderService } from '@src/modules/authorization';
-import { EntityId } from '@shared/domain';
-import { ContextExternalToolRepo } from '@shared/repo';
 import { Injectable } from '@nestjs/common';
-import { ContextExternalTool } from '../domain';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool/context-external-tool.repo';
+import { AuthorizationLoaderService } from '@src/modules/authorization/types/authorization-loader-service';
+import { ContextExternalTool } from '../domain/context-external-tool.do';
 
 @Injectable()
 export class ContextExternalToolAuthorizableService implements AuthorizationLoaderService {

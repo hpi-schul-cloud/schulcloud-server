@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { PageContentResponse } from '../controller/dto/response/page-content.response';
 import { PageContentDto } from '../service/dto/page-content.dto';
-import { PageContentResponse } from '../controller/dto';
 
 @Injectable()
 export class PageContentMapper {

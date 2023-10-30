@@ -1,17 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { RoleName } from '@shared/domain';
-import { Logger } from '@src/core/logger';
-import { GroupTypes } from '@src/modules/group';
-import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
-import { GroupRoleUnknownLoggable } from '../../loggable';
-import {
-	SanisGroupRole,
-	SanisGroupType,
-	SanisGruppenResponse,
-	SanisResponse,
-	SanisRole,
-	SanisSonstigeGruppenzugehoerigeResponse,
-} from './response';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { Logger } from '@src/core/logger/logger';
+import { GroupTypes } from '@src/modules/group/domain/group-types';
+import { ExternalGroupUserDto } from '../../dto/external-group-user.dto';
+import { ExternalGroupDto } from '../../dto/external-group.dto';
+import { ExternalSchoolDto } from '../../dto/external-school.dto';
+import { ExternalUserDto } from '../../dto/external-user.dto';
+import { GroupRoleUnknownLoggable } from '../../loggable/group-role-unknown.loggable';
+import { SanisGroupRole } from './response/sanis-group-role';
+import { SanisGroupType } from './response/sanis-group-type';
+import { SanisGruppenResponse } from './response/sanis-gruppen-response';
+import { SanisRole } from './response/sanis-role';
+import { SanisSonstigeGruppenzugehoerigeResponse } from './response/sanis-sonstige-gruppenzugehoerige-response';
+import { SanisResponse } from './response/sanis.response';
 
 const RoleMapping: Record<SanisRole, RoleName> = {
 	[SanisRole.LEHR]: RoleName.TEACHER,

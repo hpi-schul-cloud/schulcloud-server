@@ -1,5 +1,7 @@
-import { ContentElementType, LinkElement } from '@shared/domain';
-import { LinkElementContent, LinkElementResponse, TimestampsResponse } from '../dto';
+import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
+import { LinkElementResponse, LinkElementContent } from '../dto/element/link-element.response';
+import { TimestampsResponse } from '../dto/timestamps.response';
 import { BaseResponseMapper } from './base-mapper.interface';
 
 export class LinkElementResponseMapper implements BaseResponseMapper {

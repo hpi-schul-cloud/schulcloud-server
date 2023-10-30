@@ -1,5 +1,8 @@
-import { BaseFactory } from '@shared/testing/factory/base.factory';
-import { ISchoolExternalToolProperties, SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
+import {
+	ISchoolExternalToolProperties,
+	SchoolExternalToolEntity,
+} from '@src/modules/tool/school-external-tool/entity/school-external-tool.entity';
+import { BaseFactory } from './base.factory';
 import { externalToolEntityFactory } from './external-tool-entity.factory';
 import { schoolFactory } from './school.factory';
 

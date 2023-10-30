@@ -10,15 +10,18 @@ import {
 	Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { VideoConferenceScope } from '@shared/domain/interface';
+import { VideoConferenceScope } from '@shared/domain/interface/video-conference-scope.enum';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ICurrentUser } from '@src/modules/authentication/interface';
-import { BBBBaseResponse } from '../bbb';
-import { defaultVideoConferenceOptions } from '../interface';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { BBBBaseResponse } from '../bbb/response/bbb-base.response';
+import { defaultVideoConferenceOptions } from '../interface/video-conference-options.interface';
 import { VideoConferenceResponseDeprecatedMapper } from '../mapper/vc-deprecated-response.mapper';
-import { VideoConferenceDeprecatedUc } from '../uc';
-import { VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
-import { VideoConferenceCreateParams } from './dto';
+import { VideoConference } from '../uc/dto/video-conference';
+import { VideoConferenceInfo } from '../uc/dto/video-conference-info';
+import { VideoConferenceJoin } from '../uc/dto/video-conference-join';
+import { VideoConferenceState } from '../uc/dto/video-conference-state.enum';
+import { VideoConferenceDeprecatedUc } from '../uc/video-conference-deprecated.uc';
+import { VideoConferenceCreateParams } from './dto/request/video-conference-create.params';
 import {
 	DeprecatedVideoConferenceInfoResponse,
 	VideoConferenceBaseResponse,

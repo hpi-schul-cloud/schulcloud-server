@@ -1,8 +1,8 @@
+import { CommonCartridgeResourceType, CommonCartridgeVersion } from './common-cartridge-enums';
 import {
-	ICommonCartridgeOrganizationProps,
 	CommonCartridgeOrganizationItemElement,
+	ICommonCartridgeOrganizationProps,
 } from './common-cartridge-organization-item-element';
-import { CommonCartridgeVersion, CommonCartridgeResourceType } from './common-cartridge-enums';
 import { ICommonCartridgeResourceProps } from './common-cartridge-resource-item-element';
 
 describe('CommonCartridgeOrganizationItemElement', () => {

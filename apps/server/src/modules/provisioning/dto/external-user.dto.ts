@@ -1,4 +1,4 @@
-import { RoleName } from '@shared/domain';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
 
 export class ExternalUserDto {
 	externalId: string;

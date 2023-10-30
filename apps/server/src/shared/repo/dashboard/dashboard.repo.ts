@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, DashboardEntity, GridElementWithPosition, DashboardModelEntity } from '@shared/domain';
+
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { DashboardEntity, GridElementWithPosition } from '@shared/domain/entity/dashboard.entity';
+import { DashboardModelEntity } from '@shared/domain/entity/dashboard.model.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { DashboardModelMapper } from './dashboard.model.mapper';
 
 const generateEmptyDashboard = (userId: EntityId) => {

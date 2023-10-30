@@ -1,18 +1,17 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ForbiddenOperationError, ValidationError } from '@shared/common';
+import { ForbiddenOperationError } from '@shared/common/error/forbidden-operation.error';
+import { ValidationError } from '@shared/common/error/validation.error';
 import { CurrentUser } from '../decorator/auth.decorator';
-import type { ICurrentUser, OauthCurrentUser } from '../interface';
-import { LoginDto } from '../uc/dto';
+import { ICurrentUser, OauthCurrentUser } from '../interface/user';
+import { LoginDto } from '../uc/dto/login.dto';
 import { LoginUc } from '../uc/login.uc';
-import {
-	LdapAuthorizationBodyParams,
-	LocalAuthorizationBodyParams,
-	LoginResponse,
-	Oauth2AuthorizationBodyParams,
-	OauthLoginResponse,
-} from './dto';
+import { LdapAuthorizationBodyParams } from './dto/ldap-authorization.body.params';
+import { LocalAuthorizationBodyParams } from './dto/local-authorization.body.params';
+import { LoginResponse } from './dto/login.response';
+import { OauthLoginResponse } from './dto/oauth-login.response';
+import { Oauth2AuthorizationBodyParams } from './dto/oauth2-authorization.body.params';
 import { LoginResponseMapper } from './mapper/login-response.mapper';
 
 @ApiTags('Authentication')

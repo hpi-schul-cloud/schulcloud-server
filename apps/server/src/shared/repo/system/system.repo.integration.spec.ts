@@ -1,10 +1,11 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SystemEntity, SystemTypeEnum } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { SystemRepo } from '@shared/repo';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { SystemTypeEnum } from '@shared/domain/types/system.type';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
 import { systemFactory } from '@shared/testing/factory/system.factory';
+import { SystemRepo } from './system.repo';
 
 describe('system repo', () => {
 	let module: TestingModule;

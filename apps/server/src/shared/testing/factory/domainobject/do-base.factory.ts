@@ -1,5 +1,5 @@
-import { BuildOptions, DeepPartial } from 'fishery';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { BuildOptions, DeepPartial } from 'fishery';
 import { BaseFactory } from '../base.factory';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

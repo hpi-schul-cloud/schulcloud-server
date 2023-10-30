@@ -1,5 +1,5 @@
-import { AcceptLoginRequestBody } from '@shared/infra/oauth-provider/dto';
-import { LoginRequestBody } from '@src/modules/oauth-provider/controller/dto';
+import { AcceptLoginRequestBody } from '@shared/infra/oauth-provider/dto/request/accept-login-request.body';
+import { LoginRequestBody } from '../controller/dto/request/login-request.body';
 
 export class OauthProviderRequestMapper {
 	static mapCreateAcceptLoginRequestBody(

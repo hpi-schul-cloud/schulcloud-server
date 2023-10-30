@@ -1,10 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { CustomParameterLocationParams } from '@src/modules/tool/common/enum/request-response/custom-parameter-location.enum';
+import { CustomParameterScopeTypeParams } from '@src/modules/tool/common/enum/request-response/custom-parameter-scope-type.enum';
+import { CustomParameterTypeParams } from '@src/modules/tool/common/enum/request-response/custom-parameter-type.enum';
 import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import {
-	CustomParameterLocationParams,
-	CustomParameterScopeTypeParams,
-	CustomParameterTypeParams,
-} from '../../../../common/enum';
 
 export class CustomParameterPostParams {
 	@IsString()

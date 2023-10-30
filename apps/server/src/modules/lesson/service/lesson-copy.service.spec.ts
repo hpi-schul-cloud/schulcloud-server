@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { BaseEntity } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { AuthorizableObject } from '@shared/domain/domain-object';
 import {
-	BaseEntity,
 	ComponentType,
-	EntityId,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
 	IComponentInternalProperties,
@@ -12,21 +12,20 @@ import {
 	IComponentProperties,
 	IComponentTextProperties,
 	LessonEntity,
-	Material,
-} from '@shared/domain';
-import { AuthorizableObject } from '@shared/domain/domain-object';
-import { LessonRepo } from '@shared/repo';
-import {
-	courseFactory,
-	lessonFactory,
-	materialFactory,
-	setupEntities,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
-import { CopyFilesService } from '@src/modules/files-storage-client';
-import { TaskCopyService } from '@src/modules/task/service';
+} from '@shared/domain/entity/lesson.entity';
+import { Material } from '@shared/domain/entity/materials.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { LessonRepo } from '@shared/repo/lesson/lesson.repo';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { materialFactory } from '@shared/testing/factory/material.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { CopyHelperService } from '@src/modules/copy-helper/service/copy-helper.service';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper/types/copy.types';
+import { CopyFilesService } from '@src/modules/files-storage-client/service/copy-files.service';
+import { TaskCopyService } from '@src/modules/task/service/task-copy.service';
 import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
 import { NexboardService } from './nexboard.service';

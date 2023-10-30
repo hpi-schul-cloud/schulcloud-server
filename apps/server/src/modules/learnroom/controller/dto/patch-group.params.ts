@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SanitizeHtml } from '@shared/controller';
+import { SanitizeHtml } from '@shared/controller/transformer/sanitize-html.transformer';
+
 import { IsString } from 'class-validator';
 
 /**

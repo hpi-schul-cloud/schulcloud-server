@@ -1,8 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { INestApplication } from '@nestjs/common';
-import { DurationLoggingInterceptor } from '@shared/common';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+
 import request from 'supertest';
+import { DurationLoggingInterceptor } from './duration-logging.interceptor';
 import { createTestModule } from './timeout.interceptor.spec';
 
 describe('DurationLoggingInterceptor', () => {

@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
-import { Counted, EntityId, CourseGroup } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { CourseGroup } from '@shared/domain/entity/coursegroup.entity';
+import { Counted } from '@shared/domain/types/counted';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { BaseRepo } from '../base.repo';
 
 @Injectable()

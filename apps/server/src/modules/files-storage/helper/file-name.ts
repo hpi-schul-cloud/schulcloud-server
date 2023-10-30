@@ -1,8 +1,8 @@
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types/entity-id';
 import crypto from 'crypto';
 import path from 'path';
-import { PreviewParams } from '../controller/dto';
-import { FileRecord } from '../entity';
+import { PreviewParams } from '../controller/dto/file-storage.params';
+import { FileRecord } from '../entity/filerecord.entity';
 
 export function hasDuplicateName(fileRecords: FileRecord[], name: string): FileRecord | undefined {
 	const foundFileRecord = fileRecords.find((item: FileRecord) => item.hasName(name));

@@ -1,15 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SubmissionItem } from '@shared/domain';
-import { ValidationError } from '@shared/common';
-import { richTextElementFactory, setupEntities, userFactory } from '@shared/testing';
-import {
-	cardFactory,
-	submissionContainerElementFactory,
-	submissionItemFactory,
-} from '@shared/testing/factory/domainobject';
-import { BoardDoRepo } from '../repo';
+import { SubmissionItem } from '@shared/domain/domainobject/board/submission-item.do';
+import { cardFactory } from '@shared/testing/factory/domainobject/board/card.do.factory';
+import { richTextElementFactory } from '@shared/testing/factory/domainobject/board/rich-text-element.do.factory';
+import { submissionContainerElementFactory } from '@shared/testing/factory/domainobject/board/submission-container-element.do.factory';
+import { submissionItemFactory } from '@shared/testing/factory/domainobject/board/submission-item.do.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { BoardDoRepo } from '../repo/board-do.repo';
 import { BoardDoService } from './board-do.service';
 import { SubmissionItemService } from './submission-item.service';
 

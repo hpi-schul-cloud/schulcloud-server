@@ -1,17 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Pseudonym, TeamEntity, UserDO } from '@shared/domain';
-import { TeamsRepo } from '@shared/repo';
-import { externalToolFactory, pseudonymFactory, setupEntities, userDoFactory } from '@shared/testing';
-import { teamFactory } from '@shared/testing/factory/team.factory';
-import { IdToken } from '@src/modules/oauth-provider/interface/id-token';
-import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.enum';
-import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
-import { PseudonymService } from '@src/modules/pseudonym/service';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { UserService } from '@src/modules/user/service/user.service';
-import { IdTokenCreationLoggableException } from '../error/id-token-creation-exception.loggable';
-import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
+
 import resetAllMocks = jest.resetAllMocks;
 
 describe('IdTokenService', () => {

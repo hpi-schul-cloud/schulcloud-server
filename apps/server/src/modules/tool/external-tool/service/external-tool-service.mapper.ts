@@ -1,6 +1,6 @@
-import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { Injectable } from '@nestjs/common';
-import { Oauth2ToolConfig } from '../domain';
+import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto/interface/oauth-client.interface';
+import { Oauth2ToolConfig } from '../domain/config/oauth2-tool-config.do';
 
 @Injectable()
 export class ExternalToolServiceMapper {

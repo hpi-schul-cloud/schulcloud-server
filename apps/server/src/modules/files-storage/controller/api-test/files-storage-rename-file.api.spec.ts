@@ -1,23 +1,23 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
-import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
-import {
-	cleanupCollections,
-	fileRecordFactory,
-	mapUserToCurrentUser,
-	roleFactory,
-	schoolFactory,
-	userFactory,
-} from '@shared/testing';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { fileRecordFactory } from '@shared/testing/factory/filerecord.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { mapUserToCurrentUser } from '@shared/testing/map-user-to-current-user';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FilesStorageTestModule } from '@src/modules/files-storage';
-import { FileRecordResponse, RenameFileParams } from '@src/modules/files-storage/controller/dto';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+
 import { Request } from 'express';
 import request from 'supertest';
-import { FileRecord, FileRecordParentType } from '../../entity';
+import { FileRecord, FileRecordParentType } from '../../entity/filerecord.entity';
+import { FilesStorageTestModule } from '../../files-storage-test.module';
+import { RenameFileParams } from '../dto/file-storage.params';
+import { FileRecordResponse } from '../dto/file-storage.response';
 
 const baseRouteName = '/file/rename/';
 

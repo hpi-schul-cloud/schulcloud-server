@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error/business.error';
 
 export class SchoolMigrationError extends BusinessError {
 	constructor(details?: Record<string, unknown>, cause?: unknown) {

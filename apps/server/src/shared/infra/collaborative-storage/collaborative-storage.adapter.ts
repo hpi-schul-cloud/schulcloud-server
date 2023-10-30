@@ -1,10 +1,10 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { TeamPermissionsDto } from '@src/modules/collaborative-storage/services/dto/team-permissions.dto';
 import { TeamDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
-import { ICollaborativeStorageStrategy } from '@shared/infra/collaborative-storage/strategy/base.interface.strategy';
-import { Inject, Injectable } from '@nestjs/common';
-import { CollaborativeStorageAdapterMapper } from '@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
-import { LegacyLogger } from '@src/core/logger';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
+import { CollaborativeStorageAdapterMapper } from './mapper/collaborative-storage-adapter.mapper';
+import { ICollaborativeStorageStrategy } from './strategy/base.interface.strategy';
 
 /**
  * Provides an Adapter to an external collaborative storage.

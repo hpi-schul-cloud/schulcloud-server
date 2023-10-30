@@ -1,18 +1,19 @@
 import { DeepPartial } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LessonEntity, User } from '@shared/domain/entity';
-import { Permission, RoleName } from '@shared/domain/interface';
-import {
-	courseFactory,
-	courseGroupFactory,
-	lessonFactory,
-	roleFactory,
-	setupEntities,
-	userFactory,
-} from '@shared/testing';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { courseGroupFactory } from '@shared/testing/factory/coursegroup.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action } from '@src/modules/authorization/types';
-import { CourseGroupRule, CourseRule } from '.';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { LessonEntity } from '../entity/lesson.entity';
+import { User } from '../entity/user.entity';
+import { RoleName } from '../interface/rolename.enum';
+import { CourseGroupRule } from './course-group.rule';
+import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
 
 describe('LessonRule', () => {

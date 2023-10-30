@@ -1,4 +1,4 @@
-import { SortOrder } from '@shared/domain';
+import { SortOrder } from '@shared/domain/interface/find-options';
 import { SortHelper } from './sort-helper';
 
 describe('SortHelper', () => {

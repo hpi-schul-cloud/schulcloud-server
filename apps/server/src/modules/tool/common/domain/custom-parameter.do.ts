@@ -1,4 +1,6 @@
-import { CustomParameterScope, CustomParameterLocation, CustomParameterType } from '../enum';
+import { CustomParameterLocation } from '../enum/custom-parameter-location.enum';
+import { CustomParameterScope } from '../enum/custom-parameter-scope.enum';
+import { CustomParameterType } from '../enum/custom-parameter-type.enum';
 
 export class CustomParameter {
 	name: string;

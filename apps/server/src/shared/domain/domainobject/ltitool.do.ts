@@ -1,5 +1,5 @@
-import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
-import { EntityId } from '@shared/domain/types';
+import { LtiPrivacyPermission, LtiRoleType } from '../entity/ltitool.entity';
+import { EntityId } from '../types/entity-id';
 import { BaseDO } from './base.do';
 
 export class CustomLtiPropertyDO {

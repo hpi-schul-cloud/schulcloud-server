@@ -1,15 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Course, EntityId, Pseudonym, RoleName, RoleReference, UserDO } from '@shared/domain';
-import { CourseService } from '@src/modules/learnroom/service';
-import { ToolContextType } from '@src/modules/tool/common/enum';
-import { ContextExternalTool, ContextRef } from '@src/modules/tool/context-external-tool/domain';
-import { ContextExternalToolService } from '@src/modules/tool/context-external-tool/service';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { ExternalToolService } from '@src/modules/tool/external-tool/service';
-import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
-import { SchoolExternalToolService } from '@src/modules/tool/school-external-tool/service';
-import { UserService } from '@src/modules/user';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception/not-found.loggable-exception';
+import { Pseudonym } from '@shared/domain/domainobject/pseudonym.do';
+import { RoleReference } from '@shared/domain/domainobject/role-reference';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Course } from '@shared/domain/entity/course.entity';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { ToolContextType } from '@src/modules/tool/common/enum/tool-context-type.enum';
+import { ContextExternalTool } from '@src/modules/tool/context-external-tool/domain/context-external-tool.do';
+import { ContextRef } from '@src/modules/tool/context-external-tool/domain/context-ref';
+import { ContextExternalToolService } from '@src/modules/tool/context-external-tool/service/context-external-tool.service';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain/external-tool.do';
+import { ExternalToolService } from '@src/modules/tool/external-tool/service/external-tool.service';
+import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain/school-external-tool.do';
+import { SchoolExternalToolService } from '@src/modules/tool/school-external-tool/service/school-external-tool.service';
+import { UserService } from '@src/modules/user/service/user.service';
 import { PseudonymService } from './pseudonym.service';
 
 interface UserMetdata {

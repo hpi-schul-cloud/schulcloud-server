@@ -1,7 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
-import { cardFactory, columnFactory } from '@shared/testing';
+import { cardFactory } from '@shared/testing/factory/domainobject/board/card.do.factory';
+import { columnFactory } from '@shared/testing/factory/domainobject/board/column.do.factory';
 import { Column } from './column.do';
-import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types/board-composite-visitor';
 
 describe(Column.name, () => {
 	describe('isAllowedAsChild', () => {

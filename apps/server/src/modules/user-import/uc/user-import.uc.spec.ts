@@ -4,26 +4,27 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserAlreadyAssignedToImportUserError } from '@shared/common';
-import {
-	ImportUser,
-	LegacySchoolDo,
-	MatchCreator,
-	MatchCreatorScope,
-	Permission,
-	SchoolEntity,
-	SchoolFeatures,
-	SystemEntity,
-	User,
-} from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
+import { UserAlreadyAssignedToImportUserError } from '@shared/common/error/user-already-assigned-to-import-user.business-error';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { ImportUser, MatchCreator } from '@shared/domain/entity/import-user.entity';
+import { SchoolEntity, SchoolFeatures } from '@shared/domain/entity/school.entity';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { MatchCreatorScope } from '@shared/domain/types/importuser.types';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { ImportUserRepo } from '@shared/repo/importuser/importuser.repo';
+import { SystemRepo } from '@shared/repo/system/system.repo';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { federalStateFactory } from '@shared/testing/factory/federal-state.factory';
+import { importUserFactory } from '@shared/testing/factory/import-user.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
 import { systemFactory } from '@shared/testing/factory/system.factory';
-import { LoggerModule } from '@src/core/logger';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { LoggerModule } from '@src/core/logger/logger.module';
 import { AccountService } from '@src/modules/account/services/account.service';
-import { AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,

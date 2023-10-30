@@ -1,5 +1,6 @@
 import { NotImplementedException } from '@nestjs/common';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { Loggable } from '@src/core/logger/interfaces/loggable';
+import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@src/core/logger/types/logging.types';
 
 export class ParameterTypeNotImplementedLoggableException extends NotImplementedException implements Loggable {
 	constructor(private readonly parameterType: string) {

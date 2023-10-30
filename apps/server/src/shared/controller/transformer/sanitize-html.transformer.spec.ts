@@ -1,5 +1,6 @@
 import { NotImplementedException } from '@nestjs/common';
-import { InputFormat } from '@shared/domain';
+import { InputFormat } from '@shared/domain/types/input-format.types';
+
 import { plainToClass } from 'class-transformer';
 import { SanitizeHtml } from './sanitize-html.transformer';
 

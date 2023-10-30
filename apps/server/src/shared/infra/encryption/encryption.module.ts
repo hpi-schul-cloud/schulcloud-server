@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { LegacyLogger, LoggerModule } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { LoggerModule } from '@src/core/logger/logger.module';
 import { DefaultEncryptionService, LdapEncryptionService } from './encryption.interface';
 import { SymetricKeyEncryptionService } from './encryption.service';
 

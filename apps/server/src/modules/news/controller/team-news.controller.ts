@@ -1,13 +1,13 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
-
-import { PaginationParams } from '@shared/controller';
+import { PaginationParams } from '@shared/controller/dto/pagination.params';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { NewsMapper } from '../mapper/news.mapper';
-import { NewsUc } from '../uc';
-import { FilterNewsParams, NewsListResponse, TeamUrlParams } from './dto';
+import { NewsUc } from '../uc/news.uc';
+import { FilterNewsParams } from './dto/filter-news.params';
+import { NewsListResponse } from './dto/news.response';
+import { TeamUrlParams } from './dto/team.url.params';
 
 @ApiTags('News')
 @Authenticate('jwt')

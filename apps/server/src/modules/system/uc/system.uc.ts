@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { EntityNotFoundError } from '@shared/common';
-import { EntityId, SystemEntity, SystemType, SystemTypeEnum } from '@shared/domain';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { SystemService } from '@src/modules/system/service/system.service';
+import { EntityNotFoundError } from '@shared/common/error/entity-not-found.error';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { SystemType, SystemTypeEnum } from '@shared/domain/types/system.type';
+import { SystemDto } from '../service/dto/system.dto';
+import { SystemService } from '../service/system.service';
 
 @Injectable()
 export class SystemUc {

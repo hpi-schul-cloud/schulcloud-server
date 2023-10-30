@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, SchoolFeatures } from '@shared/domain';
-import { LegacySchoolRepo } from '@shared/repo';
-import { SchoolValidationService } from './validation';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { SchoolFeatures } from '@shared/domain/entity/school.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { LegacySchoolRepo } from '@shared/repo/school/legacy-school.repo';
+import { SchoolValidationService } from './validation/school-validation.service';
 
 /**
  * @deprecated because it uses the deprecated LegacySchoolDo.

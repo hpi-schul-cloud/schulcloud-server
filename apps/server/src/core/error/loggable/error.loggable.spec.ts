@@ -1,8 +1,9 @@
 import { NotFound } from '@feathersjs/errors';
 import { BadRequestException, HttpStatus, ValidationError } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { ApiValidationError, BusinessError } from '@shared/common';
-import { PrivacyProtect } from '@shared/controller';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
+import { BusinessError } from '@shared/common/error/business.error';
+import { PrivacyProtect } from '@shared/controller/validator/privacy-protect.validator';
 import { ErrorLoggable } from './error.loggable';
 
 class SampleBusinessError extends BusinessError {

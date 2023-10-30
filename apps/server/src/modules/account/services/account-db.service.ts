@@ -1,13 +1,17 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityNotFoundError } from '@shared/common';
-import { Account, Counted, EntityId } from '@shared/domain';
+import { EntityNotFoundError } from '@shared/common/error/entity-not-found.error';
+import { Account } from '@shared/domain/entity/account.entity';
+import { Counted } from '@shared/domain/types/counted';
+import { EntityId } from '@shared/domain/types/entity-id';
+
 import bcrypt from 'bcryptjs';
-import { AccountEntityToDtoMapper } from '../mapper';
+import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { AccountDto, AccountSaveDto } from './dto';
+import { AccountSaveDto } from './dto/account-save.dto';
+import { AccountDto } from './dto/account.dto';
 
 // HINT: do more empty lines :)
 

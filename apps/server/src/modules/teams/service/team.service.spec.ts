@@ -1,8 +1,5 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamsRepo } from '@shared/repo';
-import { setupEntities, teamFactory, teamUserFactory } from '@shared/testing';
-import { TeamService } from './team.service';
 
 describe('TeamService', () => {
 	let module: TestingModule;

@@ -2,29 +2,37 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, Page, Permission, SchoolYearEntity, SortOrder, User, UserDO } from '@shared/domain';
-import {
-	groupFactory,
-	legacySchoolDoFactory,
-	roleDtoFactory,
-	schoolYearFactory,
-	setupEntities,
-	UserAndAccountTestFactory,
-	userDoFactory,
-	userFactory,
-} from '@shared/testing';
-import { Action, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
-import { ClassService } from '@src/modules/class';
-import { Class } from '@src/modules/class/domain';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
+import { Page } from '@shared/domain/domainobject/page';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { SortOrder } from '@shared/domain/interface/find-options';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { groupFactory } from '@shared/testing/factory/domainobject/groups/group.factory';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/legacy-school.factory';
+import { roleDtoFactory } from '@shared/testing/factory/role-dto.factory';
+import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
+import { UserAndAccountTestFactory } from '@shared/testing/factory/user-and-account.test.factory';
+import { userDoFactory } from '@shared/testing/factory/user.do.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { AuthorizationContext } from '@src/modules/authorization/types/authorization-context.interface';
+import { Class } from '@src/modules/class/domain/class.do';
 import { classFactory } from '@src/modules/class/domain/testing/factory/class.factory';
-import { LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
-import { RoleService } from '@src/modules/role';
+import { ClassService } from '@src/modules/class/service/class.service';
+import { LegacySchoolService } from '@src/modules/legacy-school/service/legacy-school.service';
+import { SchoolYearService } from '@src/modules/legacy-school/service/school-year.service';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { SystemDto, SystemService } from '@src/modules/system';
-import { UserService } from '@src/modules/user';
-import { Group } from '../domain';
-import { GroupService } from '../service';
-import { ClassInfoDto } from './dto';
+import { RoleService } from '@src/modules/role/service/role.service';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { SystemService } from '@src/modules/system/service/system.service';
+import { UserService } from '@src/modules/user/service/user.service';
+import { Group } from '../domain/group';
+import { GroupService } from '../service/group.service';
+import { ClassInfoDto } from './dto/class-info.dto';
 import { ClassRootType } from './dto/class-root-type';
 import { GroupUc } from './group.uc';
 

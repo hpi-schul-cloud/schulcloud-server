@@ -1,12 +1,16 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, SystemEntity, UserLoginMigrationDO } from '@shared/domain';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject/user-login-migration.do';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, schoolFactory, systemFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
-import { userLoginMigrationFactory } from '../../testing/factory/user-login-migration.factory';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { systemFactory } from '@shared/testing/factory/system.factory';
+import { userLoginMigrationFactory } from '@shared/testing/factory/user-login-migration.factory';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { UserLoginMigrationRepo } from './user-login-migration.repo';
 
 describe('UserLoginMigrationRepo', () => {

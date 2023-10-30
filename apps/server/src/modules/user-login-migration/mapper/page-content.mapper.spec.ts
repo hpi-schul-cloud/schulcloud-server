@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PageContentMapper } from './page-content.mapper';
 import { PageContentDto } from '../service/dto/page-content.dto';
+import { PageContentMapper } from './page-content.mapper';
 
 describe('PageContentMapper', () => {
 	let module: TestingModule;

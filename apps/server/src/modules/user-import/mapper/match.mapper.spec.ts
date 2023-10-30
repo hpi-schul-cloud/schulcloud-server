@@ -1,5 +1,7 @@
-import { MatchCreator, MatchCreatorScope } from '@shared/domain';
-import { MatchType, FilterMatchType } from '../controller/dto';
+import { MatchCreator } from '@shared/domain/entity/import-user.entity';
+import { MatchCreatorScope } from '@shared/domain/types/importuser.types';
+import { FilterMatchType } from '../controller/dto/filter-import-user.params';
+import { MatchType } from '../controller/dto/match-type';
 import { ImportUserMatchMapper } from './match.mapper';
 
 describe('[ImportUserMatchMapper]', () => {

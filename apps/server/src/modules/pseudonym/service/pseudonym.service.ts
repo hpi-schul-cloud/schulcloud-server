@@ -1,11 +1,17 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { IFindOptions, LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { Page } from '@shared/domain/domainobject/page';
+import { Pseudonym } from '@shared/domain/domainobject/pseudonym.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { IFindOptions } from '@shared/domain/interface/find-options';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain/external-tool.do';
+
 import { v4 as uuidv4 } from 'uuid';
-import { PseudonymSearchQuery } from '../domain';
-import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
+import { PseudonymSearchQuery } from '../domain/pseudonym-search-query';
+import { ExternalToolPseudonymRepo } from '../repo/external-tool-pseudonym.repo';
+import { PseudonymsRepo } from '../repo/pseudonyms.repo';
 
 @Injectable()
 export class PseudonymService {

@@ -1,17 +1,22 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { EntityId, Permission } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
-import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
-import { CustomParameterScope, ToolContextType } from '../../common/enum';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
+import { AuthorizationContext } from '@src/modules/authorization/types/authorization-context.interface';
+import { CustomParameterScope } from '../../common/enum/custom-parameter-scope.enum';
+import { ToolContextType } from '../../common/enum/tool-context-type.enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ContextExternalToolService } from '../../context-external-tool/service';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ExternalTool } from '../domain';
-import { ExternalToolConfigurationService, ExternalToolLogoService, ExternalToolService } from '../service';
-import { ContextExternalToolTemplateInfo } from './dto';
+import { ContextExternalTool } from '../../context-external-tool/domain/context-external-tool.do';
+import { ContextExternalToolService } from '../../context-external-tool/service/context-external-tool.service';
+import { SchoolExternalTool } from '../../school-external-tool/domain/school-external-tool.do';
+import { SchoolExternalToolService } from '../../school-external-tool/service/school-external-tool.service';
+import { ExternalTool } from '../domain/external-tool.do';
+import { ExternalToolConfigurationService } from '../service/external-tool-configuration.service';
+import { ExternalToolLogoService } from '../service/external-tool-logo.service';
+import { ExternalToolService } from '../service/external-tool.service';
+import { ContextExternalToolTemplateInfo } from './dto/external-tool-configuration.types';
 
 @Injectable()
 export class ExternalToolConfigurationUc {

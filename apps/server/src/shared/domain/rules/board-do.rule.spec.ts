@@ -1,10 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { Action } from '@src/modules';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
+
+import { Action } from '@src/modules/authorization/types/action.enum';
 import { ObjectId } from 'bson';
-import { BoardDoAuthorizable, BoardRoles, UserRoleEnum } from '../domainobject';
-import { Permission } from '../interface';
+import { BoardDoAuthorizable, BoardRoles, UserRoleEnum } from '../domainobject/board/types/board-do-authorizable';
 import { BoardDoRule } from './board-do.rule';
 
 describe(BoardDoRule.name, () => {

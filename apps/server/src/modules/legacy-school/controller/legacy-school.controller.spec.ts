@@ -1,11 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { MigrationMapper } from '../mapper/migration.mapper';
 import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
-import { LegacySchoolUc } from '../uc';
-import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
+import { LegacySchoolUc } from '../uc/legacy-school.uc';
+import { MigrationBody } from './dto/migration.body';
+import { MigrationResponse } from './dto/migration.response';
+import { SchoolParams } from './dto/school.params';
 import { LegacySchoolController } from './legacy-school.controller';
 
 describe('Legacy School Controller', () => {

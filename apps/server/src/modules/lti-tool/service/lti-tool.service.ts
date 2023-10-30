@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiToolRepo } from '@shared/repo';
+import { LtiToolRepo } from '@shared/repo/ltitool/ltitool.repo';
 
 @Injectable()
 export class LtiToolService {

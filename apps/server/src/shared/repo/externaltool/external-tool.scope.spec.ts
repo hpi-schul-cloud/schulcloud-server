@@ -1,4 +1,4 @@
-import { ExternalToolScope } from '@shared/repo/externaltool/external-tool.scope';
+import { ExternalToolScope } from './external-tool.scope';
 
 describe('ExternalToolScope', () => {
 	let scope: ExternalToolScope;

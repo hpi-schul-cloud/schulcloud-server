@@ -1,8 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { FederalStateEntity } from '@shared/domain';
-import { cleanupCollections, federalStateFactory } from '@shared/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { Test, TestingModule } from '@nestjs/testing';
+import { FederalStateEntity } from '@shared/domain/entity/federal-state.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { federalStateFactory } from '@shared/testing/factory/federal-state.factory';
 import { FederalStateRepo } from './federal-state.repo';
 
 describe('FederalStateRepo', () => {

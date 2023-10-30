@@ -1,8 +1,13 @@
 import { Entity, Property } from '@mikro-orm/core';
-import { AnyBoardDo, BoardExternalReference, BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
+import {
+	BoardExternalReference,
+	BoardExternalReferenceType,
+} from '@shared/domain/domainobject/board/types/board-external-reference';
+
 import { ObjectId } from 'bson';
 import { BoardNode, BoardNodeProps } from './boardnode.entity';
-import { BoardDoBuilder } from './types';
+import { BoardDoBuilder } from './types/board-do.builder';
 import { BoardNodeType } from './types/board-node-type';
 
 @Entity({ discriminatorValue: BoardNodeType.COLUMN_BOARD })

@@ -1,9 +1,12 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, User } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { accountFactory, cleanupCollections, userFactory } from '@shared/testing';
+import { Account } from '@shared/domain/entity/account.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { accountFactory } from '@shared/testing/factory/account.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
 import { AccountRepo } from './account.repo';
 
 describe('account repo', () => {

@@ -2,23 +2,30 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication, NotFoundException, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
-import { EntityId, Permission } from '@shared/domain';
-import { AntivirusService } from '@shared/infra/antivirus';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { S3ClientAdapter } from '@shared/infra/s3-client/s3-client.adapter';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { mapUserToCurrentUser } from '@shared/testing/map-user-to-current-user';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FILES_STORAGE_S3_CONNECTION, FilesStorageTestModule } from '@src/modules/files-storage';
-import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+
 import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
-import { FileRecord, ScanStatus } from '../../entity';
-import { ErrorType } from '../../error';
+import { FileRecord, ScanStatus } from '../../entity/filerecord.entity';
+import { ErrorType } from '../../error/error-status.enum';
+import { FilesStorageTestModule } from '../../files-storage-test.module';
+import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { TestHelper } from '../../helper/test-helper';
-import { PreviewWidth } from '../../interface';
 import { PreviewOutputMimeTypes } from '../../interface/preview-output-mime-types.enum';
+import { PreviewWidth } from '../../interface/preview-width.enum';
+import { FileRecordResponse } from '../dto/file-storage.response';
 
 jest.mock('file-type-cjs/file-type-cjs-index', () => {
 	return {

@@ -1,4 +1,10 @@
-import { ISystemProperties, LdapConfig, OauthConfig, OidcConfig, SystemEntity } from '@shared/domain';
+import {
+	ISystemProperties,
+	LdapConfig,
+	OauthConfig,
+	OidcConfig,
+	SystemEntity,
+} from '@shared/domain/entity/system.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';

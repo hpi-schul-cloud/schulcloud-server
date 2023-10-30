@@ -1,6 +1,6 @@
 import { FeathersError } from '@feathersjs/errors';
 import { BadRequestException, HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error/business.error';
 import { ErrorUtils } from './error.utils';
 
 class SampleBusinessError extends BusinessError {

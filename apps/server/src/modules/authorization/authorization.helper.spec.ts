@@ -1,7 +1,3 @@
-import { Permission } from '@shared/domain';
-import { courseFactory, roleFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { AuthorizationHelper } from './authorization.helper';
-
 describe('AuthorizationHelper', () => {
 	// If we have a class with no dependencies, do we still wanna build a testing module? Or is it fine like this?
 	const service = new AuthorizationHelper();
