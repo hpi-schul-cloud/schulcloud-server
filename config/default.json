@@ -41,5 +41,10 @@
 	},
 	"CTL_TOOLS": {
 		"EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES": 300000
+	},
+	"BATCH_DELETION": {
+		"TARGET_REF_DOMAIN": "user",
+		"TARGET_REFS_FILE_PATH": "/data/ids-to-delete.txt",
+		"DELETE_IN_MINUTES": 43200
 	}
 }

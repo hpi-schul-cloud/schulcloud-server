@@ -1343,10 +1343,27 @@
 				}
 			}
 		},
-		"DELETION_INPUT_FILE_PATH":  {
-			"type": "string",
-			"default": "/data/data-to-delete.csv",
-			"description": "Path of an input file that contains all the references to the data that should be deleted."
+		"BATCH_DELETION": {
+			"type": "object",
+			"description": "Configuration for the \"batch deletion\" application.",
+			"required": [],
+			"properties": {
+				"TARGET_REF_DOMAIN": {
+					"type": "string",
+					"default": "user",
+					"description": "Domain of the provided references (ids)."
+				},
+				"TARGET_REFS_FILE_PATH": {
+					"type": "string",
+					"default": "/data/ids-to-delete.txt",
+					"description": "Path to the file containing all the references (ids) that should be deleted."
+				},
+				"DELETE_IN_MINUTES": {
+					"type": "integer",
+					"default": 43200,
+					"description": "The number of minutes after which the data should be deleted."
+				}
+			}
 		}
 	},
 	"required": [],

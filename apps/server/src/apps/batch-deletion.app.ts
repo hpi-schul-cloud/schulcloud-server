@@ -10,9 +10,11 @@ async function bootstrap() {
 	const logger = await app.resolve(Logger);
 	const configService = app.get(ConfigService);
 
-	const inputFilePath = configService.get<string>('DELETION_INPUT_FILE_PATH') as string;
+	const targetRefDomain = configService.get<string>('TARGET_REF_DOMAIN') as string;
+	const targetRefsFilePath = configService.get<string>('TARGET_REFS_FILE_PATH') as string;
+	const deleteInMinutes = configService.get<number>('DELETE_IN_MINUTES') as number;
 
-	logger.info(new BatchDeletionAppStartupLoggable({ inputFilePath }));
+	logger.info(new BatchDeletionAppStartupLoggable({ targetRefDomain, targetRefsFilePath, deleteInMinutes }));
 }
 
 void bootstrap();

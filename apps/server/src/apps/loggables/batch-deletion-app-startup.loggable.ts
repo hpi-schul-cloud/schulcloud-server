@@ -1,7 +1,9 @@
 import { Loggable, LogMessage } from '@src/core/logger';
 
 interface BatchDeletionAppStartupInfo {
-	inputFilePath: string;
+	targetRefDomain: string;
+	targetRefsFilePath: string;
+	deleteInMinutes: number;
 }
 
 export class BatchDeletionAppStartupLoggable implements Loggable {
@@ -11,7 +13,9 @@ export class BatchDeletionAppStartupLoggable implements Loggable {
 		return {
 			message: 'Successfully started batch deletion app...',
 			data: {
-				inputFilePath: this.info.inputFilePath,
+				targetRefDomain: this.info.targetRefDomain,
+				targetRefsFilePath: this.info.targetRefsFilePath,
+				deleteInMinutes: this.info.deleteInMinutes,
 			},
 		};
 	}
