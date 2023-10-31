@@ -5,6 +5,7 @@ const batchDeletionConfig = {
 	TARGET_REF_DOMAIN: Configuration.get('BATCH_DELETION__TARGET_REF_DOMAIN') as string,
 	TARGET_REFS_FILE_PATH: Configuration.get('BATCH_DELETION__TARGET_REFS_FILE_PATH') as string,
 	DELETE_IN_MINUTES: Configuration.get('BATCH_DELETION__DELETE_IN_MINUTES') as number,
+	CALLS_DELAY_MILLISECONDS: Configuration.get('BATCH_DELETION__CALLS_DELAY_MILLISECONDS') as number,
 };
 
 export const config = () => batchDeletionConfig;

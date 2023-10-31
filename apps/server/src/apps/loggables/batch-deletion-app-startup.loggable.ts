@@ -4,6 +4,7 @@ interface BatchDeletionAppStartupInfo {
 	targetRefDomain: string;
 	targetRefsFilePath: string;
 	deleteInMinutes: number;
+	callsDelayMilliseconds: number;
 }
 
 export class BatchDeletionAppStartupLoggable implements Loggable {
@@ -16,6 +17,7 @@ export class BatchDeletionAppStartupLoggable implements Loggable {
 				targetRefDomain: this.info.targetRefDomain,
 				targetRefsFilePath: this.info.targetRefsFilePath,
 				deleteInMinutes: this.info.deleteInMinutes,
+				callsDelayMilliseconds: this.info.callsDelayMilliseconds,
 			},
 		};
 	}

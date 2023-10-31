@@ -1362,6 +1362,11 @@
 					"type": "integer",
 					"default": 43200,
 					"description": "The number of minutes after which the data should be deleted."
+				},
+				"CALLS_DELAY_MILLISECONDS": {
+					"type": "integer",
+					"default": 0,
+					"description": "Delay between the HTTP calls in milliseconds - 0 (or less) indicates no delay."
 				}
 			}
 		}
