@@ -43,7 +43,7 @@ describe('rocket.chat user service', () => {
 		app.configure(rocketChat);
 		rocketChatUserService = app.service('/rocketChat/user');
 
-		server = app.listen(0);
+		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 		return server;
 	});
@@ -152,7 +152,7 @@ describe('rocket.chat login service', async () => {
 
 	before(async () => {
 		app = await appPromise();
-		server = app.listen(0);
+		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 
 		rocketChatLoginService = app.service('/rocketChat/login');
@@ -222,7 +222,7 @@ describe('rocket.chat logout service', async () => {
 
 	before(async () => {
 		app = await appPromise();
-		server = app.listen(0);
+		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 
 		rocketChatLogoutService = app.service('rocketChat/logout');
