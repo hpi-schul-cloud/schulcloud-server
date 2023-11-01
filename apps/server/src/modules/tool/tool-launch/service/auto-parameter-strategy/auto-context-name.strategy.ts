@@ -1,7 +1,7 @@
-import { ColumnBoardService } from '@modules/board';
+import { ColumnBoardService, ContentElementService } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType, ColumnBoard, Course, EntityId } from '@shared/domain';
+import { AnyContentElementDo, BoardExternalReferenceType, ColumnBoard, Course, EntityId } from '@shared/domain';
 import { CustomParameterType, ToolContextType } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
@@ -10,7 +10,11 @@ import { AutoParameterStrategy } from './auto-parameter.strategy';
 
 @Injectable()
 export class AutoContextNameStrategy implements AutoParameterStrategy {
-	constructor(private readonly courseService: CourseService, private readonly columnBoardService: ColumnBoardService) {}
+	constructor(
+		private readonly courseService: CourseService,
+		private readonly contentElementService: ContentElementService,
+		private readonly columnBoardService: ColumnBoardService
+	) {}
 
 	async getValue(
 		schoolExternalTool: SchoolExternalTool,
@@ -41,8 +45,10 @@ export class AutoContextNameStrategy implements AutoParameterStrategy {
 		return course.name;
 	}
 
-	private async getBoardValue(boardId: EntityId): Promise<string | undefined> {
-		const board: ColumnBoard = await this.columnBoardService.findById(boardId);
+	private async getBoardValue(elementId: EntityId): Promise<string | undefined> {
+		const element: AnyContentElementDo = await this.contentElementService.findById(elementId);
+
+		const board: ColumnBoard = await this.columnBoardService.findByDescendant(element);
 
 		if (board.context.type === BoardExternalReferenceType.Course) {
 			const courseName: string = await this.getCourseValue(board.context.id);

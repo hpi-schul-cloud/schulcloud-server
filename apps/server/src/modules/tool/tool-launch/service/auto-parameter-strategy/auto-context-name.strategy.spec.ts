@@ -1,13 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ColumnBoardService } from '@modules/board';
+import { ColumnBoardService, ContentElementService } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, ColumnBoard, Course } from '@shared/domain';
+import { BoardExternalReferenceType, ColumnBoard, Course, ExternalToolElement } from '@shared/domain';
 import {
 	columnBoardFactory,
 	contextExternalToolFactory,
 	courseFactory,
+	externalToolElementFactory,
 	schoolExternalToolFactory,
 	setupEntities,
 } from '@shared/testing';
@@ -22,6 +23,7 @@ describe(AutoContextNameStrategy.name, () => {
 	let strategy: AutoContextNameStrategy;
 
 	let courseService: DeepMocked<CourseService>;
+	let contentElementService: DeepMocked<ContentElementService>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
 
 	beforeAll(async () => {
@@ -35,6 +37,10 @@ describe(AutoContextNameStrategy.name, () => {
 					useValue: createMock<CourseService>(),
 				},
 				{
+					provide: ContentElementService,
+					useValue: createMock<ContentElementService>(),
+				},
+				{
 					provide: ColumnBoardService,
 					useValue: createMock<ColumnBoardService>(),
 				},
@@ -43,6 +49,7 @@ describe(AutoContextNameStrategy.name, () => {
 
 		strategy = module.get(AutoContextNameStrategy);
 		courseService = module.get(CourseService);
+		contentElementService = module.get(ContentElementService);
 		columnBoardService = module.get(ColumnBoardService);
 	});
 
@@ -106,6 +113,8 @@ describe(AutoContextNameStrategy.name, () => {
 					name: 'testName',
 				});
 
+				const externalToolElement: ExternalToolElement = externalToolElementFactory.build();
+
 				const columnBoard: ColumnBoard = columnBoardFactory.build({
 					context: {
 						id: course.id,
@@ -114,7 +123,8 @@ describe(AutoContextNameStrategy.name, () => {
 				});
 
 				courseService.findById.mockResolvedValue(course);
-				columnBoardService.findById.mockResolvedValue(columnBoard);
+				contentElementService.findById.mockResolvedValue(externalToolElement);
+				columnBoardService.findByDescendant.mockResolvedValue(columnBoard);
 
 				return {
 					schoolExternalTool,
@@ -143,6 +153,8 @@ describe(AutoContextNameStrategy.name, () => {
 					},
 				});
 
+				const externalToolElement: ExternalToolElement = externalToolElementFactory.build();
+
 				const columnBoard: ColumnBoard = columnBoardFactory.build({
 					context: {
 						id: new ObjectId().toHexString(),
@@ -150,7 +162,8 @@ describe(AutoContextNameStrategy.name, () => {
 					},
 				});
 
-				columnBoardService.findById.mockResolvedValue(columnBoard);
+				contentElementService.findById.mockResolvedValue(externalToolElement);
+				columnBoardService.findByDescendant.mockResolvedValue(columnBoard);
 
 				return {
 					schoolExternalTool,
