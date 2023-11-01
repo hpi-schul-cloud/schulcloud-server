@@ -2,7 +2,7 @@ import { Readable } from 'stream';
 
 import { HeadObjectCommandOutput, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { H5pError, ILibraryMetadata, ILibraryName, LibraryName } from '@lumieducation/h5p-server';
+import { H5pError, ILibraryMetadata, ILibraryName } from '@lumieducation/h5p-server';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
