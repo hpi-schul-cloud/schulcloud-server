@@ -1,5 +1,5 @@
 import { H5pError } from '@lumieducation/h5p-server';
-import { HttpException, InternalServerErrorException } from '@nestjs/common';
+import { HttpException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { H5PErrorMapper } from './h5p-error.mapper';
 
