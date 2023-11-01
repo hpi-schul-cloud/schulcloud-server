@@ -57,7 +57,7 @@ module.exports = {
 		await connect();
 
 		const adminAndSuperheroRole = await Roles.updateMany(
-			{ name: { $in: ['teacher', 'administrator', 'superhero'] } },
+			{ name: { $in: ['administrator', 'superhero'] } },
 			{
 				$pull: {
 					permissions: 'GROUP_FULL_ADMIN',

@@ -236,6 +236,17 @@ describe('GroupUc', () => {
 				);
 			});
 
+			it('should check the access to the full list', async () => {
+				const { teacherUser } = setup();
+
+				await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+
+				expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith<[User, string[]]>(teacherUser, [
+					Permission.CLASS_FULL_ADMIN,
+					Permission.GROUP_FULL_ADMIN,
+				]);
+			});
+
 			describe('when no pagination is given', () => {
 				it('should return all classes sorted by name', async () => {
 					const { teacherUser, clazz, group, groupWithSystem, system, schoolYear } = setup();
@@ -458,6 +469,17 @@ describe('GroupUc', () => {
 						requiredPermissions: [Permission.CLASS_VIEW, Permission.GROUP_VIEW],
 					}
 				);
+			});
+
+			it('should check the access to the full list', async () => {
+				const { teacherUser } = setup();
+
+				await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+
+				expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith<[User, string[]]>(teacherUser, [
+					Permission.CLASS_FULL_ADMIN,
+					Permission.GROUP_FULL_ADMIN,
+				]);
 			});
 
 			describe('when no pagination is given', () => {
