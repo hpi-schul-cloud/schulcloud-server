@@ -12,7 +12,7 @@ import { UserMigrationService } from '@modules/user-login-migration';
 import { SchoolMigrationService } from '@modules/user-login-migration/service';
 import { MigrationDto } from '@modules/user-login-migration/service/dto';
 import { nanoid } from 'nanoid';
-import { OauthCurrentUser } from '../../authentication/interface';
+import { OauthCurrentUser } from '@modules/authentication/interface';
 import { AuthorizationParams } from '../controller/dto';
 import { OAuthTokenDto } from '../interface';
 import { OAuthProcessDto } from '../service/dto';
