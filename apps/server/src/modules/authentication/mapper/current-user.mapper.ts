@@ -3,8 +3,7 @@ import { RoleReference } from '@shared/domain/domainobject/role-reference';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Role } from '@shared/domain/entity/role.entity';
 import { User } from '@shared/domain/entity/user.entity';
-import { JwtPayload } from 'jsonwebtoken';
-import { CreateJwtPayload } from '../interface/jwt-payload';
+import { CreateJwtPayload, JwtPayload } from '../interface/jwt-payload';
 import { ICurrentUser, OauthCurrentUser } from '../interface/user';
 
 export class CurrentUserMapper {

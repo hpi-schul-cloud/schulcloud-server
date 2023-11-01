@@ -7,8 +7,7 @@ import { schoolFactory } from '@shared/testing/factory/school.factory';
 import { userDoFactory } from '@shared/testing/factory/user.do.factory';
 import { userFactory } from '@shared/testing/factory/user.factory';
 import { setupEntities } from '@shared/testing/setup-entities';
-import { JwtPayload } from 'jsonwebtoken';
-import { CreateJwtPayload } from '../interface/jwt-payload';
+import { CreateJwtPayload, JwtPayload } from '../interface/jwt-payload';
 import { ICurrentUser, OauthCurrentUser } from '../interface/user';
 import { CurrentUserMapper } from './current-user.mapper';
 
