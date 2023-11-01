@@ -8,16 +8,14 @@ import {
 	CustomParameterType,
 	CustomParameterTypeParams,
 } from '../../common/enum';
-import { statusMapping } from '../../school-external-tool/mapper';
 import {
 	BasicToolConfigResponse,
 	CustomParameterResponse,
 	ExternalToolResponse,
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
-	ToolReferenceResponse,
 } from '../controller/dto';
-import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig, ToolReference } from '../domain';
+import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeTypeParams> = {
 	[CustomParameterScope.GLOBAL]: CustomParameterScopeTypeParams.GLOBAL,
@@ -97,25 +95,5 @@ export class ExternalToolResponseMapper {
 				isOptional: customParameterDO.isOptional,
 			};
 		});
-	}
-
-	static mapToToolReferenceResponses(toolReferences: ToolReference[]): ToolReferenceResponse[] {
-		const toolReferenceResponses: ToolReferenceResponse[] = toolReferences.map((toolReference: ToolReference) =>
-			this.mapToToolReferenceResponse(toolReference)
-		);
-
-		return toolReferenceResponses;
-	}
-
-	private static mapToToolReferenceResponse(toolReference: ToolReference): ToolReferenceResponse {
-		const response = new ToolReferenceResponse({
-			contextToolId: toolReference.contextToolId,
-			displayName: toolReference.displayName,
-			logoUrl: toolReference.logoUrl,
-			openInNewTab: toolReference.openInNewTab,
-			status: statusMapping[toolReference.status],
-		});
-
-		return response;
 	}
 }

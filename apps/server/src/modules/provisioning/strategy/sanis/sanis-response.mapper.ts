@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { GroupTypes } from '@src/modules/group';
+import { GroupTypes } from '@modules/group';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
 import { GroupRoleUnknownLoggable } from '../../loggable';
 import {
@@ -66,7 +66,7 @@ export class SanisResponseMapper {
 	}
 
 	mapToExternalGroupDtos(source: SanisResponse): ExternalGroupDto[] | undefined {
-		const groups: SanisGruppenResponse[] | undefined = source.personenkontexte[0].gruppen;
+		const groups: SanisGruppenResponse[] | undefined = source.personenkontexte[0]?.gruppen;
 
 		if (!groups) {
 			return undefined;
@@ -81,12 +81,11 @@ export class SanisResponseMapper {
 				}
 
 				const sanisGroupUsers: SanisSonstigeGruppenzugehoerigeResponse[] = [
-					...(group.sonstige_gruppenzugehoerige ?? []),
 					{
 						ktid: source.personenkontexte[0].id,
 						rollen: group.gruppenzugehoerigkeit.rollen,
 					},
-				].sort((a, b) => a.ktid.localeCompare(b.ktid));
+				].filter((sanisGroupUser) => sanisGroupUser.ktid && sanisGroupUser.rollen);
 
 				const gruppenzugehoerigkeiten: ExternalGroupUserDto[] = sanisGroupUsers
 					.map((relation): ExternalGroupUserDto | null => this.mapToExternalGroupUser(relation))

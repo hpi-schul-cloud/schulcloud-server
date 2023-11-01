@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { axiosResponseFactory, setupEntities } from '@shared/testing';
-import { GroupTypes } from '@src/modules/group';
+import { GroupTypes } from '@modules/group';
 import { UUID } from 'bson';
 import { of } from 'rxjs';
 import {

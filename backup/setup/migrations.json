@@ -306,5 +306,27 @@
 			"$date": "2023-09-01T13:14:13.453Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "652686eb35521c3d90686845"
+		},
+		"state": "up",
+		"name": "remove-moin-schule-logout-endpoint",
+		"createdAt": {
+			"$date": "2023-10-11T10:40:18.782Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "652ea0196ddf74176cb57561"
+		},
+		"state": "up",
+		"name": "add-group-view-and-list-permission",
+		"createdAt": {
+			"$date": "2023-10-17T14:38:44.886Z"
+		},
+		"__v": 0
 	}
 ]

@@ -2,8 +2,8 @@ import { ValidationError } from '@shared/common';
 import { Role, User } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { ICurrentUser } from '../interface';
-import { JwtPayload } from '../interface/jwt-payload';
+import { ICurrentUser, OauthCurrentUser } from '../interface';
+import { CreateJwtPayload, JwtPayload } from '../interface/jwt-payload';
 
 export class CurrentUserMapper {
 	static userToICurrentUser(accountId: string, user: User, systemId?: string): ICurrentUser {
@@ -17,12 +17,13 @@ export class CurrentUserMapper {
 		};
 	}
 
-	static userDoToICurrentUser(
+	static mapToOauthCurrentUser(
 		accountId: string,
 		user: UserDO,
 		systemId?: string,
-		isExternalUser = false
-	): ICurrentUser {
+		externalIdToken?: string,
+    isExternalUser = false
+	): OauthCurrentUser {
 		if (!user.id) {
 			throw new ValidationError('user has no ID');
 		}
@@ -33,7 +34,19 @@ export class CurrentUserMapper {
 			roles: user.roles.map((roleRef: RoleReference) => roleRef.id),
 			schoolId: user.schoolId,
 			userId: user.id,
-			isExternalUser,
+			externalIdToken,
+      isExternalUser,
+		};
+	}
+
+	static mapCurrentUserToCreateJwtPayload(currentUser: ICurrentUser): CreateJwtPayload {
+		return {
+			accountId: currentUser.accountId,
+			userId: currentUser.userId,
+			schoolId: currentUser.schoolId,
+			roles: currentUser.roles,
+			systemId: currentUser.systemId,
+			support: currentUser.impersonated,
 		};
 	}
 

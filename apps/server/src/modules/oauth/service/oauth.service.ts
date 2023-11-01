@@ -4,15 +4,15 @@ import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { EntityId, LegacySchoolDo, OauthConfig, SchoolFeatures, UserDO } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { LegacyLogger } from '@src/core/logger';
-import { ProvisioningService } from '@src/modules/provisioning';
-import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { SystemService } from '@src/modules/system';
-import { SystemDto } from '@src/modules/system/service';
-import { UserService } from '@src/modules/user';
-import { MigrationCheckService, UserMigrationService } from '@src/modules/user-login-migration';
+import { ProvisioningService } from '@modules/provisioning';
+import { OauthDataDto } from '@modules/provisioning/dto';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { SystemService } from '@modules/system';
+import { SystemDto } from '@modules/system/service';
+import { UserService } from '@modules/user';
+import { MigrationCheckService, UserMigrationService } from '@modules/user-login-migration';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthSSOError, SSOErrorCode, UserNotFoundAfterProvisioningLoggableException } from '../error';
+import { OAuthSSOError, SSOErrorCode, UserNotFoundAfterProvisioningLoggableException } from '../loggable';
 import { OAuthTokenDto } from '../interface';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
@@ -172,7 +172,7 @@ export class OAuthService {
 		const system: SystemDto = await this.systemService.findById(systemId);
 
 		let redirect: string;
-		if (system.oauthConfig?.provider === 'iserv') {
+		if (system.oauthConfig?.provider === 'iserv' && system.oauthConfig?.logoutEndpoint) {
 			const iservLogoutUrl: URL = new URL(system.oauthConfig.logoutEndpoint);
 			iservLogoutUrl.searchParams.append('id_token_hint', idToken);
 			iservLogoutUrl.searchParams.append('post_logout_redirect_uri', postLoginRedirect || dashboardUrl.toString());

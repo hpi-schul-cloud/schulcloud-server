@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CreateJwtPayload } from '../interface/jwt-payload';
 import { AuthenticationService } from '../services/authentication.service';
 import { LoginDto } from './dto';
 import { LoginUc } from './login.uc';
@@ -29,12 +28,15 @@ describe('LoginUc', () => {
 	describe('getLoginData', () => {
 		describe('when userInfo is given', () => {
 			const setup = () => {
-				const userInfo: CreateJwtPayload = {
+				const userInfo = {
 					accountId: '',
 					roles: [],
 					schoolId: '',
 					userId: '',
-					isExternalUser: false,
+					systemId: '',
+					impersonated: false,
+          isExternalUser: false,
+					someProperty: 'shouldNotBeMapped',
 				};
 				const loginDto: LoginDto = new LoginDto({ accessToken: 'accessToken' });
 				authenticationService.generateJwt.mockResolvedValue(loginDto);
@@ -50,7 +52,14 @@ describe('LoginUc', () => {
 
 				await loginUc.getLoginData(userInfo);
 
-				expect(authenticationService.generateJwt).toHaveBeenCalledWith(userInfo);
+				expect(authenticationService.generateJwt).toHaveBeenCalledWith({
+					accountId: userInfo.accountId,
+					userId: userInfo.userId,
+					schoolId: userInfo.schoolId,
+					roles: userInfo.roles,
+					systemId: userInfo.systemId,
+					support: userInfo.impersonated,
+				});
 			});
 
 			it('should return a loginDto', async () => {

@@ -18,10 +18,10 @@ import {
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountSaveDto } from '@src/modules/account/services/dto';
-import { AccountDto } from '@src/modules/account/services/dto/account.dto';
-import { ICurrentUser } from '@src/modules/authentication';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountSaveDto } from '@modules/account/services/dto';
+import { AccountDto } from '@modules/account/services/dto/account.dto';
+import { ICurrentUser } from '@modules/authentication';
 import { ObjectId } from 'bson';
 import {
 	AccountByIdBodyParams,

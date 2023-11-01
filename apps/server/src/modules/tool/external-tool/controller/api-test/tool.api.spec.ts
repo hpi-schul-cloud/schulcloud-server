@@ -1,41 +1,27 @@
+import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, Permission, SchoolEntity } from '@shared/domain';
+import { Permission } from '@shared/domain';
 import {
 	cleanupCollections,
-	contextExternalToolEntityFactory,
-	courseFactory,
 	externalToolEntityFactory,
 	externalToolFactory,
-	schoolExternalToolEntityFactory,
-	schoolFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
+import { ServerTestModule } from '@modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
-import { Loaded } from '@mikro-orm/core';
-import { ServerTestModule } from '@src/modules/server';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
 	CustomParameterTypeParams,
 	ToolConfigType,
-	ToolContextType,
 } from '../../../common/enum';
-import {
-	ExternalToolCreateParams,
-	ExternalToolResponse,
-	ExternalToolSearchListResponse,
-	ToolConfigurationStatusResponse,
-	ToolReferenceListResponse,
-} from '../dto';
-import { ContextExternalToolContextParams } from '../../../context-external-tool/controller/dto';
 import { ExternalToolEntity } from '../../entity';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
+import { ExternalToolCreateParams, ExternalToolResponse, ExternalToolSearchListResponse } from '../dto';
 
 describe('ToolController (API)', () => {
 	let app: INestApplication;
@@ -593,126 +579,6 @@ describe('ToolController (API)', () => {
 				const response: Response = await loggedInClient.delete(`${toolId}`);
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
-			});
-		});
-	});
-
-	describe('[GET] tools/external-tools/:contextType/:contextId/references', () => {
-		describe('when user is not authenticated', () => {
-			it('should return unauthorized', async () => {
-				const response: Response = await testApiClient.get(`contextType/${new ObjectId().toHexString()}/references`);
-
-				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
-			});
-		});
-
-		describe('when user has no access to a tool', () => {
-			const setup = async () => {
-				const schoolWithoutTool: SchoolEntity = schoolFactory.buildWithId();
-				const school: SchoolEntity = schoolFactory.buildWithId();
-				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school: schoolWithoutTool });
-				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
-					school,
-					tool: externalToolEntity,
-				});
-				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
-					schoolTool: schoolExternalToolEntity,
-					contextId: course.id,
-					contextType: ContextExternalToolType.COURSE,
-				});
-
-				await em.persistAndFlush([
-					school,
-					adminAccount,
-					adminUser,
-					course,
-					externalToolEntity,
-					schoolExternalToolEntity,
-					contextExternalToolEntity,
-				]);
-				em.clear();
-
-				const params: ContextExternalToolContextParams = {
-					contextId: course.id,
-					contextType: ToolContextType.COURSE,
-				};
-
-				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
-
-				return { loggedInClient, params };
-			};
-
-			it('should filter out the tool', async () => {
-				const { loggedInClient, params } = await setup();
-
-				const response: Response = await loggedInClient.get(`${params.contextType}/${params.contextId}/references`);
-
-				expect(response.statusCode).toEqual(HttpStatus.OK);
-				expect(response.body).toEqual<ToolReferenceListResponse>({ data: [] });
-			});
-		});
-
-		describe('when user has access for a tool', () => {
-			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
-				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.CONTEXT_TOOL_USER,
-				]);
-				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({ logoUrl: undefined });
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
-					school,
-					tool: externalToolEntity,
-					toolVersion: externalToolEntity.version,
-				});
-				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
-					schoolTool: schoolExternalToolEntity,
-					contextId: course.id,
-					contextType: ContextExternalToolType.COURSE,
-					displayName: 'This is a test tool',
-					toolVersion: schoolExternalToolEntity.toolVersion,
-				});
-
-				await em.persistAndFlush([
-					school,
-					adminAccount,
-					adminUser,
-					course,
-					externalToolEntity,
-					schoolExternalToolEntity,
-					contextExternalToolEntity,
-				]);
-				em.clear();
-
-				const params: ContextExternalToolContextParams = {
-					contextId: course.id,
-					contextType: ToolContextType.COURSE,
-				};
-
-				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
-
-				return { loggedInClient, params, contextExternalToolEntity, externalToolEntity };
-			};
-
-			it('should return an ToolReferenceListResponse with data', async () => {
-				const { loggedInClient, params, contextExternalToolEntity, externalToolEntity } = await setup();
-
-				const response: Response = await loggedInClient.get(`${params.contextType}/${params.contextId}/references`);
-
-				expect(response.statusCode).toEqual(HttpStatus.OK);
-				expect(response.body).toEqual<ToolReferenceListResponse>({
-					data: [
-						{
-							contextToolId: contextExternalToolEntity.id,
-							displayName: contextExternalToolEntity.displayName as string,
-							status: ToolConfigurationStatusResponse.LATEST,
-							logoUrl: externalToolEntity.logoUrl,
-							openInNewTab: externalToolEntity.openNewTab,
-						},
-					],
-				});
 			});
 		});
 	});

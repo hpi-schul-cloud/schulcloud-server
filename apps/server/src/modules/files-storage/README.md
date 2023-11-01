@@ -88,7 +88,7 @@ folder structure in S3
 > schoolId/fileRecordId
 > .trash/schoolId/fileRecordId (see: ## Goals and Ideas > ### Deleting Files)
 
-### Authorisation Module
+### Authorization Module
 
 The authorisation is solved by parents.
 Therefore it is required that the parent types must be known to the authentication service.

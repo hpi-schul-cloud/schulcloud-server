@@ -5,6 +5,7 @@ import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
 import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
+import { PreviewGeneratorProducerModule } from '@shared/infra/preview-generator';
 import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq/rabbitmq.module';
 import { S3ClientModule } from '@shared/infra/s3-client';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
@@ -23,8 +24,11 @@ const imports = [
 		filesServiceBaseUrl: Configuration.get('FILES_STORAGE__SERVICE_BASE_URL') as string,
 		exchange: Configuration.get('ANTIVIRUS_EXCHANGE') as string,
 		routingKey: Configuration.get('ANTIVIRUS_ROUTING_KEY') as string,
+		hostname: Configuration.get('CLAMAV__SERVICE_HOSTNAME') as string,
+		port: Configuration.get('CLAMAV__SERVICE_PORT') as number,
 	}),
 	S3ClientModule.register([s3Config]),
+	PreviewGeneratorProducerModule,
 ];
 const providers = [FilesStorageService, PreviewService, FileRecordRepo];
 

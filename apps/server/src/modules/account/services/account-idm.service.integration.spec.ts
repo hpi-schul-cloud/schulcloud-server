@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
-import { AccountSaveDto } from '@src/modules/account/services/dto';
+import { AccountSaveDto } from '@modules/account/services/dto';
 import { LoggerModule } from '@src/core/logger';
 import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';

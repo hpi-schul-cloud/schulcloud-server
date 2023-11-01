@@ -1,10 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
+import { SchoolYearEntity } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
-import { SchoolYearEntity } from '@shared/domain';
-import { SchoolYearService } from './school-year.service';
 import { SchoolYearRepo } from '../repo';
+import { SchoolYearService } from './school-year.service';
 
 describe('SchoolYearService', () => {
 	let module: TestingModule;
@@ -35,7 +35,6 @@ describe('SchoolYearService', () => {
 
 	describe('getCurrentSchoolYear', () => {
 		const setup = () => {
-			jest.setSystemTime(new Date('2022-06-01').getTime());
 			const schoolYear: SchoolYearEntity = schoolYearFactory.build({
 				startDate: new Date('2021-09-01'),
 				endDate: new Date('2022-12-31'),
@@ -52,6 +51,31 @@ describe('SchoolYearService', () => {
 				const { schoolYear } = setup();
 
 				const currentSchoolYear: SchoolYearEntity = await service.getCurrentSchoolYear();
+
+				expect(currentSchoolYear).toEqual(schoolYear);
+			});
+		});
+	});
+
+	describe('findById', () => {
+		const setup = () => {
+			const schoolYear: SchoolYearEntity = schoolYearFactory.build({
+				startDate: new Date('2021-09-01'),
+				endDate: new Date('2022-12-31'),
+			});
+
+			schoolYearRepo.findById.mockResolvedValue(schoolYear);
+
+			return {
+				schoolYear,
+			};
+		};
+
+		describe('when called', () => {
+			it('should return the current school year', async () => {
+				const { schoolYear } = setup();
+
+				const currentSchoolYear: SchoolYearEntity = await service.findById(schoolYear.id);
 
 				expect(currentSchoolYear).toEqual(schoolYear);
 			});

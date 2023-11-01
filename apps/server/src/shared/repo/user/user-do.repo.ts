@@ -17,7 +17,7 @@ import { RoleReference } from '@shared/domain/domainobject';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { BaseDORepo, Scope } from '@shared/repo';
-import { UserQuery } from '@src/modules/user/service/user-query.type';
+import { UserQuery } from '@modules/user/service/user-query.type';
 import { UserScope } from './user.scope';
 
 @Injectable()

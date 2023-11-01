@@ -259,6 +259,11 @@
 					"type": "string",
 					"default": "files-storage",
 					"description": "rabbitmq exchange name for antivirus"
+				},
+				"USE_STREAM_TO_ANTIVIRUS": {
+					"type": "boolean",
+					"default": false,
+					"description": "send file to antivirus by uploading"
 				}
 			}
 		},
@@ -452,6 +457,25 @@
 					"default": null,
 					"description": "The mock server accepted client's secret."
 				}
+			}
+		},
+		"CLAMAV": {
+			"type": "object",
+			"description": "Properties of the ClamAV server",
+			"required": [],
+			"properties": {
+				"SERVICE_HOSTNAME": {
+					"type": "string",
+					"description": "IP of host to connect to TCP interface"
+				},
+				"SERVICE_PORT": {
+					"type": "number",
+					"description": "Port of host to use when connecting via TCP interface"
+				}
+			},
+			"default": {
+				"SERVICE_HOSTNAME": "localhost",
+				"SERVICE_PORT": 3310
 			}
 		},
 		"RABBITMQ_URI": {
@@ -1050,6 +1074,11 @@
 			"default": false,
 			"description": "Enable submissions in column board."
 		},
+		"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable link elements in column board."
+		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
@@ -1293,6 +1322,11 @@
 			"default": false,
 			"description": "Enables the new class list view"
 		},
+		"FEATURE_GROUPS_IN_COURSE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables groups of type class in courses"
+		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
 			"description": "TSP School Syncer properties",
@@ -1310,14 +1344,7 @@
 			}
 		}
 	},
-	"required": [
-		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
-		"STUDENT_TEAM_CREATION",
-		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
-		"HOST",
-		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
-		"AES_KEY"
-	],
+	"required": [],
 	"allOf": [
 		{
 			"$ref": "#/definitions/FEATURE_ES_MERLIN_ENABLED",

@@ -11,7 +11,7 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.module';
 
 const baseRouteName = '/cards';
 

@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, Page, Permission, SortOrder, User, UserDO } from '@shared/domain';
-import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { ClassService } from '@src/modules/class';
-import { Class } from '@src/modules/class/domain';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { RoleService } from '@src/modules/role';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { SystemDto, SystemService } from '@src/modules/system';
-import { UserService } from '@src/modules/user';
+import { EntityId, LegacySchoolDo, Page, Permission, SchoolYearEntity, SortOrder, User, UserDO } from '@shared/domain';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { ClassService } from '@modules/class';
+import { Class } from '@modules/class/domain';
+import { LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
+import { RoleService } from '@modules/role';
+import { RoleDto } from '@modules/role/service/dto/role.dto';
+import { SystemDto, SystemService } from '@modules/system';
+import { UserService } from '@modules/user';
 import { Group, GroupUser } from '../domain';
 import { GroupService } from '../service';
 import { SortHelper } from '../util';
-import { ClassInfoDto, ResolvedGroupUser } from './dto';
+import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from './dto';
 import { GroupUcMapper } from './mapper/group-uc.mapper';
 
 @Injectable()
@@ -23,7 +23,8 @@ export class GroupUc {
 		private readonly userService: UserService,
 		private readonly roleService: RoleService,
 		private readonly schoolService: LegacySchoolService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly schoolYearService: SchoolYearService
 	) {}
 
 	public async findAllClassesForSchool(
@@ -37,7 +38,11 @@ export class GroupUc {
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, school, AuthorizationContextBuilder.read([Permission.CLASS_LIST]));
+		this.authorizationService.checkPermission(
+			user,
+			school,
+			AuthorizationContextBuilder.read([Permission.CLASS_LIST, Permission.GROUP_LIST])
+		);
 
 		const combinedClassInfo: ClassInfoDto[] = await this.findCombinedClassListForSchool(schoolId);
 
@@ -72,7 +77,12 @@ export class GroupUc {
 					clazz.teacherIds.map((teacherId: EntityId) => this.userService.findById(teacherId))
 				);
 
-				const mapped: ClassInfoDto = GroupUcMapper.mapClassToClassInfoDto(clazz, teachers);
+				let schoolYear: SchoolYearEntity | undefined;
+				if (clazz.year) {
+					schoolYear = await this.schoolYearService.findById(clazz.year);
+				}
+
+				const mapped: ClassInfoDto = GroupUcMapper.mapClassToClassInfoDto(clazz, teachers, schoolYear);
 
 				return mapped;
 			})
@@ -146,5 +156,25 @@ export class GroupUc {
 		const page: ClassInfoDto[] = combinedClassInfo.slice(skip, limit ? skip + limit : combinedClassInfo.length);
 
 		return page;
+	}
+
+	public async getGroup(userId: EntityId, groupId: EntityId): Promise<ResolvedGroupDto> {
+		const group: Group = await this.groupService.findById(groupId);
+
+		await this.checkPermission(userId, group);
+
+		const resolvedUsers: ResolvedGroupUser[] = await this.findUsersForGroup(group);
+		const resolvedGroup: ResolvedGroupDto = GroupUcMapper.mapToResolvedGroupDto(group, resolvedUsers);
+
+		return resolvedGroup;
+	}
+
+	private async checkPermission(userId: EntityId, group: Group): Promise<void> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		return this.authorizationService.checkPermission(
+			user,
+			group,
+			AuthorizationContextBuilder.read([Permission.GROUP_VIEW])
+		);
 	}
 }

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { OauthModule } from '@src/modules/oauth';
-import { ProvisioningModule } from '@src/modules/provisioning';
-import { LegacySchoolModule } from '@src/modules/legacy-school';
+import { AuthenticationModule } from '@modules/authentication/authentication.module';
+import { AuthorizationModule } from '@modules/authorization';
+import { OauthModule } from '@modules/oauth';
+import { ProvisioningModule } from '@modules/provisioning';
+import { LegacySchoolModule } from '@modules/legacy-school';
 import { UserLoginMigrationController } from './controller/user-login-migration.controller';
 import { UserMigrationController } from './controller/user-migration.controller';
 import { PageContentMapper } from './mapper';
