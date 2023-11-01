@@ -15,7 +15,7 @@ import {
 
 @Injectable()
 export class AjaxPostBodyParamsTransformPipe implements PipeTransform {
-	async transform(value: AjaxPostBodyParams) {
+	async transform(value: AjaxPostBodyParams): Promise<unknown> {
 		if (value) {
 			let transformed: Exclude<AjaxPostBodyParams, undefined>;
 
