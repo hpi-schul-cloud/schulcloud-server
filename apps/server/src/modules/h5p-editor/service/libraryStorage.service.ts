@@ -9,7 +9,7 @@ import {
 	type ILibraryName,
 	type ILibraryStorage,
 } from '@lumieducation/h5p-server';
-import { ConflictException, Inject, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import mime from 'mime';
 import path from 'node:path/posix';
@@ -405,10 +405,6 @@ export class LibraryStorage implements ILibraryStorage {
 	}
 
 	private async getMetadata(library: ILibraryName): Promise<ILibraryMetadata> {
-		if (!library) {
-			throw new NotAcceptableException('You must pass in a library name to getLibrary.');
-		}
-
 		const result = await this.libraryRepo.findOneByNameAndVersionOrFail(
 			library.machineName,
 			library.majorVersion,

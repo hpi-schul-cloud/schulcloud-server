@@ -2,7 +2,7 @@ import { Readable } from 'stream';
 
 import { HeadObjectCommandOutput, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { ILibraryMetadata, ILibraryName } from '@lumieducation/h5p-server';
+import { H5pError, ILibraryMetadata, ILibraryName, LibraryName } from '@lumieducation/h5p-server';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
@@ -458,6 +458,35 @@ describe('LibraryStorage', () => {
 		});
 	});
 
+	describe('getLibraryFile', () => {
+		describe('when getting library.json file', () => {
+			const setup = async (addLibrary = true) => {
+				const {
+					names: { testingLib },
+				} = createTestData();
+
+				if (addLibrary) {
+					await storage.addLibrary(testingLib, false);
+				}
+				const ubername = 'testing-1.2';
+				const file = 'library.json';
+
+				return { testingLib, file, ubername };
+			};
+
+			it('should return library.json file', async () => {
+				const { testingLib, file, ubername } = await setup();
+				repo.findOneByNameAndVersionOrFail.mockResolvedValueOnce(testingLib);
+
+				const result = await storage.getLibraryFile(ubername, file);
+
+				expect(result).toBeDefined();
+				expect(result.mimetype).toBeDefined();
+				expect(result.mimetype).toEqual('application/json');
+			});
+		});
+	});
+
 	describe('When getting library dependencies', () => {
 		const setup = async () => {
 			const { libraries, names } = createTestData();
@@ -565,6 +594,22 @@ describe('LibraryStorage', () => {
 						return expect(addFile).rejects.toThrow('illegal-filename');
 					})
 				);
+			});
+
+			describe('when s3 upload error', () => {
+				it('should throw H5P Error', async () => {
+					const { testingLib } = await setup();
+					const filename = 'test/abc.json';
+
+					s3ClientAdapter.create.mockImplementationOnce(() => {
+						throw Error('S3 Exception');
+					});
+
+					const addFile = () => storage.addFile(testingLib, filename, Readable.from(Buffer.from('')));
+					return expect(addFile).rejects.toThrow(
+						new H5pError(`mongo-s3-library-storage:s3-upload-error (ubername: testing-1.2, filename: test/abc.json)`)
+					);
+				});
 			});
 		});
 
