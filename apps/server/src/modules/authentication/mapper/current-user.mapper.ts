@@ -13,7 +13,6 @@ export class CurrentUserMapper {
 			roles: user.roles.getItems().map((role: Role) => role.id),
 			schoolId: user.school.id,
 			userId: user.id,
-			isExternalUser: false,
 		};
 	}
 
@@ -21,8 +20,7 @@ export class CurrentUserMapper {
 		accountId: string,
 		user: UserDO,
 		systemId?: string,
-		externalIdToken?: string,
-    isExternalUser = false
+		externalIdToken?: string
 	): OauthCurrentUser {
 		if (!user.id) {
 			throw new ValidationError('user has no ID');
@@ -35,7 +33,7 @@ export class CurrentUserMapper {
 			schoolId: user.schoolId,
 			userId: user.id,
 			externalIdToken,
-      isExternalUser,
+			isExternalUser: true,
 		};
 	}
 
@@ -58,7 +56,6 @@ export class CurrentUserMapper {
 			schoolId: jwtPayload.schoolId,
 			userId: jwtPayload.userId,
 			impersonated: jwtPayload.support,
-			isExternalUser: jwtPayload.isExternalUser,
 		};
 	}
 }

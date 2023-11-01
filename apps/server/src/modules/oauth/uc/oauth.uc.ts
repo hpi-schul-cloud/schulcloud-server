@@ -2,7 +2,6 @@ import { Injectable, UnauthorizedException, UnprocessableEntityException } from 
 import { EntityId, LegacySchoolDo, UserDO } from '@shared/domain';
 import { ISession } from '@shared/domain/types/session';
 import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser } from '@modules/authentication';
 import { AuthenticationService } from '@modules/authentication/services/authentication.service';
 import { ProvisioningService } from '@modules/provisioning';
 import { OauthDataDto } from '@modules/provisioning/dto';
@@ -13,6 +12,7 @@ import { UserMigrationService } from '@modules/user-login-migration';
 import { SchoolMigrationService } from '@modules/user-login-migration/service';
 import { MigrationDto } from '@modules/user-login-migration/service/dto';
 import { nanoid } from 'nanoid';
+import { OauthCurrentUser } from '../../authentication/interface';
 import { AuthorizationParams } from '../controller/dto';
 import { OAuthTokenDto } from '../interface';
 import { OAuthProcessDto } from '../service/dto';
@@ -142,14 +142,10 @@ export class OauthUc {
 		return migrationDto;
 	}
 
-	/**
-	 * @deprecated Please use the {@link ICurrentUser} from the specific stragegy instead.
-	 */
 	private async getJwtForUser(userId: EntityId): Promise<string> {
-		const currentUser: ICurrentUser = await this.userService.getResolvedUser(userId);
-		currentUser.isExternalUser = true;
+		const oauthCurrentUser: OauthCurrentUser = await this.userService.getResolvedUser(userId);
 
-		const { accessToken } = await this.authenticationService.generateJwt(currentUser);
+		const { accessToken } = await this.authenticationService.generateJwt(oauthCurrentUser);
 
 		return accessToken;
 	}

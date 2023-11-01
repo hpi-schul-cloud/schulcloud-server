@@ -99,7 +99,6 @@ describe('AuthenticationService', () => {
 					roles: ['student'],
 					schoolId: 'mockSchoolId',
 					userId: 'mockUserId',
-					isExternalUser: false,
 				};
 				await authenticationService.generateJwt(mockCurrentUser);
 				expect(jwtService.sign).toBeCalledWith(

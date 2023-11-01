@@ -1,17 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, UserDO } from '@shared/domain';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { ISession } from '@shared/domain/types/session';
-import { legacySchoolDoFactory, setupEntities } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser } from '@modules/authentication';
 import { AuthenticationService } from '@modules/authentication/services/authentication.service';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { OauthUc } from '@modules/oauth/uc/oauth.uc';
 import { ProvisioningService } from '@modules/provisioning';
 import { ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@modules/provisioning/dto';
-import { LegacySchoolService } from '@modules/legacy-school';
 import { SystemService } from '@modules/system';
 import { OauthConfigDto, SystemDto } from '@modules/system/service';
 import { UserService } from '@modules/user';
@@ -19,9 +11,17 @@ import { UserMigrationService } from '@modules/user-login-migration';
 import { OAuthMigrationError } from '@modules/user-login-migration/error/oauth-migration.error';
 import { SchoolMigrationService } from '@modules/user-login-migration/service';
 import { MigrationDto } from '@modules/user-login-migration/service/dto';
-import { OAuthSSOError } from '../loggable/oauth-sso.error';
+import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { LegacySchoolDo, UserDO } from '@shared/domain';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { ISession } from '@shared/domain/types/session';
+import { legacySchoolDoFactory, setupEntities } from '@shared/testing';
+import { LegacyLogger } from '@src/core/logger';
+import { OauthCurrentUser } from '@modules/authentication/interface';
 import { AuthorizationParams } from '../controller/dto';
 import { OAuthTokenDto } from '../interface';
+import { OAuthSSOError } from '../loggable/oauth-sso.error';
 import { OAuthProcessDto } from '../service/dto';
 import { OAuthService } from '../service/oauth.service';
 import { OauthLoginStateDto } from './dto/oauth-login-state.dto';
@@ -254,7 +254,7 @@ describe('OAuthUc', () => {
 				externalId: 'mockExternalId',
 			});
 
-			const currentUser: ICurrentUser = { userId: 'userId', isExternalUser: true } as ICurrentUser;
+			const currentUser: OauthCurrentUser = { userId: 'userId', isExternalUser: true } as OauthCurrentUser;
 			const testSystem: SystemDto = new SystemDto({
 				id: 'mockSystemId',
 				type: 'mock',

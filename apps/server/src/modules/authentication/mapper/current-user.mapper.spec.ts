@@ -62,7 +62,7 @@ describe('CurrentUserMapper', () => {
 			it('should throw error', () => {
 				const user: UserDO = userDoFactory.build({ createdAt: new Date(), updatedAt: new Date() });
 
-        expect(() => CurrentUserMapper.mapToOauthCurrentUser(accountId, user, undefined, 'idToken')).toThrow(
+				expect(() => CurrentUserMapper.mapToOauthCurrentUser(accountId, user, undefined, 'idToken')).toThrow(
 					ValidationError
 				);
 			});
@@ -101,6 +101,7 @@ describe('CurrentUserMapper', () => {
 					schoolId: user.schoolId,
 					userId,
 					externalIdToken: idToken,
+					isExternalUser: true,
 				});
 			});
 		});
@@ -140,6 +141,7 @@ describe('CurrentUserMapper', () => {
 					schoolId: user.schoolId,
 					userId,
 					externalIdToken: idToken,
+					isExternalUser: true,
 				});
 			});
 		});
@@ -190,7 +192,6 @@ describe('CurrentUserMapper', () => {
 					schoolId: 'dummySchoolId',
 					userId: 'dummyUserId',
 					support: true,
-					isExternalUser: true,
 					sub: 'dummyAccountId',
 					jti: 'random string',
 					aud: 'some audience',
@@ -219,7 +220,7 @@ describe('CurrentUserMapper', () => {
 				});
 			});
 
-			it('should return current user with default for isExternalUser', () => {
+			/* it('should return current user with default for isExternalUser', () => {
 				const { jwtPayload } = setup();
 
 				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
@@ -227,7 +228,7 @@ describe('CurrentUserMapper', () => {
 				expect(currentUser).toMatchObject({
 					isExternalUser: jwtPayload.isExternalUser,
 				});
-			});
+			}); */
 		});
 
 		describe('when JWT is provided without optional claims', () => {
@@ -237,7 +238,7 @@ describe('CurrentUserMapper', () => {
 					roles: ['mockRoleId'],
 					schoolId: 'dummySchoolId',
 					userId: 'dummyUserId',
-					isExternalUser: false,
+					// isExternalUser: false,
 					sub: 'dummyAccountId',
 					jti: 'random string',
 					aud: 'some audience',
@@ -261,11 +262,10 @@ describe('CurrentUserMapper', () => {
 					roles: [jwtPayload.roles[0]],
 					schoolId: jwtPayload.schoolId,
 					userId: jwtPayload.userId,
-					isExternalUser: false,
 				});
 			});
 
-			it('should return current user with default for isExternalUser', () => {
+			/* it('should return current user with default for isExternalUser', () => {
 				const { jwtPayload } = setup();
 
 				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
@@ -273,7 +273,7 @@ describe('CurrentUserMapper', () => {
 				expect(currentUser).toMatchObject({
 					isExternalUser: false,
 				});
-			});
+			}); */
 		});
 	});
 

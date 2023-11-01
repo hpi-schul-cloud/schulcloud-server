@@ -9,10 +9,10 @@ import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { AccountService } from '@modules/account/services/account.service';
 import { AccountDto } from '@modules/account/services/dto';
-import { ICurrentUser } from '@modules/authentication';
 import { RoleService } from '@modules/role/service/role.service';
 import { UserService } from '@modules/user/service/user.service';
 import { UserDto } from '@modules/user/uc/dto/user.dto';
+import { OauthCurrentUser } from '@modules/authentication/interface';
 import { UserQuery } from './user-query.type';
 
 describe('UserService', () => {
@@ -136,13 +136,13 @@ describe('UserService', () => {
 
 	describe('getResolvedUser is called', () => {
 		describe('when a resolved user is requested', () => {
-			it('should return an ICurrentUser', async () => {
+			const setup = () => {
 				const systemId = 'systemId';
 				const role: Role = roleFactory.buildWithId({
 					name: RoleName.STUDENT,
 					permissions: [Permission.DASHBOARD_VIEW],
 				});
-				const user: User = userFactory.buildWithId({ roles: [role] });
+				const user: UserDO = userDoFactory.buildWithId({ roles: [role] });
 				const account: AccountDto = new AccountDto({
 					id: 'accountId',
 					systemId,
@@ -152,18 +152,30 @@ describe('UserService', () => {
 					activated: true,
 				});
 
-				userRepo.findById.mockResolvedValue(user);
+				userDORepo.findById.mockResolvedValue(user);
 				accountService.findByUserIdOrFail.mockResolvedValue(account);
 
-				const result: ICurrentUser = await service.getResolvedUser(user.id);
-
-				expect(result).toEqual<ICurrentUser>({
-					userId: user.id,
+				return {
+					userId: user.id as string,
+					user,
+					account,
+					role,
 					systemId,
-					schoolId: user.school.id,
+				};
+			};
+
+			it('should return the current user', async () => {
+				const { userId, user, account, role, systemId } = setup();
+
+				const result: OauthCurrentUser = await service.getResolvedUser(userId);
+
+				expect(result).toEqual<OauthCurrentUser>({
+					userId,
+					systemId,
+					schoolId: user.schoolId,
 					accountId: account.id,
 					roles: [role.id],
-					isExternalUser: false,
+					isExternalUser: true,
 				});
 			});
 		});
@@ -178,30 +190,24 @@ describe('UserService', () => {
 		});
 
 		it('should return only the last name when the user has a protected role', async () => {
-			// Arrange
 			const user: UserDO = userDoFactory.withRoles([{ id: role.id, name: RoleName.STUDENT }]).buildWithId({
 				lastName: 'lastName',
 			});
 
-			// Act
 			const result: string = await service.getDisplayName(user);
 
-			// Assert
 			expect(result).toEqual(user.lastName);
 			expect(roleService.getProtectedRoles).toHaveBeenCalled();
 		});
 
 		it('should return the first name and last name when the user has no protected role', async () => {
-			// Arrange
 			const user: UserDO = userDoFactory.withRoles([{ id: 'unprotectedId', name: RoleName.STUDENT }]).buildWithId({
 				lastName: 'lastName',
 				firstName: 'firstName',
 			});
 
-			// Act
 			const result: string = await service.getDisplayName(user);
 
-			// Assert
 			expect(result).toEqual(`${user.firstName} ${user.lastName}`);
 			expect(roleService.getProtectedRoles).toHaveBeenCalled();
 		});

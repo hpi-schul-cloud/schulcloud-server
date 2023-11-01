@@ -41,8 +41,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 			account.id,
 			user,
 			systemId,
-			tokenDto.idToken,
-      true,
+			tokenDto.idToken
 		);
 
 		return currentUser;
