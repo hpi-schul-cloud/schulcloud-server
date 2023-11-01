@@ -1,22 +1,22 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
-import { OauthProviderLoginFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.login-flow.uc';
-import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
-import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
+// import should be @shared/infra/oauth-provider
 import {
 	ProviderConsentResponse,
 	ProviderLoginResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
+	ProviderConsentSessionResponse,
 } from '@shared/infra/oauth-provider/dto';
-import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
-import { ICurrentUser } from '@src/modules/authentication';
-import { OauthProviderClientCrudUc } from '@src/modules/oauth-provider/uc/oauth-provider.client-crud.uc';
-import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
-import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 import { ApiTags } from '@nestjs/swagger';
+import { OauthProviderLogoutFlowUc } from '../uc/oauth-provider.logout-flow.uc';
+import { OauthProviderLoginFlowUc } from '../uc/oauth-provider.login-flow.uc';
+import { OauthProviderResponseMapper } from '../mapper/oauth-provider-response.mapper';
+import { OauthProviderConsentFlowUc } from '../uc/oauth-provider.consent-flow.uc';
+import { ConsentResponse } from './dto/response/consent.response';
+import { OauthProviderClientCrudUc } from '../uc/oauth-provider.client-crud.uc';
+import { RedirectResponse } from './dto/response/redirect.response';
 import { OauthProviderUc } from '../uc/oauth-provider.uc';
 import {
 	AcceptQuery,

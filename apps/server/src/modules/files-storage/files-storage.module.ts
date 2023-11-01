@@ -5,6 +5,7 @@ import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
 import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
+import { PreviewGeneratorProducerModule } from '@shared/infra/preview-generator';
 import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq/rabbitmq.module';
 import { S3ClientModule } from '@shared/infra/s3-client';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
@@ -27,6 +28,7 @@ const imports = [
 		port: Configuration.get('CLAMAV__SERVICE_PORT') as number,
 	}),
 	S3ClientModule.register([s3Config]),
+	PreviewGeneratorProducerModule,
 ];
 const providers = [FilesStorageService, PreviewService, FileRecordRepo];
 

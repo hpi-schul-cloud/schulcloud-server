@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { MigrationMapper } from '../mapper/migration.mapper';
 import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
 import { LegacySchoolUc } from '../uc';

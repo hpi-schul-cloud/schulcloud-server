@@ -1,25 +1,28 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '@src/modules/authorization';
+import { CommonToolModule } from '../common';
 import { ExternalToolModule } from '../external-tool';
 import { SchoolExternalToolModule } from '../school-external-tool';
 import {
 	ContextExternalToolAuthorizableService,
 	ContextExternalToolService,
 	ContextExternalToolValidationService,
+	ToolReferenceService,
 } from './service';
-import { CommonToolModule } from '../common';
 
 @Module({
-	// TODO: remove authorization module here N21-1055
-	imports: [
-		CommonToolModule,
-		ExternalToolModule,
-		SchoolExternalToolModule,
-		LoggerModule,
-		forwardRef(() => AuthorizationModule),
+	imports: [CommonToolModule, ExternalToolModule, SchoolExternalToolModule, LoggerModule],
+	providers: [
+		ContextExternalToolService,
+		ContextExternalToolValidationService,
+		ContextExternalToolAuthorizableService,
+		ToolReferenceService,
 	],
-	providers: [ContextExternalToolService, ContextExternalToolValidationService, ContextExternalToolAuthorizableService],
-	exports: [ContextExternalToolService, ContextExternalToolValidationService, ContextExternalToolAuthorizableService],
+	exports: [
+		ContextExternalToolService,
+		ContextExternalToolValidationService,
+		ContextExternalToolAuthorizableService,
+		ToolReferenceService,
+	],
 })
 export class ContextExternalToolModule {}

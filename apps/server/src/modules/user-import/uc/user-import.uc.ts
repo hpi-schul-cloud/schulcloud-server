@@ -19,10 +19,10 @@ import {
 } from '@shared/domain';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto/account.dto';
-import { AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountDto } from '@modules/account/services/dto/account.dto';
+import { AuthorizationService } from '@modules/authorization';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { AccountSaveDto } from '../../account/services/dto';
 import {
 	MigrationMayBeCompleted,

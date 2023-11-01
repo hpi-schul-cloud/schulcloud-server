@@ -18,7 +18,7 @@ export class ExternalToolElementResponseMapper implements BaseResponseMapper {
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
 			type: ContentElementType.EXTERNAL_TOOL,
-			content: new ExternalToolElementContent({ contextExternalToolId: element.contextExternalToolId }),
+			content: new ExternalToolElementContent({ contextExternalToolId: element.contextExternalToolId ?? null }),
 		});
 
 		return result;

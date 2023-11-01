@@ -1,8 +1,8 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { CourseRepo, LessonRepo, SubmissionRepo, TaskRepo } from '@shared/repo';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { CopyHelperModule } from '@src/modules/copy-helper';
-import { FilesStorageClientModule } from '@src/modules/files-storage-client';
+import { AuthorizationModule } from '@modules/authorization';
+import { CopyHelperModule } from '@modules/copy-helper';
+import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { SubmissionService, TaskCopyService, TaskService } from './service';
 
 @Module({

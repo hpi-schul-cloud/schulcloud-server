@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { AuthorizationModule } from '@src/modules/authorization';
+import { AuthorizationModule } from '@modules/authorization';
 import { LoggerModule } from '@src/core/logger';
-import { UserLoginMigrationModule } from '@src/modules/user-login-migration';
+import { UserLoginMigrationModule } from '@modules/user-login-migration';
 import { LegacySchoolUc } from './uc';
 import { LegacySchoolModule } from './legacy-school.module';
 import { LegacySchoolController } from './controller/legacy-school.controller';

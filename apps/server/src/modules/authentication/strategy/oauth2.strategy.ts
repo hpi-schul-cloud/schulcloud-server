@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { OAuthTokenDto } from '@src/modules/oauth';
-import { OAuthService } from '@src/modules/oauth/service/oauth.service';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountDto } from '@modules/account/services/dto';
+import { OAuthTokenDto } from '@modules/oauth';
+import { OAuthService } from '@modules/oauth/service/oauth.service';
 import { Strategy } from 'passport-custom';
 import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
 import { SchoolInMigrationError } from '../errors/school-in-migration.error';

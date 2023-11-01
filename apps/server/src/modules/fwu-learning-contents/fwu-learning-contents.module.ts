@@ -9,7 +9,7 @@ import { S3ClientModule } from '@shared/infra/s3-client';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '@src/modules/authorization';
+import { AuthorizationModule } from '@modules/authorization';
 import { AuthenticationModule } from '../authentication/authentication.module';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
 import { config, s3Config } from './fwu-learning-contents.config';

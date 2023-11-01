@@ -1,7 +1,6 @@
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { SubmissionMapper } from '../mapper';
 import { SubmissionUc } from '../uc';
 import { SubmissionStatusListResponse, SubmissionUrlParams, TaskUrlParams } from './dto';
