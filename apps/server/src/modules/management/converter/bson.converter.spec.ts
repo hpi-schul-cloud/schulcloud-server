@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from 'bson';
+import { BsonConverter } from './bson.converter';
 
 describe('BsonConverter', () => {
 	let converter: BsonConverter;

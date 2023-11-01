@@ -3,6 +3,26 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import {
+	BoardExternalReference,
+	BoardExternalReferenceType,
+} from '@shared/domain/domainobject/board/types/board-external-reference';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { BoardRepo } from '@shared/repo/board/board.repo';
+import { LessonRepo } from '@shared/repo/lesson/lesson.repo';
+import { boardFactory } from '@shared/testing/factory/board.factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { CardService } from '@src/modules/board/service/card.service';
+import { ColumnBoardService } from '@src/modules/board/service/column-board.service';
+import { ColumnService } from '@src/modules/board/service/column.service';
+import { ContentElementService } from '@src/modules/board/service/content-element.service';
+import { TaskService } from '@src/modules/task/service/task.service';
+import { ColumnBoardTargetService } from './column-board-target.service';
+import { RoomsService } from './rooms.service';
 
 describe('rooms service', () => {
 	let module: TestingModule;

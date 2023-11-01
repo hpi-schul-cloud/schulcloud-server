@@ -1,3 +1,6 @@
+import { CommonCartridgeVersion } from './common-cartridge-enums';
+import { ICommonCartridgeMetadataProps, CommonCartridgeMetadataElement } from './common-cartridge-metadata-element';
+
 describe('CommonCartridgeMetadataElement', () => {
 	describe('transform', () => {
 		it('should return correct metadata regardless of common cartridge version', () => {

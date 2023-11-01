@@ -1,6 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { BoardRepo } from '@shared/repo/board/board.repo';
+import { CourseRepo } from '@shared/repo/course/course.repo';
+import { LessonRepo } from '@shared/repo/lesson/lesson.repo';
+import { TaskRepo } from '@shared/repo/task/task.repo';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { boardFactory } from '@shared/testing/factory/board.factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { RoomsService } from '../service/rooms.service';
+import { RoomBoardDTOFactory } from './room-board-dto.factory';
+import { RoomsAuthorisationService } from './rooms.authorisation.service';
+import { RoomsUc } from './rooms.uc';
 
 describe('rooms usecase', () => {
 	let uc: RoomsUc;

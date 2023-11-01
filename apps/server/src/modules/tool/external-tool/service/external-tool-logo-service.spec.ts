@@ -1,11 +1,10 @@
-import { createMock, DeepMocked, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
 import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { Logger } from '@src/core/logger/logger';
-
 import { of, throwError } from 'rxjs';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalToolLogo } from '../domain/external-tool-logo';

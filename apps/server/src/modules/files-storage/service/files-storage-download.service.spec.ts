@@ -4,6 +4,7 @@ import { NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { GetFile } from '@shared/infra/s3-client/interfaces';
 import { S3ClientAdapter } from '@shared/infra/s3-client/s3-client.adapter';
 import { fileRecordFactory } from '@shared/testing/factory/filerecord.factory';
 import { setupEntities } from '@shared/testing/setup-entities';

@@ -1,5 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { RoleDto } from '../service/dto/role.dto';
+import { RoleService } from '../service/role.service';
+import { RoleUc } from './role.uc';
 
 describe('RoleUc', () => {
 	let module: TestingModule;

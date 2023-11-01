@@ -1,3 +1,5 @@
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { setupEntities } from '@shared/testing/setup-entities';
 import * as roleModule from './roles';
 
 describe('Role seed data generation', () => {

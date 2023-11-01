@@ -1,12 +1,13 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
-import { createPrometheusMetricsApp } from '@shared/infra/metrics/prometheus/app';
-import { PrometheusMetricsConfig } from '@shared/infra/metrics/prometheus/config';
-import { createAPIResponseTimeMetricMiddleware } from '@shared/infra/metrics/prometheus/middleware';
-
+import {
+	createAPIResponseTimeMetricMiddleware,
+	createPrometheusMetricsApp,
+	PrometheusMetricsConfig,
+} from '@shared/infra/metrics';
+import { Logger } from '@src/core/logger/logger';
 import express, { Express, NextFunction, Request, RequestHandler, Response } from 'express';
-import { Logger } from 'winston';
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,

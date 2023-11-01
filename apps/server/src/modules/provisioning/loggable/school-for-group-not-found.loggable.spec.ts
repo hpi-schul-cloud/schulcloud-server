@@ -1,3 +1,7 @@
+import { externalGroupDtoFactory } from '@shared/testing/factory/external-group-dto.factory';
+import { ExternalGroupDto } from '../dto/external-group.dto';
+import { SchoolForGroupNotFoundLoggable } from './school-for-group-not-found.loggable';
+
 describe('SchoolForGroupNotFoundLoggable', () => {
 	describe('constructor', () => {
 		const setup = () => {

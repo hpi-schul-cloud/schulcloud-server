@@ -1,3 +1,5 @@
+import { ClassSourceOptionsEntity } from '../class-source-options.entity';
+
 describe(ClassSourceOptionsEntity.name, () => {
 	describe('constructor', () => {
 		describe('When a contructor is called', () => {

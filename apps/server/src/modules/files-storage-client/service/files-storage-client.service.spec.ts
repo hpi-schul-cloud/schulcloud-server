@@ -1,6 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { schoolFactory } from '@shared/testing/factory/school.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
+import { FilesStorageClientMapper } from '../mapper/files-storage-client.mapper';
+import { FileParamBuilder } from '../mapper/files-storage-param.builder';
+import { FilesStorageClientAdapterService } from './files-storage-client.service';
+import { FilesStorageProducer } from './files-storage.producer';
 
 describe('FilesStorageClientAdapterService', () => {
 	let module: TestingModule;

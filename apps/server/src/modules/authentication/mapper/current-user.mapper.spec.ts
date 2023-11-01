@@ -1,3 +1,4 @@
+import { ValidationError } from '@shared/common/error/validation.error';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { RoleName } from '@shared/domain/interface/rolename.enum';
@@ -6,7 +7,6 @@ import { schoolFactory } from '@shared/testing/factory/school.factory';
 import { userDoFactory } from '@shared/testing/factory/user.do.factory';
 import { userFactory } from '@shared/testing/factory/user.factory';
 import { setupEntities } from '@shared/testing/setup-entities';
-import { ValidationError } from 'class-validator';
 import { JwtPayload } from 'jsonwebtoken';
 import { CreateJwtPayload } from '../interface/jwt-payload';
 import { ICurrentUser, OauthCurrentUser } from '../interface/user';

@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ValidationError } from '@shared/common/error/validation.error';
 import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { ValidationError } from 'class-validator';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain/external-tool.do';
 import { ExternalToolLogoService } from './external-tool-logo.service';

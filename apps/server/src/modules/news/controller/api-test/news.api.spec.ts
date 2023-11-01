@@ -1,10 +1,19 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-
+import { News } from '@shared/domain/entity/news.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { NewsTargetModel } from '@shared/domain/types/news.types';
+import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { FeathersAuthorizationService } from '@src/modules/authorization/feathers/feathers-authorization.service';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import moment from 'moment';
 import request from 'supertest';
+import { CreateNewsParams } from '../dto/create-news.params';
+import { NewsListResponse, NewsResponse } from '../dto/news.response';
+import { UpdateNewsParams } from '../dto/update-news.params';
 
 describe('News Controller (API)', () => {
 	let app: INestApplication;

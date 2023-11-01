@@ -1,4 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { FileRecordParentType } from '@shared/infra/rabbitmq/exchange/files-storage';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { CopyFilesOfParentParamBuilder } from './copy-files-of-parent-param.builder';
+import { FileParamBuilder } from './files-storage-param.builder';
 
 describe('CopyFilesOfParentParamBuilder', () => {
 	beforeAll(async () => {

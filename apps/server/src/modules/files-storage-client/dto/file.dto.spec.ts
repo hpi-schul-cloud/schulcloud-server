@@ -1,3 +1,6 @@
+import { FileRecordParentType } from '@shared/infra/rabbitmq/exchange/files-storage';
+import { FileDto } from './file.dto';
+
 describe('FileDto', () => {
 	it('Should create well formed file dto.', () => {
 		const id = 'id123';

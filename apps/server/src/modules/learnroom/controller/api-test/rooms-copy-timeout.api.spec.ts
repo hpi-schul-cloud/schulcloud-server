@@ -12,14 +12,13 @@ import { userFactory } from '@shared/testing/factory/user.factory';
 import { mapUserToCurrentUser } from '@shared/testing/map-user-to-current-user';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ICurrentUser } from '@src/modules/authentication/interface/user';
-import { ServerTestModule } from '@src/modules/server/server.module';
-
 import { Request } from 'express';
 import request from 'supertest';
 
 Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
 // eslint-disable-next-line import/first
+import { ServerTestModule } from '@src/modules/server/server.module';
 
 // This needs to be in a separate test file because of the above configuration.
 // When we find a way to mock the config, it should be moved alongside the other API tests.

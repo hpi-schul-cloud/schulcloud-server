@@ -1,4 +1,4 @@
-import { Builder } from 'xml2js';
+import { Builder } from './builder';
 
 interface TestObject {
 	test: string;

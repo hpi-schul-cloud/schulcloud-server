@@ -1,5 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { CommonCartridgeVersion } from '../common-cartridge/common-cartridge-enums';
+import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
+import { CourseExportUc } from './course-export.uc';
 
 describe('CourseExportUc', () => {
 	let module: TestingModule;

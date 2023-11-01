@@ -1,3 +1,6 @@
+import { ICommonCartridgeElement } from './common-cartridge-element.interface';
+import { CommonCartridgeOrganizationWrapperElement } from './common-cartridge-organization-wrapper-element';
+
 describe('CommonCartridgeOrganizationWrapperElement', () => {
 	it('should transform the organization elements into the expected structure', () => {
 		const organizationElementsMock: ICommonCartridgeElement[] = [

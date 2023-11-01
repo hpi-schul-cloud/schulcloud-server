@@ -1,5 +1,4 @@
 import { createMock } from '@golevelup/ts-jest';
-import { UserQuery } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -20,6 +19,7 @@ import { systemFactory } from '@shared/testing/factory/system.factory';
 import { userDoFactory } from '@shared/testing/factory/user.do.factory';
 import { userFactory } from '@shared/testing/factory/user.factory';
 import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { UserQuery } from '@src/modules/user/service/user-query.type';
 import { UserDORepo } from './user-do.repo';
 
 describe('UserRepo', () => {

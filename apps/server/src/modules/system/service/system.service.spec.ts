@@ -1,5 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { EntityNotFoundError } from '@shared/common/error/entity-not-found.error';
+import { SystemEntity, OauthConfig } from '@shared/domain/entity/system.entity';
+import { SystemTypeEnum } from '@shared/domain/types/system.type';
+import { IdentityManagementOauthService } from '@shared/infra/identity-management/identity-management-oauth.service';
+import { SystemRepo } from '@shared/repo/system/system.repo';
+import { systemFactory } from '@shared/testing/factory/system.factory';
+import { SystemMapper } from '../mapper/system.mapper';
+import { SystemService } from './system.service';
 
 describe('SystemService', () => {
 	let module: TestingModule;

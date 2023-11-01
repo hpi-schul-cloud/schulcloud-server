@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Logger, UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
@@ -16,6 +16,7 @@ import { schoolFactory } from '@shared/testing/factory/school.factory';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { userFactory } from '@shared/testing/factory/user.factory';
 import { setupEntities } from '@shared/testing/setup-entities';
+import { Logger } from '@src/core/logger/logger';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { LdapAuthorizationBodyParams } from '../controllers/dto/ldap-authorization.body.params';
 import { ICurrentUser } from '../interface/user';

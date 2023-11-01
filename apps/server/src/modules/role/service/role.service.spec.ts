@@ -1,6 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundError } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Role } from '@shared/domain/entity/role.entity';
+import { RoleName } from '@shared/domain/interface/rolename.enum';
+import { RoleRepo } from '@shared/repo/role/role.repo';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { RoleDto } from './dto/role.dto';
+import { RoleService } from './role.service';
 
 import resetAllMocks = jest.resetAllMocks;
 

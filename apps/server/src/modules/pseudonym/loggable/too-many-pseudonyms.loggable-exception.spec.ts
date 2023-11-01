@@ -1,3 +1,5 @@
+import { TooManyPseudonymsLoggableException } from './too-many-pseudonyms.loggable-exception';
+
 describe('TooManyPseudonymsLoggableException', () => {
 	describe('constructor', () => {
 		const setup = () => {

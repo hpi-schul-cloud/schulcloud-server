@@ -1,9 +1,16 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-
+import { SystemEntity, OauthConfig } from '@shared/domain/entity/system.entity';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { systemFactory } from '@shared/testing/factory/system.factory';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request, { Response } from 'supertest';
+import { PublicSystemListResponse } from '../dto/public-system-list.response';
+import { PublicSystemResponse } from '../dto/public-system-response';
 
 describe('System (API)', () => {
 	let app: INestApplication;

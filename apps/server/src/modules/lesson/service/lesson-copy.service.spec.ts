@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { BaseEntity } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
+import { BaseEntity } from '@shared/domain/entity/base.entity';
 import {
 	ComponentType,
 	IComponentEtherpadProperties,

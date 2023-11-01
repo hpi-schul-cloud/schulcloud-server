@@ -2,8 +2,16 @@ import { createMock } from '@golevelup/ts-jest';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-
+import { Pseudonym } from '@shared/domain/domainobject/pseudonym.do';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
+import { pseudonymEntityFactory } from '@shared/testing/factory/pseudonym.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { v4 as uuidv4 } from 'uuid';
+import { PseudonymEntity } from '../entity/pseudonym.entity';
+import { PseudonymsRepo } from './pseudonyms.repo';
 
 describe('PseudonymRepo', () => {
 	let module: TestingModule;

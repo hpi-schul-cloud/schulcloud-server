@@ -7,8 +7,8 @@ import { SubmissionRepo } from '@shared/repo/submission/submission.repo';
 import { submissionFactory } from '@shared/testing/factory/submission.factory';
 import { taskFactory } from '@shared/testing/factory/task.factory';
 import { setupEntities } from '@shared/testing/setup-entities';
+import { FileDto } from '@src/modules/files-storage-client/dto/file.dto';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client/service/files-storage-client.service';
-import { FileDto } from '@src/modules/files-storage/dto/file.dto';
 import { SubmissionService } from './submission.service';
 
 describe('Submission Service', () => {

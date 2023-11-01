@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError } from '@shared/common/error/authorization.error';
 import { EntityNotFoundError } from '@shared/common/error/entity-not-found.error';
 import { ForbiddenOperationError } from '@shared/common/error/forbidden-operation.error';
+import { ValidationError } from '@shared/common/error/validation.error';
 import { Account } from '@shared/domain/entity/account.entity';
 import { Role } from '@shared/domain/entity/role.entity';
 import { SchoolRolePermission, SchoolRoles } from '@shared/domain/entity/school.entity';
@@ -20,9 +21,7 @@ import { userFactory } from '@shared/testing/factory/user.factory';
 import { setupEntities } from '@shared/testing/setup-entities';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ICurrentUser } from '@src/modules/authentication/interface/user';
-
 import { ObjectId } from 'bson';
-import { ValidationError } from 'class-validator';
 import { AccountByIdBodyParams } from '../controller/dto/account-by-id.body.params';
 import { AccountByIdParams } from '../controller/dto/account-by-id.params';
 import { AccountSearchListResponse } from '../controller/dto/account-search-list.response';

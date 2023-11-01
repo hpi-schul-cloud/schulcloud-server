@@ -1,3 +1,7 @@
+import { Account } from '@shared/domain/entity/account.entity';
+import { accountFactory } from '@shared/testing/factory/account.factory';
+import { AccountEntityToDtoMapper } from './account-entity-to-dto.mapper';
+
 describe('AccountEntityToDtoMapper', () => {
 	beforeEach(() => {
 		jest.useFakeTimers();

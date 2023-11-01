@@ -1,3 +1,6 @@
+import { ICommonCartridgeElement } from './common-cartridge-element.interface';
+import { CommonCartridgeResourceWrapperElement } from './common-cartridge-resource-wrapper-element';
+
 describe('CommonCartridgeResourceWrapperElement', () => {
 	it('should transform the resource elements into an array of transformed objects', () => {
 		const resourceElementsMock: ICommonCartridgeElement[] = [

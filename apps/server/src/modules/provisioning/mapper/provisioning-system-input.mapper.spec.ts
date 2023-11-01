@@ -1,3 +1,8 @@
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { ProvisioningSystemDto } from '../dto/provisioning-system.dto';
+import { ProvisioningSystemInputMapper } from './provisioning-system-input.mapper';
+
 describe('SchoolUcMapper', () => {
 	describe('mapToInternal', () => {
 		it('should map provisioningStrategy', () => {

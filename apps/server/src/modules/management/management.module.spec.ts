@@ -1,4 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { DatabaseManagementController } from './controller/database-management.controller';
+import { ManagementServerModule, ManagementServerTestModule } from './management-server.module';
+import { DatabaseManagementUc } from './uc/database-management.uc';
 
 describe('ManagementModule', () => {
 	let module: TestingModule;

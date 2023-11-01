@@ -1,5 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { EntityNotFoundError } from '@shared/common/error/entity-not-found.error';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { SystemRepo } from '@shared/repo/system/system.repo';
+import { systemFactory } from '@shared/testing/factory/system.factory';
+import { SystemOidcMapper } from '../mapper/system-oidc.mapper';
+import { SystemOidcService } from './system-oidc.service';
 
 describe('SystemService', () => {
 	let module: TestingModule;

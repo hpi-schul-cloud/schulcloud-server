@@ -1,5 +1,16 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { CopyApiResponse } from '@src/modules/copy-helper/dto/copy.response';
+import { CopyElementType, CopyStatusEnum, CopyStatus } from '@src/modules/copy-helper/types/copy.types';
+import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
+import { RoomBoardDTO } from '../types/room-board.types';
+import { CourseCopyUC } from '../uc/course-copy.uc';
+import { LessonCopyUC } from '../uc/lesson-copy.uc';
+import { RoomsUc } from '../uc/rooms.uc';
+import { SingleColumnBoardResponse } from './dto/single-column-board/board.response';
+import { RoomsController } from './rooms.controller';
 
 describe('rooms controller', () => {
 	let controller: RoomsController;

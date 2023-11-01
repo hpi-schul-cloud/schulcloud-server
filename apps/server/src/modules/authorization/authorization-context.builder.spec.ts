@@ -1,3 +1,7 @@
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { AuthorizationContextBuilder } from './authorization-context.builder';
+import { Action } from './types/action.enum';
+
 describe('AuthorizationContextBuilder', () => {
 	it('Should allow to set required permissions.', () => {
 		const permissionA = 'a' as Permission;

@@ -3,6 +3,12 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { UnauthorizedException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { ICreateNews, NewsTargetModel } from '@shared/domain/types/news.types';
+import { NewsRepo } from '@shared/repo/news/news.repo';
+import { Logger } from '@src/core/logger/logger';
+import { FeathersAuthorizationService } from '@src/modules/authorization/feathers/feathers-authorization.service';
+import { NewsUc } from './news.uc';
 
 describe('NewsUc', () => {
 	let module: TestingModule;

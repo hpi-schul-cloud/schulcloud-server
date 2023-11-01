@@ -6,8 +6,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import { setupEntities } from '@shared/testing/setup-entities';
-import { JwtPayload } from 'jsonwebtoken';
 import { jwtConstants } from '../constants';
+import { JwtPayload } from '../interface/jwt-payload';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
 import { JwtStrategy } from './jwt.strategy';
 

@@ -6,7 +6,7 @@ import { Course } from '@shared/domain/entity/course.entity';
 import { Role } from '@shared/domain/entity/role.entity';
 import { SchoolEntity, SchoolFeatures } from '@shared/domain/entity/school.entity';
 import { User } from '@shared/domain/entity/user.entity';
-import { TargetModels } from '@shared/domain/entity/video-conference.entity';
+import { TargetModels, VideoConference } from '@shared/domain/entity/video-conference.entity';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { RoleName } from '@shared/domain/interface/rolename.enum';
 import { VideoConferenceScope } from '@shared/domain/interface/video-conference-scope.enum';
@@ -20,11 +20,9 @@ import { userFactory } from '@shared/testing/factory/user.factory';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
 import { TestApiClient } from '@shared/testing/test-api-client';
 import { ServerTestModule } from '@src/modules/server/server.module';
-
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
-import { VideoConference } from '../../uc/dto/video-conference';
 import { VideoConferenceCreateParams } from '../dto/request/video-conference-create.params';
 import { VideoConferenceJoinResponse } from '../dto/response/video-conference-join.response';
 

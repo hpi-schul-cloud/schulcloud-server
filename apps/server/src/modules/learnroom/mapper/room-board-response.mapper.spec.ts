@@ -1,6 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 
 import { ObjectId } from 'bson';
+import { BoardElementResponse } from '../controller/dto/single-column-board/board-element.response';
+import { SingleColumnBoardResponse } from '../controller/dto/single-column-board/board.response';
+import { RoomBoardElementTypes } from '../types/room-board.types';
+import { RoomBoardResponseMapper } from './room-board-response.mapper';
 
 describe('room board response mapper', () => {
 	let mapper: RoomBoardResponseMapper;

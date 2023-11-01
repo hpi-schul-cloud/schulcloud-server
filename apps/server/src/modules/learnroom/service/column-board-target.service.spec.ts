@@ -1,6 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ColumnBoardTarget } from '@shared/domain/entity/legacy-board/column-board-target.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database/mongo-memory-database/mongo-memory-database.module';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { columnBoardTargetFactory } from '@shared/testing/factory/boardelement.factory';
+import { ColumnBoardService } from '@src/modules/board/service/column-board.service';
+import { ColumnBoardTargetService } from './column-board-target.service';
 
 describe(ColumnBoardTargetService.name, () => {
 	let module: TestingModule;

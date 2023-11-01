@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ValidationError } from '@shared/common/error/validation.error';
 import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject/user-login-migration.do';

@@ -3,6 +3,25 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { AuthorizableObject } from '@shared/domain/domain-object';
+import { BaseDO } from '@shared/domain/domainobject/base.do';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { CourseRepo } from '@shared/repo/course/course.repo';
+import { LessonRepo } from '@shared/repo/lesson/lesson.repo';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { lessonFactory } from '@shared/testing/factory/lesson.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { AuthorizableReferenceType } from '@src/modules/authorization/types/allowed-authorization-object-type.enum';
+import { CopyHelperService } from '@src/modules/copy-helper/service/copy-helper.service';
+import { CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper/types/copy.types';
+import { EtherpadService } from '@src/modules/lesson/service/etherpad.service';
+import { LessonCopyService } from '@src/modules/lesson/service/lesson-copy.service';
+import { LessonCopyUC } from './lesson-copy.uc';
 
 describe('lesson copy uc', () => {
 	let module: TestingModule;

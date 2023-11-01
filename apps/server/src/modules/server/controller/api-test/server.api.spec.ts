@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-
 import request from 'supertest';
+import { ServerTestModule } from '../../server.module';
 
 describe('Server Controller (API)', () => {
 	let app: INestApplication;

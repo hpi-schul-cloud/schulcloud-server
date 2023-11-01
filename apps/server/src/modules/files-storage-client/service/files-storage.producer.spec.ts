@@ -3,6 +3,15 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import {
+	FileRecordParentType,
+	FilesStorageExchange,
+	FilesStorageEvents,
+} from '@shared/infra/rabbitmq/exchange/files-storage';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { ErrorMapper } from '../mapper/error.mapper';
+import { FilesStorageProducer } from './files-storage.producer';
 
 describe('FilesStorageProducer', () => {
 	let module: TestingModule;

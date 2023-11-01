@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Logger, UnprocessableEntityException } from '@nestjs/common';
+import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception/not-found.loggable-exception';
 import { ExternalSource } from '@shared/domain/domainobject/external-source';
@@ -16,6 +16,7 @@ import { roleDtoFactory } from '@shared/testing/factory/role-dto.factory';
 import { roleFactory } from '@shared/testing/factory/role.factory';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { userDoFactory } from '@shared/testing/factory/user.do.factory';
+import { Logger } from '@src/core/logger/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto/account-save.dto';
 import { Group } from '@src/modules/group/domain/group';

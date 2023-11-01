@@ -9,8 +9,8 @@ import { linkElementFactory } from '@shared/testing/factory/domainobject/board/l
 import { submissionContainerElementFactory } from '@shared/testing/factory/domainobject/board/submission-container-element.do.factory';
 import { submissionItemFactory } from '@shared/testing/factory/domainobject/board/submission-item.do.factory';
 import { setupEntities } from '@shared/testing/setup-entities';
+import { FileDto } from '@src/modules/files-storage-client/dto/file.dto';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client/service/files-storage-client.service';
-import { FileDto } from '@src/modules/files-storage/dto/file.dto';
 import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
 

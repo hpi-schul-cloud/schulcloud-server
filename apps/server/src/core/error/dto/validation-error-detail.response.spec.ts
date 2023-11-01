@@ -1,3 +1,5 @@
+import { ValidationErrorDetailResponse } from './validation-error-detail.response';
+
 describe('ValidationErrorDetailResponse', () => {
 	describe('when creating a ValidationErrorDetailResponse instance', () => {
 		it('should have field and errors defined', () => {

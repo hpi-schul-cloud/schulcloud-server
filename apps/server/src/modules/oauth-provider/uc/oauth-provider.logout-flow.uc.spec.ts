@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { OauthProviderService } from '@shared/infra/oauth-provider/oauth-provider.service';
+import { OauthProviderLogoutFlowUc } from './oauth-provider.logout-flow.uc';
 
 describe('OauthProviderUc', () => {
 	let module: TestingModule;

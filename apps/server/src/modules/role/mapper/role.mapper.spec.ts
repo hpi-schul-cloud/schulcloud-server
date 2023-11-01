@@ -1,3 +1,10 @@
+import { Role } from '@shared/domain/entity/role.entity';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { RoleDto } from '../service/dto/role.dto';
+import { RoleMapper } from './role.mapper';
+
 describe('RoleMapper', () => {
 	beforeAll(async () => {
 		await setupEntities();

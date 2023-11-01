@@ -1,4 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
+import { ValidationError } from './validation.error';
 
 describe('Validation Error', () => {
 	it('should possible to create', () => {

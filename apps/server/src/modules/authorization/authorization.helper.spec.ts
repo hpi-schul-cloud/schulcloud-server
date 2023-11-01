@@ -1,3 +1,11 @@
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { taskFactory } from '@shared/testing/factory/task.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { AuthorizationHelper } from './authorization.helper';
+
 describe('AuthorizationHelper', () => {
 	// If we have a class with no dependencies, do we still wanna build a testing module? Or is it fine like this?
 	const service = new AuthorizationHelper();
