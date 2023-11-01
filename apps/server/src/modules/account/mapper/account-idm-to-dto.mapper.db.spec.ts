@@ -54,15 +54,27 @@ describe('AccountIdmToDtoMapperDb', () => {
 			});
 
 			describe('when date is undefined', () => {
-				it('should use actual date', () => {
+				const setup = () => {
 					const testIdmEntity: IdmAccount = {
 						id: 'id',
 					};
+
+					const dateMock = new Date();
+					jest.useFakeTimers();
+					jest.setSystemTime(dateMock);
+
+					return { testIdmEntity, dateMock };
+				};
+
+				it('should use actual date', () => {
+					const { testIdmEntity, dateMock } = setup();
+
 					const ret = mapper.mapToDto(testIdmEntity);
 
-					const now = new Date();
-					expect(ret.createdAt).toEqual(now);
-					expect(ret.updatedAt).toEqual(now);
+					expect(ret.createdAt).toEqual(dateMock);
+					expect(ret.updatedAt).toEqual(dateMock);
+
+					jest.useRealTimers();
 				});
 			});
 

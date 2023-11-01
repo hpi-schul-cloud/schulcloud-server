@@ -9,13 +9,17 @@ export interface IFileStorageConfig extends ICoreModuleConfig {
 	USE_STREAM_TO_ANTIVIRUS: boolean;
 }
 
-const fileStorageConfig: IFileStorageConfig = {
+export const defaultConfig = {
+	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('FILES_STORAGE__INCOMING_REQUEST_TIMEOUT') as number,
+};
+
+const fileStorageConfig: IFileStorageConfig = {
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
 	MAX_FILE_SIZE: Configuration.get('FILES_STORAGE__MAX_FILE_SIZE') as number,
 	MAX_SECURITY_CHECK_FILE_SIZE: Configuration.get('FILES_STORAGE__MAX_FILE_SIZE') as number,
-	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
 	USE_STREAM_TO_ANTIVIRUS: Configuration.get('FILES_STORAGE__USE_STREAM_TO_ANTIVIRUS') as boolean,
+	...defaultConfig,
 };
 
 // The configurations lookup

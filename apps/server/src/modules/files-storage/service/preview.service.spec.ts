@@ -2,32 +2,21 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { PreviewProducer } from '@shared/infra/preview-generator';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { Readable } from 'stream';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
-import { createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
+import { createPath, createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
 import { TestHelper } from '../helper/test-helper';
 import { PreviewWidth } from '../interface';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
-import { FileDtoBuilder, FileResponseBuilder } from '../mapper';
+import { FileResponseBuilder } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
 import { PreviewService } from './preview.service';
-
-const streamMock = jest.fn();
-const resizeMock = jest.fn();
-const imageMagickMock = () => {
-	return { stream: streamMock, resize: resizeMock, data: Readable.from('text') };
-};
-jest.mock('gm', () => {
-	return {
-		subClass: () => imageMagickMock,
-	};
-});
 
 const buildFileRecordWithParams = (mimeType: string, scanStatus?: ScanStatus) => {
 	const parentId = new ObjectId().toHexString();
@@ -62,8 +51,8 @@ const defaultPreviewParamsWithWidth = {
 describe('PreviewService', () => {
 	let module: TestingModule;
 	let previewService: PreviewService;
-	let fileStorageService: DeepMocked<FilesStorageService>;
 	let s3ClientAdapter: DeepMocked<S3ClientAdapter>;
+	let previewProducer: DeepMocked<PreviewProducer>;
 
 	beforeAll(async () => {
 		await setupEntities([FileRecord]);
@@ -83,514 +72,369 @@ describe('PreviewService', () => {
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
+				{ provide: PreviewProducer, useValue: createMock<PreviewProducer>() },
 			],
 		}).compile();
 
 		previewService = module.get(PreviewService);
-		fileStorageService = module.get(FilesStorageService);
 		s3ClientAdapter = module.get(FILES_STORAGE_S3_CONNECTION);
-	});
-
-	beforeEach(() => {
-		jest.resetAllMocks();
+		previewProducer = module.get(PreviewProducer);
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
-	describe('getPreview is called', () => {
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
+	describe('download is called', () => {
 		describe('WHEN preview is possbile', () => {
 			describe('WHEN forceUpdate is true', () => {
-				describe('WHEN width and outputformat are not set', () => {
-					describe('WHEN download of original and preview file is successfull', () => {
-						const setup = () => {
-							const bytesRange = 'bytes=0-100';
-							const orignalMimeType = 'image/png';
-							const format = orignalMimeType.split('/')[1];
-							const { fileRecord } = buildFileRecordWithParams(orignalMimeType);
-							const downloadParams = {
-								fileRecordId: fileRecord.id,
-								fileName: fileRecord.name,
-							};
-							const previewParams = { forceUpdate: true };
-
-							const originalFileResponse = TestHelper.createFileResponse();
-							fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
-
-							const previewFile = TestHelper.createFile();
-							s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
-
-							const fileNameWithoutExtension = fileRecord.name.split('.')[0];
-							const name = `${fileNameWithoutExtension}.${format}`;
-							const previewFileResponse = FileResponseBuilder.build(previewFile, name);
-
-							const hash = createPreviewNameHash(fileRecord.id, {});
-							const previewFileDto = FileDtoBuilder.build(hash, previewFile.data, orignalMimeType);
-							const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
-							streamMock.mockClear();
-							streamMock.mockReturnValueOnce(previewFileDto.data);
-
-							return {
-								bytesRange,
-								fileRecord,
-								downloadParams,
-								previewParams,
-								format,
-								previewFileDto,
-								previewPath,
-								previewFileResponse,
-							};
+				describe('WHEN first get of preview file is successfull', () => {
+					const setup = () => {
+						const bytesRange = 'bytes=0-100';
+						const mimeType = 'image/png';
+						const { fileRecord } = buildFileRecordWithParams(mimeType);
+						const previewParams = {
+							...defaultPreviewParamsWithWidth,
+							forceUpdate: true,
 						};
+						const format = previewParams.outputFormat.split('/')[1];
 
-						it('calls download with correct params', async () => {
-							const { fileRecord, downloadParams, previewParams, bytesRange } = setup();
+						const previewFile = TestHelper.createFile();
+						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
-							await previewService.getPreview(fileRecord, downloadParams, previewParams, bytesRange);
+						const fileNameWithoutExtension = fileRecord.name.split('.')[0];
+						const name = `${fileNameWithoutExtension}.${format}`;
+						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-							expect(fileStorageService.download).toHaveBeenCalledWith(fileRecord, downloadParams, bytesRange);
+						const hash = createPreviewNameHash(fileRecord.id, previewParams);
+						const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
+						const originPath = createPath(fileRecord.getSchoolId(), fileRecord.id);
+
+						return {
+							bytesRange,
+							fileRecord,
+							previewParams,
+							format,
+							previewPath,
+							originPath,
+							previewFileResponse,
+						};
+					};
+
+					it('calls previewProducer.generate with correct params', async () => {
+						const { fileRecord, previewParams, bytesRange, originPath, previewPath, format } = setup();
+
+						await previewService.download(fileRecord, previewParams, bytesRange);
+
+						expect(previewProducer.generate).toHaveBeenCalledWith({
+							originFilePath: originPath,
+							previewFilePath: previewPath,
+							previewOptions: { width: previewParams.width, format },
 						});
+					});
 
-						it('calls image magicks stream method', async () => {
-							const { fileRecord, downloadParams, previewParams, format } = setup();
+					it('calls S3ClientAdapters get method', async () => {
+						const { fileRecord, previewParams, previewPath } = setup();
 
-							await previewService.getPreview(fileRecord, downloadParams, previewParams);
+						await previewService.download(fileRecord, previewParams);
 
-							expect(streamMock).toHaveBeenCalledWith(format);
-							expect(streamMock).toHaveBeenCalledTimes(1);
-						});
+						expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewPath, undefined);
+						expect(s3ClientAdapter.get).toHaveBeenCalledTimes(1);
+					});
 
-						it('calls S3ClientAdapters create method', async () => {
-							const { fileRecord, downloadParams, previewParams, previewFileDto, previewPath } = setup();
+					it('returns preview file response', async () => {
+						const { fileRecord, previewParams, previewFileResponse } = setup();
 
-							await previewService.getPreview(fileRecord, downloadParams, previewParams);
+						const response = await previewService.download(fileRecord, previewParams);
 
-							expect(s3ClientAdapter.create).toHaveBeenCalledWith(previewPath, previewFileDto);
-							expect(s3ClientAdapter.create).toHaveBeenCalledTimes(1);
+						expect(response).toEqual(previewFileResponse);
+					});
+				});
+
+				describe('WHEN first get of preview file throws error and second is successfull', () => {
+					const setup = (error: Error | NotFoundException) => {
+						const bytesRange = 'bytes=0-100';
+						const mimeType = 'image/png';
+						const { fileRecord } = buildFileRecordWithParams(mimeType);
+						const previewParams = {
+							...defaultPreviewParamsWithWidth,
+							forceUpdate: true,
+						};
+						const format = previewParams.outputFormat.split('/')[1];
+
+						const previewFile = TestHelper.createFile();
+						s3ClientAdapter.get.mockRejectedValueOnce(error).mockResolvedValueOnce(previewFile);
+
+						const fileNameWithoutExtension = fileRecord.name.split('.')[0];
+						const name = `${fileNameWithoutExtension}.${format}`;
+						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
+
+						const hash = createPreviewNameHash(fileRecord.id, previewParams);
+						const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
+						const originPath = createPath(fileRecord.getSchoolId(), fileRecord.id);
+
+						return {
+							bytesRange,
+							fileRecord,
+							previewParams,
+							format,
+							previewPath,
+							originPath,
+							previewFileResponse,
+						};
+					};
+
+					describe('WHEN error is a NotFoundException', () => {
+						it('calls previewProducer.generate with correct params', async () => {
+							const notFoundException = new NotFoundException();
+							const { fileRecord, previewParams, bytesRange, originPath, previewPath, format } =
+								setup(notFoundException);
+
+							await previewService.download(fileRecord, previewParams, bytesRange);
+
+							expect(previewProducer.generate).toHaveBeenCalledWith({
+								originFilePath: originPath,
+								previewFilePath: previewPath,
+								previewOptions: { width: previewParams.width, format },
+							});
+							expect(previewProducer.generate).toHaveBeenCalledTimes(2);
 						});
 
 						it('calls S3ClientAdapters get method', async () => {
-							const { fileRecord, downloadParams, previewParams, previewPath } = setup();
+							const notFoundException = new NotFoundException();
+							const { fileRecord, previewParams, previewPath } = setup(notFoundException);
 
-							await previewService.getPreview(fileRecord, downloadParams, previewParams);
+							await previewService.download(fileRecord, previewParams);
 
 							expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewPath, undefined);
-							expect(s3ClientAdapter.get).toHaveBeenCalledTimes(1);
-						});
-
-						it('returns preview file response', async () => {
-							const { fileRecord, downloadParams, previewParams, previewFileResponse } = setup();
-
-							const response = await previewService.getPreview(fileRecord, downloadParams, previewParams);
-
-							expect(response).toEqual(previewFileResponse);
+							expect(s3ClientAdapter.get).toHaveBeenCalledTimes(2);
 						});
 					});
 
-					describe('WHEN download of original file throws error', () => {
-						const setup = () => {
-							const mimeType = 'image/png';
-							const { fileRecord } = buildFileRecordWithParams(mimeType);
-							const downloadParams = {
-								fileRecordId: fileRecord.id,
-								fileName: fileRecord.name,
-							};
-							const previewParams = { forceUpdate: true };
-
+					describe('WHEN error is other error', () => {
+						it('should pass error', async () => {
 							const error = new Error('testError');
-							fileStorageService.download.mockRejectedValueOnce(error);
+							const { fileRecord, previewParams } = setup(error);
 
-							return { fileRecord, downloadParams, previewParams, error };
-						};
-
-						it('passes error', async () => {
-							const { fileRecord, downloadParams, previewParams, error } = setup();
-
-							await expect(previewService.getPreview(fileRecord, downloadParams, previewParams)).rejects.toThrowError(
-								error
-							);
-						});
-					});
-
-					describe('WHEN create of preview file throws error', () => {
-						const setup = () => {
-							const mimeType = 'image/png';
-							const { fileRecord } = buildFileRecordWithParams(mimeType);
-							const downloadParams = {
-								fileRecordId: fileRecord.id,
-								fileName: fileRecord.name,
-							};
-							const previewParams = { forceUpdate: true };
-
-							const originalFileResponse = TestHelper.createFileResponse();
-							fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
-
-							const error = new Error('testError');
-							s3ClientAdapter.create.mockRejectedValueOnce(error);
-
-							return { fileRecord, downloadParams, previewParams, error };
-						};
-
-						it('passes error', async () => {
-							const { fileRecord, downloadParams, previewParams, error } = setup();
-
-							await expect(previewService.getPreview(fileRecord, downloadParams, previewParams)).rejects.toThrowError(
-								error
-							);
-						});
-					});
-
-					describe('WHEN get of preview file throws error', () => {
-						const setup = () => {
-							const mimeType = 'image/png';
-							const { fileRecord } = buildFileRecordWithParams(mimeType);
-							const downloadParams = {
-								fileRecordId: fileRecord.id,
-								fileName: fileRecord.name,
-							};
-							const previewParams = { forceUpdate: true };
-
-							const originalFileResponse = TestHelper.createFileResponse();
-							fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
-
-							const error = new Error('testError');
-							s3ClientAdapter.get.mockRejectedValueOnce(error);
-
-							return { fileRecord, downloadParams, previewParams, error };
-						};
-
-						it('passes error', async () => {
-							const { fileRecord, downloadParams, previewParams, error } = setup();
-
-							await expect(previewService.getPreview(fileRecord, downloadParams, previewParams)).rejects.toThrowError(
-								error
-							);
+							await expect(previewService.download(fileRecord, previewParams)).rejects.toThrow(error);
 						});
 					});
 				});
 
-				describe('WHEN width and outputFormat are set', () => {
-					describe('WHEN download of original and preview file is successfull', () => {
-						const setup = () => {
-							const bytesRange = 'bytes=0-100';
-							const mimeType = 'image/png';
-							const { fileRecord } = buildFileRecordWithParams(mimeType);
-							const downloadParams = {
-								fileRecordId: fileRecord.id,
-								fileName: fileRecord.name,
-							};
-							const previewParams = {
-								...defaultPreviewParamsWithWidth,
-								forceUpdate: true,
-							};
-							const format = previewParams.outputFormat.split('/')[1];
-
-							const originalFileResponse = TestHelper.createFileResponse();
-							fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
-
-							const previewFile = TestHelper.createFile();
-							s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
-
-							const fileNameWithoutExtension = fileRecord.name.split('.')[0];
-							const name = `${fileNameWithoutExtension}.${format}`;
-							const previewFileResponse = FileResponseBuilder.build(previewFile, name);
-
-							const hash = createPreviewNameHash(fileRecord.id, previewParams);
-							const previewFileDto = FileDtoBuilder.build(hash, previewFile.data, previewParams.outputFormat);
-							const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
-
-							streamMock.mockClear();
-							streamMock.mockReturnValueOnce(previewFileDto.data);
-
-							resizeMock.mockClear();
-
-							return {
-								bytesRange,
-								fileRecord,
-								downloadParams,
-								previewParams,
-								format,
-								previewFileDto,
-								previewPath,
-								previewFileResponse,
-							};
+				describe('WHEN both gets of preview file throw error', () => {
+					const setup = () => {
+						const bytesRange = 'bytes=0-100';
+						const mimeType = 'image/png';
+						const { fileRecord } = buildFileRecordWithParams(mimeType);
+						const previewParams = {
+							...defaultPreviewParamsWithWidth,
+							forceUpdate: true,
 						};
+						const format = previewParams.outputFormat.split('/')[1];
 
-						it('calls download with correct params', async () => {
-							const { fileRecord, downloadParams, previewParams, bytesRange } = setup();
+						const previewFile = TestHelper.createFile();
+						const notFoundException = new NotFoundException();
+						s3ClientAdapter.get.mockRejectedValueOnce(notFoundException).mockRejectedValueOnce(notFoundException);
 
-							await previewService.getPreview(fileRecord, downloadParams, previewParams, bytesRange);
+						const fileNameWithoutExtension = fileRecord.name.split('.')[0];
+						const name = `${fileNameWithoutExtension}.${format}`;
+						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-							expect(fileStorageService.download).toHaveBeenCalledWith(fileRecord, downloadParams, bytesRange);
-						});
+						const hash = createPreviewNameHash(fileRecord.id, previewParams);
+						const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
+						const originPath = createPath(fileRecord.getSchoolId(), fileRecord.id);
 
-						it('calls image magicks resize method', async () => {
-							const { fileRecord, downloadParams, previewParams } = setup();
-
-							await previewService.getPreview(fileRecord, downloadParams, previewParams);
-
-							expect(resizeMock).toHaveBeenCalledWith(previewParams.width, undefined, '>');
-							expect(resizeMock).toHaveBeenCalledTimes(1);
-						});
-
-						it('calls image magicks stream method', async () => {
-							const { fileRecord, downloadParams, previewParams, format } = setup();
-
-							await previewService.getPreview(fileRecord, downloadParams, previewParams);
-
-							expect(streamMock).toHaveBeenCalledWith(format);
-							expect(streamMock).toHaveBeenCalledTimes(1);
-						});
-
-						it('calls S3ClientAdapters create method', async () => {
-							const { fileRecord, downloadParams, previewParams, previewFileDto, previewPath } = setup();
-
-							await previewService.getPreview(fileRecord, downloadParams, previewParams);
-
-							expect(s3ClientAdapter.create).toHaveBeenCalledWith(previewPath, previewFileDto);
-							expect(s3ClientAdapter.create).toHaveBeenCalledTimes(1);
-						});
-
-						it('calls S3ClientAdapters get method', async () => {
-							const { fileRecord, downloadParams, previewParams, previewPath } = setup();
-
-							await previewService.getPreview(fileRecord, downloadParams, previewParams);
-
-							expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewPath, undefined);
-							expect(s3ClientAdapter.get).toHaveBeenCalledTimes(1);
-						});
-
-						it('returns preview file response', async () => {
-							const { fileRecord, downloadParams, previewParams, previewFileResponse } = setup();
-
-							const response = await previewService.getPreview(fileRecord, downloadParams, previewParams);
-
-							expect(response).toEqual(previewFileResponse);
-						});
-					});
-
-					describe('WHEN download of original file throws error', () => {
-						const setup = () => {
-							const mimeType = 'image/png';
-							const { fileRecord } = buildFileRecordWithParams(mimeType);
-							const downloadParams = {
-								fileRecordId: fileRecord.id,
-								fileName: fileRecord.name,
-							};
-							const previewParams = { ...defaultPreviewParams, forceUpdate: true };
-
-							const error = new Error('testError');
-							fileStorageService.download.mockRejectedValueOnce(error);
-
-							return { fileRecord, downloadParams, previewParams, error };
+						return {
+							bytesRange,
+							fileRecord,
+							previewParams,
+							format,
+							previewPath,
+							originPath,
+							previewFileResponse,
 						};
+					};
 
-						it('passes error', async () => {
-							const { fileRecord, downloadParams, previewParams, error } = setup();
+					it('should pass error', async () => {
+						const { fileRecord, previewParams } = setup();
 
-							await expect(previewService.getPreview(fileRecord, downloadParams, previewParams)).rejects.toThrowError(
-								error
-							);
-						});
+						await expect(previewService.download(fileRecord, previewParams)).rejects.toThrow();
 					});
 				});
 			});
 
 			describe('WHEN forceUpdate is false', () => {
-				describe('WHEN width and outputFormat are set', () => {
-					describe('WHEN S3ClientAdapter get returns already stored preview file', () => {
-						const setup = () => {
-							const mimeType = 'image/png';
-							const { fileRecord } = buildFileRecordWithParams(mimeType);
-							const downloadParams = {
-								fileRecordId: fileRecord.id,
-								fileName: fileRecord.name,
-							};
-							const previewParams = {
-								...defaultPreviewParamsWithWidth,
-							};
-							const format = previewParams.outputFormat.split('/')[1];
-
-							const previewFile = TestHelper.createFile();
-							s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
-
-							const fileNameWithoutExtension = fileRecord.name.split('.')[0];
-							const name = `${fileNameWithoutExtension}.${format}`;
-							const previewFileResponse = FileResponseBuilder.build(previewFile, name);
-
-							const hash = createPreviewNameHash(fileRecord.id, previewParams);
-							const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
-
-							resizeMock.mockClear();
-							streamMock.mockClear();
-
-							return {
-								fileRecord,
-								downloadParams,
-								previewParams,
-								previewPath,
-								previewFileResponse,
-							};
+				describe('WHEN first get of preview file is successfull', () => {
+					const setup = () => {
+						const bytesRange = 'bytes=0-100';
+						const mimeType = 'image/png';
+						const { fileRecord } = buildFileRecordWithParams(mimeType);
+						const previewParams = {
+							...defaultPreviewParamsWithWidth,
+							forceUpdate: false,
 						};
+						const format = previewParams.outputFormat.split('/')[1];
 
-						it('calls S3ClientAdapters get method', async () => {
-							const { fileRecord, downloadParams, previewParams, previewPath } = setup();
+						const previewFile = TestHelper.createFile();
+						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
-							await previewService.getPreview(fileRecord, downloadParams, previewParams);
+						const fileNameWithoutExtension = fileRecord.name.split('.')[0];
+						const name = `${fileNameWithoutExtension}.${format}`;
+						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-							expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewPath, undefined);
-							expect(s3ClientAdapter.get).toHaveBeenCalledTimes(1);
-						});
+						const hash = createPreviewNameHash(fileRecord.id, previewParams);
+						const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
+						const originPath = createPath(fileRecord.getSchoolId(), fileRecord.id);
 
-						it('returns preview file response', async () => {
-							const { fileRecord, downloadParams, previewParams, previewFileResponse } = setup();
+						return {
+							bytesRange,
+							fileRecord,
+							previewParams,
+							format,
+							previewPath,
+							originPath,
+							previewFileResponse,
+						};
+					};
 
-							const response = await previewService.getPreview(fileRecord, downloadParams, previewParams);
+					it('calls S3ClientAdapters get method', async () => {
+						const { fileRecord, previewParams, previewPath } = setup();
 
-							expect(response).toEqual(previewFileResponse);
-						});
+						await previewService.download(fileRecord, previewParams);
 
-						it('does not call image magicks resize and stream method', async () => {
-							const { fileRecord, downloadParams, previewParams } = setup();
-
-							await previewService.getPreview(fileRecord, downloadParams, previewParams);
-
-							expect(resizeMock).not.toHaveBeenCalled();
-							expect(streamMock).not.toHaveBeenCalled();
-						});
+						expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewPath, undefined);
+						expect(s3ClientAdapter.get).toHaveBeenCalledTimes(1);
 					});
 
-					describe('WHEN S3ClientAdapter get throws NotFoundException', () => {
-						const setup = () => {
-							const bytesRange = 'bytes=0-100';
-							const mimeType = 'image/png';
-							const { fileRecord } = buildFileRecordWithParams(mimeType);
-							const downloadParams = {
-								fileRecordId: fileRecord.id,
-								fileName: fileRecord.name,
-							};
-							const previewParams = {
-								...defaultPreviewParamsWithWidth,
-							};
-							const format = previewParams.outputFormat.split('/')[1];
+					it('returns preview file response', async () => {
+						const { fileRecord, previewParams, previewFileResponse } = setup();
 
-							const error = new NotFoundException();
-							s3ClientAdapter.get.mockRejectedValueOnce(error);
+						const response = await previewService.download(fileRecord, previewParams);
 
-							const originalFileResponse = TestHelper.createFileResponse();
-							fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
+						expect(response).toEqual(previewFileResponse);
+					});
 
-							const previewFile = TestHelper.createFile();
-							s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
+					it('does not call generate', async () => {
+						const { fileRecord, previewParams, bytesRange } = setup();
 
-							const fileNameWithoutExtension = fileRecord.name.split('.')[0];
-							const name = `${fileNameWithoutExtension}.${format}`;
-							const previewFileResponse = FileResponseBuilder.build(previewFile, name);
+						await previewService.download(fileRecord, previewParams, bytesRange);
 
-							const hash = createPreviewNameHash(fileRecord.id, previewParams);
-							const previewFileDto = FileDtoBuilder.build(hash, previewFile.data, previewParams.outputFormat);
-							const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
+						expect(previewProducer.generate).toHaveBeenCalledTimes(0);
+					});
+				});
 
-							streamMock.mockClear();
-							streamMock.mockReturnValueOnce(previewFileDto.data);
-
-							resizeMock.mockClear();
-
-							return {
-								bytesRange,
-								fileRecord,
-								downloadParams,
-								previewParams,
-								format,
-								previewFileDto,
-								previewPath,
-								previewFileResponse,
-							};
+				describe('WHEN first get of preview file throws error and second is successfull', () => {
+					const setup = (error: Error | NotFoundException) => {
+						const bytesRange = 'bytes=0-100';
+						const mimeType = 'image/png';
+						const { fileRecord } = buildFileRecordWithParams(mimeType);
+						const previewParams = {
+							...defaultPreviewParamsWithWidth,
+							forceUpdate: false,
 						};
+						const format = previewParams.outputFormat.split('/')[1];
 
-						it('calls download with correct params', async () => {
-							const { fileRecord, downloadParams, previewParams, bytesRange } = setup();
+						const previewFile = TestHelper.createFile();
+						s3ClientAdapter.get.mockRejectedValueOnce(error).mockResolvedValueOnce(previewFile);
 
-							await previewService.getPreview(fileRecord, downloadParams, previewParams, bytesRange);
+						const fileNameWithoutExtension = fileRecord.name.split('.')[0];
+						const name = `${fileNameWithoutExtension}.${format}`;
+						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-							expect(fileStorageService.download).toHaveBeenCalledWith(fileRecord, downloadParams, bytesRange);
-						});
+						const hash = createPreviewNameHash(fileRecord.id, previewParams);
+						const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
+						const originPath = createPath(fileRecord.getSchoolId(), fileRecord.id);
 
-						it('calls image magicks resize method', async () => {
-							const { fileRecord, downloadParams, previewParams } = setup();
+						return {
+							bytesRange,
+							fileRecord,
+							previewParams,
+							format,
+							previewPath,
+							originPath,
+							previewFileResponse,
+						};
+					};
 
-							await previewService.getPreview(fileRecord, downloadParams, previewParams);
+					describe('WHEN error is a NotFoundException', () => {
+						it('calls previewProducer.generate with correct params', async () => {
+							const notFoundException = new NotFoundException();
+							const { fileRecord, previewParams, bytesRange, originPath, previewPath, format } =
+								setup(notFoundException);
 
-							expect(resizeMock).toHaveBeenCalledWith(previewParams.width, undefined, '>');
-							expect(resizeMock).toHaveBeenCalledTimes(1);
-						});
+							await previewService.download(fileRecord, previewParams, bytesRange);
 
-						it('calls image magicks stream method', async () => {
-							const { fileRecord, downloadParams, previewParams, format } = setup();
-
-							await previewService.getPreview(fileRecord, downloadParams, previewParams);
-
-							expect(streamMock).toHaveBeenCalledWith(format);
-							expect(streamMock).toHaveBeenCalledTimes(1);
-						});
-
-						it('calls S3ClientAdapters create method', async () => {
-							const { fileRecord, downloadParams, previewParams, previewFileDto, previewPath } = setup();
-
-							await previewService.getPreview(fileRecord, downloadParams, previewParams);
-
-							expect(s3ClientAdapter.create).toHaveBeenCalledWith(previewPath, previewFileDto);
-							expect(s3ClientAdapter.create).toHaveBeenCalledTimes(1);
+							expect(previewProducer.generate).toHaveBeenCalledWith({
+								originFilePath: originPath,
+								previewFilePath: previewPath,
+								previewOptions: { width: previewParams.width, format },
+							});
+							expect(previewProducer.generate).toHaveBeenCalledTimes(1);
 						});
 
 						it('calls S3ClientAdapters get method', async () => {
-							const { fileRecord, downloadParams, previewParams, previewPath } = setup();
+							const notFoundException = new NotFoundException();
+							const { fileRecord, previewParams, previewPath } = setup(notFoundException);
 
-							await previewService.getPreview(fileRecord, downloadParams, previewParams);
+							await previewService.download(fileRecord, previewParams);
 
 							expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewPath, undefined);
 							expect(s3ClientAdapter.get).toHaveBeenCalledTimes(2);
 						});
-
-						it('returns preview file response', async () => {
-							const { fileRecord, downloadParams, previewParams, previewFileResponse } = setup();
-
-							const response = await previewService.getPreview(fileRecord, downloadParams, previewParams);
-
-							expect(response).toEqual(previewFileResponse);
-						});
 					});
 
-					describe('WHEN S3ClientAdapter get throws other than NotFoundException', () => {
-						const setup = () => {
-							const mimeType = 'image/png';
-							const { fileRecord } = buildFileRecordWithParams(mimeType);
-							const downloadParams = {
-								fileRecordId: fileRecord.id,
-								fileName: fileRecord.name,
-							};
-							const previewParams = {
-								...defaultPreviewParamsWithWidth,
-							};
-							const format = previewParams.outputFormat.split('/')[1];
-
+					describe('WHEN error is other error', () => {
+						it('should pass error', async () => {
 							const error = new Error('testError');
-							s3ClientAdapter.get.mockRejectedValueOnce(error);
+							const { fileRecord, previewParams } = setup(error);
 
-							return {
-								fileRecord,
-								downloadParams,
-								previewParams,
-								format,
-								error,
-							};
-						};
-
-						it('passes error', async () => {
-							const { fileRecord, downloadParams, previewParams, error } = setup();
-
-							await expect(previewService.getPreview(fileRecord, downloadParams, previewParams)).rejects.toThrow(error);
+							await expect(previewService.download(fileRecord, previewParams)).rejects.toThrow(error);
 						});
+					});
+				});
+
+				describe('WHEN both gets of preview file throw error', () => {
+					const setup = () => {
+						const bytesRange = 'bytes=0-100';
+						const mimeType = 'image/png';
+						const { fileRecord } = buildFileRecordWithParams(mimeType);
+						const previewParams = {
+							...defaultPreviewParamsWithWidth,
+							forceUpdate: true,
+						};
+						const format = previewParams.outputFormat.split('/')[1];
+
+						const previewFile = TestHelper.createFile();
+						const notFoundException = new NotFoundException();
+						s3ClientAdapter.get.mockRejectedValueOnce(notFoundException).mockRejectedValueOnce(notFoundException);
+
+						const fileNameWithoutExtension = fileRecord.name.split('.')[0];
+						const name = `${fileNameWithoutExtension}.${format}`;
+						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
+
+						const hash = createPreviewNameHash(fileRecord.id, previewParams);
+						const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
+						const originPath = createPath(fileRecord.getSchoolId(), fileRecord.id);
+
+						return {
+							bytesRange,
+							fileRecord,
+							previewParams,
+							format,
+							previewPath,
+							originPath,
+							previewFileResponse,
+						};
+					};
+
+					it('should pass error', async () => {
+						const { fileRecord, previewParams } = setup();
+
+						await expect(previewService.download(fileRecord, previewParams)).rejects.toThrow();
 					});
 				});
 			});
@@ -603,33 +447,23 @@ describe('PreviewService', () => {
 					const mimeType = 'application/zip';
 					const format = mimeType.split('/')[1];
 					const { fileRecord } = buildFileRecordWithParams(mimeType);
-					const downloadParams = {
-						fileRecordId: fileRecord.id,
-						fileName: fileRecord.name,
-					};
 					const previewParams = { ...defaultPreviewParams, forceUpdate: true };
-
-					const originalFileResponse = TestHelper.createFileResponse();
-					fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
 
 					const error = new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);
 
 					return {
 						bytesRange,
 						fileRecord,
-						downloadParams,
 						previewParams,
 						format,
 						error,
 					};
 				};
 
-				it('calls download with correct params', async () => {
-					const { fileRecord, downloadParams, previewParams, bytesRange, error } = setup();
+				it('passes error', async () => {
+					const { fileRecord, previewParams, bytesRange, error } = setup();
 
-					await expect(
-						previewService.getPreview(fileRecord, downloadParams, previewParams, bytesRange)
-					).rejects.toThrowError(error);
+					await expect(previewService.download(fileRecord, previewParams, bytesRange)).rejects.toThrowError(error);
 				});
 			});
 
@@ -639,33 +473,23 @@ describe('PreviewService', () => {
 					const mimeType = 'image/png';
 					const format = mimeType.split('/')[1];
 					const { fileRecord } = buildFileRecordWithParams(mimeType, ScanStatus.PENDING);
-					const downloadParams = {
-						fileRecordId: fileRecord.id,
-						fileName: fileRecord.name,
-					};
 					const previewParams = { ...defaultPreviewParams, forceUpdate: true };
-
-					const originalFileResponse = TestHelper.createFileResponse();
-					fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
 
 					const error = new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);
 
 					return {
 						bytesRange,
 						fileRecord,
-						downloadParams,
 						previewParams,
 						format,
 						error,
 					};
 				};
 
-				it('calls download with correct params', async () => {
-					const { fileRecord, downloadParams, previewParams, bytesRange, error } = setup();
+				it('passes error', async () => {
+					const { fileRecord, previewParams, bytesRange, error } = setup();
 
-					await expect(
-						previewService.getPreview(fileRecord, downloadParams, previewParams, bytesRange)
-					).rejects.toThrowError(error);
+					await expect(previewService.download(fileRecord, previewParams, bytesRange)).rejects.toThrowError(error);
 				});
 			});
 
@@ -675,21 +499,14 @@ describe('PreviewService', () => {
 					const mimeType = 'image/png';
 					const format = mimeType.split('/')[1];
 					const { fileRecord } = buildFileRecordWithParams(mimeType, ScanStatus.ERROR);
-					const downloadParams = {
-						fileRecordId: fileRecord.id,
-						fileName: fileRecord.name,
-					};
-					const previewParams = { ...defaultPreviewParams, forceUpdate: true };
 
-					const originalFileResponse = TestHelper.createFileResponse();
-					fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
+					const previewParams = { ...defaultPreviewParams, forceUpdate: true };
 
 					const error = new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);
 
 					return {
 						bytesRange,
 						fileRecord,
-						downloadParams,
 						previewParams,
 						format,
 						error,
@@ -697,11 +514,9 @@ describe('PreviewService', () => {
 				};
 
 				it('calls download with correct params', async () => {
-					const { fileRecord, downloadParams, previewParams, bytesRange, error } = setup();
+					const { fileRecord, previewParams, bytesRange, error } = setup();
 
-					await expect(
-						previewService.getPreview(fileRecord, downloadParams, previewParams, bytesRange)
-					).rejects.toThrowError(error);
+					await expect(previewService.download(fileRecord, previewParams, bytesRange)).rejects.toThrowError(error);
 				});
 			});
 
@@ -711,21 +526,13 @@ describe('PreviewService', () => {
 					const mimeType = 'image/png';
 					const format = mimeType.split('/')[1];
 					const { fileRecord } = buildFileRecordWithParams(mimeType, ScanStatus.BLOCKED);
-					const downloadParams = {
-						fileRecordId: fileRecord.id,
-						fileName: fileRecord.name,
-					};
 					const previewParams = { ...defaultPreviewParams, forceUpdate: true };
-
-					const originalFileResponse = TestHelper.createFileResponse();
-					fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
 
 					const error = new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);
 
 					return {
 						bytesRange,
 						fileRecord,
-						downloadParams,
 						previewParams,
 						format,
 						error,
@@ -733,11 +540,9 @@ describe('PreviewService', () => {
 				};
 
 				it('calls download with correct params', async () => {
-					const { fileRecord, downloadParams, previewParams, bytesRange, error } = setup();
+					const { fileRecord, previewParams, bytesRange, error } = setup();
 
-					await expect(
-						previewService.getPreview(fileRecord, downloadParams, previewParams, bytesRange)
-					).rejects.toThrowError(error);
+					await expect(previewService.download(fileRecord, previewParams, bytesRange)).rejects.toThrowError(error);
 				});
 			});
 		});
@@ -789,10 +594,10 @@ describe('PreviewService', () => {
 				};
 			};
 
-			it('does not pass error', async () => {
-				const { fileRecord } = setup();
+			it('should throw error', async () => {
+				const { fileRecord, error } = setup();
 
-				await previewService.deletePreviews([fileRecord]);
+				await expect(previewService.deletePreviews([fileRecord])).rejects.toThrowError(error);
 			});
 		});
 	});

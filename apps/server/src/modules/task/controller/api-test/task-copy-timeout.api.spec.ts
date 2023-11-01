@@ -1,9 +1,12 @@
+import { createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser } from '@modules/authentication';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -12,12 +15,13 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { Request } from 'express';
 import request from 'supertest';
 
+// config must be set outside before the server module is imported, otherwise the configuration is already set
 Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
+
 // eslint-disable-next-line import/first
 import { ServerTestModule } from '@modules/server/server.module';
 
@@ -42,6 +46,8 @@ describe('Task copy (API)', () => {
 					return true;
 				},
 			})
+			.overrideProvider(FilesStorageClientAdapterService)
+			.useValue(createMock<FilesStorageClientAdapterService>())
 			.compile();
 
 		app = moduleFixture.createNestApplication();
