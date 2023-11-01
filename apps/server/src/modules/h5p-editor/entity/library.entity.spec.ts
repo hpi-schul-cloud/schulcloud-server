@@ -101,33 +101,40 @@ describe('InstalledLibrary', () => {
 	});
 
 	describe('compare', () => {
+		describe('when compare', () => {});
 		it('should return -1', () => {
 			const result = addonLibVersionOne.compare(addonLibVersionTwo);
 			expect(result).toBe(-1);
 		});
-		it('should call compareVersions', () => {
-			const compareVersionsSpy = (
-				jest.spyOn(addonLibVersionOne, 'compareVersions') as jest.SpyInstance<any, any>
-			).mockReturnValueOnce(0);
-			addonLibVersionOne.compare(addonLibVersionOne);
-			expect(compareVersionsSpy).toHaveBeenCalled();
-			compareVersionsSpy.mockRestore();
+		describe('when compare library Version', () => {
+			it('should call compareVersions', () => {
+				const compareVersionsSpy = (
+					jest.spyOn(addonLibVersionOne, 'compareVersions') as jest.SpyInstance<any, any>
+				).mockReturnValueOnce(0);
+				addonLibVersionOne.compare(addonLibVersionOne);
+				expect(compareVersionsSpy).toHaveBeenCalled();
+				compareVersionsSpy.mockRestore();
+			});
 		});
 	});
 
 	describe('compareVersions', () => {
-		it('should return -1 and call simple_compare once', () => {
-			const simpleCompareSpy = jest.spyOn(InstalledLibrary, 'simple_compare');
-			const result = addonLibVersionOne.compareVersions(addonLibVersionTwo);
-			expect(result).toBe(-1);
-			expect(simpleCompareSpy).toHaveBeenCalledTimes(1);
+		describe('when calling compareVersions with different Libraries', () => {
+			it('should return -1 and call simple_compare once', () => {
+				const simpleCompareSpy = jest.spyOn(InstalledLibrary, 'simple_compare');
+				const result = addonLibVersionOne.compareVersions(addonLibVersionTwo);
+				expect(result).toBe(-1);
+				expect(simpleCompareSpy).toHaveBeenCalledTimes(1);
+			});
 		});
 
-		it('should return -1 and call simple_compare three times', () => {
-			const simpleCompareSpy = jest.spyOn(InstalledLibrary, 'simple_compare');
-			const result = addonLibVersionOne.compareVersions(addonLibVersionOneMinorChange);
-			expect(result).toBe(-1);
-			expect(simpleCompareSpy).toHaveBeenCalledTimes(3);
+		describe('when calling compareVersions with Minor Change', () => {
+			it('should return -1 and call simple_compare three times', () => {
+				const simpleCompareSpy = jest.spyOn(InstalledLibrary, 'simple_compare');
+				const result = addonLibVersionOne.compareVersions(addonLibVersionOneMinorChange);
+				expect(result).toBe(-1);
+				expect(simpleCompareSpy).toHaveBeenCalledTimes(3);
+			});
 		});
 	});
 });
