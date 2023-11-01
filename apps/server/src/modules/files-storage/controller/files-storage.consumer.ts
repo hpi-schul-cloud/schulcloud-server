@@ -7,12 +7,14 @@ import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageEvents, FilesStorageExchange, ICopyFileDO, IFileDO } from '@src/shared/infra/rabbitmq';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
+import { PreviewService } from '../service/preview.service';
 import { CopyFilesOfParentPayload, FileRecordParams } from './dto';
 
 @Injectable()
 export class FilesStorageConsumer {
 	constructor(
 		private readonly filesStorageService: FilesStorageService,
+		private readonly previewService: PreviewService,
 		private logger: LegacyLogger,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		private readonly orm: MikroORM // don't remove it, we need it for @UseRequestContext
@@ -61,7 +63,11 @@ export class FilesStorageConsumer {
 	public async deleteFilesOfParent(@RabbitPayload() payload: EntityId): Promise<RpcMessage<IFileDO[]>> {
 		this.logger.debug({ action: 'deleteFilesOfParent', payload });
 
-		const [fileRecords, total] = await this.filesStorageService.deleteFilesOfParent(payload);
+		const [fileRecords, total] = await this.filesStorageService.getFileRecordsOfParent(payload);
+
+		await this.previewService.deletePreviews(fileRecords);
+		await this.filesStorageService.deleteFilesOfParent(fileRecords);
+
 		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
 
 		return { message: response.data };

@@ -1,24 +1,27 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication, NotFoundException, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { EntityId, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus';
+import { PreviewProducer } from '@shared/infra/preview-generator';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
-import { ICurrentUser } from '@modules/authentication';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
-import { FILES_STORAGE_S3_CONNECTION, FilesStorageTestModule } from '@modules/files-storage';
-import { FileRecordResponse } from '@modules/files-storage/controller/dto';
+import NodeClam from 'clamscan';
 import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
 import { FileRecord, ScanStatus } from '../../entity';
 import { ErrorType } from '../../error';
+import { FilesStorageTestModule } from '../../files-storage-test.module';
+import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { TestHelper } from '../../helper/test-helper';
 import { PreviewWidth } from '../../interface';
 import { PreviewOutputMimeTypes } from '../../interface/preview-output-mime-types.enum';
+import { FileRecordResponse } from '../dto';
 
 jest.mock('file-type-cjs/file-type-cjs-index', () => {
 	return {
@@ -87,6 +90,7 @@ describe('File Controller (API) - preview', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let s3ClientAdapter: DeepMocked<S3ClientAdapter>;
+	let antivirusService: DeepMocked<AntivirusService>;
 	let currentUser: ICurrentUser;
 	let api: API;
 	let schoolId: EntityId;
@@ -101,6 +105,8 @@ describe('File Controller (API) - preview', () => {
 		})
 			.overrideProvider(AntivirusService)
 			.useValue(createMock<AntivirusService>())
+			.overrideProvider(PreviewProducer)
+			.useValue(createMock<PreviewProducer>())
 			.overrideProvider(FILES_STORAGE_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
 			.overrideGuard(JwtAuthGuard)
@@ -111,6 +117,8 @@ describe('File Controller (API) - preview', () => {
 					return true;
 				},
 			})
+			.overrideProvider(NodeClam)
+			.useValue(createMock<NodeClam>())
 			.compile();
 
 		app = module.createNestApplication();
@@ -119,6 +127,7 @@ describe('File Controller (API) - preview', () => {
 
 		em = module.get(EntityManager);
 		s3ClientAdapter = module.get(FILES_STORAGE_S3_CONNECTION);
+		antivirusService = module.get(AntivirusService);
 		api = new API(app);
 	});
 
@@ -143,6 +152,7 @@ describe('File Controller (API) - preview', () => {
 		uploadPath = `/file/upload/${schoolId}/schools/${schoolId}`;
 
 		jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
+		antivirusService.checkStream.mockResolvedValueOnce({ virus_detected: false });
 	});
 
 	const setScanStatus = async (fileRecordId: EntityId, status: ScanStatus) => {
@@ -325,9 +335,8 @@ describe('File Controller (API) - preview', () => {
 						const { result: uploadedFile } = await api.postUploadFile(uploadPath);
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
-						const originalFile = TestHelper.createFile();
 						const previewFile = TestHelper.createFile('bytes 0-3/4');
-						s3ClientAdapter.get.mockResolvedValueOnce(originalFile).mockResolvedValueOnce(previewFile);
+						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
 						return { uploadedFile };
 					};
@@ -370,12 +379,8 @@ describe('File Controller (API) - preview', () => {
 					await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 					const error = new NotFoundException();
-					const originalFile = TestHelper.createFile();
 					const previewFile = TestHelper.createFile('bytes 0-3/4');
-					s3ClientAdapter.get
-						.mockRejectedValueOnce(error)
-						.mockResolvedValueOnce(originalFile)
-						.mockResolvedValueOnce(previewFile);
+					s3ClientAdapter.get.mockRejectedValueOnce(error).mockResolvedValueOnce(previewFile);
 
 					return { uploadedFile };
 				};
