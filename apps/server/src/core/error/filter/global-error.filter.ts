@@ -24,7 +24,9 @@ export class GlobalErrorFilter<T extends IError | undefined> implements Exceptio
 
 		if (contextType === 'http') {
 			this.sendHttpResponse(error, host);
-		} else if (contextType === 'rmq') {
+		}
+
+		if (contextType === 'rmq') {
 			return { message: undefined, error };
 		}
 	}
