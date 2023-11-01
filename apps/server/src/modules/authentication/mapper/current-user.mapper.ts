@@ -13,6 +13,7 @@ export class CurrentUserMapper {
 			roles: user.roles.getItems().map((role: Role) => role.id),
 			schoolId: user.school.id,
 			userId: user.id,
+			isExternalUser: false,
 		};
 	}
 
@@ -45,6 +46,7 @@ export class CurrentUserMapper {
 			roles: currentUser.roles,
 			systemId: currentUser.systemId,
 			support: currentUser.impersonated,
+			isExternalUser: currentUser.isExternalUser,
 		};
 	}
 
@@ -56,6 +58,7 @@ export class CurrentUserMapper {
 			schoolId: jwtPayload.schoolId,
 			userId: jwtPayload.userId,
 			impersonated: jwtPayload.support,
+			isExternalUser: jwtPayload.isExternalUser,
 		};
 	}
 }
