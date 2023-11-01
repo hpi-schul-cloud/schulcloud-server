@@ -63,9 +63,6 @@ export class OauthUc {
 		return authenticationUrl;
 	}
 
-	/**
-	 * @deprecated Please use the oauth2 strategy instead.
-	 */
 	async processOAuthLogin(cachedState: OauthLoginStateDto, code?: string, error?: string): Promise<OAuthProcessDto> {
 		const { state, systemId, postLoginRedirect, userLoginMigration } = cachedState;
 

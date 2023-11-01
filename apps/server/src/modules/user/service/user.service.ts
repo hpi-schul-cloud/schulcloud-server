@@ -1,17 +1,16 @@
-import { ConfigService } from '@nestjs/config';
-import { EntityId, IFindOptions, LanguageType, User } from '@shared/domain';
-import { RoleReference, Page, UserDO } from '@shared/domain/domainobject';
-import { UserRepo } from '@shared/repo';
-import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { AccountService } from '@modules/account';
 import { AccountDto } from '@modules/account/services/dto';
-import { ICurrentUser } from '@modules/authentication';
 // invalid import
 import { CurrentUserMapper } from '@modules/authentication/mapper';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { RoleService } from '@modules/role/service/role.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { OauthCurrentUser } from '../../authentication/interface';
+import { ConfigService } from '@nestjs/config';
+import { EntityId, IFindOptions, LanguageType, User } from '@shared/domain';
+import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { UserRepo } from '@shared/repo';
+import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { OauthCurrentUser } from '@modules/authentication/interface';
 import { IUserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';

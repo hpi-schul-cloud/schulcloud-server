@@ -219,16 +219,6 @@ describe('CurrentUserMapper', () => {
 					impersonated: jwtPayload.support,
 				});
 			});
-
-			/* it('should return current user with default for isExternalUser', () => {
-				const { jwtPayload } = setup();
-
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
-
-				expect(currentUser).toMatchObject({
-					isExternalUser: jwtPayload.isExternalUser,
-				});
-			}); */
 		});
 
 		describe('when JWT is provided without optional claims', () => {
@@ -238,7 +228,6 @@ describe('CurrentUserMapper', () => {
 					roles: ['mockRoleId'],
 					schoolId: 'dummySchoolId',
 					userId: 'dummyUserId',
-					// isExternalUser: false,
 					sub: 'dummyAccountId',
 					jti: 'random string',
 					aud: 'some audience',
@@ -264,16 +253,6 @@ describe('CurrentUserMapper', () => {
 					userId: jwtPayload.userId,
 				});
 			});
-
-			/* it('should return current user with default for isExternalUser', () => {
-				const { jwtPayload } = setup();
-
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
-
-				expect(currentUser).toMatchObject({
-					isExternalUser: false,
-				});
-			}); */
 		});
 	});
 
