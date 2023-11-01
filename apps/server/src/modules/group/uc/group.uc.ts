@@ -67,7 +67,7 @@ export class GroupUc {
 
 		const classInfosFromClasses = await this.findClassesForSchool(schoolId, schoolYearQueryType);
 
-		if (schoolYearQueryType === SchoolYearQueryType.CURRENT_YEAR) {
+		if (schoolYearQueryType === SchoolYearQueryType.CURRENT_YEAR || schoolYearQueryType === undefined) {
 			classInfosFromGroups = await this.findGroupsOfTypeClassForSchool(schoolId);
 		}
 

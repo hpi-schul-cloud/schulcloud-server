@@ -215,7 +215,8 @@ describe('GroupUc', () => {
 
 					throw new Error();
 				});
-				schoolYearService.findById.mockResolvedValue(schoolYear);
+				schoolYearService.findById.mockResolvedValueOnce(schoolYear);
+				schoolYearService.findById.mockResolvedValueOnce(nextSchoolYear);
 				schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYear);
 
 				return {
@@ -227,6 +228,7 @@ describe('GroupUc', () => {
 					groupWithSystem,
 					system,
 					schoolYear,
+					nextSchoolYear,
 				};
 			};
 
@@ -247,12 +249,13 @@ describe('GroupUc', () => {
 
 			describe('when no pagination is given', () => {
 				it('should return all classes sorted by name', async () => {
-					const { teacherUser, clazz, group, groupWithSystem, system, schoolYear } = setup();
+					const { teacherUser, clazz, successorClass, group, groupWithSystem, system, schoolYear, nextSchoolYear } =
+						setup();
 
 					const result: Page<ClassInfoDto> = await uc.findAllClassesForSchool(
 						teacherUser.id,
 						teacherUser.school.id,
-						SchoolYearQueryType.CURRENT_YEAR
+						undefined
 					);
 
 					expect(result).toEqual<Page<ClassInfoDto>>({
@@ -264,6 +267,18 @@ describe('GroupUc', () => {
 								externalSourceName: clazz.source,
 								teachers: [teacherUser.lastName],
 								schoolYear: schoolYear.name,
+								isUpgradable: false,
+								studentCount: 2,
+							},
+							{
+								id: successorClass.id,
+								name: successorClass.gradeLevel
+									? `${successorClass.gradeLevel}${successorClass.name}`
+									: successorClass.name,
+								externalSourceName: successorClass.source,
+								type: ClassRootType.CLASS,
+								teachers: [teacherUser.lastName],
+								schoolYear: nextSchoolYear.name,
 								isUpgradable: false,
 								studentCount: 2,
 							},
@@ -283,7 +298,7 @@ describe('GroupUc', () => {
 								studentCount: 1,
 							},
 						],
-						total: 3,
+						total: 4,
 					});
 				});
 			});
@@ -366,7 +381,7 @@ describe('GroupUc', () => {
 
 			describe('when querying for classes from next school year', () => {
 				it('should only return classes from next school year', async () => {
-					const { teacherUser, successorClass } = setup();
+					const { teacherUser, successorClass, nextSchoolYear } = setup();
 
 					const result: Page<ClassInfoDto> = await uc.findAllClassesForSchool(
 						teacherUser.id,
@@ -378,10 +393,15 @@ describe('GroupUc', () => {
 						data: [
 							{
 								id: successorClass.id,
-								name: successorClass.name,
+								name: successorClass.gradeLevel
+									? `${successorClass.gradeLevel}${successorClass.name}`
+									: successorClass.name,
+								externalSourceName: successorClass.source,
 								type: ClassRootType.CLASS,
 								teachers: [teacherUser.lastName],
-								studentCount: 0,
+								schoolYear: nextSchoolYear.name,
+								isUpgradable: false,
+								studentCount: 2,
 							},
 						],
 						total: 1,
@@ -396,7 +416,7 @@ describe('GroupUc', () => {
 					const result: Page<ClassInfoDto> = await uc.findAllClassesForSchool(
 						teacherUser.id,
 						teacherUser.school.id,
-						SchoolYearQueryType.NEXT_YEAR
+						SchoolYearQueryType.PREVIOUS_YEARS
 					);
 
 					expect(result).toEqual<Page<ClassInfoDto>>({
