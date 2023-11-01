@@ -82,6 +82,7 @@ module.exports = {
 				es6: true,
 			},
 			rules: {
+				'import/no-cycle': 'off',
 				'import/no-unresolved': 'off', // better handled by ts resolver
 				'import/no-extraneous-dependencies': 'off', // better handles by ts resolver
 				'import/prefer-default-export': 'off',
