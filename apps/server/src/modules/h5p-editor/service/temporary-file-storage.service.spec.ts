@@ -2,8 +2,7 @@ import { ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IUser } from '@lumieducation/h5p-server';
 import { Test, TestingModule } from '@nestjs/testing';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { FileDto } from '@src/modules/files-storage/dto';
+import { File, S3ClientAdapter } from '@shared/infra/s3-client';
 import { GetFileResponse } from '@src/modules/files-storage/interface';
 import { ReadStream } from 'fs';
 import { Readable } from 'node:stream';
@@ -249,7 +248,6 @@ describe('TemporaryFileStorage', () => {
 			});
 		});
 	});
-
 	describe('saveFile is called', () => {
 		describe('WHEN file exists', () => {
 			it('should overwrite file', async () => {
@@ -259,7 +257,7 @@ describe('TemporaryFileStorage', () => {
 				const readStream = Readable.from(newData) as ReadStream;
 				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
 				let savedData = Buffer.alloc(0);
-				s3clientAdapter.create.mockImplementation(async (path: string, file: FileDto) => {
+				s3clientAdapter.create.mockImplementation(async (path: string, file: File) => {
 					savedData += file.data.read();
 					return Promise.resolve({} as ServiceOutputTypes);
 				});
@@ -278,7 +276,7 @@ describe('TemporaryFileStorage', () => {
 				const newData = 'This is new fake H5P content.';
 				const readStream = Readable.from(newData) as ReadStream;
 				let savedData = Buffer.alloc(0);
-				s3clientAdapter.create.mockImplementation(async (path: string, file: FileDto) => {
+				s3clientAdapter.create.mockImplementation(async (path: string, file: File) => {
 					savedData += file.data.read();
 					return Promise.resolve({} as ServiceOutputTypes);
 				});
