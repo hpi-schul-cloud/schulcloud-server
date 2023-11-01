@@ -14,6 +14,7 @@ import { SortHelper } from '../util';
 import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from './dto';
 import { GroupUcMapper } from './mapper/group-uc.mapper';
 import { SchoolYearQueryType } from '../controller/dto';
+import { UnknownQueryTypeLoggableException } from '../loggable/unknown-query-type-loggable-exception';
 
 @Injectable()
 export class GroupUc {
@@ -141,7 +142,7 @@ export class GroupUc {
 			case SchoolYearQueryType.PREVIOUS_YEARS:
 				return schoolYear.startDate < currentYear.startDate;
 			default:
-				return true;
+				throw new UnknownQueryTypeLoggableException(schoolYearQueryType);
 		}
 	}
 

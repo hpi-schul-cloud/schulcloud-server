@@ -29,6 +29,7 @@ import { ClassInfoDto, ResolvedGroupDto } from './dto';
 import { ClassRootType } from './dto/class-root-type';
 import { GroupUc } from './group.uc';
 import { SchoolYearQueryType } from '../controller/dto';
+import { UnknownQueryTypeLoggableException } from '../loggable/unknown-query-type-loggable-exception';
 
 describe('GroupUc', () => {
 	let module: TestingModule;
@@ -169,6 +170,12 @@ describe('GroupUc', () => {
 					teacherIds: [teacherUser.id],
 					year: nextSchoolYear.id,
 				});
+				const classWithoutSchoolYear = classFactory.build({
+					name: 'NoYear',
+					teacherIds: [teacherUser.id],
+					year: undefined,
+				});
+
 				const system: SystemDto = new SystemDto({
 					id: new ObjectId().toHexString(),
 					displayName: 'External System',
@@ -190,7 +197,7 @@ describe('GroupUc', () => {
 
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
-				classService.findClassesForSchool.mockResolvedValueOnce([clazz, successorClass]);
+				classService.findClassesForSchool.mockResolvedValueOnce([clazz, successorClass, classWithoutSchoolYear]);
 				groupService.findClassesForSchool.mockResolvedValueOnce([group, groupWithSystem]);
 				systemService.findById.mockResolvedValue(system);
 				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
@@ -224,6 +231,7 @@ describe('GroupUc', () => {
 					school,
 					clazz,
 					successorClass,
+					classWithoutSchoolYear,
 					group,
 					groupWithSystem,
 					system,
@@ -249,8 +257,17 @@ describe('GroupUc', () => {
 
 			describe('when no pagination is given', () => {
 				it('should return all classes sorted by name', async () => {
-					const { teacherUser, clazz, successorClass, group, groupWithSystem, system, schoolYear, nextSchoolYear } =
-						setup();
+					const {
+						teacherUser,
+						clazz,
+						successorClass,
+						classWithoutSchoolYear,
+						group,
+						groupWithSystem,
+						system,
+						schoolYear,
+						nextSchoolYear,
+					} = setup();
 
 					const result: Page<ClassInfoDto> = await uc.findAllClassesForSchool(
 						teacherUser.id,
@@ -275,10 +292,21 @@ describe('GroupUc', () => {
 								name: successorClass.gradeLevel
 									? `${successorClass.gradeLevel}${successorClass.name}`
 									: successorClass.name,
-								externalSourceName: successorClass.source,
 								type: ClassRootType.CLASS,
+								externalSourceName: successorClass.source,
 								teachers: [teacherUser.lastName],
 								schoolYear: nextSchoolYear.name,
+								isUpgradable: false,
+								studentCount: 2,
+							},
+							{
+								id: classWithoutSchoolYear.id,
+								name: classWithoutSchoolYear.gradeLevel
+									? `${classWithoutSchoolYear.gradeLevel}${classWithoutSchoolYear.name}`
+									: classWithoutSchoolYear.name,
+								type: ClassRootType.CLASS,
+								externalSourceName: classWithoutSchoolYear.source,
+								teachers: [teacherUser.lastName],
 								isUpgradable: false,
 								studentCount: 2,
 							},
@@ -298,14 +326,14 @@ describe('GroupUc', () => {
 								studentCount: 1,
 							},
 						],
-						total: 4,
+						total: 5,
 					});
 				});
 			});
 
 			describe('when sorting by external source name in descending order', () => {
 				it('should return all classes sorted by external source name in descending order', async () => {
-					const { teacherUser, clazz, group, groupWithSystem, system, schoolYear } = setup();
+					const { teacherUser, clazz, classWithoutSchoolYear, group, groupWithSystem, system, schoolYear } = setup();
 
 					const result: Page<ClassInfoDto> = await uc.findAllClassesForSchool(
 						teacherUser.id,
@@ -319,6 +347,17 @@ describe('GroupUc', () => {
 
 					expect(result).toEqual<Page<ClassInfoDto>>({
 						data: [
+							{
+								id: classWithoutSchoolYear.id,
+								name: classWithoutSchoolYear.gradeLevel
+									? `${classWithoutSchoolYear.gradeLevel}${classWithoutSchoolYear.name}`
+									: classWithoutSchoolYear.name,
+								type: ClassRootType.CLASS,
+								externalSourceName: classWithoutSchoolYear.source,
+								teachers: [teacherUser.lastName],
+								isUpgradable: false,
+								studentCount: 2,
+							},
 							{
 								id: clazz.id,
 								name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
@@ -345,7 +384,7 @@ describe('GroupUc', () => {
 								studentCount: 0,
 							},
 						],
-						total: 3,
+						total: 4,
 					});
 				});
 			});
@@ -358,7 +397,7 @@ describe('GroupUc', () => {
 						teacherUser.id,
 						teacherUser.school.id,
 						SchoolYearQueryType.CURRENT_YEAR,
-						1,
+						2,
 						1,
 						'name',
 						SortOrder.asc
@@ -374,7 +413,7 @@ describe('GroupUc', () => {
 								studentCount: 0,
 							},
 						],
-						total: 3,
+						total: 4,
 					});
 				});
 			});
@@ -423,6 +462,17 @@ describe('GroupUc', () => {
 						data: [],
 						total: 0,
 					});
+				});
+			});
+
+			describe('when querying for not existing type', () => {
+				it('should throw', async () => {
+					const { teacherUser } = setup();
+
+					const func = async () =>
+						uc.findAllClassesForSchool(teacherUser.id, teacherUser.school.id, 'notAType' as SchoolYearQueryType);
+
+					await expect(func).rejects.toThrow(UnknownQueryTypeLoggableException);
 				});
 			});
 		});
