@@ -14,4 +14,10 @@ export class SchoolYearDtoMapper {
 
 		return dto;
 	}
+
+	public static mapToDtos(schoolYears: SchoolYear[]): SchoolYearDto[] {
+		const dtos = schoolYears.map((schoolYear) => this.mapToDto(schoolYear));
+
+		return dtos;
+	}
 }

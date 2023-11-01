@@ -2,6 +2,7 @@ import { County, SchoolFeature, SchoolPurpose } from '../type';
 import { FederalStateDto } from './federal-state.dto';
 import { SchoolYearDto } from './school-year.dto';
 import { SystemDto } from './system.dto';
+import { YearsDto } from './years.dto';
 
 export class SchoolDto {
 	constructor({
@@ -17,6 +18,7 @@ export class SchoolDto {
 		inMaintenance,
 		isExternal,
 		logo_dataUrl,
+		years,
 	}: SchoolDto) {
 		this.id = id;
 		this.name = name;
@@ -30,6 +32,7 @@ export class SchoolDto {
 		this.inMaintenance = inMaintenance;
 		this.isExternal = isExternal;
 		this.logo_dataUrl = logo_dataUrl;
+		this.years = years;
 	}
 
 	id: string;
@@ -55,4 +58,6 @@ export class SchoolDto {
 	isExternal: boolean;
 
 	logo_dataUrl?: string;
+
+	years: YearsDto;
 }

@@ -12,4 +12,10 @@ export class SchoolYearEntityMapper {
 
 		return schoolYear;
 	}
+
+	public static mapToDos(entities: SchoolYearEntity[]) {
+		const schoolYears = entities.map((entity) => this.mapToDo(entity));
+
+		return schoolYears;
+	}
 }

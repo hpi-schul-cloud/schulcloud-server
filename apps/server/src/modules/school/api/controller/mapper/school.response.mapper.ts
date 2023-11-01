@@ -5,6 +5,7 @@ import { SlimSchoolResponse } from '../response/school-reduced.response';
 import { FederalStateResponseMapper } from './federal-state.response.mapper';
 import { SchoolYearResponseMapper } from './school-year.response.mapper';
 import { SystemResponseMapper } from './system.response.mapper';
+import { YearsResponseMapper } from './years.response.mapper';
 
 export class SchoolResponseMapper {
 	public static mapToResponse(school: SchoolDto): SchoolResponse {
@@ -12,6 +13,7 @@ export class SchoolResponseMapper {
 		const currentYear = school.currentYear && SchoolYearResponseMapper.mapToResponse(school.currentYear);
 		const features = school.features && Array.from(school.features);
 		const systems = school.systems?.map((system) => SystemResponseMapper.mapToResponse(system));
+		const years = YearsResponseMapper.mapToResponse(school.years);
 
 		// TODO: Do we want to access the props via getProps() here or do we want getters?
 		// I added getters for federalState and schoolYear because there are conditions with them below
@@ -23,6 +25,7 @@ export class SchoolResponseMapper {
 			currentYear,
 			features,
 			systems,
+			years,
 		});
 
 		return res;

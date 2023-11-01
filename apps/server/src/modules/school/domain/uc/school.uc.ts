@@ -1,17 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, IPagination, Permission } from '@shared/domain';
-// Importing AuthorizationService and AuthorizationContextBuilder from the barrel file leads to a runtime error.
-import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { SchoolDto, SlimSchoolDto } from '../dto';
+import { AuthorizationContextBuilder } from '@src/modules/authorization/domain/mapper/authorization-context.builder';
+import { AuthorizationService } from '@src/modules/authorization/domain/service/authorization.service';
+import { School, SchoolYear } from '../do';
+import { SchoolDto, SchoolYearDto, SlimSchoolDto } from '../dto';
+import { YearsDto } from '../dto/years.dto';
 import { SchoolDtoMapper } from '../mapper';
+import { SchoolYearDtoMapper } from '../mapper/school-year.dto.mapper';
 import { SchoolService } from '../service';
+import { SchoolYearService } from '../service/school-year.service';
 import { SchoolQuery } from '../type';
 
 @Injectable()
 export class SchoolUc {
 	constructor(
+		private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: SchoolService,
-		private readonly authorizationService: AuthorizationService
+		private readonly schoolYearService: SchoolYearService
 	) {}
 
 	public async getListOfSlimSchools(query: SchoolQuery, pagination: IPagination): Promise<SlimSchoolDto[]> {
@@ -29,7 +34,64 @@ export class SchoolUc {
 		const authContext = AuthorizationContextBuilder.read([Permission.SCHOOL_EDIT]);
 		this.authorizationService.checkPermission(user, school, authContext);
 
-		const dto = SchoolDtoMapper.mapToDto(school);
+		const yearsDto = await this.createYearsDto(school);
+
+		const dto = SchoolDtoMapper.mapToDto(school, yearsDto);
+
+		return dto;
+	}
+
+	private async createYearsDto(school: School): Promise<YearsDto> {
+		const schoolYears = await this.schoolYearService.getAllSchoolYears();
+		const schoolYearDtos = SchoolYearDtoMapper.mapToDtos(schoolYears);
+
+		const activeYear = this.computeActiveYear(school, schoolYears);
+		const nextYear = this.computeNextYear(schoolYears, activeYear);
+		const lastYear = this.computeLastYear(schoolYears, activeYear);
+		const defaultYear = activeYear || nextYear;
+
+		const years = {
+			schoolYears: schoolYearDtos,
+			activeYear,
+			nextYear,
+			lastYear,
+			defaultYear,
+		};
+
+		return years;
+	}
+
+	private computeActiveYear(school: School, schoolYears: SchoolYear[]): SchoolYearDto | undefined {
+		let activeYear = school.getProps().currentYear;
+
+		if (!activeYear) {
+			const now = new Date();
+			activeYear = schoolYears.find(
+				(schoolYear) => schoolYear.getProps().startDate <= now && schoolYear.getProps().endDate >= now
+			);
+		}
+
+		const dto = activeYear && SchoolYearDtoMapper.mapToDto(activeYear);
+
+		return dto;
+	}
+
+	private computeNextYear(schoolYears: SchoolYear[], activeYear?: SchoolYearDto): SchoolYearDto | undefined {
+		const indexOfActiveYear = schoolYears.findIndex((schoolYear) => schoolYear.id === activeYear?.id);
+
+		const nextYear = schoolYears[indexOfActiveYear + 1];
+
+		const dto = nextYear && SchoolYearDtoMapper.mapToDto(nextYear);
+
+		return dto;
+	}
+
+	private computeLastYear(schoolYears: SchoolYear[], activeYear?: SchoolYearDto): SchoolYearDto | undefined {
+		const indexOfActiveYear = schoolYears.findIndex((schoolYear) => schoolYear.id === activeYear?.id);
+
+		const lastYear = schoolYears[indexOfActiveYear - 1];
+
+		const dto = lastYear && SchoolYearDtoMapper.mapToDto(lastYear);
 
 		return dto;
 	}

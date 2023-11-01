@@ -4,6 +4,7 @@ import { CountyResponse } from './county.response';
 import { FederalStateResponse } from './federal-state.response';
 import { SchoolYearResponse } from './school-year.response';
 import { SystemResponse } from './system.response';
+import { YearsResponse } from './years.response';
 
 export class SchoolResponse {
 	constructor({
@@ -19,6 +20,7 @@ export class SchoolResponse {
 		inMaintenance,
 		isExternal,
 		logo_dataUrl,
+		years,
 	}: SchoolResponse) {
 		this.id = id;
 		this.name = name;
@@ -32,6 +34,7 @@ export class SchoolResponse {
 		this.inMaintenance = inMaintenance;
 		this.isExternal = isExternal;
 		this.logo_dataUrl = logo_dataUrl;
+		this.years = years;
 	}
 
 	@ApiProperty()
@@ -69,4 +72,7 @@ export class SchoolResponse {
 
 	@ApiPropertyOptional()
 	logo_dataUrl?: string;
+
+	@ApiProperty({ type: () => YearsResponse })
+	years: YearsResponse;
 }

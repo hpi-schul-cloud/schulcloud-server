@@ -1,11 +1,12 @@
 import { School } from '../do';
 import { SchoolDto, SlimSchoolDto } from '../dto';
+import { YearsDto } from '../dto/years.dto';
 import { FederalStateDtoMapper } from './federal-state.dto.mapper';
 import { SchoolYearDtoMapper } from './school-year.dto.mapper';
 import { SystemDtoMapper } from './system.dto.mapper';
 
 export class SchoolDtoMapper {
-	public static mapToDto(school: School): SchoolDto {
+	public static mapToDto(school: School, years: YearsDto): SchoolDto {
 		const schoolProps = school.getProps();
 
 		const federalState = FederalStateDtoMapper.mapToDto(schoolProps.federalState);
@@ -26,6 +27,7 @@ export class SchoolDtoMapper {
 			inMaintenance: school.isInMaintenance(),
 			isExternal: school.isExternal(),
 			logo_dataUrl: schoolProps.logo_dataUrl,
+			years,
 		});
 
 		return dto;
