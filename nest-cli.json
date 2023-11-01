@@ -63,6 +63,15 @@
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
+		"preview-generator-amqp": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/preview-generator-consumer.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
 		"fwu-learning-contents": {
 			"type": "application",
 			"root": "apps/server",

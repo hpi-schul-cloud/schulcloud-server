@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -8,7 +9,6 @@ import { AntivirusService } from '@shared/infra/antivirus';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
@@ -123,7 +123,7 @@ describe('FilesStorageUC delete methods', () => {
 				const mockedResult = [[fileRecord], 0] as Counted<FileRecord[]>;
 
 				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
-				filesStorageService.deleteFilesOfParent.mockResolvedValueOnce(mockedResult);
+				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce(mockedResult);
 
 				return { params, userId, mockedResult, requestParams, fileRecord };
 			};
@@ -143,11 +143,11 @@ describe('FilesStorageUC delete methods', () => {
 			});
 
 			it('should call service with correct params', async () => {
-				const { requestParams, userId } = setup();
+				const { requestParams, userId, fileRecord } = setup();
 
 				await filesStorageUC.deleteFilesOfParent(userId, requestParams);
 
-				expect(filesStorageService.deleteFilesOfParent).toHaveBeenCalledWith(requestParams.parentId);
+				expect(filesStorageService.deleteFilesOfParent).toHaveBeenCalledWith([fileRecord]);
 			});
 
 			it('should call deletePreviews', async () => {
@@ -189,10 +189,14 @@ describe('FilesStorageUC delete methods', () => {
 
 		describe('WHEN service throws error', () => {
 			const setup = () => {
+				const { fileRecords } = buildFileRecordsWithParams();
+
+				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
 				const { requestParams, userId } = createParams();
 				const error = new Error('test');
 
 				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
+				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 				filesStorageService.deleteFilesOfParent.mockRejectedValueOnce(error);
 
 				return { requestParams, userId, error };

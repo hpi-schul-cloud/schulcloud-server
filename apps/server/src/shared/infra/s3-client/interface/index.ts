@@ -24,7 +24,6 @@ export interface CopyFiles {
 
 export interface File {
 	data: Readable;
-	name: string;
 	mimeType: string;
 }
 
