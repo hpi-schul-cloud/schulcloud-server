@@ -3,28 +3,31 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionRequestEntity } from '@src/modules/deletion/entity/deletion-request.entity';
 import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
 import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
+// import { deletionRequestEntityFactory } from './testing/factory/deletion-request.entity.factory';
 
 describe(DeletionRequestEntity.name, () => {
 	beforeAll(async () => {
 		await setupEntities();
 	});
 
+	const setup = () => {
+		jest.clearAllMocks();
+
+		const props = {
+			id: new ObjectId().toHexString(),
+			domain: DeletionDomainModel.USER,
+			deleteAfter: new Date(),
+			itemId: new ObjectId().toHexString(),
+			status: DeletionStatusModel.REGISTERED,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
+
+		return { props };
+	};
+
 	describe('constructor', () => {
 		describe('When constructor is called', () => {
-			const setup = () => {
-				const props = {
-					id: new ObjectId().toHexString(),
-					domain: DeletionDomainModel.USER,
-					deleteAfter: new Date(),
-					itemId: new ObjectId().toHexString(),
-					status: DeletionStatusModel.REGISTERED,
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				};
-
-				return { props };
-			};
-
 			it('should throw an error by empty constructor', () => {
 				// @ts-expect-error: Test case
 				const test = () => new DeletionRequestEntity();
@@ -54,6 +57,17 @@ describe(DeletionRequestEntity.name, () => {
 
 				expect(entityProps).toEqual(props);
 			});
+		});
+	});
+
+	describe('executed', () => {
+		it('should update status', () => {
+			const { props } = setup();
+			const entity: DeletionRequestEntity = new DeletionRequestEntity(props);
+
+			entity.executed();
+
+			expect(entity.status).toEqual(DeletionStatusModel.SUCCESS);
 		});
 	});
 });

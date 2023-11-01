@@ -1,7 +1,11 @@
 export const enum DeletionDomainModel {
-	USER = 'user',
-	TEAMS = 'teams',
+	ACCOUNT = 'account',
+	CLASS = 'class',
+	COURSEGROUP = 'courseGroup',
+	COURSE = 'course',
+	FILE = 'file',
 	LESSONS = 'lessons',
 	PSEUDONYMS = 'pseudonyms',
-	ACCOUNT = 'account',
+	TEAMS = 'teams',
+	USER = 'user',
 }

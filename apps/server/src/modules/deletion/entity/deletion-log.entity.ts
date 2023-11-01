@@ -6,10 +6,10 @@ import { DeletionOperationModel } from '../domain/types/deletion-operation-model
 
 export interface DeletionLogEntityProps {
 	id?: EntityId;
-	domain?: DeletionDomainModel;
+	domain: DeletionDomainModel;
 	operation?: DeletionOperationModel;
-	modifiedCounter?: number;
-	deletedCounter?: number;
+	modifiedCount?: number;
+	deletedCount?: number;
 	deletionRequestId?: ObjectId;
 	createdAt?: Date;
 	updatedAt?: Date;
@@ -17,17 +17,17 @@ export interface DeletionLogEntityProps {
 
 @Entity({ tableName: 'deletionlogs' })
 export class DeletionLogEntity extends BaseEntityWithTimestamps {
-	@Property({ nullable: true })
-	domain?: DeletionDomainModel;
+	@Property()
+	domain: DeletionDomainModel;
 
 	@Property({ nullable: true })
 	operation?: DeletionOperationModel;
 
 	@Property({ nullable: true })
-	modifiedCounter?: number;
+	modifiedCount?: number;
 
 	@Property({ nullable: true })
-	deletedCounter?: number;
+	deletedCount?: number;
 
 	@Property({ nullable: true })
 	deletionRequestId?: ObjectId;
@@ -38,20 +38,18 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 			this.id = props.id;
 		}
 
-		if (props.domain !== undefined) {
-			this.domain = props.domain;
-		}
+		this.domain = props.domain;
 
 		if (props.operation !== undefined) {
 			this.operation = props.operation;
 		}
 
-		if (props.modifiedCounter !== undefined) {
-			this.modifiedCounter = props.modifiedCounter;
+		if (props.modifiedCount !== undefined) {
+			this.modifiedCount = props.modifiedCount;
 		}
 
-		if (props.deletedCounter !== undefined) {
-			this.deletedCounter = props.deletedCounter;
+		if (props.deletedCount !== undefined) {
+			this.deletedCount = props.deletedCount;
 		}
 
 		if (props.deletionRequestId !== undefined) {

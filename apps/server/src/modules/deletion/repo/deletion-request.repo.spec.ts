@@ -170,6 +170,67 @@ describe(DeletionRequestRepo.name, () => {
 		});
 	});
 
+	describe('update', () => {
+		describe('when updating deletionRequest', () => {
+			const setup = async () => {
+				const userId = new ObjectId().toHexString();
+
+				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({ itemId: userId });
+				await em.persistAndFlush(entity);
+
+				// Arrange expected DeletionRequestEntity after changing status
+				entity.status = DeletionStatusModel.SUCCESS;
+				const deletionRequestToUpdate = DeletionRequestMapper.mapToDO(entity);
+
+				return {
+					entity,
+					deletionRequestToUpdate,
+				};
+			};
+
+			it('should update the deletionRequest', async () => {
+				const { entity, deletionRequestToUpdate } = await setup();
+
+				await repo.update(deletionRequestToUpdate);
+
+				const result: DeletionRequest = await repo.findById(entity.id);
+
+				expect(result.status).toEqual(entity.status);
+			});
+		});
+	});
+
+	describe('markDeletionRequestAsExecuted', () => {
+		describe('when mark deletionRequest as executed', () => {
+			const setup = async () => {
+				const userId = new ObjectId().toHexString();
+
+				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({ itemId: userId });
+				await em.persistAndFlush(entity);
+
+				return { entity };
+			};
+
+			it('should update the deletionRequest', async () => {
+				const { entity } = await setup();
+
+				const result = await repo.markDeletionRequestAsExecuted(entity.id);
+
+				expect(result).toBe(true);
+			});
+
+			it('should update the deletionRequest', async () => {
+				const { entity } = await setup();
+
+				await repo.markDeletionRequestAsExecuted(entity.id);
+
+				const result: DeletionRequest = await repo.findById(entity.id);
+
+				expect(result.status).toEqual(DeletionStatusModel.SUCCESS);
+			});
+		});
+	});
+
 	describe('deleteById', () => {
 		describe('when deleting deletionRequest exists', () => {
 			const setup = async () => {

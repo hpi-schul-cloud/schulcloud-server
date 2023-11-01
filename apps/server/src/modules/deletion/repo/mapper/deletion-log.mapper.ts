@@ -10,8 +10,8 @@ export class DeletionLogMapper {
 			updatedAt: entity.updatedAt,
 			domain: entity.domain,
 			operation: entity.operation,
-			modifiedCounter: entity.modifiedCounter,
-			deletedCounter: entity.deletedCounter,
+			modifiedCount: entity.modifiedCount,
+			deletedCount: entity.deletedCount,
 			deletionRequestId: entity.deletionRequestId?.toHexString(),
 		});
 	}
@@ -23,8 +23,8 @@ export class DeletionLogMapper {
 			updatedAt: domainObject.updatedAt,
 			domain: domainObject.domain,
 			operation: domainObject.operation,
-			modifiedCounter: domainObject.modifiedCounter,
-			deletedCounter: domainObject.deletedCounter,
+			modifiedCount: domainObject.modifiedCount,
+			deletedCount: domainObject.deletedCount,
 			deletionRequestId: new ObjectId(domainObject.deletionRequestId),
 		});
 	}

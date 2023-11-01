@@ -7,32 +7,32 @@ import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum'
 
 export interface DeletionRequestEntityProps {
 	id?: EntityId;
-	domain?: DeletionDomainModel;
-	deleteAfter?: Date;
-	itemId?: EntityId;
-	status?: DeletionStatusModel;
+	domain: DeletionDomainModel;
+	deleteAfter: Date;
+	itemId: EntityId;
+	status: DeletionStatusModel;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
 
 @Entity({ tableName: 'deletionrequests' })
+@Index({ properties: ['_itemId', 'domain'] })
 export class DeletionRequestEntity extends BaseEntityWithTimestamps {
-	@Property({ nullable: true })
-	deleteAfter?: Date;
+	@Property()
+	deleteAfter: Date;
 
-	@Property({ fieldName: 'itemToDeletion', nullable: true })
-	@Index()
-	_itemId?: ObjectId;
+	@Property()
+	_itemId: ObjectId;
 
-	get itemId(): EntityId | undefined {
-		return this._itemId?.toHexString();
+	get itemId(): EntityId {
+		return this._itemId.toHexString();
 	}
 
-	@Property({ nullable: true })
-	domain?: DeletionDomainModel;
+	@Property()
+	domain: DeletionDomainModel;
 
-	@Property({ nullable: true })
-	status?: DeletionStatusModel;
+	@Property()
+	status: DeletionStatusModel;
 
 	constructor(props: DeletionRequestEntityProps) {
 		super();
@@ -40,21 +40,10 @@ export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 			this.id = props.id;
 		}
 
-		if (props.domain !== undefined) {
-			this.domain = props.domain;
-		}
-
-		if (props.deleteAfter !== undefined) {
-			this.deleteAfter = props.deleteAfter;
-		}
-
-		if (props.itemId !== undefined) {
-			this._itemId = new ObjectId(props.itemId);
-		}
-
-		if (props.status !== undefined) {
-			this.status = props.status;
-		}
+		this.domain = props.domain;
+		this.deleteAfter = props.deleteAfter;
+		this._itemId = new ObjectId(props.itemId);
+		this.status = props.status;
 
 		if (props.createdAt !== undefined) {
 			this.createdAt = props.createdAt;
@@ -63,5 +52,9 @@ export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 		if (props.updatedAt !== undefined) {
 			this.updatedAt = props.updatedAt;
 		}
+	}
+
+	public executed(): void {
+		this.status = DeletionStatusModel.SUCCESS;
 	}
 }

@@ -42,7 +42,20 @@ export class DeletionRequestRepo {
 
 	async update(deletionRequest: DeletionRequest): Promise<void> {
 		const deletionRequestEntity = DeletionRequestMapper.mapToEntity(deletionRequest);
-		await this.em.persistAndFlush(deletionRequestEntity);
+		const referencedEntity = this.em.getReference(DeletionRequestEntity, deletionRequestEntity.id);
+
+		await this.em.persistAndFlush(referencedEntity);
+	}
+
+	async markDeletionRequestAsExecuted(deletionRequestId: EntityId): Promise<boolean> {
+		const deletionRequest: DeletionRequestEntity = await this.em.findOneOrFail(DeletionRequestEntity, {
+			id: deletionRequestId,
+		});
+
+		deletionRequest.executed();
+		await this.em.persistAndFlush(deletionRequest);
+
+		return true;
 	}
 
 	async deleteById(deletionRequestId: EntityId): Promise<boolean> {

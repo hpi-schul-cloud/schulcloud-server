@@ -1,40 +1,37 @@
 import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionLogRepo } from '../repo';
+import { DeletionLog } from '../domain/deletion-log.do';
+import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
+import { DeletionOperationModel } from '../domain/types/deletion-operation-model.enum';
 
 @Injectable()
 export class DeletionLogService {
 	constructor(private readonly deletionLogRepo: DeletionLogRepo) {}
 
-	// async createLogRequest(userId: EntityId): Promise<string> {
-	// 	const dateInFuture = new Date();
-	// 	dateInFuture.setDate(dateInFuture.getDate() + 30);
+	async createDeletionLog(
+		deletionRequestId: EntityId,
+		domain: DeletionDomainModel,
+		operation: DeletionOperationModel,
+		modifiedCounter: number,
+		deletedCounter: number
+	): Promise<void> {
+		const newDeletionLog = new DeletionLog({
+			id: new ObjectId().toHexString(),
+			domain,
+			deletionRequestId,
+			operation,
+			modifiedCount: modifiedCounter,
+			deletedCount: deletedCounter,
+		});
 
-	// 	const newDeletionLog = new DeletionLog({
-	// 		id: new ObjectId().toHexString(),
-	// 		scope: 'scope',
-	// 		operation: DeletionOperationModel.DELETE,
-	// 		deletionRequestId: new ObjectId(),
-	// 		docIds: [new ObjectId(), new ObjectId()],
-	// 	});
+		await this.deletionLogRepo.create(newDeletionLog);
+	}
 
-	// 	await this.deletionLogRepo.create(newDeletionLog);
+	async findByDeletionRequestId(deletionRequestId: EntityId): Promise<DeletionLog[]> {
+		const deletionLogs: DeletionLog[] = await this.deletionLogRepo.findAllByDeletionRequestId(deletionRequestId);
 
-	// 	return newDeletionLof.id;
-	// }
-
-	// async findById(deletionRequestId: EntityId): Promise<DeletionRequest> {
-	// 	const deletionRequest: DeletionRequest = await this.deletionRequestRepo.findById(deletionRequestId);
-
-	// 	return deletionRequest;
-	// }
-
-	// async findAllItemsByDeletionDate(): Promise<DeletionRequest[]> {
-	// 	const itemsToDelete: DeletionRequest[] = await this.deletionRequestRepo.findAllItemsByDeletionDate();
-
-	// 	return itemsToDelete;
-	// }
-
-	// async deleteById(deletionRequestId: EntityId): Promise<void> {
-	// 	await this.deletionRequestRepo.deleteById(deletionRequestId);
-	// }
+		return deletionLogs;
+	}
 }

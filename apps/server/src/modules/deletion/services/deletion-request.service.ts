@@ -4,6 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionRequestRepo } from '../repo/deletion-request.repo';
 import { DeletionRequest } from '../domain/deletion-request.do';
 import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
+import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
 
 @Injectable()
 export class DeletionRequestService {
@@ -13,22 +14,23 @@ export class DeletionRequestService {
 		itemId: EntityId,
 		domain: DeletionDomainModel,
 		deleteInMinutes?: number
-	): Promise<string> {
+	): Promise<{ requestId: EntityId; deletionPlannedAt: Date }> {
 		deleteInMinutes = deleteInMinutes === undefined ? 43200 : deleteInMinutes;
 
 		const dateOfDeletion = new Date();
-		dateOfDeletion.setDate(dateOfDeletion.getDate() + deleteInMinutes * 1000);
+		dateOfDeletion.setMinutes(dateOfDeletion.getMinutes() + deleteInMinutes);
 
 		const newDeletionRequest = new DeletionRequest({
 			id: new ObjectId().toHexString(),
 			domain,
 			deleteAfter: dateOfDeletion,
 			itemId,
+			status: DeletionStatusModel.REGISTERED,
 		});
 
 		await this.deletionRequestRepo.create(newDeletionRequest);
 
-		return newDeletionRequest.id;
+		return { requestId: newDeletionRequest.id, deletionPlannedAt: newDeletionRequest.deleteAfter };
 	}
 
 	async findById(deletionRequestId: EntityId): Promise<DeletionRequest> {
@@ -41,6 +43,14 @@ export class DeletionRequestService {
 		const itemsToDelete: DeletionRequest[] = await this.deletionRequestRepo.findAllItemsByDeletionDate();
 
 		return itemsToDelete;
+	}
+
+	async update(deletionRequestToUpdate: DeletionRequest): Promise<void> {
+		await this.deletionRequestRepo.update(deletionRequestToUpdate);
+	}
+
+	async markDeletionRequestAsExecuted(deletionRequestId: EntityId): Promise<boolean> {
+		return this.deletionRequestRepo.markDeletionRequestAsExecuted(deletionRequestId);
 	}
 
 	async deleteById(deletionRequestId: EntityId): Promise<void> {

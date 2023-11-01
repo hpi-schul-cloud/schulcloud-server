@@ -5,6 +5,8 @@ import { setupEntities } from '@shared/testing';
 import { DeletionRequestService } from './deletion-request.service';
 import { DeletionRequestRepo } from '../repo';
 import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
+import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
+import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
 
 describe(DeletionRequestService.name, () => {
 	let module: TestingModule;
@@ -42,18 +44,32 @@ describe(DeletionRequestService.name, () => {
 		});
 	});
 
-	// TODO createDeletionRequest
-	// describe('createDeletionRequest', () => {
-	// 	describe('when creating a deletionRequest', () => {
-	// 		const setup = () => {
-	// 			const deletionRequest = deletionRequestFactory.build();
+	describe('createDeletionRequest', () => {
+		describe('when creating a deletionRequest', () => {
+			const setup = () => {
+				const itemId = '653e4833cc39e5907a1e18d2';
+				const domain = DeletionDomainModel.USER;
 
-	// 			return { deletionRequest };
-	// 		};
+				return { itemId, domain };
+			};
 
-	// 		it('should ');
-	// 	});
-	// });
+			it('should call deletionRequestRepo.create', async () => {
+				const { itemId, domain } = setup();
+
+				await service.createDeletionRequest(itemId, domain);
+
+				expect(deletionRequestRepo.create).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: expect.any(String),
+						domain,
+						deleteAfter: expect.any(Date),
+						itemId,
+						status: DeletionStatusModel.REGISTERED,
+					})
+				);
+			});
+		});
+	});
 
 	describe('findById', () => {
 		describe('when finding by deletionRequestId', () => {
@@ -110,6 +126,40 @@ describe(DeletionRequestService.name, () => {
 
 				expect(result).toHaveLength(2);
 				expect(result).toEqual(deletionRequests);
+			});
+		});
+	});
+
+	describe('update', () => {
+		describe('when updating deletionRequest', () => {
+			const setup = () => {
+				const deletionRequest = deletionRequestFactory.buildWithId();
+
+				return { deletionRequest };
+			};
+
+			it('should call deletionRequestRepo.update', async () => {
+				const { deletionRequest } = setup();
+				await service.update(deletionRequest);
+
+				expect(deletionRequestRepo.update).toBeCalledWith(deletionRequest);
+			});
+		});
+	});
+
+	describe('markDeletionRequestAsExecuted', () => {
+		describe('when mark deletionRequest as executed', () => {
+			const setup = () => {
+				const deletionRequestId = new ObjectId().toHexString();
+
+				return { deletionRequestId };
+			};
+
+			it('should call deletionRequestRepo.markDeletionRequestAsExecuted', async () => {
+				const { deletionRequestId } = setup();
+				await service.markDeletionRequestAsExecuted(deletionRequestId);
+
+				expect(deletionRequestRepo.markDeletionRequestAsExecuted).toBeCalledWith(deletionRequestId);
 			});
 		});
 	});

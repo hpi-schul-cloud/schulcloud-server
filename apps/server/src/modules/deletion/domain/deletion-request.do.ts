@@ -6,10 +6,10 @@ import { DeletionStatusModel } from './types/deletion-status-model.enum';
 export interface DeletionRequestProps extends AuthorizableObject {
 	createdAt?: Date;
 	updatedAt?: Date;
-	domain?: DeletionDomainModel;
-	deleteAfter?: Date;
-	itemId?: EntityId;
-	status?: DeletionStatusModel;
+	domain: DeletionDomainModel;
+	deleteAfter: Date;
+	itemId: EntityId;
+	status: DeletionStatusModel;
 }
 
 export class DeletionRequest extends DomainObject<DeletionRequestProps> {
@@ -21,19 +21,19 @@ export class DeletionRequest extends DomainObject<DeletionRequestProps> {
 		return this.props.updatedAt;
 	}
 
-	get domain(): DeletionDomainModel | undefined {
+	get domain(): DeletionDomainModel {
 		return this.props.domain;
 	}
 
-	get deleteAfter(): Date | undefined {
+	get deleteAfter(): Date {
 		return this.props.deleteAfter;
 	}
 
-	get itemId(): EntityId | undefined {
+	get itemId(): EntityId {
 		return this.props.itemId;
 	}
 
-	get status(): DeletionStatusModel | undefined {
+	get status(): DeletionStatusModel {
 		return this.props.status;
 	}
 }
