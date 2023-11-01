@@ -642,9 +642,11 @@ describe('ContentStorage', () => {
 
 		describe('WHEN file exists', () => {
 			it('should S3ClientAdapter.get with range', async () => {
-				const { testRanges, contentID, filename, user } = setup();
+				const { testRanges, contentID, filename, user, fileResponse } = setup();
 
 				for (const range of testRanges) {
+					s3ClientAdapter.get.mockResolvedValueOnce(fileResponse);
+
 					// eslint-disable-next-line no-await-in-loop
 					await service.getFileStream(contentID, filename, user, range[0], range[1]);
 
