@@ -1,9 +1,10 @@
 import { ILibraryMetadata } from '@lumieducation/h5p-server';
-import { FileMetadata, InstalledLibrary } from './library.entity';
+import { FileMetadata, InstalledLibrary, LibraryName, Path } from './library.entity';
 
 describe('InstalledLibrary', () => {
 	let addonLibVersionOne: InstalledLibrary;
 	let addonLibVersionOneMinorChange: InstalledLibrary;
+	let addonLibVersionOnePatchChange: InstalledLibrary;
 	let addonLibVersionTwo: InstalledLibrary;
 
 	beforeAll(() => {
@@ -58,6 +59,32 @@ describe('InstalledLibrary', () => {
 		};
 		addonLibVersionOneMinorChange = new InstalledLibrary(addonLibMetadataVersionOneMinorChange);
 		addonLibVersionOneMinorChange.addTo = { player: { machineNames: [testingLibVersionOneMinorChange.machineName] } };
+
+		const testingLibMetadataVersionOnePatchChange: ILibraryMetadata = {
+			runnable: false,
+			title: '',
+			patchVersion: 5,
+			machineName: 'testing',
+			majorVersion: 1,
+			minorVersion: 2,
+		};
+		const testingLibVersionOnePatchChange = new InstalledLibrary(testingLibMetadataVersionOnePatchChange);
+		testingLibVersionOne.files.push(
+			new FileMetadata('file1', new Date(), 2),
+			new FileMetadata('file2', new Date(), 4),
+			new FileMetadata('file3', new Date(), 6)
+		);
+
+		const addonLibMetadataVersionOnePatchChange: ILibraryMetadata = {
+			runnable: false,
+			title: '',
+			patchVersion: 5,
+			machineName: 'addonVersionOne',
+			majorVersion: 1,
+			minorVersion: 2,
+		};
+		addonLibVersionOnePatchChange = new InstalledLibrary(addonLibMetadataVersionOnePatchChange);
+		addonLibVersionOnePatchChange.addTo = { player: { machineNames: [testingLibVersionOnePatchChange.machineName] } };
 
 		const testingLibMetadataVersionTwo: ILibraryMetadata = {
 			runnable: false,
@@ -119,7 +146,7 @@ describe('InstalledLibrary', () => {
 	});
 
 	describe('compareVersions', () => {
-		describe('when calling compareVersions with different Libraries', () => {
+		describe('when calling compareVersions with Major Change', () => {
 			it('should return -1 and call simple_compare once', () => {
 				const simpleCompareSpy = jest.spyOn(InstalledLibrary, 'simple_compare');
 				const result = addonLibVersionOne.compareVersions(addonLibVersionTwo);
@@ -136,5 +163,61 @@ describe('InstalledLibrary', () => {
 				expect(simpleCompareSpy).toHaveBeenCalledTimes(3);
 			});
 		});
+
+		describe('when calling compareVersions with same Major & Minor Versions', () => {
+			it('should return call simple_compare with patch versions', () => {
+				const simpleCompareSpy = jest.spyOn(InstalledLibrary, 'simple_compare');
+				const result = addonLibVersionOne.compareVersions(addonLibVersionOnePatchChange);
+				expect(result).toBe(-1);
+				expect(simpleCompareSpy).toHaveBeenCalledWith(
+					addonLibVersionOne.patchVersion,
+					addonLibVersionOnePatchChange.patchVersion
+				);
+			});
+		});
+	});
+});
+
+describe('LibraryName', () => {
+	let libraryName: LibraryName;
+
+	beforeEach(() => {
+		libraryName = new LibraryName('test', 1, 2);
+	});
+
+	it('should be defined', () => {
+		expect(libraryName).toBeDefined();
+	});
+
+	it('should create libraryName', () => {
+		const newlibraryName = new LibraryName('newtest', 1, 2);
+		expect(newlibraryName.machineName).toEqual('newtest');
+	});
+
+	it('should change libraryName', () => {
+		libraryName.machineName = 'changed-name';
+		expect(libraryName.machineName).toEqual('changed-name');
+	});
+});
+
+describe('Path', () => {
+	let path: Path;
+
+	beforeEach(() => {
+		path = new Path('');
+	});
+
+	it('should be defined', () => {
+		expect(path).toBeDefined();
+	});
+
+	it('should create path', () => {
+		const newPath = new Path('test-path');
+		expect(newPath.path).toEqual('test-path');
+	});
+
+	it('should change path', () => {
+		path.path = 'new-path';
+		expect(path.path).toEqual('new-path');
 	});
 });
