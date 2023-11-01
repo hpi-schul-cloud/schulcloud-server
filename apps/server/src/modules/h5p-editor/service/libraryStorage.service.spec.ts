@@ -618,7 +618,7 @@ describe('LibraryStorage', () => {
 			it('should return parsed json', async () => {
 				const { testingLib, testFile } = await setup();
 
-				const json = (await storage.getFileAsJson(testingLib, testFile.name)) as unknown;
+				const json = await storage.getFileAsJson(testingLib, testFile.name);
 				expect(json).toEqual(JSON.parse(testFile.content));
 			});
 
