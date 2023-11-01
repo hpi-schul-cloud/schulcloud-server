@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { PseudonymService } from '@src/modules/pseudonym';
-import { UserService } from '@src/modules';
+import { UserService } from '@src/modules/user';
 import { TeamService } from '@src/modules/teams';
 import { ClassService } from '@src/modules/class';
 import { LessonService } from '@src/modules/lesson/service';
