@@ -405,10 +405,6 @@ export class LibraryStorage implements ILibraryStorage {
 	}
 
 	private async getMetadata(library: ILibraryName): Promise<ILibraryMetadata> {
-		if (!library) {
-			throw new NotAcceptableException('You must pass in a library name to getLibrary.');
-		}
-
 		const result = await this.libraryRepo.findOneByNameAndVersionOrFail(
 			library.machineName,
 			library.majorVersion,
