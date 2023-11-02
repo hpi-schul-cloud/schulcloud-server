@@ -1,0 +1,3 @@
+@Injectable()
+export class PermissionContextService {
+}
