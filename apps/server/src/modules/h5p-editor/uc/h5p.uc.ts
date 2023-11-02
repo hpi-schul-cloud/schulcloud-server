@@ -1,4 +1,5 @@
 import {
+	AjaxSuccessResponse,
 	H5PAjaxEndpoint,
 	H5PEditor,
 	H5PPlayer,
@@ -7,6 +8,12 @@ import {
 	IPlayerModel,
 	IUser as LumiIUser,
 } from '@lumieducation/h5p-server';
+import {
+	IAjaxResponse,
+	IHubInfo,
+	ILibraryDetailedDataForClient,
+	ILibraryOverviewForClient,
+} from '@lumieducation/h5p-server/build/src/types';
 import {
 	BadRequestException,
 	HttpException,
@@ -24,10 +31,10 @@ import { Readable } from 'stream';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
 import { H5PContentParentType } from '../entity';
 import { H5PContentMapper } from '../mapper/h5p-content.mapper';
+import { H5PErrorMapper } from '../mapper/h5p-error.mapper';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { LumiUserWithContentData } from '../types/lumi-types';
-import { H5PErrorMapper } from '../mapper/h5p-error.mapper';
 
 @Injectable()
 export class H5PEditorUc {
@@ -83,8 +90,10 @@ export class H5PEditorUc {
 		};
 	}
 
-	// eslint-disable-next-line consistent-return
-	public async getAjax(query: AjaxGetQueryParams, currentUser: ICurrentUser) {
+	public async getAjax(
+		query: AjaxGetQueryParams,
+		currentUser: ICurrentUser
+	): Promise<IHubInfo | ILibraryDetailedDataForClient | IAjaxResponse | undefined> {
 		const user = this.changeUserType(currentUser);
 		const language = await this.getUserLanguage(currentUser);
 		const h5pErrorMapper = new H5PErrorMapper();
@@ -102,17 +111,27 @@ export class H5PEditorUc {
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			h5pErrorMapper.mapH5pError(err);
+			return undefined;
 		}
 	}
 
-	// eslint-disable-next-line consistent-return
 	public async postAjax(
 		currentUser: ICurrentUser,
 		query: AjaxPostQueryParams,
 		body: AjaxPostBodyParams,
 		contentFile?: Express.Multer.File,
 		h5pFile?: Express.Multer.File
-	) {
+	): Promise<
+		| AjaxSuccessResponse
+		| {
+				height?: number;
+				mime: string;
+				path: string;
+				width?: number;
+		  }
+		| ILibraryOverviewForClient[]
+		| undefined
+	> {
 		const user = this.changeUserType(currentUser);
 		const language = await this.getUserLanguage(currentUser);
 		const h5pErrorMapper = new H5PErrorMapper();
@@ -144,6 +163,7 @@ export class H5PEditorUc {
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			h5pErrorMapper.mapH5pError(err);
+			return undefined;
 		}
 	}
 
