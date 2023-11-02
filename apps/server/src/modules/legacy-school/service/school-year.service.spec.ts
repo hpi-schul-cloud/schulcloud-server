@@ -35,7 +35,6 @@ describe('SchoolYearService', () => {
 
 	describe('getCurrentSchoolYear', () => {
 		const setup = () => {
-			jest.setSystemTime(new Date('2022-06-01').getTime());
 			const schoolYear: SchoolYearEntity = schoolYearFactory.build({
 				startDate: new Date('2021-09-01'),
 				endDate: new Date('2022-12-31'),
@@ -60,7 +59,6 @@ describe('SchoolYearService', () => {
 
 	describe('findById', () => {
 		const setup = () => {
-			jest.setSystemTime(new Date('2022-06-01').getTime());
 			const schoolYear: SchoolYearEntity = schoolYearFactory.build({
 				startDate: new Date('2021-09-01'),
 				endDate: new Date('2022-12-31'),
