@@ -48,11 +48,7 @@ export class ClassesRepo {
 		existingEntities.forEach((entity) => {
 			const updatedDomainObject: Class | undefined = classMap.get(entity.id);
 
-			if (!updatedDomainObject) {
-				return;
-			}
-
-			const updatedEntity: ClassEntity = ClassMapper.mapToEntity(updatedDomainObject);
+			const updatedEntity: ClassEntity = ClassMapper.mapToEntity(updatedDomainObject as Class);
 
 			this.em.assign(entity, updatedEntity);
 		});
