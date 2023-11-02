@@ -73,7 +73,7 @@ export class DeletionRequestUc {
 	}
 
 	async findById(deletionRequestId: EntityId): Promise<DeletionRequestLog> {
-		const deletionRequest = await this.deletionRequestService.findById(deletionRequestId);
+		const deletionRequest: DeletionRequest = await this.deletionRequestService.findById(deletionRequestId);
 		let response: DeletionRequestLog = {
 			targetRef: {
 				domain: deletionRequest.domain,
