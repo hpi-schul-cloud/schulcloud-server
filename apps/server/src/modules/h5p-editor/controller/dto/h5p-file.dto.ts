@@ -14,3 +14,12 @@ export class H5pFileDto implements File {
 
 	mimeType: string;
 }
+
+export interface GetH5pFileResponse {
+	data: Readable;
+	etag?: string;
+	contentType?: string;
+	contentLength?: number;
+	contentRange?: string;
+	name: string;
+}

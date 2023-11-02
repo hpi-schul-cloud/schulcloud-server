@@ -3,9 +3,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IUser } from '@lumieducation/h5p-server';
 import { Test, TestingModule } from '@nestjs/testing';
 import { File, S3ClientAdapter } from '@shared/infra/s3-client';
-import { GetFileResponse } from '@src/modules/files-storage/interface';
 import { ReadStream } from 'fs';
 import { Readable } from 'node:stream';
+import { GetH5pFileResponse } from '../controller/dto';
 import { H5pEditorTempFile } from '../entity/base-entity-with-timestamp.entity';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { TemporaryFileRepo } from '../repo/temporary-file.repo';
@@ -187,7 +187,7 @@ describe('TemporaryFileStorage', () => {
 			it('should return readable file stream', async () => {
 				const { user1, file1 } = setup();
 				const actualContent = fileContent(user1.id, file1.filename);
-				const response: Required<GetFileResponse> = {
+				const response: Required<GetH5pFileResponse> = {
 					data: Readable.from(actualContent),
 					etag: '',
 					contentType: '',
