@@ -92,7 +92,7 @@ describe(ClassService.name, () => {
 			it('should return the classes', async () => {
 				const { userId, classes } = setup();
 
-				const result: Class[] = await service.findClassesForSchool(userId);
+				const result: Class[] = await service.findAllByUserId(userId);
 
 				expect(result).toEqual(classes);
 			});
