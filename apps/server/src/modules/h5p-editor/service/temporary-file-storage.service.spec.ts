@@ -6,7 +6,7 @@ import { File, S3ClientAdapter } from '@shared/infra/s3-client';
 import { ReadStream } from 'fs';
 import { Readable } from 'node:stream';
 import { GetH5pFileResponse } from '../controller/dto';
-import { H5pEditorTempFile } from '../entity/base-entity-with-timestamp.entity';
+import { H5pEditorTempFile } from '../entity/h5p-editor-tempfile.entity';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { TemporaryFileRepo } from '../repo/temporary-file.repo';
 import { TemporaryFileStorage } from './temporary-file-storage.service';
