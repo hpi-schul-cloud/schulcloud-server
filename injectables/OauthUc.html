@@ -642,7 +642,6 @@
 import { EntityId, LegacySchoolDo, UserDO } from &#x27;@shared/domain&#x27;;
 import { ISession } from &#x27;@shared/domain/types/session&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { ICurrentUser } from &#x27;@modules/authentication&#x27;;
 import { AuthenticationService } from &#x27;@modules/authentication/services/authentication.service&#x27;;
 import { ProvisioningService } from &#x27;@modules/provisioning&#x27;;
 import { OauthDataDto } from &#x27;@modules/provisioning/dto&#x27;;
@@ -653,6 +652,7 @@ import { UserMigrationService } from &#x27;@modules/user-login-migration&#x27;;
 import { SchoolMigrationService } from &#x27;@modules/user-login-migration/service&#x27;;
 import { MigrationDto } from &#x27;@modules/user-login-migration/service/dto&#x27;;
 import { nanoid } from &#x27;nanoid&#x27;;
+import { OauthCurrentUser } from &#x27;@modules/authentication/interface&#x27;;
 import { AuthorizationParams } from &#x27;../controller/dto&#x27;;
 import { OAuthTokenDto } from &#x27;../interface&#x27;;
 import { OAuthProcessDto } from &#x27;../service/dto&#x27;;
@@ -780,9 +780,9 @@ export class OauthUc {
 	}
 
 	private async getJwtForUser(userId: EntityId): Promise&lt;string&gt; {
-		const currentUser: ICurrentUser &#x3D; await this.userService.getResolvedUser(userId);
+		const oauthCurrentUser: OauthCurrentUser &#x3D; await this.userService.getResolvedUser(userId);
 
-		const { accessToken } &#x3D; await this.authenticationService.generateJwt(currentUser);
+		const { accessToken } &#x3D; await this.authenticationService.generateJwt(oauthCurrentUser);
 
 		return accessToken;
 	}

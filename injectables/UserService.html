@@ -816,7 +816,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/User.html" target="_self" >Promise&lt;ICurrentUser&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/User.html" target="_self" >Promise&lt;OauthCurrentUser&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -840,7 +840,7 @@
             </tr>
             <tr>
                 <td class="col-md-4 deprecated">
-                    
+                    [object Object],[object Object],[object Object]
                 </td>
             </tr>
             <tr>
@@ -1194,19 +1194,19 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { EntityId, IFindOptions, LanguageType, User } from &#x27;@shared/domain&#x27;;
-import { RoleReference, Page, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
-import { UserRepo } from &#x27;@shared/repo&#x27;;
-import { UserDORepo } from &#x27;@shared/repo/user/user-do.repo&#x27;;
-import { AccountService } from &#x27;@modules/account&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountService } from &#x27;@modules/account&#x27;;
 import { AccountDto } from &#x27;@modules/account/services/dto&#x27;;
-import { ICurrentUser } from &#x27;@modules/authentication&#x27;;
 // invalid import
 import { CurrentUserMapper } from &#x27;@modules/authentication/mapper&#x27;;
 import { RoleDto } from &#x27;@modules/role/service/dto/role.dto&#x27;;
 import { RoleService } from &#x27;@modules/role/service/role.service&#x27;;
 import { BadRequestException, Injectable } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
+import { EntityId, IFindOptions, LanguageType, User } from &#x27;@shared/domain&#x27;;
+import { Page, RoleReference, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
+import { UserRepo } from &#x27;@shared/repo&#x27;;
+import { UserDORepo } from &#x27;@shared/repo/user/user-do.repo&#x27;;
+import { OauthCurrentUser } from &#x27;@modules/authentication/interface&#x27;;
 import { IUserConfig } from &#x27;../interfaces&#x27;;
 import { UserMapper } from &#x27;../mapper/user.mapper&#x27;;
 import { UserDto } from &#x27;../uc/dto/user.dto&#x27;;
@@ -1230,7 +1230,7 @@ export class UserService {
 	}
 
 	/**
-	 * @deprecated
+	 * @deprecated use {@link UserService.findById} instead
 	 */
 	async getUser(id: string): Promise&lt;UserDto&gt; {
 		const userEntity &#x3D; await this.userRepo.findById(id, true);
@@ -1239,11 +1239,11 @@ export class UserService {
 		return userDto;
 	}
 
-	async getResolvedUser(userId: EntityId): Promise&lt;ICurrentUser&gt; {
-		const user: User &#x3D; await this.userRepo.findById(userId, true);
+	async getResolvedUser(userId: EntityId): Promise&lt;OauthCurrentUser&gt; {
+		const user: UserDO &#x3D; await this.findById(userId);
 		const account: AccountDto &#x3D; await this.accountService.findByUserIdOrFail(userId);
 
-		const resolvedUser: ICurrentUser &#x3D; CurrentUserMapper.userToICurrentUser(account.id, user, account.systemId);
+		const resolvedUser: OauthCurrentUser &#x3D; CurrentUserMapper.mapToOauthCurrentUser(account.id, user, account.systemId);
 
 		return resolvedUser;
 	}

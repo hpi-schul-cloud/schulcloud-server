@@ -146,8 +146,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">apps/server/src/modules/authentication/mapper/current-user.mapper.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">apps/server/src/modules/authentication/mapper/current-user.mapper.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -215,8 +215,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">apps/server/src/modules/authentication/mapper/current-user.mapper.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/modules/authentication/mapper/current-user.mapper.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -284,8 +284,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/authentication/mapper/current-user.mapper.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/authentication/mapper/current-user.mapper.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -485,6 +485,7 @@ export class CurrentUserMapper {
 			roles: user.roles.getItems().map((role: Role) &#x3D;&gt; role.id),
 			schoolId: user.school.id,
 			userId: user.id,
+			isExternalUser: false,
 		};
 	}
 
@@ -505,6 +506,7 @@ export class CurrentUserMapper {
 			schoolId: user.schoolId,
 			userId: user.id,
 			externalIdToken,
+			isExternalUser: true,
 		};
 	}
 
@@ -516,6 +518,7 @@ export class CurrentUserMapper {
 			roles: currentUser.roles,
 			systemId: currentUser.systemId,
 			support: currentUser.impersonated,
+			isExternalUser: currentUser.isExternalUser,
 		};
 	}
 
@@ -527,6 +530,7 @@ export class CurrentUserMapper {
 			schoolId: jwtPayload.schoolId,
 			userId: jwtPayload.userId,
 			impersonated: jwtPayload.support,
+			isExternalUser: jwtPayload.isExternalUser,
 		};
 	}
 }

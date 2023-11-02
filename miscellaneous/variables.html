@@ -6925,6 +6925,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		accountId: account ? account.id : new ObjectId().toHexString(),
 		systemId,
 		impersonated,
+		isExternalUser: false,
 	};
 
 	return currentUser;
