@@ -215,7 +215,6 @@ export class ContentStorage implements IContentStorage {
 
 	private async exists(checkPath: string): Promise<boolean> {
 		try {
-			// await this.storageClient.head(checkPath);
 			await this.storageClient.get(checkPath);
 		} catch (err) {
 			if (err instanceof NotFoundException) {

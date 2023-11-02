@@ -117,10 +117,6 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 	}
 
 	private getFilePath(userId: string, filename: string): string {
-		if (!userId || !filename) {
-			throw new ForbiddenException('COULD_NOT_CREATE_PATH');
-		}
-
 		const path = `h5p-tempfiles/${userId}/${filename}`;
 
 		return path;
