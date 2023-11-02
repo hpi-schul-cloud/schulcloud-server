@@ -3,7 +3,7 @@ import { S3Config } from '@shared/infra/s3-client';
 import { CoreModuleConfig } from '@src/core';
 
 export const FILES_STORAGE_S3_CONNECTION = 'FILES_STORAGE_S3_CONNECTION';
-export interface IFileStorageConfig extends CoreModuleConfig {
+export interface FileStorageConfig extends CoreModuleConfig {
 	MAX_FILE_SIZE: number;
 	MAX_SECURITY_CHECK_FILE_SIZE: number;
 	USE_STREAM_TO_ANTIVIRUS: boolean;
@@ -14,7 +14,7 @@ export const defaultConfig = {
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('FILES_STORAGE__INCOMING_REQUEST_TIMEOUT') as number,
 };
 
-const fileStorageConfig: IFileStorageConfig = {
+const fileStorageConfig: FileStorageConfig = {
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
 	MAX_FILE_SIZE: Configuration.get('FILES_STORAGE__MAX_FILE_SIZE') as number,
 	MAX_SECURITY_CHECK_FILE_SIZE: Configuration.get('FILES_STORAGE__MAX_FILE_SIZE') as number,

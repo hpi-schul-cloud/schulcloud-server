@@ -25,7 +25,7 @@ import {
 import { FileDto } from '../dto';
 import { FileRecord, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
-import { FILES_STORAGE_S3_CONNECTION, IFileStorageConfig } from '../files-storage.config';
+import { FileStorageConfig, FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import {
 	createCopyFiles,
 	createFileRecord,
@@ -45,7 +45,7 @@ export class FilesStorageService {
 		private readonly fileRecordRepo: FileRecordRepo,
 		@Inject(FILES_STORAGE_S3_CONNECTION) private readonly storageClient: S3ClientAdapter,
 		private readonly antivirusService: AntivirusService,
-		private readonly configService: ConfigService<IFileStorageConfig, true>,
+		private readonly configService: ConfigService<FileStorageConfig, true>,
 		private logger: LegacyLogger
 	) {
 		this.logger.setContext(FilesStorageService.name);
