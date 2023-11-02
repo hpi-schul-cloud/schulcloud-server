@@ -14,6 +14,6 @@ export class SlimSchoolResponse {
 	@ApiProperty()
 	name: string;
 
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ enum: SchoolPurpose, enumName: 'SchoolPurpose' })
 	purpose?: SchoolPurpose;
 }

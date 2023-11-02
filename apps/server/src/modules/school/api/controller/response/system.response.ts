@@ -53,7 +53,7 @@ export class SystemResponse {
 	@ApiPropertyOptional()
 	ldapConfig?: LdapConfig;
 
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ enum: SystemProvisioningStrategy, enumName: 'SystemProvisioningStrategy' })
 	provisioningStrategy?: SystemProvisioningStrategy;
 
 	@ApiPropertyOptional()

@@ -58,10 +58,10 @@ export class SchoolResponse {
 	@ApiPropertyOptional()
 	county?: CountyResponse;
 
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ enum: SchoolPurpose, enumName: 'SchoolPurpose' })
 	purpose?: SchoolPurpose;
 
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ enum: SchoolFeature, enumName: 'SchoolFeature', isArray: true })
 	features?: SchoolFeature[];
 
 	@ApiPropertyOptional({ type: () => [SystemResponse] })
@@ -76,7 +76,7 @@ export class SchoolResponse {
 	@ApiPropertyOptional()
 	logo_dataUrl?: string;
 
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ enum: FileStorageType, enumName: 'FileStorageType' })
 	fileStorageType?: FileStorageType;
 
 	@ApiProperty({ type: () => YearsResponse })
