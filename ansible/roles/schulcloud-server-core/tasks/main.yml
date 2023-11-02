@@ -99,7 +99,7 @@
       state: absent
       api_version: networking.k8s.io/v1
       kind: Ingress
-      name: {{ NAMESPACE }}-api-files-ingress
+      name: "{{ NAMESPACE }}-api-files-ingress"
     when: FEATURE_FWU_CONTENT_ENABLED is defined and FEATURE_FWU_CONTENT_ENABLED|bool
 
   - name: Delete Files CronJob
