@@ -87,19 +87,18 @@ export class CommonCartridgeExportService {
 		content: IComponentProperties,
 		version: CommonCartridgeVersion
 	): ICommonCartridgeResourceProps | undefined {
-		const commonProps = {
-			version,
-			identifier: createIdentifier(content._id),
-			href: `${createIdentifier(lessonId)}/${createIdentifier(content._id)}.html`,
-			title: content.title,
+		const commonProps = (fileExt: 'html' | 'xml') => {
+			return {
+				version,
+				identifier: createIdentifier(content._id),
+				href: `${createIdentifier(lessonId)}/${createIdentifier(content._id)}.${fileExt}`,
+				title: content.title,
+			};
 		};
 
 		if (content.component === ComponentType.TEXT) {
 			return {
-				version,
-				identifier: createIdentifier(content._id),
-				href: `${createIdentifier(lessonId)}/${createIdentifier(content._id)}.html`,
-				title: content.title,
+				...commonProps('html'),
 				type: CommonCartridgeResourceType.WEB_CONTENT,
 				intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				html: `<h1>${content.title}</h1><p>${content.content.text}</p>`,
@@ -109,35 +108,32 @@ export class CommonCartridgeExportService {
 		if (content.component === ComponentType.GEOGEBRA) {
 			const url = `https://www.geogebra.org/m/${content.content.materialId}`;
 			return version === CommonCartridgeVersion.V_1_3_0
-				? { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V3, url }
-				: { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V1, url };
+				? { ...commonProps('xml'), type: CommonCartridgeResourceType.WEB_LINK_V3, url }
+				: { ...commonProps('xml'), type: CommonCartridgeResourceType.WEB_LINK_V1, url };
 		}
 
 		if (content.component === ComponentType.ETHERPAD) {
 			return version === CommonCartridgeVersion.V_1_3_0
 				? {
-						...commonProps,
+						...commonProps('xml'),
 						type: CommonCartridgeResourceType.WEB_LINK_V3,
 						url: content.content.url,
 						title: content.content.description,
 				  }
 				: {
-						...commonProps,
+						...commonProps('xml'),
 						type: CommonCartridgeResourceType.WEB_LINK_V1,
 						url: content.content.url,
 						title: content.content.description,
 				  };
 		}
 
-		if (content.component === ComponentType.LERNSTORE) {
-			if (content.content && Array.isArray(content.content.resources) && content.content.resources.length > 0) {
-				content.content.resources.map((resource) => {
-					const url = resource.url;
-					return version === CommonCartridgeVersion.V_1_3_0
-						? { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V3, url }
-						: { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V1, url };
-				});
-			}
+		if (content.component === ComponentType.LERNSTORE && content.content) {
+			const { resources } = content.content;
+
+			return version === CommonCartridgeVersion.V_1_3_0
+				? { type: CommonCartridgeResourceType.WEB_LINK_V3, url: resources[0].url, ...commonProps('xml') }
+				: { type: CommonCartridgeResourceType.WEB_LINK_V1, url: resources[0].url, ...commonProps('xml') };
 		}
 
 		return undefined;

@@ -1,19 +1,21 @@
+import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { CourseService } from '@modules/learnroom/service';
+import { CommonCartridgeExportService } from '@modules/learnroom/service/common-cartridge-export.service';
+import { LessonService } from '@modules/lesson/service';
+import { TaskService } from '@modules/task/service/task.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	ComponentType,
 	Course,
+	IComponentLernstoreProperties,
 	IComponentProperties,
-	IComponentTextProperties,
 	LessonEntity,
 	Task,
 } from '@shared/domain';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
-import { CommonCartridgeExportService } from '@modules/learnroom/service/common-cartridge-export.service';
-import { CourseService } from '@modules/learnroom/service';
-import { LessonService } from '@modules/lesson/service';
-import { TaskService } from '@modules/task/service/task.service';
 import AdmZip from 'adm-zip';
+import { writeFile } from 'fs/promises';
 import { CommonCartridgeVersion } from '../common-cartridge';
 
 describe('CommonCartridgeExportService', () => {
@@ -51,33 +53,63 @@ describe('CommonCartridgeExportService', () => {
 		lessonServiceMock = module.get(LessonService);
 		taskServiceMock = module.get(TaskService);
 		course = courseFactory.teachersWithId(2).buildWithId();
-		lessons = lessonFactory.buildListWithId(5, {
+		lessons = lessonFactory.buildListWithId(1, {
 			contents: [
 				{
+					_id: faker.string.uuid(),
+					hidden: false,
 					component: ComponentType.TEXT,
 					title: 'Text',
 					content: {
 						text: 'text',
 					},
-				} as IComponentProperties,
+				},
 				{
+					_id: faker.string.uuid(),
+					hidden: false,
 					component: ComponentType.ETHERPAD,
 					title: 'Etherpad',
 					content: {
-						url: 'url',
+						title: faker.lorem.words(2),
+						description: faker.lorem.sentence(),
+						url: 'https://google.com',
 					},
-				} as IComponentProperties,
+				},
 				{
+					_id: faker.string.uuid(),
+					hidden: false,
 					component: ComponentType.GEOGEBRA,
 					title: 'Geogebra',
 					content: {
-						materialId: 'materialId',
+						materialId: 'https://google.com',
 					},
-				} as IComponentProperties,
-				{} as IComponentProperties,
+				},
+				{
+					_id: faker.string.uuid(),
+					hidden: false,
+					// AI next 18 lines
+					component: ComponentType.LERNSTORE,
+					title: 'Lernstore',
+					content: {
+						resources: [
+							{
+								client: faker.company.name(),
+								title: faker.lorem.words(2),
+								description: faker.lorem.sentence(),
+								url: faker.internet.url(),
+							},
+							{
+								client: faker.company.name(),
+								title: faker.lorem.words(2),
+								description: faker.lorem.sentence(),
+								url: faker.internet.url(),
+							},
+						],
+					},
+				},
 			],
 		});
-		tasks = taskFactory.buildListWithId(5);
+		tasks = taskFactory.buildListWithId(2);
 	});
 
 	afterAll(async () => {
@@ -87,20 +119,14 @@ describe('CommonCartridgeExportService', () => {
 	describe('exportCourse', () => {
 		const setupExport = async (version: CommonCartridgeVersion) => {
 			const [lesson] = lessons;
-			const textContent = { text: 'Some random text' } as IComponentTextProperties;
-			const lessonContent: IComponentProperties = {
-				_id: 'random_id',
-				title: 'A random title',
-				hidden: false,
-				component: ComponentType.TEXT,
-				content: textContent,
-			};
-			lesson.contents = [lessonContent];
+
 			lessonServiceMock.findById.mockResolvedValueOnce(lesson);
 			courseServiceMock.findById.mockResolvedValueOnce(course);
 			lessonServiceMock.findByCourseIds.mockResolvedValueOnce([lessons, lessons.length]);
 			taskServiceMock.findBySingleParent.mockResolvedValueOnce([tasks, tasks.length]);
+
 			const archive = new AdmZip(await courseExportService.exportCourse(course.id, '', version));
+
 			return archive;
 		};
 
@@ -201,6 +227,45 @@ describe('CommonCartridgeExportService', () => {
 			it('should add version 3 information to manifest file', () => {
 				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
 				expect(manifest).toContain(CommonCartridgeVersion.V_1_3_0);
+			});
+		});
+
+		describe('when exporting learn store content from course with Common Cartridge 1.3', () => {
+			let archive: AdmZip;
+			let lernstoreProps: IComponentProperties;
+
+			beforeAll(async () => {
+				const [lesson] = lessons;
+
+				archive = await setupExport(CommonCartridgeVersion.V_1_3_0);
+				lernstoreProps = lesson.contents.filter((content) => content.component === ComponentType.LERNSTORE)[0];
+
+				await writeFile('test.zip', archive.toBuffer(), 'binary');
+			});
+
+			it('should add learn store content to manifest file', () => {
+				// AI next 3 lines
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+
+				expect(manifest).toContain(lernstoreProps.title);
+			});
+
+			it.skip('should create directory for each learn store content', () => {
+				// AI next 3 lines
+				const directory = archive.getEntry(`i${lernstoreProps._id as string}/`);
+
+				expect(directory).toBeDefined();
+			});
+
+			it.skip('should add learn store content as web links to directory', () => {
+				expect(lernstoreProps.content).toBeDefined();
+				expect((lernstoreProps.content as IComponentLernstoreProperties).resources).toHaveLength(2);
+
+				(lernstoreProps.content as IComponentLernstoreProperties).resources.forEach((resource) => {
+					const file = archive.getEntry(`i${lernstoreProps._id as string}/${resource.title}.html`);
+
+					expect(file).toBeDefined();
+				});
 			});
 		});
 	});

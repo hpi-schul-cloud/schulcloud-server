@@ -6,8 +6,7 @@ export type ICommonCartridgeOrganizationProps = {
 	identifier: string;
 	title: string;
 	version: string;
-	resources: ICommonCartridgeResourceProps[];
-};
+} & ({ children: ICommonCartridgeOrganizationProps[] } | { resources: ICommonCartridgeResourceProps[] });
 
 export class CommonCartridgeOrganizationItemElement implements ICommonCartridgeElement {
 	constructor(private readonly props: ICommonCartridgeOrganizationProps) {}
