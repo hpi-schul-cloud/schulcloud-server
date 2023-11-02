@@ -1,9 +1,9 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { S3Config } from '@shared/infra/s3-client';
-import { ICoreModuleConfig } from '@src/core';
+import { CoreModuleConfig } from '@src/core';
 
 export const FILES_STORAGE_S3_CONNECTION = 'FILES_STORAGE_S3_CONNECTION';
-export interface IFileStorageConfig extends ICoreModuleConfig {
+export interface IFileStorageConfig extends CoreModuleConfig {
 	MAX_FILE_SIZE: number;
 	MAX_SECURITY_CHECK_FILE_SIZE: number;
 	USE_STREAM_TO_ANTIVIRUS: boolean;
