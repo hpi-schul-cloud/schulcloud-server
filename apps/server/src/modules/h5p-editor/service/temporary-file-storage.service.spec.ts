@@ -100,7 +100,6 @@ describe('TemporaryFileStorage', () => {
 			it('should delete file', async () => {
 				const { user1, file1 } = setup();
 				const res = [`h5p-tempfiles/${user1.id}/${file1.filename}`];
-				console.log(res);
 				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
 
 				await storage.deleteFile(file1.filename, user1.id);
@@ -171,6 +170,13 @@ describe('TemporaryFileStorage', () => {
 
 				const fileStatsPromise = storage.getFileStats('abc/nonexistingfile.txt', user1);
 
+				await expect(fileStatsPromise).rejects.toThrow();
+			});
+		});
+		describe('WHEN filename is invalid', () => {
+			it('should throw error', async () => {
+				const { user1 } = setup();
+				const fileStatsPromise = storage.getFileStats('/../&$!.txt', user1);
 				await expect(fileStatsPromise).rejects.toThrow();
 			});
 		});
