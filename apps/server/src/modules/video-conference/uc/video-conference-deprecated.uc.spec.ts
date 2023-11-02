@@ -172,6 +172,7 @@ describe('VideoConferenceUc', () => {
 			roles: [],
 			schoolId: 'schoolId',
 			accountId: 'accountId',
+			isExternalUser: false,
 		};
 		defaultOptions = {
 			everybodyJoinsAsModerator: false,
