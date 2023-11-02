@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { GetFile, S3ClientAdapter } from '@shared/infra/s3-client';
 import { Logger } from '@src/core/logger';
+import { PreviewInputMimeTypes } from '@src/modules/files-storage/interface';
 import { subClass } from 'gm';
 import { PassThrough } from 'stream';
 import { PreviewFileOptions, PreviewOptions, PreviewResponseMessage } from './interface';
@@ -44,6 +45,10 @@ export class PreviewGeneratorService {
 		const { format, width } = previewParams;
 
 		const preview = this.imageMagick(original.data);
+
+		if (original.contentType === PreviewInputMimeTypes.APPLICATION_PDF) {
+			preview.selectFrame(0);
+		}
 
 		if (width) {
 			preview.resize(width, undefined, '>');
