@@ -29,7 +29,7 @@ import { ClassInfoDto, ResolvedGroupDto } from './dto';
 import { ClassRootType } from './dto/class-root-type';
 import { GroupUc } from './group.uc';
 import { SchoolYearQueryType } from '../controller/dto';
-import { UnknownQueryTypeLoggableException } from '../loggable/unknown-query-type-loggable-exception';
+import { UnknownQueryTypeLoggableException } from '../loggable';
 
 describe('GroupUc', () => {
 	let module: TestingModule;
@@ -126,7 +126,7 @@ describe('GroupUc', () => {
 			it('should throw forbidden', async () => {
 				const { user, error } = setup();
 
-				const func = () => uc.findAllClassesForSchool(user.id, user.school.id, SchoolYearQueryType.CURRENT_YEAR);
+				const func = () => uc.findAllClassesForSchool(user.id, user.school.id);
 
 				await expect(func).rejects.toThrow(error);
 			});

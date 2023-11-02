@@ -7,9 +7,9 @@ export enum SchoolYearQueryType {
 	PREVIOUS_YEARS = 'previousYears',
 }
 
-export class ClassFilterParams {
+export class FilterParams {
 	@IsOptional()
 	@IsEnum(SchoolYearQueryType)
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ enum: SchoolYearQueryType })
 	type?: SchoolYearQueryType;
 }

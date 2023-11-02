@@ -14,7 +14,7 @@ import { SortHelper } from '../util';
 import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from './dto';
 import { GroupUcMapper } from './mapper/group-uc.mapper';
 import { SchoolYearQueryType } from '../controller/dto';
-import { UnknownQueryTypeLoggableException } from '../loggable/unknown-query-type-loggable-exception';
+import { UnknownQueryTypeLoggableException } from '../loggable';
 
 @Injectable()
 export class GroupUc {
@@ -32,7 +32,7 @@ export class GroupUc {
 	public async findAllClassesForSchool(
 		userId: EntityId,
 		schoolId: EntityId,
-		schoolYearQueryType: SchoolYearQueryType | undefined,
+		schoolYearQueryType?: SchoolYearQueryType,
 		skip = 0,
 		limit?: number,
 		sortBy: keyof ClassInfoDto = 'name',
@@ -62,7 +62,7 @@ export class GroupUc {
 
 	private async findCombinedClassListForSchool(
 		schoolId: string,
-		schoolYearQueryType: SchoolYearQueryType | undefined
+		schoolYearQueryType?: SchoolYearQueryType
 	): Promise<ClassInfoDto[]> {
 		let classInfosFromGroups: ClassInfoDto[] = [];
 
@@ -79,7 +79,7 @@ export class GroupUc {
 
 	private async findClassesForSchool(
 		schoolId: EntityId,
-		schoolYearQueryType: SchoolYearQueryType | undefined
+		schoolYearQueryType?: SchoolYearQueryType
 	): Promise<ClassInfoDto[]> {
 		const classes: Class[] = await this.classService.findClassesForSchool(schoolId);
 		const currentYear: SchoolYearEntity = await this.schoolYearService.getCurrentSchoolYear();
@@ -123,8 +123,8 @@ export class GroupUc {
 
 	private isClassOfQueryType(
 		currentYear: SchoolYearEntity,
-		schoolYear: SchoolYearEntity | undefined,
-		schoolYearQueryType: SchoolYearQueryType | undefined
+		schoolYear?: SchoolYearEntity,
+		schoolYearQueryType?: SchoolYearQueryType
 	): boolean {
 		if (schoolYearQueryType === undefined) {
 			return true;

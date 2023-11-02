@@ -6,7 +6,7 @@ import { ErrorResponse } from '@src/core/error/dto';
 import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { GroupUc } from '../uc';
 import { ClassInfoDto, ResolvedGroupDto } from '../uc/dto';
-import { ClassInfoSearchListResponse, ClassSortParams, GroupIdParams, GroupResponse, ClassFilterParams } from './dto';
+import { ClassInfoSearchListResponse, ClassSortParams, GroupIdParams, GroupResponse, FilterParams } from './dto';
 import { GroupResponseMapper } from './mapper';
 
 @ApiTags('Group')
@@ -23,9 +23,8 @@ export class GroupController {
 	public async findClassesForSchool(
 		@Query() pagination: PaginationParams,
 		@Query() sortingQuery: ClassSortParams,
-		@Query() schoolYearQuery: ClassFilterParams,
-		@CurrentUser()
-		currentUser: ICurrentUser
+		@Query() schoolYearQuery: FilterParams,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ClassInfoSearchListResponse> {
 		const board: Page<ClassInfoDto> = await this.groupUc.findAllClassesForSchool(
 			currentUser.userId,
