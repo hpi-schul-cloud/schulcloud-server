@@ -24,13 +24,13 @@
 <title>cluster_SharingModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 1407,-268 1407,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_SharingModule_exports</title>
-<polygon fill="none" stroke="black" points="527,-208 527,-260 673,-260 673,-208 527,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_SharingModule_providers</title>
 <polygon fill="none" stroke="black" points="869,-78 869,-130 1399,-130 1399,-78 869,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_SharingModule_exports</title>
+<polygon fill="none" stroke="black" points="527,-208 527,-260 673,-260 673,-208 527,-208"/>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_SharingModule_imports</title>
