@@ -33,14 +33,6 @@ export class ContentStorage implements IContentStorage {
 		@Inject(H5P_CONTENT_S3_CONNECTION) private readonly storageClient: S3ClientAdapter
 	) {}
 
-	private checkExtendedUserType(user: ILumiUser): void {
-		const isExtendedUserType = user instanceof LumiUserWithContentData;
-
-		if (!isExtendedUserType) {
-			throw new Error('Method expected LumiUserWithContentData instead of IUser');
-		}
-	}
-
 	private async createOrUpdateContent(
 		contentId: ContentId,
 		user: LumiUserWithContentData,
@@ -73,8 +65,6 @@ export class ContentStorage implements IContentStorage {
 		contentId?: ContentId | undefined
 	): Promise<ContentId> {
 		try {
-			this.checkExtendedUserType(user);
-
 			const h5pContent = await this.createOrUpdateContent(contentId as string, user, metadata, content);
 			await this.repo.save(h5pContent);
 
@@ -86,8 +76,7 @@ export class ContentStorage implements IContentStorage {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public async addFile(contentId: string, filename: string, stream: Readable, _user?: ILumiUser): Promise<void> {
+	public async addFile(contentId: string, filename: string, stream: Readable): Promise<void> {
 		this.checkFilename(filename);
 
 		const contentExists = await this.contentExists(contentId);
@@ -111,11 +100,11 @@ export class ContentStorage implements IContentStorage {
 		return exists;
 	}
 
-	public async deleteContent(contentId: string, user?: ILumiUser): Promise<void> {
+	public async deleteContent(contentId: string): Promise<void> {
 		try {
 			const h5pContent = await this.repo.findById(contentId);
 
-			const fileList = await this.listFiles(contentId, user);
+			const fileList = await this.listFiles(contentId);
 			const fileDeletePromises = fileList.map((file) => this.deleteFile(contentId, file));
 
 			await Promise.all([this.repo.delete(h5pContent), ...fileDeletePromises]);
@@ -126,8 +115,7 @@ export class ContentStorage implements IContentStorage {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public async deleteFile(contentId: string, filename: string, _user?: ILumiUser | undefined): Promise<void> {
+	public async deleteFile(contentId: string, filename: string): Promise<void> {
 		this.checkFilename(filename);
 		const filePath = this.getFilePath(contentId, filename);
 		await this.storageClient.delete([filePath]);
@@ -141,8 +129,7 @@ export class ContentStorage implements IContentStorage {
 		return this.exists(filePath);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public async getFileStats(contentId: string, file: string, _user: ILumiUser): Promise<IFileStats> {
+	public async getFileStats(contentId: string, file: string): Promise<IFileStats> {
 		const filePath = this.getFilePath(contentId, file);
 		const { ContentLength, LastModified } = await this.storageClient.head(filePath);
 
@@ -183,51 +170,36 @@ export class ContentStorage implements IContentStorage {
 		return fileResponse.data;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public async getMetadata(contentId: string, _user?: ILumiUser | undefined): Promise<IContentMetadata> {
+	public async getMetadata(contentId: string): Promise<IContentMetadata> {
 		const h5pContent = await this.repo.findById(contentId);
 		return h5pContent.metadata;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public async getParameters(contentId: string, _user?: ILumiUser | undefined): Promise<unknown> {
+	public async getParameters(contentId: string): Promise<unknown> {
 		const h5pContent = await this.repo.findById(contentId);
 		return h5pContent.content;
 	}
 
 	public async getUsage(library: ILibraryName): Promise<{ asDependency: number; asMainLibrary: number }> {
-		const defaultUser: ILumiUser = {
-			canCreateRestricted: false,
-			canInstallRecommended: false,
-			canUpdateAndInstallLibraries: false,
-			email: '',
-			id: '',
-			name: 'getUsage',
-			type: '',
-		};
-
 		const contentIds = await this.listContent();
-		const result = await this.resolveDependecies(contentIds, defaultUser, library);
+		const result = await this.resolveDependecies(contentIds, library);
 		return result;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public getUserPermissions(_contentId: string, _user: ILumiUser): Promise<Permission[]> {
+	public getUserPermissions(): Promise<Permission[]> {
 		const permissions = [Permission.Delete, Permission.Download, Permission.Edit, Permission.Embed, Permission.View];
 
 		return Promise.resolve(permissions);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public async listContent(_user?: ILumiUser): Promise<string[]> {
+	public async listContent(): Promise<string[]> {
 		const contentList = await this.repo.getAllContents();
 
 		const contentIDs = contentList.map((c) => c.id);
 		return contentIDs;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public async listFiles(contentId: string, _user?: ILumiUser): Promise<string[]> {
+	public async listFiles(contentId: string): Promise<string[]> {
 		const contentExists = await this.contentExists(contentId);
 		if (!contentExists) {
 			throw new HttpException('message', 404, {
@@ -279,13 +251,12 @@ export class ContentStorage implements IContentStorage {
 
 	private async resolveDependecies(
 		contentIds: string[],
-		user: ILumiUser,
 		library: ILibraryName
 	): Promise<{ asMainLibrary: number; asDependency: number }> {
 		let asDependency = 0;
 		let asMainLibrary = 0;
 
-		const contentMetadataList = await Promise.all(contentIds.map((id) => this.getMetadata(id, user)));
+		const contentMetadataList = await Promise.all(contentIds.map((id) => this.getMetadata(id)));
 
 		for (const contentMetadata of contentMetadataList) {
 			const isMainLibrary = contentMetadata.mainLibrary === library.machineName;
