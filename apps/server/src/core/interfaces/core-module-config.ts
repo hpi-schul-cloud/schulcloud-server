@@ -1,4 +1,4 @@
 import { InterceptorConfig } from '@shared/common';
-import { ILoggerConfig } from '../logger';
+import { LoggerConfig } from '../logger';
 
-export interface CoreModuleConfig extends InterceptorConfig, ILoggerConfig {}
+export interface CoreModuleConfig extends InterceptorConfig, LoggerConfig {}
