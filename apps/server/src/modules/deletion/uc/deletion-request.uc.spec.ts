@@ -9,7 +9,7 @@ import { FilesService } from '@src/modules/files/service';
 import { LessonService } from '@src/modules/lesson/service';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { TeamService } from '@src/modules/teams';
-import { UserService } from '@src/modules';
+import { UserService } from '@src/modules/user';
 import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
