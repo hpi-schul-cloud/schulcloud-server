@@ -472,11 +472,11 @@ describe('GroupUc', () => {
 			});
 
 			it('should check the access to the full list', async () => {
-				const { teacherUser } = setup();
+				const { adminUser } = setup();
 
-				await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+				await uc.findAllClasses(adminUser.id, adminUser.school.id);
 
-				expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith<[User, string[]]>(teacherUser, [
+				expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith<[User, string[]]>(adminUser, [
 					Permission.CLASS_FULL_ADMIN,
 					Permission.GROUP_FULL_ADMIN,
 				]);
