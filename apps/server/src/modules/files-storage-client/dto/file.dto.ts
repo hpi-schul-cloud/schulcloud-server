@@ -1,6 +1,6 @@
 import { EntityId } from '@shared/domain';
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
-import { IFileDomainObjectProps } from '../interfaces';
+import { FileDomainObjectProps } from '../interfaces';
 
 export class FileDto {
 	id: EntityId;
@@ -11,7 +11,7 @@ export class FileDto {
 
 	parentId: EntityId;
 
-	constructor(props: IFileDomainObjectProps) {
+	constructor(props: FileDomainObjectProps) {
 		this.id = props.id;
 		this.name = props.name;
 		this.parentType = props.parentType;
