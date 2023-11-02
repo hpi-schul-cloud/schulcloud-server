@@ -1,5 +1,5 @@
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
-import { ICopyFileDomainObjectProps, IFileDomainObjectProps } from '../interfaces';
+import { CopyFileDomainObjectProps, FileDomainObjectProps } from '../interfaces';
 import { FilesStorageClientMapper } from './files-storage-client.mapper';
 
 describe('FilesStorageClientMapper', () => {
@@ -15,7 +15,7 @@ describe('FilesStorageClientMapper', () => {
 			parentType: FileRecordParentType.Task,
 		};
 
-		const response: IFileDomainObjectProps[] = [record];
+		const response: FileDomainObjectProps[] = [record];
 
 		describe('mapfileRecordListResponseToDomainFilesDto', () => {
 			it('Should map to valid file Dtos.', () => {
@@ -83,13 +83,13 @@ describe('FilesStorageClientMapper', () => {
 	});
 
 	describe('copyFileDto mapper', () => {
-		const copyFileResponse: ICopyFileDomainObjectProps = {
+		const copyFileResponse: CopyFileDomainObjectProps = {
 			id: 'id123',
 			sourceId: 'sourceId123',
 			name: 'name',
 		};
 
-		const list: ICopyFileDomainObjectProps[] = [copyFileResponse];
+		const list: CopyFileDomainObjectProps[] = [copyFileResponse];
 
 		describe('mapCopyFileListResponseToCopyFilesDto', () => {
 			it('Should map to valid file Dtos.', () => {

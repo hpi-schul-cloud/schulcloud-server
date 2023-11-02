@@ -12,14 +12,14 @@ import {
 	IFileRecordParams,
 	RpcMessageProducer,
 } from '@src/shared/infra/rabbitmq';
-import { IFilesStorageClientConfig } from '../interfaces';
+import { FilesStorageClientConfig } from '../interfaces';
 
 @Injectable()
 export class FilesStorageProducer extends RpcMessageProducer {
 	constructor(
 		protected readonly amqpConnection: AmqpConnection,
 		private readonly logger: LegacyLogger,
-		protected readonly configService: ConfigService<IFilesStorageClientConfig, true>
+		protected readonly configService: ConfigService<FilesStorageClientConfig, true>
 	) {
 		super(amqpConnection, FilesStorageExchange, configService.get('INCOMING_REQUEST_TIMEOUT_COPY_API'));
 		this.logger.setContext(FilesStorageProducer.name);

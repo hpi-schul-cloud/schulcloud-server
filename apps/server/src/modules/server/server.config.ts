@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import type { AccountConfig } from '@modules/account';
-import type { IFilesStorageClientConfig } from '@modules/files-storage-client';
+import type { FilesStorageClientConfig } from '@modules/files-storage-client';
 import type { ICommonCartridgeConfig } from '@modules/learnroom/common-cartridge';
 import type { IUserConfig } from '@modules/user';
 import type { IIdentityManagementConfig } from '@shared/infra/identity-management';
@@ -16,7 +16,7 @@ export enum NodeEnvType {
 export interface IServerConfig
 	extends CoreModuleConfig,
 		IUserConfig,
-		IFilesStorageClientConfig,
+		FilesStorageClientConfig,
 		AccountConfig,
 		IIdentityManagementConfig,
 		ICommonCartridgeConfig {

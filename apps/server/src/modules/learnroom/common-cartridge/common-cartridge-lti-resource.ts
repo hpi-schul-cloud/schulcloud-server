@@ -1,7 +1,7 @@
 import { Builder } from 'xml2js';
-import { ICommonCartridgeElement } from './common-cartridge-element.interface';
-import { ICommonCartridgeFile } from './common-cartridge-file.interface';
+import { CommonCartridgeElement } from './common-cartridge-element.interface';
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from './common-cartridge-enums';
+import { ICommonCartridgeFile } from './common-cartridge-file.interface';
 
 export type ICommonCartridgeLtiResourceProps = {
 	type: CommonCartridgeResourceType.LTI;
@@ -13,7 +13,7 @@ export type ICommonCartridgeLtiResourceProps = {
 	url: string;
 };
 
-export class CommonCartridgeLtiResource implements ICommonCartridgeElement, ICommonCartridgeFile {
+export class CommonCartridgeLtiResource implements CommonCartridgeElement, ICommonCartridgeFile {
 	constructor(private readonly props: ICommonCartridgeLtiResourceProps, private readonly xmlBuilder: Builder) {}
 
 	canInline(): boolean {
