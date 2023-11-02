@@ -16,8 +16,9 @@ import {
 @Injectable()
 export class AjaxPostBodyParamsTransformPipe implements PipeTransform {
 	async transform(value: AjaxPostBodyParams): Promise<unknown> {
+		console.log('value BEFORE IF', value);
 		if (value) {
-			let transformed!: Exclude<AjaxPostBodyParams, undefined>;
+			let transformed: Exclude<AjaxPostBodyParams, undefined>;
 
 			if ('libraries' in value) {
 				transformed = plainToClass(LibrariesBodyParams, value);
@@ -25,15 +26,17 @@ export class AjaxPostBodyParamsTransformPipe implements PipeTransform {
 				transformed = plainToClass(ContentBodyParams, value);
 			} else if ('libraryParameters' in value) {
 				transformed = plainToClass(LibraryParametersBodyParams, value);
+			} else {
+				return undefined;
 			}
-
+			console.log('Transformed BEFORE validation', transformed);
 			const validationResult = await validate(transformed);
 			if (validationResult.length > 0) {
 				const validationPipe = new ValidationPipe();
 				const exceptionFactory = validationPipe.createExceptionFactory();
 				throw exceptionFactory(validationResult);
 			}
-
+			console.log('Transformed BEFORE return', transformed);
 			return transformed;
 		}
 
