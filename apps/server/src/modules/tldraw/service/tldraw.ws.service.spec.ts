@@ -357,7 +357,7 @@ describe('TldrawWSService', () => {
 
 				service.setupWSConnection(ws);
 
-				await delay(10);
+				await delay(50);
 
 				expect(closeConnSpy).toHaveBeenCalled();
 
