@@ -11,7 +11,7 @@ import {
 	columnNodeFactory,
 	courseFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.module';
 
 describe(`card update height (api)`, () => {
 	let app: INestApplication;

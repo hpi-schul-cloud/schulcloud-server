@@ -11,8 +11,8 @@ import {
 	userFactory,
 	legacyFileEntityMockFactory,
 } from '@shared/testing';
-import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
-import { CopyFilesService } from '@src/modules/files-storage-client';
+import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyFilesService } from '@modules/files-storage-client';
 import { TaskCopyService } from './task-copy.service';
 
 describe('task copy service', () => {

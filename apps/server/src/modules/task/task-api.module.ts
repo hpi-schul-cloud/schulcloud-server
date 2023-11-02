@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { CopyHelperModule } from '@src/modules/copy-helper/copy-helper.module';
+import { AuthorizationModule } from '@modules/authorization';
+import { CopyHelperModule } from '@modules/copy-helper/copy-helper.module';
 import { SubmissionController, TaskController } from './controller';
 import { TaskModule } from './task.module';
 import { SubmissionUc, TaskCopyUC, TaskUC } from './uc';

@@ -2,8 +2,8 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable } from '@nestjs/common';
 import { Board, BoardExternalReferenceType, ColumnBoardTarget, EntityId } from '@shared/domain';
 import { BoardRepo, LessonRepo } from '@shared/repo';
-import { ColumnBoardService } from '@src/modules/board';
-import { TaskService } from '@src/modules/task/service';
+import { ColumnBoardService } from '@modules/board';
+import { TaskService } from '@modules/task/service';
 import { ColumnBoardTargetService } from './column-board-target.service';
 
 @Injectable()

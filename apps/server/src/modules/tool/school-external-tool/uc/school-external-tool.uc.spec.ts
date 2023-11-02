@@ -2,13 +2,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, Permission, User } from '@shared/domain';
 import { schoolExternalToolFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationContextBuilder } from '@src/modules/authorization';
-import { SchoolExternalToolUc } from './school-external-tool.uc';
-import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
-import { ContextExternalToolService } from '../../context-external-tool/service';
-import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
-import { SchoolExternalTool } from '../domain';
+import { AuthorizationContextBuilder } from '@modules/authorization';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
+import { ContextExternalToolService } from '../../context-external-tool/service';
+import { SchoolExternalTool } from '../domain';
+import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
+import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
+import { SchoolExternalToolUc } from './school-external-tool.uc';
 
 describe('SchoolExternalToolUc', () => {
 	let module: TestingModule;
@@ -259,7 +259,7 @@ describe('SchoolExternalToolUc', () => {
 				const tool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const user: User = userFactory.buildWithId();
 
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValue(tool);
+				schoolExternalToolService.findById.mockResolvedValue(tool);
 
 				return {
 					user,
@@ -285,7 +285,7 @@ describe('SchoolExternalToolUc', () => {
 			const setup = () => {
 				const tool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const user: User = userFactory.buildWithId();
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValue(tool);
+				schoolExternalToolService.findById.mockResolvedValue(tool);
 
 				return {
 					user,
