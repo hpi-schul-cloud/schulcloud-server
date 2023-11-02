@@ -27,13 +27,14 @@ import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/
 import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { UserService } from '@src/modules/user';
 import { Request } from 'express';
-import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams, GetLibraryFile } from '../controller/dto';
+import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
 import { H5PContentParentType } from '../entity';
 import { H5PContentMapper } from '../mapper/h5p-content.mapper';
 import { H5PErrorMapper } from '../mapper/h5p-error.mapper';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { LumiUserWithContentData } from '../types/lumi-types';
+import { GetLibraryFile } from './dto/h5p-getLibraryFile';
 
 @Injectable()
 export class H5PEditorUc {
