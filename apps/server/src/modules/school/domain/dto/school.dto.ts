@@ -1,4 +1,5 @@
 import { County, SchoolFeature, SchoolPurpose } from '../type';
+import { FileStorageType } from '../type/file-storage-type.enum';
 import { FederalStateDto } from './federal-state.dto';
 import { SchoolYearDto } from './school-year.dto';
 import { SystemDto } from './system.dto';
@@ -18,6 +19,7 @@ export class SchoolDto {
 		inMaintenance,
 		isExternal,
 		logo_dataUrl,
+		fileStorageType,
 		years,
 	}: SchoolDto) {
 		this.id = id;
@@ -32,6 +34,7 @@ export class SchoolDto {
 		this.inMaintenance = inMaintenance;
 		this.isExternal = isExternal;
 		this.logo_dataUrl = logo_dataUrl;
+		this.fileStorageType = fileStorageType;
 		this.years = years;
 	}
 
@@ -58,6 +61,8 @@ export class SchoolDto {
 	isExternal: boolean;
 
 	logo_dataUrl?: string;
+
+	fileStorageType?: FileStorageType;
 
 	years: YearsDto;
 }

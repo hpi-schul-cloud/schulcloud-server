@@ -30,6 +30,7 @@ export class SchoolEntityMapper {
 			features,
 			systems,
 			logo_dataUrl: entity.logo_dataUrl,
+			fileStorageType: entity.fileStorageType,
 		});
 
 		return school;

@@ -11,6 +11,7 @@ import {
 } from '@mikro-orm/core';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SchoolFeature, SchoolPurpose } from '@src/modules/school/domain';
+import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
 import { BaseEntity } from './base.entity';
 import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { SchoolYearEntity } from './schoolyear.entity';
@@ -33,6 +34,7 @@ export interface ISchoolProperties {
 	purpose?: SchoolPurpose;
 	enableStudentTeamCreation?: boolean;
 	logo_dataUrl?: string;
+	fileStorageType?: FileStorageType;
 }
 
 @Embeddable()
@@ -112,6 +114,9 @@ export class SchoolEntity extends BaseEntity {
 	@Property({ nullable: true })
 	logo_dataUrl?: string;
 
+	@Property({ nullable: true })
+	fileStorageType?: FileStorageType;
+
 	constructor(props: ISchoolProperties) {
 		super();
 		if (props.externalId) {
@@ -144,6 +149,10 @@ export class SchoolEntity extends BaseEntity {
 		// TODO: General question: Why the if-checks around the optional props?
 		if (props.purpose) {
 			this.purpose = props.purpose;
+		}
+
+		if (props.fileStorageType) {
+			this.fileStorageType = props.fileStorageType;
 		}
 	}
 }

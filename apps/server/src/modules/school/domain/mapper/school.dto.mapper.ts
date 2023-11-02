@@ -15,18 +15,13 @@ export class SchoolDtoMapper {
 		const systems = schoolProps.systems?.map((system) => SystemDtoMapper.mapToDto(system));
 
 		const dto = new SchoolDto({
-			id: school.id,
-			name: schoolProps.name,
-			officialSchoolNumber: schoolProps.officialSchoolNumber,
+			...schoolProps,
 			currentYear,
 			federalState,
-			county: schoolProps.county,
-			purpose: schoolProps.purpose,
 			features,
 			systems,
 			inMaintenance: school.isInMaintenance(),
 			isExternal: school.isExternal(),
-			logo_dataUrl: schoolProps.logo_dataUrl,
 			years,
 		});
 

@@ -2,6 +2,7 @@
 import { FederalStateEntity, ISchoolProperties, SchoolRoles, SchoolYearEntity, SystemEntity } from '@shared/domain';
 import { federalStateFactory, schoolFactory } from '@shared/testing';
 import { SchoolFeature, SchoolPurpose } from '@src/modules/school/domain';
+import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
 import { DeepPartial } from 'fishery';
 import { EFederalState } from './federalstates';
 import { SeedSchoolYearEnum } from './schoolyears';
@@ -46,7 +47,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		},
 		createdAt: '2017-08-24T12:04:11.721Z',
 		systems: [],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
 		permissions: {
@@ -62,7 +63,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'Schiller-Oberschule',
 		createdAt: '2017-01-01T00:06:37.148Z',
 		systems: [],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
 		permissions: {
@@ -85,7 +86,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		},
 		createdAt: '2017-01-01T00:06:37.148Z',
 		systems: [],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
 		permissions: {
@@ -114,7 +115,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		},
 		createdAt: '2018-11-09T10:04:11.721Z',
 		systems: [],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.EXPERT,
 		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.VIDEOCONFERENCE, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
@@ -132,7 +133,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		},
 		createdAt: '2020-11-04T15:16:28.827Z',
 		systems: [],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
 		permissions: {
@@ -161,7 +162,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		},
 		createdAt: '2020-11-04T21:11:14.312Z',
 		systems: [],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
 		permissions: {
@@ -185,7 +186,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		federalState: EFederalState.INTERNATIONAL_SCHOOL,
 		createdAt: '2020-11-04T21:38:05.110Z',
 		systems: [],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
 		permissions: {
@@ -216,7 +217,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		},
 		createdAt: '2020-12-08T16:58:36.527Z',
 		systems: [],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
@@ -248,7 +249,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		},
 		createdAt: '2017-01-01T00:06:37.148Z',
 		systems: ['62c7f233f35a554ba3ed42f1'],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
 		permissions: {
