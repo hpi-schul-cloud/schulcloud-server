@@ -219,8 +219,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="69"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:69</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -508,7 +508,10 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 		}
 
 		const axiosConfig: AxiosRequestConfig &#x3D; {
-			headers: { Authorization: &#x60;Bearer ${input.accessToken}&#x60; },
+			headers: {
+				Authorization: &#x60;Bearer ${input.accessToken}&#x60;,
+				&#x27;Accept-Encoding&#x27;: &#x27;gzip&#x27;,
+			},
 		};
 
 		const axiosResponse: AxiosResponse&lt;SanisResponse&gt; &#x3D; await firstValueFrom(
