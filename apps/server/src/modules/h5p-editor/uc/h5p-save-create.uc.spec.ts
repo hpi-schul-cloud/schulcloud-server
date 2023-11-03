@@ -27,6 +27,7 @@ const createParams = () => {
 		roles: ['student'],
 		schoolId: 'mockSchoolId',
 		userId: 'mockUserId',
+		isExternalUser: false,
 	};
 
 	return { contentId, parameters, metadata, mainLibraryUbername, parentId, mockCurrentUser };
