@@ -287,6 +287,7 @@ describe('Login Controller (api)', () => {
 					roles: [studentRole.id],
 					schoolId: school.id,
 					accountId: account.id,
+					isExternalUser: false,
 				});
 				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
