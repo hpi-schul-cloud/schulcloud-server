@@ -28,7 +28,7 @@ import { GroupService } from '../service';
 import { ClassInfoDto, ResolvedGroupDto } from './dto';
 import { ClassRootType } from './dto/class-root-type';
 import { GroupUc } from './group.uc';
-import { SchoolYearQueryType } from '../controller/dto';
+import { SchoolYearQueryType } from '../controller/dto/interface';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 
 describe('GroupUc', () => {
@@ -199,7 +199,7 @@ describe('GroupUc', () => {
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
-				classService.findAllByUserId.mockResolvedValueOnce([clazz]);
+				classService.findAllByUserId.mockResolvedValueOnce([clazz, successorClass, classWithoutSchoolYear]);
 				groupService.findByUser.mockResolvedValueOnce([group, groupWithSystem]);
 				classService.findClassesForSchool.mockResolvedValueOnce([clazz, successorClass, classWithoutSchoolYear]);
 				groupService.findClassesForSchool.mockResolvedValueOnce([group, groupWithSystem]);
@@ -284,11 +284,7 @@ describe('GroupUc', () => {
 						nextSchoolYear,
 					} = setup();
 
-					const result: Page<ClassInfoDto> = await uc.findAllClasses(
-						teacherUser.id,
-						teacherUser.school.id,
-						undefined
-					);
+					const result: Page<ClassInfoDto> = await uc.findAllClasses(teacherUser.id, teacherUser.school.id, undefined);
 
 					expect(result).toEqual<Page<ClassInfoDto>>({
 						data: [
@@ -309,7 +305,7 @@ describe('GroupUc', () => {
 									: successorClass.name,
 								type: ClassRootType.CLASS,
 								externalSourceName: successorClass.source,
-								teachers: [teacherUser.lastName],
+								teacherNames: [teacherUser.lastName],
 								schoolYear: nextSchoolYear.name,
 								isUpgradable: false,
 								studentCount: 2,
@@ -321,7 +317,7 @@ describe('GroupUc', () => {
 									: classWithoutSchoolYear.name,
 								type: ClassRootType.CLASS,
 								externalSourceName: classWithoutSchoolYear.source,
-								teachers: [teacherUser.lastName],
+								teacherNames: [teacherUser.lastName],
 								isUpgradable: false,
 								studentCount: 2,
 							},
@@ -338,7 +334,7 @@ describe('GroupUc', () => {
 								type: ClassRootType.GROUP,
 								externalSourceName: system.displayName,
 								teacherNames: [teacherUser.lastName],
-								studentCount: 1
+								studentCount: 1,
 							},
 						],
 						total: 5,
@@ -369,7 +365,7 @@ describe('GroupUc', () => {
 									: classWithoutSchoolYear.name,
 								type: ClassRootType.CLASS,
 								externalSourceName: classWithoutSchoolYear.source,
-								teachers: [teacherUser.lastName],
+								teacherNames: [teacherUser.lastName],
 								isUpgradable: false,
 								studentCount: 2,
 							},
@@ -437,7 +433,7 @@ describe('GroupUc', () => {
 				it('should only return classes from next school year', async () => {
 					const { teacherUser, successorClass, nextSchoolYear } = setup();
 
-					const result: Page<ClassInfoDto> = await uc.findAllClassesForSchool(
+					const result: Page<ClassInfoDto> = await uc.findAllClasses(
 						teacherUser.id,
 						teacherUser.school.id,
 						SchoolYearQueryType.NEXT_YEAR
@@ -452,7 +448,7 @@ describe('GroupUc', () => {
 									: successorClass.name,
 								externalSourceName: successorClass.source,
 								type: ClassRootType.CLASS,
-								teachernames: [teacherUser.lastName],
+								teacherNames: [teacherUser.lastName],
 								schoolYear: nextSchoolYear.name,
 								isUpgradable: false,
 								studentCount: 2,
@@ -467,7 +463,7 @@ describe('GroupUc', () => {
 				it('should only return classes from previous school years', async () => {
 					const { teacherUser } = setup();
 
-					const result: Page<ClassInfoDto> = await uc.findAllClassesForSchool(
+					const result: Page<ClassInfoDto> = await uc.findAllClasses(
 						teacherUser.id,
 						teacherUser.school.id,
 						SchoolYearQueryType.PREVIOUS_YEARS
@@ -485,7 +481,7 @@ describe('GroupUc', () => {
 					const { teacherUser } = setup();
 
 					const func = async () =>
-						uc.findAllClassesForSchool(teacherUser.id, teacherUser.school.id, 'notAType' as SchoolYearQueryType);
+						uc.findAllClasses(teacherUser.id, teacherUser.school.id, 'notAType' as SchoolYearQueryType);
 
 					await expect(func).rejects.toThrow(UnknownQueryTypeLoggableException);
 				});
@@ -636,12 +632,14 @@ describe('GroupUc', () => {
 								teacherNames: [teacherUser.lastName],
 								schoolYear: schoolYear.name,
 								isUpgradable: false,
+								studentCount: 2,
 							},
 							{
 								id: group.id,
 								name: group.name,
 								type: ClassRootType.GROUP,
 								teacherNames: [teacherUser.lastName],
+								studentCount: 0,
 							},
 							{
 								id: groupWithSystem.id,
@@ -649,6 +647,7 @@ describe('GroupUc', () => {
 								type: ClassRootType.GROUP,
 								externalSourceName: system.displayName,
 								teacherNames: [teacherUser.lastName],
+								studentCount: 1,
 							},
 						],
 						total: 3,
@@ -665,6 +664,7 @@ describe('GroupUc', () => {
 						adminUser.school.id,
 						undefined,
 						undefined,
+						undefined,
 						'externalSourceName',
 						SortOrder.desc
 					);
@@ -679,6 +679,7 @@ describe('GroupUc', () => {
 								teacherNames: [teacherUser.lastName],
 								schoolYear: schoolYear.name,
 								isUpgradable: false,
+								studentCount: 2,
 							},
 							{
 								id: groupWithSystem.id,
@@ -686,12 +687,14 @@ describe('GroupUc', () => {
 								type: ClassRootType.GROUP,
 								externalSourceName: system.displayName,
 								teacherNames: [teacherUser.lastName],
+								studentCount: 1,
 							},
 							{
 								id: group.id,
 								name: group.name,
 								type: ClassRootType.GROUP,
 								teacherNames: [teacherUser.lastName],
+								studentCount: 0,
 							},
 						],
 						total: 3,
@@ -706,6 +709,7 @@ describe('GroupUc', () => {
 					const result: Page<ClassInfoDto> = await uc.findAllClasses(
 						adminUser.id,
 						adminUser.school.id,
+						undefined,
 						1,
 						1,
 						'name',
@@ -719,6 +723,7 @@ describe('GroupUc', () => {
 								name: group.name,
 								type: ClassRootType.GROUP,
 								teacherNames: [teacherUser.lastName],
+								studentCount: 0,
 							},
 						],
 						total: 3,

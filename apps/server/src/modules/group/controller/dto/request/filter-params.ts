@@ -1,11 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
-
-export enum SchoolYearQueryType {
-	NEXT_YEAR = 'nextYear',
-	CURRENT_YEAR = 'currentYear',
-	PREVIOUS_YEARS = 'previousYears',
-}
+import { SchoolYearQueryType } from '../interface';
 
 export class FilterParams {
 	@IsOptional()
