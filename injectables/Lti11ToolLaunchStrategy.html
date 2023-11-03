@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/tool-launch/service/strategy/lti11-tool-launch.strategy.ts</code>
+            <code>apps/server/src/modules/tool/tool-launch/service/launch-strategy/lti11-tool-launch.strategy.ts</code>
         </p>
 
 
@@ -81,6 +81,22 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#autoParameterStrategyMap" >autoParameterStrategyMap</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -173,12 +189,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, pseudonymService: <a href="../injectables/PseudonymService.html" target="_self">PseudonymService</a>, lti11EncryptionService: <a href="../injectables/Lti11EncryptionService.html" target="_self">Lti11EncryptionService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>)</code>
+<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, pseudonymService: <a href="../injectables/PseudonymService.html" target="_self">PseudonymService</a>, lti11EncryptionService: <a href="../injectables/Lti11EncryptionService.html" target="_self">Lti11EncryptionService</a>, autoSchoolIdStrategy: <a href="../injectables/AutoSchoolIdStrategy.html" target="_self">AutoSchoolIdStrategy</a>, autoSchoolNumberStrategy: <a href="../injectables/AutoSchoolNumberStrategy.html" target="_self">AutoSchoolNumberStrategy</a>, autoContextIdStrategy: <a href="../injectables/AutoContextIdStrategy.html" target="_self">AutoContextIdStrategy</a>, autoContextNameStrategy: <a href="../injectables/AutoContextNameStrategy.html" target="_self">AutoContextNameStrategy</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/lti11-tool-launch.strategy.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/lti11-tool-launch.strategy.ts:22</a></div>
                             </td>
                         </tr>
 
@@ -232,10 +248,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>schoolService</td>
+                                                        <td>autoSchoolIdStrategy</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/LegacySchoolService.html" target="_self" >LegacySchoolService</a></code>
+                                                                        <code><a href="../injectables/AutoSchoolIdStrategy.html" target="_self" >AutoSchoolIdStrategy</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -244,10 +260,34 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>courseService</td>
+                                                        <td>autoSchoolNumberStrategy</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/CourseService.html" target="_self" >CourseService</a></code>
+                                                                        <code><a href="../injectables/AutoSchoolNumberStrategy.html" target="_self" >AutoSchoolNumberStrategy</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>autoContextIdStrategy</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AutoContextIdStrategy.html" target="_self" >AutoContextIdStrategy</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>autoContextNameStrategy</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AutoContextNameStrategy.html" target="_self" >AutoContextNameStrategy</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -299,7 +339,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:30</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:36</a></code>
 </div>
                         </td>
                     </tr>
@@ -387,7 +427,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:122</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:128</a></code>
 </div>
                         </td>
                     </tr>
@@ -475,7 +515,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:163</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:169</a></code>
 </div>
                         </td>
                     </tr>
@@ -544,8 +584,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="144"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/lti11-tool-launch.strategy.ts:144</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="150"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/lti11-tool-launch.strategy.ts:150</a></div>
                         </td>
                     </tr>
 
@@ -620,7 +660,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:141</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:155</a></code>
 </div>
                         </td>
                     </tr>
@@ -854,7 +894,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:91</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:105</a></code>
 </div>
                         </td>
                     </tr>
@@ -941,7 +981,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:114</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:128</a></code>
 </div>
                         </td>
                     </tr>
@@ -1017,7 +1057,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:125</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:139</a></code>
 </div>
                         </td>
                     </tr>
@@ -1092,7 +1132,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:65</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:79</a></code>
 </div>
                         </td>
                     </tr>
@@ -1168,7 +1208,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:26</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:40</a></code>
 </div>
                         </td>
                     </tr>
@@ -1255,7 +1295,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:50</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:64</a></code>
 </div>
                         </td>
                     </tr>
@@ -1331,7 +1371,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:204</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:218</a></code>
 </div>
                         </td>
                     </tr>
@@ -1443,7 +1483,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:167</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:181</a></code>
 </div>
                         </td>
                     </tr>
@@ -1539,23 +1579,68 @@
         </tbody>
     </table>
 </section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="autoParameterStrategyMap"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>autoParameterStrategyMap</b></span>
+                        <a href="#autoParameterStrategyMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/AutoParameterStrategy.html" target="_self" >Map&lt;CustomParameterType | AutoParameterStrategy&gt;</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../injectables/AbstractLaunchStrategy.html" target="_self" >AbstractLaunchStrategy</a></code>
+</div>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:24</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, InternalServerErrorException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { PseudonymService } from &#x27;@modules/pseudonym/service&#x27;;
+import { UserService } from &#x27;@modules/user&#x27;;
+import { Injectable, InternalServerErrorException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from &#x27;@shared/domain&#x27;;
 import { RoleReference } from &#x27;@shared/domain/domainobject&#x27;;
-import { CourseService } from &#x27;@modules/learnroom/service&#x27;;
-import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
-import { PseudonymService } from &#x27;@modules/pseudonym/service&#x27;;
-import { UserService } from &#x27;@modules/user&#x27;;
 import { Authorization } from &#x27;oauth-1.0a&#x27;;
 import { LtiRole } from &#x27;../../../common/enum&#x27;;
 import { ExternalTool } from &#x27;../../../external-tool/domain&#x27;;
 import { LtiRoleMapper } from &#x27;../../mapper&#x27;;
 import { AuthenticationValues, LaunchRequestMethod, PropertyData, PropertyLocation } from &#x27;../../types&#x27;;
+import {
+	AutoContextIdStrategy,
+	AutoContextNameStrategy,
+	AutoSchoolIdStrategy,
+	AutoSchoolNumberStrategy,
+} from &#x27;../auto-parameter-strategy&#x27;;
 import { Lti11EncryptionService } from &#x27;../lti11-encryption.service&#x27;;
 import { AbstractLaunchStrategy } from &#x27;./abstract-launch.strategy&#x27;;
 import { IToolLaunchParams } from &#x27;./tool-launch-params.interface&#x27;;
@@ -1566,10 +1651,12 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		private readonly userService: UserService,
 		private readonly pseudonymService: PseudonymService,
 		private readonly lti11EncryptionService: Lti11EncryptionService,
-		schoolService: LegacySchoolService,
-		courseService: CourseService
+		autoSchoolIdStrategy: AutoSchoolIdStrategy,
+		autoSchoolNumberStrategy: AutoSchoolNumberStrategy,
+		autoContextIdStrategy: AutoContextIdStrategy,
+		autoContextNameStrategy: AutoContextNameStrategy
 	) {
-		super(schoolService, courseService);
+		super(autoSchoolIdStrategy, autoSchoolNumberStrategy, autoContextIdStrategy, autoContextNameStrategy);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -2264,13 +2264,25 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ToolLaunchModule.html" data-type="entity-link" >ToolLaunchModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-ToolLaunchModule-e885482a387b360bda9728c13f0cbf84ec7601c02c7e87cff8d2d426a5ad9c1df00e2933d7b6720be1e48483bcaf930db5c79d50840a43e890a887760fc8047d"' : 'data-bs-target="#xs-injectables-links-module-ToolLaunchModule-e885482a387b360bda9728c13f0cbf84ec7601c02c7e87cff8d2d426a5ad9c1df00e2933d7b6720be1e48483bcaf930db5c79d50840a43e890a887760fc8047d"' }>
+                                        'data-bs-target="#injectables-links-module-ToolLaunchModule-4c727b6b72563bf936b0367b8c3d78e0b281d503aff5be150626b5e4fb6c5fe2667906068070c0ba5791b7f879a5be5a09cf4d8f603348473a684b20f84adb0b"' : 'data-bs-target="#xs-injectables-links-module-ToolLaunchModule-4c727b6b72563bf936b0367b8c3d78e0b281d503aff5be150626b5e4fb6c5fe2667906068070c0ba5791b7f879a5be5a09cf4d8f603348473a684b20f84adb0b"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ToolLaunchModule-e885482a387b360bda9728c13f0cbf84ec7601c02c7e87cff8d2d426a5ad9c1df00e2933d7b6720be1e48483bcaf930db5c79d50840a43e890a887760fc8047d"' :
-                                        'id="xs-injectables-links-module-ToolLaunchModule-e885482a387b360bda9728c13f0cbf84ec7601c02c7e87cff8d2d426a5ad9c1df00e2933d7b6720be1e48483bcaf930db5c79d50840a43e890a887760fc8047d"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ToolLaunchModule-4c727b6b72563bf936b0367b8c3d78e0b281d503aff5be150626b5e4fb6c5fe2667906068070c0ba5791b7f879a5be5a09cf4d8f603348473a684b20f84adb0b"' :
+                                        'id="xs-injectables-links-module-ToolLaunchModule-4c727b6b72563bf936b0367b8c3d78e0b281d503aff5be150626b5e4fb6c5fe2667906068070c0ba5791b7f879a5be5a09cf4d8f603348473a684b20f84adb0b"' }>
+                                        <li class="link">
+                                            <a href="injectables/AutoContextIdStrategy.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AutoContextIdStrategy</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/AutoContextNameStrategy.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AutoContextNameStrategy</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/AutoSchoolIdStrategy.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AutoSchoolIdStrategy</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/AutoSchoolNumberStrategy.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AutoSchoolNumberStrategy</a>
+                                        </li>
                                         <li class="link">
                                             <a href="injectables/BasicToolLaunchStrategy.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BasicToolLaunchStrategy</a>
                                         </li>
@@ -4629,6 +4641,18 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/AuthorizationService.html" data-type="entity-link" >AuthorizationService</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/AutoContextIdStrategy.html" data-type="entity-link" >AutoContextIdStrategy</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/AutoContextNameStrategy.html" data-type="entity-link" >AutoContextNameStrategy</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/AutoSchoolIdStrategy.html" data-type="entity-link" >AutoSchoolIdStrategy</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/AutoSchoolNumberStrategy.html" data-type="entity-link" >AutoSchoolNumberStrategy</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/BaseDORepo.html" data-type="entity-link" >BaseDORepo</a>
                                 </li>
                                 <li class="link">
@@ -5276,6 +5300,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/AuthorizationParams.html" data-type="entity-link" >AuthorizationParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/AutoParameterStrategy.html" data-type="entity-link" >AutoParameterStrategy</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/BaseResponseMapper.html" data-type="entity-link" >BaseResponseMapper</a>

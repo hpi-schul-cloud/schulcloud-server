@@ -71,7 +71,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/tool-launch/service/strategy/tool-launch-params.interface.ts</code>
+            <code>apps/server/src/modules/tool/tool-launch/service/launch-strategy/tool-launch-params.interface.ts</code>
         </p>
 
 
@@ -222,9 +222,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ExternalTool } from &#x27;../../../external-tool/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ContextExternalTool } from &#x27;../../../context-external-tool/domain&#x27;;
+import { ExternalTool } from &#x27;../../../external-tool/domain&#x27;;
 import { SchoolExternalTool } from &#x27;../../../school-external-tool/domain&#x27;;
-import { ContextExternalTool } from &#x27;../../../context-external-tool/domain&#x27;;
 
 export interface IToolLaunchParams {
 	externalTool: ExternalTool;

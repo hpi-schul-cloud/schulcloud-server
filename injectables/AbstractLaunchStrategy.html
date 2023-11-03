@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/tool-launch/service/strategy/abstract-launch.strategy.ts</code>
+            <code>apps/server/src/modules/tool/tool-launch/service/launch-strategy/abstract-launch.strategy.ts</code>
         </p>
 
 
@@ -75,6 +75,22 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#autoParameterStrategyMap" >autoParameterStrategyMap</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -162,12 +178,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>)</code>
+<code>constructor(autoSchoolIdStrategy: <a href="../injectables/AutoSchoolIdStrategy.html" target="_self">AutoSchoolIdStrategy</a>, autoSchoolNumberStrategy: <a href="../injectables/AutoSchoolNumberStrategy.html" target="_self">AutoSchoolNumberStrategy</a>, autoContextIdStrategy: <a href="../injectables/AutoContextIdStrategy.html" target="_self">AutoContextIdStrategy</a>, autoContextNameStrategy: <a href="../injectables/AutoContextNameStrategy.html" target="_self">AutoContextNameStrategy</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/abstract-launch.strategy.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/abstract-launch.strategy.ts:24</a></div>
                             </td>
                         </tr>
 
@@ -185,10 +201,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>schoolService</td>
+                                                        <td>autoSchoolIdStrategy</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/LegacySchoolService.html" target="_self" >LegacySchoolService</a></code>
+                                                                        <code><a href="../injectables/AutoSchoolIdStrategy.html" target="_self" >AutoSchoolIdStrategy</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -197,10 +213,34 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>courseService</td>
+                                                        <td>autoSchoolNumberStrategy</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/CourseService.html" target="_self" >CourseService</a></code>
+                                                                        <code><a href="../injectables/AutoSchoolNumberStrategy.html" target="_self" >AutoSchoolNumberStrategy</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>autoContextIdStrategy</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AutoContextIdStrategy.html" target="_self" >AutoContextIdStrategy</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>autoContextNameStrategy</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AutoContextNameStrategy.html" target="_self" >AutoContextNameStrategy</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -245,8 +285,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="141"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/abstract-launch.strategy.ts:141</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="155"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/abstract-launch.strategy.ts:155</a></div>
                         </td>
                     </tr>
 
@@ -363,7 +403,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="249"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/abstract-launch.strategy.ts:249</a></div>
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/abstract-launch.strategy.ts:249</a></div>
                         </td>
                     </tr>
 
@@ -467,8 +507,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="91"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/abstract-launch.strategy.ts:91</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="105"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/abstract-launch.strategy.ts:105</a></div>
                         </td>
                     </tr>
 
@@ -549,8 +589,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="41"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/abstract-launch.strategy.ts:41</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="55"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/abstract-launch.strategy.ts:55</a></div>
                         </td>
                     </tr>
 
@@ -630,8 +670,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="114"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/abstract-launch.strategy.ts:114</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="128"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/abstract-launch.strategy.ts:128</a></div>
                         </td>
                     </tr>
 
@@ -700,8 +740,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="125"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/abstract-launch.strategy.ts:125</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="139"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/abstract-launch.strategy.ts:139</a></div>
                         </td>
                     </tr>
 
@@ -770,8 +810,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/abstract-launch.strategy.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/abstract-launch.strategy.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -851,8 +891,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="65"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/abstract-launch.strategy.ts:65</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="79"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/abstract-launch.strategy.ts:79</a></div>
                         </td>
                     </tr>
 
@@ -921,8 +961,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/abstract-launch.strategy.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/abstract-launch.strategy.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -1002,8 +1042,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/abstract-launch.strategy.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="64"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/abstract-launch.strategy.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -1072,8 +1112,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/abstract-launch.strategy.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/abstract-launch.strategy.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -1142,8 +1182,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="204"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/abstract-launch.strategy.ts:204</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="218"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/abstract-launch.strategy.ts:218</a></div>
                         </td>
                     </tr>
 
@@ -1248,8 +1288,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="167"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/abstract-launch.strategy.ts:167</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="181"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/abstract-launch.strategy.ts:181</a></div>
                         </td>
                     </tr>
 
@@ -1344,35 +1384,83 @@
         </tbody>
     </table>
 </section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="autoParameterStrategyMap"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>autoParameterStrategyMap</b></span>
+                        <a href="#autoParameterStrategyMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/AutoParameterStrategy.html" target="_self" >Map&lt;CustomParameterType | AutoParameterStrategy&gt;</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/abstract-launch.strategy.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Course, EntityId, LegacySchoolDo } from &#x27;@shared/domain&#x27;;
-import { CourseService } from &#x27;@modules/learnroom/service&#x27;;
-import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
+import { EntityId } from &#x27;@shared/domain&#x27;;
 import { URLSearchParams } from &#x27;url&#x27;;
 import { CustomParameter, CustomParameterEntry } from &#x27;../../../common/domain&#x27;;
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	ToolContextType,
-} from &#x27;../../../common/enum&#x27;;
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from &#x27;../../../common/enum&#x27;;
 import { ContextExternalTool } from &#x27;../../../context-external-tool/domain&#x27;;
 import { ExternalTool } from &#x27;../../../external-tool/domain&#x27;;
 import { SchoolExternalTool } from &#x27;../../../school-external-tool/domain&#x27;;
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from &#x27;../../error&#x27;;
 import { ToolLaunchMapper } from &#x27;../../mapper&#x27;;
 import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, ToolLaunchRequest } from &#x27;../../types&#x27;;
+import {
+	AutoContextIdStrategy,
+	AutoContextNameStrategy,
+	AutoParameterStrategy,
+	AutoSchoolIdStrategy,
+	AutoSchoolNumberStrategy,
+} from &#x27;../auto-parameter-strategy&#x27;;
 import { IToolLaunchParams } from &#x27;./tool-launch-params.interface&#x27;;
 import { IToolLaunchStrategy } from &#x27;./tool-launch-strategy.interface&#x27;;
 
 @Injectable()
 export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
-	constructor(private readonly schoolService: LegacySchoolService, private readonly courseService: CourseService) {}
+	private readonly autoParameterStrategyMap: Map&lt;CustomParameterType, AutoParameterStrategy&gt;;
+
+	constructor(
+		autoSchoolIdStrategy: AutoSchoolIdStrategy,
+		autoSchoolNumberStrategy: AutoSchoolNumberStrategy,
+		autoContextIdStrategy: AutoContextIdStrategy,
+		autoContextNameStrategy: AutoContextNameStrategy
+	) {
+		this.autoParameterStrategyMap &#x3D; new Map&lt;CustomParameterType, AutoParameterStrategy&gt;([
+			[CustomParameterType.AUTO_SCHOOLID, autoSchoolIdStrategy],
+			[CustomParameterType.AUTO_SCHOOLNUMBER, autoSchoolNumberStrategy],
+			[CustomParameterType.AUTO_CONTEXTID, autoContextIdStrategy],
+			[CustomParameterType.AUTO_CONTEXTNAME, autoContextNameStrategy],
+		]);
+	}
 
 	public async createLaunchData(userId: EntityId, data: IToolLaunchParams): Promise&lt;ToolLaunchData&gt; {
 		const launchData: ToolLaunchData &#x3D; this.buildToolLaunchDataFromExternalTool(data.externalTool);
@@ -1558,43 +1646,29 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
 	): Promise&lt;string | undefined&gt; {
-		switch (customParameter.type) {
-			case CustomParameterType.AUTO_SCHOOLID: {
-				return schoolExternalTool.schoolId;
-			}
-			case CustomParameterType.AUTO_CONTEXTID: {
-				return contextExternalTool.contextRef.id;
-			}
-			case CustomParameterType.AUTO_CONTEXTNAME: {
-				switch (contextExternalTool.contextRef.type) {
-					case ToolContextType.COURSE: {
-						const course: Course &#x3D; await this.courseService.findById(contextExternalTool.contextRef.id);
-
-						return course.name;
-					}
-					default: {
-						throw new ParameterTypeNotImplementedLoggableException(
-							&#x60;${customParameter.type}/${contextExternalTool.contextRef.type as string}&#x60;
-						);
-					}
-				}
-			}
-			case CustomParameterType.AUTO_SCHOOLNUMBER: {
-				const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
-
-				return school.officialSchoolNumber;
-			}
-			case CustomParameterType.BOOLEAN:
-			case CustomParameterType.NUMBER:
-			case CustomParameterType.STRING: {
-				return customParameter.scope &#x3D;&#x3D;&#x3D; CustomParameterScope.GLOBAL
-					? customParameter.default
-					: matchingParameterEntry?.value;
-			}
-			default: {
-				throw new ParameterTypeNotImplementedLoggableException(customParameter.type);
-			}
+		if (
+			customParameter.type &#x3D;&#x3D;&#x3D; CustomParameterType.BOOLEAN ||
+			customParameter.type &#x3D;&#x3D;&#x3D; CustomParameterType.NUMBER ||
+			customParameter.type &#x3D;&#x3D;&#x3D; CustomParameterType.STRING
+		) {
+			return customParameter.scope &#x3D;&#x3D;&#x3D; CustomParameterScope.GLOBAL
+				? customParameter.default
+				: matchingParameterEntry?.value;
 		}
+
+		const autoParameterStrategy: AutoParameterStrategy | undefined &#x3D; this.autoParameterStrategyMap.get(
+			customParameter.type
+		);
+		if (autoParameterStrategy) {
+			const autoValue: string | undefined &#x3D; await autoParameterStrategy.getValue(
+				schoolExternalTool,
+				contextExternalTool
+			);
+
+			return autoValue;
+		}
+
+		throw new ParameterTypeNotImplementedLoggableException(customParameter.type);
 	}
 
 	private addProperty(
