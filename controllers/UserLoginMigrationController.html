@@ -98,6 +98,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#closeMigration" >closeMigration</a>
                             </li>
@@ -186,6 +187,7 @@
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Async</span>
                         <span ><b>closeMigration</b></span>
                         <a href="#closeMigration"><span class="icon ion-ios-link"></span></a>
@@ -203,14 +205,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;close&#x27;)<br />@ApiUnprocessableEntityResponse({description: &#x27;User login migration is already closed and cannot be modified. Restart is possible.&#x27;, type: UserLoginMigrationAlreadyClosedLoggableException})<br />@ApiUnprocessableEntityResponse({description: &#x27;User login migration is already closed and cannot be modified. It cannot be restarted.&#x27;, type: UserLoginMigrationGracePeriodExpiredLoggableException})<br />@ApiNotFoundResponse({description: &#x27;User login migration does not exist&#x27;, type: UserLoginMigrationNotFoundLoggableException})<br />@ApiOkResponse({description: &#x27;User login migration closed&#x27;, type: UserLoginMigrationResponse})<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br />@ApiNoContentResponse({description: &#x27;User login migration was reverted&#x27;})<br /></code>
+                    <code>@Post(&#x27;close&#x27;)<br />@HttpCode(HttpStatus.OK)<br />@ApiUnprocessableEntityResponse({description: &#x27;User login migration is already closed and cannot be modified. Restart is possible.&#x27;, type: UserLoginMigrationAlreadyClosedLoggableException})<br />@ApiUnprocessableEntityResponse({description: &#x27;User login migration is already closed and cannot be modified. It cannot be restarted.&#x27;, type: UserLoginMigrationGracePeriodExpiredLoggableException})<br />@ApiNotFoundResponse({description: &#x27;User login migration does not exist&#x27;, type: UserLoginMigrationNotFoundLoggableException})<br />@ApiOkResponse({description: &#x27;User login migration closed&#x27;, type: UserLoginMigrationResponse})<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br />@ApiNoContentResponse({description: &#x27;User login migration was reverted&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="200"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:200</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="201"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:201</a></div>
                         </td>
                     </tr>
 
@@ -473,8 +475,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="217"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:217</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="218"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:218</a></div>
                         </td>
                     </tr>
 
@@ -806,7 +808,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, Param, Post, Put, Query } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser, JWT } from &#x27;@modules/authentication&#x27;;
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from &#x27;@nestjs/common&#x27;;
 import {
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
@@ -819,7 +822,6 @@ import {
 	ApiUnprocessableEntityResponse,
 } from &#x27;@nestjs/swagger&#x27;;
 import { Page, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
-import { Authenticate, CurrentUser, ICurrentUser, JWT } from &#x27;@modules/authentication&#x27;;
 import {
 	SchoolNumberMissingLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
@@ -989,6 +991,7 @@ export class UserLoginMigrationController {
 	}
 
 	@Post(&#x27;close&#x27;)
+	@HttpCode(HttpStatus.OK)
 	@ApiUnprocessableEntityResponse({
 		description: &#x27;User login migration is already closed and cannot be modified. Restart is possible.&#x27;,
 		type: UserLoginMigrationAlreadyClosedLoggableException,
