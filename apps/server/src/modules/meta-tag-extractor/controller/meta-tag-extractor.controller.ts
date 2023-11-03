@@ -1,13 +1,5 @@
-import {
-	BadRequestException,
-	Body,
-	Controller,
-	ForbiddenException,
-	InternalServerErrorException,
-	Post,
-} from '@nestjs/common';
+import { Body, Controller, InternalServerErrorException, Post, UnauthorizedException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { MetaTagExtractorUc } from '../uc';
@@ -20,13 +12,11 @@ import { GetMetaTagDataBody } from './post-link-url.body.params';
 export class MetaTagExtractorController {
 	constructor(private readonly metaTagExtractorUc: MetaTagExtractorUc) {}
 
-	@ApiOperation({ summary: 'Return dummy HTML for testing' })
+	@ApiOperation({ summary: 'return extract meta tags' })
 	@ApiResponse({ status: 201, type: MetaTagExtractorResponse })
-	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 400, type: BadRequestException })
-	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 401, type: UnauthorizedException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
-	@Post('/:url')
+	@Post('')
 	async getData(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() bodyParams: GetMetaTagDataBody

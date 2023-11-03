@@ -14,7 +14,6 @@ export type MetaData = {
 export class MetaTagExtractorService {
 	async fetchMetaData(url: string): Promise<MetaData> {
 		if (url.length === 0) {
-			// WIP: add nice debug logging for available open GraphData?!?
 			throw new Error(`MetaTagExtractorService requires a valid URL. Given URL: ${url}`);
 		}
 
