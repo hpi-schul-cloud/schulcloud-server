@@ -2,7 +2,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { MetaTagExtractorService } from '../service';
 import { MetaTagExtractorUc } from './meta-tag-extractor.uc';
@@ -24,10 +23,6 @@ describe(MetaTagExtractorUc.name, () => {
 				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
-				},
-				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
