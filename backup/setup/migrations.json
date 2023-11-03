@@ -328,5 +328,16 @@
 			"$date": "2023-10-17T14:38:44.886Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "653a645338f94b0ea8e3173d"
+		},
+		"state": "up",
+		"name": "add-group-full-admin-permission",
+		"createdAt": {
+			"$date": "2023-10-26T13:06:27.322Z"
+		},
+		"__v": 0
 	}
 ]

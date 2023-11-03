@@ -9,7 +9,7 @@ export class ClassInfoDto {
 
 	externalSourceName?: string;
 
-	teachers: string[];
+	teacherNames: string[];
 
 	schoolYear?: string;
 
@@ -20,7 +20,7 @@ export class ClassInfoDto {
 		this.type = props.type;
 		this.name = props.name;
 		this.externalSourceName = props.externalSourceName;
-		this.teachers = props.teachers;
+		this.teacherNames = props.teacherNames;
 		this.schoolYear = props.schoolYear;
 		this.isUpgradable = props.isUpgradable;
 	}
