@@ -53,10 +53,9 @@ describe(DeletionLogRepo.name, () => {
 
 	describe('create deletionLog', () => {
 		describe('when deletionLog is new', () => {
-			it('should create a new deletionLog', async () => {
+			const setup = () => {
 				const domainObject: DeletionLog = deletionLogFactory.build();
 				const deletionLogId = domainObject.id;
-				await repo.create(domainObject);
 
 				const expectedDomainObject = {
 					id: domainObject.id,
@@ -69,9 +68,14 @@ describe(DeletionLogRepo.name, () => {
 					updatedAt: domainObject.updatedAt,
 				};
 
+				return { domainObject, deletionLogId, expectedDomainObject };
+			};
+			it('should create a new deletionLog', async () => {
+				const { domainObject, deletionLogId, expectedDomainObject } = setup();
+				await repo.create(domainObject);
+
 				const result = await repo.findById(deletionLogId);
 
-				// expect(result).toEqual(domainObject);
 				expect(result).toEqual(expect.objectContaining(expectedDomainObject));
 			});
 		});
@@ -139,14 +143,6 @@ describe(DeletionLogRepo.name, () => {
 				await em.persistAndFlush([deletionLogEntity1, deletionLogEntity2, deletionLogEntity3]);
 				em.clear();
 
-				return { deletionLogEntity1, deletionLogEntity2, deletionLogEntity3, deletionRequest1Id };
-			};
-
-			it('should find deletionRequests with deleteAfter smaller then today', async () => {
-				const { deletionLogEntity1, deletionLogEntity2, deletionLogEntity3, deletionRequest1Id } = await setup();
-
-				const results = await repo.findAllByDeletionRequestId(deletionRequest1Id.toHexString());
-
 				const expectedArray = [
 					{
 						id: deletionLogEntity1.id,
@@ -169,6 +165,14 @@ describe(DeletionLogRepo.name, () => {
 						updatedAt: deletionLogEntity2.updatedAt,
 					},
 				];
+
+				return { deletionLogEntity3, deletionRequest1Id, expectedArray };
+			};
+
+			it('should find deletionRequests with deleteAfter smaller then today', async () => {
+				const { deletionLogEntity3, deletionRequest1Id, expectedArray } = await setup();
+
+				const results = await repo.findAllByDeletionRequestId(deletionRequest1Id.toHexString());
 
 				expect(results.length).toEqual(2);
 

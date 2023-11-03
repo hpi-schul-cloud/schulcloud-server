@@ -71,14 +71,14 @@ describe(DeletionRequestRepo.name, () => {
 			const setup = async () => {
 				const userId = new ObjectId().toHexString();
 
-				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({ itemId: userId });
+				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({ targetRefId: userId });
 				await em.persistAndFlush(entity);
 
 				const expectedDeletionRequest = {
 					id: entity.id,
-					domain: entity.domain,
+					targetRefDomain: entity.targetRefDomain,
 					deleteAfter: entity.deleteAfter,
-					itemId: entity.itemId,
+					targetRefId: entity.targetRefId,
 					status: entity.status,
 					createdAt: entity.createdAt,
 					updatedAt: entity.updatedAt,
@@ -127,34 +127,34 @@ describe(DeletionRequestRepo.name, () => {
 				await em.persistAndFlush([deletionRequestEntity1, deletionRequestEntity2, deletionRequestEntity3]);
 				em.clear();
 
-				return { deletionRequestEntity1, deletionRequestEntity2, deletionRequestEntity3 };
-			};
-
-			it('should find deletionRequests with deleteAfter smaller then today', async () => {
-				const { deletionRequestEntity1, deletionRequestEntity2, deletionRequestEntity3 } = await setup();
-
-				const results = await repo.findAllItemsByDeletionDate();
-
 				const expectedArray = [
 					{
 						id: deletionRequestEntity1.id,
-						domain: deletionRequestEntity1.domain,
+						targetRefDomain: deletionRequestEntity1.targetRefDomain,
 						deleteAfter: deletionRequestEntity1.deleteAfter,
-						itemId: deletionRequestEntity1.itemId,
+						targetRefId: deletionRequestEntity1.targetRefId,
 						status: deletionRequestEntity1.status,
 						createdAt: deletionRequestEntity1.createdAt,
 						updatedAt: deletionRequestEntity1.updatedAt,
 					},
 					{
 						id: deletionRequestEntity2.id,
-						domain: deletionRequestEntity2.domain,
+						targetRefDomain: deletionRequestEntity2.targetRefDomain,
 						deleteAfter: deletionRequestEntity2.deleteAfter,
-						itemId: deletionRequestEntity2.itemId,
+						targetRefId: deletionRequestEntity2.targetRefId,
 						status: deletionRequestEntity2.status,
 						createdAt: deletionRequestEntity2.createdAt,
 						updatedAt: deletionRequestEntity2.updatedAt,
 					},
 				];
+
+				return { deletionRequestEntity3, expectedArray };
+			};
+
+			it('should find deletionRequests with deleteAfter smaller then today', async () => {
+				const { deletionRequestEntity3, expectedArray } = await setup();
+
+				const results = await repo.findAllItemsByDeletionDate();
 
 				expect(results.length).toEqual(2);
 
@@ -175,7 +175,7 @@ describe(DeletionRequestRepo.name, () => {
 			const setup = async () => {
 				const userId = new ObjectId().toHexString();
 
-				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({ itemId: userId });
+				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({ targetRefId: userId });
 				await em.persistAndFlush(entity);
 
 				// Arrange expected DeletionRequestEntity after changing status
@@ -205,7 +205,7 @@ describe(DeletionRequestRepo.name, () => {
 			const setup = async () => {
 				const userId = new ObjectId().toHexString();
 
-				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({ itemId: userId });
+				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({ targetRefId: userId });
 				await em.persistAndFlush(entity);
 
 				return { entity };
@@ -235,7 +235,7 @@ describe(DeletionRequestRepo.name, () => {
 		describe('when deleting deletionRequest exists', () => {
 			const setup = async () => {
 				const userId = new ObjectId().toHexString();
-				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({ itemId: userId });
+				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({ targetRefId: userId });
 				const deletionRequestId = entity.id;
 				await em.persistAndFlush(entity);
 				em.clear();

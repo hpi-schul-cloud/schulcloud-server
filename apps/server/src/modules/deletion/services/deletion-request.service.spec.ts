@@ -47,23 +47,23 @@ describe(DeletionRequestService.name, () => {
 	describe('createDeletionRequest', () => {
 		describe('when creating a deletionRequest', () => {
 			const setup = () => {
-				const itemId = '653e4833cc39e5907a1e18d2';
-				const domain = DeletionDomainModel.USER;
+				const targetRefId = '653e4833cc39e5907a1e18d2';
+				const targetRefDomain = DeletionDomainModel.USER;
 
-				return { itemId, domain };
+				return { targetRefId, targetRefDomain };
 			};
 
 			it('should call deletionRequestRepo.create', async () => {
-				const { itemId, domain } = setup();
+				const { targetRefId, targetRefDomain } = setup();
 
-				await service.createDeletionRequest(itemId, domain);
+				await service.createDeletionRequest(targetRefId, targetRefDomain);
 
 				expect(deletionRequestRepo.create).toHaveBeenCalledWith(
 					expect.objectContaining({
 						id: expect.any(String),
-						domain,
+						targetRefDomain,
 						deleteAfter: expect.any(Date),
-						itemId,
+						targetRefId,
 						status: DeletionStatusModel.REGISTERED,
 					})
 				);

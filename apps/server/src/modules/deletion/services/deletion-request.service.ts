@@ -11,8 +11,8 @@ export class DeletionRequestService {
 	constructor(private readonly deletionRequestRepo: DeletionRequestRepo) {}
 
 	async createDeletionRequest(
-		itemId: EntityId,
-		domain: DeletionDomainModel,
+		targetRefId: EntityId,
+		targetRefDomain: DeletionDomainModel,
 		deleteInMinutes?: number
 	): Promise<{ requestId: EntityId; deletionPlannedAt: Date }> {
 		deleteInMinutes = deleteInMinutes === undefined ? 43200 : deleteInMinutes;
@@ -22,9 +22,9 @@ export class DeletionRequestService {
 
 		const newDeletionRequest = new DeletionRequest({
 			id: new ObjectId().toHexString(),
-			domain,
+			targetRefDomain,
 			deleteAfter: dateOfDeletion,
-			itemId,
+			targetRefId,
 			status: DeletionStatusModel.REGISTERED,
 		});
 

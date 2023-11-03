@@ -8,10 +8,8 @@ import { DeletionLogEntity } from '../../entity';
 describe(DeletionLogMapper.name, () => {
 	describe('mapToDO', () => {
 		describe('When entity is mapped for domainObject', () => {
-			it('should properly map the entity to the domain object', () => {
+			const setup = () => {
 				const entity = deletionLogEntityFactory.build();
-
-				const domainObject = DeletionLogMapper.mapToDO(entity);
 
 				const expectedDomainObject = new DeletionLog({
 					id: entity.id,
@@ -23,6 +21,13 @@ describe(DeletionLogMapper.name, () => {
 					createdAt: entity.createdAt,
 					updatedAt: entity.updatedAt,
 				});
+
+				return { entity, expectedDomainObject };
+			};
+			it('should properly map the entity to the domain object', () => {
+				const { entity, expectedDomainObject } = setup();
+
+				const domainObject = DeletionLogMapper.mapToDO(entity);
 
 				expect(domainObject).toEqual(expectedDomainObject);
 			});
@@ -39,10 +44,8 @@ describe(DeletionLogMapper.name, () => {
 		});
 
 		describe('When entities array is mapped for domainObjects array', () => {
-			it('should properly map the entities to the domain objects', () => {
+			const setup = () => {
 				const entities = [deletionLogEntityFactory.build()];
-
-				const domainObjects = DeletionLogMapper.mapToDOs(entities);
 
 				const expectedDomainObjects = entities.map(
 					(entity) =>
@@ -57,6 +60,13 @@ describe(DeletionLogMapper.name, () => {
 							updatedAt: entity.updatedAt,
 						})
 				);
+
+				return { entities, expectedDomainObjects };
+			};
+			it('should properly map the entities to the domain objects', () => {
+				const { entities, expectedDomainObjects } = setup();
+
+				const domainObjects = DeletionLogMapper.mapToDOs(entities);
 
 				expect(domainObjects).toEqual(expectedDomainObjects);
 			});
@@ -74,10 +84,8 @@ describe(DeletionLogMapper.name, () => {
 				jest.useRealTimers();
 			});
 
-			it('should properly map the domainObject to the entity', () => {
+			const setup = () => {
 				const domainObject = deletionLogFactory.build();
-
-				const entities = DeletionLogMapper.mapToEntity(domainObject);
 
 				const expectedEntities = new DeletionLogEntity({
 					id: domainObject.id,
@@ -89,6 +97,14 @@ describe(DeletionLogMapper.name, () => {
 					createdAt: domainObject.createdAt,
 					updatedAt: domainObject.updatedAt,
 				});
+
+				return { domainObject, expectedEntities };
+			};
+
+			it('should properly map the domainObject to the entity', () => {
+				const { domainObject, expectedEntities } = setup();
+
+				const entities = DeletionLogMapper.mapToEntity(domainObject);
 
 				expect(entities).toEqual(expectedEntities);
 			});
@@ -114,10 +130,8 @@ describe(DeletionLogMapper.name, () => {
 				jest.useRealTimers();
 			});
 
-			it('should properly map the domainObjects to the entities', () => {
+			const setup = () => {
 				const domainObjects = [deletionLogFactory.build()];
-
-				const entities = DeletionLogMapper.mapToEntities(domainObjects);
 
 				const expectedEntities = domainObjects.map(
 					(domainObject) =>
@@ -132,6 +146,15 @@ describe(DeletionLogMapper.name, () => {
 							updatedAt: domainObject.updatedAt,
 						})
 				);
+
+				return { domainObjects, expectedEntities };
+			};
+
+			it('should properly map the domainObjects to the entities', () => {
+				const { domainObjects, expectedEntities } = setup();
+
+				const entities = DeletionLogMapper.mapToEntities(domainObjects);
+
 				expect(entities).toEqual(expectedEntities);
 			});
 		});

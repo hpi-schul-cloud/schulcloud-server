@@ -33,23 +33,30 @@ describe(DeletionRequest.name, () => {
 
 	describe('getters', () => {
 		describe('When getters are used', () => {
-			it('getters should return proper values', () => {
+			const setup = () => {
 				const props = {
 					id: new ObjectId().toHexString(),
-					domain: DeletionDomainModel.USER,
+					targetRefDomain: DeletionDomainModel.USER,
 					deleteAfter: new Date(),
-					itemId: new ObjectId().toHexString(),
+					targetRefId: new ObjectId().toHexString(),
 					status: DeletionStatusModel.REGISTERED,
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				};
 
 				const deletionRequestDo = new DeletionRequest(props);
+
+				return { props, deletionRequestDo };
+			};
+
+			it('getters should return proper values', () => {
+				const { props, deletionRequestDo } = setup();
+
 				const gettersValues = {
 					id: deletionRequestDo.id,
-					domain: deletionRequestDo.domain,
+					targetRefDomain: deletionRequestDo.targetRefDomain,
 					deleteAfter: deletionRequestDo.deleteAfter,
-					itemId: deletionRequestDo.itemId,
+					targetRefId: deletionRequestDo.targetRefId,
 					status: deletionRequestDo.status,
 					createdAt: deletionRequestDo.createdAt,
 					updatedAt: deletionRequestDo.updatedAt,

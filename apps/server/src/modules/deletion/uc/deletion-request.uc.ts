@@ -18,7 +18,7 @@ import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum'
 import { DeletionLog } from '../domain/deletion-log.do';
 
 export interface DeletionRequestLog {
-	targetRef: { domain: DeletionDomainModel; itemId: EntityId };
+	targetRef: { targetRefDoamin: DeletionDomainModel; targetRefId: EntityId };
 	deletionPlannedAt: Date;
 	statistics?: DeletionLogStatistic[];
 }
@@ -30,7 +30,7 @@ export interface DeletionLogStatistic {
 }
 
 export interface DeletionRequestProps {
-	targetRef: { domain: DeletionDomainModel; itemId: EntityId };
+	targetRef: { targetRefDoamin: DeletionDomainModel; targetRefId: EntityId };
 	deleteInMinutes?: number;
 }
 
@@ -54,8 +54,8 @@ export class DeletionRequestUc {
 		deletionRequest: DeletionRequestProps
 	): Promise<{ requestId: EntityId; deletionPlannedAt: Date }> {
 		const result = await this.deletionRequestService.createDeletionRequest(
-			deletionRequest.targetRef.itemId,
-			deletionRequest.targetRef.domain,
+			deletionRequest.targetRef.targetRefId,
+			deletionRequest.targetRef.targetRefDoamin,
 			deletionRequest.deleteInMinutes
 		);
 
@@ -76,8 +76,8 @@ export class DeletionRequestUc {
 		const deletionRequest: DeletionRequest = await this.deletionRequestService.findById(deletionRequestId);
 		let response: DeletionRequestLog = {
 			targetRef: {
-				domain: deletionRequest.domain,
-				itemId: deletionRequest.itemId,
+				targetRefDoamin: deletionRequest.targetRefDomain,
+				targetRefId: deletionRequest.targetRefId,
 			},
 			deletionPlannedAt: deletionRequest.deleteAfter,
 		};
@@ -116,16 +116,16 @@ export class DeletionRequestUc {
 			teamsUpdated,
 			userDeleted,
 		] = await Promise.all([
-			this.accountService.deleteByUserId(deletionRequest.itemId),
-			this.classService.deleteUserDataFromClasses(deletionRequest.itemId),
-			this.courseGroupService.deleteUserDataFromCourseGroup(deletionRequest.itemId),
-			this.courseService.deleteUserDataFromCourse(deletionRequest.itemId),
-			this.filesService.markFilesOwnedByUserForDeletion(deletionRequest.itemId),
-			this.filesService.removeUserPermissionsToAnyFiles(deletionRequest.itemId),
-			this.lessonService.deleteUserDataFromLessons(deletionRequest.itemId),
-			this.pseudonymService.deleteByUserId(deletionRequest.itemId),
-			this.teamService.deleteUserDataFromTeams(deletionRequest.itemId),
-			this.userService.deleteUser(deletionRequest.itemId),
+			this.accountService.deleteByUserId(deletionRequest.targetRefId),
+			this.classService.deleteUserDataFromClasses(deletionRequest.targetRefId),
+			this.courseGroupService.deleteUserDataFromCourseGroup(deletionRequest.targetRefId),
+			this.courseService.deleteUserDataFromCourse(deletionRequest.targetRefId),
+			this.filesService.markFilesOwnedByUserForDeletion(deletionRequest.targetRefId),
+			this.filesService.removeUserPermissionsToAnyFiles(deletionRequest.targetRefId),
+			this.lessonService.deleteUserDataFromLessons(deletionRequest.targetRefId),
+			this.pseudonymService.deleteByUserId(deletionRequest.targetRefId),
+			this.teamService.deleteUserDataFromTeams(deletionRequest.targetRefId),
+			this.userService.deleteUser(deletionRequest.targetRefId),
 		]);
 
 		await this.deletionLogService.createDeletionLog(

@@ -103,8 +103,8 @@ describe(DeletionRequestUc.name, () => {
 		jest.clearAllMocks();
 		const deletionRequestToCreate: DeletionRequestProps = {
 			targetRef: {
-				domain: DeletionDomainModel.USER,
-				itemId: '653e4833cc39e5907a1e18d2',
+				targetRefDoamin: DeletionDomainModel.USER,
+				targetRefId: '653e4833cc39e5907a1e18d2',
 			},
 			deleteInMinutes: 1440,
 		};
@@ -122,8 +122,8 @@ describe(DeletionRequestUc.name, () => {
 
 		const executedDeletionRequestSummary: DeletionRequestLog = {
 			targetRef: {
-				domain: deletionRequestExecuted.domain,
-				itemId: deletionRequestExecuted.itemId,
+				targetRefDoamin: deletionRequestExecuted.targetRefDomain,
+				targetRefId: deletionRequestExecuted.targetRefId,
 			},
 			deletionPlannedAt: deletionRequestExecuted.deleteAfter,
 			statistics: [
@@ -142,8 +142,8 @@ describe(DeletionRequestUc.name, () => {
 
 		const notExecutedDeletionRequestSummary: DeletionRequestLog = {
 			targetRef: {
-				domain: deletionRequest.domain,
-				itemId: deletionRequest.itemId,
+				targetRefDoamin: deletionRequest.targetRefDomain,
+				targetRefId: deletionRequest.targetRefId,
 			},
 			deletionPlannedAt: deletionRequest.deleteAfter,
 		};
@@ -178,8 +178,8 @@ describe(DeletionRequestUc.name, () => {
 				await uc.createDeletionRequest(deletionRequestToCreate);
 
 				expect(deletionRequestService.createDeletionRequest).toHaveBeenCalledWith(
-					deletionRequestToCreate.targetRef.itemId,
-					deletionRequestToCreate.targetRef.domain,
+					deletionRequestToCreate.targetRef.targetRefId,
+					deletionRequestToCreate.targetRef.targetRefDoamin,
 					deletionRequestToCreate.deleteInMinutes
 				);
 			});
@@ -237,7 +237,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(classService.deleteUserDataFromClasses).toHaveBeenCalledWith(deletionRequestToExecute.itemId);
+				expect(classService.deleteUserDataFromClasses).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call courseGroupService.deleteUserDataFromCourseGroup to delete user data in courseGroup module', async () => {
@@ -247,7 +247,9 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(courseGroupService.deleteUserDataFromCourseGroup).toHaveBeenCalledWith(deletionRequestToExecute.itemId);
+				expect(courseGroupService.deleteUserDataFromCourseGroup).toHaveBeenCalledWith(
+					deletionRequestToExecute.targetRefId
+				);
 			});
 
 			it('should call courseService.deleteUserDataFromCourse to delete user data in course module', async () => {
@@ -257,7 +259,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(courseService.deleteUserDataFromCourse).toHaveBeenCalledWith(deletionRequestToExecute.itemId);
+				expect(courseService.deleteUserDataFromCourse).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call filesService.markFilesOwnedByUserForDeletion to mark users files to delete in file module', async () => {
@@ -267,7 +269,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(filesService.markFilesOwnedByUserForDeletion).toHaveBeenCalledWith(deletionRequestToExecute.itemId);
+				expect(filesService.markFilesOwnedByUserForDeletion).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call filesService.removeUserPermissionsToAnyFiles to remove users permissions to any files in file module', async () => {
@@ -277,7 +279,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(filesService.removeUserPermissionsToAnyFiles).toHaveBeenCalledWith(deletionRequestToExecute.itemId);
+				expect(filesService.removeUserPermissionsToAnyFiles).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call lessonService.deleteUserDataFromLessons to delete users data in lesson module', async () => {
@@ -287,7 +289,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(lessonService.deleteUserDataFromLessons).toHaveBeenCalledWith(deletionRequestToExecute.itemId);
+				expect(lessonService.deleteUserDataFromLessons).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call pseudonymService.deleteByUserId to delete users data in pseudonym module', async () => {
@@ -297,7 +299,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(pseudonymService.deleteByUserId).toHaveBeenCalledWith(deletionRequestToExecute.itemId);
+				expect(pseudonymService.deleteByUserId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call teamService.deleteUserDataFromTeams to delete users data in teams module', async () => {
@@ -307,7 +309,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(teamService.deleteUserDataFromTeams).toHaveBeenCalledWith(deletionRequestToExecute.itemId);
+				expect(teamService.deleteUserDataFromTeams).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call userService.deleteUsers to delete user in user module', async () => {
@@ -317,7 +319,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(userService.deleteUser).toHaveBeenCalledWith(deletionRequestToExecute.itemId);
+				expect(userService.deleteUser).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call deletionLogService.createDeletionLog to create logs for deletionRequest', async () => {

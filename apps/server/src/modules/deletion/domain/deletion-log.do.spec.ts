@@ -33,7 +33,7 @@ describe(DeletionLog.name, () => {
 
 	describe('getters', () => {
 		describe('When getters are used', () => {
-			it('getters should return proper values', () => {
+			const setup = () => {
 				const props = {
 					id: new ObjectId().toHexString(),
 					domain: DeletionDomainModel.USER,
@@ -46,6 +46,12 @@ describe(DeletionLog.name, () => {
 				};
 
 				const deletionLogDo = new DeletionLog(props);
+
+				return { props, deletionLogDo };
+			};
+			it('getters should return proper values', () => {
+				const { props, deletionLogDo } = setup();
+
 				const gettersValues = {
 					id: deletionLogDo.id,
 					domain: deletionLogDo.domain,

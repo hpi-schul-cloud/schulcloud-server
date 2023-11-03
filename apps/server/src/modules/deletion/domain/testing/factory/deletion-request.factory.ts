@@ -6,9 +6,9 @@ import { DeletionDomainModel } from '../../types/deletion-domain-model.enum';
 import { DeletionStatusModel } from '../../types/deletion-status-model.enum';
 
 class DeletionRequestFactory extends DoBaseFactory<DeletionRequest, DeletionRequestProps> {
-	withUserIds(itemId: string): this {
+	withUserIds(id: string): this {
 		const params: DeepPartial<DeletionRequestProps> = {
-			itemId,
+			targetRefId: id,
 		};
 
 		return this.params(params);
@@ -18,9 +18,9 @@ class DeletionRequestFactory extends DoBaseFactory<DeletionRequest, DeletionRequ
 export const deletionRequestFactory = DeletionRequestFactory.define(DeletionRequest, () => {
 	return {
 		id: new ObjectId().toHexString(),
-		domain: DeletionDomainModel.USER,
+		targetRefDomain: DeletionDomainModel.USER,
 		deleteAfter: new Date(),
-		itemId: new ObjectId().toHexString(),
+		targetRefId: new ObjectId().toHexString(),
 		status: DeletionStatusModel.REGISTERED,
 		createdAt: new Date(),
 		updatedAt: new Date(),

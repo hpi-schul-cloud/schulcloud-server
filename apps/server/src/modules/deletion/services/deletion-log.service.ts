@@ -14,16 +14,16 @@ export class DeletionLogService {
 		deletionRequestId: EntityId,
 		domain: DeletionDomainModel,
 		operation: DeletionOperationModel,
-		modifiedCounter: number,
-		deletedCounter: number
+		modifiedCount: number,
+		deletedCount: number
 	): Promise<void> {
 		const newDeletionLog = new DeletionLog({
 			id: new ObjectId().toHexString(),
 			domain,
 			deletionRequestId,
 			operation,
-			modifiedCount: modifiedCounter,
-			deletedCount: deletedCounter,
+			modifiedCount,
+			deletedCount,
 		});
 
 		await this.deletionLogRepo.create(newDeletionLog);

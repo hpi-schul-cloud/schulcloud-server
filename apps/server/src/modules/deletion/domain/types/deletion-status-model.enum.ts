@@ -1,4 +1,4 @@
-export enum DeletionStatusModel {
-	'REGISTERED' = 'registered',
-	'SUCCESS' = 'success',
+export const enum DeletionStatusModel {
+	REGISTERED = 'registered',
+	SUCCESS = 'success',
 }

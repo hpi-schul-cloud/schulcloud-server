@@ -1,4 +1,3 @@
-import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionRequest } from '../../domain/deletion-request.do';
 import { DeletionRequestEntity } from '../../entity';
 
@@ -8,9 +7,9 @@ export class DeletionRequestMapper {
 			id: entity.id,
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
-			domain: entity.domain,
+			targetRefDomain: entity.targetRefDomain,
 			deleteAfter: entity.deleteAfter,
-			itemId: entity.itemId,
+			targetRefId: entity.targetRefId,
 			status: entity.status,
 		});
 	}
@@ -18,9 +17,9 @@ export class DeletionRequestMapper {
 	static mapToEntity(domainObject: DeletionRequest): DeletionRequestEntity {
 		return new DeletionRequestEntity({
 			id: domainObject.id,
-			domain: domainObject.domain,
+			targetRefDomain: domainObject.targetRefDomain,
 			deleteAfter: domainObject.deleteAfter,
-			itemId: new ObjectId(domainObject.itemId).toHexString(),
+			targetRefId: domainObject.targetRefId,
 			createdAt: domainObject.createdAt,
 			updatedAt: domainObject.updatedAt,
 			status: domainObject.status,

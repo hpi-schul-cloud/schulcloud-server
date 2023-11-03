@@ -1,35 +1,30 @@
 import { Entity, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain';
 import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
 import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
 
 export interface DeletionRequestEntityProps {
 	id?: EntityId;
-	domain: DeletionDomainModel;
+	targetRefDomain: DeletionDomainModel;
 	deleteAfter: Date;
-	itemId: EntityId;
+	targetRefId: EntityId;
 	status: DeletionStatusModel;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
 
 @Entity({ tableName: 'deletionrequests' })
-@Index({ properties: ['_itemId', 'domain'] })
+@Index({ properties: ['targetRefId', 'targetRefDomain'] })
 export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 	@Property()
 	deleteAfter: Date;
 
 	@Property()
-	_itemId: ObjectId;
-
-	get itemId(): EntityId {
-		return this._itemId.toHexString();
-	}
+	targetRefId: EntityId;
 
 	@Property()
-	domain: DeletionDomainModel;
+	targetRefDomain: DeletionDomainModel;
 
 	@Property()
 	status: DeletionStatusModel;
@@ -40,9 +35,9 @@ export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 			this.id = props.id;
 		}
 
-		this.domain = props.domain;
+		this.targetRefDomain = props.targetRefDomain;
 		this.deleteAfter = props.deleteAfter;
-		this._itemId = new ObjectId(props.itemId);
+		this.targetRefId = props.targetRefId;
 		this.status = props.status;
 
 		if (props.createdAt !== undefined) {

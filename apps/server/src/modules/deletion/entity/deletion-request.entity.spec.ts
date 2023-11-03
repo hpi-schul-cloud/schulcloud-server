@@ -3,7 +3,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionRequestEntity } from '@src/modules/deletion/entity/deletion-request.entity';
 import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
 import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
-// import { deletionRequestEntityFactory } from './testing/factory/deletion-request.entity.factory';
 
 describe(DeletionRequestEntity.name, () => {
 	beforeAll(async () => {
@@ -15,9 +14,9 @@ describe(DeletionRequestEntity.name, () => {
 
 		const props = {
 			id: new ObjectId().toHexString(),
-			domain: DeletionDomainModel.USER,
+			targetRefDomain: DeletionDomainModel.USER,
 			deleteAfter: new Date(),
-			itemId: new ObjectId().toHexString(),
+			targetRefId: new ObjectId().toHexString(),
 			status: DeletionStatusModel.REGISTERED,
 			createdAt: new Date(),
 			updatedAt: new Date(),
@@ -47,9 +46,9 @@ describe(DeletionRequestEntity.name, () => {
 
 				const entityProps = {
 					id: entity.id,
-					domain: entity.domain,
+					targetRefDomain: entity.targetRefDomain,
 					deleteAfter: entity.deleteAfter,
-					itemId: entity.itemId,
+					targetRefId: entity.targetRefId,
 					status: entity.status,
 					createdAt: entity.createdAt,
 					updatedAt: entity.updatedAt,
