@@ -88,6 +88,7 @@ describe('Oauth2Strategy', () => {
 					schoolId: user.schoolId,
 					accountId: account.id,
 					externalIdToken: idToken,
+					isExternalUser: true,
 				});
 			});
 		});

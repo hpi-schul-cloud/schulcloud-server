@@ -35,6 +35,7 @@ describe('LoginUc', () => {
 					userId: '',
 					systemId: '',
 					impersonated: false,
+					isExternalUser: false,
 					someProperty: 'shouldNotBeMapped',
 				};
 				const loginDto: LoginDto = new LoginDto({ accessToken: 'accessToken' });
@@ -58,6 +59,7 @@ describe('LoginUc', () => {
 					roles: userInfo.roles,
 					systemId: userInfo.systemId,
 					support: userInfo.impersonated,
+					isExternalUser: userInfo.isExternalUser,
 				});
 			});
 
