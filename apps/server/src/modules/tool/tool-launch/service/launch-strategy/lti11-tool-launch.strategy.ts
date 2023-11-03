@@ -1,15 +1,19 @@
+import { PseudonymService } from '@modules/pseudonym/service';
+import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
-import { CourseService } from '@modules/learnroom/service';
-import { LegacySchoolService } from '@modules/legacy-school';
-import { PseudonymService } from '@modules/pseudonym/service';
-import { UserService } from '@modules/user';
 import { Authorization } from 'oauth-1.0a';
 import { LtiRole } from '../../../common/enum';
 import { ExternalTool } from '../../../external-tool/domain';
 import { LtiRoleMapper } from '../../mapper';
 import { AuthenticationValues, LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
+import {
+	AutoContextIdStrategy,
+	AutoContextNameStrategy,
+	AutoSchoolIdStrategy,
+	AutoSchoolNumberStrategy,
+} from '../auto-parameter-strategy';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
@@ -20,10 +24,12 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		private readonly userService: UserService,
 		private readonly pseudonymService: PseudonymService,
 		private readonly lti11EncryptionService: Lti11EncryptionService,
-		schoolService: LegacySchoolService,
-		courseService: CourseService
+		autoSchoolIdStrategy: AutoSchoolIdStrategy,
+		autoSchoolNumberStrategy: AutoSchoolNumberStrategy,
+		autoContextIdStrategy: AutoContextIdStrategy,
+		autoContextNameStrategy: AutoContextNameStrategy
 	) {
-		super(schoolService, courseService);
+		super(autoSchoolIdStrategy, autoSchoolNumberStrategy, autoContextIdStrategy, autoContextNameStrategy);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

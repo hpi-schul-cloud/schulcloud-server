@@ -1,27 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { Course, EntityId, LegacySchoolDo } from '@shared/domain';
-import { CourseService } from '@modules/learnroom/service';
-import { LegacySchoolService } from '@modules/legacy-school';
+import { EntityId } from '@shared/domain';
 import { URLSearchParams } from 'url';
 import { CustomParameter, CustomParameterEntry } from '../../../common/domain';
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	ToolContextType,
-} from '../../../common/enum';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { ExternalTool } from '../../../external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
 import { ToolLaunchMapper } from '../../mapper';
 import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, ToolLaunchRequest } from '../../types';
+import {
+	AutoContextIdStrategy,
+	AutoContextNameStrategy,
+	AutoParameterStrategy,
+	AutoSchoolIdStrategy,
+	AutoSchoolNumberStrategy,
+} from '../auto-parameter-strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
 
 @Injectable()
 export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
-	constructor(private readonly schoolService: LegacySchoolService, private readonly courseService: CourseService) {}
+	private readonly autoParameterStrategyMap: Map<CustomParameterType, AutoParameterStrategy>;
+
+	constructor(
+		autoSchoolIdStrategy: AutoSchoolIdStrategy,
+		autoSchoolNumberStrategy: AutoSchoolNumberStrategy,
+		autoContextIdStrategy: AutoContextIdStrategy,
+		autoContextNameStrategy: AutoContextNameStrategy
+	) {
+		this.autoParameterStrategyMap = new Map<CustomParameterType, AutoParameterStrategy>([
+			[CustomParameterType.AUTO_SCHOOLID, autoSchoolIdStrategy],
+			[CustomParameterType.AUTO_SCHOOLNUMBER, autoSchoolNumberStrategy],
+			[CustomParameterType.AUTO_CONTEXTID, autoContextIdStrategy],
+			[CustomParameterType.AUTO_CONTEXTNAME, autoContextNameStrategy],
+		]);
+	}
 
 	public async createLaunchData(userId: EntityId, data: IToolLaunchParams): Promise<ToolLaunchData> {
 		const launchData: ToolLaunchData = this.buildToolLaunchDataFromExternalTool(data.externalTool);
@@ -207,43 +221,29 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
 	): Promise<string | undefined> {
-		switch (customParameter.type) {
-			case CustomParameterType.AUTO_SCHOOLID: {
-				return schoolExternalTool.schoolId;
-			}
-			case CustomParameterType.AUTO_CONTEXTID: {
-				return contextExternalTool.contextRef.id;
-			}
-			case CustomParameterType.AUTO_CONTEXTNAME: {
-				switch (contextExternalTool.contextRef.type) {
-					case ToolContextType.COURSE: {
-						const course: Course = await this.courseService.findById(contextExternalTool.contextRef.id);
-
-						return course.name;
-					}
-					default: {
-						throw new ParameterTypeNotImplementedLoggableException(
-							`${customParameter.type}/${contextExternalTool.contextRef.type as string}`
-						);
-					}
-				}
-			}
-			case CustomParameterType.AUTO_SCHOOLNUMBER: {
-				const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
-
-				return school.officialSchoolNumber;
-			}
-			case CustomParameterType.BOOLEAN:
-			case CustomParameterType.NUMBER:
-			case CustomParameterType.STRING: {
-				return customParameter.scope === CustomParameterScope.GLOBAL
-					? customParameter.default
-					: matchingParameterEntry?.value;
-			}
-			default: {
-				throw new ParameterTypeNotImplementedLoggableException(customParameter.type);
-			}
+		if (
+			customParameter.type === CustomParameterType.BOOLEAN ||
+			customParameter.type === CustomParameterType.NUMBER ||
+			customParameter.type === CustomParameterType.STRING
+		) {
+			return customParameter.scope === CustomParameterScope.GLOBAL
+				? customParameter.default
+				: matchingParameterEntry?.value;
 		}
+
+		const autoParameterStrategy: AutoParameterStrategy | undefined = this.autoParameterStrategyMap.get(
+			customParameter.type
+		);
+		if (autoParameterStrategy) {
+			const autoValue: string | undefined = await autoParameterStrategy.getValue(
+				schoolExternalTool,
+				contextExternalTool
+			);
+
+			return autoValue;
+		}
+
+		throw new ParameterTypeNotImplementedLoggableException(customParameter.type);
 	}
 
 	private addProperty(
