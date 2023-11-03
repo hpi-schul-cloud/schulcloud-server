@@ -1,6 +1,6 @@
-import { RoleName, SchoolYearEntity, UserDO } from '@shared/domain';
 import { Class } from '@modules/class/domain';
 import { SystemDto } from '@modules/system';
+import { RoleName, SchoolYearEntity, UserDO } from '@shared/domain';
 import { Group } from '../../domain';
 import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../dto';
 import { ClassRootType } from '../dto/class-root-type';
@@ -16,7 +16,7 @@ export class GroupUcMapper {
 			type: ClassRootType.GROUP,
 			name: group.name,
 			externalSourceName: system?.displayName,
-			teachers: resolvedUsers
+			teacherNames: resolvedUsers
 				.filter((groupUser: ResolvedGroupUser) => groupUser.role.name === RoleName.TEACHER)
 				.map((groupUser: ResolvedGroupUser) => groupUser.user.lastName),
 		});
@@ -33,7 +33,7 @@ export class GroupUcMapper {
 			type: ClassRootType.CLASS,
 			name,
 			externalSourceName: clazz.source,
-			teachers: teachers.map((user: UserDO) => user.lastName),
+			teacherNames: teachers.map((user: UserDO) => user.lastName),
 			schoolYear: schoolYear?.name,
 			isUpgradable,
 		});
