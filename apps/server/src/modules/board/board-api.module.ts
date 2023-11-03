@@ -9,13 +9,13 @@ import {
 	ColumnController,
 	ElementController,
 } from './controller';
-import { BoardUc, CardUc } from './uc';
+import { BoardUc, CardUc, ColumnUc } from './uc';
 import { ElementUc } from './uc/element.uc';
 import { SubmissionItemUc } from './uc/submission-item.uc';
 
 @Module({
 	imports: [BoardModule, LoggerModule, forwardRef(() => AuthorizationModule)],
 	controllers: [BoardController, ColumnController, CardController, ElementController, BoardSubmissionController],
-	providers: [BoardUc, CardUc, ElementUc, SubmissionItemUc],
+	providers: [BoardUc, ColumnUc, CardUc, ElementUc, SubmissionItemUc],
 })
 export class BoardApiModule {}
