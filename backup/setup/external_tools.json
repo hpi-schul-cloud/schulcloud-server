@@ -76,9 +76,9 @@
 			}
 		},
 		"name": "LTI Test Tool",
-		"url": "https://www.tsugi.org/lti-test/tool.php",
+		"url": "https://saltire.lti.app",
 		"config_type": "lti11",
-		"config_baseUrl": "https://www.tsugi.org/lti-test/tool.php",
+		"config_baseUrl": "https://saltire.lti.app/tool",
 		"config_key": "12345",
 		"config_secret": "secret",
 		"config_lti_message_type": "basic-lti-launch-request",
