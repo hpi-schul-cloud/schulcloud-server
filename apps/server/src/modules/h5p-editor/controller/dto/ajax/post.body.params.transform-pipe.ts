@@ -17,7 +17,7 @@ import {
 export class AjaxPostBodyParamsTransformPipe implements PipeTransform {
 	async transform(value: AjaxPostBodyParams): Promise<unknown> {
 		if (value) {
-			let transformed!: Exclude<AjaxPostBodyParams, undefined>;
+			let transformed: Exclude<AjaxPostBodyParams, undefined>;
 
 			if ('libraries' in value) {
 				transformed = plainToClass(LibrariesBodyParams, value);
