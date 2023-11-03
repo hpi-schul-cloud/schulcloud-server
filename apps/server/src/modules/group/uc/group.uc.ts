@@ -96,7 +96,7 @@ export class GroupUc {
 		const classInfosFromClasses = await this.findClassesForUser(userId, schoolYearQueryType);
 
 		if (!schoolYearQueryType || schoolYearQueryType === SchoolYearQueryType.CURRENT_YEAR) {
-			classInfosFromGroups = await this.findGroupsOfTypeClassForSchool(userId);
+			classInfosFromGroups = await this.findGroupsOfTypeClassForUser(userId);
 		}
 
 		const combinedClassInfo: ClassInfoDto[] = [...classInfosFromClasses, ...classInfosFromGroups];
