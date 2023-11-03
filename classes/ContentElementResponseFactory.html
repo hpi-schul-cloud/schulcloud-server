@@ -107,6 +107,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Static</span>
+                                <a href="#mapSubmissionContentToResponse" >mapSubmissionContentToResponse</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
                                 <a href="#mapToResponse" >mapToResponse</a>
                             </li>
                         </ul>
@@ -159,7 +163,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/board/controller/mapper/content-element-response.factory.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/board/controller/mapper/content-element-response.factory.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -173,6 +177,75 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapSubmissionContentToResponse"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                        <span ><b>mapSubmissionContentToResponse</b></span>
+                        <a href="#mapSubmissionContentToResponse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapSubmissionContentToResponse(element: <a href="../interfaces/File.html" target="_self">RichTextElement | FileElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/mapper/content-element-response.factory.ts:38</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>element</td>
+                                            <td>
+                                                            <code><a href="../interfaces/File.html" target="_self" >RichTextElement | FileElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >FileElementResponse | RichTextElementResponse</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -195,8 +268,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/mapper/content-element-response.factory.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/mapper/content-element-response.factory.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -252,9 +325,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { NotImplementedException } from &#x27;@nestjs/common&#x27;;
-import { AnyBoardDo } from &#x27;@shared/domain&#x27;;
-import { AnyContentElementResponse } from &#x27;../dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { NotImplementedException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
+import { AnyBoardDo, FileElement, RichTextElement } from &#x27;@shared/domain&#x27;;
+import {
+	AnyContentElementResponse,
+	FileElementResponse,
+	RichTextElementResponse,
+	isFileElementResponse,
+	isRichTextElementResponse,
+} from &#x27;../dto&#x27;;
 import { BaseResponseMapper } from &#x27;./base-mapper.interface&#x27;;
 import { ExternalToolElementResponseMapper } from &#x27;./external-tool-element-response.mapper&#x27;;
 import { FileElementResponseMapper } from &#x27;./file-element-response.mapper&#x27;;
@@ -280,6 +359,16 @@ export class ContentElementResponseFactory {
 
 		const result &#x3D; elementMapper.mapToResponse(element);
 
+		return result;
+	}
+
+	static mapSubmissionContentToResponse(
+		element: RichTextElement | FileElement
+	): FileElementResponse | RichTextElementResponse {
+		const result &#x3D; this.mapToResponse(element);
+		if (!isFileElementResponse(result) &amp;&amp; !isRichTextElementResponse(result)) {
+			throw new UnprocessableEntityException();
+		}
 		return result;
 	}
 }

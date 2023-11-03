@@ -135,7 +135,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/column-board-node.entity.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/column-board-node.entity.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -171,7 +171,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/column-board-node.entity.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/column-board-node.entity.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -184,7 +184,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Property } from &#x27;@mikro-orm/core&#x27;;
-import { AnyBoardDo, BoardExternalReference, BoardExternalReferenceType } from &#x27;@shared/domain/domainobject&#x27;;
+import {
+	AnyBoardDo,
+	BoardExternalReference,
+	BoardExternalReferenceType,
+} from &#x27;@shared/domain/domainobject/board/types&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
 import { BoardNode, BoardNodeProps } from &#x27;./boardnode.entity&#x27;;
 import { BoardDoBuilder } from &#x27;./types&#x27;;

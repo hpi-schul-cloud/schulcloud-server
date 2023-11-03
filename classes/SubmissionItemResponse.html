@@ -94,6 +94,10 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                <a href="#elements" >elements</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
                                 <a href="#id" >id</a>
                             </li>
                             <li>
@@ -128,7 +132,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:4</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:6</a></div>
                             </td>
                         </tr>
 
@@ -199,7 +203,43 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:22</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="elements"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>elements</b></span>
+                        <a href="#elements"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/File.html" target="_self" >(RichTextElementResponse | FileElementResponse)[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty({type: &#x27;array&#x27;, items: undefined})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -235,7 +275,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -271,7 +311,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -307,7 +347,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -326,15 +366,18 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiExtraModels, ApiProperty, getSchemaPath } from &#x27;@nestjs/swagger&#x27;;
 import { TimestampsResponse } from &#x27;../timestamps.response&#x27;;
+import { FileElementResponse, RichTextElementResponse } from &#x27;../element&#x27;;
 
+@ApiExtraModels(FileElementResponse, RichTextElementResponse)
 export class SubmissionItemResponse {
-	constructor({ id, timestamps, completed, userId }: SubmissionItemResponse) {
+	constructor({ id, timestamps, completed, userId, elements }: SubmissionItemResponse) {
 		this.id &#x3D; id;
 		this.timestamps &#x3D; timestamps;
 		this.completed &#x3D; completed;
 		this.userId &#x3D; userId;
+		this.elements &#x3D; elements;
 	}
 
 	@ApiProperty({ pattern: &#x27;[a-f0-9]{24}&#x27; })
@@ -348,6 +391,14 @@ export class SubmissionItemResponse {
 
 	@ApiProperty({ pattern: &#x27;[a-f0-9]{24}&#x27; })
 	userId: string;
+
+	@ApiProperty({
+		type: &#x27;array&#x27;,
+		items: {
+			oneOf: [{ $ref: getSchemaPath(FileElementResponse) }, { $ref: getSchemaPath(RichTextElementResponse) }],
+		},
+	})
+	elements: (RichTextElementResponse | FileElementResponse)[];
 }
 </code></pre>
     </div>

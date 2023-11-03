@@ -111,7 +111,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
-                                <a href="#mapSubmissionsToResponse" >mapSubmissionsToResponse</a>
+                                <a href="#mapSubmissionItemToResponse" >mapSubmissionItemToResponse</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -160,7 +160,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/board/controller/mapper/submission-item-response.mapper.ts:5</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/board/controller/mapper/submission-item-response.mapper.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -196,8 +196,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="7"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/mapper/submission-item-response.mapper.ts:7</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="8"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/mapper/submission-item-response.mapper.ts:8</a></div>
                         </td>
                     </tr>
 
@@ -217,26 +217,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapSubmissionsToResponse"></a>
+                    <a name="mapSubmissionItemToResponse"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
-                        <span ><b>mapSubmissionsToResponse</b></span>
-                        <a href="#mapSubmissionsToResponse"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapSubmissionItemToResponse</b></span>
+                        <a href="#mapSubmissionItemToResponse"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapSubmissionsToResponse(submissionItem: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>)</code>
+                    <code>mapSubmissionItemToResponse(submissionItem: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/mapper/submission-item-response.mapper.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/mapper/submission-item-response.mapper.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -304,8 +304,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/mapper/submission-item-response.mapper.ts:15</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="16"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/mapper/submission-item-response.mapper.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -385,8 +385,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/mapper/submission-item-response.mapper.ts:40</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/mapper/submission-item-response.mapper.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -442,8 +442,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SubmissionItem, UserBoardRoles } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FileElement, isSubmissionItemContent, RichTextElement, SubmissionItem, UserBoardRoles } from &#x27;@shared/domain&#x27;;
 import { SubmissionItemResponse, SubmissionsResponse, TimestampsResponse, UserDataResponse } from &#x27;../dto&#x27;;
+import { ContentElementResponseFactory } from &#x27;./content-element-response.factory&#x27;;
 
 export class SubmissionItemResponseMapper {
 	private static instance: SubmissionItemResponseMapper;
@@ -458,7 +459,7 @@ export class SubmissionItemResponseMapper {
 
 	public mapToResponse(submissionItems: SubmissionItem[], users: UserBoardRoles[]): SubmissionsResponse {
 		const submissionItemsResponse: SubmissionItemResponse[] &#x3D; submissionItems.map((item) &#x3D;&gt;
-			this.mapSubmissionsToResponse(item)
+			this.mapSubmissionItemToResponse(item)
 		);
 		const usersResponse: UserDataResponse[] &#x3D; users.map((user) &#x3D;&gt; this.mapUsersToResponse(user));
 
@@ -467,7 +468,8 @@ export class SubmissionItemResponseMapper {
 		return response;
 	}
 
-	public mapSubmissionsToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
+	public mapSubmissionItemToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
+		const children: (FileElement | RichTextElement)[] &#x3D; submissionItem.children.filter(isSubmissionItemContent);
 		const result &#x3D; new SubmissionItemResponse({
 			completed: submissionItem.completed,
 			id: submissionItem.id,
@@ -476,6 +478,7 @@ export class SubmissionItemResponseMapper {
 				createdAt: submissionItem.createdAt,
 			}),
 			userId: submissionItem.userId,
+			elements: children.map((element) &#x3D;&gt; ContentElementResponseFactory.mapSubmissionContentToResponse(element)),
 		});
 
 		return result;

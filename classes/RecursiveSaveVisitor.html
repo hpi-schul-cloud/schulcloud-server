@@ -114,6 +114,7 @@
                                 <a href="#createOrUpdateBoardNode" >createOrUpdateBoardNode</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#registerParentData" >registerParentData</a>
                             </li>
                             <li>
@@ -121,9 +122,14 @@
                                 <a href="#save" >save</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#saveRecursive" >saveRecursive</a>
+                            </li>
+                            <li>
                                 <a href="#visitCard" >visitCard</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#visitChildren" >visitChildren</a>
                             </li>
                             <li>
@@ -287,8 +293,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="203"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:203</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="202"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:202</a></div>
                         </td>
                     </tr>
 
@@ -340,6 +346,7 @@
                 <td class="col-md-4">
                     <a name="registerParentData"></a>
                     <span class="name">
+                            <span class="modifier">Private</span>
                         <span ><b>registerParentData</b></span>
                         <a href="#registerParentData"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -347,15 +354,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>registerParentData(parent: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, child: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, parentNode: <a href="../entitys/BoardNode.html" target="_self">BoardNode</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>registerParentData(parent: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, child: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, parentNode: <a href="../entitys/BoardNode.html" target="_self">BoardNode</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="195"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:195</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="188"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:188</a></div>
                         </td>
                     </tr>
 
@@ -510,6 +518,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="saveRecursive"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>saveRecursive</b></span>
+                        <a href="#saveRecursive"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>saveRecursive(boardNode: <a href="../entitys/BoardNode.html" target="_self">BoardNode</a>, anyBoardDo: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="196"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:196</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/BoardNode.html" target="_self" >BoardNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>anyBoardDo</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="visitCard"></a>
                     <span class="name">
                         <span ><b>visitCard</b></span>
@@ -526,8 +615,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="83"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:83</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -579,6 +668,7 @@
                 <td class="col-md-4">
                     <a name="visitChildren"></a>
                     <span class="name">
+                            <span class="modifier">Private</span>
                         <span ><b>visitChildren</b></span>
                         <a href="#visitChildren"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -586,15 +676,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>visitChildren(parent: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, parentNode: <a href="../entitys/BoardNode.html" target="_self">BoardNode</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>visitChildren(parent: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, parentNode: <a href="../entitys/BoardNode.html" target="_self">BoardNode</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="188"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:188</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="181"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:181</a></div>
                         </td>
                     </tr>
 
@@ -672,8 +763,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="69"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:69</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="68"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:68</a></div>
                         </td>
                     </tr>
 
@@ -806,8 +897,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="172"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:172</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="165"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:165</a></div>
                         </td>
                     </tr>
 
@@ -873,8 +964,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="98"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:98</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="95"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:95</a></div>
                         </td>
                     </tr>
 
@@ -940,8 +1031,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="113"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:113</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="109"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:109</a></div>
                         </td>
                     </tr>
 
@@ -1007,8 +1098,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="129"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:129</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="125"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:125</a></div>
                         </td>
                     </tr>
 
@@ -1074,8 +1165,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="144"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:144</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="139"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:139</a></div>
                         </td>
                     </tr>
 
@@ -1134,15 +1225,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>visitSubmissionItem(submission: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>)</code>
+<code>visitSubmissionItem(submissionItem: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="158"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:158</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="152"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:152</a></div>
                         </td>
                     </tr>
 
@@ -1163,7 +1254,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>submission</td>
+                                                <td>submissionItem</td>
                                             <td>
                                                             <code><a href="../classes/SubmissionItem.html" target="_self" >SubmissionItem</a></code>
                                             </td>
@@ -1262,8 +1353,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			context: columnBoard.context,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(columnBoard, boardNode);
+		this.saveRecursive(boardNode, columnBoard);
 	}
 
 	visitColumn(column: Column): void {
@@ -1276,8 +1366,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			position: parentData?.position,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(column, boardNode);
+		this.saveRecursive(boardNode, column);
 	}
 
 	visitCard(card: Card): void {
@@ -1291,8 +1380,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			position: parentData?.position,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(card, boardNode);
+		this.saveRecursive(boardNode, card);
 	}
 
 	visitFileElement(fileElement: FileElement): void {
@@ -1306,8 +1394,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			position: parentData?.position,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(fileElement, boardNode);
+		this.saveRecursive(boardNode, fileElement);
 	}
 
 	visitLinkElement(linkElement: LinkElement): void {
@@ -1337,8 +1424,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			position: parentData?.position,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(richTextElement, boardNode);
+		this.saveRecursive(boardNode, richTextElement);
 	}
 
 	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {
@@ -1351,22 +1437,20 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			dueDate: submissionContainerElement.dueDate,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(submissionContainerElement, boardNode);
+		this.saveRecursive(boardNode, submissionContainerElement);
 	}
 
-	visitSubmissionItem(submission: SubmissionItem): void {
-		const parentData &#x3D; this.parentsMap.get(submission.id);
+	visitSubmissionItem(submissionItem: SubmissionItem): void {
+		const parentData &#x3D; this.parentsMap.get(submissionItem.id);
 		const boardNode &#x3D; new SubmissionItemNode({
-			id: submission.id,
+			id: submissionItem.id,
 			parent: parentData?.boardNode,
 			position: parentData?.position,
-			completed: submission.completed,
-			userId: submission.userId,
+			completed: submissionItem.completed,
+			userId: submissionItem.userId,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(submission, boardNode);
+		this.saveRecursive(boardNode, submissionItem);
 	}
 
 	visitExternalToolElement(externalToolElement: ExternalToolElement): void {
@@ -1385,14 +1469,14 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		this.visitChildren(externalToolElement, boardNode);
 	}
 
-	visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {
+	private visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {
 		parent.children.forEach((child) &#x3D;&gt; {
 			this.registerParentData(parent, child, parentNode);
 			child.accept(this);
 		});
 	}
 
-	registerParentData(parent: AnyBoardDo, child: AnyBoardDo, parentNode: BoardNode) {
+	private registerParentData(parent: AnyBoardDo, child: AnyBoardDo, parentNode: BoardNode) {
 		const position &#x3D; parent.children.findIndex((obj) &#x3D;&gt; obj.id &#x3D;&#x3D;&#x3D; child.id);
 		if (position &#x3D;&#x3D;&#x3D; -1) {
 			throw new Error(&#x60;Cannot get child position. Child doesnt belong to parent&#x60;);
@@ -1400,6 +1484,12 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		this.parentsMap.set(child.id, { boardNode: parentNode, position });
 	}
 
+	private saveRecursive(boardNode: BoardNode, anyBoardDo: AnyBoardDo): void {
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(anyBoardDo, boardNode);
+	}
+
+	// TODO make private (change tests)
 	createOrUpdateBoardNode(boardNode: BoardNode): void {
 		const existing &#x3D; this.em.getUnitOfWork().getById&lt;BoardNode&gt;(BoardNode.name, boardNode.id);
 		if (existing) {

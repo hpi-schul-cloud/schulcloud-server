@@ -144,7 +144,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="133" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:133</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="134" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:134</a></div>
                         </td>
                     </tr>
 
@@ -164,17 +164,18 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional, getSchemaPath } from &#x27;@nestjs/swagger&#x27;;
-import { ContentElementType, InputFormat } from &#x27;@shared/domain&#x27;;
+import { ContentElementType } from &#x27;@shared/domain&#x27;;
+import { InputFormat } from &#x27;@shared/domain/types&#x27;;
 import { Type } from &#x27;class-transformer&#x27;;
 import { IsDate, IsEnum, IsMongoId, IsOptional, IsString, ValidateNested } from &#x27;class-validator&#x27;;
 
 export abstract class ElementContentBody {
+	@IsEnum(ContentElementType)
 	@ApiProperty({
 		enum: ContentElementType,
 		description: &#x27;the type of the updated element&#x27;,
 		enumName: &#x27;ContentElementType&#x27;,
 	})
-	@IsEnum(ContentElementType)
 	type!: ContentElementType;
 }
 

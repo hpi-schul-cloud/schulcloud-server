@@ -95,6 +95,17 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#createElement" >createElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#getSubmissionItems" >getSubmissionItems</a>
                             </li>
@@ -130,6 +141,113 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="createElement"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>createElement</b></span>
+                        <a href="#createElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createElement(urlParams: <a href="../classes/SubmissionItemUrlParams.html" target="_self">SubmissionItemUrlParams</a>, bodyParams: <a href="../classes/CreateContentElementBodyParams.html" target="_self">CreateContentElementBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Create a new element in a submission item.&#x27;})<br />@ApiExtraModels(RichTextElementResponse, FileElementResponse)<br />@ApiResponse({status: 201, schema: undefined})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@Post(&#x27;:submissionItemId/elements&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="89"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board-submission.controller.ts:89</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>urlParams</td>
+                                            <td>
+                                                            <code><a href="../classes/SubmissionItemUrlParams.html" target="_self" >SubmissionItemUrlParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>bodyParams</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateContentElementBodyParams.html" target="_self" >CreateContentElementBodyParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;FileElementResponse | RichTextElementResponse&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getSubmissionItems"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -160,8 +278,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/board-submission.controller.ts:27</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board-submission.controller.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -255,8 +373,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/board-submission.controller.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board-submission.controller.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -330,16 +448,33 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, ForbiddenException, Get, HttpCode, NotFoundException, Param, Patch } from &#x27;@nestjs/common&#x27;;
-import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+	Body,
+	Controller,
+	ForbiddenException,
+	Get,
+	HttpCode,
+	NotFoundException,
+	Param,
+	Patch,
+	Post,
+} from &#x27;@nestjs/common&#x27;;
+import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
 import { ICurrentUser, Authenticate, CurrentUser } from &#x27;@modules/authentication&#x27;;
 import { SubmissionsResponse } from &#x27;./dto/submission-item/submissions.response&#x27;;
 import { CardUc } from &#x27;../uc&#x27;;
 import { ElementUc } from &#x27;../uc/element.uc&#x27;;
 import { SubmissionItemUc } from &#x27;../uc/submission-item.uc&#x27;;
-import { SubmissionContainerUrlParams, SubmissionItemUrlParams, UpdateSubmissionItemBodyParams } from &#x27;./dto&#x27;;
-import { SubmissionItemResponseMapper } from &#x27;./mapper&#x27;;
+import {
+	CreateContentElementBodyParams,
+	FileElementResponse,
+	RichTextElementResponse,
+	SubmissionContainerUrlParams,
+	SubmissionItemUrlParams,
+	UpdateSubmissionItemBodyParams,
+} from &#x27;./dto&#x27;;
+import { ContentElementResponseFactory, SubmissionItemResponseMapper } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Board Submission&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
@@ -387,6 +522,30 @@ export class BoardSubmissionController {
 			urlParams.submissionItemId,
 			bodyParams.completed
 		);
+	}
+
+	@ApiOperation({ summary: &#x27;Create a new element in a submission item.&#x27; })
+	@ApiExtraModels(RichTextElementResponse, FileElementResponse)
+	@ApiResponse({
+		status: 201,
+		schema: {
+			oneOf: [{ $ref: getSchemaPath(RichTextElementResponse) }, { $ref: getSchemaPath(FileElementResponse) }],
+		},
+	})
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Post(&#x27;:submissionItemId/elements&#x27;)
+	async createElement(
+		@Param() urlParams: SubmissionItemUrlParams,
+		@Body() bodyParams: CreateContentElementBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;FileElementResponse | RichTextElementResponse&gt; {
+		const { type } &#x3D; bodyParams;
+		const element &#x3D; await this.submissionItemUc.createElement(currentUser.userId, urlParams.submissionItemId, type);
+		const response &#x3D; ContentElementResponseFactory.mapSubmissionContentToResponse(element);
+
+		return response;
 	}
 }
 </code></pre>

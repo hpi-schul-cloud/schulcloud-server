@@ -807,7 +807,7 @@
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
 import { ICurrentUser, Authenticate, CurrentUser } from &#x27;@modules/authentication&#x27;;
-import { BoardUc, CardUc } from &#x27;../uc&#x27;;
+import { CardUc, ColumnUc } from &#x27;../uc&#x27;;
 import {
 	AnyContentElementResponse,
 	CardIdsParams,
@@ -829,7 +829,7 @@ import { CardResponseMapper, ContentElementResponseFactory } from &#x27;./mapper
 @Authenticate(&#x27;jwt&#x27;)
 @Controller(&#x27;cards&#x27;)
 export class CardController {
-	constructor(private readonly boardUc: BoardUc, private readonly cardUc: CardUc) {}
+	constructor(private readonly columnUc: ColumnUc, private readonly cardUc: CardUc) {}
 
 	@ApiOperation({ summary: &#x27;Get a list of cards by their ids.&#x27; })
 	@ApiResponse({ status: 200, type: CardListResponse })
@@ -862,7 +862,7 @@ export class CardController {
 		@Body() bodyParams: MoveCardBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;void&gt; {
-		await this.boardUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toPosition);
+		await this.columnUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toPosition);
 	}
 
 	@ApiOperation({ summary: &#x27;Update the height of a single card.&#x27; })
@@ -877,7 +877,7 @@ export class CardController {
 		@Body() bodyParams: SetHeightBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;void&gt; {
-		await this.boardUc.updateCardHeight(currentUser.userId, urlParams.cardId, bodyParams.height);
+		await this.cardUc.updateCardHeight(currentUser.userId, urlParams.cardId, bodyParams.height);
 	}
 
 	@ApiOperation({ summary: &#x27;Update the title of a single card.&#x27; })
@@ -892,7 +892,7 @@ export class CardController {
 		@Body() bodyParams: RenameBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;void&gt; {
-		await this.boardUc.updateCardTitle(currentUser.userId, urlParams.cardId, bodyParams.title);
+		await this.cardUc.updateCardTitle(currentUser.userId, urlParams.cardId, bodyParams.title);
 	}
 
 	@ApiOperation({ summary: &#x27;Delete a single card.&#x27; })
@@ -903,7 +903,7 @@ export class CardController {
 	@HttpCode(204)
 	@Delete(&#x27;:cardId&#x27;)
 	async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise&lt;void&gt; {
-		await this.boardUc.deleteCard(currentUser.userId, urlParams.cardId);
+		await this.cardUc.deleteCard(currentUser.userId, urlParams.cardId);
 	}
 
 	@ApiOperation({ summary: &#x27;Create a new element on a card.&#x27; })

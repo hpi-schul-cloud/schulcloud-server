@@ -98,6 +98,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findParentOfId" >findParentOfId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#move" >move</a>
                             </li>
                             <li>
@@ -127,7 +131,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:19</a></div>
                             </td>
                         </tr>
 
@@ -221,15 +225,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>create(parent: <a href="../classes/Card.html" target="_self">Card</a>, type: <a href="../undefineds/ContentElementType.html" target="_self">ContentElementType</a>)</code>
+                    <code>create(parent: <a href="../entitys/Submission.html" target="_self">Card | SubmissionItem</a>, type: <a href="../undefineds/ContentElementType.html" target="_self">ContentElementType</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="35"
-                                    class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:35</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -252,7 +256,7 @@
                                         <tr>
                                                 <td>parent</td>
                                             <td>
-                                                            <code><a href="../classes/Card.html" target="_self" >Card</a></code>
+                                                            <code><a href="../entitys/Submission.html" target="_self" >Card | SubmissionItem</a></code>
                                             </td>
 
                                             <td>
@@ -309,8 +313,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -378,8 +382,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -429,6 +433,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findParentOfId"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findParentOfId</b></span>
+                        <a href="#findParentOfId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findParentOfId(elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:37</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>elementId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/Board.html" target="_self" >Promise&lt;AnyBoardDo&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="move"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -447,8 +520,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -540,8 +613,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -607,12 +680,14 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import {
+	AnyBoardDo,
 	AnyContentElementDo,
 	Card,
 	ContentElementFactory,
 	ContentElementType,
 	EntityId,
 	isAnyContentElement,
+	SubmissionItem,
 } from &#x27;@shared/domain&#x27;;
 import { AnyElementContentBody } from &#x27;../controller/dto&#x27;;
 import { BoardDoRepo } from &#x27;../repo&#x27;;
@@ -639,7 +714,15 @@ export class ContentElementService {
 		return element;
 	}
 
-	async create(parent: Card, type: ContentElementType): Promise&lt;AnyContentElementDo&gt; {
+	async findParentOfId(elementId: EntityId): Promise&lt;AnyBoardDo&gt; {
+		const parent &#x3D; await this.boardDoRepo.findParentOfId(elementId);
+		if (!parent) {
+			throw new NotFoundException(&#x27;There is no node with this id&#x27;);
+		}
+		return parent;
+	}
+
+	async create(parent: Card | SubmissionItem, type: ContentElementType): Promise&lt;AnyContentElementDo&gt; {
 		const element &#x3D; this.contentElementFactory.build(type);
 		parent.addChild(element);
 		await this.boardDoRepo.save(parent.children, parent);
