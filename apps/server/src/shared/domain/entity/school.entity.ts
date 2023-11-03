@@ -36,6 +36,7 @@ export interface ISchoolProperties {
 	logo_dataUrl?: string;
 	fileStorageType?: FileStorageType;
 	language?: string;
+	timezone?: string;
 }
 
 @Embeddable()
@@ -121,6 +122,9 @@ export class SchoolEntity extends BaseEntity {
 	@Property({ nullable: true })
 	language?: string;
 
+	@Property({ nullable: true })
+	timezone?: string;
+
 	constructor(props: ISchoolProperties) {
 		super();
 		if (props.externalId) {
@@ -161,6 +165,10 @@ export class SchoolEntity extends BaseEntity {
 
 		if (props.language) {
 			this.language = props.language;
+		}
+
+		if (props.timezone) {
+			this.timezone = props.timezone;
 		}
 	}
 }

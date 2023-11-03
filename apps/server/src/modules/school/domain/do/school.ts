@@ -43,4 +43,5 @@ export interface SchoolProps extends AuthorizableObject {
 	logo_dataUrl?: string;
 	fileStorageType?: FileStorageType;
 	language?: string;
+	timezone?: string;
 }

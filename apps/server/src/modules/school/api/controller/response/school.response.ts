@@ -23,6 +23,7 @@ export class SchoolResponse {
 		logo_dataUrl,
 		fileStorageType,
 		language,
+		timezone,
 		years,
 	}: SchoolResponse) {
 		this.id = id;
@@ -39,6 +40,7 @@ export class SchoolResponse {
 		this.logo_dataUrl = logo_dataUrl;
 		this.fileStorageType = fileStorageType;
 		this.language = language;
+		this.timezone = timezone;
 		this.years = years;
 	}
 
@@ -83,6 +85,9 @@ export class SchoolResponse {
 
 	@ApiPropertyOptional()
 	language?: string;
+
+	@ApiPropertyOptional()
+	timezone?: string;
 
 	@ApiProperty({ type: () => YearsResponse })
 	years: YearsResponse;

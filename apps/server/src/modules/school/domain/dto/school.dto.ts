@@ -21,6 +21,7 @@ export class SchoolDto {
 		logo_dataUrl,
 		fileStorageType,
 		language,
+		timezone,
 		years,
 	}: SchoolDto) {
 		this.id = id;
@@ -37,6 +38,7 @@ export class SchoolDto {
 		this.logo_dataUrl = logo_dataUrl;
 		this.fileStorageType = fileStorageType;
 		this.language = language;
+		this.timezone = timezone;
 		this.years = years;
 	}
 
@@ -67,6 +69,8 @@ export class SchoolDto {
 	fileStorageType?: FileStorageType;
 
 	language?: string;
+
+	timezone?: string;
 
 	years: YearsDto;
 }
