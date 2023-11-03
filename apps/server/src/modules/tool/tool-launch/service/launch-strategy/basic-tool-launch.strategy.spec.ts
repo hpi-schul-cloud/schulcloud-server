@@ -1,12 +1,16 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
-import { CourseService } from '@modules/learnroom/service';
-import { LegacySchoolService } from '@modules/legacy-school';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { ExternalTool } from '../../../external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
+import {
+	AutoContextIdStrategy,
+	AutoContextNameStrategy,
+	AutoSchoolIdStrategy,
+	AutoSchoolNumberStrategy,
+} from '../auto-parameter-strategy';
 import { BasicToolLaunchStrategy } from './basic-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 
@@ -19,12 +23,20 @@ describe('BasicToolLaunchStrategy', () => {
 			providers: [
 				BasicToolLaunchStrategy,
 				{
-					provide: LegacySchoolService,
-					useValue: createMock<LegacySchoolService>(),
+					provide: AutoSchoolIdStrategy,
+					useValue: createMock<AutoSchoolIdStrategy>(),
 				},
 				{
-					provide: CourseService,
-					useValue: createMock<CourseService>(),
+					provide: AutoSchoolNumberStrategy,
+					useValue: createMock<AutoSchoolNumberStrategy>(),
+				},
+				{
+					provide: AutoContextIdStrategy,
+					useValue: createMock<AutoContextIdStrategy>(),
+				},
+				{
+					provide: AutoContextNameStrategy,
+					useValue: createMock<AutoContextNameStrategy>(),
 				},
 			],
 		}).compile();
