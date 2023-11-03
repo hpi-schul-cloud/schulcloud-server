@@ -145,9 +145,7 @@ export class GroupUc {
 		return classInfosFromClasses;
 	}
 
-	private async addSchoolYearsToClasses(
-		classes: Class[]
-	): Promise<{ clazz: Class; schoolYear?: SchoolYearEntity | undefined }[]> {
+	private async addSchoolYearsToClasses(classes: Class[]): Promise<{ clazz: Class; schoolYear?: SchoolYearEntity }[]> {
 		const classesWithSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[] = await Promise.all(
 			classes.map(async (clazz) => {
 				let schoolYear: SchoolYearEntity | undefined;
