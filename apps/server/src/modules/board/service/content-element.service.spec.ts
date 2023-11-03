@@ -123,6 +123,43 @@ describe(ContentElementService.name, () => {
 		});
 	});
 
+	describe('findParentOfId', () => {
+		describe('when parent is a vaid node', () => {
+			const setup = () => {
+				const card = cardFactory.build();
+				const element = richTextElementFactory.build();
+
+				return { element, card };
+			};
+
+			it('should call the repo', async () => {
+				const { element, card } = setup();
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(card);
+
+				await service.findParentOfId(element.id);
+
+				expect(boardDoRepo.findParentOfId).toHaveBeenCalledWith(element.id);
+			});
+
+			it('should throw NotFoundException', async () => {
+				const { element } = setup();
+
+				boardDoRepo.findParentOfId.mockResolvedValue(undefined);
+
+				await expect(service.findParentOfId(element.id)).rejects.toThrowError(NotFoundException);
+			});
+
+			it('should return the parent', async () => {
+				const { element, card } = setup();
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(card);
+
+				const result = await service.findParentOfId(element.id);
+
+				expect(result).toEqual(card);
+			});
+		});
+	});
+
 	describe('create', () => {
 		describe('when creating a content element of type', () => {
 			const setup = () => {
