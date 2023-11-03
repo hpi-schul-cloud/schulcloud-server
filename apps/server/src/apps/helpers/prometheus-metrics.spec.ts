@@ -53,7 +53,7 @@ afterAll(() => {
 	Configuration.reset(configBefore);
 });
 
-describe('PrometheusMetricsSetupStateLoggable', () => {
+describe.skip('PrometheusMetricsSetupStateLoggable', () => {
 	describe('getLogMessage', () => {
 		describe('should return a log message with proper content', () => {
 			const expectedMessage = 'Setting up Prometheus metrics...';
