@@ -152,7 +152,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="84" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:84</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="100" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:100</a></div>
                         </td>
                     </tr>
 
@@ -194,7 +194,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ElementContentBody.html#source" target="_self" >ElementContentBody:80</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/ElementContentBody.html#source" target="_self" >ElementContentBody:96</a></code>
 </div>
                         </td>
                     </tr>
@@ -218,7 +218,7 @@
 import { ContentElementType } from &#x27;@shared/domain&#x27;;
 import { InputFormat } from &#x27;@shared/domain/types&#x27;;
 import { Type } from &#x27;class-transformer&#x27;;
-import { IsDate, IsEnum, IsMongoId, IsOptional, IsString, ValidateNested } from &#x27;class-validator&#x27;;
+import { IsDate, IsEnum, IsMongoId, IsOptional, IsString, IsUrl, ValidateNested } from &#x27;class-validator&#x27;;
 
 export abstract class ElementContentBody {
 	@IsEnum(ContentElementType)
@@ -248,10 +248,26 @@ export class FileElementContentBody extends ElementContentBody {
 	@ApiProperty()
 	content!: FileContentBody;
 }
+
 export class LinkContentBody {
-	@IsString()
+	@IsUrl()
 	@ApiProperty({})
 	url!: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiProperty({})
+	title?: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiProperty({})
+	description?: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiProperty({})
+	imageUrl?: string;
 }
 
 export class LinkElementContentBody extends ElementContentBody {
