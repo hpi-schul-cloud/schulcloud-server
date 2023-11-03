@@ -97,7 +97,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#findClassesForSchool" >findClassesForSchool</a>
+                                <a href="#findClasses" >findClasses</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -130,7 +130,7 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findClassesForSchool"></a>
+                    <a name="findClasses"></a>
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
@@ -139,15 +139,15 @@
                             <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>findClassesForSchool</b></span>
-                        <a href="#findClassesForSchool"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findClasses</b></span>
+                        <a href="#findClasses"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findClassesForSchool(pagination: <a href="../classes/PaginationParams.html" target="_self">PaginationParams</a>, sortingQuery: <a href="../classes/ClassSortParams.html" target="_self">ClassSortParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                    <code>findClasses(pagination: <a href="../classes/PaginationParams.html" target="_self">PaginationParams</a>, sortingQuery: <a href="../classes/ClassSortParams.html" target="_self">ClassSortParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
                 </td>
             </tr>
 
@@ -155,7 +155,7 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@ApiOperation({summary: &#x27;Get a list of classes and groups of type class for the current users school.&#x27;})<br />@ApiResponse({status: undefined, type: ClassInfoSearchListResponse})<br />@ApiResponse({status: &#x27;4XX&#x27;, type: ErrorResponse})<br />@ApiResponse({status: &#x27;5XX&#x27;, type: ErrorResponse})<br />@Get(&#x27;/class&#x27;)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Get a list of classes and groups of type class for the current user.&#x27;})<br />@ApiResponse({status: undefined, type: ClassInfoSearchListResponse})<br />@ApiResponse({status: &#x27;4XX&#x27;, type: ErrorResponse})<br />@ApiResponse({status: &#x27;5XX&#x27;, type: ErrorResponse})<br />@Get(&#x27;/class&#x27;)<br /></code>
                 </td>
             </tr>
 
@@ -330,12 +330,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, HttpStatus, Param, Query } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
+import { Controller, Get, HttpStatus, Param, Query } from &#x27;@nestjs/common&#x27;;
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { PaginationParams } from &#x27;@shared/controller&#x27;;
 import { Page } from &#x27;@shared/domain&#x27;;
 import { ErrorResponse } from &#x27;@src/core/error/dto&#x27;;
-import { ICurrentUser, Authenticate, CurrentUser } from &#x27;@modules/authentication&#x27;;
 import { GroupUc } from &#x27;../uc&#x27;;
 import { ClassInfoDto, ResolvedGroupDto } from &#x27;../uc/dto&#x27;;
 import { ClassInfoSearchListResponse, ClassSortParams, GroupIdParams, GroupResponse } from &#x27;./dto&#x27;;
@@ -347,17 +347,17 @@ import { GroupResponseMapper } from &#x27;./mapper&#x27;;
 export class GroupController {
 	constructor(private readonly groupUc: GroupUc) {}
 
-	@ApiOperation({ summary: &#x27;Get a list of classes and groups of type class for the current users school.&#x27; })
+	@ApiOperation({ summary: &#x27;Get a list of classes and groups of type class for the current user.&#x27; })
 	@ApiResponse({ status: HttpStatus.OK, type: ClassInfoSearchListResponse })
 	@ApiResponse({ status: &#x27;4XX&#x27;, type: ErrorResponse })
 	@ApiResponse({ status: &#x27;5XX&#x27;, type: ErrorResponse })
 	@Get(&#x27;/class&#x27;)
-	public async findClassesForSchool(
+	public async findClasses(
 		@Query() pagination: PaginationParams,
 		@Query() sortingQuery: ClassSortParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;ClassInfoSearchListResponse&gt; {
-		const board: Page&lt;ClassInfoDto&gt; &#x3D; await this.groupUc.findAllClassesForSchool(
+		const board: Page&lt;ClassInfoDto&gt; &#x3D; await this.groupUc.findAllClasses(
 			currentUser.userId,
 			currentUser.schoolId,
 			pagination.skip,

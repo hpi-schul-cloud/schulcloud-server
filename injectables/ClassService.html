@@ -92,6 +92,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#findAllByUserId" >findAllByUserId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#findClassesForSchool" >findClassesForSchool</a>
                             </li>
                         </ul>
@@ -183,6 +188,76 @@
 
                     <tr>
                         <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">apps/server/src/modules/class/service/class.service.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAllByUserId"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>findAllByUserId</b></span>
+                        <a href="#findAllByUserId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAllByUserId(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="16"
                                     class="link-to-prism">apps/server/src/modules/class/service/class.service.ts:16</a></div>
                         </td>
@@ -220,7 +295,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/Class.html" target="_self" >Promise&lt;Class[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -321,6 +396,13 @@ export class ClassService {
 		return classes;
 	}
 
+	public async findAllByUserId(userId: EntityId): Promise&lt;Class[]&gt; {
+		const classes: Class[] &#x3D; await this.classesRepo.findAllByUserId(userId);
+
+		return classes;
+	}
+
+	// FIXME There is no usage of this method
 	public async deleteUserDataFromClasses(userId: EntityId): Promise&lt;number&gt; {
 		if (!userId) {
 			throw new InternalServerErrorException(&#x27;User id is missing&#x27;);

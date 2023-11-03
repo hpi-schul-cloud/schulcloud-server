@@ -96,7 +96,7 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#findAllClassesForSchool" >findAllClassesForSchool</a>
+                                <a href="#findAllClasses" >findAllClasses</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -106,12 +106,27 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
+                                <a href="#findClassesForUser" >findClassesForUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#findCombinedClassListForSchool" >findCombinedClassListForSchool</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
+                                <a href="#findCombinedClassListForUser" >findCombinedClassListForUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#findGroupsOfTypeClassForSchool" >findGroupsOfTypeClassForSchool</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#findGroupsOfTypeClassForUser" >findGroupsOfTypeClassForUser</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -122,6 +137,16 @@
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findUsersForGroup" >findUsersForGroup</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getClassInfoFromClass" >getClassInfoFromClass</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getClassInfoFromGroup" >getClassInfoFromGroup</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -300,8 +325,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="155"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:155</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="204"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:204</a></div>
                         </td>
                     </tr>
 
@@ -394,8 +419,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="172"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:172</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="221"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:221</a></div>
                         </td>
                     </tr>
 
@@ -457,19 +482,19 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findAllClassesForSchool"></a>
+                    <a name="findAllClasses"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>findAllClassesForSchool</b></span>
-                        <a href="#findAllClassesForSchool"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findAllClasses</b></span>
+                        <a href="#findAllClasses"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAllClassesForSchool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, skip: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, limit?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, sortBy, sortOrder: <a href="../undefineds/SortOrder.html" target="_self">SortOrder</a>)</code>
+                    <code>findAllClasses(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, skip: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, limit?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, sortBy, sortOrder: <a href="../undefineds/SortOrder.html" target="_self">SortOrder</a>)</code>
                 </td>
             </tr>
 
@@ -621,8 +646,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="71"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:71</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -672,6 +697,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findClassesForUser"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>findClassesForUser</b></span>
+                        <a href="#findClassesForUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findClassesForUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:102</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;ClassInfoDto[]&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findCombinedClassListForSchool"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -684,15 +779,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findCombinedClassListForSchool(schoolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>findCombinedClassListForSchool(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="60"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:60</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -715,7 +810,77 @@
                                         <tr>
                                                 <td>schoolId</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;ClassInfoDto[]&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findCombinedClassListForUser"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>findCombinedClassListForUser</b></span>
+                        <a href="#findCombinedClassListForUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findCombinedClassListForUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:81</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
 
                                             <td>
@@ -761,8 +926,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="94"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:94</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="127"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:127</a></div>
                         </td>
                     </tr>
 
@@ -784,6 +949,76 @@
                                     <tbody>
                                         <tr>
                                                 <td>schoolId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;ClassInfoDto[]&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findGroupsOfTypeClassForUser"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>findGroupsOfTypeClassForUser</b></span>
+                        <a href="#findGroupsOfTypeClassForUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findGroupsOfTypeClassForUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="139"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:139</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
@@ -831,8 +1066,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="117"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:117</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="166"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:166</a></div>
                         </td>
                     </tr>
 
@@ -901,8 +1136,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="137"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:137</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="186"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:186</a></div>
                         </td>
                     </tr>
 
@@ -952,6 +1187,158 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getClassInfoFromClass"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getClassInfoFromClass</b></span>
+                        <a href="#getClassInfoFromClass"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getClassInfoFromClass(clazz: <a href="../classes/Class.html" target="_self">Class</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="112"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:112</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>clazz</td>
+                                            <td>
+                                                            <code><a href="../classes/Class.html" target="_self" >Class</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;ClassInfoDto&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getClassInfoFromGroup"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getClassInfoFromGroup</b></span>
+                        <a href="#getClassInfoFromGroup"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getClassInfoFromGroup(group: <a href="../interfaces/Group.html" target="_self">Group</a>, systemMap: <a href="../classes/SystemDto.html" target="_self">Map&lt;EntityId | SystemDto&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="153"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:153</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>group</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Group.html" target="_self" >Group</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>systemMap</td>
+                                            <td>
+                                                            <code><a href="../classes/SystemDto.html" target="_self" >Map&lt;EntityId | SystemDto&gt;</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;ClassInfoDto&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getGroup"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -971,8 +1358,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="161"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:161</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="210"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:210</a></div>
                         </td>
                     </tr>
 
@@ -1036,9 +1423,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, LegacySchoolDo, Page, Permission, SchoolYearEntity, SortOrder, User, UserDO } from &#x27;@shared/domain&#x27;;
-import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { ClassService } from &#x27;@modules/class&#x27;;
 import { Class } from &#x27;@modules/class/domain&#x27;;
 import { LegacySchoolService, SchoolYearService } from &#x27;@modules/legacy-school&#x27;;
@@ -1046,6 +1431,8 @@ import { RoleService } from &#x27;@modules/role&#x27;;
 import { RoleDto } from &#x27;@modules/role/service/dto/role.dto&#x27;;
 import { SystemDto, SystemService } from &#x27;@modules/system&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EntityId, LegacySchoolDo, Page, Permission, SchoolYearEntity, SortOrder, User, UserDO } from &#x27;@shared/domain&#x27;;
 import { Group, GroupUser } from &#x27;../domain&#x27;;
 import { GroupService } from &#x27;../service&#x27;;
 import { SortHelper } from &#x27;../util&#x27;;
@@ -1065,7 +1452,7 @@ export class GroupUc {
 		private readonly schoolYearService: SchoolYearService
 	) {}
 
-	public async findAllClassesForSchool(
+	public async findAllClasses(
 		userId: EntityId,
 		schoolId: EntityId,
 		skip &#x3D; 0,
@@ -1079,10 +1466,20 @@ export class GroupUc {
 		this.authorizationService.checkPermission(
 			user,
 			school,
-			AuthorizationContextBuilder.read([Permission.CLASS_LIST, Permission.GROUP_LIST])
+			AuthorizationContextBuilder.read([Permission.CLASS_VIEW, Permission.GROUP_VIEW])
 		);
 
-		const combinedClassInfo: ClassInfoDto[] &#x3D; await this.findCombinedClassListForSchool(schoolId);
+		const canSeeFullList: boolean &#x3D; this.authorizationService.hasAllPermissions(user, [
+			Permission.CLASS_FULL_ADMIN,
+			Permission.GROUP_FULL_ADMIN,
+		]);
+
+		let combinedClassInfo: ClassInfoDto[];
+		if (canSeeFullList) {
+			combinedClassInfo &#x3D; await this.findCombinedClassListForSchool(schoolId);
+		} else {
+			combinedClassInfo &#x3D; await this.findCombinedClassListForUser(userId);
+		}
 
 		combinedClassInfo.sort((a: ClassInfoDto, b: ClassInfoDto): number &#x3D;&gt;
 			SortHelper.genericSortFunction(a[sortBy], b[sortBy], sortOrder)
@@ -1095,10 +1492,21 @@ export class GroupUc {
 		return page;
 	}
 
-	private async findCombinedClassListForSchool(schoolId: string): Promise&lt;ClassInfoDto[]&gt; {
+	private async findCombinedClassListForSchool(schoolId: EntityId): Promise&lt;ClassInfoDto[]&gt; {
 		const [classInfosFromClasses, classInfosFromGroups] &#x3D; await Promise.all([
 			await this.findClassesForSchool(schoolId),
 			await this.findGroupsOfTypeClassForSchool(schoolId),
+		]);
+
+		const combinedClassInfo: ClassInfoDto[] &#x3D; [...classInfosFromClasses, ...classInfosFromGroups];
+
+		return combinedClassInfo;
+	}
+
+	private async findCombinedClassListForUser(userId: EntityId): Promise&lt;ClassInfoDto[]&gt; {
+		const [classInfosFromClasses, classInfosFromGroups] &#x3D; await Promise.all([
+			await this.findClassesForUser(userId),
+			await this.findGroupsOfTypeClassForUser(userId),
 		]);
 
 		const combinedClassInfo: ClassInfoDto[] &#x3D; [...classInfosFromClasses, ...classInfosFromGroups];
@@ -1110,23 +1518,35 @@ export class GroupUc {
 		const classes: Class[] &#x3D; await this.classService.findClassesForSchool(schoolId);
 
 		const classInfosFromClasses: ClassInfoDto[] &#x3D; await Promise.all(
-			classes.map(async (clazz: Class): Promise&lt;ClassInfoDto&gt; &#x3D;&gt; {
-				const teachers: UserDO[] &#x3D; await Promise.all(
-					clazz.teacherIds.map((teacherId: EntityId) &#x3D;&gt; this.userService.findById(teacherId))
-				);
-
-				let schoolYear: SchoolYearEntity | undefined;
-				if (clazz.year) {
-					schoolYear &#x3D; await this.schoolYearService.findById(clazz.year);
-				}
-
-				const mapped: ClassInfoDto &#x3D; GroupUcMapper.mapClassToClassInfoDto(clazz, teachers, schoolYear);
-
-				return mapped;
-			})
+			classes.map((clazz) &#x3D;&gt; this.getClassInfoFromClass(clazz))
 		);
 
 		return classInfosFromClasses;
+	}
+
+	private async findClassesForUser(userId: EntityId): Promise&lt;ClassInfoDto[]&gt; {
+		const classes: Class[] &#x3D; await this.classService.findAllByUserId(userId);
+
+		const classInfosFromClasses: ClassInfoDto[] &#x3D; await Promise.all(
+			classes.map((clazz) &#x3D;&gt; this.getClassInfoFromClass(clazz))
+		);
+
+		return classInfosFromClasses;
+	}
+
+	private async getClassInfoFromClass(clazz: Class): Promise&lt;ClassInfoDto&gt; {
+		const teachers: UserDO[] &#x3D; await Promise.all(
+			clazz.teacherIds.map((teacherId: EntityId) &#x3D;&gt; this.userService.findById(teacherId))
+		);
+
+		let schoolYear: SchoolYearEntity | undefined;
+		if (clazz.year) {
+			schoolYear &#x3D; await this.schoolYearService.findById(clazz.year);
+		}
+
+		const mapped: ClassInfoDto &#x3D; GroupUcMapper.mapClassToClassInfoDto(clazz, teachers, schoolYear);
+
+		return mapped;
 	}
 
 	private async findGroupsOfTypeClassForSchool(schoolId: EntityId): Promise&lt;ClassInfoDto[]&gt; {
@@ -1135,21 +1555,37 @@ export class GroupUc {
 		const systemMap: Map&lt;EntityId, SystemDto&gt; &#x3D; await this.findSystemNamesForGroups(groupsOfTypeClass);
 
 		const classInfosFromGroups: ClassInfoDto[] &#x3D; await Promise.all(
-			groupsOfTypeClass.map(async (group: Group): Promise&lt;ClassInfoDto&gt; &#x3D;&gt; {
-				let system: SystemDto | undefined;
-				if (group.externalSource) {
-					system &#x3D; systemMap.get(group.externalSource.systemId);
-				}
-
-				const resolvedUsers: ResolvedGroupUser[] &#x3D; await this.findUsersForGroup(group);
-
-				const mapped: ClassInfoDto &#x3D; GroupUcMapper.mapGroupToClassInfoDto(group, resolvedUsers, system);
-
-				return mapped;
-			})
+			groupsOfTypeClass.map(async (group: Group): Promise&lt;ClassInfoDto&gt; &#x3D;&gt; this.getClassInfoFromGroup(group, systemMap))
 		);
 
 		return classInfosFromGroups;
+	}
+
+	private async findGroupsOfTypeClassForUser(userId: EntityId): Promise&lt;ClassInfoDto[]&gt; {
+		const user: UserDO &#x3D; await this.userService.findById(userId);
+
+		const groupsOfTypeClass: Group[] &#x3D; await this.groupService.findByUser(user);
+
+		const systemMap: Map&lt;EntityId, SystemDto&gt; &#x3D; await this.findSystemNamesForGroups(groupsOfTypeClass);
+
+		const classInfosFromGroups: ClassInfoDto[] &#x3D; await Promise.all(
+			groupsOfTypeClass.map(async (group: Group): Promise&lt;ClassInfoDto&gt; &#x3D;&gt; this.getClassInfoFromGroup(group, systemMap))
+		);
+
+		return classInfosFromGroups;
+	}
+
+	private async getClassInfoFromGroup(group: Group, systemMap: Map&lt;EntityId, SystemDto&gt;): Promise&lt;ClassInfoDto&gt; {
+		let system: SystemDto | undefined;
+		if (group.externalSource) {
+			system &#x3D; systemMap.get(group.externalSource.systemId);
+		}
+
+		const resolvedUsers: ResolvedGroupUser[] &#x3D; await this.findUsersForGroup(group);
+
+		const mapped: ClassInfoDto &#x3D; GroupUcMapper.mapGroupToClassInfoDto(group, resolvedUsers, system);
+
+		return mapped;
 	}
 
 	private async findSystemNamesForGroups(groups: Group[]): Promise&lt;Map&lt;EntityId, SystemDto&gt;&gt; {

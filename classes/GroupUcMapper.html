@@ -397,9 +397,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { RoleName, SchoolYearEntity, UserDO } from &#x27;@shared/domain&#x27;;
-import { Class } from &#x27;@modules/class/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Class } from &#x27;@modules/class/domain&#x27;;
 import { SystemDto } from &#x27;@modules/system&#x27;;
+import { RoleName, SchoolYearEntity, UserDO } from &#x27;@shared/domain&#x27;;
 import { Group } from &#x27;../../domain&#x27;;
 import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from &#x27;../dto&#x27;;
 import { ClassRootType } from &#x27;../dto/class-root-type&#x27;;
@@ -415,7 +415,7 @@ export class GroupUcMapper {
 			type: ClassRootType.GROUP,
 			name: group.name,
 			externalSourceName: system?.displayName,
-			teachers: resolvedUsers
+			teacherNames: resolvedUsers
 				.filter((groupUser: ResolvedGroupUser) &#x3D;&gt; groupUser.role.name &#x3D;&#x3D;&#x3D; RoleName.TEACHER)
 				.map((groupUser: ResolvedGroupUser) &#x3D;&gt; groupUser.user.lastName),
 		});
@@ -432,7 +432,7 @@ export class GroupUcMapper {
 			type: ClassRootType.CLASS,
 			name,
 			externalSourceName: clazz.source,
-			teachers: teachers.map((user: UserDO) &#x3D;&gt; user.lastName),
+			teacherNames: teachers.map((user: UserDO) &#x3D;&gt; user.lastName),
 			schoolYear: schoolYear?.name,
 			isUpgradable,
 		});

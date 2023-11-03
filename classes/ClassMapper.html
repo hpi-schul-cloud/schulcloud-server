@@ -103,7 +103,6 @@
                                 <a href="#mapToEntities" >mapToEntities</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
                                     <span class="modifier">Static</span>
                                 <a href="#mapToEntity" >mapToEntity</a>
                             </li>
@@ -340,7 +339,6 @@
                 <td class="col-md-4">
                     <a name="mapToEntity"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
                             <span class="modifier">Static</span>
                         <span ><b>mapToEntity</b></span>
                         <a href="#mapToEntity"><span class="icon ion-ios-link"></span></a>
@@ -439,7 +437,7 @@ export class ClassMapper {
 		});
 	}
 
-	private static mapToEntity(domainObject: Class): ClassEntity {
+	static mapToEntity(domainObject: Class): ClassEntity {
 		return new ClassEntity({
 			id: domainObject.id,
 			name: domainObject.name,

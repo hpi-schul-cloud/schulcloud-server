@@ -107,7 +107,7 @@
                                 <a href="#schoolYear" >schoolYear</a>
                             </li>
                             <li>
-                                <a href="#teachers" >teachers</a>
+                                <a href="#teacherNames" >teacherNames</a>
                             </li>
                             <li>
                                 <a href="#type" >type</a>
@@ -316,10 +316,10 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="teachers"></a>
+                    <a name="teacherNames"></a>
                     <span class="name">
-                        <span ><b>teachers</b></span>
-                        <a href="#teachers"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>teacherNames</b></span>
+                        <a href="#teacherNames"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -387,7 +387,7 @@ export class ClassInfoDto {
 
 	externalSourceName?: string;
 
-	teachers: string[];
+	teacherNames: string[];
 
 	schoolYear?: string;
 
@@ -398,7 +398,7 @@ export class ClassInfoDto {
 		this.type &#x3D; props.type;
 		this.name &#x3D; props.name;
 		this.externalSourceName &#x3D; props.externalSourceName;
-		this.teachers &#x3D; props.teachers;
+		this.teacherNames &#x3D; props.teacherNames;
 		this.schoolYear &#x3D; props.schoolYear;
 		this.isUpgradable &#x3D; props.isUpgradable;
 	}
