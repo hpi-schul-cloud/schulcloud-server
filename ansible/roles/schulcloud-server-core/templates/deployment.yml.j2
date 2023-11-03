@@ -21,6 +21,8 @@ spec:
     metadata:
       labels:
         app: api
+        app.kubernetes.io/part-of: schulcloud-verbund
+        app.kubernetes.io/managed-by: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
     spec:
       securityContext:
         runAsUser: 1000
