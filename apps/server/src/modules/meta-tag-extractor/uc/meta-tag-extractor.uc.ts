@@ -17,8 +17,9 @@ export class MetaTagExtractorUc {
 	async fetchMetaData(userId: EntityId, url: string): Promise<MetaData> {
 		this.logger.debug({ action: 'fetchMetaData', userId });
 
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		if (!user) {
+		try {
+			await this.authorizationService.getUserWithPermissions(userId);
+		} catch (error) {
 			throw new UnauthorizedException();
 		}
 
