@@ -16,29 +16,24 @@ import {
 @Injectable()
 export class AjaxPostBodyParamsTransformPipe implements PipeTransform {
 	async transform(value: AjaxPostBodyParams): Promise<unknown> {
-		if (value) {
-			let transformed: Exclude<AjaxPostBodyParams, undefined>;
-
-			if ('libraries' in value) {
-				transformed = plainToClass(LibrariesBodyParams, value);
-			} else if ('contentId' in value) {
-				transformed = plainToClass(ContentBodyParams, value);
-			} else if ('libraryParameters' in value) {
-				transformed = plainToClass(LibraryParametersBodyParams, value);
-			} else {
-				return undefined;
-			}
-
-			const validationResult = await validate(transformed);
-			if (validationResult.length > 0) {
-				const validationPipe = new ValidationPipe();
-				const exceptionFactory = validationPipe.createExceptionFactory();
-				throw exceptionFactory(validationResult);
-			}
-
-			return transformed;
+		if (value === undefined) {
+			return undefined;
+		}
+		if ('libraries' in value) {
+			value = plainToClass(LibrariesBodyParams, value);
+		} else if ('contentId' in value) {
+			value = plainToClass(ContentBodyParams, value);
+		} else if ('libraryParameters' in value) {
+			value = plainToClass(LibraryParametersBodyParams, value);
 		}
 
-		return undefined;
+		const validationResult = await validate(value);
+		if (validationResult.length > 0) {
+			const validationPipe = new ValidationPipe();
+			const exceptionFactory = validationPipe.createExceptionFactory();
+			throw exceptionFactory(validationResult);
+		}
+
+		return value;
 	}
 }
