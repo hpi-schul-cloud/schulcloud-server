@@ -142,7 +142,7 @@ describe('submission create (api)', () => {
 			expect(response.status).toBe(201);
 
 			const response2 = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: false });
-			expect(response2.status).toBe(406);
+			expect(response2.status).toBe(403);
 		});
 	});
 
