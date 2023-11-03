@@ -79,7 +79,7 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 		return this.rejectNotHandled(richTextElement);
 	}
 
-	async visitDrawingElementAsync(drawingElement: DrawingElement): void {
+	async visitDrawingElementAsync(drawingElement: DrawingElement): Promise<void> {
 		if (this.content instanceof DrawingContentBody) {
 			drawingElement.drawingName = this.content.drawingName;
 			drawingElement.description = this.content.description;

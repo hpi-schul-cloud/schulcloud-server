@@ -111,6 +111,7 @@ export class ExternalToolElementContentBody extends ElementContentBody {
 
 export type AnyElementContentBody =
 	| FileContentBody
+	| DrawingContentBody
 	| LinkContentBody
 	| RichTextContentBody
 	| SubmissionContainerContentBody

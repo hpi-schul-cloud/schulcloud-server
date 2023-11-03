@@ -1,27 +1,14 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { MongoMemoryDatabaseModule, MongoDatabaseModuleOptions } from '@shared/infra/database';
 import { CoreModule } from '@src/core';
-import { LoggerModule } from '@src/core/logger';
-import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { AuthenticationApiModule } from '../authentication/authentication-api.module';
-import { TldrawWsModule } from './tldraw-ws.module';
-import { TldrawWs } from './controller';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { TldrawBoardRepo } from './repo';
 import { TldrawWsService } from './service';
 import { config } from './config';
+import { TldrawWs } from './controller';
 
-const imports = [
-	TldrawWsModule,
-	MongoMemoryDatabaseModule.forRoot({ entities: [User, Course] }),
-	AuthenticationApiModule,
-	AuthorizationModule,
-	AuthenticationModule,
-	CoreModule,
-	LoggerModule,
-];
+const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 const providers = [TldrawWs, TldrawBoardRepo, TldrawWsService];
 @Module({
 	imports,

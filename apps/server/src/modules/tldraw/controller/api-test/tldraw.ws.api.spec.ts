@@ -3,9 +3,9 @@ import { Test } from '@nestjs/testing';
 import WebSocket from 'ws';
 import { TextEncoder } from 'util';
 import { INestApplication } from '@nestjs/common';
-import { TldrawTestModule } from '../..';
 import { TldrawWs } from '../tldraw.ws';
 import { TestConnection } from '../../testing/test-connection';
+import {TldrawWsTestModule} from "@src/modules/tldraw/tldraw-ws-test.module";
 
 describe('WebSocketController (WsAdapter)', () => {
 	let app: INestApplication;
@@ -20,7 +20,7 @@ describe('WebSocketController (WsAdapter)', () => {
 
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
-			imports: [TldrawTestModule],
+			imports: [TldrawWsTestModule],
 		}).compile();
 		gateway = testingModule.get<TldrawWs>(TldrawWs);
 		app = testingModule.createNestApplication();
