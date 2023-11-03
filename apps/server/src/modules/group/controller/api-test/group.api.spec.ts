@@ -18,7 +18,8 @@ import {
 import { ObjectId } from 'bson';
 import { GroupEntity, GroupEntityTypes } from '../../entity';
 import { ClassRootType } from '../../uc/dto/class-root-type';
-import { ClassInfoSearchListResponse, ClassSortBy } from '../dto';
+import { ClassInfoSearchListResponse } from '../dto';
+import { ClassSortBy } from '../dto/interface';
 
 const baseRouteName = '/groups';
 
