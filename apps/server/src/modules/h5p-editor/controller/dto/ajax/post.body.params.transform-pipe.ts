@@ -25,6 +25,8 @@ export class AjaxPostBodyParamsTransformPipe implements PipeTransform {
 				transformed = plainToClass(ContentBodyParams, value);
 			} else if ('libraryParameters' in value) {
 				transformed = plainToClass(LibraryParametersBodyParams, value);
+			} else {
+				return undefined;
 			}
 
 			const validationResult = await validate(transformed);
