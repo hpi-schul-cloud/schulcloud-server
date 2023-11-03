@@ -5,6 +5,6 @@ import { SchoolYearQueryType } from '../interface';
 export class FilterParams {
 	@IsOptional()
 	@IsEnum(SchoolYearQueryType)
-	@ApiPropertyOptional({ enum: SchoolYearQueryType })
+	@ApiPropertyOptional({ enum: SchoolYearQueryType, enumName: 'SchoolYearQueryType' })
 	type?: SchoolYearQueryType;
 }
