@@ -66,13 +66,13 @@
 <title>cluster_PseudonymModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 1276,-268 1276,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_PseudonymModule_exports</title>
-<polygon fill="none" stroke="black" points="389,-208 389,-260 695,-260 695,-208 389,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_PseudonymModule_providers</title>
 <polygon fill="none" stroke="black" points="266,-78 266,-130 1268,-130 1268,-78 266,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_PseudonymModule_exports</title>
+<polygon fill="none" stroke="black" points="389,-208 389,-260 695,-260 695,-208 389,-208"/>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_PseudonymModule_imports</title>
@@ -292,17 +292,16 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { forwardRef, Module } from &#x27;@nestjs/common&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { LearnroomModule } from &#x27;@modules/learnroom&#x27;;
-import { UserModule } from &#x27;@modules/user&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LearnroomModule } from &#x27;@modules/learnroom&#x27;;
 import { ToolModule } from &#x27;@modules/tool&#x27;;
-import { AuthorizationModule } from &#x27;@modules/authorization&#x27;;
+import { UserModule } from &#x27;@modules/user&#x27;;
+import { forwardRef, Module } from &#x27;@nestjs/common&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from &#x27;./repo&#x27;;
 import { FeathersRosterService, PseudonymService } from &#x27;./service&#x27;;
 
 @Module({
-	imports: [UserModule, LearnroomModule, forwardRef(() &#x3D;&gt; ToolModule), forwardRef(() &#x3D;&gt; AuthorizationModule)],
+	imports: [UserModule, LearnroomModule, forwardRef(() &#x3D;&gt; ToolModule)],
 	providers: [PseudonymService, PseudonymsRepo, ExternalToolPseudonymRepo, LegacyLogger, FeathersRosterService],
 	exports: [PseudonymService, FeathersRosterService],
 })
