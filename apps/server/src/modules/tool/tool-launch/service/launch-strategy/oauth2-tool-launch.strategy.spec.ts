@@ -1,12 +1,16 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
-import { CourseService } from '@modules/learnroom/service';
-import { LegacySchoolService } from '@modules/legacy-school';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { ExternalTool } from '../../../external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { LaunchRequestMethod, PropertyData } from '../../types';
+import {
+	AutoContextIdStrategy,
+	AutoContextNameStrategy,
+	AutoSchoolIdStrategy,
+	AutoSchoolNumberStrategy,
+} from '../auto-parameter-strategy';
 import { OAuth2ToolLaunchStrategy } from './oauth2-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 
@@ -14,17 +18,25 @@ describe('OAuth2ToolLaunchStrategy', () => {
 	let module: TestingModule;
 	let strategy: OAuth2ToolLaunchStrategy;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				OAuth2ToolLaunchStrategy,
 				{
-					provide: LegacySchoolService,
-					useValue: createMock<LegacySchoolService>(),
+					provide: AutoSchoolIdStrategy,
+					useValue: createMock<AutoSchoolIdStrategy>(),
 				},
 				{
-					provide: CourseService,
-					useValue: createMock<CourseService>(),
+					provide: AutoSchoolNumberStrategy,
+					useValue: createMock<AutoSchoolNumberStrategy>(),
+				},
+				{
+					provide: AutoContextIdStrategy,
+					useValue: createMock<AutoContextIdStrategy>(),
+				},
+				{
+					provide: AutoContextNameStrategy,
+					useValue: createMock<AutoContextNameStrategy>(),
 				},
 			],
 		}).compile();
