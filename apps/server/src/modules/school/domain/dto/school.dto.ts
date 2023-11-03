@@ -20,6 +20,7 @@ export class SchoolDto {
 		isExternal,
 		logo_dataUrl,
 		fileStorageType,
+		language,
 		years,
 	}: SchoolDto) {
 		this.id = id;
@@ -35,6 +36,7 @@ export class SchoolDto {
 		this.isExternal = isExternal;
 		this.logo_dataUrl = logo_dataUrl;
 		this.fileStorageType = fileStorageType;
+		this.language = language;
 		this.years = years;
 	}
 
@@ -63,6 +65,8 @@ export class SchoolDto {
 	logo_dataUrl?: string;
 
 	fileStorageType?: FileStorageType;
+
+	language?: string;
 
 	years: YearsDto;
 }

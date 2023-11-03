@@ -22,6 +22,7 @@ export class SchoolResponse {
 		isExternal,
 		logo_dataUrl,
 		fileStorageType,
+		language,
 		years,
 	}: SchoolResponse) {
 		this.id = id;
@@ -37,6 +38,7 @@ export class SchoolResponse {
 		this.isExternal = isExternal;
 		this.logo_dataUrl = logo_dataUrl;
 		this.fileStorageType = fileStorageType;
+		this.language = language;
 		this.years = years;
 	}
 
@@ -78,6 +80,9 @@ export class SchoolResponse {
 
 	@ApiPropertyOptional({ enum: FileStorageType, enumName: 'FileStorageType' })
 	fileStorageType?: FileStorageType;
+
+	@ApiPropertyOptional()
+	language?: string;
 
 	@ApiProperty({ type: () => YearsResponse })
 	years: YearsResponse;

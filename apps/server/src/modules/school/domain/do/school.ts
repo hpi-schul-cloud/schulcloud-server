@@ -42,4 +42,5 @@ export interface SchoolProps extends AuthorizableObject {
 	systems?: System[];
 	logo_dataUrl?: string;
 	fileStorageType?: FileStorageType;
+	language?: string;
 }

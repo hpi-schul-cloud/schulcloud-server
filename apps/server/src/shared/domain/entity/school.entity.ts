@@ -35,6 +35,7 @@ export interface ISchoolProperties {
 	enableStudentTeamCreation?: boolean;
 	logo_dataUrl?: string;
 	fileStorageType?: FileStorageType;
+	language?: string;
 }
 
 @Embeddable()
@@ -117,6 +118,9 @@ export class SchoolEntity extends BaseEntity {
 	@Property({ nullable: true })
 	fileStorageType?: FileStorageType;
 
+	@Property({ nullable: true })
+	language?: string;
+
 	constructor(props: ISchoolProperties) {
 		super();
 		if (props.externalId) {
@@ -153,6 +157,10 @@ export class SchoolEntity extends BaseEntity {
 
 		if (props.fileStorageType) {
 			this.fileStorageType = props.fileStorageType;
+		}
+
+		if (props.language) {
+			this.language = props.language;
 		}
 	}
 }
