@@ -1,17 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { DeletionClient } from '@modules/deletion/client';
-
-export interface QueueDeletionRequestInput {
-	targetRefDomain: string;
-	targetRefId: string;
-	deleteInMinutes: number;
-}
-
-export interface QueueDeletionRequestOutput {
-	requestId?: string;
-	deletionPlannedAt?: Date;
-	error?: string;
-}
+import { DeletionClient } from '../client';
+import { QueueDeletionRequestInput, QueueDeletionRequestOutput } from './interface';
 
 @Injectable()
 export class BatchDeletionService {
