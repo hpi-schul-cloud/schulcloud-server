@@ -1343,6 +1343,16 @@
 				}
 			}
 		},
+		"ADMIN_API_BASE_URL":  {
+			"type": "string",
+			"default": "",
+			"description": "Admin API base URL."
+		},
+		"ADMIN_API_KEY":  {
+			"type": "string",
+			"default": "",
+			"description": "Admin API key."
+		},
 		"BATCH_DELETION": {
 			"type": "object",
 			"description": "Configuration for the \"batch deletion\" application.",
