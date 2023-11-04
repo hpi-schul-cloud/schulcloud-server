@@ -1343,15 +1343,21 @@
 				}
 			}
 		},
-		"ADMIN_API_BASE_URL":  {
-			"type": "string",
-			"default": "",
-			"description": "Admin API base URL."
-		},
-		"ADMIN_API_KEY":  {
-			"type": "string",
-			"default": "",
-			"description": "Admin API key."
+		"ADMIN_API": {
+			"type": "object",
+			"description": "Configuration of the schulcloud-server's admin API.",
+			"required": ["API_KEY"],
+			"properties": {
+				"BASE_URL": {
+					"type": "string",
+					"default": "http://localhost:4030",
+					"description": "Base URL of the Admin API."
+				},
+				"API_KEY": {
+					"type": "string",
+					"description": "API key for accessing the Admin API."
+				}
+			}
 		},
 		"BATCH_DELETION": {
 			"type": "object",

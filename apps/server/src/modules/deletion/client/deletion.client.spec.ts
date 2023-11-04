@@ -25,6 +25,7 @@ describe(DeletionClient.name, () => {
 								return 'http://localhost:8080';
 							}
 
+							// Default is for the Admin APIs API Key.
 							return '6b3df003-61e9-467c-9e6b-579634801896';
 						}),
 					}),

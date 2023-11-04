@@ -44,6 +44,6 @@ export class DeletionClient {
 	}
 
 	private apiKeyHeader() {
-		return { 'X-Api-Key': this.configService.get<string>('ADMIN_API_KEY') };
+		return { 'X-Api-Key': this.configService.get<string>('ADMIN_API_API_KEY') };
 	}
 }
