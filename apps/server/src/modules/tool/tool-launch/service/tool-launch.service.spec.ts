@@ -21,7 +21,7 @@ import {
 	IToolLaunchParams,
 	Lti11ToolLaunchStrategy,
 	OAuth2ToolLaunchStrategy,
-} from './strategy';
+} from './launch-strategy';
 import { ToolLaunchService } from './tool-launch.service';
 
 describe('ToolLaunchService', () => {
