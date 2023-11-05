@@ -1,4 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { PseudonymService } from '@modules/pseudonym/service';
+import { UserService } from '@modules/user';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Pseudonym, RoleName, UserDO } from '@shared/domain';
@@ -9,10 +11,6 @@ import {
 	userDoFactory,
 } from '@shared/testing';
 import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
-import { CourseService } from '@modules/learnroom/service';
-import { LegacySchoolService } from '@modules/legacy-school';
-import { PseudonymService } from '@modules/pseudonym/service';
-import { UserService } from '@modules/user';
 import { ObjectId } from 'bson';
 import { Authorization } from 'oauth-1.0a';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole, ToolContextType } from '../../../common/enum';
@@ -20,6 +18,12 @@ import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { ExternalTool } from '../../../external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
+import {
+	AutoContextIdStrategy,
+	AutoContextNameStrategy,
+	AutoSchoolIdStrategy,
+	AutoSchoolNumberStrategy,
+} from '../auto-parameter-strategy';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
@@ -32,7 +36,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 	let pseudonymService: DeepMocked<PseudonymService>;
 	let lti11EncryptionService: DeepMocked<Lti11EncryptionService>;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				Lti11ToolLaunchStrategy,
@@ -49,12 +53,20 @@ describe('Lti11ToolLaunchStrategy', () => {
 					useValue: createMock<Lti11EncryptionService>(),
 				},
 				{
-					provide: LegacySchoolService,
-					useValue: createMock<LegacySchoolService>(),
+					provide: AutoSchoolIdStrategy,
+					useValue: createMock<AutoSchoolIdStrategy>(),
 				},
 				{
-					provide: CourseService,
-					useValue: createMock<CourseService>(),
+					provide: AutoSchoolNumberStrategy,
+					useValue: createMock<AutoSchoolNumberStrategy>(),
+				},
+				{
+					provide: AutoContextIdStrategy,
+					useValue: createMock<AutoContextIdStrategy>(),
+				},
+				{
+					provide: AutoContextNameStrategy,
+					useValue: createMock<AutoContextNameStrategy>(),
 				},
 			],
 		}).compile();
