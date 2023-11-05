@@ -3044,6 +3044,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ClassFactory.html" data-type="entity-link" >ClassFactory</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ClassFilterParams.html" data-type="entity-link" >ClassFilterParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ClassInfoDto.html" data-type="entity-link" >ClassInfoDto</a>
                             </li>
                             <li class="link">
@@ -4497,6 +4500,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/UnauthorizedLoggableException.html" data-type="entity-link" >UnauthorizedLoggableException</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/UnknownQueryTypeLoggableException.html" data-type="entity-link" >UnknownQueryTypeLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/UpdateElementContentBodyParams.html" data-type="entity-link" >UpdateElementContentBodyParams</a>

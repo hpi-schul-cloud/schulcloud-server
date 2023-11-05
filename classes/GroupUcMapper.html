@@ -142,8 +142,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/mapper/group-uc.mapper.ts:27</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/mapper/group-uc.mapper.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -328,8 +328,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/mapper/group-uc.mapper.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/mapper/group-uc.mapper.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -418,6 +418,8 @@ export class GroupUcMapper {
 			teacherNames: resolvedUsers
 				.filter((groupUser: ResolvedGroupUser) &#x3D;&gt; groupUser.role.name &#x3D;&#x3D;&#x3D; RoleName.TEACHER)
 				.map((groupUser: ResolvedGroupUser) &#x3D;&gt; groupUser.user.lastName),
+			studentCount: resolvedUsers.filter((groupUser: ResolvedGroupUser) &#x3D;&gt; groupUser.role.name &#x3D;&#x3D;&#x3D; RoleName.STUDENT)
+				.length,
 		});
 
 		return mapped;
@@ -435,6 +437,7 @@ export class GroupUcMapper {
 			teacherNames: teachers.map((user: UserDO) &#x3D;&gt; user.lastName),
 			schoolYear: schoolYear?.name,
 			isUpgradable,
+			studentCount: clazz.userIds ? clazz.userIds.length : 0,
 		});
 
 		return mapped;
