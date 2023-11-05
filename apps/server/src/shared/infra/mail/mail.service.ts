@@ -23,13 +23,10 @@ export class MailService {
 
 	public async send(data: Mail): Promise<void> {
 		if (this.domainBlacklist.length > 0) {
-			data.recipients = this.removeEmailAddressesThatHaveBlacklistedDomain(
-				data.recipients,
-				this.domainBlacklist
-			) as string[];
-			data.cc = this.removeEmailAddressesThatHaveBlacklistedDomain(data.cc, this.domainBlacklist);
-			data.bcc = this.removeEmailAddressesThatHaveBlacklistedDomain(data.bcc, this.domainBlacklist);
-			data.replyTo = this.removeEmailAddressesThatHaveBlacklistedDomain(data.replyTo, this.domainBlacklist);
+			data.recipients = this.filterEmailAdresses(data.recipients) as string[];
+			data.cc = this.filterEmailAdresses(data.cc);
+			data.bcc = this.filterEmailAdresses(data.bcc);
+			data.replyTo = this.filterEmailAdresses(data.replyTo);
 		}
 
 		if (data.recipients.length === 0) {
@@ -39,10 +36,7 @@ export class MailService {
 		await this.amqpConnection.publish(this.options.exchange, this.options.routingKey, data, { persistent: true });
 	}
 
-	private removeEmailAddressesThatHaveBlacklistedDomain(
-		mails: string[] | undefined,
-		domainBlackList: string[]
-	): string[] | undefined {
+	private filterEmailAdresses(mails: string[] | undefined): string[] | undefined {
 		if (mails === undefined || mails === null) {
 			return mails;
 		}
@@ -50,7 +44,7 @@ export class MailService {
 
 		for (const mail of mails) {
 			const mailDomain = this.getMailDomain(mail);
-			if (mailDomain && !domainBlackList.includes(mailDomain)) {
+			if (mailDomain && !this.domainBlacklist.includes(mailDomain)) {
 				mailWhitelist.push(mail);
 			}
 		}
