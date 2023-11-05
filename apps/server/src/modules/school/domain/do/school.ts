@@ -1,6 +1,5 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { County, SchoolFeature, SchoolPurpose } from '../type';
-import { FileStorageType } from '../type/file-storage-type.enum';
+import { County, FileStorageType, SchoolFeature, SchoolPermissions, SchoolPurpose } from '../type';
 import { FederalState } from './federal-state';
 import { SchoolYear } from './school-year';
 import { System } from './system';
@@ -44,4 +43,5 @@ export interface SchoolProps extends AuthorizableObject {
 	fileStorageType?: FileStorageType;
 	language?: string;
 	timezone?: string;
+	permissions?: SchoolPermissions;
 }

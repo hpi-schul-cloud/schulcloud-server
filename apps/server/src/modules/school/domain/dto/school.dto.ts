@@ -1,4 +1,4 @@
-import { County, SchoolFeature, SchoolPurpose } from '../type';
+import { County, SchoolFeature, SchoolPermissions, SchoolPurpose } from '../type';
 import { FileStorageType } from '../type/file-storage-type.enum';
 import { FederalStateDto } from './federal-state.dto';
 import { SchoolYearDto } from './school-year.dto';
@@ -22,6 +22,7 @@ export class SchoolDto {
 		fileStorageType,
 		language,
 		timezone,
+		permissions,
 		years,
 	}: SchoolDto) {
 		this.id = id;
@@ -39,6 +40,7 @@ export class SchoolDto {
 		this.fileStorageType = fileStorageType;
 		this.language = language;
 		this.timezone = timezone;
+		this.permissions = permissions;
 		this.years = years;
 	}
 
@@ -71,6 +73,8 @@ export class SchoolDto {
 	language?: string;
 
 	timezone?: string;
+
+	permissions?: SchoolPermissions;
 
 	years: YearsDto;
 }

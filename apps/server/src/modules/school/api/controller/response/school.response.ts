@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
-import { SchoolFeature, SchoolPurpose } from '../../../domain';
+import { SchoolFeature, SchoolPermissions, SchoolPurpose } from '../../../domain';
 import { CountyResponse } from './county.response';
 import { FederalStateResponse } from './federal-state.response';
 import { SchoolYearResponse } from './school-year.response';
@@ -24,6 +24,7 @@ export class SchoolResponse {
 		fileStorageType,
 		language,
 		timezone,
+		permissions,
 		years,
 	}: SchoolResponse) {
 		this.id = id;
@@ -41,6 +42,7 @@ export class SchoolResponse {
 		this.fileStorageType = fileStorageType;
 		this.language = language;
 		this.timezone = timezone;
+		this.permissions = permissions;
 		this.years = years;
 	}
 
@@ -88,6 +90,9 @@ export class SchoolResponse {
 
 	@ApiPropertyOptional()
 	timezone?: string;
+
+	@ApiPropertyOptional()
+	permissions?: SchoolPermissions;
 
 	@ApiProperty({ type: () => YearsResponse })
 	years: YearsResponse;
