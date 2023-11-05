@@ -1,6 +1,8 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable } from '@nestjs/common';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import {
+	AnyBoardDo,
 	BoardExternalReference,
 	Card,
 	Column,
@@ -32,6 +34,19 @@ export class ColumnBoardService {
 		const ids = this.boardDoRepo.findIdsByExternalReference(reference);
 
 		return ids;
+	}
+
+	async findByDescendant(boardDo: AnyBoardDo): Promise<ColumnBoard> {
+		const ancestorIds: EntityId[] = await this.boardDoRepo.getAncestorIds(boardDo);
+		const idHierarchy: EntityId[] = [...ancestorIds, boardDo.id];
+		const rootId: EntityId = idHierarchy[0];
+		const rootBoardDo: AnyBoardDo = await this.boardDoRepo.findById(rootId, 1);
+
+		if (rootBoardDo instanceof ColumnBoard) {
+			return rootBoardDo;
+		}
+
+		throw new NotFoundLoggableException(ColumnBoard.name, 'id', rootId);
 	}
 
 	async getBoardObjectTitlesById(boardIds: EntityId[]): Promise<Record<EntityId, string>> {

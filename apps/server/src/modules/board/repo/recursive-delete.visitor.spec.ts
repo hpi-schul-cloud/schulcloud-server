@@ -1,10 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import {
 	columnBoardFactory,
 	columnFactory,
+	contextExternalToolFactory,
 	externalToolElementFactory,
 	fileElementFactory,
 	linkElementFactory,
@@ -12,14 +15,15 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
-import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
 
 describe(RecursiveDeleteVisitor.name, () => {
 	let module: TestingModule;
+	let service: RecursiveDeleteVisitor;
+
 	let em: DeepMocked<EntityManager>;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
-	let service: RecursiveDeleteVisitor;
+	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -27,12 +31,15 @@ describe(RecursiveDeleteVisitor.name, () => {
 				RecursiveDeleteVisitor,
 				{ provide: EntityManager, useValue: createMock<EntityManager>() },
 				{ provide: FilesStorageClientAdapterService, useValue: createMock<FilesStorageClientAdapterService>() },
+				{ provide: ContextExternalToolService, useValue: createMock<ContextExternalToolService>() },
 			],
 		}).compile();
 
+		service = module.get(RecursiveDeleteVisitor);
 		em = module.get(EntityManager);
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
-		service = module.get(RecursiveDeleteVisitor);
+		contextExternalToolService = module.get(ContextExternalToolService);
+
 		await setupEntities();
 	});
 
@@ -212,13 +219,29 @@ describe(RecursiveDeleteVisitor.name, () => {
 
 	describe('visitExternalToolElementAsync', () => {
 		const setup = () => {
+			const contextExternalTool = contextExternalToolFactory.buildWithId();
 			const childExternalToolElement = externalToolElementFactory.build();
 			const externalToolElement = externalToolElementFactory.build({
 				children: [childExternalToolElement],
+				contextExternalToolId: contextExternalTool.id,
 			});
 
-			return { externalToolElement, childExternalToolElement };
+			contextExternalToolService.findById.mockResolvedValue(contextExternalTool);
+
+			return {
+				externalToolElement,
+				childExternalToolElement,
+				contextExternalTool,
+			};
 		};
+
+		it('should delete the context external tool that is linked to the element', async () => {
+			const { externalToolElement, contextExternalTool } = setup();
+
+			await service.visitExternalToolElementAsync(externalToolElement);
+
+			expect(contextExternalToolService.deleteContextExternalTool).toHaveBeenCalledWith(contextExternalTool);
+		});
 
 		it('should call entity remove', async () => {
 			const { externalToolElement, childExternalToolElement } = setup();
