@@ -100,7 +100,6 @@ export class CourseCopyService {
 		if (courseGroupsExist) {
 			elements.push({ type: CopyElementType.COURSEGROUP_GROUP, status: CopyStatusEnum.NOT_IMPLEMENTED });
 		}
-		console.log("estoy en finishCourseCopying")
 		const status = {
 			title: courseCopy.name,
 			type: CopyElementType.COURSE,
