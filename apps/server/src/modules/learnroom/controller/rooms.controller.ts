@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
 import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
-import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
+import { CopyApiResponse, CopyElementType, CopyMapper } from '@modules/copy-helper';
 import { serverConfig } from '@modules/server/server.config';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { CourseCopyUC } from '../uc/course-copy.uc';
@@ -17,6 +17,7 @@ import {
 	RoomUrlParams,
 	SingleColumnBoardResponse,
 } from './dto';
+import { elementAt } from 'rxjs';
 
 @ApiTags('Rooms')
 @Authenticate('jwt')
@@ -69,6 +70,13 @@ export class RoomsController {
 		@Param() urlParams: RoomUrlParams
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, urlParams.roomId);
+
+		let newElements = copyStatus.elements?.filter((element) => {
+
+			const filterCopyBoard =	element.type !== CopyElementType.LESSON_CONTENT_NEXBOARD
+			return filterCopyBoard
+		})
+    copyStatus.elements = newElements;
 		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;
 	}

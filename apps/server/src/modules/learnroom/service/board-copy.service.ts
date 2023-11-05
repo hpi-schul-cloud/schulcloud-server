@@ -51,6 +51,7 @@ export class BoardCopyService {
 		const references: BoardElement[] = this.extractReferences(elements);
 
 		let boardCopy: Board = new Board({ references, course: destinationCourse });
+
 		let status: CopyStatus = {
 			title: 'board',
 			type: CopyElementType.BOARD,
@@ -84,7 +85,7 @@ export class BoardCopyService {
 			if (element.target === undefined) {
 				return Promise.reject(new Error('Broken boardelement - not pointing to any target entity'));
 			}
-
+  console.log("estoy en copyBoardElements")
 			if (element.boardElementType === BoardElementType.Task && isTask(element.target)) {
 				return this.copyTask(element.target, user, destinationCourse).then((status) => [pos, status]);
 			}
