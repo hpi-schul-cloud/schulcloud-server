@@ -60,13 +60,24 @@ describe(DeletionRequestEntity.name, () => {
 	});
 
 	describe('executed', () => {
-		it('should update status', () => {
+		it('should update status with value success', () => {
 			const { props } = setup();
 			const entity: DeletionRequestEntity = new DeletionRequestEntity(props);
 
 			entity.executed();
 
 			expect(entity.status).toEqual(DeletionStatusModel.SUCCESS);
+		});
+	});
+
+	describe('failed', () => {
+		it('should update status with value failed', () => {
+			const { props } = setup();
+			const entity: DeletionRequestEntity = new DeletionRequestEntity(props);
+
+			entity.failed();
+
+			expect(entity.status).toEqual(DeletionStatusModel.FAILED);
 		});
 	});
 });

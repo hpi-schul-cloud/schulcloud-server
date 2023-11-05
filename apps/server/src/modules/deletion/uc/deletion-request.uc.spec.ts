@@ -99,79 +99,25 @@ describe(DeletionRequestUc.name, () => {
 		await setupEntities();
 	});
 
-	const setup = () => {
-		jest.clearAllMocks();
-		const deletionRequestToCreate: DeletionRequestProps = {
-			targetRef: {
-				targetRefDoamin: DeletionDomainModel.USER,
-				targetRefId: '653e4833cc39e5907a1e18d2',
-			},
-			deleteInMinutes: 1440,
-		};
-
-		const deletionRequest = deletionRequestFactory.build();
-		const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
-		const deletionRequestExecuted = deletionRequestFactory.build({ status: DeletionStatusModel.SUCCESS });
-		const deletionLogExecuted1 = deletionLogFactory.build({ deletionRequestId: deletionRequestExecuted.id });
-		const deletionLogExecuted2 = deletionLogFactory.build({
-			deletionRequestId: deletionRequestExecuted.id,
-			domain: DeletionDomainModel.ACCOUNT,
-			modifiedCount: 0,
-			deletedCount: 1,
-		});
-
-		const executedDeletionRequestSummary: DeletionRequestLog = {
-			targetRef: {
-				targetRefDoamin: deletionRequestExecuted.targetRefDomain,
-				targetRefId: deletionRequestExecuted.targetRefId,
-			},
-			deletionPlannedAt: deletionRequestExecuted.deleteAfter,
-			statistics: [
-				{
-					domain: deletionLogExecuted1.domain,
-					modifiedCount: deletionLogExecuted1.modifiedCount,
-					deletedCount: deletionLogExecuted1.deletedCount,
-				},
-				{
-					domain: deletionLogExecuted2.domain,
-					modifiedCount: deletionLogExecuted2.modifiedCount,
-					deletedCount: deletionLogExecuted2.deletedCount,
-				},
-			],
-		};
-
-		const notExecutedDeletionRequestSummary: DeletionRequestLog = {
-			targetRef: {
-				targetRefDoamin: deletionRequest.targetRefDomain,
-				targetRefId: deletionRequest.targetRefId,
-			},
-			deletionPlannedAt: deletionRequest.deleteAfter,
-		};
-
-		classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
-		courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(2);
-		courseService.deleteUserDataFromCourse.mockResolvedValueOnce(2);
-		filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(2);
-		filesService.removeUserPermissionsToAnyFiles.mockResolvedValueOnce(2);
-		lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(2);
-		pseudonymService.deleteByUserId.mockResolvedValueOnce(2);
-		teamService.deleteUserDataFromTeams.mockResolvedValueOnce(2);
-		userService.deleteUser.mockResolvedValueOnce(1);
-
-		return {
-			deletionRequestToCreate,
-			deletionRequest,
-			deletionRequestToExecute,
-			deletionRequestExecuted,
-			notExecutedDeletionRequestSummary,
-			executedDeletionRequestSummary,
-			deletionLogExecuted1,
-			deletionLogExecuted2,
-		};
-	};
-
 	describe('createDeletionRequest', () => {
 		describe('when creating a deletionRequest', () => {
+			const setup = () => {
+				jest.clearAllMocks();
+				const deletionRequestToCreate: DeletionRequestProps = {
+					targetRef: {
+						targetRefDoamin: DeletionDomainModel.USER,
+						targetRefId: '653e4833cc39e5907a1e18d2',
+					},
+					deleteInMinutes: 1440,
+				};
+				const deletionRequest = deletionRequestFactory.build();
+
+				return {
+					deletionRequestToCreate,
+					deletionRequest,
+				};
+			};
+
 			it('should call the service to create the deletionRequest', async () => {
 				const { deletionRequestToCreate } = setup();
 
@@ -204,16 +150,35 @@ describe(DeletionRequestUc.name, () => {
 
 	describe('executeDeletionRequests', () => {
 		describe('when executing deletionRequests', () => {
-			it('should call deletionRequestService.findAllItemsByDeletionDate', async () => {
+			const setup = () => {
+				jest.clearAllMocks();
+				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
+
+				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
+				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(2);
+				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(2);
+				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(2);
+				filesService.removeUserPermissionsToAnyFiles.mockResolvedValueOnce(2);
+				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(2);
+				pseudonymService.deleteByUserId.mockResolvedValueOnce(2);
+				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(2);
+				userService.deleteUser.mockResolvedValueOnce(1);
+
+				return {
+					deletionRequestToExecute,
+				};
+			};
+
+			it('should call deletionRequestService.findAllItemsToExecute', async () => {
 				await uc.executeDeletionRequests();
 
-				expect(deletionRequestService.findAllItemsByDeletionDate).toHaveBeenCalled();
+				expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalled();
 			});
 
 			it('should call deletionRequestService.markDeletionRequestAsExecuted to update status of deletionRequests', async () => {
 				const { deletionRequestToExecute } = setup();
 
-				deletionRequestService.findAllItemsByDeletionDate.mockResolvedValueOnce([deletionRequestToExecute]);
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 
 				await uc.executeDeletionRequests();
 
@@ -223,7 +188,7 @@ describe(DeletionRequestUc.name, () => {
 			it('should call accountService.deleteByUserId to delete user data in account module', async () => {
 				const { deletionRequestToExecute } = setup();
 
-				deletionRequestService.findAllItemsByDeletionDate.mockResolvedValueOnce([deletionRequestToExecute]);
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 
 				await uc.executeDeletionRequests();
 
@@ -233,7 +198,7 @@ describe(DeletionRequestUc.name, () => {
 			it('should call classService.deleteUserDataFromClasses to delete user data in class module', async () => {
 				const { deletionRequestToExecute } = setup();
 
-				deletionRequestService.findAllItemsByDeletionDate.mockResolvedValueOnce([deletionRequestToExecute]);
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 
 				await uc.executeDeletionRequests();
 
@@ -243,7 +208,7 @@ describe(DeletionRequestUc.name, () => {
 			it('should call courseGroupService.deleteUserDataFromCourseGroup to delete user data in courseGroup module', async () => {
 				const { deletionRequestToExecute } = setup();
 
-				deletionRequestService.findAllItemsByDeletionDate.mockResolvedValueOnce([deletionRequestToExecute]);
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 
 				await uc.executeDeletionRequests();
 
@@ -255,7 +220,7 @@ describe(DeletionRequestUc.name, () => {
 			it('should call courseService.deleteUserDataFromCourse to delete user data in course module', async () => {
 				const { deletionRequestToExecute } = setup();
 
-				deletionRequestService.findAllItemsByDeletionDate.mockResolvedValueOnce([deletionRequestToExecute]);
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 
 				await uc.executeDeletionRequests();
 
@@ -265,7 +230,7 @@ describe(DeletionRequestUc.name, () => {
 			it('should call filesService.markFilesOwnedByUserForDeletion to mark users files to delete in file module', async () => {
 				const { deletionRequestToExecute } = setup();
 
-				deletionRequestService.findAllItemsByDeletionDate.mockResolvedValueOnce([deletionRequestToExecute]);
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 
 				await uc.executeDeletionRequests();
 
@@ -275,7 +240,7 @@ describe(DeletionRequestUc.name, () => {
 			it('should call filesService.removeUserPermissionsToAnyFiles to remove users permissions to any files in file module', async () => {
 				const { deletionRequestToExecute } = setup();
 
-				deletionRequestService.findAllItemsByDeletionDate.mockResolvedValueOnce([deletionRequestToExecute]);
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 
 				await uc.executeDeletionRequests();
 
@@ -285,7 +250,7 @@ describe(DeletionRequestUc.name, () => {
 			it('should call lessonService.deleteUserDataFromLessons to delete users data in lesson module', async () => {
 				const { deletionRequestToExecute } = setup();
 
-				deletionRequestService.findAllItemsByDeletionDate.mockResolvedValueOnce([deletionRequestToExecute]);
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 
 				await uc.executeDeletionRequests();
 
@@ -295,7 +260,7 @@ describe(DeletionRequestUc.name, () => {
 			it('should call pseudonymService.deleteByUserId to delete users data in pseudonym module', async () => {
 				const { deletionRequestToExecute } = setup();
 
-				deletionRequestService.findAllItemsByDeletionDate.mockResolvedValueOnce([deletionRequestToExecute]);
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 
 				await uc.executeDeletionRequests();
 
@@ -305,7 +270,7 @@ describe(DeletionRequestUc.name, () => {
 			it('should call teamService.deleteUserDataFromTeams to delete users data in teams module', async () => {
 				const { deletionRequestToExecute } = setup();
 
-				deletionRequestService.findAllItemsByDeletionDate.mockResolvedValueOnce([deletionRequestToExecute]);
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 
 				await uc.executeDeletionRequests();
 
@@ -315,7 +280,7 @@ describe(DeletionRequestUc.name, () => {
 			it('should call userService.deleteUsers to delete user in user module', async () => {
 				const { deletionRequestToExecute } = setup();
 
-				deletionRequestService.findAllItemsByDeletionDate.mockResolvedValueOnce([deletionRequestToExecute]);
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 
 				await uc.executeDeletionRequests();
 
@@ -325,17 +290,87 @@ describe(DeletionRequestUc.name, () => {
 			it('should call deletionLogService.createDeletionLog to create logs for deletionRequest', async () => {
 				const { deletionRequestToExecute } = setup();
 
-				deletionRequestService.findAllItemsByDeletionDate.mockResolvedValueOnce([deletionRequestToExecute]);
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(9);
+				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(10);
+			});
+		});
+
+		describe('when an error occurred', () => {
+			const setup = () => {
+				jest.clearAllMocks();
+				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
+
+				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
+				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(2);
+				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(2);
+				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(2);
+				filesService.removeUserPermissionsToAnyFiles.mockResolvedValueOnce(2);
+				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(2);
+				pseudonymService.deleteByUserId.mockResolvedValueOnce(2);
+				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(2);
+				userService.deleteUser.mockRejectedValueOnce(new Error());
+
+				return {
+					deletionRequestToExecute,
+				};
+			};
+
+			it('should throw an arror', async () => {
+				const { deletionRequestToExecute } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+
+				await uc.executeDeletionRequests();
+
+				expect(deletionRequestService.markDeletionRequestAsFailed).toHaveBeenCalledWith(deletionRequestToExecute.id);
 			});
 		});
 	});
 
 	describe('findById', () => {
 		describe('when searching for logs for deletionRequest which was executed', () => {
+			const setup = () => {
+				jest.clearAllMocks();
+				const deletionRequestExecuted = deletionRequestFactory.build({ status: DeletionStatusModel.SUCCESS });
+				const deletionLogExecuted1 = deletionLogFactory.build({ deletionRequestId: deletionRequestExecuted.id });
+				const deletionLogExecuted2 = deletionLogFactory.build({
+					deletionRequestId: deletionRequestExecuted.id,
+					domain: DeletionDomainModel.ACCOUNT,
+					modifiedCount: 0,
+					deletedCount: 1,
+				});
+
+				const executedDeletionRequestSummary: DeletionRequestLog = {
+					targetRef: {
+						targetRefDoamin: deletionRequestExecuted.targetRefDomain,
+						targetRefId: deletionRequestExecuted.targetRefId,
+					},
+					deletionPlannedAt: deletionRequestExecuted.deleteAfter,
+					statistics: [
+						{
+							domain: deletionLogExecuted1.domain,
+							modifiedCount: deletionLogExecuted1.modifiedCount,
+							deletedCount: deletionLogExecuted1.deletedCount,
+						},
+						{
+							domain: deletionLogExecuted2.domain,
+							modifiedCount: deletionLogExecuted2.modifiedCount,
+							deletedCount: deletionLogExecuted2.deletedCount,
+						},
+					],
+				};
+
+				return {
+					deletionRequestExecuted,
+					executedDeletionRequestSummary,
+					deletionLogExecuted1,
+					deletionLogExecuted2,
+				};
+			};
+
 			it('should call to deletionRequestService and deletionLogService', async () => {
 				const { deletionRequestExecuted } = setup();
 
@@ -361,6 +396,23 @@ describe(DeletionRequestUc.name, () => {
 		});
 
 		describe('when searching for logs for deletionRequest which was not executed', () => {
+			const setup = () => {
+				jest.clearAllMocks();
+				const deletionRequest = deletionRequestFactory.build();
+				const notExecutedDeletionRequestSummary: DeletionRequestLog = {
+					targetRef: {
+						targetRefDoamin: deletionRequest.targetRefDomain,
+						targetRefId: deletionRequest.targetRefId,
+					},
+					deletionPlannedAt: deletionRequest.deleteAfter,
+				};
+
+				return {
+					deletionRequest,
+					notExecutedDeletionRequestSummary,
+				};
+			};
+
 			it('should call to deletionRequestService', async () => {
 				const { deletionRequest } = setup();
 
@@ -386,6 +438,15 @@ describe(DeletionRequestUc.name, () => {
 
 	describe('deleteDeletionRequestById', () => {
 		describe('when deleting a deletionRequestId', () => {
+			const setup = () => {
+				jest.clearAllMocks();
+				const deletionRequest = deletionRequestFactory.build();
+
+				return {
+					deletionRequest,
+				};
+			};
+
 			it('should call the service deletionRequestService.deleteById', async () => {
 				const { deletionRequest } = setup();
 

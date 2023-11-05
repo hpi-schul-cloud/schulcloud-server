@@ -1,9 +1,10 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId, IFindOptions, SortOrder } from '@shared/domain';
 import { DeletionRequest } from '../domain/deletion-request.do';
 import { DeletionRequestEntity } from '../entity';
 import { DeletionRequestMapper } from './mapper/deletion-request.mapper';
+import { DeletionRequestScope } from './deletion-request-scope';
 
 @Injectable()
 export class DeletionRequestRepo {
@@ -29,13 +30,19 @@ export class DeletionRequestRepo {
 		await this.em.flush();
 	}
 
-	async findAllItemsByDeletionDate(): Promise<DeletionRequest[]> {
+	async findAllItemsToExecution(options?: IFindOptions<DeletionRequest>): Promise<DeletionRequest[]> {
 		const currentDate = new Date();
-		const itemsToDelete: DeletionRequestEntity[] = await this.em.find(DeletionRequestEntity, {
-			deleteAfter: { $lt: currentDate },
+		const scope = new DeletionRequestScope().byDeleteAfter(currentDate).byStatus();
+		const { pagination } = options || { limit: 100 };
+		const order = { createdAt: SortOrder.desc };
+
+		const [deletionRequestEntities] = await this.em.findAndCount(DeletionRequestEntity, scope.query, {
+			offset: pagination?.skip,
+			limit: pagination?.limit,
+			orderBy: order,
 		});
 
-		const mapped: DeletionRequest[] = itemsToDelete.map((entity) => DeletionRequestMapper.mapToDO(entity));
+		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
 
 		return mapped;
 	}
@@ -53,6 +60,17 @@ export class DeletionRequestRepo {
 		});
 
 		deletionRequest.executed();
+		await this.em.persistAndFlush(deletionRequest);
+
+		return true;
+	}
+
+	async markDeletionRequestAsFailed(deletionRequestId: EntityId): Promise<boolean> {
+		const deletionRequest: DeletionRequestEntity = await this.em.findOneOrFail(DeletionRequestEntity, {
+			id: deletionRequestId,
+		});
+
+		deletionRequest.failed();
 		await this.em.persistAndFlush(deletionRequest);
 
 		return true;

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId, IFindOptions } from '@shared/domain';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { UserService } from '@src/modules/user';
 import { TeamService } from '@src/modules/teams';
@@ -62,9 +62,10 @@ export class DeletionRequestUc {
 		return result;
 	}
 
-	async executeDeletionRequests(): Promise<void> {
-		const deletionRequestToExecution: DeletionRequest[] =
-			await this.deletionRequestService.findAllItemsByDeletionDate();
+	async executeDeletionRequests(options?: IFindOptions<DeletionRequest>): Promise<void> {
+		const deletionRequestToExecution: DeletionRequest[] = await this.deletionRequestService.findAllItemsToExecute(
+			options
+		);
 
 		for (const req of deletionRequestToExecution) {
 			// eslint-disable-next-line no-await-in-loop
@@ -102,20 +103,7 @@ export class DeletionRequestUc {
 	}
 
 	private async executeDeletionRequest(deletionRequest: DeletionRequest): Promise<void> {
-		await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
-
-		const [
-			,
-			classesUpdated,
-			courseGroupUpdated,
-			courseUpdated,
-			fileDeleted,
-			filesPermisionUpdated,
-			lessonUpdated,
-			pseudonymDeleted,
-			teamsUpdated,
-			userDeleted,
-		] = await Promise.all([
+		await Promise.all([
 			this.accountService.deleteByUserId(deletionRequest.targetRefId),
 			this.classService.deleteUserDataFromClasses(deletionRequest.targetRefId),
 			this.courseGroupService.deleteUserDataFromCourseGroup(deletionRequest.targetRefId),
@@ -126,94 +114,125 @@ export class DeletionRequestUc {
 			this.pseudonymService.deleteByUserId(deletionRequest.targetRefId),
 			this.teamService.deleteUserDataFromTeams(deletionRequest.targetRefId),
 			this.userService.deleteUser(deletionRequest.targetRefId),
-		]);
+		])
+			.then(
+				async ([
+					,
+					classesUpdated,
+					courseGroupUpdated,
+					courseUpdated,
+					fileDeleted,
+					filesPermisionUpdated,
+					lessonUpdated,
+					pseudonymDeleted,
+					teamsUpdated,
+					userDeleted,
+				]) => {
+					await this.deletionLogService.createDeletionLog(
+						deletionRequest.id,
+						DeletionDomainModel.ACCOUNT,
+						DeletionOperationModel.DELETE,
+						0,
+						1
+					);
 
-		await this.deletionLogService.createDeletionLog(
-			deletionRequest.id,
-			DeletionDomainModel.ACCOUNT,
-			DeletionOperationModel.DELETE,
-			0,
-			1
-		);
+					if (classesUpdated > 0) {
+						await this.deletionLogService.createDeletionLog(
+							deletionRequest.id,
+							DeletionDomainModel.CLASS,
+							DeletionOperationModel.UPDATE,
+							classesUpdated,
+							0
+						);
+					}
 
-		if (classesUpdated > 0) {
-			await this.deletionLogService.createDeletionLog(
-				deletionRequest.id,
-				DeletionDomainModel.CLASS,
-				DeletionOperationModel.UPDATE,
-				classesUpdated,
-				0
-			);
-		}
+					if (classesUpdated > 0) {
+						await this.deletionLogService.createDeletionLog(
+							deletionRequest.id,
+							DeletionDomainModel.CLASS,
+							DeletionOperationModel.UPDATE,
+							classesUpdated,
+							0
+						);
+					}
 
-		if (courseGroupUpdated > 0) {
-			await this.deletionLogService.createDeletionLog(
-				deletionRequest.id,
-				DeletionDomainModel.COURSEGROUP,
-				DeletionOperationModel.UPDATE,
-				courseGroupUpdated,
-				0
-			);
-		}
+					if (courseGroupUpdated > 0) {
+						await this.deletionLogService.createDeletionLog(
+							deletionRequest.id,
+							DeletionDomainModel.COURSEGROUP,
+							DeletionOperationModel.UPDATE,
+							courseGroupUpdated,
+							0
+						);
+					}
 
-		if (courseUpdated > 0) {
-			await this.deletionLogService.createDeletionLog(
-				deletionRequest.id,
-				DeletionDomainModel.COURSE,
-				DeletionOperationModel.UPDATE,
-				courseUpdated,
-				0
-			);
-		}
+					if (courseUpdated > 0) {
+						await this.deletionLogService.createDeletionLog(
+							deletionRequest.id,
+							DeletionDomainModel.COURSE,
+							DeletionOperationModel.UPDATE,
+							courseUpdated,
+							0
+						);
+					}
 
-		if (fileDeleted > 0 || filesPermisionUpdated > 0) {
-			await this.deletionLogService.createDeletionLog(
-				deletionRequest.id,
-				DeletionDomainModel.FILE,
-				DeletionOperationModel.UPDATE,
-				fileDeleted + filesPermisionUpdated,
-				0
-			);
-		}
+					if (fileDeleted > 0 || filesPermisionUpdated > 0) {
+						await this.deletionLogService.createDeletionLog(
+							deletionRequest.id,
+							DeletionDomainModel.FILE,
+							DeletionOperationModel.UPDATE,
+							fileDeleted + filesPermisionUpdated,
+							0
+						);
+					}
 
-		if (lessonUpdated > 0) {
-			await this.deletionLogService.createDeletionLog(
-				deletionRequest.id,
-				DeletionDomainModel.LESSONS,
-				DeletionOperationModel.UPDATE,
-				lessonUpdated,
-				0
-			);
-		}
+					if (lessonUpdated > 0) {
+						await this.deletionLogService.createDeletionLog(
+							deletionRequest.id,
+							DeletionDomainModel.LESSONS,
+							DeletionOperationModel.UPDATE,
+							lessonUpdated,
+							0
+						);
+					}
 
-		if (pseudonymDeleted > 0) {
-			await this.deletionLogService.createDeletionLog(
-				deletionRequest.id,
-				DeletionDomainModel.PSEUDONYMS,
-				DeletionOperationModel.DELETE,
-				0,
-				pseudonymDeleted
-			);
-		}
+					if (pseudonymDeleted > 0) {
+						await this.deletionLogService.createDeletionLog(
+							deletionRequest.id,
+							DeletionDomainModel.PSEUDONYMS,
+							DeletionOperationModel.DELETE,
+							0,
+							pseudonymDeleted
+						);
+					}
 
-		if (teamsUpdated > 0) {
-			await this.deletionLogService.createDeletionLog(
-				deletionRequest.id,
-				DeletionDomainModel.TEAMS,
-				DeletionOperationModel.UPDATE,
-				teamsUpdated,
-				0
-			);
-		}
+					if (teamsUpdated > 0) {
+						await this.deletionLogService.createDeletionLog(
+							deletionRequest.id,
+							DeletionDomainModel.TEAMS,
+							DeletionOperationModel.UPDATE,
+							teamsUpdated,
+							0
+						);
+					}
 
-		if (userDeleted > 0) {
-			await this.deletionLogService.createDeletionLog(
-				deletionRequest.id,
-				DeletionDomainModel.USER,
-				DeletionOperationModel.DELETE,
-				0,
-				userDeleted
-			);
-		}
+					if (userDeleted > 0) {
+						await this.deletionLogService.createDeletionLog(
+							deletionRequest.id,
+							DeletionDomainModel.USER,
+							DeletionOperationModel.DELETE,
+							0,
+							userDeleted
+						);
+					}
+
+					await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
+
+					return true;
+				}
+			)
+			.catch(async () => {
+				await this.deletionRequestService.markDeletionRequestAsFailed(deletionRequest.id);
+			});
 	}
 }

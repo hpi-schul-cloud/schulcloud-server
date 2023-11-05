@@ -100,7 +100,7 @@ describe(DeletionRequestService.name, () => {
 		});
 	});
 
-	describe('findAllItemsByDeletionDate', () => {
+	describe('findAllItemsToExecute', () => {
 		describe('when finding all deletionRequests for execution', () => {
 			const setup = () => {
 				const dateInPast = new Date();
@@ -108,21 +108,21 @@ describe(DeletionRequestService.name, () => {
 				const deletionRequest1 = deletionRequestFactory.build({ deleteAfter: dateInPast });
 				const deletionRequest2 = deletionRequestFactory.build({ deleteAfter: dateInPast });
 
-				deletionRequestRepo.findAllItemsByDeletionDate.mockResolvedValue([deletionRequest1, deletionRequest2]);
+				deletionRequestRepo.findAllItemsToExecution.mockResolvedValue([deletionRequest1, deletionRequest2]);
 
 				const deletionRequests = [deletionRequest1, deletionRequest2];
 				return { deletionRequests };
 			};
 
 			it('should call deletionRequestRepo.findAllItemsByDeletionDate', async () => {
-				await service.findAllItemsByDeletionDate();
+				await service.findAllItemsToExecute();
 
-				expect(deletionRequestRepo.findAllItemsByDeletionDate).toBeCalled();
+				expect(deletionRequestRepo.findAllItemsToExecution).toBeCalled();
 			});
 
-			it('should return array of two deletionRequests with date smaller than today', async () => {
+			it('should return array of two deletionRequests to execute', async () => {
 				const { deletionRequests } = setup();
-				const result = await service.findAllItemsByDeletionDate();
+				const result = await service.findAllItemsToExecute();
 
 				expect(result).toHaveLength(2);
 				expect(result).toEqual(deletionRequests);
@@ -160,6 +160,23 @@ describe(DeletionRequestService.name, () => {
 				await service.markDeletionRequestAsExecuted(deletionRequestId);
 
 				expect(deletionRequestRepo.markDeletionRequestAsExecuted).toBeCalledWith(deletionRequestId);
+			});
+		});
+	});
+
+	describe('markDeletionRequestAsFailed', () => {
+		describe('when mark deletionRequest as failed', () => {
+			const setup = () => {
+				const deletionRequestId = new ObjectId().toHexString();
+
+				return { deletionRequestId };
+			};
+
+			it('should call deletionRequestRepo.markDeletionRequestAsExecuted', async () => {
+				const { deletionRequestId } = setup();
+				await service.markDeletionRequestAsFailed(deletionRequestId);
+
+				expect(deletionRequestRepo.markDeletionRequestAsFailed).toBeCalledWith(deletionRequestId);
 			});
 		});
 	});
