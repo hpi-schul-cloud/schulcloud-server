@@ -1,7 +1,6 @@
 import { PaginationParams } from '@shared/controller';
-import { SchoolDto, SlimSchoolDto } from '../../../domain/dto';
-import { SchoolResponse, SlimSchoolListResponse } from '../response';
-import { SlimSchoolResponse } from '../response/school-reduced.response';
+import { SchoolDto, SchoolForExternalInviteDto } from '../../../domain/dto';
+import { SchoolForExternalInviteResponse, SchoolListForExternalInviteResponse, SchoolResponse } from '../response';
 import { FederalStateResponseMapper } from './federal-state.response.mapper';
 import { SchoolYearResponseMapper } from './school-year.response.mapper';
 import { SystemResponseMapper } from './system.response.mapper';
@@ -27,16 +26,19 @@ export class SchoolResponseMapper {
 		return res;
 	}
 
-	public static mapToSlimListResponse(schools: SlimSchoolDto[], pagination: PaginationParams): SlimSchoolListResponse {
-		const dtos = schools.map((school) => this.mapToSlimResponse(school));
+	public static mapToListForExternalInviteResponse(
+		schools: SchoolForExternalInviteDto[],
+		pagination: PaginationParams
+	): SchoolListForExternalInviteResponse {
+		const dtos = schools.map((school) => this.mapToExternalInviteResponse(school));
 
-		const list = new SlimSchoolListResponse(dtos, dtos.length, pagination.skip, pagination.limit);
+		const list = new SchoolListForExternalInviteResponse(dtos, dtos.length, pagination.skip, pagination.limit);
 
 		return list;
 	}
 
-	private static mapToSlimResponse(school: SlimSchoolDto): SlimSchoolResponse {
-		const res = new SlimSchoolResponse(school);
+	private static mapToExternalInviteResponse(school: SchoolForExternalInviteDto): SchoolForExternalInviteResponse {
+		const res = new SchoolForExternalInviteResponse(school);
 
 		return res;
 	}

@@ -3,12 +3,9 @@ import { EntityId, IPagination, Permission } from '@shared/domain';
 import { AuthorizationContextBuilder } from '@src/modules/authorization/domain/mapper/authorization-context.builder';
 import { AuthorizationService } from '@src/modules/authorization/domain/service/authorization.service';
 import { School, SchoolYear } from '../do';
-import { SchoolDto, SchoolYearDto, SlimSchoolDto } from '../dto';
-import { YearsDto } from '../dto/years.dto';
-import { SchoolDtoMapper } from '../mapper';
-import { SchoolYearDtoMapper } from '../mapper/school-year.dto.mapper';
-import { SchoolService } from '../service';
-import { SchoolYearService } from '../service/school-year.service';
+import { SchoolDto, SchoolForExternalInviteDto, SchoolYearDto, YearsDto } from '../dto';
+import { SchoolDtoMapper, SchoolYearDtoMapper } from '../mapper';
+import { SchoolService, SchoolYearService } from '../service';
 import { SchoolQuery } from '../type';
 
 @Injectable()
@@ -18,14 +15,6 @@ export class SchoolUc {
 		private readonly schoolService: SchoolService,
 		private readonly schoolYearService: SchoolYearService
 	) {}
-
-	public async getListOfSlimSchools(query: SchoolQuery, pagination: IPagination): Promise<SlimSchoolDto[]> {
-		const schools = await this.schoolService.getAllSchools(query, pagination);
-
-		const dtos = SchoolDtoMapper.mapToListOfSlimDtos(schools);
-
-		return dtos;
-	}
 
 	public async getSchool(schoolId: EntityId, userId: EntityId): Promise<SchoolDto> {
 		const school = await this.schoolService.getSchool(schoolId);
@@ -39,6 +28,17 @@ export class SchoolUc {
 		const dto = SchoolDtoMapper.mapToDto(school, yearsDto);
 
 		return dto;
+	}
+
+	public async getSchoolListForExternalInvite(
+		query: SchoolQuery,
+		pagination: IPagination
+	): Promise<SchoolForExternalInviteDto[]> {
+		const schools = await this.schoolService.getAllSchools(query, pagination);
+
+		const dtos = SchoolDtoMapper.mapToListForExternalInviteDtos(schools);
+
+		return dtos;
 	}
 
 	private async createYearsDto(school: School): Promise<YearsDto> {

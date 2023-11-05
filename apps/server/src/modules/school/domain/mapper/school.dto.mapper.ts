@@ -1,6 +1,5 @@
 import { School } from '../do';
-import { SchoolDto, SlimSchoolDto } from '../dto';
-import { YearsDto } from '../dto/years.dto';
+import { SchoolDto, SchoolForExternalInviteDto, YearsDto } from '../dto';
 import { FederalStateDtoMapper } from './federal-state.dto.mapper';
 import { SchoolYearDtoMapper } from './school-year.dto.mapper';
 import { SystemDtoMapper } from './system.dto.mapper';
@@ -28,16 +27,16 @@ export class SchoolDtoMapper {
 		return dto;
 	}
 
-	public static mapToListOfSlimDtos(schools: School[]): SlimSchoolDto[] {
-		const dtos = schools.map((school) => this.mapToSlimDto(school));
+	public static mapToListForExternalInviteDtos(schools: School[]): SchoolForExternalInviteDto[] {
+		const dtos = schools.map((school) => this.mapToExternalInviteDto(school));
 
 		return dtos;
 	}
 
-	public static mapToSlimDto(school: School): SlimSchoolDto {
+	private static mapToExternalInviteDto(school: School): SchoolForExternalInviteDto {
 		const schoolProps = school.getProps();
 
-		const dto = new SlimSchoolDto({
+		const dto = new SchoolForExternalInviteDto({
 			id: school.id,
 			name: schoolProps.name,
 			purpose: schoolProps.purpose,
