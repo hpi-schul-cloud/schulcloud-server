@@ -20,7 +20,7 @@ export class SchoolUc {
 		const school = await this.schoolService.getSchool(schoolId);
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const authContext = AuthorizationContextBuilder.read([Permission.SCHOOL_EDIT]);
+		const authContext = AuthorizationContextBuilder.read([]);
 		this.authorizationService.checkPermission(user, school, authContext);
 
 		const yearsDto = await this.createYearsDto(school);
@@ -35,6 +35,8 @@ export class SchoolUc {
 		pagination: IPagination
 	): Promise<SchoolForExternalInviteDto[]> {
 		const schools = await this.schoolService.getAllSchools(query, pagination);
+
+		// TODO: Do we want authorization here? At the moment there is no fitting permission.
 
 		const dtos = SchoolDtoMapper.mapToListForExternalInviteDtos(schools);
 
