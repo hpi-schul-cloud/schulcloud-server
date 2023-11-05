@@ -15,10 +15,6 @@ export class SchoolResponseMapper {
 		const systems = school.systems?.map((system) => SystemResponseMapper.mapToResponse(system));
 		const years = YearsResponseMapper.mapToResponse(school.years);
 
-		// TODO: Do we want to access the props via getProps() here or do we want getters?
-		// I added getters for federalState and schoolYear because there are conditions with them below
-		// and then the code is a easier to read. But I wasn't really sure.
-		// Do we want any fixed criteria for when to add getters?
 		const res = new SchoolResponse({
 			...school,
 			federalState,
