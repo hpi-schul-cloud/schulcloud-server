@@ -1,7 +1,5 @@
 import fs from 'fs';
-import { Injectable } from '@nestjs/common';
 
-@Injectable()
 export class ReferencesService {
 	static loadFromTxtFile(filePath: string): string[] {
 		let fileContent = fs.readFileSync(filePath).toString();
