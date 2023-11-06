@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { RocketChatUser } from '../../domain/rocket-chat-user.do';
 import { rocketChatUserFactory } from '../../domain/testing/rocket-chat-user.factory';
 import { RocketChatUserEntity } from '../../entity';
@@ -14,7 +15,7 @@ describe(RocketChatUserMapper.name, () => {
 
 				const expectedDomainObject = new RocketChatUser({
 					id: entity.id,
-					userId: entity.userId,
+					userId: entity.userId.toHexString(),
 					username: entity.username,
 					rcId: entity.rcId,
 					authToken: entity.authToken,
@@ -45,7 +46,7 @@ describe(RocketChatUserMapper.name, () => {
 
 				const expectedEntity = new RocketChatUserEntity({
 					id: domainObject.id,
-					userId: domainObject.userId,
+					userId: new ObjectId(domainObject.userId),
 					username: domainObject.username,
 					rcId: domainObject.rcId,
 					authToken: domainObject.authToken,

@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { RocketChatUserEntity } from '../entity';
@@ -13,9 +13,9 @@ export class RocketChatUserRepo {
 		return RocketChatUserEntity;
 	}
 
-	async findByUserId(id: EntityId): Promise<RocketChatUser> {
+	async findByUserId(userId: EntityId): Promise<RocketChatUser> {
 		const entity: RocketChatUserEntity = await this.em.findOneOrFail(RocketChatUserEntity, {
-			userId: id,
+			userId: new ObjectId(userId),
 		});
 
 		const mapped: RocketChatUser = RocketChatUserMapper.mapToDO(entity);
@@ -23,17 +23,11 @@ export class RocketChatUserRepo {
 		return mapped;
 	}
 
-	async deleteByUserId(id: EntityId): Promise<boolean> {
-		const entity: RocketChatUserEntity | null = await this.em.findOne(RocketChatUserEntity, {
-			userId: id,
+	async deleteByUserId(userId: EntityId): Promise<number> {
+		const promise: Promise<number> = this.em.nativeDelete(RocketChatUserEntity, {
+			userId: new ObjectId(userId),
 		});
 
-		if (!entity) {
-			return false;
-		}
-
-		await this.em.removeAndFlush(entity);
-
-		return true;
+		return promise;
 	}
 }

@@ -1,11 +1,11 @@
-import { Entity, Index, Property } from '@mikro-orm/core';
+import { Entity, Index, Property, Unique } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain';
 
 export interface RocketChatUserEntityProps {
 	id?: EntityId;
-	userId: EntityId;
+	userId: ObjectId;
 	username: string;
 	rcId: string;
 	authToken?: string;
@@ -16,15 +16,12 @@ export interface RocketChatUserEntityProps {
 @Entity({ tableName: 'rocketchatuser' })
 export class RocketChatUserEntity extends BaseEntityWithTimestamps {
 	@Property()
+	@Unique()
 	username: string;
 
 	@Property()
-	@Index()
-	_userId: ObjectId;
-
-	get userId(): EntityId {
-		return this._userId.toHexString();
-	}
+	@Unique()
+	userId: ObjectId;
 
 	@Property()
 	@Index()
@@ -40,7 +37,7 @@ export class RocketChatUserEntity extends BaseEntityWithTimestamps {
 			this.id = props.id;
 		}
 
-		this._userId = new ObjectId(props.userId);
+		this.userId = props.userId;
 		this.username = props.username;
 		this.rcId = props.rcId;
 

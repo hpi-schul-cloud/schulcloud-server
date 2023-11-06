@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { RocketChatUserEntity } from '../../entity';
 import { RocketChatUser } from '../../domain/rocket-chat-user.do';
 
@@ -5,7 +6,7 @@ export class RocketChatUserMapper {
 	static mapToDO(entity: RocketChatUserEntity): RocketChatUser {
 		return new RocketChatUser({
 			id: entity.id,
-			userId: entity.userId,
+			userId: entity.userId.toHexString(),
 			username: entity.username,
 			rcId: entity.rcId,
 			authToken: entity.authToken,
@@ -17,7 +18,7 @@ export class RocketChatUserMapper {
 	static mapToEntity(domainObject: RocketChatUser): RocketChatUserEntity {
 		return new RocketChatUserEntity({
 			id: domainObject.id,
-			userId: domainObject.userId,
+			userId: new ObjectId(domainObject.userId),
 			username: domainObject.username,
 			rcId: domainObject.rcId,
 			authToken: domainObject.authToken,

@@ -1,6 +1,6 @@
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { RocketChatUserEntity } from '@src/modules/rocketchat/entity';
+import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
 
 describe(RocketChatUserEntity.name, () => {
 	beforeAll(async () => {
@@ -12,7 +12,7 @@ describe(RocketChatUserEntity.name, () => {
 
 		const props = {
 			id: new ObjectId().toHexString(),
-			userId: new ObjectId().toHexString(),
+			userId: new ObjectId(),
 			username: 'Test.User.shls',
 			rcId: 'JfMJXua6t29KYXdDc',
 			authToken: 'OL8e5YCZHy3agGnLS-gHAx1wU4ZCG8-DXU_WZnUxUu6',

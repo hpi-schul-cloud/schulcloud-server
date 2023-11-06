@@ -1,13 +1,12 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Test } from '@nestjs/testing';
-import { TestingModule } from '@nestjs/testing/testing-module';
+import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections } from '@shared/testing';
 import { RocketChatUserMapper } from './mapper';
 import { RocketChatUserEntity } from '../entity';
 import { RocketChatUserRepo } from './rocket-chat-user.repo';
-import { rocketChatUserEntityFactory } from '../entity/testing/rocket-chat-user.entity.factory';
-import { RocketChatUser } from '../domain/rocket-chat-user.do';
+import { RocketChatUser } from '../domain';
+import { rocketChatUserEntityFactory } from '../entity/testing';
 
 describe(RocketChatUserRepo.name, () => {
 	let module: TestingModule;
@@ -34,12 +33,13 @@ describe(RocketChatUserRepo.name, () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
-		await em.nativeDelete(RocketChatUserEntity, {});
+		// await em.nativeDelete(RocketChatUserEntity, {});
 	});
 
 	describe('defined', () => {
 		it('repo should be defined', () => {
 			expect(repo).toBeDefined();
+			expect(typeof repo.findByUserId).toEqual('function');
 		});
 
 		it('entity manager should be defined', () => {
@@ -52,17 +52,15 @@ describe(RocketChatUserRepo.name, () => {
 	});
 
 	describe('findByUserId', () => {
-		describe('when searching by userId', () => {
+		describe('when searching rocketChatUser by userId', () => {
 			const setup = async () => {
-				// const rocketChatUserId = new ObjectId().toHexString();
-
-				// const entity: RocketChatUserEntity = rocketChatUserEntityFactory.build({ userId: rocketChatUserId });
-				const entity: RocketChatUserEntity = rocketChatUserEntityFactory.build();
+				const userId = new ObjectId();
+				const entity: RocketChatUserEntity = rocketChatUserEntityFactory.build({ userId });
 				await em.persistAndFlush(entity);
 				em.clear();
 				const expectedRocketChatUser = {
 					id: entity.id,
-					userId: entity.userId,
+					userId: entity.userId.toHexString(),
 					username: entity.username,
 					rcId: entity.rcId,
 					authToken: entity.authToken,
@@ -79,7 +77,7 @@ describe(RocketChatUserRepo.name, () => {
 			it('should find the rocketChatUser', async () => {
 				const { entity, expectedRocketChatUser } = await setup();
 
-				const result: RocketChatUser = await repo.findByUserId(entity.userId);
+				const result: RocketChatUser = await repo.findByUserId(entity.userId.toHexString());
 
 				// Verify explicit fields.
 				expect(result).toEqual(expect.objectContaining(expectedRocketChatUser));
@@ -87,35 +85,35 @@ describe(RocketChatUserRepo.name, () => {
 		});
 	});
 
-	describe('deleteById', () => {
-		describe('when deleting deletionRequest exists', () => {
+	describe('deleteByUserId', () => {
+		describe('when deleting rocketChatUser exists', () => {
 			const setup = async () => {
 				const entity: RocketChatUserEntity = rocketChatUserEntityFactory.build();
-				const rocketChatUserId = entity.userId;
+				const rocketChatUserId = entity.userId.toHexString();
 				await em.persistAndFlush(entity);
 				em.clear();
 
 				return { rocketChatUserId };
 			};
 
-			it('should delete the deletionRequest with deletionRequestId', async () => {
+			it('should delete the rocketChatUSer with userId', async () => {
 				const { rocketChatUserId } = await setup();
 
 				await repo.deleteByUserId(rocketChatUserId);
 
-				expect(await em.findOne(RocketChatUserEntity, { userId: rocketChatUserId })).toBeNull();
+				expect(await em.findOne(RocketChatUserEntity, { userId: new ObjectId(rocketChatUserId) })).toBeNull();
 			});
 
-			it('should return true', async () => {
+			it('should return number equal 1', async () => {
 				const { rocketChatUserId } = await setup();
 
-				const result: boolean = await repo.deleteByUserId(rocketChatUserId);
+				const result: number = await repo.deleteByUserId(rocketChatUserId);
 
-				expect(result).toEqual(true);
+				expect(result).toEqual(1);
 			});
 		});
 
-		describe('when no deletionRequestEntity exists', () => {
+		describe('when no rocketChatUser exists', () => {
 			const setup = () => {
 				const rocketChatUserId = new ObjectId().toHexString();
 
@@ -125,9 +123,9 @@ describe(RocketChatUserRepo.name, () => {
 			it('should return false', async () => {
 				const { rocketChatUserId } = setup();
 
-				const result: boolean = await repo.deleteByUserId(rocketChatUserId);
+				const result: number = await repo.deleteByUserId(rocketChatUserId);
 
-				expect(result).toEqual(false);
+				expect(result).toEqual(0);
 			});
 		});
 	});
