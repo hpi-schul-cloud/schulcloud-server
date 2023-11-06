@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-tldraw-deployment
+  name: tldraw-deployment
   namespace: {{ NAMESPACE }}
   labels:
-    app: api-tldraw
+    app: tldraw
 spec:
   replicas: {{ TLDRAW_EDITOR_REPLICAS|default("1", true) }}
   strategy:
