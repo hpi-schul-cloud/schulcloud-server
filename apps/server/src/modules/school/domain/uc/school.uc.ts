@@ -32,7 +32,8 @@ export class SchoolUc {
 
 	public async getSchoolListForExternalInvite(
 		query: SchoolQuery,
-		pagination: IPagination
+		pagination: IPagination,
+		ownSchoolId: EntityId
 	): Promise<SchoolForExternalInviteDto[]> {
 		const schools = await this.schoolService.getAllSchools(query, pagination);
 
@@ -40,7 +41,9 @@ export class SchoolUc {
 
 		const dtos = SchoolDtoMapper.mapToListForExternalInviteDtos(schools);
 
-		return dtos;
+		const dtosWithoutOwnSchool = dtos.filter((dto) => dto.id !== ownSchoolId);
+
+		return dtosWithoutOwnSchool;
 	}
 
 	private async createYearsDto(school: School): Promise<YearsDto> {

@@ -33,9 +33,10 @@ export class SchoolController {
 	@Get('/list-for-external-invite')
 	public async getSchoolListForExternalInvite(
 		@Query() query: SchoolQueryParams,
-		@Query() pagination: PaginationParams
+		@Query() pagination: PaginationParams,
+		@CurrentUser() user: ICurrentUser
 	): Promise<SchoolListForExternalInviteResponse> {
-		const schools = await this.schoolUc.getSchoolListForExternalInvite(query, pagination);
+		const schools = await this.schoolUc.getSchoolListForExternalInvite(query, pagination, user.schoolId);
 
 		const res = SchoolResponseMapper.mapToListForExternalInviteResponse(schools, pagination);
 
