@@ -1,10 +1,10 @@
 import { ITemporaryFile, ITemporaryFileStorage, IUser } from '@lumieducation/h5p-server';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotAcceptableException } from '@nestjs/common';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { FileDto } from '@src/modules/files-storage/dto/file.dto';
 import { ReadStream } from 'fs';
 import { Readable } from 'stream';
-import { TemporaryFile } from '../entity/temporary-file.entity';
+import { H5pFileDto } from '../controller/dto/h5p-file.dto';
+import { H5pEditorTempFile } from '../entity/h5p-editor-tempfile.entity';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { TemporaryFileRepo } from '../repo/temporary-file.repo';
 
@@ -16,13 +16,12 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 	) {}
 
 	private checkFilename(filename: string): void {
-		if (/^[a-zA-Z0-9/._-]+$/g.test(filename) && !filename.includes('..') && !filename.startsWith('/')) {
-			return;
+		if (!/^[a-zA-Z0-9/._-]+$/g.test(filename) && filename.includes('..') && filename.startsWith('/')) {
+			throw new NotAcceptableException(`Filename contains forbidden characters or is empty: '${filename}'`);
 		}
-		throw new Error(`Filename contains forbidden characters or is empty: '${filename}'`);
 	}
 
-	private getFileInfo(filename: string, userId: string): Promise<TemporaryFile> {
+	private getFileInfo(filename: string, userId: string): Promise<H5pEditorTempFile> {
 		this.checkFilename(filename);
 		return this.repo.findByUserAndFilename(userId, filename);
 	}
@@ -36,34 +35,29 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 
 	public async fileExists(filename: string, user: IUser): Promise<boolean> {
 		this.checkFilename(filename);
-		try {
-			await this.repo.findByUserAndFilename(user.id, filename);
-			return true;
-		} catch (error) {
-			return false;
-		}
+		const files = await this.repo.findAllByUserAndFilename(user.id, filename);
+		const exists = files.length !== 0;
+		return exists;
 	}
 
-	public async getFileStats(filename: string, user: IUser): Promise<TemporaryFile> {
+	public async getFileStats(filename: string, user: IUser): Promise<H5pEditorTempFile> {
 		return this.getFileInfo(filename, user.id);
 	}
 
 	public async getFileStream(
 		filename: string,
 		user: IUser,
-		rangeStart?: number | undefined,
+		rangeStart = 0,
 		rangeEnd?: number | undefined
 	): Promise<Readable> {
 		this.checkFilename(filename);
 		const tempFile = await this.repo.findByUserAndFilename(user.id, filename);
 		const path = this.getFilePath(user.id, filename);
-		if (rangeStart === undefined) {
-			rangeStart = 0;
-		}
+		let rangeEndNew = 0;
 		if (rangeEnd === undefined) {
-			rangeEnd = tempFile.size - 1;
+			rangeEndNew = tempFile.size - 1;
 		}
-		const response = await this.s3Client.get(path, `${rangeStart}-${rangeEnd}`);
+		const response = await this.s3Client.get(path, `${rangeStart}-${rangeEndNew}`);
 
 		return response.data;
 	}
@@ -91,46 +85,40 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		this.checkFilename(filename);
 		const now = new Date();
 		if (expirationTime < now) {
-			throw new Error('expirationTime must be in the future');
+			throw new NotAcceptableException('expirationTime must be in the future');
 		}
 
 		const path = this.getFilePath(user.id, filename);
-		let tempFile: TemporaryFile | undefined;
+		let tempFile: H5pEditorTempFile | undefined;
 		try {
 			tempFile = await this.repo.findByUserAndFilename(user.id, filename);
 			await this.s3Client.delete([path]);
-		} catch (err) {
-			/* does not exist */
+		} finally {
+			if (tempFile === undefined) {
+				tempFile = new H5pEditorTempFile({
+					filename,
+					ownedByUserId: user.id,
+					expiresAt: expirationTime,
+					birthtime: new Date(),
+					size: dataStream.bytesRead,
+				});
+			} else {
+				tempFile.expiresAt = expirationTime;
+				tempFile.size = dataStream.bytesRead;
+			}
 		}
 		await this.s3Client.create(
 			path,
-			new FileDto({ name: path, mimeType: 'application/octet-stream', data: dataStream })
+			new H5pFileDto({ name: path, mimeType: 'application/octet-stream', data: dataStream })
 		);
-
-		if (tempFile === undefined) {
-			tempFile = new TemporaryFile({
-				filename,
-				ownedByUserId: user.id,
-				expiresAt: expirationTime,
-				birthtime: new Date(),
-				size: dataStream.bytesRead,
-			});
-			await this.repo.save(tempFile);
-		} else {
-			tempFile.expiresAt = expirationTime;
-			tempFile.size = dataStream.bytesRead;
-			await this.repo.save(tempFile);
-		}
+		await this.repo.save(tempFile);
 
 		return tempFile;
 	}
 
 	private getFilePath(userId: string, filename: string): string {
-		if (!userId || !filename) {
-			throw new Error('COULD_NOT_CREATE_PATH');
-		}
-
 		const path = `h5p-tempfiles/${userId}/${filename}`;
+
 		return path;
 	}
 }

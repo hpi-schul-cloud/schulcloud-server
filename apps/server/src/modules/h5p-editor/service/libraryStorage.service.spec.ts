@@ -2,12 +2,11 @@ import { Readable } from 'stream';
 
 import { HeadObjectCommandOutput, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { ILibraryMetadata, ILibraryName } from '@lumieducation/h5p-server';
+import { H5pError, ILibraryMetadata, ILibraryName } from '@lumieducation/h5p-server';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { GetFileResponse } from '@src/modules/files-storage/interface';
 import { FileMetadata, InstalledLibrary } from '../entity/library.entity';
 import { H5P_LIBRARIES_S3_CONNECTION } from '../h5p-editor.config';
 import { LibraryRepo } from '../repo/library.repo';
@@ -23,6 +22,7 @@ async function readStream(stream: Readable): Promise<string> {
 	});
 }
 
+jest.useFakeTimers();
 describe('LibraryStorage', () => {
 	let module: TestingModule;
 	let storage: LibraryStorage;
@@ -37,16 +37,12 @@ describe('LibraryStorage', () => {
 					provide: LibraryRepo,
 					useValue: createMock<LibraryRepo>(),
 				},
-				{
-					provide: 'S3ClientAdapter_Libraries',
-					useValue: createMock<S3ClientAdapter>(),
-				},
 				{ provide: H5P_LIBRARIES_S3_CONNECTION, useValue: createMock<S3ClientAdapter>() },
 			],
 		}).compile();
 
 		storage = module.get(LibraryStorage);
-		s3ClientAdapter = module.get('S3ClientAdapter_Libraries');
+		s3ClientAdapter = module.get(H5P_LIBRARIES_S3_CONNECTION);
 		repo = module.get(LibraryRepo);
 	});
 
@@ -168,9 +164,10 @@ describe('LibraryStorage', () => {
 			for (const file of savedFiles) {
 				if (file[0] === filepath) {
 					return Promise.resolve({
+						name: file[1],
 						contentLength: file[1].length,
 						data: Readable.from(Buffer.from(file[1])),
-					} as GetFileResponse);
+					});
 				}
 			}
 			throw new Error(`S3 object under ${filepath} not found`);
@@ -461,6 +458,35 @@ describe('LibraryStorage', () => {
 		});
 	});
 
+	describe('getLibraryFile', () => {
+		describe('when getting library.json file', () => {
+			const setup = async (addLibrary = true) => {
+				const {
+					names: { testingLib },
+				} = createTestData();
+
+				if (addLibrary) {
+					await storage.addLibrary(testingLib, false);
+				}
+				const ubername = 'testing-1.2';
+				const file = 'library.json';
+
+				return { testingLib, file, ubername };
+			};
+
+			it('should return library.json file', async () => {
+				const { testingLib, file, ubername } = await setup();
+				repo.findOneByNameAndVersionOrFail.mockResolvedValueOnce(testingLib);
+
+				const result = await storage.getLibraryFile(ubername, file);
+
+				expect(result).toBeDefined();
+				expect(result.mimetype).toBeDefined();
+				expect(result.mimetype).toEqual('application/json');
+			});
+		});
+	});
+
 	describe('When getting library dependencies', () => {
 		const setup = async () => {
 			const { libraries, names } = createTestData();
@@ -476,7 +502,7 @@ describe('LibraryStorage', () => {
 			const { addonLib } = await setup();
 
 			const addons = await storage.listAddons();
-			expect(addons).toContainEqual(expect.objectContaining(addonLib));
+			expect(addons).toEqual([addonLib]);
 		});
 
 		it('should count dependencies', async () => {
@@ -569,6 +595,22 @@ describe('LibraryStorage', () => {
 					})
 				);
 			});
+
+			describe('when s3 upload error', () => {
+				it('should throw H5P Error', async () => {
+					const { testingLib } = await setup();
+					const filename = 'test/abc.json';
+
+					s3ClientAdapter.create.mockImplementationOnce(() => {
+						throw Error('S3 Exception');
+					});
+
+					const addFile = () => storage.addFile(testingLib, filename, Readable.from(Buffer.from('')));
+					return expect(addFile).rejects.toThrow(
+						new H5pError(`mongo-s3-library-storage:s3-upload-error (ubername: testing-1.2, filename: test/abc.json)`)
+					);
+				});
+			});
 		});
 
 		it('should list all files', async () => {
@@ -621,7 +663,7 @@ describe('LibraryStorage', () => {
 			it('should return parsed json', async () => {
 				const { testingLib, testFile } = await setup();
 
-				const json = (await storage.getFileAsJson(testingLib, testFile.name)) as unknown;
+				const json = await storage.getFileAsJson(testingLib, testFile.name);
 				expect(json).toEqual(JSON.parse(testFile.content));
 			});
 

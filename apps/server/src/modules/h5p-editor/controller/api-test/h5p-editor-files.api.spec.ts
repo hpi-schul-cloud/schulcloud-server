@@ -1,17 +1,22 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ILibraryName } from '@lumieducation/h5p-server';
 import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMetadata';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import {
+	courseFactory,
+	h5pContentFactory,
+	lessonFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
+} from '@shared/testing';
 import { ObjectID } from 'bson';
 import { Readable } from 'stream';
-import { H5PContent, H5PContentParentType, IH5PContentProperties, TemporaryFile } from '../../entity';
+import { H5PContent, H5PContentParentType, IH5PContentProperties, H5pEditorTempFile } from '../../entity';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
-import { H5PContentRepo } from '../../repo';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from '../../service';
 
 const helpers = {
@@ -73,7 +78,6 @@ describe('H5PEditor Controller (api)', () => {
 	let contentStorage: DeepMocked<ContentStorage>;
 	let libraryStorage: DeepMocked<LibraryStorage>;
 	let temporaryStorage: DeepMocked<TemporaryFileStorage>;
-	let contentRepo: DeepMocked<H5PContentRepo>;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -89,8 +93,6 @@ describe('H5PEditor Controller (api)', () => {
 			.useValue(createMock<LibraryStorage>())
 			.overrideProvider(TemporaryFileStorage)
 			.useValue(createMock<TemporaryFileStorage>())
-			.overrideProvider(H5PContentRepo)
-			.useValue(createMock<H5PContentRepo>())
 			.compile();
 
 		app = module.createNestApplication();
@@ -99,7 +101,6 @@ describe('H5PEditor Controller (api)', () => {
 		contentStorage = app.get(ContentStorage);
 		libraryStorage = app.get(LibraryStorage);
 		temporaryStorage = app.get(TemporaryFileStorage);
-		contentRepo = module.get(H5PContentRepo);
 		testApiClient = new TestApiClient(app, 'h5p-editor');
 	});
 
@@ -185,51 +186,53 @@ describe('H5PEditor Controller (api)', () => {
 
 			const setup = async () => {
 				const { studentAccount, studentUser } = createStudent();
+				const course = courseFactory.build({ students: [studentUser], school: studentUser.school });
+				const lesson = lessonFactory.build({ course });
+				await em.persistAndFlush([studentAccount, studentUser, lesson, course]);
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				const content = h5pContentFactory.build({ parentId: lesson.id, parentType: H5PContentParentType.Lesson });
+				await em.persistAndFlush([content]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
-				const dummyId = new ObjectId(0).toString();
-
-				return { loggedInClient, dummyId };
+				return { loggedInClient, content };
 			};
 
 			it('should return the content file', async () => {
-				const { loggedInClient, dummyId } = await setup();
+				const { loggedInClient, content } = await setup();
 
 				const mockFile = { content: 'Test File', size: 9, name: 'test.txt', birthtime: new Date() };
 
 				contentStorage.getFileStream.mockResolvedValueOnce(Readable.from(mockFile.content));
 				contentStorage.getFileStats.mockResolvedValueOnce({ birthtime: mockFile.birthtime, size: mockFile.size });
 
-				const response = await loggedInClient.get(`content/${dummyId}/${mockFile.name}`);
+				const response = await loggedInClient.get(`content/${content.id}/${mockFile.name}`);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.text).toBe(mockFile.content);
 			});
 
 			it('should work with range requests', async () => {
-				const { loggedInClient, dummyId } = await setup();
+				const { loggedInClient, content } = await setup();
 
 				const mockFile = { content: 'Test File', size: 9, name: 'test.txt', birthtime: new Date() };
 
 				contentStorage.getFileStream.mockResolvedValueOnce(Readable.from(mockFile.content));
 				contentStorage.getFileStats.mockResolvedValueOnce({ birthtime: mockFile.birthtime, size: mockFile.size });
 
-				const response = await loggedInClient.get(`content/${dummyId}/${mockFile.name}`).set('Range', 'bytes=2-4');
+				const response = await loggedInClient.get(`content/${content.id}/${mockFile.name}`).set('Range', 'bytes=2-4');
 
 				expect(response.statusCode).toEqual(HttpStatus.PARTIAL_CONTENT);
 				expect(response.text).toBe(mockFile.content);
 			});
 
 			it('should return 404 if file does not exist', async () => {
-				const { loggedInClient, dummyId } = await setup();
+				const { loggedInClient, content } = await setup();
 
 				contentStorage.getFileStats.mockRejectedValueOnce(new Error('Does not exist'));
 
-				const response = await loggedInClient.get(`content/${dummyId}/nonexistant.txt`);
+				const response = await loggedInClient.get(`content/${content.id}/nonexistant.txt`);
 
 				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 			});
@@ -267,7 +270,7 @@ describe('H5PEditor Controller (api)', () => {
 					content: 'File Content',
 				};
 
-				const mockTempFile = new TemporaryFile({
+				const mockTempFile = new H5pEditorTempFile({
 					filename: mockFile.name,
 					ownedByUserId: studentUser.id,
 					expiresAt: new Date(),
@@ -286,7 +289,7 @@ describe('H5PEditor Controller (api)', () => {
 
 				const response = await loggedInClient.get(`temp-files/${mockFile.name}`);
 
-				expect(response.statusCode).toEqual(HttpStatus.OK);
+				expect(response.statusCode).toEqual(HttpStatus.PARTIAL_CONTENT);
 				expect(response.text).toBe(mockFile.content);
 			});
 
@@ -334,12 +337,15 @@ describe('H5PEditor Controller (api)', () => {
 
 			const setup = async () => {
 				const { studentAccount, studentUser } = createStudent();
+				const course = courseFactory.build({ students: [studentUser], school: studentUser.school });
+				const lesson = lessonFactory.build({ course });
+				await em.persistAndFlush([studentAccount, studentUser, lesson, course]);
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				const content = h5pContentFactory.build({ parentId: lesson.id, parentType: H5PContentParentType.Lesson });
+				await em.persistAndFlush([content]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
-				const content = helpers.buildContent(0).withID(12);
 
 				return { loggedInClient, content };
 			};
@@ -352,7 +358,6 @@ describe('H5PEditor Controller (api)', () => {
 
 				contentStorage.getMetadata.mockResolvedValueOnce(dummyMetadata);
 				contentStorage.getParameters.mockResolvedValueOnce(dummyParams);
-				contentRepo.findById.mockResolvedValueOnce(content);
 				const response = await loggedInClient.get(`params/${content.id}`);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);

@@ -1,6 +1,6 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { ITemporaryFile, IFileStats } from '@lumieducation/h5p-server';
-import { BaseEntity } from '@shared/domain';
+import { BaseEntityWithTimestamps } from '@shared/domain';
 
 export interface ITemporaryFileProperties {
 	filename: string;
@@ -11,7 +11,7 @@ export interface ITemporaryFileProperties {
 }
 
 @Entity({ tableName: 'h5p-editor-temp-file' })
-export class TemporaryFile extends BaseEntity implements ITemporaryFile, IFileStats {
+export class H5pEditorTempFile extends BaseEntityWithTimestamps implements ITemporaryFile, IFileStats {
 	/**
 	 * The name by which the file can be identified; can be a path including subdirectories (e.g. 'images/xyz.png')
 	 */

@@ -3,11 +3,14 @@ import { H5PAjaxEndpoint, H5PEditor, IPlayerModel } from '@lumieducation/h5p-ser
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { h5pContentFactory, setupEntities } from '@shared/testing';
-import { AuthorizationContextBuilder, AuthorizationService, ICurrentUser, UserService } from '@src/modules';
+import { ICurrentUser } from '@src/modules/authentication';
+import { AuthorizationContextBuilder, AuthorizationReferenceService } from '@src/modules/authorization/domain';
+import { UserService } from '@src/modules/user';
 import { Request } from 'express';
 import { Readable } from 'stream';
 import { H5PContentRepo } from '../repo';
-import { ContentStorage, H5PEditorService, H5PPlayerService, LibraryStorage } from '../service';
+import { ContentStorage, LibraryStorage } from '../service';
+import { H5PEditorProvider, H5PPlayerProvider } from '../provider';
 import { TemporaryFileStorage } from '../service/temporary-file-storage.service';
 import { H5PEditorUc } from './h5p.uc';
 
@@ -19,6 +22,7 @@ const createParams = () => {
 		roles: ['student'],
 		schoolId: 'mockSchoolId',
 		userId: 'mockUserId',
+		isExternalUser: false,
 	};
 
 	const mockContentParameters: Awaited<ReturnType<H5PEditor['getContent']>> = {
@@ -43,14 +47,14 @@ describe('H5P Files', () => {
 	let libraryStorage: DeepMocked<LibraryStorage>;
 	let ajaxEndpointService: DeepMocked<H5PAjaxEndpoint>;
 	let h5pContentRepo: DeepMocked<H5PContentRepo>;
-	let authorizationService: DeepMocked<AuthorizationService>;
+	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				H5PEditorUc,
-				H5PEditorService,
-				H5PPlayerService,
+				H5PEditorProvider,
+				H5PPlayerProvider,
 				{
 					provide: H5PAjaxEndpoint,
 					useValue: createMock<H5PAjaxEndpoint>(),
@@ -72,8 +76,8 @@ describe('H5P Files', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: AuthorizationService,
-					useValue: createMock<AuthorizationService>(),
+					provide: AuthorizationReferenceService,
+					useValue: createMock<AuthorizationReferenceService>(),
 				},
 				{
 					provide: H5PContentRepo,
@@ -86,7 +90,7 @@ describe('H5P Files', () => {
 		libraryStorage = module.get(LibraryStorage);
 		ajaxEndpointService = module.get(H5PAjaxEndpoint);
 		h5pContentRepo = module.get(H5PContentRepo);
-		authorizationService = module.get(AuthorizationService);
+		authorizationReferenceService = module.get(AuthorizationReferenceService);
 		await setupEntities();
 	});
 
@@ -105,7 +109,7 @@ describe('H5P Files', () => {
 
 				ajaxEndpointService.getContentParameters.mockResolvedValueOnce(mockContentParameters);
 				h5pContentRepo.findById.mockResolvedValueOnce(content);
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
 
 				return { content, mockCurrentUser, mockContentParameters };
 			};
@@ -115,7 +119,7 @@ describe('H5P Files', () => {
 
 				await uc.getContentParameters(content.id, mockCurrentUser);
 
-				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toBeCalledWith(
 					mockCurrentUser.userId,
 					content.parentType,
 					content.parentId,
@@ -168,7 +172,7 @@ describe('H5P Files', () => {
 				const { content, mockCurrentUser } = createParams();
 
 				h5pContentRepo.findById.mockResolvedValueOnce(content);
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+				authorizationReferenceService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
 
 				return { content, mockCurrentUser };
 			};
@@ -187,7 +191,7 @@ describe('H5P Files', () => {
 				const { content, mockCurrentUser } = createParams();
 
 				h5pContentRepo.findById.mockResolvedValueOnce(content);
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
 				ajaxEndpointService.getContentParameters.mockRejectedValueOnce(new Error('test'));
 
 				return { content, mockCurrentUser };
@@ -219,7 +223,7 @@ describe('H5P Files', () => {
 				});
 
 				h5pContentRepo.findById.mockResolvedValueOnce(content);
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
 
 				const filename = 'test/file.txt';
 
@@ -231,7 +235,7 @@ describe('H5P Files', () => {
 
 				await uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
 
-				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toBeCalledWith(
 					mockCurrentUser.userId,
 					content.parentType,
 					content.parentId,
@@ -290,7 +294,7 @@ describe('H5P Files', () => {
 						stream: createMock<Readable>(),
 					});
 				});
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
 
 				const filename = 'test/file.txt';
 
@@ -322,7 +326,7 @@ describe('H5P Files', () => {
 					rangeCallback?.(100);
 					return createMock();
 				});
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
 
 				const filename = 'test/file.txt';
 
@@ -395,7 +399,7 @@ describe('H5P Files', () => {
 
 				ajaxEndpointService.getContentFile.mockRejectedValueOnce(new Error('test'));
 				h5pContentRepo.findById.mockResolvedValueOnce(content);
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
 
 				const filename = 'test/file.txt';
 

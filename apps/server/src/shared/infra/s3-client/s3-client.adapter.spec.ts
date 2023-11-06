@@ -1,7 +1,7 @@
 import { S3Client, S3ServiceException } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ErrorUtils } from '@src/core/error/utils';
 import { LegacyLogger } from '@src/core/logger';
@@ -587,14 +587,25 @@ describe('S3ClientAdapter', () => {
 		});
 
 		describe('when file does not exist', () => {
-			it('should throw NotFoundException', async () => {
+			it('should throw HttpException', async () => {
 				const { pathToFile } = setup();
 				// @ts-expect-error ignore parameter type of mock function
 				client.send.mockRejectedValueOnce(new Error('NoSuchKey'));
 
 				const headPromise = service.head(pathToFile);
 
-				await expect(headPromise).rejects.toBeInstanceOf(NotFoundException);
+				await expect(headPromise).rejects.toBeInstanceOf(HttpException);
+			});
+		});
+		describe('when file exist and failed', () => {
+			it('should throw InternalServerErrorException', async () => {
+				const { pathToFile } = setup();
+				// @ts-expect-error ignore parameter type of mock function
+				client.send.mockRejectedValueOnce(new Error('Dummy'));
+
+				const headPromise = service.head(pathToFile);
+
+				await expect(headPromise).rejects.toBeInstanceOf(InternalServerErrorException);
 			});
 		});
 	});

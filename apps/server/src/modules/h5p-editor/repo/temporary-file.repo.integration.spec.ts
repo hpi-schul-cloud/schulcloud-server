@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, h5pTemporaryFileFactory } from '@shared/testing';
-import { TemporaryFile } from '../entity';
+import { H5pEditorTempFile } from '../entity';
 import { TemporaryFileRepo } from './temporary-file.repo';
 
 describe('TemporaryFileRepo', () => {
@@ -12,7 +12,7 @@ describe('TemporaryFileRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [TemporaryFile] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [H5pEditorTempFile] })],
 			providers: [TemporaryFileRepo],
 		}).compile();
 
@@ -29,7 +29,7 @@ describe('TemporaryFileRepo', () => {
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(TemporaryFile);
+		expect(repo.entityName).toBe(H5pEditorTempFile);
 	});
 
 	describe('createTemporaryFile', () => {
@@ -62,6 +62,27 @@ describe('TemporaryFileRepo', () => {
 			const findBy = repo.findByUserAndFilename(user, filename);
 
 			await expect(findBy).rejects.toThrow();
+		});
+	});
+
+	describe('findAllByUserAndFilename', () => {
+		it('should be able to retrieve entity', async () => {
+			const tempFile = h5pTemporaryFileFactory.build();
+			await em.persistAndFlush(tempFile);
+
+			const result = await repo.findAllByUserAndFilename(tempFile.ownedByUserId, tempFile.filename);
+
+			expect(result).toBeDefined();
+			expect(result).toEqual([tempFile]);
+		});
+
+		it('should return empty array', async () => {
+			const user = 'wrong-user-id';
+			const filename = 'file.txt';
+
+			const findBy = await repo.findAllByUserAndFilename(user, filename);
+
+			expect(findBy).toEqual([]);
 		});
 	});
 

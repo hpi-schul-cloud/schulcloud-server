@@ -6,28 +6,23 @@ import { S3ClientModule } from '@shared/infra/s3-client';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { AuthenticationModule } from '@modules/authentication/authentication.module';
-import { AuthorizationModule } from '@modules/authorization';
-import { UserModule } from '../user';
-import { H5PEditorController } from './controller';
-import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
+import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
+import { UserModule } from '@modules/user';
 import { AuthenticationApiModule } from '../authentication/authentication-api.module';
 import { H5PEditorModule } from './h5p-editor.module';
 import { H5PContentRepo, LibraryRepo, TemporaryFileRepo } from './repo';
-import {
-	ContentStorage,
-	H5PAjaxEndpointService,
-	H5PEditorService,
-	H5PPlayerService,
-	LibraryStorage,
-	TemporaryFileStorage,
-} from './service';
+import { ContentStorage, LibraryStorage, TemporaryFileStorage } from './service';
 import { H5PEditorUc } from './uc/h5p.uc';
+import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
+import { H5PEditorController } from './controller';
+import { H5PEditorProvider, H5PAjaxEndpointProvider, H5PPlayerProvider } from './provider';
+import { H5PContent } from './entity';
 
 const imports = [
 	H5PEditorModule,
-	MongoMemoryDatabaseModule.forRoot({ entities: [...ALL_ENTITIES] }),
+	MongoMemoryDatabaseModule.forRoot({ entities: [...ALL_ENTITIES, H5PContent] }),
 	AuthenticationApiModule,
-	AuthorizationModule,
+	AuthorizationReferenceModule,
 	AuthenticationModule,
 	UserModule,
 	CoreModule,
@@ -38,9 +33,9 @@ const imports = [
 const controllers = [H5PEditorController];
 const providers = [
 	H5PEditorUc,
-	H5PPlayerService,
-	H5PEditorService,
-	H5PAjaxEndpointService,
+	H5PPlayerProvider,
+	H5PEditorProvider,
+	H5PAjaxEndpointProvider,
 	H5PContentRepo,
 	LibraryRepo,
 	TemporaryFileRepo,

@@ -1,41 +1,50 @@
 import {
+	AjaxSuccessResponse,
 	H5PAjaxEndpoint,
 	H5PEditor,
 	H5PPlayer,
-	H5pError,
 	IContentMetadata,
 	IEditorModel,
 	IPlayerModel,
 	IUser as LumiIUser,
 } from '@lumieducation/h5p-server';
 import {
+	IAjaxResponse,
+	IHubInfo,
+	ILibraryDetailedDataForClient,
+	ILibraryOverviewForClient,
+} from '@lumieducation/h5p-server/build/src/types';
+import {
 	BadRequestException,
 	HttpException,
 	Injectable,
-	InternalServerErrorException,
+	NotAcceptableException,
 	NotFoundException,
 } from '@nestjs/common';
 import { EntityId, LanguageType } from '@shared/domain';
-import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService, UserService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
+import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
+import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
+import { UserService } from '@src/modules/user';
 import { Request } from 'express';
-import { Readable } from 'stream';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
 import { H5PContentParentType } from '../entity';
 import { H5PContentMapper } from '../mapper/h5p-content.mapper';
+import { H5PErrorMapper } from '../mapper/h5p-error.mapper';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { LumiUserWithContentData } from '../types/lumi-types';
+import { GetLibraryFile } from './dto/h5p-getLibraryFile';
 
 @Injectable()
 export class H5PEditorUc {
 	constructor(
-		private h5pEditor: H5PEditor,
-		private h5pPlayer: H5PPlayer,
-		private h5pAjaxEndpoint: H5PAjaxEndpoint,
-		private libraryService: LibraryStorage,
+		private readonly h5pEditor: H5PEditor,
+		private readonly h5pPlayer: H5PPlayer,
+		private readonly h5pAjaxEndpoint: H5PAjaxEndpoint,
+		private readonly libraryService: LibraryStorage,
 		private readonly userService: UserService,
-		private readonly authorizationService: AuthorizationService,
+		private readonly authorizationReferenceService: AuthorizationReferenceService,
 		private readonly h5pContentRepo: H5PContentRepo
 	) {}
 
@@ -46,8 +55,13 @@ export class H5PEditorUc {
 		context: AuthorizationContext
 	) {
 		const allowedType = H5PContentMapper.mapToAllowedAuthorizationEntityType(parentType);
-		await this.authorizationService.checkPermissionByReferences(userId, allowedType, parentId, context);
+		await this.authorizationReferenceService.checkPermissionByReferences(userId, allowedType, parentId, context);
 	}
+
+	private fakeUndefinedAsString = () => {
+		const value = undefined as unknown as string;
+		return value;
+	};
 
 	/**
 	 * Returns a callback that parses the request range.
@@ -76,17 +90,13 @@ export class H5PEditorUc {
 		};
 	}
 
-	private mapH5pError(error: unknown) {
-		if (error instanceof H5pError) {
-			return new HttpException(error.message, error.httpStatusCode);
-		}
-
-		return new InternalServerErrorException({ error });
-	}
-
-	public async getAjax(query: AjaxGetQueryParams, currentUser: ICurrentUser) {
+	public async getAjax(
+		query: AjaxGetQueryParams,
+		currentUser: ICurrentUser
+	): Promise<IHubInfo | ILibraryDetailedDataForClient | IAjaxResponse | undefined> {
 		const user = this.changeUserType(currentUser);
 		const language = await this.getUserLanguage(currentUser);
+		const h5pErrorMapper = new H5PErrorMapper();
 
 		try {
 			const result = await this.h5pAjaxEndpoint.getAjax(
@@ -97,10 +107,11 @@ export class H5PEditorUc {
 				language,
 				user
 			);
-
 			return result;
 		} catch (err) {
-			throw this.mapH5pError(err);
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			h5pErrorMapper.mapH5pError(err);
+			return undefined;
 		}
 	}
 
@@ -110,9 +121,20 @@ export class H5PEditorUc {
 		body: AjaxPostBodyParams,
 		contentFile?: Express.Multer.File,
 		h5pFile?: Express.Multer.File
-	) {
+	): Promise<
+		| AjaxSuccessResponse
+		| {
+				height?: number;
+				mime: string;
+				path: string;
+				width?: number;
+		  }
+		| ILibraryOverviewForClient[]
+		| undefined
+	> {
 		const user = this.changeUserType(currentUser);
 		const language = await this.getUserLanguage(currentUser);
+		const h5pErrorMapper = new H5PErrorMapper();
 
 		try {
 			const result = await this.h5pAjaxEndpoint.postAjax(
@@ -139,7 +161,9 @@ export class H5PEditorUc {
 
 			return result;
 		} catch (err) {
-			throw this.mapH5pError(err);
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			h5pErrorMapper.mapH5pError(err);
+			return undefined;
 		}
 	}
 
@@ -163,12 +187,7 @@ export class H5PEditorUc {
 		file: string,
 		req: Request,
 		currentUser: ICurrentUser
-	): Promise<{
-		data: Readable;
-		contentType: string;
-		contentLength: number;
-		contentRange?: { start: number; end: number };
-	}> {
+	): Promise<GetLibraryFile> {
 		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
 		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.read([]));
 
@@ -194,39 +213,42 @@ export class H5PEditorUc {
 		}
 	}
 
-	public async getLibraryFile(ubername: string, file: string) {
+	public async getLibraryFile(ubername: string, file: string): Promise<GetLibraryFile> {
 		try {
 			const { mimetype, size, stream } = await this.libraryService.getLibraryFile(ubername, file);
 
 			return {
 				data: stream,
 				contentType: mimetype,
-				contentLength: size,
+				contentLength: size as number,
 			};
 		} catch (err) {
 			throw new NotFoundException();
 		}
 	}
 
-	public async getTemporaryFile(
-		file: string,
-		req: Request,
-		currentUser: ICurrentUser
-	): Promise<{
-		data: Readable;
-		contentType: string;
-		contentLength: number;
-		contentRange?: { start: number; end: number };
-	}> {
+	public async getTemporaryFile(file: string, req: Request, currentUser: ICurrentUser): Promise<GetLibraryFile> {
 		const user = this.changeUserType(currentUser);
 
 		try {
 			const rangeCallback = this.getRange(req);
+			const adapterRangeCallback: (filesize: number) => { end: number; start: number } = (filesize) => {
+				let returnValue = { start: 0, end: 0 };
+
+				if (rangeCallback) {
+					const result = rangeCallback(filesize);
+
+					if (result) {
+						returnValue = { start: result.start, end: result.end };
+					}
+				}
+
+				return returnValue;
+			};
 			const { mimetype, range, stats, stream } = await this.h5pAjaxEndpoint.getTemporaryFile(
 				file,
 				user,
-				// @ts-expect-error 2345: Callback can return undefined, typings from @lumieducation/h5p-server are wrong
-				rangeCallback
+				adapterRangeCallback
 			);
 
 			return {
@@ -253,10 +275,11 @@ export class H5PEditorUc {
 
 	public async getEmptyH5pEditor(currentUser: ICurrentUser, language: LanguageType) {
 		const user = this.changeUserType(currentUser);
+		const fakeUndefinedString = this.fakeUndefinedAsString();
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const createdH5PEditor: IEditorModel = await this.h5pEditor.render(
-			undefined as unknown as string, // Lumi typings are wrong because they dont "use strict", this method actually accepts both string and undefined
+			fakeUndefinedString, // Lumi typings are wrong because they dont "use strict", this method actually accepts both string and undefined
 			language,
 			user
 		);
@@ -292,7 +315,9 @@ export class H5PEditorUc {
 			deletedContent = true;
 		} catch (error) {
 			deletedContent = false;
-			throw new Error(error as string);
+			throw new HttpException('message', 400, {
+				cause: new NotAcceptableException(error as string, 'content not found'),
+			});
 		}
 
 		return deletedContent;
@@ -309,9 +334,10 @@ export class H5PEditorUc {
 		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
 
 		const user = this.createAugmentedLumiUser(currentUser, parentType, parentId);
+		const fakeAsString = this.fakeUndefinedAsString();
 
 		const newContentId = await this.h5pEditor.saveOrUpdateContentReturnMetaData(
-			undefined as unknown as string, // Lumi typings are wrong because they dont "use strict", this method actually accepts both string and undefined
+			fakeAsString, // Lumi typings are wrong because they dont "use strict", this method actually accepts both string and undefined
 			params,
 			metadata,
 			mainLibraryUbername,
@@ -375,10 +401,10 @@ export class H5PEditorUc {
 
 	private async getUserLanguage(currentUser: ICurrentUser): Promise<string> {
 		const languageUser = await this.userService.findById(currentUser.userId);
-		let language = 'de';
+		let userLanguage = LanguageType.DE;
 		if (languageUser?.language) {
-			language = languageUser.language.toString();
+			userLanguage = languageUser.language;
 		}
-		return language;
+		return userLanguage;
 	}
 }

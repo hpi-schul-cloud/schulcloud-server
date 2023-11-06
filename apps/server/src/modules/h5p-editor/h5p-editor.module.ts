@@ -7,23 +7,16 @@ import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
-
+import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
+import { UserModule } from '@modules/user';
 import { S3ClientModule } from '@shared/infra/s3-client';
-import { AuthorizationModule } from '@modules/authorization';
-import { UserModule } from '../user';
 import { AuthenticationModule } from '../authentication/authentication.module';
 import { H5PEditorController } from './controller/h5p-editor.controller';
-import { H5PContent, InstalledLibrary, TemporaryFile } from './entity';
+import { H5PContent, InstalledLibrary, H5pEditorTempFile } from './entity';
 import { config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
 import { H5PContentRepo, LibraryRepo, TemporaryFileRepo } from './repo';
-import {
-	ContentStorage,
-	H5PAjaxEndpointService,
-	H5PEditorService,
-	H5PPlayerService,
-	LibraryStorage,
-	TemporaryFileStorage,
-} from './service';
+import { ContentStorage, LibraryStorage, TemporaryFileStorage } from './service';
+import { H5PEditorProvider, H5PAjaxEndpointProvider, H5PPlayerProvider } from './provider';
 import { H5PEditorUc } from './uc/h5p.uc';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
@@ -34,7 +27,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 
 const imports = [
 	AuthenticationModule,
-	AuthorizationModule,
+	AuthorizationReferenceModule,
 	CoreModule,
 	UserModule,
 	RabbitMQWrapperModule,
@@ -46,8 +39,7 @@ const imports = [
 		password: DB_PASSWORD,
 		user: DB_USERNAME,
 		// Needs ALL_ENTITIES for authorization
-		entities: [...ALL_ENTITIES, H5PContent, TemporaryFile, InstalledLibrary],
-		// debug: true, // use it for locally debugging of querys
+		entities: [...ALL_ENTITIES, H5PContent, H5pEditorTempFile, InstalledLibrary],
 	}),
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),
@@ -61,9 +53,9 @@ const providers = [
 	H5PContentRepo,
 	LibraryRepo,
 	TemporaryFileRepo,
-	H5PEditorService,
-	H5PPlayerService,
-	H5PAjaxEndpointService,
+	H5PEditorProvider,
+	H5PPlayerProvider,
+	H5PAjaxEndpointProvider,
 	ContentStorage,
 	LibraryStorage,
 	TemporaryFileStorage,

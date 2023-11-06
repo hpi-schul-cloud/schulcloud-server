@@ -5,6 +5,7 @@ import {
 	DeleteObjectsCommand,
 	GetObjectCommand,
 	HeadObjectCommand,
+	HeadObjectCommandOutput,
 	ListObjectsV2Command,
 	S3Client,
 	ServiceOutputTypes,
@@ -15,7 +16,7 @@ import { ErrorUtils } from '@src/core/error/utils';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { S3_CLIENT, S3_CONFIG } from './constants';
-import { CopyFiles, File, GetFile, ListFiles, S3Config } from './interface';
+import { CopyFiles, File, GetFile, ListFiles, ObjectKeysRecursive, S3Config } from './interface';
 
 @Injectable()
 export class S3ClientAdapter {
@@ -197,7 +198,7 @@ export class S3ClientAdapter {
 		}
 	}
 
-	public async list(params: ListFiles) {
+	public async list(params: ListFiles): Promise<ObjectKeysRecursive> {
 		try {
 			this.logger.log({ action: 'list', params });
 
@@ -205,11 +206,11 @@ export class S3ClientAdapter {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException('S3ClientAdapter:listDirectory');
+			throw new NotFoundException(null, ErrorUtils.createHttpExceptionOptions(err, 'S3ClientAdapter:listDirectory'));
 		}
 	}
 
-	private async listObjectKeysRecursive(params: ListFiles) {
+	private async listObjectKeysRecursive(params: ListFiles): Promise<ObjectKeysRecursive> {
 		const { path, maxKeys, nextMarker } = params;
 		let files: string[] = params.files ? params.files : [];
 		const MaxKeys = maxKeys && maxKeys - files.length;
@@ -230,7 +231,7 @@ export class S3ClientAdapter {
 
 		files = files.concat(returnedFiles);
 
-		let res = { path, maxKeys, nextMarker: data?.ContinuationToken, files };
+		let res: ObjectKeysRecursive = { path, maxKeys, nextMarker: data?.ContinuationToken, files };
 
 		if (data?.IsTruncated && (!maxKeys || res.files.length < maxKeys)) {
 			res = await this.listObjectKeysRecursive(res);
@@ -239,7 +240,7 @@ export class S3ClientAdapter {
 		return res;
 	}
 
-	public async head(path: string) {
+	public async head(path: string): Promise<HeadObjectCommandOutput> {
 		try {
 			this.logger.log({ action: 'head', params: { path, bucket: this.config.bucket } });
 
@@ -255,9 +256,9 @@ export class S3ClientAdapter {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			if (err.message && err.message === 'NoSuchKey') {
 				this.logger.log(`could not find the file for head with id ${path}`);
-				throw new NotFoundException('NoSuchKey');
+				throw new NotFoundException(null, ErrorUtils.createHttpExceptionOptions(err, 'NoSuchKey'));
 			}
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:head');
+			throw new InternalServerErrorException(null, ErrorUtils.createHttpExceptionOptions(err, 'S3ClientAdapter:head'));
 		}
 	}
 

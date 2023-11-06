@@ -1,6 +1,6 @@
 import { H5PAjaxEndpoint, H5PEditor } from '@lumieducation/h5p-server';
 
-export const H5PAjaxEndpointService = {
+export const H5PAjaxEndpointProvider = {
 	provide: H5PAjaxEndpoint,
 	inject: [H5PEditor],
 	useFactory: (h5pEditor: H5PEditor) => {

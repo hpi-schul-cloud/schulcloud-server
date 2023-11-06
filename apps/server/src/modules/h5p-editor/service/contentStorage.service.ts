@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
 	ContentId,
 	IContentMetadata,
@@ -9,10 +8,19 @@ import {
 	LibraryName,
 	Permission,
 } from '@lumieducation/h5p-server';
-import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+	HttpException,
+	Inject,
+	Injectable,
+	InternalServerErrorException,
+	NotAcceptableException,
+	NotFoundException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { FileDto } from '@src/modules/files-storage/dto';
+import { ErrorUtils } from '@src/core/error/utils';
 import { Readable } from 'stream';
+import { H5pFileDto } from '../controller/dto/h5p-file.dto';
 import { H5PContent } from '../entity';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { H5PContentRepo } from '../repo';
@@ -25,12 +33,29 @@ export class ContentStorage implements IContentStorage {
 		@Inject(H5P_CONTENT_S3_CONNECTION) private readonly storageClient: S3ClientAdapter
 	) {}
 
-	private checkExtendedUserType(user: ILumiUser) {
-		const isExtendedUserType = user instanceof LumiUserWithContentData;
+	private async createOrUpdateContent(
+		contentId: ContentId,
+		user: LumiUserWithContentData,
+		metadata: IContentMetadata,
+		content: unknown
+	): Promise<H5PContent> {
+		let h5pContent: H5PContent;
 
-		if (!isExtendedUserType) {
-			throw new Error('Method expected LumiUserWithContentData instead of IUser');
+		if (contentId) {
+			h5pContent = await this.repo.findById(contentId);
+			h5pContent.metadata = metadata;
+			h5pContent.content = content;
+		} else {
+			h5pContent = new H5PContent({
+				parentType: user.contentParentType,
+				parentId: user.contentParentId,
+				creatorId: user.id,
+				schoolId: user.schoolId,
+				metadata,
+				content,
+			});
 		}
+		return h5pContent;
 	}
 
 	public async addContent(
@@ -40,43 +65,27 @@ export class ContentStorage implements IContentStorage {
 		contentId?: ContentId | undefined
 	): Promise<ContentId> {
 		try {
-			this.checkExtendedUserType(user);
-
-			let h5pContent: H5PContent;
-
-			if (contentId) {
-				h5pContent = await this.repo.findById(contentId);
-				h5pContent.metadata = metadata;
-				h5pContent.content = content;
-			} else {
-				h5pContent = new H5PContent({
-					parentType: user.contentParentType,
-					parentId: user.contentParentId,
-					creatorId: user.id,
-					schoolId: user.schoolId,
-					metadata,
-					content,
-				});
-			}
-
+			const h5pContent = await this.createOrUpdateContent(contentId as string, user, metadata, content);
 			await this.repo.save(h5pContent);
 
 			return h5pContent.id;
 		} catch (error) {
-			throw new InternalServerErrorException(error, 'ContentStorage:addContent');
+			throw new HttpException('message', 500, {
+				cause: new InternalServerErrorException(error as string, 'ContentStorage:addContent'),
+			});
 		}
 	}
 
-	public async addFile(contentId: string, filename: string, stream: Readable, user?: ILumiUser): Promise<void> {
+	public async addFile(contentId: string, filename: string, stream: Readable): Promise<void> {
 		this.checkFilename(filename);
 
 		const contentExists = await this.contentExists(contentId);
-		if (contentExists) {
+		if (!contentExists) {
 			throw new NotFoundException('The content does not exist');
 		}
 
 		const fullPath = this.getFilePath(contentId, filename);
-		const file: FileDto = {
+		const file: H5pFileDto = {
 			name: filename,
 			data: stream,
 			mimeType: 'application/json',
@@ -91,20 +100,22 @@ export class ContentStorage implements IContentStorage {
 		return exists;
 	}
 
-	public async deleteContent(contentId: string, user?: ILumiUser): Promise<void> {
+	public async deleteContent(contentId: string): Promise<void> {
 		try {
 			const h5pContent = await this.repo.findById(contentId);
 
-			const fileList = await this.listFiles(contentId, user);
+			const fileList = await this.listFiles(contentId);
 			const fileDeletePromises = fileList.map((file) => this.deleteFile(contentId, file));
 
 			await Promise.all([this.repo.delete(h5pContent), ...fileDeletePromises]);
 		} catch (error) {
-			throw new InternalServerErrorException(error, 'ContentStorage:deleteContent');
+			throw new HttpException('message', 500, {
+				cause: new InternalServerErrorException(error as string, 'ContentStorage:addContent'),
+			});
 		}
 	}
 
-	public async deleteFile(contentId: string, filename: string, user?: ILumiUser | undefined): Promise<void> {
+	public async deleteFile(contentId: string, filename: string): Promise<void> {
 		this.checkFilename(filename);
 		const filePath = this.getFilePath(contentId, filename);
 		await this.storageClient.delete([filePath]);
@@ -118,7 +129,7 @@ export class ContentStorage implements IContentStorage {
 		return this.exists(filePath);
 	}
 
-	public async getFileStats(contentId: string, file: string, user: ILumiUser): Promise<IFileStats> {
+	public async getFileStats(contentId: string, file: string): Promise<IFileStats> {
 		const filePath = this.getFilePath(contentId, file);
 		const { ContentLength, LastModified } = await this.storageClient.head(filePath);
 
@@ -140,7 +151,7 @@ export class ContentStorage implements IContentStorage {
 	public async getFileStream(
 		contentId: string,
 		file: string,
-		user: ILumiUser,
+		_user: ILumiUser,
 		rangeStart = 0,
 		rangeEnd?: number
 	): Promise<Readable> {
@@ -159,49 +170,41 @@ export class ContentStorage implements IContentStorage {
 		return fileResponse.data;
 	}
 
-	public async getMetadata(contentId: string, user?: ILumiUser | undefined): Promise<IContentMetadata> {
+	public async getMetadata(contentId: string): Promise<IContentMetadata> {
 		const h5pContent = await this.repo.findById(contentId);
 		return h5pContent.metadata;
 	}
 
-	public async getParameters(contentId: string, user?: ILumiUser | undefined): Promise<unknown> {
+	public async getParameters(contentId: string): Promise<unknown> {
 		const h5pContent = await this.repo.findById(contentId);
 		return h5pContent.content;
 	}
 
 	public async getUsage(library: ILibraryName): Promise<{ asDependency: number; asMainLibrary: number }> {
-		const defaultUser: ILumiUser = {
-			canCreateRestricted: false,
-			canInstallRecommended: false,
-			canUpdateAndInstallLibraries: false,
-			email: '',
-			id: '',
-			name: 'getUsage',
-			type: '',
-		};
-
 		const contentIds = await this.listContent();
-		const result = await this.resolveDependecies(contentIds, defaultUser, library);
+		const result = await this.resolveDependecies(contentIds, library);
 		return result;
 	}
 
-	public getUserPermissions(contentId: string, user: ILumiUser): Promise<Permission[]> {
+	public getUserPermissions(): Promise<Permission[]> {
 		const permissions = [Permission.Delete, Permission.Download, Permission.Edit, Permission.Embed, Permission.View];
 
 		return Promise.resolve(permissions);
 	}
 
-	public async listContent(user?: ILumiUser): Promise<string[]> {
+	public async listContent(): Promise<string[]> {
 		const contentList = await this.repo.getAllContents();
 
 		const contentIDs = contentList.map((c) => c.id);
 		return contentIDs;
 	}
 
-	public async listFiles(contentId: string, user?: ILumiUser): Promise<string[]> {
+	public async listFiles(contentId: string): Promise<string[]> {
 		const contentExists = await this.contentExists(contentId);
-		if (contentExists) {
-			throw new NotFoundException('Content could not be found');
+		if (!contentExists) {
+			throw new HttpException('message', 404, {
+				cause: new NotFoundException('Content could not be found'),
+			});
 		}
 
 		const path = this.getContentPath(contentId);
@@ -212,13 +215,16 @@ export class ContentStorage implements IContentStorage {
 
 	private async exists(checkPath: string): Promise<boolean> {
 		try {
-			await this.storageClient.head(checkPath);
+			await this.storageClient.get(checkPath);
 		} catch (err) {
 			if (err instanceof NotFoundException) {
 				return false;
 			}
 
-			throw new InternalServerErrorException(err, 'ContentStorage:exists');
+			throw new InternalServerErrorException(
+				null,
+				ErrorUtils.createHttpExceptionOptions(err, 'ContentStorage:addContent')
+			);
 		}
 
 		return true;
@@ -242,11 +248,14 @@ export class ContentStorage implements IContentStorage {
 		return false;
 	}
 
-	private async resolveDependecies(contentIds: string[], user: ILumiUser, library: ILibraryName) {
+	private async resolveDependecies(
+		contentIds: string[],
+		library: ILibraryName
+	): Promise<{ asMainLibrary: number; asDependency: number }> {
 		let asDependency = 0;
 		let asMainLibrary = 0;
 
-		const contentMetadataList = await Promise.all(contentIds.map((id) => this.getMetadata(id, user)));
+		const contentMetadataList = await Promise.all(contentIds.map((id) => this.getMetadata(id)));
 
 		for (const contentMetadata of contentMetadataList) {
 			const isMainLibrary = contentMetadata.mainLibrary === library.machineName;
@@ -267,12 +276,16 @@ export class ContentStorage implements IContentStorage {
 		if (/^[a-zA-Z0-9/._-]*$/.test(filename) && !filename.includes('..') && !filename.startsWith('/')) {
 			return;
 		}
-		throw new Error(`Filename contains forbidden characters ${filename}`);
+		throw new HttpException('message', 406, {
+			cause: new NotAcceptableException(`Filename contains forbidden characters ${filename}`),
+		});
 	}
 
 	private getContentPath(contentId: string): string {
 		if (!contentId) {
-			throw new Error('COULD_NOT_CREATE_PATH');
+			throw new HttpException('message', 406, {
+				cause: new UnprocessableEntityException('COULD_NOT_CREATE_PATH'),
+			});
 		}
 
 		const path = `h5p-content/${contentId}/`;
@@ -281,7 +294,9 @@ export class ContentStorage implements IContentStorage {
 
 	private getFilePath(contentId: string, filename: string): string {
 		if (!contentId || !filename) {
-			throw new Error('COULD_NOT_CREATE_PATH');
+			throw new HttpException('message', 406, {
+				cause: new UnprocessableEntityException('COULD_NOT_CREATE_PATH'),
+			});
 		}
 
 		const path = `${this.getContentPath(contentId)}${filename}`;

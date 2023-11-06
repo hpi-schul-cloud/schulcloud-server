@@ -2,11 +2,13 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { H5PEditor, H5PPlayer, IPlayerModel } from '@lumieducation/h5p-server';
 import { Test, TestingModule } from '@nestjs/testing';
 import { h5pContentFactory, setupEntities } from '@shared/testing';
-import { AuthorizationContextBuilder, AuthorizationService, UserService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { AuthorizationContextBuilder, AuthorizationReferenceService } from '@src/modules/authorization/domain';
+import { UserService } from '@src/modules/user';
 import { H5PContentRepo } from '../repo';
-import { H5PAjaxEndpointService, LibraryStorage } from '../service';
+import { LibraryStorage } from '../service';
+import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PEditorUc } from './h5p.uc';
 
 const createParams = () => {
@@ -17,6 +19,7 @@ const createParams = () => {
 		roles: ['student'],
 		schoolId: 'mockSchoolId',
 		userId: 'mockUserId',
+		isExternalUser: false,
 	};
 
 	const playerResponseMock = expect.objectContaining({
@@ -31,13 +34,13 @@ describe('get H5P player', () => {
 	let uc: H5PEditorUc;
 	let h5pPlayer: DeepMocked<H5PPlayer>;
 	let h5pContentRepo: DeepMocked<H5PContentRepo>;
-	let authorizationService: DeepMocked<AuthorizationService>;
+	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				H5PEditorUc,
-				H5PAjaxEndpointService,
+				H5PAjaxEndpointProvider,
 				{
 					provide: H5PEditor,
 					useValue: createMock<H5PEditor>(),
@@ -55,8 +58,8 @@ describe('get H5P player', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: AuthorizationService,
-					useValue: createMock<AuthorizationService>(),
+					provide: AuthorizationReferenceService,
+					useValue: createMock<AuthorizationReferenceService>(),
 				},
 				{
 					provide: H5PContentRepo,
@@ -68,7 +71,7 @@ describe('get H5P player', () => {
 		uc = module.get(H5PEditorUc);
 		h5pPlayer = module.get(H5PPlayer);
 		h5pContentRepo = module.get(H5PContentRepo);
-		authorizationService = module.get(AuthorizationService);
+		authorizationReferenceService = module.get(AuthorizationReferenceService);
 		await setupEntities();
 	});
 
@@ -89,7 +92,7 @@ describe('get H5P player', () => {
 
 				h5pContentRepo.findById.mockResolvedValueOnce(content);
 				h5pPlayer.render.mockResolvedValueOnce(expectedResult);
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
 
 				return { content, mockCurrentUser, expectedResult };
 			};
@@ -99,7 +102,7 @@ describe('get H5P player', () => {
 
 				await uc.getH5pPlayer(mockCurrentUser, content.id);
 
-				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toBeCalledWith(
 					mockCurrentUser.userId,
 					content.parentType,
 					content.parentId,
@@ -155,7 +158,7 @@ describe('get H5P player', () => {
 			const { content, mockCurrentUser, playerResponseMock } = createParams();
 
 			h5pContentRepo.findById.mockResolvedValueOnce(content);
-			authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+			authorizationReferenceService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
 
 			return { content, mockCurrentUser, playerResponseMock };
 		};
@@ -178,7 +181,7 @@ describe('get H5P player', () => {
 			const error = new Error('test');
 
 			h5pContentRepo.findById.mockResolvedValueOnce(content);
-			authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+			authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
 			h5pPlayer.render.mockRejectedValueOnce(error);
 
 			return { error, content, mockCurrentUser, playerResponseMock };

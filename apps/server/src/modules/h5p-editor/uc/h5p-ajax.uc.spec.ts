@@ -1,10 +1,11 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { H5PAjaxEndpoint, H5PEditor, H5PPlayer, H5pError } from '@lumieducation/h5p-server';
-import { HttpException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType, UserDO } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { AuthorizationService, UserService } from '@src/modules';
+import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
+import { UserService } from '@src/modules/user';
+import { H5PErrorMapper } from '../mapper/h5p-error.mapper';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PEditorUc } from './h5p.uc';
@@ -40,8 +41,8 @@ describe('H5P Ajax', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: AuthorizationService,
-					useValue: createMock<AuthorizationService>(),
+					provide: AuthorizationReferenceService,
+					useValue: createMock<AuthorizationReferenceService>(),
 				},
 				{
 					provide: H5PContentRepo,
@@ -65,7 +66,14 @@ describe('H5P Ajax', () => {
 	});
 
 	describe('when calling GET', () => {
-		const userMock = { userId: 'dummyId', roles: [], schoolId: 'dummySchool', accountId: 'dummyAccountId' };
+		const userMock = {
+			userId: 'dummyId',
+			roles: [],
+			schoolId: 'dummySchool',
+			accountId: 'dummyAccountId',
+			isExternalUser: false,
+		};
+		const spy = jest.spyOn(H5PErrorMapper.prototype, 'mapH5pError');
 
 		it('should call H5PAjaxEndpoint.getAjax and return the result', async () => {
 			const dummyResponse = {
@@ -93,25 +101,22 @@ describe('H5P Ajax', () => {
 			);
 		});
 
-		it('should convert any H5P-Errors into HttpExceptions', async () => {
-			ajaxEndpoint.getAjax.mockRejectedValueOnce(new H5pError('dummy-error', { error: 'Dummy Error' }, 400));
-
-			const result = uc.getAjax({ action: 'content-type-cache' }, userMock);
-
-			await expect(result).rejects.toThrowError(new HttpException('dummy-error (error: Dummy Error)', 400));
-		});
-
-		it('should convert any non-H5P-Errors into InternalServerErrorException', async () => {
+		it('should invoce h5p-error mapper', async () => {
 			ajaxEndpoint.getAjax.mockRejectedValueOnce(new Error('Dummy Error'));
-
-			const result = uc.getAjax({ action: 'content-type-cache' }, userMock);
-
-			await expect(result).rejects.toThrowError(InternalServerErrorException);
+			await uc.getAjax({ action: 'content-type-cache' }, userMock);
+			expect(spy).toHaveBeenCalledTimes(1);
 		});
 	});
 
 	describe('when calling POST', () => {
-		const userMock = { userId: 'dummyId', roles: [], schoolId: 'dummySchool', accountId: 'dummyAccountId' };
+		const userMock = {
+			userId: 'dummyId',
+			roles: [],
+			schoolId: 'dummySchool',
+			accountId: 'dummyAccountId',
+			isExternalUser: false,
+		};
+		const spy = jest.spyOn(H5PErrorMapper.prototype, 'mapH5pError');
 
 		it('should call H5PAjaxEndpoint.postAjax and return the result', async () => {
 			const dummyResponse = [
@@ -208,28 +213,15 @@ describe('H5P Ajax', () => {
 			);
 		});
 
-		it('should convert any H5P-Errors into HttpExceptions', async () => {
+		it('should invoce h5p-error.mapper', async () => {
 			ajaxEndpoint.postAjax.mockRejectedValueOnce(new H5pError('dummy-error', { error: 'Dummy Error' }, 400));
 
-			const result = uc.postAjax(
+			await uc.postAjax(
 				userMock,
 				{ action: 'libraries' },
 				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' }
 			);
-
-			await expect(result).rejects.toThrowError(new HttpException('dummy-error (error: Dummy Error)', 400));
-		});
-
-		it('should convert any non-H5P-Errors into InternalServerErrorException', async () => {
-			ajaxEndpoint.postAjax.mockRejectedValueOnce(new Error('Dummy Error'));
-
-			const result = uc.postAjax(
-				userMock,
-				{ action: 'libraries' },
-				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' }
-			);
-
-			await expect(result).rejects.toThrowError(InternalServerErrorException);
+			expect(spy).toHaveBeenCalledTimes(1);
 		});
 	});
 });

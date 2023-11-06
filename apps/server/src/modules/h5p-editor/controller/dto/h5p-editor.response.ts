@@ -1,5 +1,6 @@
 import { ContentParameters, IContentMetadata, IEditorModel, IIntegration } from '@lumieducation/h5p-server';
 import { ApiProperty } from '@nestjs/swagger';
+import { Readable } from 'stream';
 
 export class H5PEditorModelResponse {
 	constructor(editorModel: IEditorModel) {
@@ -18,6 +19,15 @@ export class H5PEditorModelResponse {
 	// This is a list of URLs that point to the CSS files the H5P editor needs to load
 	@ApiProperty()
 	styles: string[];
+}
+
+export interface GetH5PFileResponse {
+	data: Readable;
+	etag?: string;
+	contentType?: string;
+	contentLength?: number;
+	contentRange?: string;
+	name: string;
 }
 
 interface H5PContentResponse {
@@ -72,4 +82,13 @@ export class H5PSaveResponse {
 
 	@ApiProperty({ type: H5PContentMetadata })
 	metadata!: H5PContentMetadata;
+}
+
+export interface GetFileResponse {
+	data: Readable;
+	etag?: string;
+	contentType?: string;
+	contentLength?: number;
+	contentRange?: string;
+	name: string;
 }

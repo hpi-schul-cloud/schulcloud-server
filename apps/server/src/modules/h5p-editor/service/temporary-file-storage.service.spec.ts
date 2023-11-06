@@ -2,13 +2,11 @@ import { ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IUser } from '@lumieducation/h5p-server';
 import { Test, TestingModule } from '@nestjs/testing';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { FileDto } from '@src/modules/files-storage/dto';
-import { GetFileResponse } from '@src/modules/files-storage/interface';
+import { File, S3ClientAdapter } from '@shared/infra/s3-client';
 import { ReadStream } from 'fs';
-import { join } from 'node:path';
 import { Readable } from 'node:stream';
-import { TemporaryFile } from '../entity/temporary-file.entity';
+import { GetH5pFileResponse } from '../controller/dto';
+import { H5pEditorTempFile } from '../entity/h5p-editor-tempfile.entity';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { TemporaryFileRepo } from '../repo/temporary-file.repo';
 import { TemporaryFileStorage } from './temporary-file-storage.service';
@@ -31,14 +29,10 @@ describe('TemporaryFileStorage', () => {
 					useValue: createMock<TemporaryFileRepo>(),
 				},
 				{ provide: H5P_CONTENT_S3_CONNECTION, useValue: createMock<S3ClientAdapter>() },
-				{
-					provide: 'S3ClientAdapter_Content',
-					useValue: createMock<S3ClientAdapter>(),
-				},
 			],
 		}).compile();
 		storage = module.get(TemporaryFileStorage);
-		s3clientAdapter = module.get('S3ClientAdapter_Content');
+		s3clientAdapter = module.get(H5P_CONTENT_S3_CONNECTION);
 		repo = module.get(TemporaryFileRepo);
 	});
 
@@ -63,7 +57,7 @@ describe('TemporaryFileStorage', () => {
 			canUpdateAndInstallLibraries: false,
 		};
 		const filename1 = 'abc/def.txt';
-		const file1 = new TemporaryFile({
+		const file1 = new H5pEditorTempFile({
 			filename: filename1,
 			ownedByUserId: user1.id,
 			expiresAt: tomorrow,
@@ -81,7 +75,7 @@ describe('TemporaryFileStorage', () => {
 			canUpdateAndInstallLibraries: false,
 		};
 		const filename2 = 'uvw/xyz.txt';
-		const file2 = new TemporaryFile({
+		const file2 = new H5pEditorTempFile({
 			filename: filename2,
 			ownedByUserId: user2.id,
 			expiresAt: tomorrow,
@@ -105,12 +99,14 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN file exists', () => {
 			it('should delete file', async () => {
 				const { user1, file1 } = setup();
+				const res = [`h5p-tempfiles/${user1.id}/${file1.filename}`];
 				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
 
 				await storage.deleteFile(file1.filename, user1.id);
 
 				expect(repo.delete).toHaveBeenCalled();
-				expect(s3clientAdapter.delete).toHaveBeenCalledWith([join('h5p-tempfiles', user1.id, file1.filename)]);
+				expect(s3clientAdapter.delete).toHaveBeenCalledTimes(1);
+				expect(s3clientAdapter.delete).toHaveBeenCalledWith(res);
 			});
 		});
 		describe('WHEN file does not exist', () => {
@@ -144,7 +140,7 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN file does not exist', () => {
 			it('should return false', async () => {
 				const { user1 } = setup();
-				repo.findByUserAndFilename.mockRejectedValueOnce(new Error('Not found'));
+				repo.findAllByUserAndFilename.mockResolvedValue([]);
 
 				const exists = await storage.fileExists('abc/nonexistingfile.txt', user1);
 
@@ -177,6 +173,13 @@ describe('TemporaryFileStorage', () => {
 				await expect(fileStatsPromise).rejects.toThrow();
 			});
 		});
+		describe('WHEN filename is invalid', () => {
+			it('should throw error', async () => {
+				const { user1 } = setup();
+				const fileStatsPromise = storage.getFileStats('/../&$!.txt', user1);
+				await expect(fileStatsPromise).rejects.toThrow();
+			});
+		});
 	});
 
 	describe('getFileStream is called', () => {
@@ -184,7 +187,7 @@ describe('TemporaryFileStorage', () => {
 			it('should return readable file stream', async () => {
 				const { user1, file1 } = setup();
 				const actualContent = fileContent(user1.id, file1.filename);
-				const response: Required<GetFileResponse> = {
+				const response: Required<GetH5pFileResponse> = {
 					data: Readable.from(actualContent),
 					etag: '',
 					contentType: '',
@@ -251,7 +254,6 @@ describe('TemporaryFileStorage', () => {
 			});
 		});
 	});
-
 	describe('saveFile is called', () => {
 		describe('WHEN file exists', () => {
 			it('should overwrite file', async () => {
@@ -261,7 +263,7 @@ describe('TemporaryFileStorage', () => {
 				const readStream = Readable.from(newData) as ReadStream;
 				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
 				let savedData = Buffer.alloc(0);
-				s3clientAdapter.create.mockImplementation(async (path: string, file: FileDto) => {
+				s3clientAdapter.create.mockImplementation(async (path: string, file: File) => {
 					savedData += file.data.read();
 					return Promise.resolve({} as ServiceOutputTypes);
 				});
@@ -274,23 +276,20 @@ describe('TemporaryFileStorage', () => {
 		});
 
 		describe('WHEN file does not exist', () => {
-			it('should create new file', async () => {
+			it('should create and overwrite new file', async () => {
 				const { user1 } = setup();
 				const filename = 'newfile.txt';
 				const newData = 'This is new fake H5P content.';
 				const readStream = Readable.from(newData) as ReadStream;
-				repo.findByUserAndFilename.mockImplementation(() => {
-					throw new Error('Not found');
-				});
 				let savedData = Buffer.alloc(0);
-				s3clientAdapter.create.mockImplementation(async (path: string, file: FileDto) => {
+				s3clientAdapter.create.mockImplementation(async (path: string, file: File) => {
 					savedData += file.data.read();
 					return Promise.resolve({} as ServiceOutputTypes);
 				});
 
 				await storage.saveFile(filename, readStream, user1, tomorrow);
 
-				expect(s3clientAdapter.delete).not.toHaveBeenCalled();
+				expect(s3clientAdapter.delete).toHaveBeenCalled();
 				expect(savedData.toString()).toBe(newData);
 			});
 		});

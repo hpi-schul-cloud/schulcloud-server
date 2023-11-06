@@ -9,12 +9,12 @@ import {
 	type ILibraryName,
 	type ILibraryStorage,
 } from '@lumieducation/h5p-server';
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { FileDto } from '@src/modules/files-storage/dto';
 import mime from 'mime';
 import path from 'node:path/posix';
 import { Readable } from 'stream';
+import { H5pFileDto } from '../controller/dto';
 import { InstalledLibrary } from '../entity/library.entity';
 import { H5P_LIBRARIES_S3_CONNECTION } from '../h5p-editor.config';
 import { LibraryRepo } from '../repo/library.repo';
@@ -65,7 +65,7 @@ export class LibraryStorage implements ILibraryStorage {
 		try {
 			await this.s3Client.create(
 				s3Key,
-				new FileDto({
+				new H5pFileDto({
 					name: s3Key,
 					mimeType: 'application/octet-stream',
 					data: dataStream,
@@ -97,7 +97,7 @@ export class LibraryStorage implements ILibraryStorage {
 		);
 
 		if (existingLibrary !== null) {
-			throw new Error("Can't add library because it already exists");
+			throw new ConflictException("Can't add library because it already exists");
 		}
 
 		const library = new InstalledLibrary(libMeta, restricted, undefined);
@@ -220,7 +220,7 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 * @param file
 	 */
-	public async getFileAsJson(library: ILibraryName, file: string): Promise<any> {
+	public async getFileAsJson(library: ILibraryName, file: string): Promise<unknown> {
 		const content = await this.getFileAsString(library, file);
 		return JSON.parse(content) as unknown;
 	}
@@ -405,10 +405,6 @@ export class LibraryStorage implements ILibraryStorage {
 	}
 
 	private async getMetadata(library: ILibraryName): Promise<ILibraryMetadata> {
-		if (!library) {
-			throw new Error('You must pass in a library name to getLibrary.');
-		}
-
 		const result = await this.libraryRepo.findOneByNameAndVersionOrFail(
 			library.machineName,
 			library.majorVersion,
@@ -429,26 +425,28 @@ export class LibraryStorage implements ILibraryStorage {
 
 		this.checkFilename(file);
 
+		let result: { stream: Readable | never; mimetype: string; size: number | undefined } | null = null;
+
 		if (file === 'library.json') {
 			const metadata = await this.getMetadata(libraryName);
 			const stringifiedMetadata = JSON.stringify(metadata);
 			const readable = Readable.from(stringifiedMetadata);
 
-			return {
+			result = {
 				stream: readable,
 				mimetype: 'application/json',
 				size: stringifiedMetadata.length,
 			};
+		} else {
+			const response = await this.s3Client.get(this.getS3Key(libraryName, file));
+			const mimetype = mime.lookup(file, 'application/octet-stream');
+
+			result = {
+				stream: response.data,
+				mimetype,
+				size: response.contentLength,
+			};
 		}
-
-		const response = await this.s3Client.get(this.getS3Key(libraryName, file));
-
-		const mimetype = mime.lookup(file, 'application/octet-stream');
-
-		return {
-			stream: response.data,
-			mimetype,
-			size: response.contentLength,
-		};
+		return result;
 	}
 }

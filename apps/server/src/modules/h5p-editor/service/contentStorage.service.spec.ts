@@ -1,13 +1,13 @@
 import { HeadObjectCommandOutput } from '@aws-sdk/client-s3';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { IContentMetadata, ILibraryName, IUser, LibraryName } from '@lumieducation/h5p-server';
-import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IEntity } from '@shared/domain';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { GetFileResponse } from '@src/modules/files-storage/interface';
 import { ObjectID } from 'bson';
 import { Readable } from 'stream';
+import { GetH5PFileResponse } from '../controller/dto';
 import { H5PContent, H5PContentParentType, IH5PContentProperties } from '../entity';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { H5PContentRepo } from '../repo';
@@ -103,14 +103,13 @@ describe('ContentStorage', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				ContentStorage,
-				{ provide: 'S3ClientAdapter_Content', useValue: createMock<S3ClientAdapter>() },
 				{ provide: H5PContentRepo, useValue: createMock<H5PContentRepo>() },
 				{ provide: H5P_CONTENT_S3_CONNECTION, useValue: createMock<S3ClientAdapter>() },
 			],
 		}).compile();
 
 		service = module.get(ContentStorage);
-		s3ClientAdapter = module.get('S3ClientAdapter_Content');
+		s3ClientAdapter = module.get(H5P_CONTENT_S3_CONNECTION);
 		contentRepo = module.get(H5PContentRepo);
 	});
 
@@ -136,14 +135,14 @@ describe('ContentStorage', () => {
 				canInstallRecommended: false,
 				canUpdateAndInstallLibraries: false,
 				email: 'example@schul-cloud.org',
-				id: '12345',
+				id: new ObjectID().toHexString(),
 				name: 'Example User',
 				type: 'user',
 			};
 			const parentParams: H5PContentParentParams = {
-				schoolId: '',
+				schoolId: new ObjectID().toHexString(),
 				parentType: H5PContentParentType.Lesson,
-				parentId: '',
+				parentId: new ObjectID().toHexString(),
 			};
 			const user = new LumiUserWithContentData(iUser, parentParams);
 
@@ -207,7 +206,7 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN saving content fails', () => {
-			it('should throw an InternalServerErrorException', async () => {
+			it('should throw an HttpException', async () => {
 				const {
 					existingContent: { metadata, content },
 					user,
@@ -216,12 +215,12 @@ describe('ContentStorage', () => {
 
 				const addContentPromise = service.addContent(metadata, content, user);
 
-				await expect(addContentPromise).rejects.toThrow(InternalServerErrorException);
+				await expect(addContentPromise).rejects.toThrow(HttpException);
 			});
 		});
 
 		describe('WHEN finding content fails', () => {
-			it('should throw an InternalServerErrorException', async () => {
+			it('should throw an HttpException', async () => {
 				const {
 					existingContent: { metadata, content, id },
 					user,
@@ -230,7 +229,7 @@ describe('ContentStorage', () => {
 
 				const addContentPromise = service.addContent(metadata, content, user, id);
 
-				await expect(addContentPromise).rejects.toThrow(InternalServerErrorException);
+				await expect(addContentPromise).rejects.toThrow(HttpException);
 			});
 		});
 	});
@@ -259,17 +258,18 @@ describe('ContentStorage', () => {
 
 		describe('WHEN adding a file to existing content', () => {
 			it('should check if the content exists', async () => {
-				const { contentIDString, filename, stream, user } = setup();
+				const { contentIDString, filename, stream } = setup();
 
-				await service.addFile(contentIDString, filename, stream, user);
+				await service.addFile(contentIDString, filename, stream);
 
-				expect(contentRepo.findById).toBeCalledWith(contentIDString);
+				expect(contentRepo.existsOne).toBeCalledWith(contentIDString);
 			});
 
 			it('should call S3ClientAdapter.create', async () => {
-				const { contentIDString, filename, stream, user } = setup();
+				const { contentIDString, filename, stream } = setup();
+				contentRepo.existsOne.mockResolvedValueOnce(true);
 
-				await service.addFile(contentIDString, filename, stream, user);
+				await service.addFile(contentIDString, filename, stream);
 
 				expect(s3ClientAdapter.create).toBeCalledWith(
 					expect.stringContaining(filename),
@@ -284,10 +284,10 @@ describe('ContentStorage', () => {
 
 		describe('WHEN adding a file to non existant content', () => {
 			it('should throw NotFoundException', async () => {
-				const { contentIDString, filename, stream, user } = setup();
+				const { contentIDString, filename, stream } = setup();
 				contentRepo.findById.mockRejectedValueOnce(new Error());
 
-				const addFilePromise = service.addFile(contentIDString, filename, stream, user);
+				const addFilePromise = service.addFile(contentIDString, filename, stream);
 
 				await expect(addFilePromise).rejects.toThrow(NotFoundException);
 			});
@@ -295,10 +295,11 @@ describe('ContentStorage', () => {
 
 		describe('WHEN S3ClientAdapter throws error', () => {
 			it('should throw the error', async () => {
-				const { contentIDString, filename, stream, user, fileCreateError } = setup();
+				const { contentIDString, filename, stream, fileCreateError } = setup();
+				contentRepo.existsOne.mockResolvedValueOnce(true);
 				s3ClientAdapter.create.mockRejectedValueOnce(fileCreateError);
 
-				const addFilePromise = service.addFile(contentIDString, filename, stream, user);
+				const addFilePromise = service.addFile(contentIDString, filename, stream);
 
 				await expect(addFilePromise).rejects.toBe(fileCreateError);
 			});
@@ -306,9 +307,9 @@ describe('ContentStorage', () => {
 
 		describe('WHEN content id is empty string', () => {
 			it('should throw error', async () => {
-				const { filename, stream, user } = setup();
+				const { filename, stream } = setup();
 
-				const addFilePromise = service.addFile('', filename, stream, user);
+				const addFilePromise = service.addFile('', filename, stream);
 
 				await expect(addFilePromise).rejects.toThrow();
 			});
@@ -319,7 +320,7 @@ describe('ContentStorage', () => {
 		describe('WHEN content does exist', () => {
 			it('should return true', async () => {
 				const content = helpers.buildContent().withID();
-				contentRepo.findById.mockResolvedValueOnce(content);
+				contentRepo.existsOne.mockResolvedValueOnce(true);
 
 				const exists = await service.contentExists(content.id);
 
@@ -329,7 +330,7 @@ describe('ContentStorage', () => {
 
 		describe('WHEN content does not exist', () => {
 			it('should return false', async () => {
-				contentRepo.findById.mockRejectedValueOnce(new Error());
+				contentRepo.existsOne.mockResolvedValueOnce(false);
 
 				const exists = await service.contentExists('');
 
@@ -357,18 +358,21 @@ describe('ContentStorage', () => {
 
 		describe('WHEN content exists', () => {
 			it('should call H5PContentRepo.delete', async () => {
-				const { content, user } = setup();
+				const { content } = setup();
 				contentRepo.findById.mockResolvedValueOnce(content);
+				contentRepo.existsOne.mockResolvedValueOnce(true);
 
-				await service.deleteContent(content.id, user);
+				await service.deleteContent(content.id);
 
 				expect(contentRepo.delete).toHaveBeenCalledWith(content);
 			});
 
 			it('should call S3ClientAdapter.deleteFile for every file', async () => {
-				const { content, user, files } = setup();
+				const { content, files } = setup();
+				contentRepo.findById.mockResolvedValueOnce(content);
+				contentRepo.existsOne.mockResolvedValueOnce(true);
 
-				await service.deleteContent(content.id, user);
+				await service.deleteContent(content.id);
 
 				for (const file of files) {
 					expect(s3ClientAdapter.delete).toHaveBeenCalledWith([expect.stringContaining(file)]);
@@ -377,35 +381,35 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN content does not exist', () => {
-			it('should throw InternalServerErrorException', async () => {
-				const { content, user } = setup();
+			it('should throw HttpException', async () => {
+				const { content } = setup();
 				contentRepo.findById.mockRejectedValueOnce(new Error());
 
-				const deletePromise = service.deleteContent(content.id, user);
+				const deletePromise = service.deleteContent(content.id);
 
-				await expect(deletePromise).rejects.toThrow(InternalServerErrorException);
+				await expect(deletePromise).rejects.toThrow(HttpException);
 			});
 		});
 
 		describe('WHEN H5PContentRepo.delete throws an error', () => {
-			it('should throw InternalServerErrorException', async () => {
-				const { content, user } = setup();
+			it('should throw HttpException', async () => {
+				const { content } = setup();
 				contentRepo.delete.mockRejectedValueOnce(new Error());
 
-				const deletePromise = service.deleteContent(content.id, user);
+				const deletePromise = service.deleteContent(content.id);
 
-				await expect(deletePromise).rejects.toThrow(InternalServerErrorException);
+				await expect(deletePromise).rejects.toThrow(HttpException);
 			});
 		});
 
 		describe('WHEN S3ClientAdapter.delete throws an error', () => {
-			it('should throw InternalServerErrorException', async () => {
-				const { content, user } = setup();
+			it('should throw HttpException', async () => {
+				const { content } = setup();
 				s3ClientAdapter.delete.mockRejectedValueOnce(new Error());
 
-				const deletePromise = service.deleteContent(content.id, user);
+				const deletePromise = service.deleteContent(content.id);
 
-				await expect(deletePromise).rejects.toThrow(InternalServerErrorException);
+				await expect(deletePromise).rejects.toThrow(HttpException);
 			});
 		});
 	});
@@ -432,9 +436,9 @@ describe('ContentStorage', () => {
 
 		describe('WHEN deleting a file', () => {
 			it('should call S3ClientAdapter.delete', async () => {
-				const { contentID, filename, user } = setup();
+				const { contentID, filename } = setup();
 
-				await service.deleteFile(contentID, filename, user);
+				await service.deleteFile(contentID, filename);
 
 				expect(s3ClientAdapter.delete).toHaveBeenCalledWith([expect.stringContaining(contentID)]);
 			});
@@ -442,9 +446,9 @@ describe('ContentStorage', () => {
 
 		describe('WHEN filename is invalid', () => {
 			it('should throw error', async () => {
-				const { contentID, invalidFilename, user } = setup();
+				const { contentID, invalidFilename } = setup();
 
-				const deletePromise = service.deleteFile(contentID, invalidFilename, user);
+				const deletePromise = service.deleteFile(contentID, invalidFilename);
 
 				await expect(deletePromise).rejects.toThrow();
 			});
@@ -452,10 +456,10 @@ describe('ContentStorage', () => {
 
 		describe('WHEN S3ClientAdapter throws an error', () => {
 			it('should throw along the error', async () => {
-				const { contentID, filename, user, deleteError } = setup();
+				const { contentID, filename, deleteError } = setup();
 				s3ClientAdapter.delete.mockRejectedValueOnce(deleteError);
 
-				const deletePromise = service.deleteFile(contentID, filename, user);
+				const deletePromise = service.deleteFile(contentID, filename);
 
 				await expect(deletePromise).rejects.toBe(deleteError);
 			});
@@ -493,7 +497,8 @@ describe('ContentStorage', () => {
 		describe('WHEN file does not exist', () => {
 			it('should return false', async () => {
 				const { contentID, filename } = setup();
-				s3ClientAdapter.head.mockRejectedValueOnce(new NotFoundException('NoSuchKey'));
+				// s3ClientAdapter.head.mockRejectedValueOnce(new NotFoundException('NoSuchKey'));
+				s3ClientAdapter.get.mockRejectedValue(new NotFoundException('NoSuchKey'));
 
 				const exists = await service.fileExists(contentID, filename);
 
@@ -502,13 +507,13 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN S3ClientAdapter.head throws error', () => {
-			it('should throw InternalServerException', async () => {
+			it('should throw HttpException', async () => {
 				const { contentID, filename } = setup();
-				s3ClientAdapter.head.mockRejectedValueOnce(new Error());
+				s3ClientAdapter.get.mockRejectedValueOnce(new Error());
 
 				const existsPromise = service.fileExists(contentID, filename);
 
-				await expect(existsPromise).rejects.toThrow(InternalServerErrorException);
+				await expect(existsPromise).rejects.toThrow(HttpException);
 			});
 		});
 
@@ -566,10 +571,10 @@ describe('ContentStorage', () => {
 
 		describe('WHEN file exists', () => {
 			it('should return file stats', async () => {
-				const { filename, contentID, user, headResponse, size, birthtime } = setup();
+				const { filename, contentID, headResponse, size, birthtime } = setup();
 				s3ClientAdapter.head.mockResolvedValueOnce(headResponse);
 
-				const stats = await service.getFileStats(contentID, filename, user);
+				const stats = await service.getFileStats(contentID, filename);
 
 				expect(stats).toEqual(
 					expect.objectContaining({
@@ -582,10 +587,10 @@ describe('ContentStorage', () => {
 
 		describe('WHEN response from S3 is missing ContentLength field', () => {
 			it('should throw InternalServerError', async () => {
-				const { filename, contentID, user, headResponseWithoutContentLength } = setup();
+				const { filename, contentID, headResponseWithoutContentLength } = setup();
 				s3ClientAdapter.head.mockResolvedValueOnce(headResponseWithoutContentLength);
 
-				const statsPromise = service.getFileStats(contentID, filename, user);
+				const statsPromise = service.getFileStats(contentID, filename);
 
 				await expect(statsPromise).rejects.toThrow(InternalServerErrorException);
 			});
@@ -593,10 +598,10 @@ describe('ContentStorage', () => {
 
 		describe('WHEN response from S3 is missing LastModified field', () => {
 			it('should throw InternalServerError', async () => {
-				const { filename, contentID, user, headResponseWithoutLastModified } = setup();
+				const { filename, contentID, headResponseWithoutLastModified } = setup();
 				s3ClientAdapter.head.mockResolvedValueOnce(headResponseWithoutLastModified);
 
-				const statsPromise = service.getFileStats(contentID, filename, user);
+				const statsPromise = service.getFileStats(contentID, filename);
 
 				await expect(statsPromise).rejects.toThrow(InternalServerErrorException);
 			});
@@ -604,10 +609,10 @@ describe('ContentStorage', () => {
 
 		describe('WHEN S3ClientAdapter.head throws error', () => {
 			it('should throw the error', async () => {
-				const { filename, contentID, user, headError } = setup();
+				const { filename, contentID, headError } = setup();
 				s3ClientAdapter.head.mockRejectedValueOnce(headError);
 
-				const statsPromise = service.getFileStats(contentID, filename, user);
+				const statsPromise = service.getFileStats(contentID, filename);
 
 				await expect(statsPromise).rejects.toBe(headError);
 			});
@@ -619,7 +624,7 @@ describe('ContentStorage', () => {
 			const filename = 'testfile.txt';
 			const fileStream = Readable.from('content');
 			const contentID = new ObjectID().toString();
-			const fileResponse = createMock<GetFileResponse>({ data: fileStream });
+			const fileResponse = createMock<GetH5PFileResponse>({ data: fileStream });
 			const user = helpers.createUser();
 
 			const getError = new Error('Could not get file');
@@ -637,9 +642,11 @@ describe('ContentStorage', () => {
 
 		describe('WHEN file exists', () => {
 			it('should S3ClientAdapter.get with range', async () => {
-				const { testRanges, contentID, filename, user } = setup();
+				const { testRanges, contentID, filename, user, fileResponse } = setup();
 
 				for (const range of testRanges) {
+					s3ClientAdapter.get.mockResolvedValueOnce(fileResponse);
+
 					// eslint-disable-next-line no-await-in-loop
 					await service.getFileStream(contentID, filename, user, range[0], range[1]);
 
@@ -751,10 +758,10 @@ describe('ContentStorage', () => {
 
 		describe('WHEN querying for contents', () => {
 			it('should return list of IDs', async () => {
-				const { contentIds, getContentsResponse, user } = setup();
+				const { contentIds, getContentsResponse } = setup();
 				contentRepo.getAllContents.mockResolvedValueOnce(getContentsResponse);
 
-				const ids = await service.listContent(user);
+				const ids = await service.listContent();
 
 				expect(ids).toEqual(contentIds);
 			});
@@ -762,10 +769,10 @@ describe('ContentStorage', () => {
 
 		describe('WHEN H5PContentRepo.getAllContents throws error', () => {
 			it('should throw the error', async () => {
-				const { error, user } = setup();
+				const { error } = setup();
 				contentRepo.getAllContents.mockRejectedValueOnce(error);
 
-				const listPromise = service.listContent(user);
+				const listPromise = service.listContent();
 
 				await expect(listPromise).rejects.toBe(error);
 			});
@@ -784,34 +791,35 @@ describe('ContentStorage', () => {
 
 		describe('WHEN content exists', () => {
 			it('should return list of filenames', async () => {
-				const { filenames, content, user } = setup();
-				contentRepo.findById.mockResolvedValueOnce(content);
+				const { filenames, content } = setup();
+				contentRepo.existsOne.mockResolvedValueOnce(true);
 				// @ts-expect-error test case
 				s3ClientAdapter.list.mockResolvedValueOnce({ files: filenames });
 
-				const files = await service.listFiles(content.id, user);
+				const files = await service.listFiles(content.id);
 
 				expect(files).toEqual(filenames);
 			});
 		});
 
 		describe('WHEN content does not exist', () => {
-			it('should throw NotFoundException', async () => {
-				const { content, user } = setup();
-				contentRepo.findById.mockRejectedValueOnce(new Error());
+			it('should throw HttpException', async () => {
+				const { content } = setup();
+				contentRepo.existsOne.mockResolvedValueOnce(false);
 
-				const listPromise = service.listFiles(content.id, user);
+				const listPromise = service.listFiles(content.id);
 
-				await expect(listPromise).rejects.toThrow(NotFoundException);
+				await expect(listPromise).rejects.toThrow(HttpException);
 			});
 		});
 
 		describe('WHEN S3ClientAdapter.list throws error', () => {
 			it('should throw the error', async () => {
-				const { content, user, error } = setup();
+				const { content, error } = setup();
+				contentRepo.existsOne.mockResolvedValueOnce(true);
 				s3ClientAdapter.list.mockRejectedValueOnce(error);
 
-				const listPromise = service.listFiles(content.id, user);
+				const listPromise = service.listFiles(content.id);
 
 				await expect(listPromise).rejects.toBe(error);
 			});
@@ -819,9 +827,7 @@ describe('ContentStorage', () => {
 
 		describe('WHEN ID is empty string', () => {
 			it('should throw error', async () => {
-				const { user } = setup();
-
-				const listPromise = service.listFiles('', user);
+				const listPromise = service.listFiles('');
 
 				await expect(listPromise).rejects.toThrow();
 			});
@@ -875,10 +881,10 @@ describe('ContentStorage', () => {
 
 	describe('getUserPermissions (currently unused)', () => {
 		it('should return array of permissions', async () => {
-			const user = helpers.createUser();
+			// const user = helpers.createUser();
 
 			// This method is currently unused and will be changed later
-			const permissions = await service.getUserPermissions('id', user);
+			const permissions = await service.getUserPermissions();
 
 			expect(permissions.length).toBeGreaterThan(0);
 		});
@@ -888,8 +894,9 @@ describe('ContentStorage', () => {
 		describe('WHEN calling getContentPath with invalid parameters', () => {
 			it('should throw error', async () => {
 				// Test private getContentPath using listFiles
+				contentRepo.existsOne.mockResolvedValueOnce(true);
 				const promise = service.listFiles('');
-				await expect(promise).rejects.toThrow('COULD_NOT_CREATE_PATH');
+				await expect(promise).rejects.toThrow(HttpException);
 			});
 		});
 
@@ -897,10 +904,10 @@ describe('ContentStorage', () => {
 			it('should throw error', async () => {
 				// Test private getFilePath using fileExists
 				const missingContentID = service.fileExists('', 'filename');
-				await expect(missingContentID).rejects.toThrow('COULD_NOT_CREATE_PATH');
+				await expect(missingContentID).rejects.toThrow(HttpException);
 
 				const missingFilename = service.fileExists('id', '');
-				await expect(missingFilename).rejects.toThrow('COULD_NOT_CREATE_PATH');
+				await expect(missingFilename).rejects.toThrow(HttpException);
 			});
 		});
 
@@ -908,13 +915,13 @@ describe('ContentStorage', () => {
 			it('should throw error', async () => {
 				// Test private checkFilename using deleteFile
 				const invalidChars = service.deleteFile('id', 'ex#ample.txt');
-				await expect(invalidChars).rejects.toThrow('Filename contains forbidden characters');
+				await expect(invalidChars).rejects.toThrow(HttpException);
 
 				const includesDoubleDot = service.deleteFile('id', '../test.txt');
-				await expect(includesDoubleDot).rejects.toThrow('Filename contains forbidden characters');
+				await expect(includesDoubleDot).rejects.toThrow(HttpException);
 
 				const startsWithSlash = service.deleteFile('id', '/example.txt');
-				await expect(startsWithSlash).rejects.toThrow('Filename contains forbidden characters');
+				await expect(startsWithSlash).rejects.toThrow(HttpException);
 			});
 		});
 	});
