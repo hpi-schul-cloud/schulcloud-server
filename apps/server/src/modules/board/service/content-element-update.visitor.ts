@@ -24,13 +24,12 @@ import {
 	RichTextContentBody,
 	SubmissionContainerContentBody,
 } from '../controller/dto';
-import { OpenGraphProxyService } from './open-graph-proxy.service';
 
 @Injectable()
 export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 	private readonly content: AnyElementContentBody;
 
-	constructor(content: AnyElementContentBody, private readonly openGraphProxyService: OpenGraphProxyService) {
+	constructor(content: AnyElementContentBody) {
 		this.content = content;
 	}
 
@@ -57,13 +56,19 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 
 	async visitLinkElementAsync(linkElement: LinkElement): Promise<void> {
 		if (this.content instanceof LinkContentBody) {
-			const urlWithProtocol = /:\/\//.test(this.content.url) ? this.content.url : `https://${this.content.url}`;
-			linkElement.url = new URL(urlWithProtocol).toString();
-			const openGraphData = await this.openGraphProxyService.fetchOpenGraphData(linkElement.url);
-			linkElement.title = openGraphData.title;
-			linkElement.description = openGraphData.description;
-			if (openGraphData.image) {
-				linkElement.imageUrl = openGraphData.image.url;
+			linkElement.url = new URL(this.content.url).toString();
+			linkElement.title = this.content.title ?? '';
+			linkElement.description = this.content.description ?? '';
+			if (this.content.imageUrl) {
+				const isRelativeUrl = (url: string) => {
+					const fallbackHostname = 'https://www.fallback-url-if-url-is-relative.org';
+					const imageUrlObject = new URL(url, fallbackHostname);
+					return imageUrlObject.origin === fallbackHostname;
+				};
+
+				if (isRelativeUrl(this.content.imageUrl)) {
+					linkElement.imageUrl = this.content.imageUrl;
+				}
 			}
 			return Promise.resolve();
 		}

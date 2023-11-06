@@ -1,4 +1,4 @@
-import { AuthorizationLoaderService } from '@src/modules/authorization';
+import { AuthorizationLoaderService } from '@modules/authorization';
 import { EntityId } from '@shared/domain';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { Injectable } from '@nestjs/common';

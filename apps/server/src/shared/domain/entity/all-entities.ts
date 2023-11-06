@@ -1,17 +1,17 @@
-import { ClassEntity } from '@src/modules/class/entity';
-import { GroupEntity } from '@src/modules/group/entity';
-import { ExternalToolPseudonymEntity, PseudonymEntity } from '@src/modules/pseudonym/entity';
-import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
-import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
-import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
-import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
-import { DrawingElementNode } from '@shared/domain/entity/boardnode/drawing-element-node.entity';
+import { ClassEntity } from '@modules/class/entity';
+import { GroupEntity } from '@modules/group/entity';
+import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
+import { ShareToken } from '@modules/sharing/entity/share-token.entity';
+import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
+import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { Account } from './account.entity';
 import {
 	BoardNode,
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	DrawingElementNode,
 	ExternalToolElementNodeEntity,
 	FileElementNode,
 	LinkElementNode,

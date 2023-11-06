@@ -1,16 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain';
-import { drawingElementFactory, setupEntities, userFactory } from '@shared/testing';
+import { columnBoardFactory, columnFactory, setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { ObjectId } from 'bson';
-import { HttpService } from '@nestjs/axios';
-import { AxiosResponse } from 'axios';
-import { of } from 'rxjs';
-import { BoardDoAuthorizableService, ContentElementService } from '../service';
-import { CardService } from '../service/card.service';
+import { BoardDoAuthorizableService, ContentElementService, CardService } from '../service';
 import { CardUc } from './card.uc';
 
 describe(CardUc.name, () => {
@@ -104,6 +100,144 @@ describe(CardUc.name, () => {
 		});
 	});
 
+	describe('deleteCard', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const board = columnBoardFactory.build();
+			const boardId = board.id;
+			const column = columnFactory.build();
+			const card = cardFactory.build();
+			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+				id: board.id,
+			});
+			const createCardBodyParams = {
+				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
+			};
+
+			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
+
+			return { user, board, boardId, column, card, createCardBodyParams };
+		};
+
+		describe('when deleting a card', () => {
+			it('should call the service to find the card', async () => {
+				const { user, card } = setup();
+
+				await uc.deleteCard(user.id, card.id);
+
+				expect(cardService.findById).toHaveBeenCalledWith(card.id);
+			});
+
+			it('should call the service to delete the card', async () => {
+				const { user, card } = setup();
+				cardService.findById.mockResolvedValueOnce(card);
+
+				await uc.deleteCard(user.id, card.id);
+
+				expect(cardService.delete).toHaveBeenCalledWith(card);
+			});
+		});
+	});
+
+	describe('updateCardHeight', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const board = columnBoardFactory.build();
+			const boardId = board.id;
+			const column = columnFactory.build();
+			const card = cardFactory.build();
+			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+				id: board.id,
+			});
+			const createCardBodyParams = {
+				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
+			};
+
+			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
+
+			return { user, board, boardId, column, card, createCardBodyParams };
+		};
+
+		describe('when updating a card height', () => {
+			it('should call the service to find the card', async () => {
+				const { user, card } = setup();
+				const cardHeight = 200;
+
+				await uc.updateCardHeight(user.id, card.id, cardHeight);
+
+				expect(cardService.findById).toHaveBeenCalledWith(card.id);
+			});
+
+			it('should check the permission', async () => {
+				const { user, card } = setup();
+				const cardHeight = 200;
+
+				await uc.updateCardHeight(user.id, card.id, cardHeight);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalled();
+			});
+
+			it('should call the service to update the card height', async () => {
+				const { user, card } = setup();
+				cardService.findById.mockResolvedValueOnce(card);
+				const newHeight = 250;
+
+				await uc.updateCardHeight(user.id, card.id, newHeight);
+
+				expect(cardService.updateHeight).toHaveBeenCalledWith(card, newHeight);
+			});
+		});
+	});
+
+	describe('updateCardTitle', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const board = columnBoardFactory.build();
+			const boardId = board.id;
+			const column = columnFactory.build();
+			const card = cardFactory.build();
+			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+				id: board.id,
+			});
+			const createCardBodyParams = {
+				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
+			};
+
+			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
+
+			return { user, board, boardId, column, card, createCardBodyParams };
+		};
+
+		describe('when updating a card title', () => {
+			it('should call the service to find the card', async () => {
+				const { user, card } = setup();
+
+				await uc.updateCardTitle(user.id, card.id, 'new title');
+
+				expect(cardService.findById).toHaveBeenCalledWith(card.id);
+			});
+
+			it('should call the service to update the card title', async () => {
+				const { user, card } = setup();
+				cardService.findById.mockResolvedValueOnce(card);
+				const newTitle = 'new title';
+
+				await uc.updateCardTitle(user.id, card.id, newTitle);
+
+				expect(cardService.updateTitle).toHaveBeenCalledWith(card, newTitle);
+			});
+		});
+	});
+
 	describe('createElement', () => {
 		describe('when creating a content element', () => {
 			const setup = () => {
@@ -157,57 +291,6 @@ describe(CardUc.name, () => {
 				const result = await uc.createElement(user.id, card.id, ContentElementType.RICH_TEXT);
 
 				expect(result).toEqual(element);
-			});
-		});
-	});
-
-	describe('deleteElement', () => {
-		describe('when deleting a content element', () => {
-			const setup = () => {
-				const user = userFactory.build();
-				const element = richTextElementFactory.build();
-				const drawing = drawingElementFactory.build();
-				const card = cardFactory.build();
-
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
-				);
-
-				return { user, card, element, drawing };
-			};
-
-			it('should call the service to find the element', async () => {
-				const { user, element } = setup();
-
-				await uc.deleteElement(user.id, element.id, 'auth');
-
-				expect(elementService.findById).toHaveBeenCalledWith(element.id);
-			});
-
-			it('should call the service to delete the element', async () => {
-				const { user, element } = setup();
-				elementService.findById.mockResolvedValueOnce(element);
-
-				await uc.deleteElement(user.id, element.id, 'auth');
-
-				expect(elementService.delete).toHaveBeenCalledWith(element);
-			});
-
-			it('should call external controller via delete method to clear drawing bin data', async () => {
-				const { user, drawing } = setup();
-				elementService.findById.mockResolvedValueOnce(drawing);
-				const axiosResponse: AxiosResponse<string> = {
-					data: '',
-					status: 0,
-					statusText: 'statusText',
-					headers: {},
-					config: {},
-				};
-				httpService.delete.mockReturnValue(of(axiosResponse));
-
-				await uc.deleteElement(user.id, drawing.id, 'auth');
-
-				expect(httpService.delete).toHaveBeenCalled();
 			});
 		});
 	});

@@ -1,29 +1,5 @@
 import { EntityId } from '@shared/domain';
 
-export interface IRole {
-	name: string;
-
-	id: string;
-}
-
-export interface IResolvedUser {
-	firstName: string;
-
-	lastName: string;
-
-	id: string;
-
-	createdAt: Date;
-
-	updatedAt: Date;
-
-	roles: IRole[];
-
-	permissions: string[];
-
-	schoolId: string;
-}
-
 export interface ICurrentUser {
 	/** authenticated users id */
 	userId: EntityId;
@@ -39,6 +15,9 @@ export interface ICurrentUser {
 
 	/** True if a support member impersonates the user */
 	impersonated?: boolean;
+
+	/** True if the user is an external user e.g. an oauth user */
+	isExternalUser: boolean;
 }
 
 export interface OauthCurrentUser extends ICurrentUser {

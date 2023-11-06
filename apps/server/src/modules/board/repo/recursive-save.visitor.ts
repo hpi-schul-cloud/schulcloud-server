@@ -24,7 +24,7 @@ import {
 } from '@shared/domain';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { LinkElementNode } from '@shared/domain/entity/boardnode/link-element-node.entity';
-import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
+import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { DrawingElementNode } from '@shared/domain/entity/boardnode/drawing-element-node.entity';
 import { BoardNodeRepo } from './board-node.repo';
@@ -64,8 +64,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			context: columnBoard.context,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(columnBoard, boardNode);
+		this.saveRecursive(boardNode, columnBoard);
 	}
 
 	visitColumn(column: Column): void {
@@ -78,8 +77,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			position: parentData?.position,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(column, boardNode);
+		this.saveRecursive(boardNode, column);
 	}
 
 	visitCard(card: Card): void {
@@ -93,8 +91,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			position: parentData?.position,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(card, boardNode);
+		this.saveRecursive(boardNode, card);
 	}
 
 	visitFileElement(fileElement: FileElement): void {
@@ -108,8 +105,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			position: parentData?.position,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(fileElement, boardNode);
+		this.saveRecursive(boardNode, fileElement);
 	}
 
 	visitLinkElement(linkElement: LinkElement): void {
@@ -139,8 +135,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			position: parentData?.position,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(richTextElement, boardNode);
+		this.saveRecursive(boardNode, richTextElement);
 	}
 
 	visitDrawingElement(drawingElement: DrawingElement): void {
@@ -168,22 +163,20 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			dueDate: submissionContainerElement.dueDate,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(submissionContainerElement, boardNode);
+		this.saveRecursive(boardNode, submissionContainerElement);
 	}
 
-	visitSubmissionItem(submission: SubmissionItem): void {
-		const parentData = this.parentsMap.get(submission.id);
+	visitSubmissionItem(submissionItem: SubmissionItem): void {
+		const parentData = this.parentsMap.get(submissionItem.id);
 		const boardNode = new SubmissionItemNode({
-			id: submission.id,
+			id: submissionItem.id,
 			parent: parentData?.boardNode,
 			position: parentData?.position,
-			completed: submission.completed,
-			userId: submission.userId,
+			completed: submissionItem.completed,
+			userId: submissionItem.userId,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(submission, boardNode);
+		this.saveRecursive(boardNode, submissionItem);
 	}
 
 	visitExternalToolElement(externalToolElement: ExternalToolElement): void {
@@ -202,14 +195,14 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		this.visitChildren(externalToolElement, boardNode);
 	}
 
-	visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {
+	private visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {
 		parent.children.forEach((child) => {
 			this.registerParentData(parent, child, parentNode);
 			child.accept(this);
 		});
 	}
 
-	registerParentData(parent: AnyBoardDo, child: AnyBoardDo, parentNode: BoardNode) {
+	private registerParentData(parent: AnyBoardDo, child: AnyBoardDo, parentNode: BoardNode) {
 		const position = parent.children.findIndex((obj) => obj.id === child.id);
 		if (position === -1) {
 			throw new Error(`Cannot get child position. Child doesnt belong to parent`);
@@ -217,6 +210,12 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		this.parentsMap.set(child.id, { boardNode: parentNode, position });
 	}
 
+	private saveRecursive(boardNode: BoardNode, anyBoardDo: AnyBoardDo): void {
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(anyBoardDo, boardNode);
+	}
+
+	// TODO make private (change tests)
 	createOrUpdateBoardNode(boardNode: BoardNode): void {
 		const existing = this.em.getUnitOfWork().getById<BoardNode>(BoardNode.name, boardNode.id);
 		if (existing) {

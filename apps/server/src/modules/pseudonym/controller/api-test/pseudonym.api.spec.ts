@@ -11,8 +11,8 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'supertest';
 import { SchoolEntity } from '@shared/domain';
-import { ServerTestModule } from '@src/modules/server';
-import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
+import { ServerTestModule } from '@modules/server';
+import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { UUID } from 'bson';
 import { ExternalToolPseudonymEntity } from '../../entity';
 import { PseudonymResponse } from '../dto';

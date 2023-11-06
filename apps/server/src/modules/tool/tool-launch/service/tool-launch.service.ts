@@ -1,6 +1,13 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
+import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
+import { ContextExternalTool } from '../../context-external-tool/domain';
+import { ExternalTool } from '../../external-tool/domain';
+import { ExternalToolService } from '../../external-tool/service';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { ToolStatusOutdatedLoggableException } from '../error';
 import { ToolLaunchMapper } from '../mapper';
 import { ToolLaunchData, ToolLaunchRequest } from '../types';
 import {
@@ -8,14 +15,7 @@ import {
 	IToolLaunchStrategy,
 	Lti11ToolLaunchStrategy,
 	OAuth2ToolLaunchStrategy,
-} from './strategy';
-import { ToolStatusOutdatedLoggableException } from '../error';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ExternalToolService } from '../../external-tool/service';
-import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ExternalTool } from '../../external-tool/domain';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
+} from './launch-strategy';
 
 @Injectable()
 export class ToolLaunchService {
@@ -73,11 +73,9 @@ export class ToolLaunchService {
 	private async loadToolHierarchy(
 		schoolExternalToolId: string
 	): Promise<{ schoolExternalTool: SchoolExternalTool; externalTool: ExternalTool }> {
-		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(
-			schoolExternalToolId
-		);
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
 
-		const externalTool: ExternalTool = await this.externalToolService.findExternalToolById(schoolExternalTool.toolId);
+		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
 		return {
 			schoolExternalTool,

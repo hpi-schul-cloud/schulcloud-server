@@ -1,4 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Injectable } from '@nestjs/common';
 import {
 	AnyBoardDo,
@@ -14,14 +17,14 @@ import {
 	SubmissionItem,
 } from '@shared/domain';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 
 @Injectable()
 export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 	constructor(
 		private readonly em: EntityManager,
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
+		private readonly contextExternalToolService: ContextExternalToolService
 	) {}
 
 	async visitColumnBoardAsync(columnBoard: ColumnBoard): Promise<void> {
@@ -73,7 +76,14 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 	}
 
 	async visitExternalToolElementAsync(externalToolElement: ExternalToolElement): Promise<void> {
-		// TODO N21-1296: Delete linked ContextExternalTool
+		if (externalToolElement.contextExternalToolId) {
+			const linkedTool: ContextExternalTool = await this.contextExternalToolService.findById(
+				externalToolElement.contextExternalToolId
+			);
+
+			await this.contextExternalToolService.deleteContextExternalTool(linkedTool);
+		}
+
 		this.deleteNode(externalToolElement);
 
 		await this.visitChildrenAsync(externalToolElement);

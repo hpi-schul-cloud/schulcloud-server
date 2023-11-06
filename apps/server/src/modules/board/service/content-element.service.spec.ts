@@ -27,7 +27,6 @@ import {
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
-import { OpenGraphProxyService } from './open-graph-proxy.service';
 
 describe(ContentElementService.name, () => {
 	let module: TestingModule;
@@ -35,7 +34,6 @@ describe(ContentElementService.name, () => {
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
 	let boardDoService: DeepMocked<BoardDoService>;
 	let contentElementFactory: DeepMocked<ContentElementFactory>;
-	let openGraphProxyService: DeepMocked<OpenGraphProxyService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -53,10 +51,6 @@ describe(ContentElementService.name, () => {
 					provide: ContentElementFactory,
 					useValue: createMock<ContentElementFactory>(),
 				},
-				{
-					provide: OpenGraphProxyService,
-					useValue: createMock<OpenGraphProxyService>(),
-				},
 			],
 		}).compile();
 
@@ -64,7 +58,6 @@ describe(ContentElementService.name, () => {
 		boardDoRepo = module.get(BoardDoRepo);
 		boardDoService = module.get(BoardDoService);
 		contentElementFactory = module.get(ContentElementFactory);
-		openGraphProxyService = module.get(OpenGraphProxyService);
 
 		await setupEntities();
 	});
@@ -120,6 +113,43 @@ describe(ContentElementService.name, () => {
 				const { cardElement } = setup();
 
 				await expect(service.findById(cardElement.id)).rejects.toThrowError(NotFoundException);
+			});
+		});
+	});
+
+	describe('findParentOfId', () => {
+		describe('when parent is a vaid node', () => {
+			const setup = () => {
+				const card = cardFactory.build();
+				const element = richTextElementFactory.build();
+
+				return { element, card };
+			};
+
+			it('should call the repo', async () => {
+				const { element, card } = setup();
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(card);
+
+				await service.findParentOfId(element.id);
+
+				expect(boardDoRepo.findParentOfId).toHaveBeenCalledWith(element.id);
+			});
+
+			it('should throw NotFoundException', async () => {
+				const { element } = setup();
+
+				boardDoRepo.findParentOfId.mockResolvedValue(undefined);
+
+				await expect(service.findParentOfId(element.id)).rejects.toThrowError(NotFoundException);
+			});
+
+			it('should return the parent', async () => {
+				const { element, card } = setup();
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(card);
+
+				const result = await service.findParentOfId(element.id);
+
+				expect(result).toEqual(card);
 			});
 		});
 	});
@@ -295,8 +325,6 @@ describe(ContentElementService.name, () => {
 					url: linkElement.url,
 					image: { url: 'https://my-open-graph-proxy.scvs.de/image/adefcb12ed3a' },
 				};
-
-				openGraphProxyService.fetchOpenGraphData.mockResolvedValueOnce(imageResponse);
 
 				return { linkElement, content, card, imageResponse };
 			};

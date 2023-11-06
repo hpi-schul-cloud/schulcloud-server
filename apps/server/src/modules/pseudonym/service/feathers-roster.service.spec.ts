@@ -2,28 +2,28 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DatabaseObjectNotFoundException } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Course, Pseudonym, RoleName, LegacySchoolDo, UserDO, SchoolEntity } from '@shared/domain';
+import { Course, LegacySchoolDo, Pseudonym, RoleName, SchoolEntity, UserDO } from '@shared/domain';
 import {
 	contextExternalToolFactory,
 	courseFactory,
 	externalToolFactory,
-	pseudonymFactory,
 	legacySchoolDoFactory,
+	pseudonymFactory,
 	schoolExternalToolFactory,
 	schoolFactory,
 	setupEntities,
 	UserAndAccountTestFactory,
 	userDoFactory,
 } from '@shared/testing';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
-import { ToolContextType } from '@src/modules/tool/common/enum';
-import { ContextExternalTool, ContextRef } from '@src/modules/tool/context-external-tool/domain';
-import { ContextExternalToolService } from '@src/modules/tool/context-external-tool/service';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { ExternalToolService } from '@src/modules/tool/external-tool/service';
-import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
-import { SchoolExternalToolService } from '@src/modules/tool/school-external-tool/service';
-import { UserService } from '@src/modules/user';
+import { CourseService } from '@modules/learnroom/service/course.service';
+import { ToolContextType } from '@modules/tool/common/enum';
+import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { ExternalToolService } from '@modules/tool/external-tool/service';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
+import { UserService } from '@modules/user';
 import { ObjectId } from 'bson';
 import { FeathersRosterService } from './feathers-roster.service';
 import { PseudonymService } from './pseudonym.service';
@@ -249,10 +249,10 @@ describe('FeathersRosterService', () => {
 				]);
 				contextExternalToolService.findAllByContext.mockResolvedValueOnce([otherContextExternalTool]);
 				contextExternalToolService.findAllByContext.mockResolvedValueOnce([]);
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(otherSchoolExternalTool);
-				externalToolService.findExternalToolById.mockResolvedValueOnce(externalTool);
-				externalToolService.findExternalToolById.mockResolvedValueOnce(otherExternalTool);
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				schoolExternalToolService.findById.mockResolvedValueOnce(otherSchoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
+				externalToolService.findById.mockResolvedValueOnce(otherExternalTool);
 
 				return {
 					pseudonym,
@@ -299,7 +299,7 @@ describe('FeathersRosterService', () => {
 
 				await service.getUserGroups(pseudonym.pseudonym, clientId);
 
-				expect(schoolExternalToolService.getSchoolExternalToolById.mock.calls).toEqual([
+				expect(schoolExternalToolService.findById.mock.calls).toEqual([
 					[schoolExternalTool.id],
 					[otherSchoolExternalTool.id],
 				]);
@@ -310,7 +310,7 @@ describe('FeathersRosterService', () => {
 
 				await service.getUserGroups(pseudonym.pseudonym, clientId);
 
-				expect(externalToolService.findExternalToolById.mock.calls).toEqual([[externalToolId], [otherExternalTool.id]]);
+				expect(externalToolService.findById.mock.calls).toEqual([[externalToolId], [otherExternalTool.id]]);
 			});
 
 			it('should return a group for each course where the tool of the users pseudonym is used', async () => {

@@ -8,7 +8,7 @@ import { FileSystemModule } from '@shared/infra/file-system';
 import { KeycloakConfigurationModule } from '@shared/infra/identity-management/keycloak-configuration/keycloak-configuration.module';
 import { createConfigModuleOptions } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
-import { serverConfig } from '@src/modules/server';
+import { serverConfig } from '@modules/server';
 import { BoardManagementConsole } from './console/board-management.console';
 import { DatabaseManagementConsole } from './console/database-management.console';
 import { DatabaseManagementController } from './controller/database-management.controller';

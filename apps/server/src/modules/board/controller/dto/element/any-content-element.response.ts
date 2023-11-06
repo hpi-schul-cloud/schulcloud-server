@@ -12,3 +12,9 @@ export type AnyContentElementResponse =
 	| SubmissionContainerElementResponse
 	| ExternalToolElementResponse
 	| DrawingElementResponse;
+
+export const isFileElementResponse = (element: AnyContentElementResponse): element is FileElementResponse =>
+	element instanceof FileElementResponse;
+
+export const isRichTextElementResponse = (element: AnyContentElementResponse): element is RichTextElementResponse =>
+	element instanceof RichTextElementResponse;

@@ -1,4 +1,4 @@
-import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
+import { OauthProviderResponseMapper } from '@modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import {
 	ProviderConsentResponse,
 	ProviderConsentSessionResponse,
@@ -12,7 +12,7 @@ import {
 	LoginResponse,
 	OauthClientResponse,
 	RedirectResponse,
-} from '@src/modules/oauth-provider/controller/dto/';
+} from '@modules/oauth-provider/controller/dto/';
 
 describe('OauthProviderResponseMapper', () => {
 	let mapper: OauthProviderResponseMapper;

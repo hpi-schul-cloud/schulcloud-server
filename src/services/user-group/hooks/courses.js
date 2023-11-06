@@ -67,15 +67,41 @@ const addWholeClassToCourse = async (hook) => {
  * @param hook - contains and request body
  */
 const deleteWholeClassFromCourse = (hook) => {
+	const { app } = hook;
 	const requestBody = hook.data;
 	const courseId = hook.id;
-	if (requestBody.classIds === undefined && requestBody.user === undefined) {
+	if (requestBody.classIds === undefined && requestBody.user === undefined && requestBody.groupIds === undefined) {
 		return hook;
 	}
 	return CourseModel.findById(courseId)
 		.exec()
-		.then((course) => {
+		.then(async (course) => {
 			if (!course) return hook;
+
+			const removedGroups = _.differenceBy(course.groupIds, requestBody.groupIds, (v) => JSON.stringify(v));
+			if (Configuration.get('FEATURE_GROUPS_IN_COURSE_ENABLED') && removedGroups.length > 0) {
+				await Promise.all(
+					removedGroups.map((groupId) =>
+						app
+							.service('nest-group-service')
+							.findById(groupId)
+							.then((group) => group.users)
+					)
+				).then(async (groupUsers) => {
+					// flatten deep arrays and remove duplicates
+					const userIds = _.flattenDeep(groupUsers).map((groupUser) => groupUser.userId);
+					const uniqueUserIds = _.uniqWith(userIds, (a, b) => a === b);
+
+					await CourseModel.update(
+						{ _id: course._id },
+						{ $pull: { userIds: { $in: uniqueUserIds } } },
+						{ multi: true }
+					).exec();
+					hook.data.userIds = hook.data.userIds.filter((value) => !uniqueUserIds.some((id) => equalIds(id, value)));
+
+					return undefined;
+				});
+			}
 
 			const removedClasses = _.differenceBy(course.classIds, requestBody.classIds, (v) => JSON.stringify(v));
 			if (removedClasses.length < 1) return hook;

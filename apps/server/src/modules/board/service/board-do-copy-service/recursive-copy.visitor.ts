@@ -13,7 +13,7 @@ import {
 } from '@shared/domain';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ObjectId } from 'bson';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 

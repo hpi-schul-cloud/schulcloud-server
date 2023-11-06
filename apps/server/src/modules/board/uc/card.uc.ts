@@ -1,24 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { AnyBoardDo, AnyContentElementDo, Card, ContentElementType, EntityId } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization/authorization.service';
-import { Action } from '@src/modules/authorization/types/action.enum';
-import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
-import { firstValueFrom } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
-import { Configuration } from '@hpi-schul-cloud/commons';
+import { AuthorizationService, Action } from '@modules/authorization';
 import { BoardDoAuthorizableService, CardService, ContentElementService } from '../service';
+import { BaseUc } from './base.uc';
 
 @Injectable()
-export class CardUc {
+export class CardUc extends BaseUc {
 	constructor(
-		private readonly authorizationService: AuthorizationService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		@Inject(forwardRef(() => AuthorizationService))
+		protected readonly authorizationService: AuthorizationService,
+		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly cardService: CardService,
 		private readonly elementService: ContentElementService,
-		private readonly logger: LegacyLogger,
-		private readonly httpService: HttpService
+		private readonly logger: LegacyLogger
 	) {
+		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(CardUc.name);
 	}
 
@@ -29,6 +26,33 @@ export class CardUc {
 		const allowedCards = await this.filterAllowed(userId, cards, Action.read);
 
 		return allowedCards;
+	}
+
+	async updateCardHeight(userId: EntityId, cardId: EntityId, height: number): Promise<void> {
+		this.logger.debug({ action: 'updateCardHeight', userId, cardId, height });
+
+		const card = await this.cardService.findById(cardId);
+		await this.checkPermission(userId, card, Action.write);
+
+		await this.cardService.updateHeight(card, height);
+	}
+
+	async updateCardTitle(userId: EntityId, cardId: EntityId, title: string): Promise<void> {
+		this.logger.debug({ action: 'updateCardTitle', userId, cardId, title });
+
+		const card = await this.cardService.findById(cardId);
+		await this.checkPermission(userId, card, Action.write);
+
+		await this.cardService.updateTitle(card, title);
+	}
+
+	async deleteCard(userId: EntityId, cardId: EntityId): Promise<void> {
+		this.logger.debug({ action: 'deleteCard', userId, cardId });
+
+		const card = await this.cardService.findById(cardId);
+		await this.checkPermission(userId, card, Action.write);
+
+		await this.cardService.delete(card);
 	}
 
 	// --- elements ---
@@ -52,25 +76,6 @@ export class CardUc {
 		return element;
 	}
 
-	async deleteElement(userId: EntityId, elementId: EntityId, auth: string): Promise<void> {
-		this.logger.debug({ action: 'deleteElement', userId, elementId });
-
-		const element = await this.elementService.findById(elementId);
-		await this.checkPermission(userId, element, Action.write);
-
-		await this.elementService.delete(element);
-		if (element instanceof DrawingElement) {
-			await firstValueFrom(
-				this.httpService.delete(`${Configuration.get('TLDRAW_URI') as string}/tldraw-document/${element.drawingName}`, {
-					headers: {
-						Accept: 'Application/json',
-						Authorization: auth,
-					},
-				})
-			);
-		}
-	}
-
 	async moveElement(
 		userId: EntityId,
 		elementId: EntityId,
@@ -86,14 +91,6 @@ export class CardUc {
 		await this.checkPermission(userId, targetCard, Action.write);
 
 		await this.elementService.move(element, targetCard, targetPosition);
-	}
-
-	private async checkPermission(userId: EntityId, boardDo: AnyBoardDo, action: Action): Promise<void> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
-		const context = { action, requiredPermissions: [] };
-
-		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
 	}
 
 	private async filterAllowed<T extends AnyBoardDo>(userId: EntityId, boardDos: T[], action: Action): Promise<T[]> {

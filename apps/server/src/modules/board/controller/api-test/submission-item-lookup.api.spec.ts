@@ -1,20 +1,22 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain';
+import { BoardExternalReferenceType, ContentElementType } from '@shared/domain';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
 	courseFactory,
+	fileElementNodeFactory,
+	richTextElementNodeFactory,
 	submissionContainerElementNodeFactory,
 	submissionItemNodeFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
+import { ServerTestModule } from '@modules/server';
 import { SubmissionsResponse } from '../dto';
 
 const baseRouteName = '/board-submissions';
@@ -255,6 +257,119 @@ describe('submission item lookup (api)', () => {
 			const response = await loggedInClient.get(`${submissionContainerNode.id}`);
 
 			expect(response.status).toEqual(403);
+		});
+	});
+
+	describe('when submission item has child elements', () => {
+		describe('when submission item has a RICH_TEXT child element', () => {
+			const setup = async () => {
+				await cleanupCollections(em);
+
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const course = courseFactory.build({ teachers: [teacherUser], students: [studentUser] });
+				await em.persistAndFlush([studentAccount, studentUser, teacherAccount, teacherUser, course]);
+
+				const columnBoardNode = columnBoardNodeFactory.buildWithId({
+					context: { id: course.id, type: BoardExternalReferenceType.Course },
+				});
+
+				const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+
+				const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+
+				const submissionContainer = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
+				const submissionItem = submissionItemNodeFactory.buildWithId({
+					parent: submissionContainer,
+					userId: studentUser.id,
+				});
+				const richTextElement = richTextElementNodeFactory.buildWithId({ parent: submissionItem });
+
+				await em.persistAndFlush([
+					columnBoardNode,
+					columnNode,
+					cardNode,
+					submissionContainer,
+					submissionItem,
+					richTextElement,
+				]);
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				return {
+					loggedInClient,
+					submissionContainer,
+					submissionItem,
+					richTextElement,
+				};
+			};
+
+			it('should return all RICH_TEXT child elements', async () => {
+				const { loggedInClient, submissionContainer, richTextElement } = await setup();
+
+				const response = await loggedInClient.get(`${submissionContainer.id}`);
+				const submissionItemResponse = (response.body as SubmissionsResponse).submissionItemsResponse[0];
+				const richTextElementResponse = submissionItemResponse.elements.filter(
+					(element) => element.type === ContentElementType.RICH_TEXT
+				);
+
+				expect(richTextElementResponse[0].id).toEqual(richTextElement.id);
+			});
+		});
+
+		describe('when submission item has a FILE child element', () => {
+			const setup = async () => {
+				await cleanupCollections(em);
+
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const course = courseFactory.build({ teachers: [teacherUser], students: [studentUser] });
+				await em.persistAndFlush([studentAccount, studentUser, teacherAccount, teacherUser, course]);
+
+				const columnBoardNode = columnBoardNodeFactory.buildWithId({
+					context: { id: course.id, type: BoardExternalReferenceType.Course },
+				});
+
+				const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+
+				const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+
+				const submissionContainer = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
+				const submissionItem = submissionItemNodeFactory.buildWithId({
+					parent: submissionContainer,
+					userId: studentUser.id,
+				});
+				const fileElement = fileElementNodeFactory.buildWithId({ parent: submissionItem });
+
+				await em.persistAndFlush([
+					columnBoardNode,
+					columnNode,
+					cardNode,
+					submissionContainer,
+					submissionItem,
+					fileElement,
+				]);
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				return {
+					loggedInClient,
+					submissionContainer,
+					submissionItem,
+					fileElement,
+				};
+			};
+			it('should return all FILE child elements', async () => {
+				const { loggedInClient, submissionContainer, fileElement } = await setup();
+
+				const response = await loggedInClient.get(`${submissionContainer.id}`);
+				const submissionItemResponse = (response.body as SubmissionsResponse).submissionItemsResponse[0];
+				const fileElementResponse = submissionItemResponse.elements.filter(
+					(element) => element.type === ContentElementType.FILE
+				);
+
+				expect(fileElementResponse[0].id).toEqual(fileElement.id);
+			});
 		});
 	});
 });

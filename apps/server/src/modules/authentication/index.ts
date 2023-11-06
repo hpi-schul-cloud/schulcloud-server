@@ -1,3 +1,2 @@
-export * from './interface';
-export * from './guard/jwt-auth.guard';
-export * from './authentication.module';
+export { ICurrentUser } from './interface';
+export { JWT, CurrentUser, Authenticate } from './decorator';
