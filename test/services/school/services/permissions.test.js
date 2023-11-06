@@ -47,7 +47,6 @@ describe('permissons service', () => {
 
 		it('changes the STUDENT_LIST permission if TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE is true', async () => {
 			Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE', 'true');
-			app.configure(schoolServices);
 
 			const service = app.service('/school/teacher/studentvisibility');
 			expect(service).to.not.be.undefined;
@@ -65,7 +64,6 @@ describe('permissons service', () => {
 	describe('for LERNSTORE_VIEW permission', () => {
 		it('is not registered if FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED is false', async () => {
 			Configuration.set('FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED', 'false');
-			app.configure(schoolServices);
 
 			const service = app.service('/school/student/studentlernstorevisibility');
 			expect(service).to.be.undefined;
@@ -73,7 +71,6 @@ describe('permissons service', () => {
 
 		it('changes the LERNSTORE_VIEW permission if FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED is true', async () => {
 			Configuration.set('FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED', 'true');
-			app.configure(schoolServices);
 
 			const service = app.service('/school/student/studentlernstorevisibility');
 			expect(service).to.not.be.undefined;

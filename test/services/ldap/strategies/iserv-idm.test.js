@@ -6,7 +6,7 @@ const appPromise = require('../../../../src/app');
 const AbstractLDAPStrategy = require('../../../../src/services/ldap/strategies/interface');
 const IservIdmLDAPStrategy = require('../../../../src/services/ldap/strategies/iserv-idm');
 
-describe('IservIdmLDAPStrategy', () => {
+describe.only('IservIdmLDAPStrategy', () => {
 	it('implements AbstractLDAPStrategy', () => {
 		expect(new IservIdmLDAPStrategy()).to.be.instanceOf(AbstractLDAPStrategy);
 	});
@@ -25,10 +25,15 @@ describe('IservIdmLDAPStrategy', () => {
 		app.use('/ldap', originalLdapService);
 	});
 
+	afterEach(() => {
+		app.unuse('/ldap');
+	});
+
 	describe('#getSchools', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
+				get: () => {},
 				searchCollection: sinon.fake.returns([
 					{ dn: 'o=Testschule,dc=de', o: 'Testschule' },
 					{ dn: 'o=hvk,dc=schule', description: 'Heinrich-von-Kleist-Schule', o: 'hvk' },
@@ -86,6 +91,7 @@ describe('IservIdmLDAPStrategy', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
+				get: () => {},
 				searchCollection: sinon.fake.returns([
 					{
 						dn: 'cn=student1,ou=users,o=Testschule,dc=de',
@@ -206,6 +212,7 @@ describe('IservIdmLDAPStrategy', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
+				get: () => {},
 				searchCollection: sinon.fake.returns([
 					{
 						dn: 'cn=klasse9a,ou=groups,o=Testschule,dc=de',

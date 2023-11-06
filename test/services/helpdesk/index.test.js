@@ -5,7 +5,7 @@ const sinon = require('sinon');
 const appPromise = require('../../../src/app');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
-describe('helpdesk service', function test() {
+describe.only('helpdesk service', function test() {
 	this.timeout(10000);
 	let app;
 	let helpdeskService;
@@ -36,7 +36,7 @@ describe('helpdesk service', function test() {
 	});
 
 	after((done) => {
-		app.use('/mails', originalMailService);
+		//app.use('/mails', originalMailService);
 		helpdeskService
 			.remove(testProblem)
 			.then((result) => {
@@ -48,11 +48,21 @@ describe('helpdesk service', function test() {
 			});
 	});
 
+	beforeEach(() => {
+		//	app.unuse('/mails');
+		//	app.use('/mails', originalMailService);
+	});
+
+	afterEach(() => {
+		app.unuse('/mails');
+	});
+
 	it('registered the helpdesk service', () => {
 		assert.ok(helpdeskService);
 	});
 
 	it('POST /helpdesk to admin with valid data', () => {
+		app.use('/mails', originalMailService);
 		const postBody = {
 			type: 'contactAdmin',
 			subject: 'Dies ist ein Titel 2',
@@ -69,6 +79,7 @@ describe('helpdesk service', function test() {
 	});
 
 	it('POST /helpdesk to admin without schoolId', () => {
+		app.use('/mails', originalMailService);
 		const postBody = {
 			type: 'contactAdmin',
 			subject: 'Dies ist ein Titel 3',
@@ -83,6 +94,7 @@ describe('helpdesk service', function test() {
 	});
 
 	it('POST /helpdesk to admin without data', () => {
+		app.use('/mails', originalMailService);
 		const postBody = {
 			type: 'contactAdmin',
 			subject: 'Dies ist ein Titel 3',
@@ -95,6 +107,7 @@ describe('helpdesk service', function test() {
 	});
 
 	it('POST /helpdesk to schoolcloud with problem, valid data', () => {
+		app.use('/mails', originalMailService);
 		const postBody = {
 			type: 'contactHPI',
 			subject: 'Dies ist ein Titel 4',

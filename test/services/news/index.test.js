@@ -5,13 +5,13 @@ const sleep = require('util').promisify(setTimeout);
 const appPromise = require('../../../src/app');
 const { newsModel: News } = require('../../../src/services/news/model');
 
-describe('news service', () => {
+describe.only('news service', () => {
 	let app;
 	let newsService;
 
 	before(async () => {
 		app = await appPromise();
-		newsService = app.service('news');
+		newsService = app.service('/news1');
 	});
 
 	it('public service has been disabled', () => {

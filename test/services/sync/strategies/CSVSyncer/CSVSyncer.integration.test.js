@@ -472,6 +472,7 @@ describe('CSVSyncer Integration', () => {
 
 		it('should import five teachers into three existing classes', async () => {
 			const emails = [];
+			app.unuse('/mails');
 			app.use(
 				'/mails',
 				new MockEmailService((email) => {
@@ -713,6 +714,10 @@ describe('CSVSyncer Integration', () => {
 			await Promise.all(CLASSES.map((klass) => deleteClass(klass)));
 			await testObjects.cleanup();
 			app.use('/mails', new MailService());
+		});
+
+		afterEach(() => {
+			app.unuse('/mails');
 		});
 
 		it('should be accepted for execution', () => {

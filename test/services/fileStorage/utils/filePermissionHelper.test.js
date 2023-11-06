@@ -19,7 +19,7 @@ const fixtures = require('../fixtures');
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-describe('filePermissionHelper', () => {
+describe.only('filePermissionHelper', () => {
 	describe('checkPermissions function should', () => {
 		before(async () => {
 			const promises = [

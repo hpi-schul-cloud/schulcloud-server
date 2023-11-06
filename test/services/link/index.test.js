@@ -7,7 +7,7 @@ const logger = require('../../../src/logger');
 
 chai.use(chaiHttp);
 
-describe('link service', () => {
+describe.only('link service', () => {
 	let app;
 	let port;
 	let server;

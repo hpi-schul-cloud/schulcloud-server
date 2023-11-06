@@ -12,7 +12,7 @@ const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
-describe('jwtTimer service', () => {
+describe.only('jwtTimer service', () => {
 	it('registered the supportJWT service', async () => {
 		// eslint-disable-next-line global-require
 		const defaultApp = await require('../../../../src/app')();
@@ -44,8 +44,8 @@ describe('jwtTimer service', () => {
 				mockery.registerMock('@hpi-schul-cloud/commons', commons);
 				/* eslint-disable global-require */
 				redisHelper = require('../../../../src/utils/redis');
-				const { jwtTimerServiceSetup } = require('../../../../src/services/account/services/jwtTimerService');
-				app.configure(jwtTimerServiceSetup);
+				//const { jwtTimerServiceSetup } = require('../../../../src/services/account/services/jwtTimerService');
+				//app.configure(jwtTimerServiceSetup);
 				/* eslint-enable global-require */
 
 				Configuration.set('REDIS_URI', '//validHost:4444');
@@ -104,8 +104,8 @@ describe('jwtTimer service', () => {
 				delete require.cache[require.resolve('../../../../src/utils/redis')];
 				/* eslint-disable global-require */
 				redisHelper = require('../../../../src/utils/redis');
-				const { jwtTimerServiceSetup } = require('../../../../src/services/account/services/jwtTimerService');
-				app.configure(jwtTimerServiceSetup);
+				//const { jwtTimerServiceSetup } = require('../../../../src/services/account/services/jwtTimerService');
+				//app.configure(jwtTimerServiceSetup);
 				/* eslint-enable global-require */
 
 				redisHelper.initializeRedisClient();

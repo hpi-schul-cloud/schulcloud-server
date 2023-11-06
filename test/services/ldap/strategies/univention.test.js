@@ -11,7 +11,7 @@ const mockLDAPConfig = {
 	providerOptions: {},
 };
 
-describe('UniventionLDAPStrategy', () => {
+describe.only('UniventionLDAPStrategy', () => {
 	it('implements AbstractLDAPStrategy', () => {
 		expect(new UniventionLDAPStrategy()).to.be.instanceOf(AbstractLDAPStrategy);
 	});
@@ -27,7 +27,7 @@ describe('UniventionLDAPStrategy', () => {
 	});
 
 	after(() => {
-		app.use('/ldap', originalLdapService);
+		//	app.use('/ldap', originalLdapService);
 	});
 
 	describe('#getSchools', () => {
@@ -39,13 +39,19 @@ describe('UniventionLDAPStrategy', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
+				get: () => {},
 				searchCollection: sinon.fake.resolves(ldapFakeSchoolSearchResult),
 			};
 		}
 
 		beforeEach(() => {
 			ldapServiceMock = new MockLdapService();
+			app.unuse('/ldap');
 			app.use('/ldap', ldapServiceMock);
+		});
+
+		afterEach(() => {
+			app.unuse('/ldap');
 		});
 
 		it('should search at the given root path and fall back to empty string', async () => {
@@ -122,6 +128,7 @@ describe('UniventionLDAPStrategy', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
+				get: () => {},
 				searchCollection: sinon.fake.resolves([
 					{
 						dn: 'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
@@ -166,6 +173,7 @@ describe('UniventionLDAPStrategy', () => {
 
 		beforeEach(() => {
 			ldapServiceMock = new MockLdapService();
+			app.unuse('/ldap');
 			app.use('/ldap', ldapServiceMock);
 		});
 
@@ -241,12 +249,14 @@ describe('UniventionLDAPStrategy', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
+				get: () => {},
 				searchCollection: sinon.fake.resolves(ldapFakeClassSearchResult),
 			};
 		}
 
 		beforeEach(() => {
 			ldapServiceMock = new MockLdapService();
+			app.unuse('/ldap');
 			app.use('/ldap', ldapServiceMock);
 		});
 

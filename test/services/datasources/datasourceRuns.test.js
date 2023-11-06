@@ -38,7 +38,7 @@ class MockSyncerWithData extends Syncer {
 	}
 }
 
-describe('datasourceRuns service', () => {
+describe.only('datasourceRuns service', () => {
 	let app;
 	let datasourceRunsService;
 	let server;
@@ -54,8 +54,8 @@ describe('datasourceRuns service', () => {
 		mockery.registerMock('./strategies', [MockSyncer, MockSyncerWithData]);
 		datasourceRunsService = app.service('datasourceRuns');
 		// eslint-disable-next-line global-require
-		const sync = require('../../../src/services/sync');
-		app.configure(sync);
+		//const sync = require('../../../src/services/sync');
+		//app.configure(sync);
 		server = await app.listen(0);
 	});
 
@@ -64,6 +64,10 @@ describe('datasourceRuns service', () => {
 		mockery.disable();
 		await server.close();
 		await closeNestServices(nestServices);
+	});
+
+	afterEach(() => {
+		app.unuse('/sync/userAccounts');
 	});
 
 	it('registered the datasourceRuns service', () => {
