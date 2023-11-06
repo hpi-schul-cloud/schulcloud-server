@@ -12,6 +12,8 @@ import { TeamService } from '@src/modules/teams';
 import { UserService } from '@src/modules/user';
 import { RocketChatUserService } from '@src/modules/rocketchat-user/service/rocket-chat-user.service';
 import { RocketChatService } from '@src/modules/rocketchat';
+import { rocketChatUserFactory } from '@src/modules/rocketchat-user/domain/testing/rocket-chat-user.factory';
+import { RocketChatUser } from '@src/modules/rocketchat-user/domain';
 import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
@@ -19,8 +21,6 @@ import { DeletionRequestLog, DeletionRequestProps, DeletionRequestUc } from './d
 import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
 import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
 import { deletionLogFactory } from '../domain/testing/factory/deletion-log.factory';
-import { rocketChatUserFactory } from '@src/modules/rocketchat-user/domain/testing/rocket-chat-user.factory';
-import { RocketChatUser } from '@src/modules/rocketchat-user/domain';
 
 describe(DeletionRequestUc.name, () => {
 	let module: TestingModule;
