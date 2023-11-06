@@ -20,6 +20,8 @@ export class SchoolMikroOrmRepo extends BaseRepo<SchoolEntity> implements School
 		scope.byFederalState(query.federalStateId);
 
 		const findOptions = this.mapToMikroOrmOptions(options);
+		// TODO: Is there a way to write this without "as never"?
+		findOptions.populate = ['federalState' as never];
 
 		const entities = await this._em.find(SchoolEntity, scope.query, findOptions);
 
