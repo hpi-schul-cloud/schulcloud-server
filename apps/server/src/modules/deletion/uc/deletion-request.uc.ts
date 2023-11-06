@@ -9,6 +9,8 @@ import { CourseService } from '@src/modules/learnroom/service';
 import { CourseGroupService } from '@src/modules/learnroom/service/coursegroup.service';
 import { FilesService } from '@src/modules/files/service';
 import { AccountService } from '@src/modules/account/services/account.service';
+import { RocketChatService } from '@src/modules/rocketchat';
+import { RocketChatUserService } from '@src/modules/rocketchat-user/service/rocket-chat-user.service';
 import { DeletionRequestService } from '../services/deletion-request.service';
 import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
 import { DeletionLogService } from '../services/deletion-log.service';
@@ -47,7 +49,9 @@ export class DeletionRequestUc {
 		private readonly lessonService: LessonService,
 		private readonly pseudonymService: PseudonymService,
 		private readonly teamService: TeamService,
-		private readonly userService: UserService
+		private readonly userService: UserService,
+		private readonly rocketChatUserService: RocketChatUserService,
+		private readonly rocketChatService: RocketChatService
 	) {}
 
 	async createDeletionRequest(
@@ -114,6 +118,7 @@ export class DeletionRequestUc {
 			this.pseudonymService.deleteByUserId(deletionRequest.targetRefId),
 			this.teamService.deleteUserDataFromTeams(deletionRequest.targetRefId),
 			this.userService.deleteUser(deletionRequest.targetRefId),
+			this.removeUserFromRocketChatByUserId(deletionRequest.targetRefId),
 		])
 			.then(
 				async ([
@@ -127,6 +132,7 @@ export class DeletionRequestUc {
 					pseudonymDeleted,
 					teamsUpdated,
 					userDeleted,
+					rocketChatUserDeleted,
 				]) => {
 					await this.deletionLogService.createDeletionLog(
 						deletionRequest.id,
@@ -226,6 +232,16 @@ export class DeletionRequestUc {
 						);
 					}
 
+					if (rocketChatUserDeleted > 0) {
+						await this.deletionLogService.createDeletionLog(
+							deletionRequest.id,
+							DeletionDomainModel.ROCKETCHATUSER,
+							DeletionOperationModel.DELETE,
+							0,
+							rocketChatUserDeleted
+						);
+					}
+
 					await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
 
 					return true;
@@ -234,5 +250,20 @@ export class DeletionRequestUc {
 			.catch(async () => {
 				await this.deletionRequestService.markDeletionRequestAsFailed(deletionRequest.id);
 			});
+	}
+
+	private async removeUserFromRocketChatByUserId(userId: EntityId): Promise<number> {
+		const rocketChatUser = await this.rocketChatUserService.findByUserId(userId);
+
+		if (!rocketChatUser) {
+			return 0;
+		}
+
+		const [, rocketChatUserDeleted] = await Promise.all([
+			this.rocketChatService.deleteUser(rocketChatUser.username),
+			this.rocketChatUserService.deleteByUserId(rocketChatUser.userId),
+		]);
+
+		return rocketChatUserDeleted;
 	}
 }

@@ -10,6 +10,8 @@ import { LessonService } from '@src/modules/lesson/service';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { TeamService } from '@src/modules/teams';
 import { UserService } from '@src/modules/user';
+import { RocketChatUserService } from '@src/modules/rocketchat-user/service/rocket-chat-user.service';
+import { RocketChatService } from '@src/modules/rocketchat';
 import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
@@ -17,6 +19,8 @@ import { DeletionRequestLog, DeletionRequestProps, DeletionRequestUc } from './d
 import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
 import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
 import { deletionLogFactory } from '../domain/testing/factory/deletion-log.factory';
+import { rocketChatUserFactory } from '@src/modules/rocketchat-user/domain/testing/rocket-chat-user.factory';
+import { RocketChatUser } from '@src/modules/rocketchat-user/domain';
 
 describe(DeletionRequestUc.name, () => {
 	let module: TestingModule;
@@ -32,6 +36,8 @@ describe(DeletionRequestUc.name, () => {
 	let pseudonymService: DeepMocked<PseudonymService>;
 	let teamService: DeepMocked<TeamService>;
 	let userService: DeepMocked<UserService>;
+	let rocketChatUserService: DeepMocked<RocketChatUserService>;
+	let rocketChatService: DeepMocked<RocketChatService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -81,6 +87,14 @@ describe(DeletionRequestUc.name, () => {
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
+				{
+					provide: RocketChatUserService,
+					useValue: createMock<RocketChatUserService>(),
+				},
+				{
+					provide: RocketChatService,
+					useValue: createMock<RocketChatService>(),
+				},
 			],
 		}).compile();
 
@@ -96,6 +110,8 @@ describe(DeletionRequestUc.name, () => {
 		pseudonymService = module.get(PseudonymService);
 		teamService = module.get(TeamService);
 		userService = module.get(UserService);
+		rocketChatUserService = module.get(RocketChatUserService);
+		rocketChatService = module.get(RocketChatService);
 		await setupEntities();
 	});
 
@@ -153,6 +169,9 @@ describe(DeletionRequestUc.name, () => {
 			const setup = () => {
 				jest.clearAllMocks();
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
+				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build({
+					userId: deletionRequestToExecute.targetRefId,
+				});
 
 				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
 				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(2);
@@ -163,9 +182,11 @@ describe(DeletionRequestUc.name, () => {
 				pseudonymService.deleteByUserId.mockResolvedValueOnce(2);
 				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(2);
 				userService.deleteUser.mockResolvedValueOnce(1);
+				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(1);
 
 				return {
 					deletionRequestToExecute,
+					rocketChatUser,
 				};
 			};
 
@@ -287,6 +308,38 @@ describe(DeletionRequestUc.name, () => {
 				expect(userService.deleteUser).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
+			it('should call rocketChatUserService.findByUserId to find rocketChatUser in rocketChatUser module', async () => {
+				const { deletionRequestToExecute } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+
+				await uc.executeDeletionRequests();
+
+				expect(rocketChatUserService.findByUserId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+			});
+
+			it('should call rocketChatUserService.deleteByUserId to delete rocketChatUser in rocketChatUser module', async () => {
+				const { deletionRequestToExecute, rocketChatUser } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+				rocketChatUserService.findByUserId.mockResolvedValueOnce(rocketChatUser);
+
+				await uc.executeDeletionRequests();
+
+				expect(rocketChatUserService.deleteByUserId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+			});
+
+			it('should call rocketChatService.deleteUser to delete rocketChatUser in rocketChat external module', async () => {
+				const { deletionRequestToExecute, rocketChatUser } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+				rocketChatUserService.findByUserId.mockResolvedValueOnce(rocketChatUser);
+
+				await uc.executeDeletionRequests();
+
+				expect(rocketChatService.deleteUser).toHaveBeenCalledWith(rocketChatUser.username);
+			});
+
 			it('should call deletionLogService.createDeletionLog to create logs for deletionRequest', async () => {
 				const { deletionRequestToExecute } = setup();
 
@@ -294,7 +347,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(10);
+				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(11);
 			});
 		});
 
