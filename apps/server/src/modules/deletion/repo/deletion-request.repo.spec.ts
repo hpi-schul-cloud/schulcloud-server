@@ -206,7 +206,7 @@ describe(DeletionRequestRepo.name, () => {
 			it('should find deletionRequests to execute with limit = 2', async () => {
 				const { expectedArray } = await setup();
 
-				const results = await repo.findAllItemsToExecution({ pagination: { limit: 2 } });
+				const results = await repo.findAllItemsToExecution(2);
 
 				expect(results.length).toEqual(2);
 
