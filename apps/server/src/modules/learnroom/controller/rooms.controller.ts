@@ -70,11 +70,11 @@ export class RoomsController {
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, urlParams.roomId);
 		const newElements = copyStatus.elements?.filter((element) => {
-		const filterCopyBoard = element.type !== CopyElementType.LESSON_CONTENT_NEXBOARD;
-		 return filterCopyBoard;
+			const filterCopyBoard = element.type !== CopyElementType.LESSON_CONTENT_NEXBOARD;
+			return filterCopyBoard;
 		});
 		copyStatus.elements = newElements;
-    const dto = CopyMapper.mapToResponse(copyStatus);
+		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;
 	}
 
