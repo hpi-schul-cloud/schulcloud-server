@@ -33,7 +33,6 @@ describe(RocketChatUserRepo.name, () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
-		// await em.nativeDelete(RocketChatUserEntity, {});
 	});
 
 	describe('defined', () => {

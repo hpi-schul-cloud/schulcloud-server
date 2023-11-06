@@ -31,7 +31,7 @@ describe(RocketChatUser.name, () => {
 
 	describe('getters', () => {
 		describe('When getters are used', () => {
-			it('getters should return proper values', () => {
+			const setup = () => {
 				const props = {
 					id: new ObjectId().toHexString(),
 					userId: new ObjectId().toHexString(),
@@ -43,6 +43,13 @@ describe(RocketChatUser.name, () => {
 				};
 
 				const rocketChatUserDo = new RocketChatUser(props);
+
+				return { props, rocketChatUserDo };
+			};
+
+			it('getters should return proper values', () => {
+				const { props, rocketChatUserDo } = setup();
+
 				const gettersValues = {
 					id: rocketChatUserDo.id,
 					userId: rocketChatUserDo.userId,

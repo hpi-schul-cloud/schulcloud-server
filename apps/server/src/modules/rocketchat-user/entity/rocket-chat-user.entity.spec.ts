@@ -56,15 +56,4 @@ describe(RocketChatUserEntity.name, () => {
 			});
 		});
 	});
-
-	// describe('executed', () => {
-	// 	it('should update status', () => {
-	// 		const { props } = setup();
-	// 		const entity: DeletionRequestEntity = new DeletionRequestEntity(props);
-
-	// 		entity.executed();
-
-	// 		expect(entity.status).toEqual(DeletionStatusModel.SUCCESS);
-	// 	});
-	// });
 });
