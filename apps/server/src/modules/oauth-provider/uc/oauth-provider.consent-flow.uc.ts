@@ -4,12 +4,12 @@ import {
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '@shared/infra/oauth-provider/dto';
-import { AcceptQuery, ConsentRequestBody } from '@src/modules/oauth-provider/controller/dto';
-import { ICurrentUser } from '@src/modules/authentication';
+import { AcceptQuery, ConsentRequestBody } from '@modules/oauth-provider/controller/dto';
+import { ICurrentUser } from '@modules/authentication';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
+import { IdTokenService } from '@modules/oauth-provider/service/id-token.service';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
-import { IdToken } from '@src/modules/oauth-provider/interface/id-token';
+import { IdToken } from '@modules/oauth-provider/interface/id-token';
 
 @Injectable()
 export class OauthProviderConsentFlowUc {

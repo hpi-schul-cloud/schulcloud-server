@@ -1,14 +1,30 @@
-import { Body, Controller, ForbiddenException, Get, HttpCode, NotFoundException, Param, Patch } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+	Body,
+	Controller,
+	ForbiddenException,
+	Get,
+	HttpCode,
+	NotFoundException,
+	Param,
+	Patch,
+	Post,
+} from '@nestjs/common';
+import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { SubmissionsResponse } from '@src/modules/board/controller/dto/submission-item/submissions.response';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
+import { SubmissionsResponse } from './dto/submission-item/submissions.response';
 import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
 import { SubmissionItemUc } from '../uc/submission-item.uc';
-import { SubmissionContainerUrlParams, SubmissionItemUrlParams, UpdateSubmissionItemBodyParams } from './dto';
-import { SubmissionItemResponseMapper } from './mapper';
+import {
+	CreateContentElementBodyParams,
+	FileElementResponse,
+	RichTextElementResponse,
+	SubmissionContainerUrlParams,
+	SubmissionItemUrlParams,
+	UpdateSubmissionItemBodyParams,
+} from './dto';
+import { ContentElementResponseFactory, SubmissionItemResponseMapper } from './mapper';
 
 @ApiTags('Board Submission')
 @Authenticate('jwt')
@@ -56,5 +72,29 @@ export class BoardSubmissionController {
 			urlParams.submissionItemId,
 			bodyParams.completed
 		);
+	}
+
+	@ApiOperation({ summary: 'Create a new element in a submission item.' })
+	@ApiExtraModels(RichTextElementResponse, FileElementResponse)
+	@ApiResponse({
+		status: 201,
+		schema: {
+			oneOf: [{ $ref: getSchemaPath(RichTextElementResponse) }, { $ref: getSchemaPath(FileElementResponse) }],
+		},
+	})
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Post(':submissionItemId/elements')
+	async createElement(
+		@Param() urlParams: SubmissionItemUrlParams,
+		@Body() bodyParams: CreateContentElementBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<FileElementResponse | RichTextElementResponse> {
+		const { type } = bodyParams;
+		const element = await this.submissionItemUc.createElement(currentUser.userId, urlParams.submissionItemId, type);
+		const response = ContentElementResponseFactory.mapSubmissionContentToResponse(element);
+
+		return response;
 	}
 }

@@ -1,15 +1,16 @@
 import { ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
-import { ContentElementType, InputFormat } from '@shared/domain';
+import { ContentElementType } from '@shared/domain';
+import { InputFormat } from '@shared/domain/types';
 import { Type } from 'class-transformer';
-import { IsDate, IsEnum, IsMongoId, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsDate, IsEnum, IsMongoId, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
 
 export abstract class ElementContentBody {
+	@IsEnum(ContentElementType)
 	@ApiProperty({
 		enum: ContentElementType,
 		description: 'the type of the updated element',
 		enumName: 'ContentElementType',
 	})
-	@IsEnum(ContentElementType)
 	type!: ContentElementType;
 }
 
@@ -31,10 +32,26 @@ export class FileElementContentBody extends ElementContentBody {
 	@ApiProperty()
 	content!: FileContentBody;
 }
+
 export class LinkContentBody {
-	@IsString()
+	@IsUrl()
 	@ApiProperty({})
 	url!: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiProperty({})
+	title?: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiProperty({})
+	description?: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiProperty({})
+	imageUrl?: string;
 }
 
 export class LinkElementContentBody extends ElementContentBody {
@@ -69,8 +86,6 @@ export class SubmissionContainerContentBody {
 	@IsDate()
 	@IsOptional()
 	@ApiPropertyOptional({
-		required: false,
-		nullable: true,
 		description: 'The point in time until when a submission can be handed in.',
 	})
 	dueDate?: Date;

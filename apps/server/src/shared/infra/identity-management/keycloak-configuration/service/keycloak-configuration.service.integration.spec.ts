@@ -8,7 +8,7 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { SystemRepo } from '@shared/repo/system/system.repo';
 import { systemFactory } from '@shared/testing/factory';
 import { LoggerModule } from '@src/core/logger';
-import { SystemService } from '@src/modules/system/service/system.service';
+import { SystemService } from '@modules/system/service/system.service';
 import { v1 } from 'uuid';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';

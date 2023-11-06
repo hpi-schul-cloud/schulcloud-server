@@ -4,10 +4,10 @@ import { ValidationError } from '@shared/common';
 import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
+import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 import { ExternalToolValidationService } from './external-tool-validation.service';
 import { ExternalToolService } from './external-tool.service';
-import { ExternalToolLogoService } from './external-tool-logo.service';
 
 describe('ExternalToolValidationService', () => {
 	let module: TestingModule;
@@ -232,7 +232,7 @@ describe('ExternalToolValidationService', () => {
 					.buildWithId();
 
 				externalOauthTool.id = 'toolId';
-				externalToolService.findExternalToolById.mockResolvedValue(externalOauthTool);
+				externalToolService.findById.mockResolvedValue(externalOauthTool);
 
 				return {
 					externalOauthTool,
@@ -266,7 +266,7 @@ describe('ExternalToolValidationService', () => {
 						.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 						.buildWithId();
 
-					externalToolService.findExternalToolById.mockResolvedValue(existingExternalOauthTool);
+					externalToolService.findById.mockResolvedValue(existingExternalOauthTool);
 
 					const newExternalTool: ExternalTool = externalToolFactory.buildWithId();
 
@@ -296,7 +296,7 @@ describe('ExternalToolValidationService', () => {
 						.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 						.buildWithId();
 
-					externalToolService.findExternalToolById.mockResolvedValue(externalOauthTool);
+					externalToolService.findById.mockResolvedValue(externalOauthTool);
 
 					return { externalOauthTool };
 				};
@@ -318,7 +318,7 @@ describe('ExternalToolValidationService', () => {
 					const existingExternalOauthToolDOWithDifferentClientId: ExternalTool = externalToolFactory
 						.withOauth2Config({ clientId: 'DifferentClientId', clientSecret: 'secret' })
 						.buildWithId();
-					externalToolService.findExternalToolById.mockResolvedValue(existingExternalOauthToolDOWithDifferentClientId);
+					externalToolService.findById.mockResolvedValue(existingExternalOauthToolDOWithDifferentClientId);
 
 					return {
 						externalOauthTool,
@@ -344,7 +344,7 @@ describe('ExternalToolValidationService', () => {
 				const externalLtiToolDO: ExternalTool = externalToolFactory.withLti11Config().buildWithId();
 				externalLtiToolDO.id = 'toolId';
 
-				externalToolService.findExternalToolById.mockResolvedValue(externalLtiToolDO);
+				externalToolService.findById.mockResolvedValue(externalLtiToolDO);
 
 				return {
 					externalLtiToolDO,

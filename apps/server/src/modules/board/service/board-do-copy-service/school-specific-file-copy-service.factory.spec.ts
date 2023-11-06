@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { FileRecordParentType } from '@src/modules/files-storage/entity';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { FileRecordParentType } from '@modules/files-storage/entity';
 import { ObjectId } from 'bson';
 import { SchoolSpecificFileCopyServiceFactory } from './school-specific-file-copy-service.factory';
 import { SchoolSpecificFileCopyServiceImpl } from './school-specific-file-copy.service';

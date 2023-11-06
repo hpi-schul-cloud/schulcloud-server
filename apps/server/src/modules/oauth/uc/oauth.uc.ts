@@ -2,17 +2,17 @@ import { Injectable, UnauthorizedException, UnprocessableEntityException } from 
 import { EntityId, LegacySchoolDo, UserDO } from '@shared/domain';
 import { ISession } from '@shared/domain/types/session';
 import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser } from '@src/modules/authentication';
-import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
-import { ProvisioningService } from '@src/modules/provisioning';
-import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { SystemService } from '@src/modules/system';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { UserService } from '@src/modules/user';
-import { UserMigrationService } from '@src/modules/user-login-migration';
-import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
-import { MigrationDto } from '@src/modules/user-login-migration/service/dto';
+import { AuthenticationService } from '@modules/authentication/services/authentication.service';
+import { ProvisioningService } from '@modules/provisioning';
+import { OauthDataDto } from '@modules/provisioning/dto';
+import { SystemService } from '@modules/system';
+import { SystemDto } from '@modules/system/service/dto/system.dto';
+import { UserService } from '@modules/user';
+import { UserMigrationService } from '@modules/user-login-migration';
+import { SchoolMigrationService } from '@modules/user-login-migration/service';
+import { MigrationDto } from '@modules/user-login-migration/service/dto';
 import { nanoid } from 'nanoid';
+import { OauthCurrentUser } from '@modules/authentication/interface';
 import { AuthorizationParams } from '../controller/dto';
 import { OAuthTokenDto } from '../interface';
 import { OAuthProcessDto } from '../service/dto';
@@ -140,9 +140,9 @@ export class OauthUc {
 	}
 
 	private async getJwtForUser(userId: EntityId): Promise<string> {
-		const currentUser: ICurrentUser = await this.userService.getResolvedUser(userId);
+		const oauthCurrentUser: OauthCurrentUser = await this.userService.getResolvedUser(userId);
 
-		const { accessToken } = await this.authenticationService.generateJwt(currentUser);
+		const { accessToken } = await this.authenticationService.generateJwt(oauthCurrentUser);
 
 		return accessToken;
 	}

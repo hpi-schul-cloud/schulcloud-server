@@ -12,8 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
 import {
@@ -112,7 +111,7 @@ export class ElementController {
 		@Param() urlParams: ContentElementUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.cardUc.deleteElement(currentUser.userId, urlParams.contentElementId);
+		await this.elementUc.deleteElement(currentUser.userId, urlParams.contentElementId);
 	}
 
 	@ApiOperation({ summary: 'Create a new submission item having parent a submission container element.' })
@@ -134,7 +133,7 @@ export class ElementController {
 			bodyParams.completed
 		);
 		const mapper = SubmissionItemResponseMapper.getInstance();
-		const response = mapper.mapSubmissionsToResponse(submissionItem);
+		const response = mapper.mapSubmissionItemToResponse(submissionItem);
 
 		return response;
 	}

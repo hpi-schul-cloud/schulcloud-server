@@ -132,17 +132,7 @@ When calling other internal micro service for already authorized operations plea
    // next orchestration steps
 ```
 
-### Example 2 - Execute a Single Operation with Loading Resources
-
-```javascript
-// If you don't have an entity but an entity type and id, you can check permission by reference
-await this.authorizationService.checkPermissionByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
-// or
-await this.authorizationService.hasPermissionByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
-// next orchestration steps
-```
-
-### Example 3 - Set Permission(s) of User as Required
+### Example 2 - Set Permission(s) of User as Required
 
 ```javascript
 // Multiple permissions can be added. For a successful authorization, the user need all of them.
@@ -173,14 +163,13 @@ this.authorizationService.hasPermission(userId, course, PermissionContexts.creat
 ```ts
 async createSchoolBySuperhero(userId: EntityId, params: { name: string }) {
 
-    const user = this.authorizationService.getUserWithPermissions(userId);
-    this.authorizationService.hasAllPermissions(user, [Permission.SCHOOL_CREATE]);
+   const user = this.authorizationService.getUserWithPermissions(userId);
+   this.authorizationService.hasAllPermissions(user, [Permission.SCHOOL_CREATE]);
 
-    const school = new School(params);
+   const school = new School(params);
+   await this.schoolService.save(school);
 
-    await this.schoolService.save(school);
-
-    return true;
+   return true;
 }
 
 ```
@@ -191,15 +180,15 @@ async createSchoolBySuperhero(userId: EntityId, params: { name: string }) {
 
 async createUserByAdmin(userId: EntityId, params: { email: string, firstName: string, lastName: string, schoolId: EntityId }) {
 
-    const user = this.authorizationService.getUserWithPermissions(userId);
+   const user = this.authorizationService.getUserWithPermissions(userId);
+    
+   const context = AuthorizationContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER])
+   await this.authorizationService.checkPermission(user, school, context);
 
-   await this.authorizationService.checkPermissionByReferences(userId, AllowedEntity.school, schoolId, AuthorizationContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER]));
+   const newUser = new User(params)
+   await this.userService.save(newUser);
 
-    const newUser = new User(params)
-
-    await this.userService.save(newUser);
-
-    return true;
+   return true;
 }
 
 ```
@@ -210,18 +199,17 @@ async createUserByAdmin(userId: EntityId, params: { email: string, firstName: st
 // admin
 async editCourseByAdmin(userId: EntityId, params: { courseId: EntityId, description: string }) {
 
-    const course = this.courseService.getCourse(params.courseId);
-    const user = this.authorizationService.getUserWithPermissions(userId);
+   const course = this.courseService.getCourse(params.courseId);
+   const user = this.authorizationService.getUserWithPermissions(userId);
+   const school = course.school;
 
-   const school = course.school
+   const context = AuthorizationContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER]);
+   this.authorizationService.checkPermissions(user, school, context);
 
-    this.authorizationService.hasPermissions(user, school, [Permission.INSTANCE, Permission.COURSE_EDIT]);
+   course.description = params.description;
+   await this.courseService.save(course);
 
-    course.description = params.description;
-
-    await this.courseService.save(course);
-
-    return true;
+   return true;
 }
 
 ```
@@ -234,18 +222,17 @@ async createCourse(userId: EntityId, params: { schoolId: EntityId }) {
    const user = this.authorizationService.getUserWithPermissions(userId);
    const school = this.schoolService.getSchool(params.schoolId);
 
-        this.authorizationService.checkPermission(user, school
-            {
-                action: Actions.write,
-                requiredPermissions: [Permission.COURSE_CREATE],
-            }
-        );
+   this.authorizationService.checkPermission(user, school
+       {
+         action: Actions.write,
+         requiredPermissions: [Permission.COURSE_CREATE],
+       }
+   );
 
-    const course = new Course({ school });
+   const course = new Course({ school });
+   await this.courseService.saveCourse(course);
 
-    await this.courseService.saveCourse(course);
-
-    return course;
+   return course;
 }
 
 ```
@@ -255,21 +242,20 @@ async createCourse(userId: EntityId, params: { schoolId: EntityId }) {
 ```ts
 // User can create a lesson to course, so you have a courseId
 async createLesson(userId: EntityId, params: { courseId: EntityId }) {
-    const course = this.courseService.getCourse(params.courseId);
-    const user = this.authorizationService.getUserWithPermissions(userId);
+   const course = this.courseService.getCourse(params.courseId);
+   const user = this.authorizationService.getUserWithPermissions(userId);
          // check authorization for user and course
-        this.authorizationService.checkPermission(user, course
-            {
-                action: Actions.write,
-                requiredPermissions: [Permission.COURSE_EDIT],
-            }
-        );
+   this.authorizationService.checkPermission(user, course
+      {
+         action: Actions.write,
+         requiredPermissions: [Permission.COURSE_EDIT],
+      }
+   );
 
-    const lesson = new Lesson({course});
+   const lesson = new Lesson({course});
+   await this.lessonService.saveLesson(lesson);
 
-    await this.lessonService.saveLesson(lesson);
-
-    return true;
+   return true;
 }
 ```
 
@@ -345,8 +331,9 @@ The authorization module is the core of authorization. It collects all needed in
 
 ### Reference.loader
 
-For situations where only the id and the domain object (string) type is known, it is possible to use the \*ByReferences methods.
-They load the reference directly.
+It should be use only inside of the authorization module.
+It is use to load registrated ressouces by the id and name of the ressource.
+This is needed to solve the API requests from external services. (API implementation is missing for now)
 
 > Please keep in mind that it can have an impact on the performance if you use it wrongly.
 > We keep it as a seperate method to avoid the usage in areas where the domain object should exist, because we see the risk that a developer could be tempted by the ease of only passing the id.

@@ -5,12 +5,12 @@ import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { S3ClientModule } from '@shared/infra/s3-client';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
-import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { UserModule } from '..';
+import { AuthenticationModule } from '@modules/authentication/authentication.module';
+import { AuthorizationModule } from '@modules/authorization';
+import { UserModule } from '../user';
 import { H5PEditorController } from './controller';
 import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
+import { AuthenticationApiModule } from '../authentication/authentication-api.module';
 import { H5PEditorModule } from './h5p-editor.module';
 import { H5PContentRepo, LibraryRepo, TemporaryFileRepo } from './repo';
 import {

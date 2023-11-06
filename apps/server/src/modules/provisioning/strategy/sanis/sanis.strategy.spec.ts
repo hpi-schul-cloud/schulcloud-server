@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { axiosResponseFactory, setupEntities } from '@shared/testing';
-import { GroupTypes } from '@src/modules/group';
+import { GroupTypes } from '@modules/group';
 import { UUID } from 'bson';
 import { of } from 'rxjs';
 import {
@@ -188,7 +188,21 @@ describe('SanisStrategy', () => {
 					provisioningUrl,
 					expect.objectContaining({
 						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-						headers: expect.objectContaining({ Authorization: 'Bearer sanisAccessToken' }),
+						headers: expect.objectContaining({ Authorization: 'Bearer sanisAccessToken', 'Accept-Encoding': 'gzip' }),
+					})
+				);
+			});
+
+			it('should accept gzip compressed data', async () => {
+				const { input, provisioningUrl } = setup();
+
+				await strategy.getData(input);
+
+				expect(httpService.get).toHaveBeenCalledWith(
+					provisioningUrl,
+					expect.objectContaining({
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						headers: expect.objectContaining({ 'Accept-Encoding': 'gzip' }),
 					})
 				);
 			});

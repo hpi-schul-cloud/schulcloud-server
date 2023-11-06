@@ -12,9 +12,8 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { BoardUc } from '../uc';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
+import { BoardUc, ColumnUc } from '../uc';
 import { CardResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams } from './dto';
 import { CardResponseMapper } from './mapper';
 import { CreateCardBodyParams } from './dto/card/create-card.body.params';
@@ -23,7 +22,7 @@ import { CreateCardBodyParams } from './dto/card/create-card.body.params';
 @Authenticate('jwt')
 @Controller('columns')
 export class ColumnController {
-	constructor(private readonly boardUc: BoardUc) {}
+	constructor(private readonly boardUc: BoardUc, private readonly columnUc: ColumnUc) {}
 
 	@ApiOperation({ summary: 'Move a single column.' })
 	@ApiResponse({ status: 204 })
@@ -52,7 +51,7 @@ export class ColumnController {
 		@Body() bodyParams: RenameBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.boardUc.updateColumnTitle(currentUser.userId, urlParams.columnId, bodyParams.title);
+		await this.columnUc.updateColumnTitle(currentUser.userId, urlParams.columnId, bodyParams.title);
 	}
 
 	@ApiOperation({ summary: 'Delete a single column.' })
@@ -63,7 +62,7 @@ export class ColumnController {
 	@HttpCode(204)
 	@Delete(':columnId')
 	async deleteColumn(@Param() urlParams: ColumnUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
-		await this.boardUc.deleteColumn(currentUser.userId, urlParams.columnId);
+		await this.columnUc.deleteColumn(currentUser.userId, urlParams.columnId);
 	}
 
 	@ApiOperation({ summary: 'Create a new card on a column.' })
@@ -79,7 +78,7 @@ export class ColumnController {
 		@Body() createCardBodyParams?: CreateCardBodyParams
 	): Promise<CardResponse> {
 		const { requiredEmptyElements } = createCardBodyParams || {};
-		const card = await this.boardUc.createCard(currentUser.userId, urlParams.columnId, requiredEmptyElements);
+		const card = await this.columnUc.createCard(currentUser.userId, urlParams.columnId, requiredEmptyElements);
 
 		const response = CardResponseMapper.mapToResponse(card);
 

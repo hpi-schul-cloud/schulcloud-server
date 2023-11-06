@@ -4,10 +4,10 @@ import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { IFindOptions, IPagination, Page, SortOrder } from '@shared/domain';
 import { BaseDORepo, ExternalToolRepoMapper, ExternalToolSortingMapper, Scope } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ToolConfigType } from '@src/modules/tool/common/enum';
-import { ExternalToolSearchQuery } from '@src/modules/tool/common/interface';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { ExternalToolEntity, IExternalToolProperties } from '@src/modules/tool/external-tool/entity';
+import { ToolConfigType } from '@modules/tool/common/enum';
+import { ExternalToolSearchQuery } from '@modules/tool/common/interface';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { ExternalToolEntity, IExternalToolProperties } from '@modules/tool/external-tool/entity';
 import { ExternalToolScope } from './external-tool.scope';
 
 @Injectable()

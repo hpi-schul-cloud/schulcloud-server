@@ -58,6 +58,13 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: deployment.yml.j2
+      
+  - name: Ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: ingress.yml.j2
+      apply: yes
 
   - name: FileStorageDeployment
     kubernetes.core.k8s:
@@ -65,11 +72,34 @@
       namespace: "{{ NAMESPACE }}"
       template: api-files-deployment.yml.j2
 
+  - name: FileStorageDeployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-files-deployment.yml.j2
+
+  - name: File Storage Ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-files-ingress.yml.j2
+      apply: yes
+
   - name: FwuLearningContentsDeployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-fwu-deployment.yml.j2
+    when: FEATURE_FWU_CONTENT_ENABLED is defined and FEATURE_FWU_CONTENT_ENABLED|bool
+
+  - name: Fwu Learning Contents Ingress Remove
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      state: absent
+      api_version: networking.k8s.io/v1
+      kind: Ingress
+      name: "{{ NAMESPACE }}-api-fwu-ingress"
     when: FEATURE_FWU_CONTENT_ENABLED is defined and FEATURE_FWU_CONTENT_ENABLED|bool
 
   - name: Delete Files CronJob
@@ -83,3 +113,32 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: amqp-files-deployment.yml.j2
+
+  - name: Preview Generator Deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: preview-generator-deployment.yml.j2
+
+  - name: preview generator configmap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: preview-generator-configmap.yml.j2
+      apply: yes
+
+  - name: preview generator Secret by 1Password
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: preview-generator-onepassword.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+
+  - name: preview generator scaled object
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: preview-generator-scaled-object.yml.j2
+    when:
+     - KEDA_ENABLED is defined and KEDA_ENABLED|bool
+     - SCALED_PREVIEW_GENERATOR_ENABLED is defined and SCALED_PREVIEW_GENERATOR_ENABLED|bool

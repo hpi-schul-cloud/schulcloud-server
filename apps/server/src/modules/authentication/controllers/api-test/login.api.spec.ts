@@ -1,17 +1,18 @@
 import { EntityManager } from '@mikro-orm/core';
+import { SSOErrorCode } from '@modules/oauth/loggable';
+import { OauthTokenResponse } from '@modules/oauth/service/dto';
+import { ServerTestModule } from '@modules/server/server.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, RoleName, SchoolEntity, SystemEntity, User } from '@shared/domain';
 import { accountFactory, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
-import { SSOErrorCode } from '@src/modules/oauth/error/sso-error-code.enum';
-import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
-import { ServerTestModule } from '@src/modules/server/server.module';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
-import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams } from '../dto';
+import { ICurrentUser } from '../../interface';
+import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, OauthLoginResponse } from '../dto';
 
 const ldapAccountUserName = 'ldapAccountUserName';
 const mockUserLdapDN = 'mockUserLdapDN';
@@ -129,6 +130,7 @@ describe('Login Controller (api)', () => {
 				expect(decodedToken).toHaveProperty('accountId');
 				expect(decodedToken).toHaveProperty('schoolId');
 				expect(decodedToken).toHaveProperty('roles');
+				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});
 
@@ -144,41 +146,38 @@ describe('Login Controller (api)', () => {
 	});
 
 	describe('loginLdap', () => {
-		let account: Account;
-		let user: User;
-		let school: SchoolEntity;
-		let system: SystemEntity;
-
-		beforeAll(async () => {
-			const schoolExternalId = 'mockSchoolExternalId';
-			system = systemFactory.withLdapConfig().buildWithId({});
-			school = schoolFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
-			const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-
-			user = userFactory.buildWithId({ school, roles: [studentRoles], ldapDn: mockUserLdapDN });
-
-			account = accountFactory.buildWithId({
-				userId: user.id,
-				username: `${schoolExternalId}/${ldapAccountUserName}`.toLowerCase(),
-				systemId: system.id,
-			});
-
-			em.persist(system);
-			em.persist(school);
-			em.persist(studentRoles);
-			em.persist(user);
-			em.persist(account);
-			await em.flush();
-		});
-
 		describe('when user login succeeds', () => {
-			it('should return jwt', async () => {
+			const setup = async () => {
+				const schoolExternalId = 'mockSchoolExternalId';
+				const system: SystemEntity = systemFactory.withLdapConfig().buildWithId({});
+				const school: SchoolEntity = schoolFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
+				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
+
+				const user: User = userFactory.buildWithId({ school, roles: [studentRoles], ldapDn: mockUserLdapDN });
+
+				const account: Account = accountFactory.buildWithId({
+					userId: user.id,
+					username: `${schoolExternalId}/${ldapAccountUserName}`.toLowerCase(),
+					systemId: system.id,
+				});
+
+				await em.persistAndFlush([system, school, studentRoles, user, account]);
+
 				const params: LdapAuthorizationBodyParams = {
 					username: ldapAccountUserName,
 					password: defaultPassword,
 					schoolId: school.id,
 					systemId: system.id,
 				};
+
+				return {
+					params,
+				};
+			};
+
+			it('should return jwt', async () => {
+				const { params } = await setup();
+
 				const response = await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params);
 
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
@@ -193,18 +192,104 @@ describe('Login Controller (api)', () => {
 				expect(decodedToken).toHaveProperty('accountId');
 				expect(decodedToken).toHaveProperty('schoolId');
 				expect(decodedToken).toHaveProperty('roles');
+				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});
 
 		describe('when user login fails', () => {
-			it('should return error response', async () => {
+			const setup = async () => {
+				const schoolExternalId = 'mockSchoolExternalId';
+				const system: SystemEntity = systemFactory.withLdapConfig().buildWithId({});
+				const school: SchoolEntity = schoolFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
+				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
+
+				const user: User = userFactory.buildWithId({ school, roles: [studentRoles], ldapDn: mockUserLdapDN });
+
+				const account: Account = accountFactory.buildWithId({
+					userId: user.id,
+					username: `${schoolExternalId}/${ldapAccountUserName}`.toLowerCase(),
+					systemId: system.id,
+				});
+
+				await em.persistAndFlush([system, school, studentRoles, user, account]);
+
 				const params: LdapAuthorizationBodyParams = {
 					username: 'nonExistentUser',
 					password: 'wrongPassword',
 					schoolId: school.id,
 					systemId: system.id,
 				};
-				await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params).expect(401);
+
+				return {
+					params,
+				};
+			};
+
+			it('should return error response', async () => {
+				const { params } = await setup();
+
+				const response = await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when logging in as a user of the Central LDAP of Brandenburg', () => {
+			const setup = async () => {
+				const officialSchoolNumber = '01234';
+				const system: SystemEntity = systemFactory.withLdapConfig().buildWithId({});
+				const school: SchoolEntity = schoolFactory.buildWithId({
+					systems: [system],
+					externalId: officialSchoolNumber,
+					officialSchoolNumber,
+				});
+				const studentRole = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
+
+				const user: User = userFactory.buildWithId({ school, roles: [studentRole], ldapDn: mockUserLdapDN });
+
+				const account: Account = accountFactory.buildWithId({
+					userId: user.id,
+					username: `${officialSchoolNumber}/${ldapAccountUserName}`.toLowerCase(),
+					systemId: system.id,
+				});
+
+				await em.persistAndFlush([system, school, studentRole, user, account]);
+
+				const params: LdapAuthorizationBodyParams = {
+					username: ldapAccountUserName,
+					password: defaultPassword,
+					schoolId: school.id,
+					systemId: system.id,
+				};
+
+				return {
+					params,
+					user,
+					account,
+					school,
+					system,
+					studentRole,
+				};
+			};
+
+			it('should return a jwt', async () => {
+				const { params, user, account, school, system, studentRole } = await setup();
+
+				const response = await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params);
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				expect(response.body.accessToken).toBeDefined();
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
+				const decodedToken = jwt.decode(response.body.accessToken);
+				expect(decodedToken).toMatchObject<ICurrentUser>({
+					userId: user.id,
+					systemId: system.id,
+					roles: [studentRole.id],
+					schoolId: school.id,
+					accountId: account.id,
+					isExternalUser: false,
+				});
+				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});
 	});
@@ -253,11 +338,12 @@ describe('Login Controller (api)', () => {
 
 				return {
 					system,
+					idToken,
 				};
 			};
 
-			it('should return jwt', async () => {
-				const { system } = await setup();
+			it('should return oauth login response', async () => {
+				const { system, idToken } = await setup();
 
 				const response: Response = await request(app.getHttpServer())
 					.post(`${basePath}/oauth2`)
@@ -269,7 +355,33 @@ describe('Login Controller (api)', () => {
 					.expect(HttpStatus.OK);
 
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				expect(response.body).toEqual<OauthLoginResponse>({
+					accessToken: expect.any(String),
+					externalIdToken: idToken,
+				});
+			});
+
+			it('should return a valid jwt as access token', async () => {
+				const { system } = await setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.post(`${basePath}/oauth2`)
+					.send({
+						redirectUri: 'redirectUri',
+						code: 'code',
+						systemId: system.id,
+					})
+					.expect(HttpStatus.OK);
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
+				const decodedToken = jwt.decode(response.body.accessToken);
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				expect(response.body.accessToken).toBeDefined();
+				expect(decodedToken).toHaveProperty('userId');
+				expect(decodedToken).toHaveProperty('accountId');
+				expect(decodedToken).toHaveProperty('schoolId');
+				expect(decodedToken).toHaveProperty('roles');
+				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});
 

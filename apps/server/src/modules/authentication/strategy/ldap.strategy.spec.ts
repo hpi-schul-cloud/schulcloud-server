@@ -15,7 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AccountDto } from '@src/modules/account/services/dto';
+import { AccountDto } from '@modules/account/services/dto';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { ICurrentUser } from '../interface';
 import { AuthenticationService } from '../services/authentication.service';
@@ -436,6 +436,7 @@ describe('LdapStrategy', () => {
 					schoolId: school.id,
 					systemId: system.id,
 					accountId: account.id,
+					isExternalUser: false,
 				});
 			});
 		});
@@ -500,6 +501,7 @@ describe('LdapStrategy', () => {
 					schoolId: school.id,
 					systemId: system.id,
 					accountId: account.id,
+					isExternalUser: false,
 				});
 			});
 		});

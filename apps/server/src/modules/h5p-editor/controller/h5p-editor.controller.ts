@@ -19,9 +19,10 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
 
+import { Authenticate } from '@modules/authentication/decorator/auth.decorator';
 import { H5PEditorUc } from '../uc/h5p.uc';
 
 import {
@@ -38,6 +39,24 @@ import {
 	SaveH5PEditorParams,
 } from './dto';
 import { H5PEditorModelContentResponse, H5PEditorModelResponse, H5PSaveResponse } from './dto/h5p-editor.response';
+
+// Dummy html response so we can test i-frame integration
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const dummyResponse = (title: string) => `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title}</title>
+</head>
+<body>
+    <h1>${title}</h1>
+    <p>This response can be used for testing</p>
+</body>
+</html>
+`;
 
 @ApiTags('h5p-editor')
 @Authenticate('jwt')

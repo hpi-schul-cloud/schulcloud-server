@@ -1,17 +1,12 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { Course, EntityId, LessonEntity, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { CourseRepo, LessonRepo } from '@shared/repo';
-import {
-	Action,
-	AuthorizableReferenceType,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@src/modules/authorization';
-import { CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
-import { LessonCopyParentParams } from '@src/modules/lesson';
-import { LessonCopyService } from '@src/modules/lesson/service';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
+import { LessonCopyParentParams } from '@modules/lesson';
+import { LessonCopyService } from '@modules/lesson/service';
 
 @Injectable()
 export class LessonCopyUC {
@@ -24,27 +19,24 @@ export class LessonCopyUC {
 	) {}
 
 	async copyLesson(userId: EntityId, lessonId: EntityId, parentParams: LessonCopyParentParams): Promise<CopyStatus> {
-		this.featureEnabled();
-		const user = await this.authorisation.getUserWithPermissions(userId);
-		const originalLesson = await this.lessonRepo.findById(lessonId);
-		const context = AuthorizationContextBuilder.read([Permission.TOPIC_CREATE]);
-		if (!this.authorisation.hasPermission(user, originalLesson, context)) {
-			throw new ForbiddenException('could not find lesson to copy');
-		}
+		this.checkFeatureEnabled();
 
+		const [user, originalLesson]: [User, LessonEntity] = await Promise.all([
+			this.authorisation.getUserWithPermissions(userId),
+			this.lessonRepo.findById(lessonId),
+		]);
+
+		this.checkOriginalLessonAuthorization(user, originalLesson);
+
+		// should be a seperate private method
 		const destinationCourse = parentParams.courseId
 			? await this.courseRepo.findById(parentParams.courseId)
 			: originalLesson.course;
-		await this.authorisation.checkPermissionByReferences(
-			userId,
-			AuthorizableReferenceType.Course,
-			destinationCourse.id,
-			{
-				action: Action.write,
-				requiredPermissions: [],
-			}
-		);
+		// ---
 
+		this.checkDestinationCourseAuthorization(user, destinationCourse);
+
+		// should be a seperate private method
 		const [existingLessons] = await this.lessonRepo.findAllByCourseIds([originalLesson.course.id]);
 		const existingNames = existingLessons.map((l) => l.name);
 		const copyName = this.copyHelperService.deriveCopyName(originalLesson.name, existingNames);
@@ -55,11 +47,25 @@ export class LessonCopyUC {
 			user,
 			copyName,
 		});
+		// ---
 
 		return copyStatus;
 	}
 
-	private featureEnabled() {
+	private checkOriginalLessonAuthorization(user: User, originalLesson: LessonEntity): void {
+		const contextReadWithTopicCreate = AuthorizationContextBuilder.read([Permission.TOPIC_CREATE]);
+		if (!this.authorisation.hasPermission(user, originalLesson, contextReadWithTopicCreate)) {
+			// error message is not correct, switch to authorisation.checkPermission() makse sense for me
+			throw new ForbiddenException('could not find lesson to copy');
+		}
+	}
+
+	private checkDestinationCourseAuthorization(user: User, destinationCourse: Course): void {
+		const contextCanWrite = AuthorizationContextBuilder.write([]);
+		this.authorisation.checkPermission(user, destinationCourse, contextCanWrite);
+	}
+
+	private checkFeatureEnabled() {
 		const enabled = Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean;
 		if (!enabled) {
 			throw new InternalServerErrorException('Copy Feature not enabled');

@@ -25,6 +25,9 @@ data:
     else
         echo "gg, hacky mongo replicaset"
     fi
+    {% if KEDA_NAMESPACE_ACTIVATOR_ENABLED is defined %}
+    curl -XPUT -H 'Content-Type: application/json'  -Lv 'https://activate.cd.dbildungscloud.dev/namespace' -d '{"name" : "{{ NAMESPACE }}"}'
+    {% endif %}
     curl --retry 360 --retry-connrefused --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/database/seed?with-indexes=true'
 
     # Below is a series of a MongoDB-data initializations, meant for the development and testing
@@ -177,7 +180,6 @@ data:
               "redirectUri": "https://{{ NAMESPACE }}.cd.dbildungscloud.dev/api/v3/sso/oauth",
               "authEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/auth",
               "provider": "sanis",
-              "logoutEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/logout",
               "jwksEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/certs",
               "issuer": "https://auth.stage.niedersachsen-login.schule/realms/SANIS"
             }

@@ -1,16 +1,22 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, UserRoleEnum } from '@shared/domain';
+import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain';
 import {
 	fileElementFactory,
+	richTextElementFactory,
 	setupEntities,
 	submissionContainerElementFactory,
 	submissionItemFactory,
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
-import { Action } from '@src/modules/authorization/types/action.enum';
+import { Action, AuthorizationService } from '@modules/authorization';
+import {
+	BadRequestException,
+	ForbiddenException,
+	NotFoundException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { SubmissionItemUc } from './submission-item.uc';
 
@@ -194,7 +200,9 @@ describe(SubmissionItemUc.name, () => {
 			it('should throw HttpException', async () => {
 				const { teacher, fileEl } = setup();
 
-				await expect(uc.findSubmissionItems(teacher.id, fileEl.id)).rejects.toThrow('Id is not submission container');
+				await expect(uc.findSubmissionItems(teacher.id, fileEl.id)).rejects.toThrow(
+					new NotFoundException('Could not find a submission container with this id')
+				);
 			});
 		});
 	});
@@ -233,16 +241,102 @@ describe(SubmissionItemUc.name, () => {
 			const context = { action: Action.read, requiredPermissions: [] };
 			expect(authorizationService.checkPermission).toBeCalledWith(user, boardDoAuthorizable, context);
 		});
-		it('should throw if user is not creator of submission', async () => {
+		it('should throw if user is not creator of submission item', async () => {
 			const user2 = userFactory.buildWithId();
 			const { submissionItem } = setup();
 
-			await expect(uc.updateSubmissionItem(user2.id, submissionItem.id, false)).rejects.toThrow();
+			await expect(uc.updateSubmissionItem(user2.id, submissionItem.id, false)).rejects.toThrow(
+				new ForbiddenException()
+			);
 		});
-		it('should call service to update element', async () => {
+		it('should call service to update submission item', async () => {
 			const { submissionItem, user } = setup();
 			await uc.updateSubmissionItem(user.id, submissionItem.id, false);
 			expect(submissionItemService.update).toHaveBeenCalledWith(submissionItem, false);
+		});
+	});
+
+	describe('createElement', () => {
+		describe('when the user is a student', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const submissionItem = submissionItemFactory.build({
+					userId: user.id,
+				});
+
+				submissionItemService.findById.mockResolvedValue(submissionItem);
+
+				const element = richTextElementFactory.build();
+
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+					new BoardDoAuthorizable({
+						users: [{ userId: user.id, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT }],
+						id: submissionItem.id,
+					})
+				);
+
+				return { element, submissionItem, user };
+			};
+
+			it('should call service to find the submission item ', async () => {
+				const { element, submissionItem, user } = setup();
+				elementService.create.mockResolvedValueOnce(element);
+
+				await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
+				expect(submissionItemService.findById).toHaveBeenCalledWith(submissionItem.id);
+			});
+
+			it('should authorize', async () => {
+				const { element, submissionItem, user } = setup();
+				elementService.create.mockResolvedValueOnce(element);
+
+				const boardDoAuthorizable = await boardDoAuthorizableService.getBoardAuthorizable(submissionItem);
+
+				await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
+				const context = { action: Action.read, requiredPermissions: [] };
+				expect(authorizationService.checkPermission).toBeCalledWith(user, boardDoAuthorizable, context);
+			});
+
+			it('should throw if user is not creator of submission item', async () => {
+				const user2 = userFactory.buildWithId();
+				const { submissionItem } = setup();
+
+				await expect(uc.createElement(user2.id, submissionItem.id, ContentElementType.RICH_TEXT)).rejects.toThrow(
+					new ForbiddenException()
+				);
+			});
+
+			it('should throw if type is not file or rich text', async () => {
+				const { submissionItem, user } = setup();
+				await expect(uc.createElement(user.id, submissionItem.id, ContentElementType.LINK)).rejects.toThrow(
+					new BadRequestException()
+				);
+			});
+
+			it('should call service to create element', async () => {
+				const { element, submissionItem, user } = setup();
+				elementService.create.mockResolvedValueOnce(element);
+
+				await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
+				expect(elementService.create).toHaveBeenCalledWith(submissionItem, ContentElementType.RICH_TEXT);
+			});
+
+			it('should return element', async () => {
+				const { element, submissionItem, user } = setup();
+				elementService.create.mockResolvedValueOnce(element);
+
+				const returnedElement = await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
+				expect(returnedElement).toEqual(element);
+			});
+
+			it('should throw if element is not file or rich text', async () => {
+				const { submissionItem, user } = setup();
+				const otherElement = submissionContainerElementFactory.build();
+				elementService.create.mockResolvedValueOnce(otherElement);
+				await expect(uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT)).rejects.toThrow(
+					new UnprocessableEntityException()
+				);
+			});
 		});
 	});
 });

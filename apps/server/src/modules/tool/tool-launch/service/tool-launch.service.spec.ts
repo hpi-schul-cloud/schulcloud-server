@@ -7,22 +7,22 @@ import {
 	externalToolFactory,
 	schoolExternalToolFactory,
 } from '@shared/testing';
+import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
+import { CommonToolService } from '../../common/service';
 import { ContextExternalTool } from '../../context-external-tool/domain';
+import { BasicToolConfig, ExternalTool } from '../../external-tool/domain';
+import { ExternalToolService } from '../../external-tool/service';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { ToolStatusOutdatedLoggableException } from '../error';
 import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import {
 	BasicToolLaunchStrategy,
 	IToolLaunchParams,
 	Lti11ToolLaunchStrategy,
 	OAuth2ToolLaunchStrategy,
-} from './strategy';
+} from './launch-strategy';
 import { ToolLaunchService } from './tool-launch.service';
-import { ToolStatusOutdatedLoggableException } from '../error';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ExternalToolService } from '../../external-tool/service';
-import { CommonToolService } from '../../common/service';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { BasicToolConfig, ExternalTool } from '../../external-tool/domain';
-import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
 
 describe('ToolLaunchService', () => {
 	let module: TestingModule;
@@ -104,8 +104,8 @@ describe('ToolLaunchService', () => {
 					contextExternalTool,
 				};
 
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValue(schoolExternalTool);
-				externalToolService.findExternalToolById.mockResolvedValue(externalTool);
+				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
+				externalToolService.findById.mockResolvedValue(externalTool);
 				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
 				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.LATEST);
 
@@ -136,9 +136,7 @@ describe('ToolLaunchService', () => {
 
 				await service.getLaunchData('userId', launchParams.contextExternalTool);
 
-				expect(schoolExternalToolService.getSchoolExternalToolById).toHaveBeenCalledWith(
-					launchParams.schoolExternalTool.id
-				);
+				expect(schoolExternalToolService.findById).toHaveBeenCalledWith(launchParams.schoolExternalTool.id);
 			});
 
 			it('should call findExternalToolById', async () => {
@@ -146,7 +144,7 @@ describe('ToolLaunchService', () => {
 
 				await service.getLaunchData('userId', launchParams.contextExternalTool);
 
-				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(launchParams.schoolExternalTool.toolId);
+				expect(externalToolService.findById).toHaveBeenCalledWith(launchParams.schoolExternalTool.toolId);
 			});
 		});
 
@@ -165,8 +163,8 @@ describe('ToolLaunchService', () => {
 					contextExternalTool,
 				};
 
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValue(schoolExternalTool);
-				externalToolService.findExternalToolById.mockResolvedValue(externalTool);
+				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
+				externalToolService.findById.mockResolvedValue(externalTool);
 				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.LATEST);
 
 				return {
@@ -209,8 +207,8 @@ describe('ToolLaunchService', () => {
 
 				const userId = 'userId';
 
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValue(schoolExternalTool);
-				externalToolService.findExternalToolById.mockResolvedValue(externalTool);
+				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
+				externalToolService.findById.mockResolvedValue(externalTool);
 				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
 				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.OUTDATED);
 

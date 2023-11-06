@@ -1,4 +1,5 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, Course, Permission, SchoolEntity, User } from '@shared/domain';
@@ -15,18 +16,17 @@ import {
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
 import { ObjectId } from 'bson';
 import { CustomParameterScope, ToolContextType } from '../../../common/enum';
+import { ExternalToolEntity } from '../../../external-tool/entity';
+import { CustomParameterEntryResponse } from '../../../school-external-tool/controller/dto';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
 import {
 	ContextExternalToolPostParams,
 	ContextExternalToolResponse,
 	ContextExternalToolSearchListResponse,
 } from '../dto';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
-import { ExternalToolEntity } from '../../../external-tool/entity';
-import { CustomParameterEntryResponse } from '../../../school-external-tool/controller/dto';
 
 describe('ToolContextController (API)', () => {
 	let app: INestApplication;
@@ -114,28 +114,28 @@ describe('ToolContextController (API)', () => {
 			});
 		});
 
-		describe('when creation of contextExternalTool failed', () => {
+		describe('when user is not authorized for the requested context', () => {
 			const setup = async () => {
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-
-				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser] });
-
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const school = schoolFactory.build();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const course = courseFactory.build({ teachers: [teacherUser] });
+				const otherCourse = courseFactory.build();
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.build({
 					schoolParameters: [],
 					toolVersion: 1,
+					school,
 				});
 
-				const randomTestId = new ObjectId().toString();
+				await em.persistAndFlush([course, otherCourse, school, teacherUser, teacherAccount, schoolExternalToolEntity]);
+				em.clear();
+
 				const postParams: ContextExternalToolPostParams = {
-					schoolToolId: randomTestId,
-					contextId: randomTestId,
+					schoolToolId: schoolExternalToolEntity.id,
+					contextId: otherCourse.id,
 					contextType: ToolContextType.COURSE,
 					parameters: [],
 					toolVersion: 1,
 				};
-
-				await em.persistAndFlush([course, teacherUser, teacherAccount, schoolExternalToolEntity]);
-				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
@@ -145,12 +145,13 @@ describe('ToolContextController (API)', () => {
 				};
 			};
 
-			it('when user is not authorized, it should return forbidden', async () => {
+			it('it should return forbidden', async () => {
 				const { postParams, loggedInClient } = await setup();
 
 				const response = await loggedInClient.post().send(postParams);
 
 				expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
+				// expected body is missed
 			});
 		});
 	});
@@ -204,23 +205,26 @@ describe('ToolContextController (API)', () => {
 		describe('when deletion of contextExternalTool failed', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-
-				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser] });
-
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const course = courseFactory.buildWithId({ teachers: [teacherUser] });
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					toolVersion: 1,
 				});
-
-				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+				const contextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
+					contextId: course.id,
 					toolVersion: 1,
 				});
 
-				em.persist([course, teacherUser, teacherAccount, schoolExternalToolEntity, contextExternalToolEntity]);
-				await em.flush();
+				await em.persistAndFlush([
+					course,
+					teacherUser,
+					teacherAccount,
+					schoolExternalToolEntity,
+					contextExternalToolEntity,
+				]);
 				em.clear();
 
-				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await testApiClient.login(teacherAccount);
 
 				return {
 					contextExternalToolEntity,
@@ -234,6 +238,7 @@ describe('ToolContextController (API)', () => {
 				const result = await loggedInClient.delete(`${contextExternalToolEntity.id}`);
 
 				expect(result.statusCode).toEqual(HttpStatus.FORBIDDEN);
+				// result.body is missed
 			});
 		});
 	});
@@ -543,37 +548,29 @@ describe('ToolContextController (API)', () => {
 
 		describe('when user has not the required permission', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
-
+				const school = schoolFactory.build();
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
-
-				const course: Course = courseFactory.buildWithId({
+				const course = courseFactory.build({
 					teachers: [studentUser],
 					school,
 				});
-
-				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId();
-				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const externalTool: ExternalToolEntity = externalToolEntityFactory.build();
+				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.build({
 					school,
 					tool: externalTool,
 					toolVersion: 1,
 				});
-				const contextExternalTool: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+
+				await em.persistAndFlush([school, course, externalTool, schoolExternalTool, studentAccount, studentUser]);
+
+				const contextExternalTool: ContextExternalToolEntity = contextExternalToolEntityFactory.build({
 					contextId: course.id,
 					schoolTool: schoolExternalTool,
 					toolVersion: 1,
 					contextType: ContextExternalToolType.COURSE,
 				});
 
-				await em.persistAndFlush([
-					school,
-					course,
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
-					studentAccount,
-					studentUser,
-				]);
+				await em.persistAndFlush([contextExternalTool]);
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);
@@ -591,6 +588,7 @@ describe('ToolContextController (API)', () => {
 				const response = await loggedInClient.get(`${contextExternalTool.id}`);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				// body check
 			});
 		});
 	});
@@ -688,34 +686,37 @@ describe('ToolContextController (API)', () => {
 
 		describe('when the user is not authorized', () => {
 			const setup = async () => {
-				const roleWithoutPermission = roleFactory.buildWithId();
-
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher();
-
+				const roleWithoutPermission = roleFactory.build();
 				teacherUser.roles.set([roleWithoutPermission]);
 
-				const school: SchoolEntity = schoolFactory.buildWithId();
-
-				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
-
+				const school = schoolFactory.build();
+				const course = courseFactory.build({ teachers: [teacherUser], school });
 				const contextParameter = customParameterEntityFactory.build({
 					scope: CustomParameterScope.CONTEXT,
 					regex: 'testValue123',
 				});
-
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.build({
 					parameters: [contextParameter],
 					version: 2,
 				});
-
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.build({
 					tool: externalToolEntity,
 					school,
 					schoolParameters: [],
 					toolVersion: 2,
 				});
 
-				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+				await em.persistAndFlush([
+					course,
+					school,
+					teacherUser,
+					teacherAccount,
+					externalToolEntity,
+					schoolExternalToolEntity,
+				]);
+
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.build({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
@@ -723,6 +724,10 @@ describe('ToolContextController (API)', () => {
 					parameters: [],
 					toolVersion: 1,
 				});
+
+				await em.persistAndFlush([contextExternalToolEntity]);
+
+				em.clear();
 
 				const postParams: ContextExternalToolPostParams = {
 					schoolToolId: schoolExternalToolEntity.id,
@@ -738,17 +743,6 @@ describe('ToolContextController (API)', () => {
 					toolVersion: 2,
 				};
 
-				await em.persistAndFlush([
-					course,
-					school,
-					teacherUser,
-					teacherAccount,
-					externalToolEntity,
-					schoolExternalToolEntity,
-					contextExternalToolEntity,
-				]);
-				em.clear();
-
 				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
 				return { loggedInClient, postParams, contextExternalToolEntity };
@@ -760,6 +754,7 @@ describe('ToolContextController (API)', () => {
 				const response = await loggedInClient.put(`${contextExternalToolEntity.id}`).send(postParams);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				// body missed
 			});
 		});
 

@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Authenticate, CurrentUser, ICurrentUser, JWT } from '@modules/authentication';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
@@ -11,8 +12,6 @@ import {
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Page, UserLoginMigrationDO } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
 import {
 	SchoolNumberMissingLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
@@ -182,6 +181,7 @@ export class UserLoginMigrationController {
 	}
 
 	@Post('close')
+	@HttpCode(HttpStatus.OK)
 	@ApiUnprocessableEntityResponse({
 		description: 'User login migration is already closed and cannot be modified. Restart is possible.',
 		type: UserLoginMigrationAlreadyClosedLoggableException,

@@ -2,17 +2,17 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, LanguageType, Permission, Role, RoleName, SortOrder, User } from '@shared/domain';
+import { EntityId, IFindOptions, LanguageType, Permission, Role, RoleName, SortOrder, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { ICurrentUser } from '@src/modules/authentication';
-import { RoleService } from '@src/modules/role/service/role.service';
-import { UserService } from '@src/modules/user/service/user.service';
-import { UserDto } from '@src/modules/user/uc/dto/user.dto';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountDto } from '@modules/account/services/dto';
+import { RoleService } from '@modules/role/service/role.service';
+import { UserService } from '@modules/user/service/user.service';
+import { UserDto } from '@modules/user/uc/dto/user.dto';
+import { OauthCurrentUser } from '@modules/authentication/interface';
 import { UserQuery } from './user-query.type';
 
 describe('UserService', () => {
@@ -136,13 +136,13 @@ describe('UserService', () => {
 
 	describe('getResolvedUser is called', () => {
 		describe('when a resolved user is requested', () => {
-			it('should return an ICurrentUser', async () => {
+			const setup = () => {
 				const systemId = 'systemId';
 				const role: Role = roleFactory.buildWithId({
 					name: RoleName.STUDENT,
 					permissions: [Permission.DASHBOARD_VIEW],
 				});
-				const user: User = userFactory.buildWithId({ roles: [role] });
+				const user: UserDO = userDoFactory.buildWithId({ roles: [role] });
 				const account: AccountDto = new AccountDto({
 					id: 'accountId',
 					systemId,
@@ -152,17 +152,30 @@ describe('UserService', () => {
 					activated: true,
 				});
 
-				userRepo.findById.mockResolvedValue(user);
+				userDORepo.findById.mockResolvedValue(user);
 				accountService.findByUserIdOrFail.mockResolvedValue(account);
 
-				const result: ICurrentUser = await service.getResolvedUser(user.id);
-
-				expect(result).toEqual<ICurrentUser>({
-					userId: user.id,
+				return {
+					userId: user.id as string,
+					user,
+					account,
+					role,
 					systemId,
-					schoolId: user.school.id,
+				};
+			};
+
+			it('should return the current user', async () => {
+				const { userId, user, account, role, systemId } = setup();
+
+				const result: OauthCurrentUser = await service.getResolvedUser(userId);
+
+				expect(result).toEqual<OauthCurrentUser>({
+					userId,
+					systemId,
+					schoolId: user.schoolId,
 					accountId: account.id,
 					roles: [role.id],
+					isExternalUser: true,
 				});
 			});
 		});
@@ -177,30 +190,24 @@ describe('UserService', () => {
 		});
 
 		it('should return only the last name when the user has a protected role', async () => {
-			// Arrange
 			const user: UserDO = userDoFactory.withRoles([{ id: role.id, name: RoleName.STUDENT }]).buildWithId({
 				lastName: 'lastName',
 			});
 
-			// Act
 			const result: string = await service.getDisplayName(user);
 
-			// Assert
 			expect(result).toEqual(user.lastName);
 			expect(roleService.getProtectedRoles).toHaveBeenCalled();
 		});
 
 		it('should return the first name and last name when the user has no protected role', async () => {
-			// Arrange
 			const user: UserDO = userDoFactory.withRoles([{ id: 'unprotectedId', name: RoleName.STUDENT }]).buildWithId({
 				lastName: 'lastName',
 				firstName: 'firstName',
 			});
 
-			// Act
 			const result: string = await service.getDisplayName(user);
 
-			// Assert
 			expect(result).toEqual(`${user.firstName} ${user.lastName}`);
 			expect(roleService.getProtectedRoles).toHaveBeenCalled();
 		});
@@ -327,6 +334,52 @@ describe('UserService', () => {
 			await service.saveAll(users);
 
 			expect(userDORepo.saveAll).toHaveBeenCalledWith(users);
+		});
+	});
+
+	describe('deleteUser', () => {
+		describe('when user is missing', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.build({ id: undefined });
+				const userId: EntityId = user.id as EntityId;
+
+				userRepo.deleteUser.mockResolvedValue(0);
+
+				return {
+					userId,
+				};
+			};
+
+			it('should return 0', async () => {
+				const { userId } = setup();
+
+				const result = await service.deleteUser(userId);
+
+				expect(result).toEqual(0);
+			});
+		});
+
+		describe('when deleting by userId', () => {
+			const setup = () => {
+				const user1: User = userFactory.asStudent().buildWithId();
+				userFactory.asStudent().buildWithId();
+
+				userRepo.findById.mockResolvedValue(user1);
+				userRepo.deleteUser.mockResolvedValue(1);
+
+				return {
+					user1,
+				};
+			};
+
+			it('should delete user by userId', async () => {
+				const { user1 } = setup();
+
+				const result = await service.deleteUser(user1.id);
+
+				expect(userRepo.deleteUser).toHaveBeenCalledWith(user1.id);
+				expect(result).toEqual(1);
+			});
 		});
 	});
 });

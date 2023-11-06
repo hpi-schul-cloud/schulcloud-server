@@ -7,7 +7,7 @@ import {
 	legacySchoolDoFactory,
 	schoolExternalToolFactory,
 } from '@shared/testing/factory/domainobject';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { ToolContextType } from '../../common/enum';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextExternalTool, ContextRef } from '../domain';
@@ -130,7 +130,7 @@ describe('ContextExternalToolService', () => {
 		});
 	});
 
-	describe('getContextExternalToolById', () => {
+	describe('findById', () => {
 		describe('when contextExternalToolId is given', () => {
 			const setup = () => {
 				const schoolId: string = legacySchoolDoFactory.buildWithId().id as string;
@@ -151,7 +151,7 @@ describe('ContextExternalToolService', () => {
 			it('should return a contextExternalTool', async () => {
 				const { contextExternalTool } = setup();
 
-				const result: ContextExternalTool = await service.getContextExternalToolById(contextExternalTool.id as string);
+				const result: ContextExternalTool = await service.findById(contextExternalTool.id as string);
 
 				expect(result).toEqual(contextExternalTool);
 			});
@@ -165,7 +165,7 @@ describe('ContextExternalToolService', () => {
 			it('should throw a not found exception', async () => {
 				setup();
 
-				const func = () => service.getContextExternalToolById('unknownContextExternalToolId');
+				const func = () => service.findById('unknownContextExternalToolId');
 
 				await expect(func()).rejects.toThrow(NotFoundException);
 			});
