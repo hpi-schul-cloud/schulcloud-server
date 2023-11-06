@@ -9,7 +9,7 @@ import { S3ClientModule } from '@shared/infra/s3-client';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
-import { UserModule } from '..';
+import { UserModule } from '../user';
 
 import { config, s3ConfigContent, s3ConfigLibraries } from './h5p-library-management.config';
 import { H5PContentRepo, LibraryRepo } from '../h5p-editor/repo';
