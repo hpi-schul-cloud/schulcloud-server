@@ -4,11 +4,12 @@ import ClientRepresentation from '@keycloak/keycloak-admin-client/lib/defs/clien
 import IdentityProviderMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderMapperRepresentation';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import ProtocolMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/protocolMapperRepresentation';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { IServerConfig } from '@modules/server/server.config';
 import { OidcConfigDto } from '@modules/system/service';
 import { SystemOidcService } from '@modules/system/service/system-oidc.service';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+// TODO: (sub) module structure
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 
@@ -18,6 +19,7 @@ enum ConfigureAction {
 	DELETE = 'delete',
 }
 
+// TODO: move (as private readonly) into class if it belongs to class. if it doesnt, move somewhere else (seperate file?)
 const flowAlias = 'Direct Broker Flow';
 const oidcUserAttributeMapperName = 'OIDC User Attribute Mapper';
 const oidcExternalSubMapperName = 'External Sub Mapper';
@@ -31,6 +33,8 @@ export class KeycloakConfigurationService {
 		private readonly systemOidcService: SystemOidcService
 	) {}
 
+	// TODO: this function is too complex. for example, building the requests can be extracted into private methods
+	// TODO: for-loops can also be extracted (one level per function)
 	public async configureBrokerFlows(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const executionProviders = ['idp-create-user-if-unique', 'idp-auto-link'];
@@ -93,8 +97,10 @@ export class KeycloakConfigurationService {
 			realmName: kc.realmName,
 			flowAlias,
 		});
+
 		// eslint-disable-next-line no-restricted-syntax
 		for (const execution of executions) {
+			// TODO: if you cant find a way to avoid the await in a loop, please at least explain it here, and make sure this is well tested
 			// eslint-disable-next-line no-await-in-loop
 			await updateExecutionRequest({
 				realmName: kc.realmName,
@@ -107,6 +113,7 @@ export class KeycloakConfigurationService {
 
 	public async configureClient(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
+		// TODO: check using API_HOST instead (potentially it has to be set for local environments)
 		const scDomain = this.configService.get<string>('SC_DOMAIN');
 		const redirectUri = scDomain === 'localhost' ? 'http://localhost:3030/' : `https://${scDomain}/`;
 		const cr: ClientRepresentation = {
@@ -133,6 +140,7 @@ export class KeycloakConfigurationService {
 		const configureActions = this.selectConfigureAction(newConfigs, oldConfigs);
 		// eslint-disable-next-line no-restricted-syntax
 		for (const configureAction of configureActions) {
+			// TODO: try to find a way to avoid the awaits in loop, if not at least explain
 			if (configureAction.action === ConfigureAction.CREATE) {
 				// eslint-disable-next-line no-await-in-loop
 				await this.createIdentityProvider(configureAction.config);
@@ -158,12 +166,14 @@ export class KeycloakConfigurationService {
 			{
 				realm: kc.realmName,
 			},
+			// TODO: if this is the config all realms should have, it might make sense to put this somewhere as a constant
 			{
 				editUsernameAllowed: true,
 			}
 		);
 	}
 
+	// TODO: name should be singular
 	private async addClientProtocolMappers(defaultClientInternalId: string) {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const allMappers = await kc.clients.listProtocolMappers({ id: defaultClientInternalId });
@@ -181,6 +191,7 @@ export class KeycloakConfigurationService {
 		}
 	}
 
+	// TODO: remove comment
 	/**
 	 * decides for each system if it needs to be added, updated or deleted in keycloak
 	 *
@@ -189,11 +200,13 @@ export class KeycloakConfigurationService {
 	 * @returns
 	 */
 	private selectConfigureAction(newConfigs: OidcConfigDto[], oldConfigs: IdentityProviderRepresentation[]) {
+		// TODO: typing instead of as cast
 		const result = [] as (
 			| { action: ConfigureAction.CREATE; config: OidcConfigDto }
 			| { action: ConfigureAction.UPDATE; config: OidcConfigDto }
 			| { action: ConfigureAction.DELETE; alias: string }
 		)[];
+		// TODO: if comments are needed, maybe these could be function names instead
 		// updating or creating configs
 		newConfigs.forEach((newConfig) => {
 			if (oldConfigs.some((oldConfig) => oldConfig.alias === newConfig.idpHint)) {
@@ -213,6 +226,7 @@ export class KeycloakConfigurationService {
 
 	private async createIdentityProvider(oidcConfig: OidcConfigDto): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
+		// TODO: Check if the if statement is still necessary, and/or if the "else" case really is valid or should throw an error
 		if (oidcConfig && oidcConfig?.idpHint) {
 			await kc.identityProviders.create(
 				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(oidcConfig, flowAlias)
@@ -223,6 +237,7 @@ export class KeycloakConfigurationService {
 
 	private async updateIdentityProvider(oidcConfig: OidcConfigDto): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
+		// TODO: Check if the if statement is still necessary, and/or if the "else" case really is valid or should throw an error
 		if (oidcConfig && oidcConfig?.idpHint) {
 			await kc.identityProviders.update(
 				{ alias: oidcConfig.idpHint },
@@ -237,6 +252,7 @@ export class KeycloakConfigurationService {
 		await kc.identityProviders.del({ alias });
 	}
 
+	// TODO: this and addClientProtocolMappers should use consistent names, as they do very similar things
 	private async updateOrCreateIdpDefaultMapper(idpAlias: string) {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const allMappers = await kc.identityProviders.findMappers({ alias: idpAlias });

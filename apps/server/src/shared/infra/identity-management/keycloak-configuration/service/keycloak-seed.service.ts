@@ -2,12 +2,12 @@ import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRep
 import { Inject } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
 import fs from 'node:fs/promises';
+import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { IJsonAccount } from '../interface/json-account.interface';
 import { IJsonUser } from '../interface/json-user.interface';
-import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import {
-	KeycloakConfigurationInputFiles,
 	IKeycloakConfigurationInputFiles,
+	KeycloakConfigurationInputFiles,
 } from '../interface/keycloak-configuration-input-files.interface';
 
 export class KeycloakSeedService {
@@ -25,6 +25,7 @@ export class KeycloakSeedService {
 		for (const user of users) {
 			const account = accounts.find((a) => a.userId.$oid === user._id.$oid);
 			if (account) {
+				// TODO: either solve or explain await in loop
 				// eslint-disable-next-line no-await-in-loop
 				userCount += (await this.createOrUpdateIdmAccount(account, user)) ? 1 : 0;
 			}
@@ -37,6 +38,7 @@ export class KeycloakSeedService {
 		let deletedUsers = 0;
 		const adminUser = this.kcAdmin.getAdminUser();
 		let kc = await this.kcAdmin.callKcAdminClient();
+		// TODO: loggables
 		this.logger.log(`Starting to delete users...`);
 		while (foundUsers > 0) {
 			// eslint-disable-next-line no-await-in-loop
@@ -58,6 +60,7 @@ export class KeycloakSeedService {
 	}
 
 	private async createOrUpdateIdmAccount(account: IJsonAccount, user: IJsonUser): Promise<boolean> {
+		// TODO: mapper?
 		const idmUserRepresentation: UserRepresentation = {
 			username: account.username,
 			firstName: user.firstName,
@@ -65,6 +68,7 @@ export class KeycloakSeedService {
 			email: user.email,
 			enabled: true,
 			credentials: [
+				// TODO: make this less hardcoded. eg. move things like iterations and algorithm into constants, or make the credentials a seperate function
 				{
 					type: 'password',
 					secretData: `{"value": "${account.password}", "salt": "", "additionalParameters": {}}`,
@@ -87,6 +91,7 @@ export class KeycloakSeedService {
 			await kc.users.create(idmUserRepresentation);
 			return true;
 		}
+		// TODO: throw error
 		// else, unreachable, multiple accounts for same username (unique)
 		return false;
 	}

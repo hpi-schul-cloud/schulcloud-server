@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { LegacyLogger } from '@src/core/logger';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/resources/authenticationManagement';
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { Test, TestingModule } from '@nestjs/testing';
+import { LegacyLogger } from '@src/core/logger';
 import { v1 } from 'uuid';
 import {
 	IKeycloakSettings,
@@ -102,6 +102,8 @@ describe('KeycloakSeedService', () => {
 		accountsFile: 'accounts.json',
 		usersFile: 'users.json',
 	};
+
+	// TODO: teststructure (trademark @CeEv)
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({

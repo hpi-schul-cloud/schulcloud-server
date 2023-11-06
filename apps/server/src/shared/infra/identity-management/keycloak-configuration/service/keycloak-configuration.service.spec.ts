@@ -6,14 +6,14 @@ import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/re
 import { Clients } from '@keycloak/keycloak-admin-client/lib/resources/clients';
 import { IdentityProviders } from '@keycloak/keycloak-admin-client/lib/resources/identityProviders';
 import { Realms } from '@keycloak/keycloak-admin-client/lib/resources/realms';
+import { SystemOidcMapper } from '@modules/system/mapper/system-oidc.mapper';
+import { SystemOidcService } from '@modules/system/service/system-oidc.service';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemEntity, SystemTypeEnum } from '@shared/domain';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { systemFactory } from '@shared/testing';
-import { SystemOidcMapper } from '@modules/system/mapper/system-oidc.mapper';
-import { SystemOidcService } from '@modules/system/service/system-oidc.service';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { v1 } from 'uuid';
@@ -305,6 +305,8 @@ describe('KeycloakConfigurationService Unit', () => {
 				})
 			);
 		});
+
+		// TODO: explain when its skipped, and when not (HINT: use "when")
 		it('should skip flow creation', async () => {
 			const flowAlias = 'Direct Broker Flow';
 			kcApiRealmsMock.makeRequest.mockImplementation(

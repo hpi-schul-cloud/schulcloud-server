@@ -2,13 +2,13 @@ import { createMock } from '@golevelup/ts-jest';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import AuthenticationExecutionExportRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionExportRepresentation';
 import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
+import { SystemService } from '@modules/system/service/system.service';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { SystemRepo } from '@shared/repo/system/system.repo';
 import { systemFactory } from '@shared/testing/factory';
 import { LoggerModule } from '@src/core/logger';
-import { SystemService } from '@modules/system/service/system.service';
 import { v1 } from 'uuid';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';
@@ -83,6 +83,7 @@ describe('KeycloakConfigurationService Integration', () => {
 			const flow = (await getFlowsRequest({ realmName: kc.realmName })).find(
 				(tempFlow) => tempFlow.alias === flowAlias
 			);
+			// TODO: empty line
 			expect(flow).toEqual(
 				expect.objectContaining<AuthenticationFlowRepresentation>({
 					providerId: 'basic-flow',
@@ -158,6 +159,7 @@ describe('KeycloakConfigurationService Integration', () => {
 				await keycloakConfigurationService.configureRealm();
 				const kc = await keycloakAdministrationService.callKcAdminClient();
 				const realm = await kc.realms.findOne({ realm: testRealm });
+				// TODO: empty line
 				expect(realm).toEqual(
 					expect.objectContaining({
 						realm: testRealm,
