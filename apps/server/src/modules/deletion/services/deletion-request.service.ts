@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionRequestRepo } from '../repo/deletion-request.repo';
 import { DeletionRequest } from '../domain/deletion-request.do';
@@ -39,8 +39,8 @@ export class DeletionRequestService {
 		return deletionRequest;
 	}
 
-	async findAllItemsToExecute(options?: IFindOptions<DeletionRequest>): Promise<DeletionRequest[]> {
-		const itemsToDelete: DeletionRequest[] = await this.deletionRequestRepo.findAllItemsToExecution(options);
+	async findAllItemsToExecute(limit?: number): Promise<DeletionRequest[]> {
+		const itemsToDelete: DeletionRequest[] = await this.deletionRequestRepo.findAllItemsToExecution(limit);
 
 		return itemsToDelete;
 	}

@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions, SortOrder } from '@shared/domain';
+import { EntityId, SortOrder } from '@shared/domain';
 import { DeletionRequest } from '../domain/deletion-request.do';
 import { DeletionRequestEntity } from '../entity';
 import { DeletionRequestMapper } from './mapper/deletion-request.mapper';
@@ -30,15 +30,13 @@ export class DeletionRequestRepo {
 		await this.em.flush();
 	}
 
-	async findAllItemsToExecution(options?: IFindOptions<DeletionRequest>): Promise<DeletionRequest[]> {
+	async findAllItemsToExecution(limit?: number): Promise<DeletionRequest[]> {
 		const currentDate = new Date();
 		const scope = new DeletionRequestScope().byDeleteAfter(currentDate).byStatus();
-		const { pagination } = options || { limit: 100 };
 		const order = { createdAt: SortOrder.desc };
 
 		const [deletionRequestEntities] = await this.em.findAndCount(DeletionRequestEntity, scope.query, {
-			offset: pagination?.skip,
-			limit: pagination?.limit,
+			limit,
 			orderBy: order,
 		});
 
