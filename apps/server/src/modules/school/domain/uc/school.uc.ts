@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, IPagination, Permission } from '@shared/domain';
+import { EntityId, IPagination } from '@shared/domain';
 import { AuthorizationContextBuilder } from '@src/modules/authorization/domain/mapper/authorization-context.builder';
 import { AuthorizationService } from '@src/modules/authorization/domain/service/authorization.service';
 import { School, SchoolYear } from '../do';
