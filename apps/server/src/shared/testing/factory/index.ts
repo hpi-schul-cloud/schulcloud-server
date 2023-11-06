@@ -36,3 +36,4 @@ export * from './user-login-migration.factory';
 export * from './user.do.factory';
 export * from './user.factory';
 export * from './legacy-file-entity-mock.factory';
+export * from './jwt.test.factory';

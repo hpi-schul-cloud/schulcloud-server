@@ -23,6 +23,9 @@ export class ClassInfoResponse {
 	@ApiPropertyOptional()
 	isUpgradable?: boolean;
 
+	@ApiProperty()
+	studentCount: number;
+
 	constructor(props: ClassInfoResponse) {
 		this.id = props.id;
 		this.type = props.type;
@@ -31,5 +34,6 @@ export class ClassInfoResponse {
 		this.teachers = props.teachers;
 		this.schoolYear = props.schoolYear;
 		this.isUpgradable = props.isUpgradable;
+		this.studentCount = props.studentCount;
 	}
 }

@@ -19,6 +19,8 @@ export class GroupUcMapper {
 			teacherNames: resolvedUsers
 				.filter((groupUser: ResolvedGroupUser) => groupUser.role.name === RoleName.TEACHER)
 				.map((groupUser: ResolvedGroupUser) => groupUser.user.lastName),
+			studentCount: resolvedUsers.filter((groupUser: ResolvedGroupUser) => groupUser.role.name === RoleName.STUDENT)
+				.length,
 		});
 
 		return mapped;
@@ -36,6 +38,7 @@ export class GroupUcMapper {
 			teacherNames: teachers.map((user: UserDO) => user.lastName),
 			schoolYear: schoolYear?.name,
 			isUpgradable,
+			studentCount: clazz.userIds ? clazz.userIds.length : 0,
 		});
 
 		return mapped;
