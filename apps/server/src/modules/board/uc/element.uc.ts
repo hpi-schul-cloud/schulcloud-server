@@ -1,7 +1,7 @@
 import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	AnyBoardDo,
-	AnyContentElementDo,
+	AnyContentElementDo, DrawingElement,
 	EntityId,
 	isSubmissionContainerElement,
 	isSubmissionItem,
@@ -14,6 +14,9 @@ import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { SubmissionItemService } from '../service/submission-item.service';
 import { BaseUc } from './base.uc';
+import {firstValueFrom} from "rxjs";
+import {HttpService} from "@nestjs/axios";
+import {Configuration} from "@hpi-schul-cloud/commons/lib";
 
 @Injectable()
 export class ElementUc extends BaseUc {
@@ -23,7 +26,8 @@ export class ElementUc extends BaseUc {
 		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly elementService: ContentElementService,
 		private readonly submissionItemService: SubmissionItemService,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly httpService: HttpService
 	) {
 		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(ElementUc.name);
@@ -40,10 +44,21 @@ export class ElementUc extends BaseUc {
 		return element;
 	}
 
-	async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
+	async deleteElement(userId: EntityId, elementId: EntityId, auth: string): Promise<void> {
 		const element = await this.getElementWithWritePermission(userId, elementId);
 
 		await this.elementService.delete(element);
+
+		if (element instanceof DrawingElement) {
+			await firstValueFrom(
+				this.httpService.delete(`${Configuration.get('TLDRAW_URI') as string}/tldraw-document/${element.drawingName}`, {
+					headers: {
+						Accept: 'Application/json',
+						Authorization: auth,
+					},
+				})
+			);
+		}
 	}
 
 	private async getElementWithWritePermission(userId: EntityId, elementId: EntityId): Promise<AnyContentElementDo> {

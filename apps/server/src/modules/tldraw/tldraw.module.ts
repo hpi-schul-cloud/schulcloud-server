@@ -7,13 +7,13 @@ import { TldrawBoardRepo } from './repo';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { TldrawDrawing } from '@src/modules/tldraw/entities';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
-import { AuthorizationModule } from '@src/modules';
 import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { config } from './config';
 import { TldrawController } from './controller/tldraw.controller';
 import {TldrawService} from "./service/tldraw.service";
 import {TldrawRepo} from "./repo/tldraw.repo";
+import {AuthorizationModule} from "@modules/authorization";
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
