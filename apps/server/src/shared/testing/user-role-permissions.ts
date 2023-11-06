@@ -140,4 +140,5 @@ export const adminPermissions = [
 	Permission.IMPORT_USER_VIEW,
 	Permission.SCHOOL_TOOL_ADMIN,
 	Permission.GROUP_FULL_ADMIN,
+	Permission.USER_LOGIN_MIGRATION_ADMIN,
 ] as Permission[];

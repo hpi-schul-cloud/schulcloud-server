@@ -43,6 +43,7 @@ export class GroupResponseMapper {
 			teachers: classInfo.teacherNames,
 			schoolYear: classInfo.schoolYear,
 			isUpgradable: classInfo.isUpgradable,
+			studentCount: classInfo.studentCount,
 		});
 
 		return mapped;
