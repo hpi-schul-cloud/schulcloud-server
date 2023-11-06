@@ -10,8 +10,8 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
-import { LessonCopyService } from '@src/modules/lesson/service';
+import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
+import { LessonCopyService } from '@modules/lesson/service';
 import { BoardCopyService } from './board-copy.service';
 import { CourseCopyService } from './course-copy.service';
 import { RoomsService } from './rooms.service';

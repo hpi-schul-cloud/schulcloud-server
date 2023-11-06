@@ -1,4 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ICurrentUser } from '@modules/authentication';
+import { Action, AuthorizationContextBuilder } from '@modules/authorization';
+import { AuthorizableReferenceType, AuthorizationReferenceService } from '@modules/authorization/domain';
+import { CourseService } from '@modules/learnroom';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { SchoolFeature } from '@modules/school/domain';
+import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import {
 	Course,
@@ -16,13 +23,6 @@ import { CalendarService } from '@shared/infra/calendar';
 import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
 import { TeamsRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Action, AuthorizationContextBuilder } from '@src/modules/authorization';
-import { AuthorizableReferenceType, AuthorizationReferenceService } from '@src/modules/authorization/domain';
-import { CourseService } from '@src/modules/learnroom';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { SchoolFeature } from '@src/modules/school/domain';
-import { UserService } from '@src/modules/user';
 import {
 	BBBBaseMeetingConfig,
 	BBBBaseResponse,

@@ -1,3 +1,4 @@
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import {
 	BadRequestException,
 	Body,
@@ -22,11 +23,10 @@ import {
 	UseInterceptors,
 } from '@nestjs/common';
 import { ApiConsumes, ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
+import { ApiValidationError, RequestLoggingInterceptor, RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
+import { config } from '../files-storage.config';
 import { GetFileResponse } from '../interface';
 import { FilesStorageMapper } from '../mapper';
 import { FileRecordMapper } from '../mapper/file-record.mapper';
@@ -127,6 +127,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiHeader({ name: 'Range', required: false })
 	@Get('/preview/:fileRecordId/:fileName')
+	@RequestTimeout(config().INCOMING_REQUEST_TIMEOUT)
 	async downloadPreview(
 		@Param() params: DownloadFileParams,
 		@CurrentUser() currentUser: ICurrentUser,

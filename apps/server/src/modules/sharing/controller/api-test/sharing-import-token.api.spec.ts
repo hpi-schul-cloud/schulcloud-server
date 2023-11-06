@@ -4,7 +4,7 @@ import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -13,9 +13,9 @@ import {
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper';
-import { ServerTestModule } from '@src/modules/server';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { ServerTestModule } from '@modules/server';
 import { Request } from 'express';
 import request from 'supertest';
 import { ShareTokenContext, ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';

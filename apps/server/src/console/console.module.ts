@@ -7,11 +7,11 @@ import { ALL_ENTITIES } from '@shared/domain';
 import { ConsoleWriterModule } from '@shared/infra/console/console-writer/console-writer.module';
 import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
-import { FilesModule } from '@src/modules/files';
-import { FileEntity } from '@src/modules/files/entity';
-import { FileRecord } from '@src/modules/files-storage/entity';
-import { ManagementModule } from '@src/modules/management/management.module';
-import { serverConfig } from '@src/modules/server';
+import { FilesModule } from '@modules/files';
+import { FileEntity } from '@modules/files/entity';
+import { FileRecord } from '@modules/files-storage/entity';
+import { ManagementModule } from '@modules/management/management.module';
+import { serverConfig } from '@modules/server';
 import { ConsoleModule } from 'nestjs-console';
 import { ServerConsole } from './server.console';
 

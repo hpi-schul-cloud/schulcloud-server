@@ -13,7 +13,7 @@ import {
 	SystemEntity,
 	User,
 } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import {
 	cleanupCollections,
 	importUserFactory,
@@ -23,8 +23,8 @@ import {
 	systemFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@src/modules/server/server.module';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@modules/server/server.module';
 import {
 	FilterImportUserParams,
 	FilterMatchType,
@@ -40,7 +40,7 @@ import {
 	UserMatchListResponse,
 	UserMatchResponse,
 	UserRole,
-} from '@src/modules/user-import/controller/dto';
+} from '@modules/user-import/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
 import { SchoolFeature } from '@src/modules/school/domain';

@@ -1,4 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountSaveDto } from '@modules/account/services/dto';
+import { Group, GroupService } from '@modules/group';
+import { FederalStateService, LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
+import { RoleService } from '@modules/role';
+import { RoleDto } from '@modules/role/service/dto/role.dto';
+import { SchoolFeature } from '@modules/school/domain';
+import { UserService } from '@modules/user';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -15,14 +23,6 @@ import {
 	userDoFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountSaveDto } from '@src/modules/account/services/dto';
-import { Group, GroupService } from '@src/modules/group';
-import { FederalStateService, LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
-import { RoleService } from '@src/modules/role';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { SchoolFeature } from '@src/modules/school/domain';
-import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
 import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';

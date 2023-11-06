@@ -1,6 +1,6 @@
 import { UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationResponse, UserLoginMigrationSearchParams } from '../controller/dto';
-import { UserLoginMigrationQuery } from '../uc/dto/user-login-migration-query';
+import { UserLoginMigrationQuery } from '../uc';
 
 export class UserLoginMigrationMapper {
 	static mapSearchParamsToQuery(searchParams: UserLoginMigrationSearchParams): UserLoginMigrationQuery {
@@ -12,6 +12,7 @@ export class UserLoginMigrationMapper {
 
 	static mapUserLoginMigrationDoToResponse(domainObject: UserLoginMigrationDO): UserLoginMigrationResponse {
 		const response: UserLoginMigrationResponse = new UserLoginMigrationResponse({
+			id: domainObject.id as string,
 			sourceSystemId: domainObject.sourceSystemId,
 			targetSystemId: domainObject.targetSystemId,
 			startedAt: domainObject.startedAt,

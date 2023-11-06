@@ -15,6 +15,7 @@ import {
 	TeamRule,
 	UserLoginMigrationRule,
 	UserRule,
+	GroupRule,
 } from '../rules';
 import type { AuthorizationContext, Rule } from '../type';
 
@@ -35,7 +36,8 @@ export class RuleManager {
 		private readonly boardDoRule: BoardDoRule,
 		private readonly contextExternalToolRule: ContextExternalToolRule,
 		private readonly userLoginMigrationRule: UserLoginMigrationRule,
-		private readonly schoolRule: SchoolRule
+		private readonly schoolRule: SchoolRule,
+		private readonly groupRule: GroupRule
 	) {
 		this.rules = [
 			this.courseRule,
@@ -51,6 +53,7 @@ export class RuleManager {
 			this.contextExternalToolRule,
 			this.userLoginMigrationRule,
 			this.schoolRule,
+			this.groupRule,
 		];
 	}
 

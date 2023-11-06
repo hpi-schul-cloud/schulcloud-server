@@ -1,28 +1,38 @@
-import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import {
-	AnyBoardDo,
+	BadRequestException,
+	forwardRef,
+	Inject,
+	Injectable,
+	NotFoundException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
+import {
+	ContentElementType,
 	EntityId,
+	FileElement,
+	isFileElement,
+	isRichTextElement,
 	isSubmissionContainerElement,
 	isSubmissionItem,
+	RichTextElement,
 	SubmissionItem,
 	UserBoardRoles,
 	UserRoleEnum,
 } from '@shared/domain';
-import { Logger } from '@src/core/logger';
-import { AuthorizationService, Action } from '@src/modules/authorization';
+import { AuthorizationService, Action } from '@modules/authorization';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
+import { BaseUc } from './base.uc';
 
 @Injectable()
-export class SubmissionItemUc {
+export class SubmissionItemUc extends BaseUc {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService))
-		private readonly authorizationService: AuthorizationService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
-		private readonly elementService: ContentElementService,
-		private readonly submissionItemService: SubmissionItemService,
-		private readonly logger: Logger
+		protected readonly authorizationService: AuthorizationService,
+		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		protected readonly elementService: ContentElementService,
+		protected readonly submissionItemService: SubmissionItemService
 	) {
-		this.logger.setContext(SubmissionItemUc.name);
+		super(authorizationService, boardDoAuthorizableService);
 	}
 
 	async findSubmissionItems(
@@ -32,7 +42,7 @@ export class SubmissionItemUc {
 		const submissionContainerElement = await this.elementService.findById(submissionContainerId);
 
 		if (!isSubmissionContainerElement(submissionContainerElement)) {
-			throw new HttpException('Id is not submission container', HttpStatus.UNPROCESSABLE_ENTITY);
+			throw new NotFoundException('Could not find a submission container with this id');
 		}
 
 		await this.checkPermission(userId, submissionContainerElement, Action.read);
@@ -57,46 +67,31 @@ export class SubmissionItemUc {
 		completed: boolean
 	): Promise<SubmissionItem> {
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
-
-		await this.checkPermission(userId, submissionItem, Action.read, UserRoleEnum.STUDENT);
-		if (submissionItem.userId !== userId) {
-			throw new ForbiddenException();
-		}
-
+		await this.checkSubmissionItemWritePermission(userId, submissionItem);
 		await this.submissionItemService.update(submissionItem, completed);
 
 		return submissionItem;
 	}
 
-	private async isAuthorizedStudent(userId: EntityId, boardDo: AnyBoardDo): Promise<boolean> {
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
-		const userRoleEnum = boardDoAuthorizable.users.find((u) => u.userId === userId)?.userRoleEnum;
-
-		if (!userRoleEnum) {
-			throw new ForbiddenException('User not part of this board');
-		}
-
-		// TODO do this with permission instead of role and using authorizable rules
-		if (userRoleEnum === UserRoleEnum.STUDENT) {
-			return true;
-		}
-
-		return false;
-	}
-
-	private async checkPermission(
+	async createElement(
 		userId: EntityId,
-		boardDo: AnyBoardDo,
-		action: Action,
-		requiredUserRole?: UserRoleEnum
-	): Promise<void> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
-		if (requiredUserRole) {
-			boardDoAuthorizable.requiredUserRole = requiredUserRole;
+		submissionItemId: EntityId,
+		type: ContentElementType
+	): Promise<FileElement | RichTextElement> {
+		if (type !== ContentElementType.RICH_TEXT && type !== ContentElementType.FILE) {
+			throw new BadRequestException();
 		}
-		const context = { action, requiredPermissions: [] };
 
-		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
+		const submissionItem = await this.submissionItemService.findById(submissionItemId);
+
+		await this.checkSubmissionItemWritePermission(userId, submissionItem);
+
+		const element = await this.elementService.create(submissionItem, type);
+
+		if (!isFileElement(element) && !isRichTextElement(element)) {
+			throw new UnprocessableEntityException();
+		}
+
+		return element;
 	}
 }

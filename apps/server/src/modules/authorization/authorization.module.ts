@@ -16,6 +16,7 @@ import {
 	UserLoginMigrationRule,
 	LegacySchoolRule,
 	SchoolRule,
+	GroupRule,
 } from './domain/rules';
 import { AuthorizationHelper, AuthorizationService, RuleManager } from './domain';
 import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
@@ -34,6 +35,7 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 		ContextExternalToolRule,
 		CourseGroupRule,
 		CourseRule,
+		GroupRule,
 		LessonRule,
 		SchoolRule,
 		SchoolExternalToolRule,

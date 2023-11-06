@@ -15,15 +15,15 @@ import {
 	UserAndAccountTestFactory,
 	userDoFactory,
 } from '@shared/testing';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
-import { ToolContextType } from '@src/modules/tool/common/enum';
-import { ContextExternalTool, ContextRef } from '@src/modules/tool/context-external-tool/domain';
-import { ContextExternalToolService } from '@src/modules/tool/context-external-tool/service';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { ExternalToolService } from '@src/modules/tool/external-tool/service';
-import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
-import { SchoolExternalToolService } from '@src/modules/tool/school-external-tool/service';
-import { UserService } from '@src/modules/user';
+import { CourseService } from '@modules/learnroom/service/course.service';
+import { ToolContextType } from '@modules/tool/common/enum';
+import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { ExternalToolService } from '@modules/tool/external-tool/service';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
+import { UserService } from '@modules/user';
 import { ObjectId } from 'bson';
 import { FeathersRosterService } from './feathers-roster.service';
 import { PseudonymService } from './pseudonym.service';

@@ -9,10 +9,10 @@ import {
 	Task,
 } from '@shared/domain';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
-import { CommonCartridgeExportService } from '@src/modules/learnroom/service/common-cartridge-export.service';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LessonService } from '@src/modules/lesson/service';
-import { TaskService } from '@src/modules/task/service/task.service';
+import { CommonCartridgeExportService } from '@modules/learnroom/service/common-cartridge-export.service';
+import { CourseService } from '@modules/learnroom/service';
+import { LessonService } from '@modules/lesson/service';
+import { TaskService } from '@modules/task/service/task.service';
 import AdmZip from 'adm-zip';
 import { CommonCartridgeVersion } from '../common-cartridge';
 

@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, EntityId, User } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 
 export const mapUserToCurrentUser = (
 	user: User,
@@ -15,6 +15,7 @@ export const mapUserToCurrentUser = (
 		accountId: account ? account.id : new ObjectId().toHexString(),
 		systemId,
 		impersonated,
+		isExternalUser: false,
 	};
 
 	return currentUser;

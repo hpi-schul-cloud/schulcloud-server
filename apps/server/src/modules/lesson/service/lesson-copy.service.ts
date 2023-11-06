@@ -12,16 +12,10 @@ import {
 	Material,
 } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
-import {
-	CopyDictionary,
-	CopyElementType,
-	CopyHelperService,
-	CopyStatus,
-	CopyStatusEnum,
-} from '@src/modules/copy-helper';
-import { CopyFilesService } from '@src/modules/files-storage-client';
-import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
-import { TaskCopyService } from '@src/modules/task/service/task-copy.service';
+import { CopyDictionary, CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyFilesService } from '@modules/files-storage-client';
+import { FileUrlReplacement } from '@modules/files-storage-client/service/copy-files.service';
+import { TaskCopyService } from '@modules/task/service/task-copy.service';
 import { randomBytes } from 'crypto';
 import { LessonCopyParams } from '../types';
 import { EtherpadService } from './etherpad.service';

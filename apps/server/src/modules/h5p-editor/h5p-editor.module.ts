@@ -6,7 +6,7 @@ import { Account, Role, SchoolEntity, SchoolYearEntity, SystemEntity, User } fro
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
-import { AuthorizationModule } from '@src/modules/authorization';
+import { AuthorizationModule } from '@modules/authorization';
 import { AuthenticationModule } from '../authentication/authentication.module';
 import { H5PEditorController } from './controller/h5p-editor.controller';
 import { config } from './h5p-editor.config';

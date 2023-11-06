@@ -1,9 +1,8 @@
 import { Account } from '@shared/domain';
-import { AccountDto } from '@src/modules/account/services/dto/account.dto';
+import { AccountDto } from '@modules/account/services/dto/account.dto';
 import { AccountResponse } from '../controller/dto';
 
 export class AccountResponseMapper {
-	// TODO: remove this one
 	static mapToResponseFromEntity(account: Account): AccountResponse {
 		return new AccountResponse({
 			id: account.id,

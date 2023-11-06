@@ -7,8 +7,8 @@ import {
 	userFactory,
 	schoolExternalToolFactory,
 } from '@shared/testing';
-import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
-import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { Role, User, Permission } from '@shared/domain';
 import { Action } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';

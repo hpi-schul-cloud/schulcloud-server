@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
-import { AuthorizationContext, Rule } from '@src/modules';
 import { School } from '@src/modules/school/domain';
 import { AuthorizationHelper } from '../service/authorization.helper';
+import { AuthorizationContext, Rule } from '../type';
 
 @Injectable()
 export class SchoolRule implements Rule {

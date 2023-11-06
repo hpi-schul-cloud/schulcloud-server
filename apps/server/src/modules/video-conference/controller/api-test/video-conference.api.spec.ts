@@ -1,4 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { SchoolFeature } from '@modules/school/domain';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -24,8 +26,6 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
-import { SchoolFeature } from '@src/modules/school/domain';
-import { ServerTestModule } from '@src/modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';

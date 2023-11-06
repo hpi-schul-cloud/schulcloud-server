@@ -1,6 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountService } from '@modules/account/services/account.service';
+import { AuthorizationService } from '@modules/authorization';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { SchoolFeature } from '@modules/school/domain';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -20,10 +24,6 @@ import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { LoggerModule } from '@src/core/logger';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { SchoolFeature } from '@src/modules/school/domain';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,

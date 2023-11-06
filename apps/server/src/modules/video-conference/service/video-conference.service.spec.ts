@@ -1,4 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { CourseService } from '@modules/learnroom/service';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { SchoolFeature } from '@modules/school/domain';
+import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -14,21 +19,10 @@ import {
 } from '@shared/domain';
 import { CalendarEventDto, CalendarService } from '@shared/infra/calendar';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import {
-	courseFactory,
-	roleFactory,
-	setupEntities,
-	teamFactory,
-	teamUserFactory,
-	userDoFactory,
-	userFactory,
-} from '@shared/testing';
+import { courseFactory, roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { teamFactory } from '@shared/testing/factory/team.factory';
+import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
-import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { CourseService } from '@src/modules/learnroom';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { SchoolFeature } from '@src/modules/school/domain';
-import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';

@@ -1,4 +1,4 @@
-import { AccountDto } from '@src/modules/account/services/dto';
+import { AccountDto } from '@modules/account/services/dto';
 import { ObjectId } from 'bson';
 import { defaultTestPasswordHash } from './account.factory';
 import { BaseFactory } from './base.factory';
