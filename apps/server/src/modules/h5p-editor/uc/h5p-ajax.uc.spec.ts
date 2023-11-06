@@ -66,7 +66,13 @@ describe('H5P Ajax', () => {
 	});
 
 	describe('when calling GET', () => {
-		const userMock = { userId: 'dummyId', roles: [], schoolId: 'dummySchool', accountId: 'dummyAccountId' };
+		const userMock = {
+			userId: 'dummyId',
+			roles: [],
+			schoolId: 'dummySchool',
+			accountId: 'dummyAccountId',
+			isExternalUser: false,
+		};
 		const spy = jest.spyOn(H5PErrorMapper.prototype, 'mapH5pError');
 
 		it('should call H5PAjaxEndpoint.getAjax and return the result', async () => {
@@ -103,7 +109,13 @@ describe('H5P Ajax', () => {
 	});
 
 	describe('when calling POST', () => {
-		const userMock = { userId: 'dummyId', roles: [], schoolId: 'dummySchool', accountId: 'dummyAccountId' };
+		const userMock = {
+			userId: 'dummyId',
+			roles: [],
+			schoolId: 'dummySchool',
+			accountId: 'dummyAccountId',
+			isExternalUser: false,
+		};
 		const spy = jest.spyOn(H5PErrorMapper.prototype, 'mapH5pError');
 
 		it('should call H5PAjaxEndpoint.postAjax and return the result', async () => {

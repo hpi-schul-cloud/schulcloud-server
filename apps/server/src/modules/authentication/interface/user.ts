@@ -15,6 +15,9 @@ export interface ICurrentUser {
 
 	/** True if a support member impersonates the user */
 	impersonated?: boolean;
+
+	/** True if the user is an external user e.g. an oauth user */
+	isExternalUser: boolean;
 }
 
 export interface OauthCurrentUser extends ICurrentUser {

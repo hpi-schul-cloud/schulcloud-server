@@ -21,6 +21,7 @@ const createParams = () => {
 		roles: ['student'],
 		schoolId: 'mockSchoolId',
 		userId: 'mockUserId',
+		isExternalUser: false,
 	};
 
 	const editorResponseMock = { scripts: ['test.js'] } as IEditorModel;

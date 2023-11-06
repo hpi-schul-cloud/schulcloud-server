@@ -3,7 +3,7 @@ import { Class } from '../../domain';
 import { ClassSourceOptions } from '../../domain/class-source-options.do';
 import { classFactory } from '../../domain/testing/factory/class.factory';
 import { ClassEntity } from '../../entity';
-import { classEntityFactory } from '../../entity/testing/factory/class.entity.factory';
+import { classEntityFactory } from '../../entity/testing';
 import { ClassMapper } from './class.mapper';
 
 describe(ClassMapper.name, () => {
