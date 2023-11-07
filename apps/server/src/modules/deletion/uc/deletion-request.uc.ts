@@ -103,7 +103,18 @@ export class DeletionRequestUc {
 	}
 
 	private async executeDeletionRequest(deletionRequest: DeletionRequest): Promise<void> {
-		await Promise.all([
+		[
+					,
+					classesUpdated,
+					courseGroupUpdated,
+					courseUpdated,
+					fileDeleted,
+					filesPermisionUpdated,
+					lessonUpdated,
+					pseudonymDeleted,
+					teamsUpdated,
+					userDeleted,
+				] = await Promise.all([
 			this.accountService.deleteByUserId(deletionRequest.targetRefId),
 			this.classService.deleteUserDataFromClasses(deletionRequest.targetRefId),
 			this.courseGroupService.deleteUserDataFromCourseGroup(deletionRequest.targetRefId),
