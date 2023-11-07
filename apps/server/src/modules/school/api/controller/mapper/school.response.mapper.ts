@@ -1,6 +1,5 @@
-import { PaginationParams } from '@shared/controller';
 import { SchoolDto, SchoolForExternalInviteDto } from '../../../domain';
-import { SchoolForExternalInviteResponse, SchoolListForExternalInviteResponse, SchoolResponse } from '../response';
+import { SchoolForExternalInviteResponse, SchoolResponse } from '../response';
 import { FederalStateResponseMapper } from './federal-state.response.mapper';
 import { SchoolYearResponseMapper } from './school-year.response.mapper';
 import { SystemResponseMapper } from './system.response.mapper';
@@ -27,14 +26,11 @@ export class SchoolResponseMapper {
 	}
 
 	public static mapToListForExternalInviteResponse(
-		schools: SchoolForExternalInviteDto[],
-		pagination: PaginationParams
-	): SchoolListForExternalInviteResponse {
+		schools: SchoolForExternalInviteDto[]
+	): SchoolForExternalInviteResponse[] {
 		const dtos = schools.map((school) => this.mapToExternalInviteResponse(school));
 
-		const list = new SchoolListForExternalInviteResponse(dtos, dtos.length, pagination.skip, pagination.limit);
-
-		return list;
+		return dtos;
 	}
 
 	private static mapToExternalInviteResponse(school: SchoolForExternalInviteDto): SchoolForExternalInviteResponse {

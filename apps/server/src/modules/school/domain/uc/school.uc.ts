@@ -1,13 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { IPagination } from '@shared/domain/interface/find-options';
-import { EntityId } from '@shared/domain/types/entity-id';
 import { AuthorizationContextBuilder } from '@modules/authorization/domain/mapper/authorization-context.builder';
 import { AuthorizationService } from '@modules/authorization/domain/service/authorization.service';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { School, SchoolYear } from '../do';
 import { SchoolDto, SchoolForExternalInviteDto, SchoolYearDto, YearsDto } from '../dto';
 import { SchoolDtoMapper, SchoolYearDtoMapper } from '../mapper';
-import { SchoolService, SchoolYearService } from '../service';
 import { SchoolQuery } from '../query';
+import { SchoolService, SchoolYearService } from '../service';
 
 @Injectable()
 export class SchoolUc {
@@ -33,10 +32,9 @@ export class SchoolUc {
 
 	public async getSchoolListForExternalInvite(
 		query: SchoolQuery,
-		pagination: IPagination,
 		ownSchoolId: EntityId
 	): Promise<SchoolForExternalInviteDto[]> {
-		const schools = await this.schoolService.getAllSchools(query, pagination);
+		const schools = await this.schoolService.getAllSchools(query);
 
 		// TODO: Do we want authorization here? At the moment there is no fitting permission.
 

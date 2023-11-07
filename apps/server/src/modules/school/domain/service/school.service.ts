@@ -16,7 +16,7 @@ export class SchoolService {
 	) {}
 
 	// TODO: Rename this to getSchools because it has a query and does not return all schools!
-	public async getAllSchools(query: SchoolQuery, pagination: IPagination): Promise<School[]> {
+	public async getAllSchools(query: SchoolQuery, pagination?: IPagination): Promise<School[]> {
 		const order = { name: SortOrder.asc };
 		const schools = await this.schoolRepo.getAllSchools(query, { pagination, order });
 
