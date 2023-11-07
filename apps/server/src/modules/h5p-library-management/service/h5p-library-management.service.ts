@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {
 	H5PConfig,
 	cacheImplementations,
@@ -50,21 +51,30 @@ export class H5PLibraryManagementService {
 		const librariesYamlContent = readFileSync(Configuration.get('H5P_EDITOR__LIBRARY_LIST_PATH') as string, {
 			encoding: 'utf-8',
 		});
+		console.log('!!!LOG!!! librariesYamlContent');
+		console.log(librariesYamlContent);
 		this.libraryWishList = (parse(librariesYamlContent) as { h5p_libraries: string[] }).h5p_libraries;
+		console.log('!!!LOG!!! this.libraryWishList');
+		console.log(this.libraryWishList);
 	}
 
 	async uninstallUnwantedLibraries(wantedLibraries: string[]) {
+		console.log('triggered uninstallUnwantedLibraries');
 		for (const installedLibrary of await this.libraryAdministration.getLibraries()) {
 			if (!wantedLibraries.includes(installedLibrary.machineName) && installedLibrary.dependentsCount === 0) {
 				// force removal, don't let content prevent it, therefore use libraryStorage directly
 				// also to avoid conflicts, remove one-by-one, not using for-await:
 				// eslint-disable-next-line no-await-in-loop
+				console.log('try delete library: ', installedLibrary);
+				// eslint-disable-next-line no-await-in-loop
 				await this.libraryStorage.deleteLibrary(installedLibrary);
+				console.log('successfully deleted library: ', installedLibrary);
 			}
 		}
 	}
 
 	async installLibraries(libraries: string[]) {
+		console.log('triggered installLibraries');
 		for (const libname of libraries) {
 			// avoid conflicts, install one-by-one:
 			// eslint-disable-next-line no-await-in-loop
@@ -74,7 +84,10 @@ export class H5PLibraryManagementService {
 			}
 			const user: IUser = { canUpdateAndInstallLibraries: true } as IUser;
 			// eslint-disable-next-line no-await-in-loop
+			console.log('try install library: ', libname, ' user: ', user);
+			// eslint-disable-next-line no-await-in-loop
 			await this.contentTypeRepo.installContentType(libname, user);
+			console.log('successfully installed library: ', libname, ' user: ', user);
 		}
 	}
 
