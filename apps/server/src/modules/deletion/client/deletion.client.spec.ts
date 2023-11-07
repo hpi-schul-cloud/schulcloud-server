@@ -7,6 +7,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { axiosResponseFactory } from '@shared/testing';
 import { DeletionRequestOutput } from './interface';
 import { DeletionClient } from './deletion.client';
+import { DeletionClientConfig } from './deletion-client.config';
 
 describe(DeletionClient.name, () => {
 	let module: TestingModule;
@@ -21,8 +22,8 @@ describe(DeletionClient.name, () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService>({
 						get: jest.fn((key: string) => {
-							if (key === 'ADMIN_API__BASE_URL') {
-								return 'http://localhost:8080';
+							if (key === 'ADMIN_API_BASE_URL') {
+								return 'http://localhost:4030';
 							}
 
 							// Default is for the Admin APIs API Key.
