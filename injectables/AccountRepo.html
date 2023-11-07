@@ -930,8 +930,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="77"
-                                    class="link-to-prism">apps/server/src/modules/account/repo/account.repo.ts:77</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="79"
+                                    class="link-to-prism">apps/server/src/modules/account/repo/account.repo.ts:79</a></div>
                         </td>
                     </tr>
 
@@ -1551,7 +1551,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AnyEntity, EntityName, Primary } from &#x27;@mikro-orm/core&#x27;;
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId } from &#x27;@shared/domain&#x27;;
+import { EntityId, SortOrder } from &#x27;@shared/domain&#x27;;
 import { Account } from &#x27;@shared/domain/entity/account.entity&#x27;;
 import { BaseRepo } from &#x27;@shared/repo/base.repo&#x27;;
 
@@ -1621,7 +1621,9 @@ export class AccountRepo extends BaseRepo&lt;Account&gt; {
 	 * @deprecated For migration purpose only
 	 */
 	async findMany(offset &#x3D; 0, limit &#x3D; 100): Promise&lt;Account[]&gt; {
-		return this._em.find(this.entityName, {}, { offset, limit });
+		const result &#x3D; await this._em.find(this.entityName, {}, { offset, limit, orderBy: { id: SortOrder.asc } });
+		this._em.clear();
+		return result;
 	}
 
 	private async searchByUsername(
