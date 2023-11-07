@@ -4,7 +4,7 @@ import {
 	ForbiddenException,
 	InternalServerErrorException,
 } from '@nestjs/common';
-import { IError } from '@shared/infra/rabbitmq';
+import { IError } from '@infra/rabbitmq';
 import _ from 'lodash';
 import { ErrorMapper } from './error.mapper';
 

@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
+import { DefaultEncryptionService, IEncryptionService } from '@infra/encryption';
 import { OauthConfigDto } from '@modules/system/service';
 import qs from 'qs';
 import { lastValueFrom } from 'rxjs';

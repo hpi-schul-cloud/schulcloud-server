@@ -1,4 +1,4 @@
-import { File } from '@shared/infra/s3-client';
+import { File } from '@infra/s3-client';
 import { PassThrough } from 'stream';
 import { PreviewOptions } from './interface';
 

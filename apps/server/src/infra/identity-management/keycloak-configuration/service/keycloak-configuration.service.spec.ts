@@ -10,7 +10,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemEntity, SystemTypeEnum } from '@shared/domain';
-import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import { SymetricKeyEncryptionService } from '@infra/encryption';
 import { systemFactory } from '@shared/testing';
 import { SystemOidcMapper } from '@modules/system/mapper/system-oidc.mapper';
 import { SystemOidcService } from '@modules/system/service/system-oidc.service';

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GetFile, S3ClientAdapter } from '@shared/infra/s3-client';
+import { GetFile, S3ClientAdapter } from '@infra/s3-client';
 import { Logger } from '@src/core/logger';
 import { subClass } from 'gm';
 import { PassThrough } from 'stream';

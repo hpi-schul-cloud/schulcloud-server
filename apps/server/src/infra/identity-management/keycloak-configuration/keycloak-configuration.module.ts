@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { EncryptionModule } from '@shared/infra/encryption';
-import { ConsoleWriterModule } from '@shared/infra/console';
+import { EncryptionModule } from '@infra/encryption';
+import { ConsoleWriterModule } from '@infra/console';
 import { AccountModule } from '@modules/account';
 import { SystemModule } from '@modules/system';
 import { KeycloakAdministrationModule } from '../keycloak-administration/keycloak-administration.module';

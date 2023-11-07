@@ -1,8 +1,8 @@
 import { TeamPermissionsDto } from '@modules/collaborative-storage/services/dto/team-permissions.dto';
 import { TeamDto } from '@modules/collaborative-storage/services/dto/team.dto';
-import { ICollaborativeStorageStrategy } from '@shared/infra/collaborative-storage/strategy/base.interface.strategy';
+import { ICollaborativeStorageStrategy } from '@infra/collaborative-storage/strategy/base.interface.strategy';
 import { Inject, Injectable } from '@nestjs/common';
-import { CollaborativeStorageAdapterMapper } from '@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
+import { CollaborativeStorageAdapterMapper } from '@infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
 import { LegacyLogger } from '@src/core/logger';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 

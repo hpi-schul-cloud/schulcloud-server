@@ -1,7 +1,7 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { FilesPreviewEvents, FilesPreviewExchange, RpcMessageProducer } from '@shared/infra/rabbitmq';
+import { FilesPreviewEvents, FilesPreviewExchange, RpcMessageProducer } from '@infra/rabbitmq';
 import { Logger } from '@src/core/logger';
 import { PreviewFileOptions, PreviewResponseMessage } from './interface';
 import { PreviewModuleConfig } from './interface/preview-consumer-config';

@@ -1,7 +1,7 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
+import { MongoMemoryDatabaseModule } from '@infra/database';
+import { KeycloakModule } from '@infra/identity-management/keycloak/keycloak.module';
 import { LoggerModule } from '@src/core/logger';
 import { v1 } from 'uuid';
 import { KeycloakAdministrationModule } from '../../keycloak-administration/keycloak-administration.module';

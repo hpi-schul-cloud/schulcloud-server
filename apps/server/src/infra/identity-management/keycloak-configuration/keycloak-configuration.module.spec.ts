@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { ConfigModule } from '@nestjs/config';
 import { KeycloakConfigurationModule } from './keycloak-configuration.module';
 import { KeycloakConsole } from './console/keycloak-configuration.console';

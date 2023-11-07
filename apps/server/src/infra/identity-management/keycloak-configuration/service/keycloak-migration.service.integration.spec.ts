@@ -3,7 +3,7 @@ import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { LoggerModule } from '@src/core/logger';
 import { v1 } from 'uuid';

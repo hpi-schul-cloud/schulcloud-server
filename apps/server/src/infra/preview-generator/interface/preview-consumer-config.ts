@@ -1,4 +1,4 @@
-import { S3Config } from '@shared/infra/s3-client';
+import { S3Config } from '@infra/s3-client';
 
 export interface PreviewModuleConfig {
 	NEST_LOG_LEVEL: string;

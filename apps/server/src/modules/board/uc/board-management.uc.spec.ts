@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConsoleWriterService } from '@shared/infra/console';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { ConsoleWriterService } from '@infra/console';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { courseFactory } from '@shared/testing';
 import { BoardManagementUc } from '@modules/management/uc/board-management.uc';
 

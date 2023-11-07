@@ -1,8 +1,8 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { Account, Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
-import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
+import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoDatabaseModuleOptions } from '@infra/database/mongo-memory-database/types';
+import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { AuthenticationModule } from '@modules/authentication/authentication.module';

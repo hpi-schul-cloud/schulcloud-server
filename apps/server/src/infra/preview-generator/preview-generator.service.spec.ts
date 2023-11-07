@@ -1,6 +1,6 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { GetFile, S3ClientAdapter } from '@shared/infra/s3-client';
+import { GetFile, S3ClientAdapter } from '@infra/s3-client';
 import { Logger } from '@src/core/logger';
 import { Readable } from 'node:stream';
 import { PreviewGeneratorService } from './preview-generator.service';

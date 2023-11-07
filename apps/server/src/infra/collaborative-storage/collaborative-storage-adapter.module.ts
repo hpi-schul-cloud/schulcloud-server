@@ -1,9 +1,9 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpModule } from '@nestjs/axios';
 import { Module, Provider } from '@nestjs/common';
-import { CollaborativeStorageAdapterMapper } from '@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
-import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
-import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.strategy';
+import { CollaborativeStorageAdapterMapper } from '@infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
+import { NextcloudClient } from '@infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
+import { NextcloudStrategy } from '@infra/collaborative-storage/strategy/nextcloud/nextcloud.strategy';
 import { LtiToolRepo } from '@shared/repo/ltitool/';
 import { LoggerModule } from '@src/core/logger';
 import { ToolModule } from '@modules/tool';

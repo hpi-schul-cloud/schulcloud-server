@@ -3,7 +3,7 @@ import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';

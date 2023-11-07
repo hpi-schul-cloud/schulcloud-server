@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { CollaborativeStorageAdapterModule } from '@shared/infra/collaborative-storage/collaborative-storage-adapter.module';
+import { CollaborativeStorageAdapterModule } from '@infra/collaborative-storage/collaborative-storage-adapter.module';
 import { TeamsRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@modules/authorization';
