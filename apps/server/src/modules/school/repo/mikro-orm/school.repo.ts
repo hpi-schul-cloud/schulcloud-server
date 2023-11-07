@@ -21,9 +21,7 @@ export class SchoolMikroOrmRepo extends BaseRepo<SchoolEntity> implements School
 		scope.allowEmptyQuery(true);
 		scope.byFederalState(query.federalStateId);
 
-		const findOptions = this.mapToMikroOrmOptions(options);
-		// TODO: Is there a way to write this without "as never"?
-		findOptions.populate = ['federalState' as never];
+		const findOptions = this.mapToMikroOrmOptions(options, ['federalState', 'currentYear', 'systems']);
 
 		const entities = await this._em.find(SchoolEntity, scope.query, findOptions);
 
@@ -45,11 +43,12 @@ export class SchoolMikroOrmRepo extends BaseRepo<SchoolEntity> implements School
 	}
 
 	// TODO: This should probably be a common mapper for all repos.
-	private mapToMikroOrmOptions(options?: IFindOptions<SchoolProps>): FindOptions<SchoolEntity> {
+	private mapToMikroOrmOptions(options?: IFindOptions<SchoolProps>, populate?: string[]): FindOptions<SchoolEntity> {
 		const findOptions: FindOptions<SchoolEntity> = {
 			offset: options?.pagination?.skip,
 			limit: options?.pagination?.limit,
 			orderBy: options?.order,
+			populate: populate as never[],
 		};
 
 		// If no order is specified, a default order is applied here, because pagination can be messed up without order.
