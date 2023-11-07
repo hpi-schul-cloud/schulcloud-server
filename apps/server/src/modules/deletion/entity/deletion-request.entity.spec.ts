@@ -9,6 +9,10 @@ describe(DeletionRequestEntity.name, () => {
 		await setupEntities();
 	});
 
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+	
 	const setup = () => {
 		const props = {
 			id: new ObjectId().toHexString(),
