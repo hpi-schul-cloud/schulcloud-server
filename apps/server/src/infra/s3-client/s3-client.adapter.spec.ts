@@ -6,9 +6,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ErrorUtils } from '@src/core/error/utils';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'node:stream';
-import { FileDto } from '../../../modules/files-storage/dto';
 import { S3_CLIENT, S3_CONFIG } from './constants';
-import { S3Config } from './interface';
+import { File, S3Config } from './interface';
 import { S3ClientAdapter } from './s3-client.adapter';
 
 const createParameter = () => {
@@ -190,11 +189,10 @@ describe('S3ClientAdapter', () => {
 	describe('create', () => {
 		const createFile = () => {
 			const readable = Readable.from('ddd');
-			const file = new FileDto({
+			const file: File = {
 				data: readable,
-				name: 'test.txt',
 				mimeType: 'text/plain',
-			});
+			};
 
 			return { file };
 		};
