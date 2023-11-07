@@ -191,9 +191,9 @@ jobs:
     secrets:
       service-account-token: ${{ secrets.CYPRESS_ONEPWD_SERVICE_ACCOUNT_TOKEN }}
 
-  test-successful:
-    runs-on: ubuntu-latest
-    needs:
-      - end-to-end-tests
-    steps:
-      - run: echo "Test was successful"
+#  test-successful:
+#    runs-on: ubuntu-latest
+#    needs:
+#      - end-to-end-tests
+#    steps:
+#      - run: echo "Test was successful"
