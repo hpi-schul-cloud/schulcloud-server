@@ -7,7 +7,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { axiosResponseFactory } from '@shared/testing';
 import { DeletionRequestOutput } from './interface';
 import { DeletionClient } from './deletion.client';
-import { DeletionClientConfig } from './deletion-client.config';
 
 describe(DeletionClient.name, () => {
 	let module: TestingModule;
