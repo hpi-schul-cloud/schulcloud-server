@@ -7,7 +7,7 @@ import { School, SchoolYear } from '../do';
 import { SchoolDto, SchoolForExternalInviteDto, SchoolYearDto, YearsDto } from '../dto';
 import { SchoolDtoMapper, SchoolYearDtoMapper } from '../mapper';
 import { SchoolService, SchoolYearService } from '../service';
-import { SchoolQuery } from '../type';
+import { SchoolQuery } from '../query';
 
 @Injectable()
 export class SchoolUc {

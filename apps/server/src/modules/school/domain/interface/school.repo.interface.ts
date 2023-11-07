@@ -1,7 +1,7 @@
 import { IFindOptions } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { School, SchoolProps } from '../do/school';
-import { SchoolQuery } from '../type';
+import { SchoolQuery } from '../query';
 
 export interface SchoolRepo {
 	getAllSchools(query: SchoolQuery, options: IFindOptions<SchoolProps>): Promise<School[]>;

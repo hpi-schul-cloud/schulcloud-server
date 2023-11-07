@@ -5,7 +5,8 @@ import { EntityId } from '@shared/domain/types/entity-id';
 import { SchoolConfig } from '../../school.config';
 import { School } from '../do';
 import { SchoolRepo, SCHOOL_REPO } from '../interface';
-import { SchoolFeature, SchoolQuery } from '../type';
+import { SchoolQuery } from '../query';
+import { SchoolFeature } from '../type';
 
 @Injectable()
 export class SchoolService {
