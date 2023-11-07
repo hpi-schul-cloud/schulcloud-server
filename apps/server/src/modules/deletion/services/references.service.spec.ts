@@ -30,7 +30,7 @@ describe(ReferencesService.name, () => {
 		describe('when passed a file with 3 references on a few separate lines', () => {
 			describe('split with LFs', () => {
 				it('should return an array with all the references present in a file', () => {
-					setup('653fd3b784ca851b17e98579\n' + '653fd3b784ca851b17e9857a\n' + '653fd3b784ca851b17e9857b\n\n\n');
+					setup('653fd3b784ca851b17e98579\n653fd3b784ca851b17e9857a\n653fd3b784ca851b17e9857b\n\n\n');
 
 					const references = ReferencesService.loadFromTxtFile('references.txt');
 
@@ -44,9 +44,7 @@ describe(ReferencesService.name, () => {
 
 			describe('split with CRLFs', () => {
 				it('should return an array with all the references present in a file', () => {
-					setup(
-						'653fd3b784ca851b17e98579\r\n' + '653fd3b784ca851b17e9857a\r\n' + '653fd3b784ca851b17e9857b\r\n\r\n\r\n'
-					);
+					setup('653fd3b784ca851b17e98579\r\n653fd3b784ca851b17e9857a\r\n653fd3b784ca851b17e9857b\r\n\r\n\r\n');
 
 					const references = ReferencesService.loadFromTxtFile('references.txt');
 
