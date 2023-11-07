@@ -1,4 +1,4 @@
-import { SystemEntity } from '@shared/domain';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
 import { System } from '../../../domain';
 
 export class SystemEntityMapper {

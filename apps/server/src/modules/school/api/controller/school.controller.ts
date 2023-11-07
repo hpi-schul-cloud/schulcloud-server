@@ -1,8 +1,8 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { PaginationParams } from '@shared/controller';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { PaginationParams } from '@shared/controller/dto/pagination.params';
+import { ICurrentUser } from '@modules/authentication/interface/user';
+import { Authenticate, CurrentUser } from '@modules/authentication/decorator/auth.decorator';
 import { SchoolUc } from '../../domain';
 import { SchoolResponseMapper } from './mapper';
 import { SchoolQueryParams, SchoolUrlParams } from './param';

@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, IPagination } from '@shared/domain';
-import { AuthorizationContextBuilder } from '@src/modules/authorization/domain/mapper/authorization-context.builder';
-import { AuthorizationService } from '@src/modules/authorization/domain/service/authorization.service';
+import { IPagination } from '@shared/domain/interface/find-options';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { AuthorizationContextBuilder } from '@modules/authorization/domain/mapper/authorization-context.builder';
+import { AuthorizationService } from '@modules/authorization/domain/service/authorization.service';
 import { School, SchoolYear } from '../do';
 import { SchoolDto, SchoolForExternalInviteDto, SchoolYearDto, YearsDto } from '../dto';
 import { SchoolDtoMapper, SchoolYearDtoMapper } from '../mapper';

@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId, IPagination, SortOrder } from '@shared/domain';
+import { IPagination, SortOrder } from '@shared/domain/interface/find-options';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { SchoolConfig } from '../../school.config';
 import { School } from '../do';
 import { SchoolRepo, SCHOOL_REPO } from '../interface';

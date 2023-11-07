@@ -1,5 +1,4 @@
-import { County, SchoolFeature, SchoolPermissions, SchoolPurpose } from '../type';
-import { FileStorageType } from '../type/file-storage-type.enum';
+import { County, FileStorageType, SchoolFeature, SchoolPermissions, SchoolPurpose } from '../type';
 import { FederalStateDto } from './federal-state.dto';
 import { SchoolYearDto } from './school-year.dto';
 import { SystemDto } from './system.dto';

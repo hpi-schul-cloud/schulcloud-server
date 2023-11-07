@@ -1,4 +1,4 @@
-import { FederalStateEntity } from '@shared/domain';
+import { FederalStateEntity } from '@shared/domain/entity/federal-state.entity';
 import { FederalState } from '../../../domain';
 
 export class FederalStateEntityMapper {

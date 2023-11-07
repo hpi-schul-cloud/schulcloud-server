@@ -1,4 +1,4 @@
-import { SchoolYearEntity } from '@shared/domain';
+import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
 import { SchoolYear } from '../../../domain';
 
 export class SchoolYearEntityMapper {

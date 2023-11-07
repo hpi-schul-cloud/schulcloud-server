@@ -1,5 +1,5 @@
 import { PaginationParams } from '@shared/controller';
-import { SchoolDto, SchoolForExternalInviteDto } from '../../../domain/dto';
+import { SchoolDto, SchoolForExternalInviteDto } from '../../../domain';
 import { SchoolForExternalInviteResponse, SchoolListForExternalInviteResponse, SchoolResponse } from '../response';
 import { FederalStateResponseMapper } from './federal-state.response.mapper';
 import { SchoolYearResponseMapper } from './school-year.response.mapper';

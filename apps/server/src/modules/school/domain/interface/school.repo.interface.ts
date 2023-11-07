@@ -1,4 +1,5 @@
-import { EntityId, IFindOptions } from '@shared/domain';
+import { IFindOptions } from '@shared/domain/interface/find-options';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { School, SchoolProps } from '../do/school';
 import { SchoolQuery } from '../type';
 

@@ -1,5 +1,5 @@
-import { SchoolYearEntity } from '@shared/domain';
-import { BaseRepo } from '@shared/repo';
+import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
+import { BaseRepo } from '@shared/repo/base.repo';
 import { SchoolYear, SchoolYearRepo } from '../../domain';
 import { SchoolYearEntityMapper } from './mapper';
 
