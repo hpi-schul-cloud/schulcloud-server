@@ -18,7 +18,8 @@ import {
 import { ObjectId } from 'bson';
 import { GroupEntity, GroupEntityTypes } from '../../entity';
 import { ClassRootType } from '../../uc/dto/class-root-type';
-import { ClassInfoSearchListResponse, ClassSortBy } from '../dto';
+import { ClassInfoSearchListResponse } from '../dto';
+import { ClassSortBy } from '../dto/interface';
 
 const baseRouteName = '/groups';
 
@@ -120,6 +121,7 @@ describe('Group (API)', () => {
 							name: group.name,
 							externalSourceName: system.displayName,
 							teachers: [adminUser.lastName],
+							studentCount: 0,
 						},
 						{
 							id: clazz.id,
@@ -128,6 +130,7 @@ describe('Group (API)', () => {
 							teachers: [teacherUser.lastName],
 							schoolYear: schoolYear.name,
 							isUpgradable: false,
+							studentCount: 0,
 						},
 					],
 					skip: 0,
