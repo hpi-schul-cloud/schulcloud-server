@@ -6,7 +6,10 @@ import { QueueDeletionRequestInput, QueueDeletionRequestOutput } from './interfa
 export class BatchDeletionService {
 	constructor(private readonly deletionClient: DeletionClient) {}
 
-	async queueDeletionRequests(inputs: QueueDeletionRequestInput[]): Promise<QueueDeletionRequestOutput[]> {
+	async queueDeletionRequests(
+		inputs: QueueDeletionRequestInput[],
+		callsDelayMilliseconds?: number
+	): Promise<QueueDeletionRequestOutput[]> {
 		const outputs: QueueDeletionRequestOutput[] = [];
 
 		// For every provided deletion request input, try to queue it via deletion client.
@@ -34,6 +37,11 @@ export class BatchDeletionService {
 			} catch (err) {
 				// In case of a failure client response, add the full error message to the outputs.
 				outputs.push({ error: err.toString() });
+			}
+
+			// If any delay between the client calls has been requested, "sleep" for the specified amount of time.
+			if (callsDelayMilliseconds && callsDelayMilliseconds > 0) {
+				await new Promise((resolve) => setTimeout(resolve, callsDelayMilliseconds));
 			}
 		}
 

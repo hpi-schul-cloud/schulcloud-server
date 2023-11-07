@@ -2,10 +2,11 @@ import { Console, Command } from 'nestjs-console';
 import { ConsoleWriterService } from '@shared/infra/console';
 import { BatchDeletionUc } from '../uc';
 
-interface BatchDeleteOptions {
+interface PushDeletionRequestsOptions {
 	refsFilePath: string;
 	targetRefDomain: string;
 	deleteInMinutes: number;
+	callsDelayMs: number;
 }
 
 @Console({ command: 'queue', description: 'Console providing an access to the deletion queue.' })
@@ -31,13 +32,19 @@ export class DeletionQueueConsole {
 				description: 'Number of minutes after which the data deletion process should begin.',
 				required: false,
 			},
+			{
+				flags: '-cdm, --callsDelayMs <value>',
+				description: 'Delay between all the performed client calls, in milliseconds.',
+				required: false,
+			},
 		],
 	})
-	async pushDeletionRequests(options: BatchDeleteOptions): Promise<void> {
+	async pushDeletionRequests(options: PushDeletionRequestsOptions): Promise<void> {
 		const summary = await this.batchDeletionUc.deleteRefsFromTxtFile(
 			options.refsFilePath,
 			options.targetRefDomain,
-			options.deleteInMinutes ? Number(options.deleteInMinutes) : undefined
+			options.deleteInMinutes ? Number(options.deleteInMinutes) : undefined,
+			options.callsDelayMs ? Number(options.callsDelayMs) : undefined
 		);
 
 		this.consoleWriter.info(JSON.stringify(summary));

@@ -9,7 +9,8 @@ export class BatchDeletionUc {
 	async deleteRefsFromTxtFile(
 		refsFilePath: string,
 		targetRefDomain: string = 'user',
-		deleteInMinutes: number = 43200 // 43200 minutes = 720 hours = 30 days
+		deleteInMinutes: number = 43200, // 43200 minutes = 720 hours = 30 days
+		callsDelayMilliseconds?: number
 	): Promise<BatchDeletionSummary> {
 		// First, load all the references from the provided text file (with given path).
 		const refsFromTxtFile = ReferencesService.loadFromTxtFile(refsFilePath);
@@ -26,7 +27,13 @@ export class BatchDeletionUc {
 			})
 		);
 
-		const outputs = await this.batchDeletionService.queueDeletionRequests(inputs);
+		// Measure the overall queueing execution time by setting the start...
+		const startTime = performance.now();
+
+		const outputs = await this.batchDeletionService.queueDeletionRequests(inputs, callsDelayMilliseconds);
+
+		// ...and end timestamps before and after the batch deletion service method execution.
+		const endTime = performance.now();
 
 		// Throw an error if the returned outputs number doesn't match the returned inputs number.
 		if (outputs.length !== inputs.length) {
@@ -38,6 +45,7 @@ export class BatchDeletionUc {
 		}
 
 		const summary: BatchDeletionSummary = {
+			executionTimeMilliseconds: endTime - startTime,
 			overallStatus: 'failure',
 			successCount: 0,
 			failureCount: 0,
