@@ -15,7 +15,6 @@ export class DeletionRequestService {
 		targetRefDomain: DeletionDomainModel,
 		deleteInMinutes = 43200
 	): Promise<{ requestId: EntityId; deletionPlannedAt: Date }> {
-
 		const dateOfDeletion = new Date();
 		dateOfDeletion.setMinutes(dateOfDeletion.getMinutes() + deleteInMinutes);
 
