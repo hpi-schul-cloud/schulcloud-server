@@ -75,13 +75,9 @@ export class DeletionRequestRepo {
 	}
 
 	async deleteById(deletionRequestId: EntityId): Promise<boolean> {
-		const entity: DeletionRequestEntity | null = await this.em.findOne(DeletionRequestEntity, {
+		const entity: DeletionRequestEntity | null = await this.em.findOneOrFail(DeletionRequestEntity, {
 			id: deletionRequestId,
 		});
-
-		if (!entity) {
-			return false;
-		}
 
 		await this.em.removeAndFlush(entity);
 

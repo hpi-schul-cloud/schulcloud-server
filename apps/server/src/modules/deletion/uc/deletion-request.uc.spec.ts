@@ -1,19 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { ClassService } from '@src/modules/class';
-import { CourseGroupService } from '@src/modules/learnroom/service/coursegroup.service';
-import { CourseService } from '@src/modules/learnroom/service';
-import { FilesService } from '@src/modules/files/service';
-import { LessonService } from '@src/modules/lesson/service';
-import { PseudonymService } from '@src/modules/pseudonym';
-import { TeamService } from '@src/modules/teams';
-import { UserService } from '@src/modules/user';
+import { AccountService } from '@modules/account/services';
+import { ClassService } from '@modules/class';
+import { CourseGroupService, CourseService } from '@modules/learnroom/service';
+import { FilesService } from '@modules/files/service';
+import { LessonService } from '@modules/lesson/service';
+import { PseudonymService } from '@modules/pseudonym';
+import { TeamService } from '@modules/teams';
+import { UserService } from '@modules/user';
 import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
-import { DeletionRequestLog, DeletionRequestProps, DeletionRequestUc } from './deletion-request.uc';
+import { DeletionRequestUc } from './deletion-request.uc';
+import { DeletionRequestLog, DeletionRequestProps } from './interface/interfaces';
 import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
 import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
 import { deletionLogFactory } from '../domain/testing/factory/deletion-log.factory';
@@ -345,7 +345,7 @@ describe(DeletionRequestUc.name, () => {
 
 				const executedDeletionRequestSummary: DeletionRequestLog = {
 					targetRef: {
-						targetRefDoamin: deletionRequestExecuted.targetRefDomain,
+						targetRefDomain: deletionRequestExecuted.targetRefDomain,
 						targetRefId: deletionRequestExecuted.targetRefId,
 					},
 					deletionPlannedAt: deletionRequestExecuted.deleteAfter,
@@ -401,7 +401,7 @@ describe(DeletionRequestUc.name, () => {
 				const deletionRequest = deletionRequestFactory.build();
 				const notExecutedDeletionRequestSummary: DeletionRequestLog = {
 					targetRef: {
-						targetRefDoamin: deletionRequest.targetRefDomain,
+						targetRefDomain: deletionRequest.targetRefDomain,
 						targetRefId: deletionRequest.targetRefId,
 					},
 					deletionPlannedAt: deletionRequest.deleteAfter,

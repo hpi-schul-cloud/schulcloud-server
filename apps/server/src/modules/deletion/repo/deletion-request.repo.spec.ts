@@ -338,21 +338,5 @@ describe(DeletionRequestRepo.name, () => {
 				expect(result).toEqual(true);
 			});
 		});
-
-		describe('when no deletionRequestEntity exists', () => {
-			const setup = () => {
-				const deletionRequestId = new ObjectId().toHexString();
-
-				return { deletionRequestId };
-			};
-
-			it('should return false', async () => {
-				const { deletionRequestId } = setup();
-
-				const result: boolean = await repo.deleteById(deletionRequestId);
-
-				expect(result).toEqual(false);
-			});
-		});
 	});
 });
