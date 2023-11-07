@@ -13,9 +13,8 @@ export class DeletionRequestService {
 	async createDeletionRequest(
 		targetRefId: EntityId,
 		targetRefDomain: DeletionDomainModel,
-		deleteInMinutes?: number
+		deleteInMinutes = 43200
 	): Promise<{ requestId: EntityId; deletionPlannedAt: Date }> {
-		deleteInMinutes = deleteInMinutes === undefined ? 43200 : deleteInMinutes;
 
 		const dateOfDeletion = new Date();
 		dateOfDeletion.setMinutes(dateOfDeletion.getMinutes() + deleteInMinutes);
