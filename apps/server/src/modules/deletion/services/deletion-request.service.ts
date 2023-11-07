@@ -13,10 +13,8 @@ export class DeletionRequestService {
 	async createDeletionRequest(
 		targetRefId: EntityId,
 		targetRefDomain: DeletionDomainModel,
-		deleteInMinutes?: number
+		deleteInMinutes = 43200
 	): Promise<{ requestId: EntityId; deletionPlannedAt: Date }> {
-		deleteInMinutes = deleteInMinutes === undefined ? 43200 : deleteInMinutes;
-
 		const dateOfDeletion = new Date();
 		dateOfDeletion.setMinutes(dateOfDeletion.getMinutes() + deleteInMinutes);
 
@@ -39,8 +37,8 @@ export class DeletionRequestService {
 		return deletionRequest;
 	}
 
-	async findAllItemsByDeletionDate(): Promise<DeletionRequest[]> {
-		const itemsToDelete: DeletionRequest[] = await this.deletionRequestRepo.findAllItemsByDeletionDate();
+	async findAllItemsToExecute(limit?: number): Promise<DeletionRequest[]> {
+		const itemsToDelete: DeletionRequest[] = await this.deletionRequestRepo.findAllItemsToExecution(limit);
 
 		return itemsToDelete;
 	}
@@ -51,6 +49,10 @@ export class DeletionRequestService {
 
 	async markDeletionRequestAsExecuted(deletionRequestId: EntityId): Promise<boolean> {
 		return this.deletionRequestRepo.markDeletionRequestAsExecuted(deletionRequestId);
+	}
+
+	async markDeletionRequestAsFailed(deletionRequestId: EntityId): Promise<boolean> {
+		return this.deletionRequestRepo.markDeletionRequestAsFailed(deletionRequestId);
 	}
 
 	async deleteById(deletionRequestId: EntityId): Promise<void> {

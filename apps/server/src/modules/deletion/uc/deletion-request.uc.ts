@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { PseudonymService } from '@src/modules/pseudonym';
-import { UserService } from '@src/modules/user';
-import { TeamService } from '@src/modules/teams';
-import { ClassService } from '@src/modules/class';
-import { LessonService } from '@src/modules/lesson/service';
-import { CourseService } from '@src/modules/learnroom/service';
-import { CourseGroupService } from '@src/modules/learnroom/service/coursegroup.service';
-import { FilesService } from '@src/modules/files/service';
-import { AccountService } from '@src/modules/account/services/account.service';
+import { PseudonymService } from '@modules/pseudonym';
+import { UserService } from '@modules/user';
+import { TeamService } from '@modules/teams';
+import { ClassService } from '@modules/class';
+import { LessonService } from '@modules/lesson/service';
+import { CourseGroupService, CourseService } from '@modules/learnroom/service';
+import { FilesService } from '@modules/files/service';
+import { AccountService } from '@modules/account/services';
 import { DeletionRequestService } from '../services/deletion-request.service';
 import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
 import { DeletionLogService } from '../services/deletion-log.service';
@@ -16,23 +15,15 @@ import { DeletionRequest } from '../domain/deletion-request.do';
 import { DeletionOperationModel } from '../domain/types/deletion-operation-model.enum';
 import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
 import { DeletionLog } from '../domain/deletion-log.do';
-
-export interface DeletionRequestLog {
-	targetRef: { targetRefDoamin: DeletionDomainModel; targetRefId: EntityId };
-	deletionPlannedAt: Date;
-	statistics?: DeletionLogStatistic[];
-}
-
-export interface DeletionLogStatistic {
-	domain: DeletionDomainModel;
-	modifiedCount?: number;
-	deletedCount?: number;
-}
-
-export interface DeletionRequestProps {
-	targetRef: { targetRefDoamin: DeletionDomainModel; targetRefId: EntityId };
-	deleteInMinutes?: number;
-}
+import {
+	DeletionRequestProps,
+	DeletionRequestLog,
+	DeletionLogStatistic,
+	DeletionRequestCreateAnswer,
+} from './interface/interfaces';
+import { DeletionLogStatisticBuilder } from './builder/deletion-log-statistic.builder';
+import { DeletionRequestLogBuilder } from './builder/deletion-request-log.builder';
+import { DeletionTargetRefBuilder } from './builder/deletion-target-ref.builder';
 
 @Injectable()
 export class DeletionRequestUc {
@@ -50,9 +41,7 @@ export class DeletionRequestUc {
 		private readonly userService: UserService
 	) {}
 
-	async createDeletionRequest(
-		deletionRequest: DeletionRequestProps
-	): Promise<{ requestId: EntityId; deletionPlannedAt: Date }> {
+	async createDeletionRequest(deletionRequest: DeletionRequestProps): Promise<DeletionRequestCreateAnswer> {
 		const result = await this.deletionRequestService.createDeletionRequest(
 			deletionRequest.targetRef.targetRefId,
 			deletionRequest.targetRef.targetRefDoamin,
@@ -62,9 +51,10 @@ export class DeletionRequestUc {
 		return result;
 	}
 
-	async executeDeletionRequests(): Promise<void> {
-		const deletionRequestToExecution: DeletionRequest[] =
-			await this.deletionRequestService.findAllItemsByDeletionDate();
+	async executeDeletionRequests(limit?: number): Promise<void> {
+		const deletionRequestToExecution: DeletionRequest[] = await this.deletionRequestService.findAllItemsToExecute(
+			limit
+		);
 
 		for (const req of deletionRequestToExecution) {
 			// eslint-disable-next-line no-await-in-loop
@@ -74,23 +64,17 @@ export class DeletionRequestUc {
 
 	async findById(deletionRequestId: EntityId): Promise<DeletionRequestLog> {
 		const deletionRequest: DeletionRequest = await this.deletionRequestService.findById(deletionRequestId);
-		let response: DeletionRequestLog = {
-			targetRef: {
-				targetRefDoamin: deletionRequest.targetRefDomain,
-				targetRefId: deletionRequest.targetRefId,
-			},
-			deletionPlannedAt: deletionRequest.deleteAfter,
-		};
+
+		let response: DeletionRequestLog = DeletionRequestLogBuilder.build(
+			DeletionTargetRefBuilder.build(deletionRequest.targetRefDomain, deletionRequest.targetRefId),
+			deletionRequest.deleteAfter
+		);
 
 		if (deletionRequest.status === DeletionStatusModel.SUCCESS) {
 			const deletionLog: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequestId);
-			const deletionLogStatistic: DeletionLogStatistic[] = deletionLog.map((log) => {
-				return {
-					domain: log.domain,
-					modifiedCount: log.modifiedCount,
-					deletedCount: log.deletedCount,
-				};
-			});
+			const deletionLogStatistic: DeletionLogStatistic[] = deletionLog.map((log) =>
+				DeletionLogStatisticBuilder.build(log.domain, log.modifiedCount, log.deletedCount)
+			);
 			response = { ...response, statistics: deletionLogStatistic };
 		}
 
@@ -102,118 +86,125 @@ export class DeletionRequestUc {
 	}
 
 	private async executeDeletionRequest(deletionRequest: DeletionRequest): Promise<void> {
-		await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
+		try {
+			await Promise.all([
+				this.removeAccount(deletionRequest),
+				this.removeUserFromClasses(deletionRequest),
+				this.removeUserFromCourseGroup(deletionRequest),
+				this.removeUserFromCourse(deletionRequest),
+				this.removeUsersFilesAndPermissions(deletionRequest),
+				this.removeUserFromLessons(deletionRequest),
+				this.removeUsersPseudonyms(deletionRequest),
+				this.removeUserFromTeams(deletionRequest),
+				this.removeUser(deletionRequest),
+			]);
+			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
+		} catch (error) {
+			await this.deletionRequestService.markDeletionRequestAsFailed(deletionRequest.id);
+		}
+	}
 
-		const [
-			,
+	private async logDeletion(
+		deletionRequest: DeletionRequest,
+		domainModel: DeletionDomainModel,
+		operationModel: DeletionOperationModel,
+		updatedCount: number,
+		deletedCount: number
+	): Promise<void> {
+		if (updatedCount > 0 || deletedCount > 0) {
+			await this.deletionLogService.createDeletionLog(
+				deletionRequest.id,
+				domainModel,
+				operationModel,
+				updatedCount,
+				deletedCount
+			);
+		}
+	}
+
+	private async removeAccount(deletionRequest: DeletionRequest) {
+		await this.accountService.deleteByUserId(deletionRequest.targetRefId);
+		await this.logDeletion(deletionRequest, DeletionDomainModel.ACCOUNT, DeletionOperationModel.DELETE, 0, 1);
+	}
+
+	private async removeUserFromClasses(deletionRequest: DeletionRequest) {
+		const classesUpdated: number = await this.classService.deleteUserDataFromClasses(deletionRequest.targetRefId);
+		await this.logDeletion(
+			deletionRequest,
+			DeletionDomainModel.CLASS,
+			DeletionOperationModel.UPDATE,
 			classesUpdated,
-			courseGroupUpdated,
-			courseUpdated,
-			fileDeleted,
-			filesPermisionUpdated,
-			lessonUpdated,
-			pseudonymDeleted,
-			teamsUpdated,
-			userDeleted,
-		] = await Promise.all([
-			this.accountService.deleteByUserId(deletionRequest.targetRefId),
-			this.classService.deleteUserDataFromClasses(deletionRequest.targetRefId),
-			this.courseGroupService.deleteUserDataFromCourseGroup(deletionRequest.targetRefId),
-			this.courseService.deleteUserDataFromCourse(deletionRequest.targetRefId),
-			this.filesService.markFilesOwnedByUserForDeletion(deletionRequest.targetRefId),
-			this.filesService.removeUserPermissionsToAnyFiles(deletionRequest.targetRefId),
-			this.lessonService.deleteUserDataFromLessons(deletionRequest.targetRefId),
-			this.pseudonymService.deleteByUserId(deletionRequest.targetRefId),
-			this.teamService.deleteUserDataFromTeams(deletionRequest.targetRefId),
-			this.userService.deleteUser(deletionRequest.targetRefId),
-		]);
+			0
+		);
+	}
 
-		await this.deletionLogService.createDeletionLog(
-			deletionRequest.id,
-			DeletionDomainModel.ACCOUNT,
+	private async removeUserFromCourseGroup(deletionRequest: DeletionRequest) {
+		const courseGroupUpdated: number = await this.courseGroupService.deleteUserDataFromCourseGroup(
+			deletionRequest.targetRefId
+		);
+		await this.logDeletion(
+			deletionRequest,
+			DeletionDomainModel.COURSEGROUP,
+			DeletionOperationModel.UPDATE,
+			courseGroupUpdated,
+			0
+		);
+	}
+
+	private async removeUserFromCourse(deletionRequest: DeletionRequest) {
+		const courseUpdated: number = await this.courseService.deleteUserDataFromCourse(deletionRequest.targetRefId);
+		await this.logDeletion(
+			deletionRequest,
+			DeletionDomainModel.COURSE,
+			DeletionOperationModel.UPDATE,
+			courseUpdated,
+			0
+		);
+	}
+
+	private async removeUsersFilesAndPermissions(deletionRequest: DeletionRequest) {
+		const filesDeleted: number = await this.filesService.markFilesOwnedByUserForDeletion(deletionRequest.targetRefId);
+		const filePermissionsUpdated: number = await this.filesService.removeUserPermissionsToAnyFiles(
+			deletionRequest.targetRefId
+		);
+		await this.logDeletion(
+			deletionRequest,
+			DeletionDomainModel.FILE,
+			DeletionOperationModel.UPDATE,
+			filesDeleted + filePermissionsUpdated,
+			0
+		);
+	}
+
+	private async removeUserFromLessons(deletionRequest: DeletionRequest) {
+		const lessonsUpdated: number = await this.lessonService.deleteUserDataFromLessons(deletionRequest.targetRefId);
+		await this.logDeletion(
+			deletionRequest,
+			DeletionDomainModel.LESSONS,
+			DeletionOperationModel.UPDATE,
+			lessonsUpdated,
+			0
+		);
+	}
+
+	private async removeUsersPseudonyms(deletionRequest: DeletionRequest) {
+		const pseudonymDeleted: number = await this.pseudonymService.deleteByUserId(deletionRequest.targetRefId);
+		await this.logDeletion(
+			deletionRequest,
+			DeletionDomainModel.PSEUDONYMS,
 			DeletionOperationModel.DELETE,
 			0,
-			1
+			pseudonymDeleted
 		);
+	}
 
-		if (classesUpdated > 0) {
-			await this.deletionLogService.createDeletionLog(
-				deletionRequest.id,
-				DeletionDomainModel.CLASS,
-				DeletionOperationModel.UPDATE,
-				classesUpdated,
-				0
-			);
-		}
+	private async removeUserFromTeams(deletionRequest: DeletionRequest) {
+		const teamsUpdated: number = await this.teamService.deleteUserDataFromTeams(deletionRequest.targetRefId);
+		await this.logDeletion(deletionRequest, DeletionDomainModel.TEAMS, DeletionOperationModel.UPDATE, teamsUpdated, 0);
+	}
 
-		if (courseGroupUpdated > 0) {
-			await this.deletionLogService.createDeletionLog(
-				deletionRequest.id,
-				DeletionDomainModel.COURSEGROUP,
-				DeletionOperationModel.UPDATE,
-				courseGroupUpdated,
-				0
-			);
-		}
-
-		if (courseUpdated > 0) {
-			await this.deletionLogService.createDeletionLog(
-				deletionRequest.id,
-				DeletionDomainModel.COURSE,
-				DeletionOperationModel.UPDATE,
-				courseUpdated,
-				0
-			);
-		}
-
-		if (fileDeleted > 0 || filesPermisionUpdated > 0) {
-			await this.deletionLogService.createDeletionLog(
-				deletionRequest.id,
-				DeletionDomainModel.FILE,
-				DeletionOperationModel.UPDATE,
-				fileDeleted + filesPermisionUpdated,
-				0
-			);
-		}
-
-		if (lessonUpdated > 0) {
-			await this.deletionLogService.createDeletionLog(
-				deletionRequest.id,
-				DeletionDomainModel.LESSONS,
-				DeletionOperationModel.UPDATE,
-				lessonUpdated,
-				0
-			);
-		}
-
-		if (pseudonymDeleted > 0) {
-			await this.deletionLogService.createDeletionLog(
-				deletionRequest.id,
-				DeletionDomainModel.PSEUDONYMS,
-				DeletionOperationModel.DELETE,
-				0,
-				pseudonymDeleted
-			);
-		}
-
-		if (teamsUpdated > 0) {
-			await this.deletionLogService.createDeletionLog(
-				deletionRequest.id,
-				DeletionDomainModel.TEAMS,
-				DeletionOperationModel.UPDATE,
-				teamsUpdated,
-				0
-			);
-		}
-
-		if (userDeleted > 0) {
-			await this.deletionLogService.createDeletionLog(
-				deletionRequest.id,
-				DeletionDomainModel.USER,
-				DeletionOperationModel.DELETE,
-				0,
-				userDeleted
-			);
-		}
+	private async removeUser(deletionRequest: DeletionRequest) {
+		const userDeleted: number = await this.userService.deleteUser(deletionRequest.targetRefId);
+		await this.logDeletion(deletionRequest, DeletionDomainModel.USER, DeletionOperationModel.DELETE, 0, userDeleted);
 	}
 }

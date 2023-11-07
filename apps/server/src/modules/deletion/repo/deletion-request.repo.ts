@@ -1,9 +1,10 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId, SortOrder } from '@shared/domain';
 import { DeletionRequest } from '../domain/deletion-request.do';
 import { DeletionRequestEntity } from '../entity';
 import { DeletionRequestMapper } from './mapper/deletion-request.mapper';
+import { DeletionRequestScope } from './deletion-request-scope';
 
 @Injectable()
 export class DeletionRequestRepo {
@@ -29,13 +30,17 @@ export class DeletionRequestRepo {
 		await this.em.flush();
 	}
 
-	async findAllItemsByDeletionDate(): Promise<DeletionRequest[]> {
+	async findAllItemsToExecution(limit?: number): Promise<DeletionRequest[]> {
 		const currentDate = new Date();
-		const itemsToDelete: DeletionRequestEntity[] = await this.em.find(DeletionRequestEntity, {
-			deleteAfter: { $lt: currentDate },
+		const scope = new DeletionRequestScope().byDeleteAfter(currentDate).byStatus();
+		const order = { createdAt: SortOrder.desc };
+
+		const [deletionRequestEntities] = await this.em.findAndCount(DeletionRequestEntity, scope.query, {
+			limit,
+			orderBy: order,
 		});
 
-		const mapped: DeletionRequest[] = itemsToDelete.map((entity) => DeletionRequestMapper.mapToDO(entity));
+		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
 
 		return mapped;
 	}
@@ -58,14 +63,21 @@ export class DeletionRequestRepo {
 		return true;
 	}
 
-	async deleteById(deletionRequestId: EntityId): Promise<boolean> {
-		const entity: DeletionRequestEntity | null = await this.em.findOne(DeletionRequestEntity, {
+	async markDeletionRequestAsFailed(deletionRequestId: EntityId): Promise<boolean> {
+		const deletionRequest: DeletionRequestEntity = await this.em.findOneOrFail(DeletionRequestEntity, {
 			id: deletionRequestId,
 		});
 
-		if (!entity) {
-			return false;
-		}
+		deletionRequest.failed();
+		await this.em.persistAndFlush(deletionRequest);
+
+		return true;
+	}
+
+	async deleteById(deletionRequestId: EntityId): Promise<boolean> {
+		const entity: DeletionRequestEntity | null = await this.em.findOneOrFail(DeletionRequestEntity, {
+			id: deletionRequestId,
+		});
 
 		await this.em.removeAndFlush(entity);
 

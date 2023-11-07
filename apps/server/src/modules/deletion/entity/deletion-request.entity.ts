@@ -27,6 +27,7 @@ export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 	targetRefDomain: DeletionDomainModel;
 
 	@Property()
+	@Index()
 	status: DeletionStatusModel;
 
 	constructor(props: DeletionRequestEntityProps) {
@@ -51,5 +52,9 @@ export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 
 	public executed(): void {
 		this.status = DeletionStatusModel.SUCCESS;
+	}
+
+	public failed(): void {
+		this.status = DeletionStatusModel.FAILED;
 	}
 }
