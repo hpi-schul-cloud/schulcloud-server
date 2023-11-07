@@ -16,9 +16,20 @@ export class SchoolEntityMapper {
 		const systems = entity.systems?.getItems().map((system) => SystemEntityMapper.mapToDo(system));
 
 		const school = new School({
-			...entity,
-			// id needs to be mapped explicitly because it exists only virtually in the entity
 			id: entity.id,
+			name: entity.name,
+			officialSchoolNumber: entity.officialSchoolNumber,
+			externalId: entity.externalId,
+			previousExternalId: entity.previousExternalId,
+			inMaintenanceSince: entity.inMaintenanceSince,
+			inUserMigration: entity.inUserMigration,
+			purpose: entity.purpose,
+			county: entity.county,
+			logo_dataUrl: entity.logo_dataUrl,
+			fileStorageType: entity.fileStorageType,
+			language: entity.language,
+			timezone: entity.timezone,
+			permissions: entity.permissions,
 			currentYear,
 			federalState,
 			features,
