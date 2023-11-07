@@ -9,6 +9,7 @@ import { DeletionClientConfig } from './deletion-client.config';
 @Injectable()
 export class DeletionClient {
 	private readonly baseUrl: string;
+
 	private readonly apiKey: string;
 
 	private readonly postDeletionRequestsEndpoint: string;
@@ -48,9 +49,9 @@ export class DeletionClient {
 
 				return resp.data;
 			})
-			.catch((err) => {
+			.catch((err: Error) => {
 				// Throw an error if sending/processing deletion request by the client failed in any way.
-				throw new Error(`failed to send/process a deletion request: ${err}`);
+				throw new Error(`failed to send/process a deletion request: ${err.toString()}`);
 			});
 	}
 
