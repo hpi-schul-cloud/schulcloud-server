@@ -98,15 +98,6 @@
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
-		},
-		"batch-deletion": {
-			"type": "application",
-			"root": "apps/server",
-			"entryFile": "apps/batch-deletion.app",
-			"sourceRoot": "apps/server/src",
-			"compilerOptions": {
-				"tsConfigPath": "apps/server/tsconfig.app.json"
-			}
 		}
 	}
 }
