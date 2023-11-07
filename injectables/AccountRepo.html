@@ -1621,7 +1621,7 @@ export class AccountRepo extends BaseRepo&lt;Account&gt; {
 	 * @deprecated For migration purpose only
 	 */
 	async findMany(offset &#x3D; 0, limit &#x3D; 100): Promise&lt;Account[]&gt; {
-		const result &#x3D; await this._em.find(this.entityName, {}, { offset, limit, orderBy: { id: SortOrder.asc } });
+		const result &#x3D; await this._em.find(this.entityName, {}, { offset, limit, orderBy: { _id: SortOrder.asc } });
 		this._em.clear();
 		return result;
 	}
