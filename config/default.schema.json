@@ -1346,7 +1346,6 @@
 		"ADMIN_API": {
 			"type": "object",
 			"description": "Configuration of the schulcloud-server's admin API.",
-			"required": ["API_KEY"],
 			"properties": {
 				"BASE_URL": {
 					"type": "string",
@@ -1356,33 +1355,6 @@
 				"API_KEY": {
 					"type": "string",
 					"description": "API key for accessing the Admin API."
-				}
-			}
-		},
-		"BATCH_DELETION": {
-			"type": "object",
-			"description": "Configuration for the \"batch deletion\" application.",
-			"required": [],
-			"properties": {
-				"TARGET_REF_DOMAIN": {
-					"type": "string",
-					"default": "user",
-					"description": "Domain of the provided references (ids)."
-				},
-				"TARGET_REFS_FILE_PATH": {
-					"type": "string",
-					"default": "/data/ids-to-delete.txt",
-					"description": "Path to the file containing all the references (ids) that should be deleted."
-				},
-				"DELETE_IN_MINUTES": {
-					"type": "integer",
-					"default": 43200,
-					"description": "The number of minutes after which the data should be deleted."
-				},
-				"CALLS_DELAY_MILLISECONDS": {
-					"type": "integer",
-					"default": 0,
-					"description": "Delay between the HTTP calls in milliseconds - 0 (or less) indicates no delay."
 				}
 			}
 		}
