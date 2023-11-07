@@ -289,6 +289,18 @@
                             <a href="#defaultVideoConferenceOptions" title="apps/server/src/modules/video-conference/interface/video-conference-options.interface.ts" ><b>defaultVideoConferenceOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference-options.interface.ts)</a>
                         </li>
                         <li>
+                            <a href="#deletionLogEntityFactory" title="apps/server/src/modules/deletion/entity/testing/factory/deletion-log.entity.factory.ts" ><b>deletionLogEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-log.entity.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#deletionLogFactory" title="apps/server/src/modules/deletion/domain/testing/factory/deletion-log.factory.ts" ><b>deletionLogFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-log.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#deletionRequestEntityFactory" title="apps/server/src/modules/deletion/entity/testing/factory/deletion-request.entity.factory.ts" ><b>deletionRequestEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-request.entity.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#deletionRequestFactory" title="apps/server/src/modules/deletion/domain/testing/factory/deletion-request.factory.ts" ><b>deletionRequestFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-request.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#dummyResponse" title="apps/server/src/modules/h5p-editor/controller/h5p-editor.controller.ts" ><b>dummyResponse</b>&nbsp;&nbsp;&nbsp;(apps/.../h5p-editor.controller.ts)</a>
                         </li>
                         <li>
@@ -4925,6 +4937,146 @@ must use</p>
 	everyAttendeeJoinsMuted: false,
 	everybodyJoinsAsModerator: false,
 }</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/deletion/entity/testing/factory/deletion-log.entity.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deletionLogEntityFactory"></a>
+                    <span class="name">
+                        <span ><b>deletionLogEntityFactory</b></span>
+                        <a href="#deletionLogEntityFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;DeletionLogEntity, DeletionLogEntityProps&gt;(
+	DeletionLogEntity,
+	() &#x3D;&gt; {
+		return {
+			id: new ObjectId().toHexString(),
+			domain: DeletionDomainModel.USER,
+			operation: DeletionOperationModel.DELETE,
+			modifiedCount: 0,
+			deletedCount: 1,
+			deletionRequestId: new ObjectId(),
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/deletion/domain/testing/factory/deletion-log.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deletionLogFactory"></a>
+                    <span class="name">
+                        <span ><b>deletionLogFactory</b></span>
+                        <a href="#deletionLogFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>DoBaseFactory.define&lt;DeletionLog, DeletionLogProps&gt;(DeletionLog, () &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		domain: DeletionDomainModel.USER,
+		operation: DeletionOperationModel.DELETE,
+		modifiedCount: 0,
+		deletedCount: 1,
+		deletionRequestId: new ObjectId().toHexString(),
+		createdAt: new Date(),
+		updatedAt: new Date(),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/deletion/entity/testing/factory/deletion-request.entity.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deletionRequestEntityFactory"></a>
+                    <span class="name">
+                        <span ><b>deletionRequestEntityFactory</b></span>
+                        <a href="#deletionRequestEntityFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;DeletionRequestEntity, DeletionRequestEntityProps&gt;(
+	DeletionRequestEntity,
+	() &#x3D;&gt; {
+		return {
+			id: new ObjectId().toHexString(),
+			targetRefDomain: DeletionDomainModel.USER,
+			deleteAfter: new Date(),
+			targetRefId: new ObjectId().toHexString(),
+			status: DeletionStatusModel.REGISTERED,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/deletion/domain/testing/factory/deletion-request.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deletionRequestFactory"></a>
+                    <span class="name">
+                        <span ><b>deletionRequestFactory</b></span>
+                        <a href="#deletionRequestFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>DeletionRequestFactory.define(DeletionRequest, () &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		targetRefDomain: DeletionDomainModel.USER,
+		deleteAfter: new Date(),
+		targetRefId: new ObjectId().toHexString(),
+		status: DeletionStatusModel.REGISTERED,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+	};
+})</code>
                     </td>
                 </tr>
 

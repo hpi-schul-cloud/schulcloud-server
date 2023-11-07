@@ -758,6 +758,26 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                             </li>
                             <li class="link">
+                                <a href="modules/DeletionModule.html" data-type="entity-link" >DeletionModule</a>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                        'data-bs-target="#injectables-links-module-DeletionModule-f61a65e6d0104422cbaf9bed2a580cb6ca3c5e5869a20b1831f547aa8d2b2856e4653f3d7423467922b407f5319247c146bc04e79bbef6783ea0b0414df1889f"' : 'data-bs-target="#xs-injectables-links-module-DeletionModule-f61a65e6d0104422cbaf9bed2a580cb6ca3c5e5869a20b1831f547aa8d2b2856e4653f3d7423467922b407f5319247c146bc04e79bbef6783ea0b0414df1889f"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-DeletionModule-f61a65e6d0104422cbaf9bed2a580cb6ca3c5e5869a20b1831f547aa8d2b2856e4653f3d7423467922b407f5319247c146bc04e79bbef6783ea0b0414df1889f"' :
+                                        'id="xs-injectables-links-module-DeletionModule-f61a65e6d0104422cbaf9bed2a580cb6ca3c5e5869a20b1831f547aa8d2b2856e4653f3d7423467922b407f5319247c146bc04e79bbef6783ea0b0414df1889f"' }>
+                                        <li class="link">
+                                            <a href="injectables/DeletionRequestRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >DeletionRequestRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/DeletionRequestService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >DeletionRequestService</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </li>
+                            <li class="link">
                                 <a href="modules/EncryptionModule.html" data-type="entity-link" >EncryptionModule</a>
                             </li>
                             <li class="link">
@@ -2719,6 +2739,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="entities/DashboardModelEntity.html" data-type="entity-link" >DashboardModelEntity</a>
                                 </li>
                                 <li class="link">
+                                    <a href="entities/DeletionLogEntity.html" data-type="entity-link" >DeletionLogEntity</a>
+                                </li>
+                                <li class="link">
+                                    <a href="entities/DeletionRequestEntity.html" data-type="entity-link" >DeletionRequestEntity</a>
+                                </li>
+                                <li class="link">
                                     <a href="entities/ExternalToolElementNodeEntity.html" data-type="entity-link" >ExternalToolElementNodeEntity</a>
                                 </li>
                                 <li class="link">
@@ -3309,6 +3335,36 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/DeleteFilesConsole.html" data-type="entity-link" >DeleteFilesConsole</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/DeletionLog.html" data-type="entity-link" >DeletionLog</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/DeletionLogMapper.html" data-type="entity-link" >DeletionLogMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/DeletionLogStatisticBuilder.html" data-type="entity-link" >DeletionLogStatisticBuilder</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/DeletionRequest.html" data-type="entity-link" >DeletionRequest</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/DeletionRequestEntity.html" data-type="entity-link" >DeletionRequestEntity</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/DeletionRequestFactory.html" data-type="entity-link" >DeletionRequestFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/DeletionRequestLogBuilder.html" data-type="entity-link" >DeletionRequestLogBuilder</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/DeletionRequestMapper.html" data-type="entity-link" >DeletionRequestMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/DeletionRequestScope.html" data-type="entity-link" >DeletionRequestScope</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/DeletionTargetRefBuilder.html" data-type="entity-link" >DeletionTargetRefBuilder</a>
                             </li>
                             <li class="link">
                                 <a href="classes/DeprecatedVideoConferenceInfoResponse.html" data-type="entity-link" class="deprecated-name">DeprecatedVideoConferenceInfoResponse</a>
@@ -4878,6 +4934,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/DeleteFilesUc.html" data-type="entity-link" >DeleteFilesUc</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/DeletionLogRepo.html" data-type="entity-link" >DeletionLogRepo</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/DeletionLogService.html" data-type="entity-link" >DeletionLogService</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/DeletionRequestUc.html" data-type="entity-link" >DeletionRequestUc</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/DurationLoggingInterceptor.html" data-type="entity-link" >DurationLoggingInterceptor</a>
                                 </li>
                                 <li class="link">
@@ -5456,6 +5521,33 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/DashboardGridElementModelProperties.html" data-type="entity-link" >DashboardGridElementModelProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/DeletionLogEntityProps.html" data-type="entity-link" >DeletionLogEntityProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/DeletionLogProps.html" data-type="entity-link" >DeletionLogProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/DeletionLogStatistic.html" data-type="entity-link" >DeletionLogStatistic</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/DeletionRequestCreateAnswer.html" data-type="entity-link" >DeletionRequestCreateAnswer</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/DeletionRequestEntityProps.html" data-type="entity-link" >DeletionRequestEntityProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/DeletionRequestLog.html" data-type="entity-link" >DeletionRequestLog</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/DeletionRequestProps.html" data-type="entity-link" >DeletionRequestProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/DeletionRequestProps-1.html" data-type="entity-link" >DeletionRequestProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/DeletionTargetRef.html" data-type="entity-link" >DeletionTargetRef</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/ExternalSourceEntityProps.html" data-type="entity-link" >ExternalSourceEntityProps</a>
