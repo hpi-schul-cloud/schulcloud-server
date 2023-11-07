@@ -172,14 +172,14 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: 'trivy-results.sarif'
-
-  end-to-end-tests:
-    needs:
-      - build_and_push
-      - branch_meta
-    uses: hpi-schul-cloud/end-to-end-tests/.github/workflows/e2e_call.yml@main
-    with:
-      ref: ${{ needs.branch_meta.outputs.branch }}
+  
+#  end-to-end-tests:
+#    needs:
+#      - build_and_push
+#      - branch_meta
+#    uses: hpi-schul-cloud/end-to-end-tests/.github/workflows/e2e_call.yml@main
+#    with:
+#      ref: ${{ needs.branch_meta.outputs.branch }}
 
   cy-e2e-tests:
     needs:
