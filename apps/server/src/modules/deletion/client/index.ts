@@ -1,4 +1,4 @@
-export * from './interface/deletion-request-input.interface';
-export * from './interface/deletion-request-output.interface';
+export * from './interface';
+export * from './builder';
 export * from './deletion-client.config';
 export * from './deletion.client';

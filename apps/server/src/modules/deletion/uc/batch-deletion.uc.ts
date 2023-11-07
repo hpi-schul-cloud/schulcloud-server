@@ -8,8 +8,8 @@ export class BatchDeletionUc {
 
 	async deleteRefsFromTxtFile(
 		refsFilePath: string,
-		targetRefDomain: string = 'user',
-		deleteInMinutes: number = 43200, // 43200 minutes = 720 hours = 30 days
+		targetRefDomain = 'user',
+		deleteInMinutes = 43200, // 43200 minutes = 720 hours = 30 days
 		callsDelayMilliseconds?: number
 	): Promise<BatchDeletionSummary> {
 		// First, load all the references from the provided text file (with given path).
@@ -22,8 +22,8 @@ export class BatchDeletionUc {
 		refsFromTxtFile.forEach((ref) =>
 			inputs.push({
 				targetRefId: ref,
-				targetRefDomain: targetRefDomain,
-				deleteInMinutes: deleteInMinutes,
+				targetRefDomain,
+				deleteInMinutes,
 			})
 		);
 

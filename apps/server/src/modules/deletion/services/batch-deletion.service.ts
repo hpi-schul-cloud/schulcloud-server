@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { DeletionClient } from '../client';
+import { QueueDeletionRequestOutputBuilder } from '@modules/deletion/services/builder';
+import { DeletionClient, DeletionRequestInputBuilder } from '../client';
 import { QueueDeletionRequestInput, QueueDeletionRequestOutput } from './interface';
 
 @Injectable()
@@ -17,31 +18,35 @@ export class BatchDeletionService {
 		// response in a form of a requestId + deletionPlannedAt values pair or some error
 		// returned from the client. In any case, every input should be processed.
 		for (const input of inputs) {
-			const deletionRequestInput = {
-				targetRef: {
-					domain: input.targetRefDomain,
-					id: input.targetRefId,
-				},
-				deleteInMinutes: input.deleteInMinutes,
-			};
+			const deletionRequestInput = DeletionRequestInputBuilder.build(
+				input.targetRefDomain,
+				input.targetRefId,
+				input.deleteInMinutes
+			);
 
 			try {
+				// eslint-disable-next-line no-await-in-loop
 				const deletionRequestOutput = await this.deletionClient.queueDeletionRequest(deletionRequestInput);
 
 				// In case of a successful client response, add the
 				// requestId + deletionPlannedAt values pair to the outputs.
-				outputs.push({
-					requestId: deletionRequestOutput.requestId,
-					deletionPlannedAt: deletionRequestOutput.deletionPlannedAt,
-				});
+				outputs.push(
+					QueueDeletionRequestOutputBuilder.buildSuccess(
+						deletionRequestOutput.requestId,
+						deletionRequestOutput.deletionPlannedAt
+					)
+				);
 			} catch (err) {
 				// In case of a failure client response, add the full error message to the outputs.
-				outputs.push({ error: err.toString() });
+				outputs.push(QueueDeletionRequestOutputBuilder.buildError(err as Error));
 			}
 
 			// If any delay between the client calls has been requested, "sleep" for the specified amount of time.
 			if (callsDelayMilliseconds && callsDelayMilliseconds > 0) {
-				await new Promise((resolve) => setTimeout(resolve, callsDelayMilliseconds));
+				// eslint-disable-next-line no-await-in-loop
+				await new Promise((resolve) => {
+					setTimeout(resolve, callsDelayMilliseconds);
+				});
 			}
 		}
 
