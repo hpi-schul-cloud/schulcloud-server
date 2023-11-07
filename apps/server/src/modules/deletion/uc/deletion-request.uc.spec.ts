@@ -412,7 +412,7 @@ describe(DeletionRequestUc.name, () => {
 					notExecutedDeletionRequestSummary,
 				};
 			};
-      
+
 			it('should call to deletionRequestService', async () => {
 				const { deletionRequest } = setup();
 
@@ -446,7 +446,7 @@ describe(DeletionRequestUc.name, () => {
 					deletionRequest,
 				};
 			};
-      
+
 			it('should call the service deletionRequestService.deleteById', async () => {
 				const { deletionRequest } = setup();
 
