@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ReferencesService, BatchDeletionService, QueueDeletionRequestInput } from '../services';
+import {
+	ReferencesService,
+	BatchDeletionService,
+	QueueDeletionRequestInput,
+	QueueDeletionRequestInputBuilder,
+} from '../services';
 import { BatchDeletionSummary } from './interface';
 
 @Injectable()
@@ -20,11 +25,7 @@ export class BatchDeletionUc {
 		// For each reference found in a given file, add it to the inputs
 		// array (with added targetRefDomain and deleteInMinutes fields).
 		refsFromTxtFile.forEach((ref) =>
-			inputs.push({
-				targetRefId: ref,
-				targetRefDomain,
-				deleteInMinutes,
-			})
+			inputs.push(QueueDeletionRequestInputBuilder.build(targetRefDomain, ref, deleteInMinutes))
 		);
 
 		// Measure the overall queueing execution time by setting the start...
@@ -54,7 +55,7 @@ export class BatchDeletionUc {
 
 		// Go through every received output and, in case of an error presence increase
 		// a failure count or, in case of no error, increase a success count.
-		for (let i = 0; i < outputs.length; i++) {
+		for (let i = 0; i < outputs.length; i += 1) {
 			if (outputs[i].error) {
 				summary.failureCount += 1;
 			} else {

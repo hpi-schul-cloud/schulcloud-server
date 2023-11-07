@@ -1,9 +1,4 @@
-import { QueueDeletionRequestInput, QueueDeletionRequestOutput } from '../../services';
-
-export interface BatchDeletionSummaryDetail {
-	input: QueueDeletionRequestInput;
-	output: QueueDeletionRequestOutput;
-}
+import { BatchDeletionSummaryDetail } from './batch-deletion-summary-detail.interface';
 
 export interface BatchDeletionSummary {
 	executionTimeMilliseconds: number;
