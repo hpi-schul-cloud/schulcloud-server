@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
-import { School } from '@src/modules/school/domain';
+import { School } from '@src/modules/school/domain/do';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { AuthorizationContext, Rule } from '../type';
 
