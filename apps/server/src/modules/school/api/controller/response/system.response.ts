@@ -3,28 +3,17 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { LdapConfig, OauthConfig, OidcConfig } from '../../../domain';
 
 export class SystemResponse {
-	constructor({
-		id,
-		type,
-		url,
-		alias,
-		displayName,
-		oauthConfig,
-		oidcConfig,
-		ldapConfig,
-		provisioningStrategy,
-		provisioningUrl,
-	}: SystemResponse) {
-		this.id = id;
-		this.type = type;
-		this.url = url;
-		this.alias = alias;
-		this.displayName = displayName;
-		this.oauthConfig = oauthConfig;
-		this.oidcConfig = oidcConfig;
-		this.ldapConfig = ldapConfig;
-		this.provisioningStrategy = provisioningStrategy;
-		this.provisioningUrl = provisioningUrl;
+	constructor(props: SystemResponse) {
+		this.id = props.id;
+		this.type = props.type;
+		this.url = props.url;
+		this.alias = props.alias;
+		this.displayName = props.displayName;
+		this.oauthConfig = props.oauthConfig;
+		this.oidcConfig = props.oidcConfig;
+		this.ldapConfig = props.ldapConfig;
+		this.provisioningStrategy = props.provisioningStrategy;
+		this.provisioningUrl = props.provisioningUrl;
 	}
 
 	@ApiProperty()

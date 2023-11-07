@@ -1,10 +1,10 @@
 import { SchoolPurpose } from '../type';
 
 export class SchoolForExternalInviteDto {
-	constructor({ id, name, purpose }: SchoolForExternalInviteDto) {
-		this.id = id;
-		this.name = name;
-		this.purpose = purpose;
+	constructor(props: SchoolForExternalInviteDto) {
+		this.id = props.id;
+		this.name = props.name;
+		this.purpose = props.purpose;
 	}
 
 	id: string;

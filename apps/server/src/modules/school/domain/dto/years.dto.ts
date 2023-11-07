@@ -1,12 +1,12 @@
 import { SchoolYearDto } from './school-year.dto';
 
 export class YearsDto {
-	constructor({ schoolYears, defaultYear, activeYear, lastYear, nextYear }: YearsDto) {
-		this.schoolYears = schoolYears;
-		this.defaultYear = defaultYear;
-		this.activeYear = activeYear;
-		this.lastYear = lastYear;
-		this.nextYear = nextYear;
+	constructor(props: YearsDto) {
+		this.schoolYears = props.schoolYears;
+		this.defaultYear = props.defaultYear;
+		this.activeYear = props.activeYear;
+		this.lastYear = props.lastYear;
+		this.nextYear = props.nextYear;
 	}
 
 	schoolYears: SchoolYearDto[];

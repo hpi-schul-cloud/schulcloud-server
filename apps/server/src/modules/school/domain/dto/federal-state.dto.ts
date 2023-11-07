@@ -1,12 +1,12 @@
 import { County } from '../type';
 
 export class FederalStateDto {
-	constructor({ id, name, abbreviation, logoUrl, counties }: FederalStateDto) {
-		this.id = id;
-		this.name = name;
-		this.abbreviation = abbreviation;
-		this.logoUrl = logoUrl;
-		this.counties = counties;
+	constructor(props: FederalStateDto) {
+		this.id = props.id;
+		this.name = props.name;
+		this.abbreviation = props.abbreviation;
+		this.logoUrl = props.logoUrl;
+		this.counties = props.counties;
 	}
 
 	id: string;

@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class SchoolYearResponse {
-	constructor({ id, name, startDate, endDate }: SchoolYearResponse) {
-		this.id = id;
-		this.name = name;
-		this.startDate = startDate;
-		this.endDate = endDate;
+	constructor(props: SchoolYearResponse) {
+		this.id = props.id;
+		this.name = props.name;
+		this.startDate = props.startDate;
+		this.endDate = props.endDate;
 	}
 
 	@ApiProperty()

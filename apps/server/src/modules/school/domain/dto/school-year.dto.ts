@@ -1,9 +1,9 @@
 export class SchoolYearDto {
-	constructor({ id, name, startDate, endDate }: SchoolYearDto) {
-		this.id = id;
-		this.name = name;
-		this.startDate = startDate;
-		this.endDate = endDate;
+	constructor(props: SchoolYearDto) {
+		this.id = props.id;
+		this.name = props.name;
+		this.startDate = props.startDate;
+		this.endDate = props.endDate;
 	}
 
 	id: string;

@@ -2,10 +2,10 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SchoolPurpose } from '../../../domain';
 
 export class SchoolForExternalInviteResponse {
-	constructor({ id, name, purpose }: SchoolForExternalInviteResponse) {
-		this.id = id;
-		this.name = name;
-		this.purpose = purpose;
+	constructor(props: SchoolForExternalInviteResponse) {
+		this.id = props.id;
+		this.name = props.name;
+		this.purpose = props.purpose;
 	}
 
 	@ApiProperty()

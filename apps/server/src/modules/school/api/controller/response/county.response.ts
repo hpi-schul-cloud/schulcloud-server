@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CountyResponse {
-	constructor({ name, countyId, antaresKey }: CountyResponse) {
-		this.name = name;
-		this.countyId = countyId;
-		this.antaresKey = antaresKey;
+	constructor(props: CountyResponse) {
+		this.name = props.name;
+		this.countyId = props.countyId;
+		this.antaresKey = props.antaresKey;
 	}
 
 	@ApiProperty()

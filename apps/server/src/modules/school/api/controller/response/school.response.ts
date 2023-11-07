@@ -7,42 +7,24 @@ import { SystemResponse } from './system.response';
 import { YearsResponse } from './years.response';
 
 export class SchoolResponse {
-	constructor({
-		id,
-		name,
-		officialSchoolNumber,
-		federalState,
-		currentYear,
-		purpose,
-		features,
-		county,
-		systems,
-		inMaintenance,
-		isExternal,
-		logo_dataUrl,
-		fileStorageType,
-		language,
-		timezone,
-		permissions,
-		years,
-	}: SchoolResponse) {
-		this.id = id;
-		this.name = name;
-		this.officialSchoolNumber = officialSchoolNumber;
-		this.federalState = federalState;
-		this.currentYear = currentYear;
-		this.purpose = purpose;
-		this.features = features;
-		this.county = county;
-		this.systems = systems;
-		this.inMaintenance = inMaintenance;
-		this.isExternal = isExternal;
-		this.logo_dataUrl = logo_dataUrl;
-		this.fileStorageType = fileStorageType;
-		this.language = language;
-		this.timezone = timezone;
-		this.permissions = permissions;
-		this.years = years;
+	constructor(props: SchoolResponse) {
+		this.id = props.id;
+		this.name = props.name;
+		this.officialSchoolNumber = props.officialSchoolNumber;
+		this.federalState = props.federalState;
+		this.currentYear = props.currentYear;
+		this.purpose = props.purpose;
+		this.features = props.features;
+		this.county = props.county;
+		this.systems = props.systems;
+		this.inMaintenance = props.inMaintenance;
+		this.isExternal = props.isExternal;
+		this.logo_dataUrl = props.logo_dataUrl;
+		this.fileStorageType = props.fileStorageType;
+		this.language = props.language;
+		this.timezone = props.timezone;
+		this.permissions = props.permissions;
+		this.years = props.years;
 	}
 
 	@ApiProperty()

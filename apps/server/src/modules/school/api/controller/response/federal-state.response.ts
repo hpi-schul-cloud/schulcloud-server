@@ -2,12 +2,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CountyResponse } from './county.response';
 
 export class FederalStateResponse {
-	constructor({ id, name, abbreviation, logoUrl, counties }: FederalStateResponse) {
-		this.id = id;
-		this.name = name;
-		this.abbreviation = abbreviation;
-		this.logoUrl = logoUrl;
-		this.counties = counties;
+	constructor(props: FederalStateResponse) {
+		this.id = props.id;
+		this.name = props.name;
+		this.abbreviation = props.abbreviation;
+		this.logoUrl = props.logoUrl;
+		this.counties = props.counties;
 	}
 
 	@ApiProperty()
