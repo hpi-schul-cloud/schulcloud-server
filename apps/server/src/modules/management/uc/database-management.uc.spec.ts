@@ -5,11 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { StorageProviderEntity, SystemEntity } from '@shared/domain';
 import { DatabaseManagementService } from '@infra/database';
-import {
-	DefaultEncryptionService,
-	LdapEncryptionService,
-	SymetricKeyEncryptionService,
-} from '@infra/encryption';
+import { DefaultEncryptionService, LdapEncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
 import { setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';

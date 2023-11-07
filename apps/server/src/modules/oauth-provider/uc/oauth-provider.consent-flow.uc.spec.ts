@@ -1,12 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthProviderService } from '@infra/oauth-provider/index';
+import { OauthProviderService } from '@infra/oauth-provider';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AcceptQuery, ConsentRequestBody } from '@modules/oauth-provider/controller/dto';
-import {
-	AcceptConsentRequestBody,
-	ProviderConsentResponse,
-	ProviderRedirectResponse,
-} from '@infra/oauth-provider/dto';
+import { AcceptConsentRequestBody, ProviderConsentResponse, ProviderRedirectResponse } from '@infra/oauth-provider/dto';
 import { OauthProviderConsentFlowUc } from '@modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
 import { ICurrentUser } from '@modules/authentication';
 import { ForbiddenException } from '@nestjs/common';
