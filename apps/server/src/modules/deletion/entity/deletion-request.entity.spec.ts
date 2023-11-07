@@ -12,7 +12,7 @@ describe(DeletionRequestEntity.name, () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
-	
+
 	const setup = () => {
 		const props = {
 			id: new ObjectId().toHexString(),
