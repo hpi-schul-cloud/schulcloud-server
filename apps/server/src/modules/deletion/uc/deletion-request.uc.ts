@@ -64,7 +64,6 @@ export class DeletionRequestUc {
 
 	async findById(deletionRequestId: EntityId): Promise<DeletionRequestLog> {
 		const deletionRequest: DeletionRequest = await this.deletionRequestService.findById(deletionRequestId);
-
 		let response: DeletionRequestLog = DeletionRequestLogBuilder.build(
 			DeletionTargetRefBuilder.build(deletionRequest.targetRefDomain, deletionRequest.targetRefId),
 			deletionRequest.deleteAfter
