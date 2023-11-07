@@ -25,7 +25,7 @@ export class DeletionClient {
 	}
 
 	async queueDeletionRequest(input: DeletionRequestInput): Promise<DeletionRequestOutput> {
-		const request = this.httpService.post(this.postDeletionRequestsEndpoint, input, this.headers());
+		const request = this.httpService.post(this.postDeletionRequestsEndpoint, input, this.defaultHeaders());
 
 		return firstValueFrom(request)
 			.then((resp: AxiosResponse<DeletionRequestOutput>) => {
@@ -58,7 +58,7 @@ export class DeletionClient {
 		return { 'X-Api-Key': this.apiKey };
 	}
 
-	private headers() {
+	private defaultHeaders() {
 		return {
 			headers: this.apiKeyHeader(),
 		};
