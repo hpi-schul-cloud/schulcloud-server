@@ -1,7 +1,7 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { CacheWrapperModule } from '@shared/infra/cache';
-import { EncryptionModule } from '@shared/infra/encryption';
+import { CacheWrapperModule } from '@infra/cache';
+import { EncryptionModule } from '@infra/encryption';
 import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@modules/authorization';

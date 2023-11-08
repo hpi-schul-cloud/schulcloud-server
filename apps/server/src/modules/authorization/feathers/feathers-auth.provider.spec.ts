@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NewsTargetModel } from '@shared/domain';
-import { FeathersServiceProvider } from '@shared/infra/feathers';
+import { FeathersServiceProvider } from '@infra/feathers';
 import { FeathersAuthProvider } from './feathers-auth.provider';
 
 describe('FeathersAuthProvider', () => {
