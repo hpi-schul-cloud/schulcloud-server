@@ -1,11 +1,10 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { MongoDatabaseModuleOptions } from '@infra/database/mongo-memory-database/types';
-import { RabbitMQWrapperTestModule } from '@infra/rabbitmq/rabbitmq.module';
+import { MongoMemoryDatabaseModule, MongoDatabaseModuleOptions } from '@infra/database';
+import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { AuthenticationModule } from '@modules/authentication/authentication.module';
+import { AuthenticationModule } from '@modules/authentication';
 import { AuthorizationModule } from '@modules/authorization';
 import { FileRecord } from './entity';
 import { FilesStorageApiModule } from './files-storage-api.module';

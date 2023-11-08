@@ -2,12 +2,12 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { CalendarEventDto } from '@infra/calendar/dto/calendar-event.dto';
-import { CalendarMapper } from '@infra/calendar/mapper/calendar.mapper';
 import { ErrorUtils } from '@src/core/error/utils';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Observable, firstValueFrom } from 'rxjs';
 import { URL, URLSearchParams } from 'url';
+import { CalendarMapper } from '../mapper/calendar.mapper';
+import { CalendarEventDto } from '../dto/calendar-event.dto';
 import { ICalendarEvent } from '../interface/calendar-event.interface';
 
 @Injectable()

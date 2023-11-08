@@ -3,9 +3,6 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LtiPrivacyPermission, LtiRoleType, Pseudonym, RoleName, User, UserDO } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { TeamRolePermissionsDto } from '@infra/collaborative-storage/dto/team-role-permissions.dto';
-import { NextcloudClient } from '@infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
-import { NextcloudStrategy } from '@infra/collaborative-storage/strategy/nextcloud/nextcloud.strategy';
 import { LtiToolRepo } from '@shared/repo';
 import { ltiToolDOFactory, pseudonymFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
@@ -13,6 +10,9 @@ import { TeamDto, TeamUserDto } from '@modules/collaborative-storage/services/dt
 import { PseudonymService } from '@modules/pseudonym';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { UserService } from '@modules/user';
+import { NextcloudStrategy } from './nextcloud.strategy';
+import { NextcloudClient } from './nextcloud.client';
+import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 
 class NextcloudStrategySpec extends NextcloudStrategy {
 	static specGenerateGroupId(dto: TeamRolePermissionsDto): string {

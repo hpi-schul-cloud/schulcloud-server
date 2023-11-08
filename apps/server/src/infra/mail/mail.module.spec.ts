@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RabbitMQWrapperTestModule } from '@infra/rabbitmq/rabbitmq.module';
+import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { MailModule } from './mail.module';
 import { MailService } from './mail.service';
 

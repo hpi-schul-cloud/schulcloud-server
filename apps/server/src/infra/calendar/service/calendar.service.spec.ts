@@ -4,11 +4,11 @@ import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CalendarEventDto, CalendarService } from '@infra/calendar';
-import { ICalendarEvent } from '@infra/calendar/interface/calendar-event.interface';
-import { CalendarMapper } from '@infra/calendar/mapper/calendar.mapper';
 import { axiosResponseFactory } from '@shared/testing';
 import { AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
+import { CalendarMapper } from '../mapper/calendar.mapper';
+import { ICalendarEvent } from '../interface/calendar-event.interface';
 
 describe('CalendarServiceSpec', () => {
 	let module: TestingModule;

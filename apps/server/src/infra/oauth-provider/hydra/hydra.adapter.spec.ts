@@ -12,11 +12,11 @@ import {
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '@infra/oauth-provider/dto';
-import { ProviderConsentSessionResponse } from '@infra/oauth-provider/dto/response/consent-session.response';
-import { HydraAdapter } from '@infra/oauth-provider/hydra/hydra.adapter';
 import { axiosResponseFactory } from '@shared/testing';
 import { AxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'axios';
 import { of } from 'rxjs';
+import { HydraAdapter } from './hydra.adapter';
+import { ProviderConsentSessionResponse } from '../dto/response/consent-session.response';
 import resetAllMocks = jest.resetAllMocks;
 
 class HydraAdapterSpec extends HydraAdapter {

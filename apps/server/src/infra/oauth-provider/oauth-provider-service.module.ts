@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { OauthProviderService } from '@infra/oauth-provider/oauth-provider.service';
-import { HydraAdapter } from '@infra/oauth-provider/hydra/hydra.adapter';
 import { HttpModule } from '@nestjs/axios';
+import { OauthProviderService } from './oauth-provider.service';
+import { HydraAdapter } from './hydra/hydra.adapter';
 
 @Module({
 	imports: [HttpModule],

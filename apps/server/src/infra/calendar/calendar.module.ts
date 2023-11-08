@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
-import { CalendarService } from '@infra/calendar/service/calendar.service';
-import { CalendarMapper } from '@infra/calendar/mapper/calendar.mapper';
+import { CalendarService } from './service/calendar.service';
+import { CalendarMapper } from './mapper/calendar.mapper';
 
 @Module({
 	imports: [HttpModule],
