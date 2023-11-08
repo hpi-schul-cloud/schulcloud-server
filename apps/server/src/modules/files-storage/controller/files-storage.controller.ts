@@ -134,7 +134,8 @@ export class FilesStorageController {
 		@Query() previewParams: PreviewParams,
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response,
-		@Headers('Range') bytesRange?: string
+		@Headers('Range') bytesRange?: string,
+		@Headers('If-None-Match') etag?: string
 	): Promise<StreamableFile | void> {
 		const fileResponse = await this.filesStorageUC.downloadPreview(
 			currentUser.userId,
@@ -143,7 +144,7 @@ export class FilesStorageController {
 			bytesRange
 		);
 
-		if (req.headers['if-none-match'] === fileResponse.etag) {
+		if (etag === fileResponse.etag) {
 			response.status(304);
 
 			return undefined;
