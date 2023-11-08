@@ -10,5 +10,6 @@ export const schoolFactory = BaseFactory.define<School, SchoolProps>(School, ({ 
 		name: `school #${sequence}`,
 		currentYear: schoolYearFactory.build(),
 		federalState: federalStateFactory.build(),
+		features: new Set(),
 	};
 });

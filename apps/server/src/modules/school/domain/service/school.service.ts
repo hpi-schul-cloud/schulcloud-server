@@ -15,6 +15,14 @@ export class SchoolService {
 		private readonly configService: ConfigService<SchoolConfig, true>
 	) {}
 
+	public async getSchool(schoolId: EntityId): Promise<School> {
+		const school = await this.schoolRepo.getSchool(schoolId);
+
+		this.setStudentTeamCreationFeature(school);
+
+		return school;
+	}
+
 	public async getAllSchools(query: SchoolQuery, pagination?: IPagination): Promise<School[]> {
 		const order = { name: SortOrder.asc };
 		const schools = await this.schoolRepo.getAllSchools(query, { pagination, order });
@@ -22,14 +30,6 @@ export class SchoolService {
 		schools.forEach((school) => this.setStudentTeamCreationFeature(school));
 
 		return schools;
-	}
-
-	public async getSchool(schoolId: EntityId): Promise<School> {
-		const school = await this.schoolRepo.getSchool(schoolId);
-
-		this.setStudentTeamCreationFeature(school);
-
-		return school;
 	}
 
 	private setStudentTeamCreationFeature(school: School): School {
