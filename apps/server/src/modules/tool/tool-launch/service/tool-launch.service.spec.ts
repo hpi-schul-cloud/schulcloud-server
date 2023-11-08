@@ -8,6 +8,7 @@ import {
 	schoolExternalToolFactory,
 } from '@shared/testing';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { ApiValidationError } from '@shared/common';
 import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -270,6 +271,8 @@ describe('ToolLaunchService', () => {
 					openNewTab: false,
 				});
 
+				const userId = 'userId';
+
 				const launchParams: IToolLaunchParams = {
 					externalTool,
 					schoolExternalTool,
@@ -279,12 +282,15 @@ describe('ToolLaunchService', () => {
 				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
 				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
-				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.LATEST);
+				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.OUTDATED);
 
+				contextExternalToolValidationService.validate.mockRejectedValueOnce(ApiValidationError);
 				Configuration.set('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED', true);
 
 				return {
 					launchParams,
+					userId,
+					contextExternalToolId: contextExternalTool.id as string,
 				};
 			};
 
@@ -295,6 +301,14 @@ describe('ToolLaunchService', () => {
 
 				expect(schoolExternalToolValidationService.validate).toHaveBeenCalled();
 				expect(contextExternalToolValidationService.validate).toHaveBeenCalled();
+			});
+
+			it('should throw ToolStatusOutdatedLoggableException', async () => {
+				const { launchParams, userId, contextExternalToolId } = setup();
+
+				const func = () => service.getLaunchData(userId, launchParams.contextExternalTool);
+
+				await expect(func).rejects.toThrow(new ToolStatusOutdatedLoggableException(userId, contextExternalToolId));
 			});
 		});
 	});

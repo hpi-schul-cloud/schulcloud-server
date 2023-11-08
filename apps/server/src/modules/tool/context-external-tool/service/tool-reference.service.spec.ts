@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { ApiValidationError } from '@shared/common';
 import { ToolConfigurationStatus } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
 import { ExternalToolLogoService, ExternalToolService } from '../../external-tool/service';
@@ -11,6 +12,7 @@ import { ToolReference } from '../domain';
 import { ContextExternalToolService } from './context-external-tool.service';
 import { ToolReferenceService } from './tool-reference.service';
 import { ContextExternalToolValidationService } from './context-external-tool-validation.service';
+import objectContaining = jasmine.objectContaining;
 
 describe('ToolReferenceService', () => {
 	let module: TestingModule;
@@ -160,9 +162,10 @@ describe('ToolReferenceService', () => {
 				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
-				commonToolService.determineToolConfigurationStatus.mockReturnValue(ToolConfigurationStatus.OUTDATED);
+				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.OUTDATED);
 				externalToolLogoService.buildLogoUrl.mockReturnValue(logoUrl);
 
+				schoolExternalToolValidationService.validate.mockRejectedValueOnce(ApiValidationError);
 				Configuration.set('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED', true);
 
 				return {
@@ -179,6 +182,14 @@ describe('ToolReferenceService', () => {
 
 				expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
 				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(contextExternalTool);
+			});
+
+			it('should get the outdated status', async () => {
+				const { contextExternalToolId } = setup();
+
+				const toolReference: ToolReference = await service.getToolReference(contextExternalToolId);
+
+				expect(toolReference).toEqual(expect.objectContaining({ status: ToolConfigurationStatus.OUTDATED }));
 			});
 		});
 	});
