@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { BatchDeletionSummaryDetailBuilder } from '@modules/deletion/uc/builder';
 import {
 	ReferencesService,
 	BatchDeletionService,
 	QueueDeletionRequestInput,
 	QueueDeletionRequestInputBuilder,
 } from '../services';
-import { BatchDeletionSummary } from './interface';
+import { BatchDeletionSummary, BatchDeletionSummaryOverallStatus } from './interface';
 
 @Injectable()
 export class BatchDeletionUc {
@@ -47,7 +48,7 @@ export class BatchDeletionUc {
 
 		const summary: BatchDeletionSummary = {
 			executionTimeMilliseconds: endTime - startTime,
-			overallStatus: 'failure',
+			overallStatus: BatchDeletionSummaryOverallStatus.FAILURE,
 			successCount: 0,
 			failureCount: 0,
 			details: [],
@@ -63,15 +64,12 @@ export class BatchDeletionUc {
 			}
 
 			// Also add all the processed inputs and outputs details to the overall summary.
-			summary.details.push({
-				input: inputs[i],
-				output: outputs[i],
-			});
+			summary.details.push(BatchDeletionSummaryDetailBuilder.build(inputs[i], outputs[i]));
 		}
 
 		// If no failure has been spotted, assume an overall success.
 		if (summary.failureCount === 0) {
-			summary.overallStatus = 'success';
+			summary.overallStatus = BatchDeletionSummaryOverallStatus.SUCCESS;
 		}
 
 		return summary;
