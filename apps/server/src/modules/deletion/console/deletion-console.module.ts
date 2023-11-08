@@ -5,7 +5,7 @@ import { ConsoleModule } from 'nestjs-console';
 import { ConsoleWriterModule } from '@infra/console';
 import { createConfigModuleOptions } from '@src/config';
 import { DeletionClient } from '../client';
-import { deletionClientConfig } from '../client/deletion-client.config';
+import { getDeletionClientConfig } from '../client/deletion-client.config';
 import { BatchDeletionService } from '../services';
 import { BatchDeletionUc } from '../uc';
 import { DeletionQueueConsole } from './deletion-queue.console';
@@ -15,7 +15,7 @@ import { DeletionQueueConsole } from './deletion-queue.console';
 		ConsoleModule,
 		ConsoleWriterModule,
 		HttpModule,
-		ConfigModule.forRoot(createConfigModuleOptions(deletionClientConfig)),
+		ConfigModule.forRoot(createConfigModuleOptions(getDeletionClientConfig)),
 	],
 	providers: [DeletionClient, BatchDeletionService, BatchDeletionUc, DeletionQueueConsole],
 })
