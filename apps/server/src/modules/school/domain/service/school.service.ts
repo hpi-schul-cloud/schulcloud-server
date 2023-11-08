@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IPagination, SortOrder } from '@shared/domain/interface/find-options';
+import { IFindOptions } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { SchoolConfig } from '../../school.config';
-import { School } from '../do';
+import { School, SchoolProps } from '../do';
 import { SchoolRepo, SCHOOL_REPO } from '../interface';
 import { SchoolQuery } from '../query';
 import { SchoolFeature } from '../type';
@@ -23,17 +23,20 @@ export class SchoolService {
 		return school;
 	}
 
-	public async getAllSchools(query: SchoolQuery, pagination?: IPagination): Promise<School[]> {
-		const order = { name: SortOrder.asc };
-		const schools = await this.schoolRepo.getAllSchools(query, { pagination, order });
+	public async getAllSchools(query: SchoolQuery, options?: IFindOptions<SchoolProps>): Promise<School[]> {
+		const schools = await this.schoolRepo.getAllSchools(query, options);
 
 		schools.forEach((school) => this.setStudentTeamCreationFeature(school));
 
 		return schools;
 	}
 
-	public async getAllSchoolsExceptOwnSchool(query: SchoolQuery, ownSchoolId: EntityId): Promise<School[]> {
-		const schools = await this.getAllSchools(query);
+	public async getAllSchoolsExceptOwnSchool(
+		query: SchoolQuery,
+		ownSchoolId: EntityId,
+		options?: IFindOptions<SchoolProps>
+	): Promise<School[]> {
+		const schools = await this.getAllSchools(query, options);
 
 		const schoolsWithoutOwnSchool = schools.filter((school) => school.id !== ownSchoolId);
 

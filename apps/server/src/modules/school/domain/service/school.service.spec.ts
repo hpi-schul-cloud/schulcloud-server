@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { SortOrder } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { schoolFactory } from '../../testing/school.factory';
 import { SchoolRepo } from '../interface';
@@ -29,6 +30,10 @@ describe('SchoolService', () => {
 		service = module.get(SchoolService);
 		schoolRepo = module.get('SCHOOL_REPO');
 		configService = module.get(ConfigService);
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
 	it('should be defined', () => {
@@ -97,19 +102,23 @@ describe('SchoolService', () => {
 		});
 
 		it('should pass query to repo', async () => {
+			const schools = schoolFactory.buildList(3);
+			schoolRepo.getAllSchools.mockResolvedValueOnce(schools);
 			const query = { federalStateId: new ObjectId().toHexString() };
 
 			await service.getAllSchools(query);
 
-			expect(schoolRepo.getAllSchools).toBeCalledWith(query, expect.anything());
+			expect(schoolRepo.getAllSchools).toBeCalledWith(query, undefined);
 		});
 
-		it('should pass pagination and default order to repo', async () => {
-			const pagination = { limit: 10, offset: 0 };
+		it('should pass find options to repo', async () => {
+			const schools = schoolFactory.buildList(3);
+			schoolRepo.getAllSchools.mockResolvedValueOnce(schools);
+			const options = { pagination: { limit: 10, offset: 0 }, order: { name: SortOrder.asc } };
 
-			await service.getAllSchools({}, pagination);
+			await service.getAllSchools({}, options);
 
-			expect(schoolRepo.getAllSchools).toBeCalledWith(expect.anything(), { pagination, order: { name: 'asc' } });
+			expect(schoolRepo.getAllSchools).toBeCalledWith(expect.anything(), options);
 		});
 	});
 

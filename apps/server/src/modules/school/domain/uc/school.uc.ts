@@ -1,6 +1,7 @@
 import { AuthorizationContextBuilder } from '@modules/authorization/domain/mapper/authorization-context.builder';
 import { AuthorizationService } from '@modules/authorization/domain/service/authorization.service';
 import { Injectable } from '@nestjs/common';
+import { SortOrder } from '@shared/domain';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { SchoolDto, SchoolForExternalInviteDto } from '../dto';
 import { SchoolDtoMapper } from '../mapper';
@@ -35,7 +36,13 @@ export class SchoolUc {
 		query: SchoolQuery,
 		ownSchoolId: EntityId
 	): Promise<SchoolForExternalInviteDto[]> {
-		const schools = await this.schoolService.getAllSchoolsExceptOwnSchool(query, ownSchoolId);
+		const findOptions = {
+			order: {
+				name: SortOrder.asc,
+			},
+		};
+
+		const schools = await this.schoolService.getAllSchoolsExceptOwnSchool(query, ownSchoolId, findOptions);
 
 		// TODO: Do we want authorization here? At the moment there is no fitting permission.
 
