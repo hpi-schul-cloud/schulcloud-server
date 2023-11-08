@@ -215,10 +215,6 @@ export class DeletionRequestUc {
 	private async removeUserFromRocketChat(deletionRequest: DeletionRequest): Promise<number> {
 		const rocketChatUser = await this.rocketChatUserService.findByUserId(deletionRequest.targetRefId);
 
-		if (!rocketChatUser) {
-			return 0;
-		}
-
 		const [, rocketChatUserDeleted] = await Promise.all([
 			this.rocketChatService.deleteUser(rocketChatUser.username),
 			this.rocketChatUserService.deleteByUserId(rocketChatUser.userId),
