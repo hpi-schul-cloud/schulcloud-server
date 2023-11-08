@@ -382,7 +382,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>userToICurrentUser(accountId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, user: <a href="../interfaces/User.html" target="_self">User</a>, systemId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>userToICurrentUser(accountId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, user: <a href="../interfaces/User.html" target="_self">User</a>, isExternalUser: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, systemId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -435,6 +435,18 @@
 
                                         </tr>
                                         <tr>
+                                                <td>isExternalUser</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
                                                 <td>systemId</td>
                                             <td>
                                                             <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
@@ -478,14 +490,14 @@ import { ICurrentUser, OauthCurrentUser } from &#x27;../interface&#x27;;
 import { CreateJwtPayload, JwtPayload } from &#x27;../interface/jwt-payload&#x27;;
 
 export class CurrentUserMapper {
-	static userToICurrentUser(accountId: string, user: User, systemId?: string): ICurrentUser {
+	static userToICurrentUser(accountId: string, user: User, isExternalUser: boolean, systemId?: string): ICurrentUser {
 		return {
 			accountId,
 			systemId,
 			roles: user.roles.getItems().map((role: Role) &#x3D;&gt; role.id),
 			schoolId: user.school.id,
 			userId: user.id,
-			isExternalUser: false,
+			isExternalUser,
 		};
 	}
 

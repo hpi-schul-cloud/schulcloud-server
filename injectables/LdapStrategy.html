@@ -659,13 +659,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountDto } from &#x27;@modules/account/services/dto&#x27;;
+import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
 import { LegacySchoolDo, SystemEntity, User } from &#x27;@shared/domain&#x27;;
 import { LegacySchoolRepo, SystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
 import { ErrorLoggable } from &#x27;@src/core/error/loggable/error.loggable&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { AccountDto } from &#x27;@modules/account/services/dto&#x27;;
 import { Strategy } from &#x27;passport-custom&#x27;;
 import { LdapAuthorizationBodyParams } from &#x27;../controllers/dto&#x27;;
 import { ICurrentUser } from &#x27;../interface&#x27;;
@@ -709,7 +709,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
 
 		await this.checkCredentials(account, system, ldapDn, password);
 
-		const currentUser: ICurrentUser &#x3D; CurrentUserMapper.userToICurrentUser(account.id, user, systemId);
+		const currentUser: ICurrentUser &#x3D; CurrentUserMapper.userToICurrentUser(account.id, user, true, systemId);
 
 		return currentUser;
 	}
