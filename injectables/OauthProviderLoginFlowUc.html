@@ -129,7 +129,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -243,8 +243,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -336,8 +336,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -405,8 +405,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -511,8 +511,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="106"
-                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:106</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:102</a></div>
                         </td>
                     </tr>
 
@@ -592,8 +592,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="94"
-                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:94</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:90</a></div>
                         </td>
                     </tr>
 
@@ -648,12 +648,8 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, InternalServerErrorException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { Permission, Pseudonym, User, UserDO } from &#x27;@shared/domain&#x27;;
 import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
-import { OauthProviderService } from &#x27;@shared/infra/oauth-provider&#x27;;
-import {
-	AcceptLoginRequestBody,
-	ProviderLoginResponse,
-	ProviderRedirectResponse,
-} from &#x27;@shared/infra/oauth-provider/dto&#x27;;
+import { OauthProviderService } from &#x27;@infra/oauth-provider&#x27;;
+import { AcceptLoginRequestBody, ProviderLoginResponse, ProviderRedirectResponse } from &#x27;@infra/oauth-provider/dto&#x27;;
 import { AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from &#x27;@modules/oauth-provider/controller/dto&#x27;;
 import { OauthProviderRequestMapper } from &#x27;@modules/oauth-provider/mapper/oauth-provider-request.mapper&#x27;;

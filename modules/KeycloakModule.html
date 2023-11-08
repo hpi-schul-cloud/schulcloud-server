@@ -66,13 +66,13 @@
 <title>cluster_KeycloakModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 1214,-268 1214,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_KeycloakModule_providers</title>
-<polygon fill="none" stroke="black" points="496,-78 496,-130 1206,-130 1206,-78 496,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_KeycloakModule_exports</title>
 <polygon fill="none" stroke="black" points="162,-208 162,-260 694,-260 694,-208 162,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_KeycloakModule_providers</title>
+<polygon fill="none" stroke="black" points="496,-78 496,-130 1206,-130 1206,-78 496,-78"/>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_KeycloakModule_imports</title>
@@ -204,7 +204,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/infra/identity-management/keycloak/keycloak.module.ts</code>
+            <code>apps/server/src/infra/identity-management/keycloak/keycloak.module.ts</code>
         </p>
 
 
@@ -264,7 +264,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpModule } from &#x27;@nestjs/axios&#x27;;
 import { Module } from &#x27;@nestjs/common&#x27;;
-import { EncryptionModule } from &#x27;@shared/infra/encryption&#x27;;
+import { EncryptionModule } from &#x27;@infra/encryption&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { KeycloakAdministrationModule } from &#x27;../keycloak-administration/keycloak-administration.module&#x27;;
 import { KeycloakIdentityManagementOauthService } from &#x27;./service/keycloak-identity-management-oauth.service&#x27;;

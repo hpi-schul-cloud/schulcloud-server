@@ -1321,14 +1321,14 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from &#x27;@nestjs/common&#x27;;
 import { ICurrentUser, Authenticate, CurrentUser } from &#x27;@modules/authentication&#x27;;
-// import should be @shared/infra/oauth-provider
+// import should be @infra/oauth-provider
 import {
 	ProviderConsentResponse,
 	ProviderLoginResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
 	ProviderConsentSessionResponse,
-} from &#x27;@shared/infra/oauth-provider/dto&#x27;;
+} from &#x27;@infra/oauth-provider/dto&#x27;;
 import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { OauthProviderLogoutFlowUc } from &#x27;../uc/oauth-provider.logout-flow.uc&#x27;;
 import { OauthProviderLoginFlowUc } from &#x27;../uc/oauth-provider.login-flow.uc&#x27;;

@@ -437,8 +437,8 @@ When the jwt is validated, the expiration time will be extended with this call.<
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CACHE_MANAGER } from &#x27;@nestjs/cache-manager&#x27;;
 import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-import { CacheService } from &#x27;@shared/infra/cache&#x27;;
-import { CacheStoreType } from &#x27;@shared/infra/cache/interface/cache-store-type.enum&#x27;;
+import { CacheService } from &#x27;@infra/cache&#x27;;
+import { CacheStoreType } from &#x27;@infra/cache/interface/cache-store-type.enum&#x27;;
 import {
 	addTokenToWhitelist,
 	createRedisIdentifierFromJwtData,

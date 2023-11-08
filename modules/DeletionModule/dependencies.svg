@@ -24,71 +24,71 @@
 <title>cluster_DeletionModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 582,-268 582,-70 8,-70"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_DeletionModule_imports</title>
-<polygon fill="none" stroke="black" points="458,-78 458,-130 574,-130 574,-78 458,-78"/>
+<g id="clust6" class="cluster">
+<title>cluster_DeletionModule_providers</title>
+<polygon fill="none" stroke="black" points="140,-78 140,-130 574,-130 574,-78 140,-78"/>
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_DeletionModule_exports</title>
-<polygon fill="none" stroke="black" points="261,-208 261,-260 431,-260 431,-208 261,-208"/>
+<polygon fill="none" stroke="black" points="167,-208 167,-260 337,-260 337,-208 167,-208"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_DeletionModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 450,-130 450,-78 16,-78"/>
+<g id="clust3" class="cluster">
+<title>cluster_DeletionModule_imports</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 132,-130 132,-78 16,-78"/>
 </g>
 <!-- LoggerModule -->
 <g id="node1" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="565.98,-122 562.98,-126 541.98,-126 538.98,-122 466.02,-122 466.02,-86 565.98,-86 565.98,-122"/>
-<text text-anchor="middle" x="516" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="123.98,-122 120.98,-126 99.98,-126 96.98,-122 24.02,-122 24.02,-86 123.98,-86 123.98,-122"/>
+<text text-anchor="middle" x="74" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- DeletionModule -->
 <g id="node2" class="node">
 <title>DeletionModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="399.76,-187 396.76,-191 375.76,-191 372.76,-187 292.24,-187 292.24,-151 399.76,-151 399.76,-187"/>
-<text text-anchor="middle" x="346" y="-164.8" font-family="Times,serif" font-size="14.00">DeletionModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="305.76,-187 302.76,-191 281.76,-191 278.76,-187 198.24,-187 198.24,-151 305.76,-151 305.76,-187"/>
+<text text-anchor="middle" x="252" y="-164.8" font-family="Times,serif" font-size="14.00">DeletionModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;DeletionModule -->
 <g id="edge1" class="edge">
 <title>LoggerModule&#45;&gt;DeletionModule</title>
-<path fill="none" stroke="black" d="M516,-122.11C516,-141.34 516,-169 516,-169 516,-169 409.79,-169 409.79,-169"/>
-<polygon fill="black" stroke="black" points="409.79,-165.5 399.79,-169 409.79,-172.5 409.79,-165.5"/>
+<path fill="none" stroke="black" d="M74,-122.11C74,-141.34 74,-169 74,-169 74,-169 188.11,-169 188.11,-169"/>
+<polygon fill="black" stroke="black" points="188.11,-172.5 198.11,-169 188.11,-165.5 188.11,-172.5"/>
 </g>
 <!-- DeletionRequestService  -->
 <g id="node3" class="node">
 <title>DeletionRequestService </title>
-<polygon fill="#fb8072" stroke="black" points="423.29,-252 268.71,-252 268.71,-216 423.29,-216 423.29,-252"/>
-<text text-anchor="middle" x="346" y="-229.8" font-family="Times,serif" font-size="14.00">DeletionRequestService </text>
+<polygon fill="#fb8072" stroke="black" points="329.29,-252 174.71,-252 174.71,-216 329.29,-216 329.29,-252"/>
+<text text-anchor="middle" x="252" y="-229.8" font-family="Times,serif" font-size="14.00">DeletionRequestService </text>
 </g>
 <!-- DeletionModule&#45;&gt;DeletionRequestService  -->
 <g id="edge2" class="edge">
 <title>DeletionModule&#45;&gt;DeletionRequestService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M346,-187.11C346,-187.11 346,-205.99 346,-205.99"/>
-<polygon fill="black" stroke="black" points="342.5,-205.99 346,-215.99 349.5,-205.99 342.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M252,-187.11C252,-187.11 252,-205.99 252,-205.99"/>
+<polygon fill="black" stroke="black" points="248.5,-205.99 252,-215.99 255.5,-205.99 248.5,-205.99"/>
 </g>
 <!-- DeletionRequestRepo -->
 <g id="node4" class="node">
 <title>DeletionRequestRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="346" cy="-104" rx="95.57" ry="18"/>
-<text text-anchor="middle" x="346" y="-99.8" font-family="Times,serif" font-size="14.00">DeletionRequestRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="470" cy="-104" rx="95.57" ry="18"/>
+<text text-anchor="middle" x="470" y="-99.8" font-family="Times,serif" font-size="14.00">DeletionRequestRepo</text>
 </g>
 <!-- DeletionRequestRepo&#45;&gt;DeletionModule -->
 <g id="edge3" class="edge">
 <title>DeletionRequestRepo&#45;&gt;DeletionModule</title>
-<path fill="none" stroke="black" d="M346,-122.11C346,-122.11 346,-140.99 346,-140.99"/>
-<polygon fill="black" stroke="black" points="342.5,-140.99 346,-150.99 349.5,-140.99 342.5,-140.99"/>
+<path fill="none" stroke="black" d="M470,-122.11C470,-141.34 470,-169 470,-169 470,-169 315.89,-169 315.89,-169"/>
+<polygon fill="black" stroke="black" points="315.89,-165.5 305.89,-169 315.89,-172.5 315.89,-165.5"/>
 </g>
 <!-- DeletionRequestService -->
 <g id="node5" class="node">
 <title>DeletionRequestService</title>
-<ellipse fill="#fdb462" stroke="black" cx="128" cy="-104" rx="104.21" ry="18"/>
-<text text-anchor="middle" x="128" y="-99.8" font-family="Times,serif" font-size="14.00">DeletionRequestService</text>
+<ellipse fill="#fdb462" stroke="black" cx="252" cy="-104" rx="104.21" ry="18"/>
+<text text-anchor="middle" x="252" y="-99.8" font-family="Times,serif" font-size="14.00">DeletionRequestService</text>
 </g>
 <!-- DeletionRequestService&#45;&gt;DeletionModule -->
 <g id="edge4" class="edge">
 <title>DeletionRequestService&#45;&gt;DeletionModule</title>
-<path fill="none" stroke="black" d="M128,-122.11C128,-141.34 128,-169 128,-169 128,-169 282.11,-169 282.11,-169"/>
-<polygon fill="black" stroke="black" points="282.11,-172.5 292.11,-169 282.11,-165.5 282.11,-172.5"/>
+<path fill="none" stroke="black" d="M252,-122.11C252,-122.11 252,-140.99 252,-140.99"/>
+<polygon fill="black" stroke="black" points="248.5,-140.99 252,-150.99 255.5,-140.99 248.5,-140.99"/>
 </g>
 </g>
 </svg>

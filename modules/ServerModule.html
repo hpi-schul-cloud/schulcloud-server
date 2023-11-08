@@ -675,10 +675,10 @@ import { VideoConferenceApiModule } from &#x27;@modules/video-conference/video-c
 import { DynamicModule, Inject, MiddlewareConsumer, Module, NestModule, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { ConfigModule } from &#x27;@nestjs/config&#x27;;
 import { ALL_ENTITIES } from &#x27;@shared/domain&#x27;;
-import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from &#x27;@shared/infra/database&#x27;;
-import { MailModule } from &#x27;@shared/infra/mail&#x27;;
-import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from &#x27;@shared/infra/rabbitmq&#x27;;
-import { RedisModule, REDIS_CLIENT } from &#x27;@shared/infra/redis&#x27;;
+import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from &#x27;@infra/database&#x27;;
+import { MailModule } from &#x27;@infra/mail&#x27;;
+import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from &#x27;@infra/rabbitmq&#x27;;
+import { RedisModule, REDIS_CLIENT } from &#x27;@infra/redis&#x27;;
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from &#x27;@src/config&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
 import { LegacyLogger, LoggerModule } from &#x27;@src/core/logger&#x27;;

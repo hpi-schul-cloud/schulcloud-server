@@ -263,8 +263,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/files-storage-test.module.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/files-storage-test.module.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -317,12 +317,11 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DynamicModule, Module } from &#x27;@nestjs/common&#x27;;
 import { ALL_ENTITIES } from &#x27;@shared/domain&#x27;;
-import { MongoMemoryDatabaseModule } from &#x27;@shared/infra/database&#x27;;
-import { MongoDatabaseModuleOptions } from &#x27;@shared/infra/database/mongo-memory-database/types&#x27;;
-import { RabbitMQWrapperTestModule } from &#x27;@shared/infra/rabbitmq/rabbitmq.module&#x27;;
+import { MongoMemoryDatabaseModule, MongoDatabaseModuleOptions } from &#x27;@infra/database&#x27;;
+import { RabbitMQWrapperTestModule } from &#x27;@infra/rabbitmq&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
-import { AuthenticationModule } from &#x27;@modules/authentication/authentication.module&#x27;;
+import { AuthenticationModule } from &#x27;@modules/authentication&#x27;;
 import { AuthorizationModule } from &#x27;@modules/authorization&#x27;;
 import { FileRecord } from &#x27;./entity&#x27;;
 import { FilesStorageApiModule } from &#x27;./files-storage-api.module&#x27;;

@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/infra/collaborative-storage/collaborative-storage.adapter.ts</code>
+            <code>apps/server/src/infra/collaborative-storage/collaborative-storage.adapter.ts</code>
         </p>
 
 
@@ -144,7 +144,7 @@ It loads an appropriate strategy and applies that to the given data.</p>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/shared/infra/collaborative-storage/collaborative-storage.adapter.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/infra/collaborative-storage/collaborative-storage.adapter.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -232,7 +232,7 @@ It loads an appropriate strategy and applies that to the given data.</p>
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">apps/server/src/shared/infra/collaborative-storage/collaborative-storage.adapter.ts:58</a></div>
+                                    class="link-to-prism">apps/server/src/infra/collaborative-storage/collaborative-storage.adapter.ts:58</a></div>
                         </td>
                     </tr>
 
@@ -306,7 +306,7 @@ It loads an appropriate strategy and applies that to the given data.</p>
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="49"
-                                    class="link-to-prism">apps/server/src/shared/infra/collaborative-storage/collaborative-storage.adapter.ts:49</a></div>
+                                    class="link-to-prism">apps/server/src/infra/collaborative-storage/collaborative-storage.adapter.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -380,7 +380,7 @@ It loads an appropriate strategy and applies that to the given data.</p>
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">apps/server/src/shared/infra/collaborative-storage/collaborative-storage.adapter.ts:30</a></div>
+                                    class="link-to-prism">apps/server/src/infra/collaborative-storage/collaborative-storage.adapter.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -454,7 +454,7 @@ It loads an appropriate strategy and applies that to the given data.</p>
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="67"
-                                    class="link-to-prism">apps/server/src/shared/infra/collaborative-storage/collaborative-storage.adapter.ts:67</a></div>
+                                    class="link-to-prism">apps/server/src/infra/collaborative-storage/collaborative-storage.adapter.ts:67</a></div>
                         </td>
                     </tr>
 
@@ -528,7 +528,7 @@ It loads an appropriate strategy and applies that to the given data.</p>
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">apps/server/src/shared/infra/collaborative-storage/collaborative-storage.adapter.ts:40</a></div>
+                                    class="link-to-prism">apps/server/src/infra/collaborative-storage/collaborative-storage.adapter.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -638,7 +638,7 @@ It loads an appropriate strategy and applies that to the given data.</p>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/shared/infra/collaborative-storage/collaborative-storage.adapter.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/infra/collaborative-storage/collaborative-storage.adapter.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -653,11 +653,11 @@ It loads an appropriate strategy and applies that to the given data.</p>
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { TeamPermissionsDto } from &#x27;@modules/collaborative-storage/services/dto/team-permissions.dto&#x27;;
 import { TeamDto } from &#x27;@modules/collaborative-storage/services/dto/team.dto&#x27;;
-import { ICollaborativeStorageStrategy } from &#x27;@shared/infra/collaborative-storage/strategy/base.interface.strategy&#x27;;
 import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-import { CollaborativeStorageAdapterMapper } from &#x27;@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { RoleDto } from &#x27;@modules/role/service/dto/role.dto&#x27;;
+import { CollaborativeStorageAdapterMapper } from &#x27;./mapper/collaborative-storage-adapter.mapper&#x27;;
+import { ICollaborativeStorageStrategy } from &#x27;./strategy/base.interface.strategy&#x27;;
 
 /**
  * Provides an Adapter to an external collaborative storage.

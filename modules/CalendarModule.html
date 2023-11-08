@@ -66,13 +66,13 @@
 <title>cluster_CalendarModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="72,-70 72,-268 424,-268 424,-70 72,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_CalendarModule_providers</title>
-<polygon fill="none" stroke="black" points="80,-78 80,-130 416,-130 416,-78 80,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_CalendarModule_exports</title>
 <polygon fill="none" stroke="black" points="183,-208 183,-260 311,-260 311,-208 183,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_CalendarModule_providers</title>
+<polygon fill="none" stroke="black" points="80,-78 80,-130 416,-130 416,-78 80,-78"/>
 </g>
 <!-- CalendarService  -->
 <g id="node1" class="node">
@@ -152,7 +152,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/infra/calendar/calendar.module.ts</code>
+            <code>apps/server/src/infra/calendar/calendar.module.ts</code>
         </p>
 
 
@@ -193,8 +193,8 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;;
 import { HttpModule } from &#x27;@nestjs/axios&#x27;;
-import { CalendarService } from &#x27;@shared/infra/calendar/service/calendar.service&#x27;;
-import { CalendarMapper } from &#x27;@shared/infra/calendar/mapper/calendar.mapper&#x27;;
+import { CalendarService } from &#x27;./service/calendar.service&#x27;;
+import { CalendarMapper } from &#x27;./mapper/calendar.mapper&#x27;;
 
 @Module({
 	imports: [HttpModule],
