@@ -10,7 +10,7 @@ import {
 	type ILibraryStorage,
 } from '@lumieducation/h5p-server';
 import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
+import { S3ClientAdapter } from '@infra/s3-client';
 import mime from 'mime';
 import path from 'node:path/posix';
 import { Readable } from 'stream';

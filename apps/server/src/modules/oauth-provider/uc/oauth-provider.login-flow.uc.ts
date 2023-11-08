@@ -1,12 +1,8 @@
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Permission, Pseudonym, User, UserDO } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { OauthProviderService } from '@shared/infra/oauth-provider';
-import {
-	AcceptLoginRequestBody,
-	ProviderLoginResponse,
-	ProviderRedirectResponse,
-} from '@shared/infra/oauth-provider/dto';
+import { OauthProviderService } from '@infra/oauth-provider';
+import { AcceptLoginRequestBody, ProviderLoginResponse, ProviderRedirectResponse } from '@infra/oauth-provider/dto';
 import { AuthorizationService } from '@modules/authorization';
 import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@modules/oauth-provider/controller/dto';
 import { OauthProviderRequestMapper } from '@modules/oauth-provider/mapper/oauth-provider-request.mapper';
