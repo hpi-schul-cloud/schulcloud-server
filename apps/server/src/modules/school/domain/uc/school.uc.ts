@@ -34,15 +34,13 @@ export class SchoolUc {
 		query: SchoolQuery,
 		ownSchoolId: EntityId
 	): Promise<SchoolForExternalInviteDto[]> {
-		const schools = await this.schoolService.getAllSchools(query);
+		const schools = await this.schoolService.getAllSchoolsExceptOwnSchool(query, ownSchoolId);
 
 		// TODO: Do we want authorization here? At the moment there is no fitting permission.
 
 		const dtos = SchoolDtoMapper.mapToListForExternalInviteDtos(schools);
 
-		const dtosWithoutOwnSchool = dtos.filter((dto) => dto.id !== ownSchoolId);
-
-		return dtosWithoutOwnSchool;
+		return dtos;
 	}
 
 	private async createYearsDto(school: School): Promise<YearsDto> {

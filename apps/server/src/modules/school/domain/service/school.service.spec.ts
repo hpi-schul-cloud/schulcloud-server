@@ -112,4 +112,16 @@ describe('SchoolService', () => {
 			expect(schoolRepo.getAllSchools).toBeCalledWith(expect.anything(), { pagination, order: { name: 'asc' } });
 		});
 	});
+
+	describe('getAllSchoolsExceptOwnSchool', () => {
+		it('should return all schools except own school', async () => {
+			const ownSchool = schoolFactory.build();
+			const foreignSchools = schoolFactory.buildList(3);
+			schoolRepo.getAllSchools.mockResolvedValueOnce([ownSchool, ...foreignSchools]);
+
+			const result = await service.getAllSchoolsExceptOwnSchool({}, ownSchool.id);
+
+			expect(result).toEqual(foreignSchools);
+		});
+	});
 });

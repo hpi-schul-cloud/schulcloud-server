@@ -32,6 +32,14 @@ export class SchoolService {
 		return schools;
 	}
 
+	public async getAllSchoolsExceptOwnSchool(query: SchoolQuery, ownSchoolId: EntityId): Promise<School[]> {
+		const schools = await this.getAllSchools(query);
+
+		const schoolsWithoutOwnSchool = schools.filter((school) => school.id !== ownSchoolId);
+
+		return schoolsWithoutOwnSchool;
+	}
+
 	private setStudentTeamCreationFeature(school: School): School {
 		const configValue = this.configService.get<string>('STUDENT_TEAM_CREATION');
 
