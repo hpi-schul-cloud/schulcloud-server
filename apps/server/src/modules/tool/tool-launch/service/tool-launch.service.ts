@@ -57,12 +57,7 @@ export class ToolLaunchService {
 
 		const { externalTool, schoolExternalTool } = await this.loadToolHierarchy(schoolExternalToolId);
 
-		if (Configuration.get('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED')) {
-			await this.schoolExternalToolValidationService.validate(schoolExternalTool);
-			await this.contextExternalToolValidationService.validate(contextExternalTool);
-		} else {
-			this.isToolStatusLatestOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
-		}
+		await this.isToolStatusLatestOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
 
 		const strategy: IToolLaunchStrategy | undefined = this.strategies.get(externalTool.config.type);
 
@@ -92,17 +87,37 @@ export class ToolLaunchService {
 		};
 	}
 
-	private isToolStatusLatestOrThrow(
+	private async determineToolConfigurationStatusThroughValidation(
+		schoolExternalTool: SchoolExternalTool,
+		contextExternalTool: ContextExternalTool
+	): Promise<ToolConfigurationStatus> {
+		try {
+			await this.schoolExternalToolValidationService.validate(schoolExternalTool);
+			await this.contextExternalToolValidationService.validate(contextExternalTool);
+			return ToolConfigurationStatus.LATEST;
+		} catch (err) {
+			return ToolConfigurationStatus.OUTDATED;
+		}
+	}
+
+	private async isToolStatusLatestOrThrow(
 		userId: EntityId,
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
-	): void {
-		const status: ToolConfigurationStatus = this.commonToolService.determineToolConfigurationStatus(
-			externalTool,
-			schoolExternalTool,
-			contextExternalTool
-		);
+	): Promise<void> {
+		let status: ToolConfigurationStatus;
+
+		if (Configuration.get('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED')) {
+			status = await this.determineToolConfigurationStatusThroughValidation(schoolExternalTool, contextExternalTool);
+		} else {
+			status = this.commonToolService.determineToolConfigurationStatus(
+				externalTool,
+				schoolExternalTool,
+				contextExternalTool
+			);
+		}
+
 		if (status !== ToolConfigurationStatus.LATEST) {
 			throw new ToolStatusOutdatedLoggableException(userId, contextExternalTool.id ?? '');
 		}

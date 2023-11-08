@@ -7,13 +7,14 @@ import {
 	externalToolFactory,
 	schoolExternalToolFactory,
 } from '@shared/testing';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { BasicToolConfig, ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../../school-external-tool/service';
 import { ToolStatusOutdatedLoggableException } from '../error';
 import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import {
@@ -23,6 +24,7 @@ import {
 	OAuth2ToolLaunchStrategy,
 } from './launch-strategy';
 import { ToolLaunchService } from './tool-launch.service';
+import { ContextExternalToolValidationService } from '../../context-external-tool/service';
 
 describe('ToolLaunchService', () => {
 	let module: TestingModule;
@@ -32,6 +34,8 @@ describe('ToolLaunchService', () => {
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let basicToolLaunchStrategy: DeepMocked<BasicToolLaunchStrategy>;
 	let commonToolService: DeepMocked<CommonToolService>;
+	let contextExternalToolValidationService: DeepMocked<ContextExternalToolValidationService>;
+	let schoolExternalToolValidationService: DeepMocked<SchoolExternalToolValidationService>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -61,6 +65,14 @@ describe('ToolLaunchService', () => {
 					provide: CommonToolService,
 					useValue: createMock<CommonToolService>(),
 				},
+				{
+					provide: ContextExternalToolValidationService,
+					useValue: createMock<ContextExternalToolValidationService>(),
+				},
+				{
+					provide: SchoolExternalToolValidationService,
+					useValue: createMock<SchoolExternalToolValidationService>(),
+				},
 			],
 		}).compile();
 
@@ -69,6 +81,8 @@ describe('ToolLaunchService', () => {
 		externalToolService = module.get(ExternalToolService);
 		basicToolLaunchStrategy = module.get(BasicToolLaunchStrategy);
 		commonToolService = module.get(CommonToolService);
+		contextExternalToolValidationService = module.get(ContextExternalToolValidationService);
+		schoolExternalToolValidationService = module.get(SchoolExternalToolValidationService);
 	});
 
 	afterAll(async () => {
@@ -109,6 +123,8 @@ describe('ToolLaunchService', () => {
 				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
 				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.LATEST);
 
+				Configuration.set('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED', false);
+
 				return {
 					launchDataDO,
 					launchParams,
@@ -145,6 +161,14 @@ describe('ToolLaunchService', () => {
 				await service.getLaunchData('userId', launchParams.contextExternalTool);
 
 				expect(externalToolService.findById).toHaveBeenCalledWith(launchParams.schoolExternalTool.toolId);
+			});
+
+			it('should call determineToolConfigurationStatus', async () => {
+				const { launchParams } = setup();
+
+				await service.getLaunchData('userId', launchParams.contextExternalTool);
+
+				expect(commonToolService.determineToolConfigurationStatus).toHaveBeenCalled();
 			});
 		});
 
@@ -213,7 +237,6 @@ describe('ToolLaunchService', () => {
 				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.OUTDATED);
 
 				return {
-					launchDataDO,
 					launchParams,
 					userId,
 					contextExternalToolId: contextExternalTool.id as string,
@@ -226,6 +249,52 @@ describe('ToolLaunchService', () => {
 				const func = () => service.getLaunchData(userId, launchParams.contextExternalTool);
 
 				await expect(func).rejects.toThrow(new ToolStatusOutdatedLoggableException(userId, contextExternalToolId));
+			});
+		});
+
+		describe('when FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED is true', () => {
+			const setup = () => {
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.build();
+				const basicToolConfigDO: BasicToolConfig = basicToolConfigFactory.build();
+				const externalTool: ExternalTool = externalToolFactory.build({
+					config: basicToolConfigDO,
+				});
+
+				const launchDataDO: ToolLaunchData = new ToolLaunchData({
+					type: ToolLaunchDataType.BASIC,
+					baseUrl: 'https://www.basic-baseurl.com/',
+					properties: [],
+					openNewTab: false,
+				});
+
+				const launchParams: IToolLaunchParams = {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				};
+
+				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
+				externalToolService.findById.mockResolvedValue(externalTool);
+				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
+				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.LATEST);
+
+				Configuration.set('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED', true);
+
+				return {
+					launchParams,
+				};
+			};
+
+			it('should should call validate', async () => {
+				const { launchParams } = setup();
+
+				await service.getLaunchData('userId', launchParams.contextExternalTool);
+
+				expect(schoolExternalToolValidationService.validate).toHaveBeenCalled();
+				expect(contextExternalToolValidationService.validate).toHaveBeenCalled();
 			});
 		});
 	});

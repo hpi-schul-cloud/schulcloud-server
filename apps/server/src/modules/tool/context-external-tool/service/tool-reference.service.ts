@@ -35,7 +35,7 @@ export class ToolReferenceService {
 
 		let status: ToolConfigurationStatus;
 		if (Configuration.get('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED')) {
-			status = await this.determineToolConfigurationStatus(schoolExternalTool, contextExternalTool);
+			status = await this.determineToolConfigurationStatusThroughValidation(schoolExternalTool, contextExternalTool);
 		} else {
 			status = this.commonToolService.determineToolConfigurationStatus(
 				externalTool,
@@ -57,7 +57,7 @@ export class ToolReferenceService {
 		return toolReference;
 	}
 
-	private async determineToolConfigurationStatus(
+	private async determineToolConfigurationStatusThroughValidation(
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
 	): Promise<ToolConfigurationStatus> {

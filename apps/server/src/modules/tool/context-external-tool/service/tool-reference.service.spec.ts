@@ -2,13 +2,15 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { ToolConfigurationStatus } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
 import { ExternalToolLogoService, ExternalToolService } from '../../external-tool/service';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../../school-external-tool/service';
 import { ToolReference } from '../domain';
 import { ContextExternalToolService } from './context-external-tool.service';
 import { ToolReferenceService } from './tool-reference.service';
+import { ContextExternalToolValidationService } from './context-external-tool-validation.service';
 
 describe('ToolReferenceService', () => {
 	let module: TestingModule;
@@ -19,6 +21,8 @@ describe('ToolReferenceService', () => {
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let commonToolService: DeepMocked<CommonToolService>;
 	let externalToolLogoService: DeepMocked<ExternalToolLogoService>;
+	let contextExternalToolValidationService: DeepMocked<ContextExternalToolValidationService>;
+	let schoolExternalToolValidationService: DeepMocked<SchoolExternalToolValidationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -44,6 +48,14 @@ describe('ToolReferenceService', () => {
 					provide: ExternalToolLogoService,
 					useValue: createMock<ExternalToolLogoService>(),
 				},
+				{
+					provide: ContextExternalToolValidationService,
+					useValue: createMock<ContextExternalToolValidationService>(),
+				},
+				{
+					provide: SchoolExternalToolValidationService,
+					useValue: createMock<SchoolExternalToolValidationService>(),
+				},
 			],
 		}).compile();
 
@@ -53,6 +65,8 @@ describe('ToolReferenceService', () => {
 		contextExternalToolService = module.get(ContextExternalToolService);
 		commonToolService = module.get(CommonToolService);
 		externalToolLogoService = module.get(ExternalToolLogoService);
+		contextExternalToolValidationService = module.get(ContextExternalToolValidationService);
+		schoolExternalToolValidationService = module.get(SchoolExternalToolValidationService);
 	});
 
 	afterAll(async () => {
@@ -81,6 +95,8 @@ describe('ToolReferenceService', () => {
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
 				commonToolService.determineToolConfigurationStatus.mockReturnValue(ToolConfigurationStatus.OUTDATED);
 				externalToolLogoService.buildLogoUrl.mockReturnValue(logoUrl);
+
+				Configuration.set('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED', false);
 
 				return {
 					contextExternalToolId,
@@ -126,6 +142,43 @@ describe('ToolReferenceService', () => {
 					status: ToolConfigurationStatus.OUTDATED,
 					contextToolId: contextExternalToolId,
 				});
+			});
+		});
+
+		describe('when FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED is true', () => {
+			const setup = () => {
+				const contextExternalToolId = new ObjectId().toHexString();
+				const externalTool = externalToolFactory.buildWithId();
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id as string,
+				});
+				const contextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.buildWithId(undefined, contextExternalToolId);
+				const logoUrl = 'logoUrl';
+
+				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
+				commonToolService.determineToolConfigurationStatus.mockReturnValue(ToolConfigurationStatus.OUTDATED);
+				externalToolLogoService.buildLogoUrl.mockReturnValue(logoUrl);
+
+				Configuration.set('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED', true);
+
+				return {
+					contextExternalToolId,
+					schoolExternalTool,
+					contextExternalTool,
+				};
+			};
+
+			it('should determine the tool status through validation', async () => {
+				const { contextExternalToolId, schoolExternalTool, contextExternalTool } = setup();
+
+				await service.getToolReference(contextExternalToolId);
+
+				expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
+				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(contextExternalTool);
 			});
 		});
 	});

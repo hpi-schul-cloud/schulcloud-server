@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { externalToolFactory, schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
@@ -51,8 +52,12 @@ describe('SchoolExternalToolValidationService', () => {
 				...externalToolFactory.buildWithId(),
 				...externalToolDoMock,
 			});
-			externalToolService.findById.mockResolvedValue(externalTool);
+
 			const schoolExternalToolId = schoolExternalTool.id as string;
+
+			externalToolService.findById.mockResolvedValue(externalTool);
+			Configuration.set('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED', true);
+
 			return {
 				schoolExternalTool,
 				ExternalTool,
@@ -87,9 +92,44 @@ describe('SchoolExternalToolValidationService', () => {
 					schoolExternalTool
 				);
 			});
-		});
 
+			it('should not throw error', async () => {
+				const { schoolExternalTool } = setup({ version: 8383 }, { toolVersion: 1337 });
+
+				const func = () => service.validate(schoolExternalTool);
+
+				await expect(func()).resolves.not.toThrow();
+			});
+		});
+	});
+
+	describe('validate with FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED on false', () => {
 		describe('when version of externalTool and schoolExternalTool are different', () => {
+			const setup = (
+				externalToolDoMock?: Partial<ExternalTool>,
+				schoolExternalToolDoMock?: Partial<SchoolExternalTool>
+			) => {
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+					...schoolExternalToolFactory.buildWithId(),
+					...schoolExternalToolDoMock,
+				});
+				const externalTool: ExternalTool = new ExternalTool({
+					...externalToolFactory.buildWithId(),
+					...externalToolDoMock,
+				});
+
+				const schoolExternalToolId = schoolExternalTool.id as string;
+
+				externalToolService.findById.mockResolvedValue(externalTool);
+				Configuration.set('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED', false);
+
+				return {
+					schoolExternalTool,
+					ExternalTool,
+					schoolExternalToolId,
+				};
+			};
+
 			it('should throw error', async () => {
 				const { schoolExternalTool } = setup({ version: 8383 }, { toolVersion: 1337 });
 
