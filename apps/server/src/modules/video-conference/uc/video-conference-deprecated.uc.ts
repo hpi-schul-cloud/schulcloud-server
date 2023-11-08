@@ -13,8 +13,8 @@ import {
 	VideoConferenceOptionsDO,
 } from '@shared/domain';
 import { VideoConferenceScope } from '@shared/domain/interface';
-import { CalendarService } from '@shared/infra/calendar';
-import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
+import { CalendarService } from '@infra/calendar';
+import { CalendarEventDto } from '@infra/calendar/dto/calendar-event.dto';
 import { TeamsRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { ICurrentUser } from '@modules/authentication';

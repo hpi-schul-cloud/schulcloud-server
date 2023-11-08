@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PermissionService } from '@shared/domain';
 import { SystemRepo, UserRepo } from '@shared/repo';
-import { IdentityManagementModule } from '@shared/infra/identity-management';
+import { IdentityManagementModule } from '@infra/identity-management';
 import { LoggerModule } from '@src/core/logger/logger.module';
 import { AccountRepo } from './repo/account.repo';
 import { AccountService } from './services/account.service';

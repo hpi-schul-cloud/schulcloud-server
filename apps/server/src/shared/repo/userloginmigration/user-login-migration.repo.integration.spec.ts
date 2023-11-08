@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, SystemEntity, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections, schoolFactory, systemFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { userLoginMigrationFactory } from '../../testing/factory/user-login-migration.factory';
