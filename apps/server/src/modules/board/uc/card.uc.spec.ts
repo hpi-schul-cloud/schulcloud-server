@@ -6,9 +6,9 @@ import { cardFactory, richTextElementFactory } from '@shared/testing/factory/dom
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@modules/authorization';
 import { ObjectId } from 'bson';
+import { HttpService } from '@nestjs/axios';
 import { BoardDoAuthorizableService, ContentElementService, CardService } from '../service';
 import { CardUc } from './card.uc';
-import { HttpService } from '@nestjs/axios';
 
 describe(CardUc.name, () => {
 	let module: TestingModule;
@@ -17,7 +17,6 @@ describe(CardUc.name, () => {
 	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let cardService: DeepMocked<CardService>;
 	let elementService: DeepMocked<ContentElementService>;
-	let httpService: DeepMocked<HttpService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -56,7 +55,6 @@ describe(CardUc.name, () => {
 
 		cardService = module.get(CardService);
 		elementService = module.get(ContentElementService);
-		httpService = module.get(HttpService);
 		await setupEntities();
 	});
 

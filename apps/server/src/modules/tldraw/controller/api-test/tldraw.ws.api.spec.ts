@@ -3,9 +3,9 @@ import { Test } from '@nestjs/testing';
 import WebSocket from 'ws';
 import { TextEncoder } from 'util';
 import { INestApplication } from '@nestjs/common';
+import { TldrawWsTestModule } from '@src/modules/tldraw/tldraw-ws-test.module';
 import { TldrawWs } from '../tldraw.ws';
 import { TestConnection } from '../../testing/test-connection';
-import {TldrawWsTestModule} from "@src/modules/tldraw/tldraw-ws-test.module";
 
 describe('WebSocketController (WsAdapter)', () => {
 	let app: INestApplication;
