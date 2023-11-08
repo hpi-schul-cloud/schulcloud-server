@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import type { IIdentityManagementConfig } from '@shared/infra/identity-management';
+import type { IIdentityManagementConfig } from '@infra/identity-management';
 import type { ICoreModuleConfig } from '@src/core';
 import type { IAccountConfig } from '@modules/account';
 import type { IFilesStorageClientConfig } from '@modules/files-storage-client';

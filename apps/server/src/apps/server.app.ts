@@ -5,7 +5,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
-import { Mail, MailService } from '@shared/infra/mail';
+import { Mail, MailService } from '@infra/mail';
 import { LegacyLogger, Logger } from '@src/core/logger';
 import { AccountService } from '@modules/account/services/account.service';
 import { TeamService } from '@modules/teams/service/team.service';

@@ -4,7 +4,7 @@ import {
 	PrometheusMetricsConfig,
 	createAPIResponseTimeMetricMiddleware,
 	createPrometheusMetricsApp,
-} from '@shared/infra/metrics';
+} from '@infra/metrics';
 import { LogMessage, Loggable, Logger } from '@src/core/logger';
 import { AppStartLoggable } from './app-start-loggable';
 

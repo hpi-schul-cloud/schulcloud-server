@@ -1,4 +1,4 @@
-import { File } from '@shared/infra/s3-client';
+import { File } from '@infra/s3-client';
 import { Readable } from 'stream';
 
 export class FileDto implements File {
