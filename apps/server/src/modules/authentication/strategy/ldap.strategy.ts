@@ -7,7 +7,7 @@ import { Logger } from '@src/core/logger';
 import { AccountDto } from '@modules/account/services/dto';
 import { Strategy } from 'passport-custom';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
-import { ICurrentUser } from '../interface';
+import { ICurrentUser, LdapCurrentUser } from '../interface';
 import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapService } from '../services/ldap.service';
@@ -48,7 +48,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 
 		await this.checkCredentials(account, system, ldapDn, password);
 
-		const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(account.id, user, systemId);
+		const currentUser: LdapCurrentUser = CurrentUserMapper.mapToLdapCurrentUser(account.id, user, systemId);
 
 		return currentUser;
 	}

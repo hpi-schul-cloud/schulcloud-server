@@ -2,7 +2,7 @@ import { ValidationError } from '@shared/common';
 import { Role, User } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { ICurrentUser, OauthCurrentUser } from '../interface';
+import { ICurrentUser, LdapCurrentUser, OauthCurrentUser } from '../interface';
 import { CreateJwtPayload, JwtPayload } from '../interface/jwt-payload';
 
 export class CurrentUserMapper {
@@ -15,6 +15,10 @@ export class CurrentUserMapper {
 			userId: user.id,
 			isExternalUser: false,
 		};
+	}
+
+	static mapToLdapCurrentUser(accountId: string, user: User, systemId?: string): LdapCurrentUser {
+		return { ...CurrentUserMapper.userToICurrentUser(accountId, user, systemId), isExternalUser: true };
 	}
 
 	static mapToOauthCurrentUser(

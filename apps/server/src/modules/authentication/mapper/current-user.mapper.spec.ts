@@ -304,4 +304,33 @@ describe('CurrentUserMapper', () => {
 			});
 		});
 	});
+
+	describe('mapToLdapCurrentUser', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId({
+				school: schoolFactory.buildWithId(),
+			});
+			const systemId = 'mockSystemId';
+
+			return {
+				user,
+				systemId,
+			};
+		};
+
+		it('should map to ldap current user', () => {
+			const { user, systemId } = setup();
+
+			const currentUser: ICurrentUser = CurrentUserMapper.mapToLdapCurrentUser(accountId, user, systemId);
+
+			expect(currentUser).toMatchObject({
+				accountId,
+				systemId,
+				roles: [],
+				schoolId: user.school.id,
+				userId: user.id,
+				isExternalUser: true,
+			});
+		});
+	});
 });

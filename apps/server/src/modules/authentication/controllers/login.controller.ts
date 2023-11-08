@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ForbiddenOperationError, ValidationError } from '@shared/common';
 import { CurrentUser } from '../decorator';
-import type { ICurrentUser, OauthCurrentUser } from '../interface';
+import type { ICurrentUser, LdapCurrentUser, OauthCurrentUser } from '../interface';
 import { LoginDto } from '../uc/dto';
 import { LoginUc } from '../uc/login.uc';
 import {
@@ -27,8 +27,11 @@ export class LoginController {
 	@ApiResponse({ status: 200, type: LoginResponse, description: 'Login was successful.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid user credentials.' })
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	async loginLdap(@CurrentUser() user: ICurrentUser, @Body() _: LdapAuthorizationBodyParams): Promise<LoginResponse> {
+	async loginLdap(
+		@CurrentUser() user: LdapCurrentUser,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		@Body() _: LdapAuthorizationBodyParams
+	): Promise<LoginResponse> {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
 
 		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto);
