@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
@@ -17,8 +18,9 @@ export class SchoolExternalToolValidationService {
 
 		const loadedExternalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
-		this.checkVersionMatch(schoolExternalTool.toolVersion, loadedExternalTool.version);
-
+		if (!Configuration.get('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED')) {
+			this.checkVersionMatch(schoolExternalTool.toolVersion, loadedExternalTool.version);
+		}
 		this.commonToolValidationService.checkCustomParameterEntries(loadedExternalTool, schoolExternalTool);
 	}
 

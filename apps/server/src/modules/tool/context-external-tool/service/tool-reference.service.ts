@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { ToolConfigurationStatus } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolLogoService, ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../../school-external-tool/service';
 import { ContextExternalTool, ToolReference } from '../domain';
 import { ToolReferenceMapper } from '../mapper';
 import { ContextExternalToolService } from './context-external-tool.service';
+import { ContextExternalToolValidationService } from './context-external-tool-validation.service';
 
 @Injectable()
 export class ToolReferenceService {
@@ -17,7 +19,9 @@ export class ToolReferenceService {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly commonToolService: CommonToolService,
-		private readonly externalToolLogoService: ExternalToolLogoService
+		private readonly externalToolLogoService: ExternalToolLogoService,
+		private readonly contextExternalToolValidationService: ContextExternalToolValidationService,
+		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService
 	) {}
 
 	async getToolReference(contextExternalToolId: EntityId): Promise<ToolReference> {
@@ -29,11 +33,16 @@ export class ToolReferenceService {
 		);
 		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
-		const status: ToolConfigurationStatus = this.commonToolService.determineToolConfigurationStatus(
-			externalTool,
-			schoolExternalTool,
-			contextExternalTool
-		);
+		let status: ToolConfigurationStatus;
+		if (Configuration.get('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED')) {
+			status = await this.determineToolConfigurationStatus(schoolExternalTool, contextExternalTool);
+		} else {
+			status = this.commonToolService.determineToolConfigurationStatus(
+				externalTool,
+				schoolExternalTool,
+				contextExternalTool
+			);
+		}
 
 		const toolReference: ToolReference = ToolReferenceMapper.mapToToolReference(
 			externalTool,
@@ -46,5 +55,18 @@ export class ToolReferenceService {
 		);
 
 		return toolReference;
+	}
+
+	private async determineToolConfigurationStatus(
+		schoolExternalTool: SchoolExternalTool,
+		contextExternalTool: ContextExternalTool
+	): Promise<ToolConfigurationStatus> {
+		try {
+			await this.schoolExternalToolValidationService.validate(schoolExternalTool);
+			await this.contextExternalToolValidationService.validate(contextExternalTool);
+			return ToolConfigurationStatus.LATEST;
+		} catch (err) {
+			return ToolConfigurationStatus.OUTDATED;
+		}
 	}
 }

@@ -1327,6 +1327,11 @@
 			"default": false,
 			"description": "Enables groups of type class in courses"
 		},
+		"FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the calculation of the outdated status of an external tool without the usage of the db attribute version"
+		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
 			"description": "TSP School Syncer properties",

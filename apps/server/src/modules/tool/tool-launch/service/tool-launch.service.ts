@@ -1,12 +1,13 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../../school-external-tool/service';
 import { ToolStatusOutdatedLoggableException } from '../error';
 import { ToolLaunchMapper } from '../mapper';
 import { ToolLaunchData, ToolLaunchRequest } from '../types';
@@ -16,6 +17,7 @@ import {
 	Lti11ToolLaunchStrategy,
 	OAuth2ToolLaunchStrategy,
 } from './launch-strategy';
+import { ContextExternalToolValidationService } from '../../context-external-tool/service';
 
 @Injectable()
 export class ToolLaunchService {
@@ -27,7 +29,9 @@ export class ToolLaunchService {
 		private readonly basicToolLaunchStrategy: BasicToolLaunchStrategy,
 		private readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy,
 		private readonly oauth2ToolLaunchStrategy: OAuth2ToolLaunchStrategy,
-		private readonly commonToolService: CommonToolService
+		private readonly commonToolService: CommonToolService,
+		private readonly contextExternalToolValidationService: ContextExternalToolValidationService,
+		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService
 	) {
 		this.strategies = new Map();
 		this.strategies.set(ToolConfigType.BASIC, basicToolLaunchStrategy);
@@ -53,7 +57,12 @@ export class ToolLaunchService {
 
 		const { externalTool, schoolExternalTool } = await this.loadToolHierarchy(schoolExternalToolId);
 
-		this.isToolStatusLatestOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
+		if (Configuration.get('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED')) {
+			await this.schoolExternalToolValidationService.validate(schoolExternalTool);
+			await this.contextExternalToolValidationService.validate(contextExternalTool);
+		} else {
+			this.isToolStatusLatestOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
+		}
 
 		const strategy: IToolLaunchStrategy | undefined = this.strategies.get(externalTool.config.type);
 
