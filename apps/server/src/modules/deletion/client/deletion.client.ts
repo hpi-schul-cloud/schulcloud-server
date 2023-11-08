@@ -18,8 +18,8 @@ export class DeletionClient {
 		private readonly httpService: HttpService,
 		private readonly configService: ConfigService<DeletionClientConfig, true>
 	) {
-		this.baseUrl = this.configService.get<string>('ADMIN_API_BASE_URL');
-		this.apiKey = this.configService.get<string>('ADMIN_API_API_KEY');
+		this.baseUrl = this.configService.get<string>('ADMIN_API_CLIENT_BASE_URL');
+		this.apiKey = this.configService.get<string>('ADMIN_API_CLIENT_API_KEY');
 
 		// Prepare the POST /deletionRequests endpoint beforehand to not do it on every client call.
 		this.postDeletionRequestsEndpoint = new URL('/admin/api/v1/deletionRequests', this.baseUrl).toString();

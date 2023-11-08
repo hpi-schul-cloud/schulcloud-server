@@ -6,16 +6,24 @@ const bootstrap = new BootstrapConsole({
 	useDecorators: true,
 });
 
-void bootstrap.init().then(async (app) => {
-	// eslint-disable-next-line promise/always-return
-	try {
-		await app.init();
-		await bootstrap.boot();
-		await app.close();
-	} catch (e) {
+bootstrap
+	.init()
+	.then(async (app) => {
+		// eslint-disable-next-line promise/always-return
+		try {
+			await app.init();
+			await bootstrap.boot();
+			await app.close();
+		} catch (err) {
+			await app.close();
+
+			// eslint-disable-next-line no-console
+			console.error(err);
+			process.exitCode = 1;
+		}
+	})
+	.catch((err) => {
 		// eslint-disable-next-line no-console
-		console.error(e);
-		await app.close();
+		console.error(err);
 		process.exitCode = 1;
-	}
-});
+	});

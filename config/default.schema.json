@@ -1343,9 +1343,9 @@
 				}
 			}
 		},
-		"ADMIN_API": {
+		"ADMIN_API_CLIENT": {
 			"type": "object",
-			"description": "Configuration of the schulcloud-server's admin API.",
+			"description": "Configuration of the schulcloud-server's admin API client.",
 			"properties": {
 				"BASE_URL": {
 					"type": "string",

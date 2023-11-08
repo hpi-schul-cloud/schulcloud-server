@@ -21,7 +21,7 @@ describe(DeletionClient.name, () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService>({
 						get: jest.fn((key: string) => {
-							if (key === 'ADMIN_API_BASE_URL') {
+							if (key === 'ADMIN_API_CLIENT_BASE_URL') {
 								return 'http://localhost:4030';
 							}
 
