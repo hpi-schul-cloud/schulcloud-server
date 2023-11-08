@@ -154,7 +154,7 @@ export class SchoolEntity extends BaseEntity {
 			this.userLoginMigration = props.userLoginMigration;
 		}
 		this.federalState = props.federalState;
-		// TODO: General question: Why the if-checks around the optional props?
+
 		if (props.purpose) {
 			this.purpose = props.purpose;
 		}
