@@ -13,10 +13,10 @@ import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum'
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
 import { DeletionRequestUc } from './deletion-request.uc';
-import { DeletionRequestLog, DeletionRequestProps } from './interface/interfaces';
 import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
 import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
 import { deletionLogFactory } from '../domain/testing/factory/deletion-log.factory';
+import { DeletionRequestBodyProps, DeletionRequestLogResponse } from '../controller/dto';
 
 describe(DeletionRequestUc.name, () => {
 	let module: TestingModule;
@@ -103,9 +103,9 @@ describe(DeletionRequestUc.name, () => {
 		describe('when creating a deletionRequest', () => {
 			const setup = () => {
 				jest.clearAllMocks();
-				const deletionRequestToCreate: DeletionRequestProps = {
+				const deletionRequestToCreate: DeletionRequestBodyProps = {
 					targetRef: {
-						targetRefDoamin: DeletionDomainModel.USER,
+						targetRefDomain: DeletionDomainModel.USER,
 						targetRefId: '653e4833cc39e5907a1e18d2',
 					},
 					deleteInMinutes: 1440,
@@ -125,7 +125,7 @@ describe(DeletionRequestUc.name, () => {
 
 				expect(deletionRequestService.createDeletionRequest).toHaveBeenCalledWith(
 					deletionRequestToCreate.targetRef.targetRefId,
-					deletionRequestToCreate.targetRef.targetRefDoamin,
+					deletionRequestToCreate.targetRef.targetRefDomain,
 					deletionRequestToCreate.deleteInMinutes
 				);
 			});
@@ -343,7 +343,7 @@ describe(DeletionRequestUc.name, () => {
 					deletedCount: 1,
 				});
 
-				const executedDeletionRequestSummary: DeletionRequestLog = {
+				const executedDeletionRequestSummary: DeletionRequestLogResponse = {
 					targetRef: {
 						targetRefDomain: deletionRequestExecuted.targetRefDomain,
 						targetRefId: deletionRequestExecuted.targetRefId,
@@ -399,7 +399,7 @@ describe(DeletionRequestUc.name, () => {
 			const setup = () => {
 				jest.clearAllMocks();
 				const deletionRequest = deletionRequestFactory.build();
-				const notExecutedDeletionRequestSummary: DeletionRequestLog = {
+				const notExecutedDeletionRequestSummary: DeletionRequestLogResponse = {
 					targetRef: {
 						targetRefDomain: deletionRequest.targetRefDomain,
 						targetRefId: deletionRequest.targetRefId,

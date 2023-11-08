@@ -15,15 +15,11 @@ import { DeletionRequest } from '../domain/deletion-request.do';
 import { DeletionOperationModel } from '../domain/types/deletion-operation-model.enum';
 import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
 import { DeletionLog } from '../domain/deletion-log.do';
-import {
-	DeletionRequestProps,
-	DeletionRequestLog,
-	DeletionLogStatistic,
-	DeletionRequestCreateAnswer,
-} from './interface/interfaces';
+import { DeletionLogStatistic } from './interface/interfaces';
 import { DeletionLogStatisticBuilder } from './builder/deletion-log-statistic.builder';
-import { DeletionRequestLogBuilder } from './builder/deletion-request-log.builder';
+import { DeletionRequestLogResponseBuilder } from './builder/deletion-request-log.builder';
 import { DeletionTargetRefBuilder } from './builder/deletion-target-ref.builder';
+import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 
 @Injectable()
 export class DeletionRequestUc {
@@ -41,10 +37,10 @@ export class DeletionRequestUc {
 		private readonly userService: UserService
 	) {}
 
-	async createDeletionRequest(deletionRequest: DeletionRequestProps): Promise<DeletionRequestCreateAnswer> {
+	async createDeletionRequest(deletionRequest: DeletionRequestBodyProps): Promise<DeletionRequestResponse> {
 		const result = await this.deletionRequestService.createDeletionRequest(
 			deletionRequest.targetRef.targetRefId,
-			deletionRequest.targetRef.targetRefDoamin,
+			deletionRequest.targetRef.targetRefDomain,
 			deletionRequest.deleteInMinutes
 		);
 
@@ -62,9 +58,9 @@ export class DeletionRequestUc {
 		}
 	}
 
-	async findById(deletionRequestId: EntityId): Promise<DeletionRequestLog> {
+	async findById(deletionRequestId: EntityId): Promise<DeletionRequestLogResponse> {
 		const deletionRequest: DeletionRequest = await this.deletionRequestService.findById(deletionRequestId);
-		let response: DeletionRequestLog = DeletionRequestLogBuilder.build(
+		let response: DeletionRequestLogResponse = DeletionRequestLogResponseBuilder.build(
 			DeletionTargetRefBuilder.build(deletionRequest.targetRefDomain, deletionRequest.targetRefId),
 			deletionRequest.deleteAfter
 		);
