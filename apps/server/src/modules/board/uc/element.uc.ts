@@ -1,7 +1,8 @@
 import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	AnyBoardDo,
-	AnyContentElementDo, DrawingElement,
+	AnyContentElementDo,
+	DrawingElement,
 	EntityId,
 	isSubmissionContainerElement,
 	isSubmissionItem,
@@ -14,9 +15,9 @@ import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { SubmissionItemService } from '../service/submission-item.service';
 import { BaseUc } from './base.uc';
-import {firstValueFrom} from "rxjs";
-import {HttpService} from "@nestjs/axios";
-import {Configuration} from "@hpi-schul-cloud/commons/lib";
+import { firstValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
 @Injectable()
 export class ElementUc extends BaseUc {

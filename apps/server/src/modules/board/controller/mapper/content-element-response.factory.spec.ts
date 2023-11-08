@@ -40,7 +40,7 @@ describe(ContentElementResponseFactory.name, () => {
 	});
 
 	it('should return instance of DrawingElementResponse', () => {
-		const { drawingElement } = drawingElementFactory.build();
+		const drawingElement = drawingElementFactory.build();
 
 		const result = ContentElementResponseFactory.mapToResponse(drawingElement);
 

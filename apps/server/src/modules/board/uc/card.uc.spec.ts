@@ -8,6 +8,7 @@ import { AuthorizationService } from '@modules/authorization';
 import { ObjectId } from 'bson';
 import { BoardDoAuthorizableService, ContentElementService, CardService } from '../service';
 import { CardUc } from './card.uc';
+import { HttpService } from '@nestjs/axios';
 
 describe(CardUc.name, () => {
 	let module: TestingModule;

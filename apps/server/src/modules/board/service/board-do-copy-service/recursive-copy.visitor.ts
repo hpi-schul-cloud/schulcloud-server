@@ -3,7 +3,8 @@ import {
 	BoardCompositeVisitorAsync,
 	Card,
 	Column,
-	ColumnBoard, DrawingElement,
+	ColumnBoard,
+	DrawingElement,
 	EntityId,
 	ExternalToolElement,
 	FileElement,
@@ -123,7 +124,6 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		this.copyMap.set(original.id, copy);
 	}
 
-
 	async visitDrawingElementAsync(original: DrawingElement): Promise<void> {
 		const copy = new DrawingElement({
 			id: new ObjectId().toHexString(),
@@ -131,7 +131,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			drawingName: original.drawingName,
 			children: [],
 			createdAt: new Date(),
-			updatedAt: new Date()
+			updatedAt: new Date(),
 		});
 		this.resultMap.set(original.id, {
 			copyEntity: copy,

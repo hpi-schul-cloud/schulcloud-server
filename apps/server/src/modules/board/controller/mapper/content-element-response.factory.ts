@@ -8,7 +8,7 @@ import {
 	isRichTextElementResponse,
 } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
-import { DrawingElementResponseMapper } from '@src/modules/board/controller/mapper/drawing-element-response.mapper';
+import { DrawingElementResponseMapper } from './drawing-element-response.mapper';
 import { ExternalToolElementResponseMapper } from './external-tool-element-response.mapper';
 import { FileElementResponseMapper } from './file-element-response.mapper';
 import { LinkElementResponseMapper } from './link-element-response.mapper';

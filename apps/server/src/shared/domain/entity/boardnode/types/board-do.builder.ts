@@ -13,7 +13,7 @@ import type {
 import type { CardNode } from '../card-node.entity';
 import type { ColumnBoardNode } from '../column-board-node.entity';
 import type { ColumnNode } from '../column-node.entity';
-import { DrawingElementNode } from '@shared/domain/entity/boardnode/drawing-element-node.entity';
+import { DrawingElementNode } from '../drawing-element-node.entity';
 import type { ExternalToolElementNodeEntity } from '../external-tool-element-node.entity';
 import type { FileElementNode } from '../file-element-node.entity';
 import type { LinkElementNode } from '../link-element-node.entity';

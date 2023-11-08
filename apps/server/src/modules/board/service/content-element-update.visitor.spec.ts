@@ -60,9 +60,9 @@ describe(ContentElementUpdateVisitor.name, () => {
 		});
 
 		describe('when component is a drawing-item', () => {
-			it('should throw an error', () => {
+			it('should throw an error', async () => {
 				const { drawingItem, updater } = setup();
-				expect(() => updater.visitDrawingElement(drawingItem)).toThrow();
+				await expect(() => updater.visitDrawingElementAsync(drawingItem)).rejects.toThrow();
 			});
 		});
 	});
