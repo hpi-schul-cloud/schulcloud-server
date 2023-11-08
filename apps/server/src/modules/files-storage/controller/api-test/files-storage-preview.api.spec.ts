@@ -341,6 +341,7 @@ describe('File Controller (API) - preview', () => {
 							expect(response.status).toEqual(206);
 							expect(response.headers['accept-ranges']).toMatch('bytes');
 							expect(response.headers['content-range']).toMatch('bytes 0-3/4');
+							expect(response.headers.etag).toMatch('testTag');
 						});
 					});
 
@@ -403,6 +404,7 @@ describe('File Controller (API) - preview', () => {
 						expect(response.status).toEqual(206);
 						expect(response.headers['accept-ranges']).toMatch('bytes');
 						expect(response.headers['content-range']).toMatch('bytes 0-3/4');
+						expect(response.headers.etag).toMatch('testTag');
 					});
 				});
 			});
