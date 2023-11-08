@@ -1,5 +1,5 @@
 import { Console, Command } from 'nestjs-console';
-import { ConsoleWriterService } from '@shared/infra/console';
+import { ConsoleWriterService } from '@infra/console';
 import { BatchDeletionUc } from '../uc';
 import { PushDeletionRequestsOptions } from './interface';
 
