@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { S3Config } from '@shared/infra/s3-client';
+import { S3Config } from '@src/infra/s3-client';
 
 const h5pEditorConfig = {
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,

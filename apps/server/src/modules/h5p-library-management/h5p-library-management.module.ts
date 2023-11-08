@@ -3,9 +3,9 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
-import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq';
+import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
 
-import { S3ClientModule } from '@shared/infra/s3-client';
+import { S3ClientModule } from '@src/infra/s3-client';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
