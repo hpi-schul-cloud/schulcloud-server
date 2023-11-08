@@ -26,3 +26,17 @@ export interface File {
 	data: Readable;
 	mimeType: string;
 }
+
+export interface ListFiles {
+	path: string;
+	maxKeys?: number;
+	nextMarker?: string;
+	files?: string[];
+}
+
+export interface ObjectKeysRecursive {
+	path: string;
+	maxKeys: number | undefined;
+	nextMarker: string | undefined;
+	files: string[];
+}
