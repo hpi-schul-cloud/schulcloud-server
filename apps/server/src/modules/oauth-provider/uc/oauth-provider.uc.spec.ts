@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthProviderUc } from '@modules/oauth-provider/uc/oauth-provider.uc';
-import { OauthProviderService } from '@shared/infra/oauth-provider/index';
+import { OauthProviderService } from '@infra/oauth-provider/index';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto';
+import { ProviderConsentSessionResponse } from '@infra/oauth-provider/dto';
 
 describe('OauthProviderUc', () => {
 	let module: TestingModule;

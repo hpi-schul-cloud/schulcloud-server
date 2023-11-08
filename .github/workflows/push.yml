@@ -172,7 +172,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: 'trivy-results.sarif'
-
+  
   end-to-end-tests:
     needs:
       - build_and_push

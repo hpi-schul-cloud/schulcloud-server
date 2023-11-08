@@ -14,7 +14,7 @@ import {
 	ColumnBoard,
 	RichTextElementNode,
 } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import {
 	cardFactory,
 	cardNodeFactory,
