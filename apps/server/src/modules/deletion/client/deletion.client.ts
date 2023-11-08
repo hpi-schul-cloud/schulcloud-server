@@ -3,8 +3,7 @@ import { AxiosResponse } from 'axios';
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { DeletionRequestInput, DeletionRequestOutput } from './interface';
-import { DeletionClientConfig } from './deletion-client.config';
+import { DeletionRequestInput, DeletionRequestOutput, DeletionClientConfig } from './interface';
 
 @Injectable()
 export class DeletionClient {
