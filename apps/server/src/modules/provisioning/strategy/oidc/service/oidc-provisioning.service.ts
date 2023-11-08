@@ -67,7 +67,7 @@ export class OidcProvisioningService {
 		return savedSchool;
 	}
 
-	getSchoolName(externalSchool: ExternalSchoolDto): string {
+	private getSchoolName(externalSchool: ExternalSchoolDto): string {
 		const schoolName: string = externalSchool.location
 			? `${externalSchool.name} (${externalSchool.location})`
 			: externalSchool.name;
