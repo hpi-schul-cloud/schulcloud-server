@@ -1,4 +1,4 @@
-import { ObjectId } from '@mikro-orm/mongodb';
+import { ObjectId } from 'bson';
 import { DeletionRequestOutput } from '../interface';
 import { DeletionRequestOutputBuilder } from './deletion-request-output.builder';
 
