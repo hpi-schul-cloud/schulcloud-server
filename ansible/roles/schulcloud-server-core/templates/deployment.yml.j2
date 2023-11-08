@@ -5,8 +5,8 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: api
-    app.kubernetes.io/part-of: schulcloud-verbund
     app.kubernetes.io/managed-by: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    app.kubernetes.io/part-of: {{ SCHULCLOUD_SERVER_REPO_NAME }}
 spec:
   replicas: {{ API_REPLICAS|default("1", true) }}
   strategy:
@@ -23,8 +23,8 @@ spec:
     metadata:
       labels:
         app: api
-        app.kubernetes.io/part-of: schulcloud-verbund
         app.kubernetes.io/managed-by: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+        app.kubernetes.io/part-of: {{ SCHULCLOUD_SERVER_REPO_NAME }}
     spec:
       securityContext:
         runAsUser: 1000
