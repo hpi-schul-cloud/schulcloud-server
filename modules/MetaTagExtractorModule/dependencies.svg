@@ -24,6 +24,10 @@
 <title>cluster_MetaTagExtractorModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 810,-268 810,-70 8,-70"/>
 </g>
+<g id="clust4" class="cluster">
+<title>cluster_MetaTagExtractorModule_exports</title>
+<polygon fill="none" stroke="black" points="227,-208 227,-260 407,-260 407,-208 227,-208"/>
+</g>
 <g id="clust6" class="cluster">
 <title>cluster_MetaTagExtractorModule_providers</title>
 <polygon fill="none" stroke="black" points="564,-78 564,-130 802,-130 802,-78 564,-78"/>
@@ -31,10 +35,6 @@
 <g id="clust3" class="cluster">
 <title>cluster_MetaTagExtractorModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 556,-130 556,-78 16,-78"/>
-</g>
-<g id="clust4" class="cluster">
-<title>cluster_MetaTagExtractorModule_exports</title>
-<polygon fill="none" stroke="black" points="227,-208 227,-260 407,-260 407,-208 227,-208"/>
 </g>
 <!-- AuthenticationModule -->
 <g id="node1" class="node">

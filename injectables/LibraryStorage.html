@@ -1,0 +1,2585 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >LibraryStorage</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts</code>
+        </p>
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#addFile" >addFile</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#addLibrary" >addLibrary</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkFilename" >checkFilename</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#clearFiles" >clearFiles</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteLibrary" >deleteLibrary</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#fileExists" >fileExists</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getAllDependentsCount" >getAllDependentsCount</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getDependentsCount" >getDependentsCount</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getFileAsJson" >getFileAsJson</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getFileAsString" >getFileAsString</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getFileStats" >getFileStats</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getFileStream" >getFileStream</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getInstalledLibraryNames" >getInstalledLibraryNames</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getLanguages" >getLanguages</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getLibrary" >getLibrary</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getLibraryFile" >getLibraryFile</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getMetadata" >getMetadata</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getS3Key" >getS3Key</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#isInstalled" >isInstalled</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#listAddons" >listAddons</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#listFiles" >listFiles</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateAdditionalMetadata" >updateAdditionalMetadata</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateLibrary" >updateLibrary</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(libraryRepo: <a href="../injectables/LibraryRepo.html" target="_self">LibraryRepo</a>, s3Client: <a href="../injectables/S3ClientAdapter.html" target="_self">S3ClientAdapter</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:23</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>libraryRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LibraryRepo.html" target="_self" >LibraryRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>s3Client</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/S3ClientAdapter.html" target="_self" >S3ClientAdapter</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addFile"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>addFile</b></span>
+                        <a href="#addFile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addFile(libraryName: <a href="../classes/LibraryName.html" target="_self">ILibraryName</a>, filename: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, dataStream: Readable)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:60</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Adds a file to a library. Library metadata must be installed using <code>installLibrary</code> first.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>libraryName</td>
+                                            <td>
+                                                            <code><a href="../classes/LibraryName.html" target="_self" >ILibraryName</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>filename</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>dataStream</td>
+                                            <td>
+                                                        <code>Readable</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>true if successful</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addLibrary"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>addLibrary</b></span>
+                        <a href="#addLibrary"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addLibrary(libMeta: <a href="../interfaces/Meta.html" target="_self">ILibraryMetadata</a>, restricted: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:91</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Adds the metadata of the library</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>libMeta</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Meta.html" target="_self" >ILibraryMetadata</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>restricted</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/InstalledLibrary.html" target="_self" >Promise&lt;IInstalledLibrary&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>The newly created library object</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkFilename"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>checkFilename</b></span>
+                        <a href="#checkFilename"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkFilename(filename: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:37</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Checks if the filename is absolute or traverses outside the directory.
+Throws an error if the filename is illegal.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>filename</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>the requested file</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="clearFiles"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>clearFiles</b></span>
+                        <a href="#clearFiles"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>clearFiles(libraryName: <a href="../classes/LibraryName.html" target="_self">ILibraryName</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="114"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:114</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Removes all files of a library, but keeps the metadata</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>libraryName</td>
+                                            <td>
+                                                            <code><a href="../classes/LibraryName.html" target="_self" >ILibraryName</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteLibrary"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteLibrary</b></span>
+                        <a href="#deleteLibrary"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteLibrary(libraryName: <a href="../classes/LibraryName.html" target="_self">ILibraryName</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="132"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:132</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Deletes metadata and all files of the library</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>libraryName</td>
+                                            <td>
+                                                            <code><a href="../classes/LibraryName.html" target="_self" >ILibraryName</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fileExists"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>fileExists</b></span>
+                        <a href="#fileExists"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fileExists(libraryName: <a href="../classes/LibraryName.html" target="_self">ILibraryName</a>, filename: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="156"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:156</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Checks if the file exists in the library</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>libraryName</td>
+                                            <td>
+                                                            <code><a href="../classes/LibraryName.html" target="_self" >ILibraryName</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>filename</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>true if the file exists, false otherwise</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getAllDependentsCount"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getAllDependentsCount</b></span>
+                        <a href="#getAllDependentsCount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getAllDependentsCount()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="171"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:171</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Counts how often libraries are listed in the dependencies of other libraries and returns a list of the number.</p>
+</div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>an object with ubernames as key.</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getDependentsCount"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getDependentsCount</b></span>
+                        <a href="#getDependentsCount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getDependentsCount(library: <a href="../classes/LibraryName.html" target="_self">ILibraryName</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="213"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:213</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Counts how many dependents the library has.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>library</td>
+                                            <td>
+                                                            <code><a href="../classes/LibraryName.html" target="_self" >ILibraryName</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>the count</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFileAsJson"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getFileAsJson</b></span>
+                        <a href="#getFileAsJson"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getFileAsJson(library: <a href="../classes/LibraryName.html" target="_self">ILibraryName</a>, file: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="223"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:223</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Returns the file as a JSON-parsed object</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>library</td>
+                                            <td>
+                                                            <code><a href="../classes/LibraryName.html" target="_self" >ILibraryName</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>file</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFileAsString"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getFileAsString</b></span>
+                        <a href="#getFileAsString"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getFileAsString(library: <a href="../classes/LibraryName.html" target="_self">ILibraryName</a>, file: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="233"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:233</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Returns the file as a utf-8 string</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>library</td>
+                                            <td>
+                                                            <code><a href="../classes/LibraryName.html" target="_self" >ILibraryName</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>file</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFileStats"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getFileStats</b></span>
+                        <a href="#getFileStats"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getFileStats(libraryName: <a href="../classes/LibraryName.html" target="_self">ILibraryName</a>, file: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="244"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:244</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Returns information about a library file</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>libraryName</td>
+                                            <td>
+                                                            <code><a href="../classes/LibraryName.html" target="_self" >ILibraryName</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>file</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;IFileStats&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFileStream"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getFileStream</b></span>
+                        <a href="#getFileStream"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getFileStream(library: <a href="../classes/LibraryName.html" target="_self">ILibraryName</a>, file: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="265"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:265</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Returns a readable stream of the file&#39;s contents.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>library</td>
+                                            <td>
+                                                            <code><a href="../classes/LibraryName.html" target="_self" >ILibraryName</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>file</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Readable&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getInstalledLibraryNames"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getInstalledLibraryNames</b></span>
+                        <a href="#getInstalledLibraryNames"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getInstalledLibraryNames(machineName?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="277"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:277</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Lists all installed libraries or the installed libraries that have the machine name</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>machineName</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>(optional) only return libraries that have this machine name</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/LibraryName.html" target="_self" >Promise&lt;ILibraryName[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getLanguages"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getLanguages</b></span>
+                        <a href="#getLanguages"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getLanguages(libraryName: <a href="../classes/LibraryName.html" target="_self">ILibraryName</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="288"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:288</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Lists all languages supported by a library</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>libraryName</td>
+                                            <td>
+                                                            <code><a href="../classes/LibraryName.html" target="_self" >ILibraryName</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;string[]&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getLibrary"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getLibrary</b></span>
+                        <a href="#getLibrary"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getLibrary(library: <a href="../classes/LibraryName.html" target="_self">ILibraryName</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="303"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:303</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Returns the library metadata</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>library</td>
+                                            <td>
+                                                            <code><a href="../classes/LibraryName.html" target="_self" >ILibraryName</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/InstalledLibrary.html" target="_self" >Promise&lt;InstalledLibrary&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getLibraryFile"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getLibraryFile</b></span>
+                        <a href="#getLibraryFile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getLibraryFile(ubername: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, file: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="423"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:423</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Returns a file from a library</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ubername</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Library ubername</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>file</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>file</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>a readable stream, mimetype and size</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMetadata"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getMetadata</b></span>
+                        <a href="#getMetadata"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getMetadata(library: <a href="../classes/LibraryName.html" target="_self">ILibraryName</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="407"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:407</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>library</td>
+                                            <td>
+                                                            <code><a href="../classes/LibraryName.html" target="_self" >ILibraryName</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Meta.html" target="_self" >Promise&lt;ILibraryMetadata&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getS3Key"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getS3Key</b></span>
+                        <a href="#getS3Key"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getS3Key(library: <a href="../classes/LibraryName.html" target="_self">ILibraryName</a>, filename: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:46</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>library</td>
+                                            <td>
+                                                            <code><a href="../classes/LibraryName.html" target="_self" >ILibraryName</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>filename</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isInstalled"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>isInstalled</b></span>
+                        <a href="#isInstalled"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isInstalled(libraryName: <a href="../classes/LibraryName.html" target="_self">ILibraryName</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="315"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:315</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Checks if a library is installed</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>libraryName</td>
+                                            <td>
+                                                            <code><a href="../classes/LibraryName.html" target="_self" >ILibraryName</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="listAddons"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>listAddons</b></span>
+                        <a href="#listAddons"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>listAddons()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="327"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:327</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Lists all addons that are installed in the system.</p>
+</div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Meta.html" target="_self" >Promise&lt;ILibraryMetadata[]&gt;</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="listFiles"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>listFiles</b></span>
+                        <a href="#listFiles"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>listFiles(libraryName: <a href="../classes/LibraryName.html" target="_self">ILibraryName</a>, withMetadata)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="341"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:341</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Returns all files that are a part of the library</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>libraryName</td>
+                                            <td>
+                                                            <code><a href="../classes/LibraryName.html" target="_self" >ILibraryName</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>withMetadata</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>true</code>
+                                            </td>
+
+                                            <td>
+                                                    <p>wether to include metadata file</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;string[]&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>an array of filenames</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateAdditionalMetadata"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateAdditionalMetadata</b></span>
+                        <a href="#updateAdditionalMetadata"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateAdditionalMetadata(libraryName: <a href="../classes/LibraryName.html" target="_self">ILibraryName</a>, additionalMetadata: <a href="../interfaces/Meta.html" target="_self">Partial&lt;IAdditionalLibraryMetadata&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="358"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:358</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Updates the additional metadata properties that are added to the stored libraries.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>libraryName</td>
+                                            <td>
+                                                            <code><a href="../classes/LibraryName.html" target="_self" >ILibraryName</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>additionalMetadata</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Meta.html" target="_self" >Partial&lt;IAdditionalLibraryMetadata&gt;</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateLibrary"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>updateLibrary</b></span>
+                        <a href="#updateLibrary"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateLibrary(library: <a href="../interfaces/Meta.html" target="_self">ILibraryMetadata</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="386"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/libraryStorage.service.ts:386</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Updates the library metadata</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>library</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Meta.html" target="_self" >ILibraryMetadata</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/InstalledLibrary.html" target="_self" >Promise&lt;IInstalledLibrary&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+	H5pError,
+	LibraryName,
+	streamToString,
+	type IAdditionalLibraryMetadata,
+	type IFileStats,
+	type IInstalledLibrary,
+	type ILibraryMetadata,
+	type ILibraryName,
+	type ILibraryStorage,
+} from &#x27;@lumieducation/h5p-server&#x27;;
+import { ConflictException, Inject, Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
+import { S3ClientAdapter } from &#x27;@shared/infra/s3-client&#x27;;
+import mime from &#x27;mime&#x27;;
+import path from &#x27;node:path/posix&#x27;;
+import { Readable } from &#x27;stream&#x27;;
+import { H5pFileDto } from &#x27;../controller/dto&#x27;;
+import { InstalledLibrary } from &#x27;../entity/library.entity&#x27;;
+import { H5P_LIBRARIES_S3_CONNECTION } from &#x27;../h5p-editor.config&#x27;;
+import { LibraryRepo } from &#x27;../repo/library.repo&#x27;;
+
+@Injectable()
+export class LibraryStorage implements ILibraryStorage {
+	/**
+	 * @param
+	 */
+	constructor(
+		private readonly libraryRepo: LibraryRepo,
+		@Inject(H5P_LIBRARIES_S3_CONNECTION) private readonly s3Client: S3ClientAdapter
+	) {}
+
+	/**
+	 * Checks if the filename is absolute or traverses outside the directory.
+	 * Throws an error if the filename is illegal.
+	 * @param filename the requested file
+	 */
+	private checkFilename(filename: string): void {
+		const hasPathTraversal &#x3D; /\.\.\//.test(filename);
+		const isAbsolutePath &#x3D; filename.startsWith(&#x27;/&#x27;);
+
+		if (hasPathTraversal || isAbsolutePath) {
+			throw new H5pError(&#x27;illegal-filename&#x27;, { filename }, 400);
+		}
+	}
+
+	private getS3Key(library: ILibraryName, filename: string) {
+		const uberName &#x3D; LibraryName.toUberName(library);
+		const s3Key &#x3D; &#x60;h5p-libraries/${uberName}/${filename}&#x60;;
+
+		return s3Key;
+	}
+
+	/**
+	 * Adds a file to a library. Library metadata must be installed using &#x60;installLibrary&#x60; first.
+	 * @param library
+	 * @param filename
+	 * @param dataStream
+	 * @returns true if successful
+	 */
+	public async addFile(libraryName: ILibraryName, filename: string, dataStream: Readable): Promise&lt;boolean&gt; {
+		this.checkFilename(filename);
+
+		const s3Key &#x3D; this.getS3Key(libraryName, filename);
+
+		try {
+			await this.s3Client.create(
+				s3Key,
+				new H5pFileDto({
+					name: s3Key,
+					mimeType: &#x27;application/octet-stream&#x27;,
+					data: dataStream,
+				})
+			);
+		} catch (error) {
+			throw new H5pError(
+				&#x60;mongo-s3-library-storage:s3-upload-error&#x60;,
+				{ ubername: LibraryName.toUberName(libraryName), filename },
+				500
+			);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Adds the metadata of the library
+	 * @param libraryMetadata
+	 * @param restricted
+	 * @returns The newly created library object
+	 */
+	public async addLibrary(libMeta: ILibraryMetadata, restricted: boolean): Promise&lt;IInstalledLibrary&gt; {
+		const existingLibrary &#x3D; await this.libraryRepo.findByNameAndExactVersion(
+			libMeta.machineName,
+			libMeta.majorVersion,
+			libMeta.minorVersion,
+			libMeta.patchVersion
+		);
+
+		if (existingLibrary !&#x3D;&#x3D; null) {
+			throw new ConflictException(&quot;Can&#x27;t add library because it already exists&quot;);
+		}
+
+		const library &#x3D; new InstalledLibrary(libMeta, restricted, undefined);
+
+		await this.libraryRepo.createLibrary(library);
+
+		return library;
+	}
+
+	/**
+	 * Removes all files of a library, but keeps the metadata
+	 * @param library
+	 */
+	public async clearFiles(libraryName: ILibraryName): Promise&lt;void&gt; {
+		const isInstalled &#x3D; await this.isInstalled(libraryName);
+
+		if (!isInstalled) {
+			throw new H5pError(&#x27;mongo-s3-library-storage:clear-library-not-found&#x27;, {
+				ubername: LibraryName.toUberName(libraryName),
+			});
+		}
+
+		const filesToDelete &#x3D; await this.listFiles(libraryName, false);
+
+		await this.s3Client.delete(filesToDelete.map((file) &#x3D;&gt; this.getS3Key(libraryName, file)));
+	}
+
+	/**
+	 * Deletes metadata and all files of the library
+	 * @param library
+	 */
+	public async deleteLibrary(libraryName: ILibraryName): Promise&lt;void&gt; {
+		const isInstalled &#x3D; await this.isInstalled(libraryName);
+
+		if (!isInstalled) {
+			throw new H5pError(&#x27;mongo-s3-library-storage:library-not-found&#x27;);
+		}
+
+		await this.clearFiles(libraryName);
+
+		const library &#x3D; await this.libraryRepo.findOneByNameAndVersionOrFail(
+			libraryName.machineName,
+			libraryName.majorVersion,
+			libraryName.minorVersion
+		);
+
+		await this.libraryRepo.delete(library);
+	}
+
+	/**
+	 * Checks if the file exists in the library
+	 * @param library
+	 * @param filename
+	 * @returns true if the file exists, false otherwise
+	 */
+	public async fileExists(libraryName: ILibraryName, filename: string): Promise&lt;boolean&gt; {
+		this.checkFilename(filename);
+
+		try {
+			await this.s3Client.head(this.getS3Key(libraryName, filename));
+			return true;
+		} catch (error) {
+			return false;
+		}
+	}
+
+	/**
+	 * Counts how often libraries are listed in the dependencies of other libraries and returns a list of the number.
+	 * @returns an object with ubernames as key.
+	 */
+	public async getAllDependentsCount(): Promise&lt;{ [ubername: string]: number }&gt; {
+		const libraries &#x3D; await this.libraryRepo.getAll();
+		const libraryMap &#x3D; new Map(libraries.map((library) &#x3D;&gt; [LibraryName.toUberName(library), library]));
+
+		// Remove circular dependencies
+		for (const library of libraries) {
+			for (const dependency of library.editorDependencies ?? []) {
+				const ubername &#x3D; LibraryName.toUberName(dependency);
+
+				const dependencyMetadata &#x3D; libraryMap.get(ubername);
+
+				if (dependencyMetadata?.preloadedDependencies) {
+					const index &#x3D; dependencyMetadata.preloadedDependencies.findIndex((libName) &#x3D;&gt;
+						LibraryName.equal(libName, library)
+					);
+
+					if (index &gt;&#x3D; 0) {
+						dependencyMetadata.preloadedDependencies.splice(index, 1);
+					}
+				}
+			}
+		}
+
+		// Count dependencies
+		const dependencies: { [ubername: string]: number } &#x3D; {};
+		for (const library of libraries) {
+			const { preloadedDependencies &#x3D; [], editorDependencies &#x3D; [], dynamicDependencies &#x3D; [] } &#x3D; library;
+
+			for (const dependency of preloadedDependencies.concat(editorDependencies, dynamicDependencies)) {
+				const ubername &#x3D; LibraryName.toUberName(dependency);
+				dependencies[ubername] &#x3D; (dependencies[ubername] ?? 0) + 1;
+			}
+		}
+
+		return dependencies;
+	}
+
+	/**
+	 * Counts how many dependents the library has.
+	 * @param library
+	 * @returns the count
+	 */
+	public async getDependentsCount(library: ILibraryName): Promise&lt;number&gt; {
+		const allDependencies &#x3D; await this.getAllDependentsCount();
+		return allDependencies[LibraryName.toUberName(library)] ?? 0;
+	}
+
+	/**
+	 * Returns the file as a JSON-parsed object
+	 * @param library
+	 * @param file
+	 */
+	public async getFileAsJson(library: ILibraryName, file: string): Promise&lt;unknown&gt; {
+		const content &#x3D; await this.getFileAsString(library, file);
+		return JSON.parse(content) as unknown;
+	}
+
+	/**
+	 * Returns the file as a utf-8 string
+	 * @param library
+	 * @param file
+	 */
+	public async getFileAsString(library: ILibraryName, file: string): Promise&lt;string&gt; {
+		const stream &#x3D; await this.getFileStream(library, file);
+		const data &#x3D; await streamToString(stream);
+		return data;
+	}
+
+	/**
+	 * Returns information about a library file
+	 * @param library
+	 * @param file
+	 */
+	public async getFileStats(libraryName: ILibraryName, file: string): Promise&lt;IFileStats&gt; {
+		this.checkFilename(file);
+
+		const s3Key &#x3D; this.getS3Key(libraryName, file);
+		const head &#x3D; await this.s3Client.head(s3Key);
+
+		if (head.LastModified &#x3D;&#x3D;&#x3D; undefined || head.ContentLength &#x3D;&#x3D;&#x3D; undefined) {
+			throw new NotFoundException();
+		}
+
+		return {
+			birthtime: head.LastModified,
+			size: head.ContentLength,
+		};
+	}
+
+	/**
+	 * Returns a readable stream of the file&#x27;s contents.
+	 * @param library
+	 * @param file
+	 */
+	public async getFileStream(library: ILibraryName, file: string): Promise&lt;Readable&gt; {
+		const ubername &#x3D; LibraryName.toUberName(library);
+
+		const response &#x3D; await this.getLibraryFile(ubername, file);
+
+		return response.stream;
+	}
+
+	/**
+	 * Lists all installed libraries or the installed libraries that have the machine name
+	 * @param machineName (optional) only return libraries that have this machine name
+	 */
+	public async getInstalledLibraryNames(machineName?: string): Promise&lt;ILibraryName[]&gt; {
+		if (machineName) {
+			return this.libraryRepo.findByName(machineName);
+		}
+		return this.libraryRepo.getAll();
+	}
+
+	/**
+	 * Lists all languages supported by a library
+	 * @param library
+	 */
+	public async getLanguages(libraryName: ILibraryName): Promise&lt;string[]&gt; {
+		const prefix &#x3D; this.getS3Key(libraryName, &#x27;language&#x27;);
+
+		const { files } &#x3D; await this.s3Client.list({ path: prefix });
+
+		const jsonFiles &#x3D; files.filter((file) &#x3D;&gt; path.extname(file) &#x3D;&#x3D;&#x3D; &#x27;.json&#x27;);
+		const languages &#x3D; jsonFiles.map((file) &#x3D;&gt; path.basename(file, &#x27;.json&#x27;));
+
+		return languages;
+	}
+
+	/**
+	 * Returns the library metadata
+	 * @param library
+	 */
+	public async getLibrary(library: ILibraryName): Promise&lt;InstalledLibrary&gt; {
+		return this.libraryRepo.findOneByNameAndVersionOrFail(
+			library.machineName,
+			library.majorVersion,
+			library.minorVersion
+		);
+	}
+
+	/**
+	 * Checks if a library is installed
+	 * @param library
+	 */
+	public async isInstalled(libraryName: ILibraryName): Promise&lt;boolean&gt; {
+		const library &#x3D; await this.libraryRepo.findNewestByNameAndVersion(
+			libraryName.machineName,
+			libraryName.majorVersion,
+			libraryName.minorVersion
+		);
+		return library !&#x3D;&#x3D; null;
+	}
+
+	/**
+	 * Lists all addons that are installed in the system.
+	 */
+	public async listAddons(): Promise&lt;ILibraryMetadata[]&gt; {
+		const installedLibraryNames &#x3D; await this.getInstalledLibraryNames();
+		const installedLibraries &#x3D; await Promise.all(installedLibraryNames.map((addonName) &#x3D;&gt; this.getLibrary(addonName)));
+		const addons &#x3D; installedLibraries.filter((library) &#x3D;&gt; library.addTo !&#x3D;&#x3D; undefined);
+
+		return addons;
+	}
+
+	/**
+	 * Returns all files that are a part of the library
+	 * @param library
+	 * @param withMetadata wether to include metadata file
+	 * @returns an array of filenames
+	 */
+	public async listFiles(libraryName: ILibraryName, withMetadata &#x3D; true): Promise&lt;string[]&gt; {
+		const prefix &#x3D; this.getS3Key(libraryName, &#x27;language&#x27;);
+
+		const { files } &#x3D; await this.s3Client.list({ path: prefix });
+
+		if (withMetadata) {
+			return files.concat(&#x27;library.json&#x27;);
+		}
+
+		return files;
+	}
+
+	/**
+	 * Updates the additional metadata properties that are added to the stored libraries.
+	 * @param library
+	 * @param additionalMetadata
+	 */
+	public async updateAdditionalMetadata(
+		libraryName: ILibraryName,
+		additionalMetadata: Partial&lt;IAdditionalLibraryMetadata&gt;
+	): Promise&lt;boolean&gt; {
+		const library &#x3D; await this.getLibrary(libraryName);
+
+		let dirty &#x3D; false;
+		for (const [property, value] of Object.entries(additionalMetadata)) {
+			if (value !&#x3D;&#x3D; library[property]) {
+				library[property] &#x3D; value;
+				dirty &#x3D; true;
+			}
+		}
+
+		// Don&#x27;t write file if nothing has changed
+		if (!dirty) {
+			return false;
+		}
+
+		await this.libraryRepo.save(library);
+
+		return true;
+	}
+
+	/**
+	 * Updates the library metadata
+	 * @param libraryMetadata
+	 */
+	async updateLibrary(library: ILibraryMetadata): Promise&lt;IInstalledLibrary&gt; {
+		const existingLibrary &#x3D; await this.libraryRepo.findOneByNameAndVersionOrFail(
+			library.machineName,
+			library.majorVersion,
+			library.minorVersion
+		);
+		let dirty &#x3D; false;
+		for (const [property, value] of Object.entries(library)) {
+			if (property !&#x3D;&#x3D; &#x27;_id&#x27; &amp;&amp; value !&#x3D;&#x3D; existingLibrary[property]) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				existingLibrary[property] &#x3D; value;
+				dirty &#x3D; true;
+			}
+		}
+		if (dirty) {
+			await this.libraryRepo.save(existingLibrary);
+		}
+
+		return existingLibrary;
+	}
+
+	private async getMetadata(library: ILibraryName): Promise&lt;ILibraryMetadata&gt; {
+		const result &#x3D; await this.libraryRepo.findOneByNameAndVersionOrFail(
+			library.machineName,
+			library.majorVersion,
+			library.minorVersion
+		);
+
+		return result;
+	}
+
+	/**
+	 * Returns a file from a library
+	 * @param ubername Library ubername
+	 * @param file file
+	 * @returns a readable stream, mimetype and size
+	 */
+	public async getLibraryFile(ubername: string, file: string) {
+		const libraryName &#x3D; LibraryName.fromUberName(ubername);
+
+		this.checkFilename(file);
+
+		let result: { stream: Readable | never; mimetype: string; size: number | undefined } | null &#x3D; null;
+
+		if (file &#x3D;&#x3D;&#x3D; &#x27;library.json&#x27;) {
+			const metadata &#x3D; await this.getMetadata(libraryName);
+			const stringifiedMetadata &#x3D; JSON.stringify(metadata);
+			const readable &#x3D; Readable.from(stringifiedMetadata);
+
+			result &#x3D; {
+				stream: readable,
+				mimetype: &#x27;application/json&#x27;,
+				size: stringifiedMetadata.length,
+			};
+		} else {
+			const response &#x3D; await this.s3Client.get(this.getS3Key(libraryName, file));
+			const mimetype &#x3D; mime.lookup(file, &#x27;application/octet-stream&#x27;);
+
+			result &#x3D; {
+				stream: response.data,
+				mimetype,
+				size: response.contentLength,
+			};
+		}
+		return result;
+	}
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'LibraryStorage.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

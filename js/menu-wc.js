@@ -1092,13 +1092,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/H5PEditorModule.html" data-type="entity-link" >H5PEditorModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-H5PEditorModule-2a5d306801f87bb138ff1b2a7da9684ef1cebce31e10044b2201eb927e3106dc2c6e43200dd5fb9a6ee71828ef9ccacfc4152104b5a6c4653e2fb600ad2ace9f"' : 'data-bs-target="#xs-controllers-links-module-H5PEditorModule-2a5d306801f87bb138ff1b2a7da9684ef1cebce31e10044b2201eb927e3106dc2c6e43200dd5fb9a6ee71828ef9ccacfc4152104b5a6c4653e2fb600ad2ace9f"' }>
+                                            'data-bs-target="#controllers-links-module-H5PEditorModule-95542b33c03e1e204b54c06e5d5f5870357724408ece2b61aaf641ce4d2707681f267f69f320c57d9c692b6551c14b2d6be3a633b8f59f512348a7a027d1d8e6"' : 'data-bs-target="#xs-controllers-links-module-H5PEditorModule-95542b33c03e1e204b54c06e5d5f5870357724408ece2b61aaf641ce4d2707681f267f69f320c57d9c692b6551c14b2d6be3a633b8f59f512348a7a027d1d8e6"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-H5PEditorModule-2a5d306801f87bb138ff1b2a7da9684ef1cebce31e10044b2201eb927e3106dc2c6e43200dd5fb9a6ee71828ef9ccacfc4152104b5a6c4653e2fb600ad2ace9f"' :
-                                            'id="xs-controllers-links-module-H5PEditorModule-2a5d306801f87bb138ff1b2a7da9684ef1cebce31e10044b2201eb927e3106dc2c6e43200dd5fb9a6ee71828ef9ccacfc4152104b5a6c4653e2fb600ad2ace9f"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-H5PEditorModule-95542b33c03e1e204b54c06e5d5f5870357724408ece2b61aaf641ce4d2707681f267f69f320c57d9c692b6551c14b2d6be3a633b8f59f512348a7a027d1d8e6"' :
+                                            'id="xs-controllers-links-module-H5PEditorModule-95542b33c03e1e204b54c06e5d5f5870357724408ece2b61aaf641ce4d2707681f267f69f320c57d9c692b6551c14b2d6be3a633b8f59f512348a7a027d1d8e6"' }>
                                             <li class="link">
                                                 <a href="controllers/H5PEditorController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >H5PEditorController</a>
                                             </li>
@@ -1106,21 +1106,88 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-H5PEditorModule-2a5d306801f87bb138ff1b2a7da9684ef1cebce31e10044b2201eb927e3106dc2c6e43200dd5fb9a6ee71828ef9ccacfc4152104b5a6c4653e2fb600ad2ace9f"' : 'data-bs-target="#xs-injectables-links-module-H5PEditorModule-2a5d306801f87bb138ff1b2a7da9684ef1cebce31e10044b2201eb927e3106dc2c6e43200dd5fb9a6ee71828ef9ccacfc4152104b5a6c4653e2fb600ad2ace9f"' }>
+                                        'data-bs-target="#injectables-links-module-H5PEditorModule-95542b33c03e1e204b54c06e5d5f5870357724408ece2b61aaf641ce4d2707681f267f69f320c57d9c692b6551c14b2d6be3a633b8f59f512348a7a027d1d8e6"' : 'data-bs-target="#xs-injectables-links-module-H5PEditorModule-95542b33c03e1e204b54c06e5d5f5870357724408ece2b61aaf641ce4d2707681f267f69f320c57d9c692b6551c14b2d6be3a633b8f59f512348a7a027d1d8e6"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-H5PEditorModule-2a5d306801f87bb138ff1b2a7da9684ef1cebce31e10044b2201eb927e3106dc2c6e43200dd5fb9a6ee71828ef9ccacfc4152104b5a6c4653e2fb600ad2ace9f"' :
-                                        'id="xs-injectables-links-module-H5PEditorModule-2a5d306801f87bb138ff1b2a7da9684ef1cebce31e10044b2201eb927e3106dc2c6e43200dd5fb9a6ee71828ef9ccacfc4152104b5a6c4653e2fb600ad2ace9f"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-H5PEditorModule-95542b33c03e1e204b54c06e5d5f5870357724408ece2b61aaf641ce4d2707681f267f69f320c57d9c692b6551c14b2d6be3a633b8f59f512348a7a027d1d8e6"' :
+                                        'id="xs-injectables-links-module-H5PEditorModule-95542b33c03e1e204b54c06e5d5f5870357724408ece2b61aaf641ce4d2707681f267f69f320c57d9c692b6551c14b2d6be3a633b8f59f512348a7a027d1d8e6"' }>
+                                        <li class="link">
+                                            <a href="injectables/ContentStorage.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ContentStorage</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/H5PContentRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >H5PContentRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/H5PEditorUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >H5PEditorUc</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/LibraryRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >LibraryRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/LibraryStorage.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >LibraryStorage</a>
+                                        </li>
                                         <li class="link">
                                             <a href="injectables/Logger.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >Logger</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/TemporaryFileRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TemporaryFileRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/TemporaryFileStorage.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TemporaryFileStorage</a>
                                         </li>
                                     </ul>
                                 </li>
                             </li>
                             <li class="link">
                                 <a href="modules/H5PEditorTestModule.html" data-type="entity-link" >H5PEditorTestModule</a>
+                                    <li class="chapter inner">
+                                        <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                            'data-bs-target="#controllers-links-module-H5PEditorTestModule-d7a83b408a560b6669a7bf49f00eaf01af953661867f6103397df104d1425549072940363d75920e81cb1e45c3966a515e3e49e0f4e3fe0394235b77386fe3be"' : 'data-bs-target="#xs-controllers-links-module-H5PEditorTestModule-d7a83b408a560b6669a7bf49f00eaf01af953661867f6103397df104d1425549072940363d75920e81cb1e45c3966a515e3e49e0f4e3fe0394235b77386fe3be"' }>
+                                            <span class="icon ion-md-swap"></span>
+                                            <span>Controllers</span>
+                                            <span class="icon ion-ios-arrow-down"></span>
+                                        </div>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-H5PEditorTestModule-d7a83b408a560b6669a7bf49f00eaf01af953661867f6103397df104d1425549072940363d75920e81cb1e45c3966a515e3e49e0f4e3fe0394235b77386fe3be"' :
+                                            'id="xs-controllers-links-module-H5PEditorTestModule-d7a83b408a560b6669a7bf49f00eaf01af953661867f6103397df104d1425549072940363d75920e81cb1e45c3966a515e3e49e0f4e3fe0394235b77386fe3be"' }>
+                                            <li class="link">
+                                                <a href="controllers/H5PEditorController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >H5PEditorController</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                        'data-bs-target="#injectables-links-module-H5PEditorTestModule-d7a83b408a560b6669a7bf49f00eaf01af953661867f6103397df104d1425549072940363d75920e81cb1e45c3966a515e3e49e0f4e3fe0394235b77386fe3be"' : 'data-bs-target="#xs-injectables-links-module-H5PEditorTestModule-d7a83b408a560b6669a7bf49f00eaf01af953661867f6103397df104d1425549072940363d75920e81cb1e45c3966a515e3e49e0f4e3fe0394235b77386fe3be"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-H5PEditorTestModule-d7a83b408a560b6669a7bf49f00eaf01af953661867f6103397df104d1425549072940363d75920e81cb1e45c3966a515e3e49e0f4e3fe0394235b77386fe3be"' :
+                                        'id="xs-injectables-links-module-H5PEditorTestModule-d7a83b408a560b6669a7bf49f00eaf01af953661867f6103397df104d1425549072940363d75920e81cb1e45c3966a515e3e49e0f4e3fe0394235b77386fe3be"' }>
+                                        <li class="link">
+                                            <a href="injectables/ContentStorage.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ContentStorage</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/H5PContentRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >H5PContentRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/H5PEditorUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >H5PEditorUc</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/LibraryRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >LibraryRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/LibraryStorage.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >LibraryStorage</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/TemporaryFileRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TemporaryFileRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/TemporaryFileStorage.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TemporaryFileStorage</a>
+                                        </li>
+                                    </ul>
+                                </li>
                             </li>
                             <li class="link">
                                 <a href="modules/IdentityManagementModule.html" data-type="entity-link" >IdentityManagementModule</a>
@@ -2769,7 +2836,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="entities/GroupEntity.html" data-type="entity-link" >GroupEntity</a>
                                 </li>
                                 <li class="link">
+                                    <a href="entities/H5PContent.html" data-type="entity-link" >H5PContent</a>
+                                </li>
+                                <li class="link">
+                                    <a href="entities/H5pEditorTempFile.html" data-type="entity-link" >H5pEditorTempFile</a>
+                                </li>
+                                <li class="link">
                                     <a href="entities/ImportUser.html" data-type="entity-link" >ImportUser</a>
+                                </li>
+                                <li class="link">
+                                    <a href="entities/InstalledLibrary.html" data-type="entity-link" >InstalledLibrary</a>
                                 </li>
                                 <li class="link">
                                     <a href="entities/LessonBoardElement.html" data-type="entity-link" >LessonBoardElement</a>
@@ -2903,6 +2979,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/AccountSearchQueryParams.html" data-type="entity-link" >AccountSearchQueryParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/AjaxGetQueryParams.html" data-type="entity-link" >AjaxGetQueryParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/AjaxPostQueryParams.html" data-type="entity-link" >AjaxPostQueryParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ApiValidationError.html" data-type="entity-link" >ApiValidationError</a>
@@ -3154,10 +3236,19 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ConsentSessionResponse.html" data-type="entity-link" >ConsentSessionResponse</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ContentBodyParams.html" data-type="entity-link" >ContentBodyParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ContentElementResponseFactory.html" data-type="entity-link" >ContentElementResponseFactory</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ContentElementUrlParams.html" data-type="entity-link" >ContentElementUrlParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ContentFileUrlParams.html" data-type="entity-link" >ContentFileUrlParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ContentMetadata.html" data-type="entity-link" >ContentMetadata</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ContextExternalTool.html" data-type="entity-link" >ContextExternalTool</a>
@@ -3547,6 +3638,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/FileEntity.html" data-type="entity-link" >FileEntity</a>
                             </li>
                             <li class="link">
+                                <a href="classes/FileMetadata.html" data-type="entity-link" >FileMetadata</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/FileParamBuilder.html" data-type="entity-link" >FileParamBuilder</a>
                             </li>
                             <li class="link">
@@ -3613,6 +3707,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/GetFwuLearningContentParams.html" data-type="entity-link" >GetFwuLearningContentParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/GetH5PContentParams.html" data-type="entity-link" >GetH5PContentParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/GetH5PEditorParams.html" data-type="entity-link" >GetH5PEditorParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/GetH5PEditorParamsCreate.html" data-type="entity-link" >GetH5PEditorParamsCreate</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/GetMetaTagDataBody.html" data-type="entity-link" >GetMetaTagDataBody</a>
                             </li>
                             <li class="link">
@@ -3659,6 +3762,33 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/GuardAgainst.html" data-type="entity-link" >GuardAgainst</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/H5PContentFactory.html" data-type="entity-link" >H5PContentFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/H5PContentMapper.html" data-type="entity-link" >H5PContentMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/H5PContentMetadata.html" data-type="entity-link" >H5PContentMetadata</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/H5PEditorModelContentResponse.html" data-type="entity-link" >H5PEditorModelContentResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/H5PEditorModelResponse.html" data-type="entity-link" >H5PEditorModelResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/H5PErrorMapper.html" data-type="entity-link" >H5PErrorMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/H5pFileDto.html" data-type="entity-link" >H5pFileDto</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/H5PSaveResponse.html" data-type="entity-link" >H5PSaveResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/H5PTemporaryFileFactory.html" data-type="entity-link" >H5PTemporaryFileFactory</a>
                             </li>
                             <li class="link">
                                 <a href="classes/HydraRedirectDto.html" data-type="entity-link" >HydraRedirectDto</a>
@@ -3760,6 +3890,18 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/LessonUrlParams-1.html" data-type="entity-link" >LessonUrlParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/LibrariesBodyParams.html" data-type="entity-link" >LibrariesBodyParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/LibraryFileUrlParams.html" data-type="entity-link" >LibraryFileUrlParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/LibraryName.html" data-type="entity-link" >LibraryName</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/LibraryParametersBodyParams.html" data-type="entity-link" >LibraryParametersBodyParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/LinkContentBody.html" data-type="entity-link" >LinkContentBody</a>
                             </li>
                             <li class="link">
@@ -3824,6 +3966,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/LtiToolFactory.html" data-type="entity-link" >LtiToolFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/LumiUserWithContentData.html" data-type="entity-link" >LumiUserWithContentData</a>
                             </li>
                             <li class="link">
                                 <a href="classes/MaterialFactory.html" data-type="entity-link" >MaterialFactory</a>
@@ -4027,6 +4172,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/PatchVisibilityParams.html" data-type="entity-link" >PatchVisibilityParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/Path.html" data-type="entity-link" >Path</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/PostH5PContentCreateParams.html" data-type="entity-link" >PostH5PContentCreateParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/PostH5PContentParams.html" data-type="entity-link" >PostH5PContentParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/PreviewActionsLoggable.html" data-type="entity-link" >PreviewActionsLoggable</a>
                             </li>
                             <li class="link">
@@ -4166,6 +4320,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/RpcMessageProducer.html" data-type="entity-link" >RpcMessageProducer</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SaveH5PEditorParams.html" data-type="entity-link" >SaveH5PEditorParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ScanResultDto.html" data-type="entity-link" >ScanResultDto</a>
@@ -4751,6 +4908,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/AccountIdmToDtoMapper.html" data-type="entity-link" >AccountIdmToDtoMapper</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/AjaxPostBodyParamsTransformPipe.html" data-type="entity-link" >AjaxPostBodyParamsTransformPipe</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/AntivirusService.html" data-type="entity-link" >AntivirusService</a>
                                 </li>
                                 <li class="link">
@@ -4869,6 +5029,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/ContentElementUpdateVisitor.html" data-type="entity-link" >ContentElementUpdateVisitor</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/ContentStorage.html" data-type="entity-link" >ContentStorage</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/ContextExternalToolAuthorizableService.html" data-type="entity-link" >ContextExternalToolAuthorizableService</a>
@@ -5027,6 +5190,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/GroupUc.html" data-type="entity-link" >GroupUc</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/H5PContentRepo.html" data-type="entity-link" >H5PContentRepo</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/HydraAdapter.html" data-type="entity-link" >HydraAdapter</a>
                                 </li>
                                 <li class="link">
@@ -5070,6 +5236,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/LessonUC.html" data-type="entity-link" >LessonUC</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/LibraryRepo.html" data-type="entity-link" >LibraryRepo</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/LibraryStorage.html" data-type="entity-link" >LibraryStorage</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/Lti11EncryptionService.html" data-type="entity-link" >Lti11EncryptionService</a>
@@ -5313,6 +5485,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/TeamsRepo.html" data-type="entity-link" >TeamsRepo</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/TemporaryFileRepo.html" data-type="entity-link" >TemporaryFileRepo</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/TemporaryFileStorage.html" data-type="entity-link" >TemporaryFileStorage</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/TimeoutInterceptor.html" data-type="entity-link" >TimeoutInterceptor</a>
@@ -5595,6 +5773,21 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/GetFileResponse.html" data-type="entity-link" >GetFileResponse</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/GetFileResponse-1.html" data-type="entity-link" >GetFileResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetH5PFileResponse.html" data-type="entity-link" >GetH5PFileResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetH5pFileResponse.html" data-type="entity-link" >GetH5pFileResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetLibraryFile.html" data-type="entity-link" >GetLibraryFile</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetLibraryFile-1.html" data-type="entity-link" >GetLibraryFile</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/GlobalConstants.html" data-type="entity-link" >GlobalConstants</a>
                             </li>
                             <li class="link">
@@ -5623,6 +5816,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/GroupValidPeriodEntityProps.html" data-type="entity-link" >GroupValidPeriodEntityProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/H5PContentParentParams.html" data-type="entity-link" >H5PContentParentParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/H5PContentResponse.html" data-type="entity-link" >H5PContentResponse</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/HtmlMailContent.html" data-type="entity-link" >HtmlMailContent</a>
@@ -5775,6 +5974,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/IGridElement.html" data-type="entity-link" >IGridElement</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/IH5PContentProperties.html" data-type="entity-link" >IH5PContentProperties</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/IIdentityManagementConfig.html" data-type="entity-link" >IIdentityManagementConfig</a>
                             </li>
                             <li class="link">
@@ -5910,6 +6112,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/ITeamUserProperties.html" data-type="entity-link" >ITeamUserProperties</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/ITemporaryFileProperties.html" data-type="entity-link" >ITemporaryFileProperties</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/IToolFeatures.html" data-type="entity-link" >IToolFeatures</a>
                             </li>
                             <li class="link">
@@ -5938,6 +6143,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/LinkElementProps.html" data-type="entity-link" >LinkElementProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ListFiles.html" data-type="entity-link" >ListFiles</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/Loggable.html" data-type="entity-link" >Loggable</a>
@@ -5971,6 +6179,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/OauthTokenResponse.html" data-type="entity-link" >OauthTokenResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ObjectKeysRecursive.html" data-type="entity-link" >ObjectKeysRecursive</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/OcsResponse.html" data-type="entity-link" >OcsResponse</a>
