@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ColumnBoardTarget } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections, columnBoardTargetFactory } from '@shared/testing';
 import { ColumnBoardService } from '@modules/board';
 import { ColumnBoardTargetService } from './column-board-target.service';

@@ -1,7 +1,7 @@
 import { VideoConferenceRepo } from '@shared/repo';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections } from '@shared/testing';
 import {
 	IVideoConferenceProperties,

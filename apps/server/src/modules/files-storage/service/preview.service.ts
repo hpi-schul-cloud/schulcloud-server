@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
-import { PreviewProducer } from '@shared/infra/preview-generator';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
+import { PreviewProducer } from '@infra/preview-generator';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { LegacyLogger } from '@src/core/logger';
 import { PreviewParams } from '../controller/dto';
 import { FileRecord, PreviewStatus } from '../entity';
