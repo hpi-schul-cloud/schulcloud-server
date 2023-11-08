@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { MongoMemoryDatabaseModule, MongoDatabaseModuleOptions } from '@shared/infra/database';
+import { MongoMemoryDatabaseModule, MongoDatabaseModuleOptions } from '@infra/database';
 import { CoreModule } from '@src/core';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';

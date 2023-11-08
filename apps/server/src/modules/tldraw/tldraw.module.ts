@@ -7,7 +7,7 @@ import { TldrawBoardRepo } from './repo';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { TldrawDrawing } from '@src/modules/tldraw/entities';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
-import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
+import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { config } from './config';
 import { TldrawController } from './controller/tldraw.controller';
