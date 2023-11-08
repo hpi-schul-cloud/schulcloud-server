@@ -20,7 +20,7 @@ export class QueueDeletionRequestOutputBuilder {
 	}
 
 	static buildSuccess(requestId: string, deletionPlannedAt: Date): QueueDeletionRequestOutput {
-		return this.build(requestId, deletionPlannedAt, undefined);
+		return this.build(requestId, deletionPlannedAt);
 	}
 
 	static buildError(err: Error): QueueDeletionRequestOutput {

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { ConsoleModule } from 'nestjs-console';
-import { ConsoleWriterModule } from '@shared/infra/console';
+import { ConsoleWriterModule } from '@infra/console';
 import { createConfigModuleOptions } from '@src/config';
 import { DeletionClient } from '../client';
 import { deletionClientConfig } from '../client/deletion-client.config';
