@@ -147,10 +147,10 @@
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
-      template: api-tldraw-deployment.yml.j2
+      template: tldraw-deployment.yml.j2
 
   - name: TlDrawServerService
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
-      template: api-tldraw-svc.yml.j2
+      template: tldraw-svc.yml.j2
