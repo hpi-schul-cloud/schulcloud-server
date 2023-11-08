@@ -61,7 +61,7 @@
 			},
 			{
 				"title": "S3ClientModule",
-				"file": "../src/shared/infra/s3-client/README.md"
+				"file": "../src/infra/s3-client/README.md"
 			}
 		]
 	}
