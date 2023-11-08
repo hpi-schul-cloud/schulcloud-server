@@ -7,9 +7,11 @@ describe(RocketChatUserEntity.name, () => {
 		await setupEntities();
 	});
 
-	const setup = () => {
+	beforeEach(() => {
 		jest.clearAllMocks();
+	});
 
+	const setup = () => {
 		const props = {
 			id: new ObjectId().toHexString(),
 			userId: new ObjectId(),

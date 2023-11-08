@@ -1,7 +1,7 @@
 import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId, SortOrder } from '@shared/domain';
 import { Account } from '@shared/domain/entity/account.entity';
 import { BaseRepo } from '@shared/repo/base.repo';
 
@@ -71,7 +71,9 @@ export class AccountRepo extends BaseRepo<Account> {
 	 * @deprecated For migration purpose only
 	 */
 	async findMany(offset = 0, limit = 100): Promise<Account[]> {
-		return this._em.find(this.entityName, {}, { offset, limit });
+		const result = await this._em.find(this.entityName, {}, { offset, limit, orderBy: { id: SortOrder.asc } });
+		this._em.clear();
+		return result;
 	}
 
 	private async searchByUsername(
