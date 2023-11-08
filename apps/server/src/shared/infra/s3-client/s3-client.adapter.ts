@@ -4,7 +4,9 @@ import {
 	CreateBucketCommand,
 	DeleteObjectsCommand,
 	GetObjectCommand,
-	ListObjectsCommand,
+	HeadObjectCommand,
+	HeadObjectCommandOutput,
+	ListObjectsV2Command,
 	S3Client,
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
@@ -14,7 +16,7 @@ import { ErrorUtils } from '@src/core/error/utils';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { S3_CLIENT, S3_CONFIG } from './constants';
-import { CopyFiles, File, GetFile, S3Config } from './interface';
+import { CopyFiles, File, GetFile, ListFiles, ObjectKeysRecursive, S3Config } from './interface';
 
 @Injectable()
 export class S3ClientAdapter {
@@ -196,11 +198,75 @@ export class S3ClientAdapter {
 		}
 	}
 
+	public async list(params: ListFiles): Promise<ObjectKeysRecursive> {
+		try {
+			this.logger.log({ action: 'list', params });
+
+			const result = await this.listObjectKeysRecursive(params);
+
+			return result;
+		} catch (err) {
+			throw new NotFoundException(null, ErrorUtils.createHttpExceptionOptions(err, 'S3ClientAdapter:listDirectory'));
+		}
+	}
+
+	private async listObjectKeysRecursive(params: ListFiles): Promise<ObjectKeysRecursive> {
+		const { path, maxKeys, nextMarker } = params;
+		let files: string[] = params.files ? params.files : [];
+		const MaxKeys = maxKeys && maxKeys - files.length;
+
+		const req = new ListObjectsV2Command({
+			Bucket: this.config.bucket,
+			Prefix: path,
+			ContinuationToken: nextMarker,
+			MaxKeys,
+		});
+
+		const data = await this.client.send(req);
+
+		const returnedFiles =
+			data?.Contents?.filter((o) => o.Key)
+				.map((o) => o.Key as string) // Can not be undefined because of filter above
+				.map((key) => key.substring(path.length)) ?? [];
+
+		files = files.concat(returnedFiles);
+
+		let res: ObjectKeysRecursive = { path, maxKeys, nextMarker: data?.ContinuationToken, files };
+
+		if (data?.IsTruncated && (!maxKeys || res.files.length < maxKeys)) {
+			res = await this.listObjectKeysRecursive(res);
+		}
+
+		return res;
+	}
+
+	public async head(path: string): Promise<HeadObjectCommandOutput> {
+		try {
+			this.logger.log({ action: 'head', params: { path, bucket: this.config.bucket } });
+
+			const req = new HeadObjectCommand({
+				Bucket: this.config.bucket,
+				Key: path,
+			});
+
+			const headResponse = await this.client.send(req);
+
+			return headResponse;
+		} catch (err) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (err.message && err.message === 'NoSuchKey') {
+				this.logger.log(`could not find the file for head with id ${path}`);
+				throw new NotFoundException(null, ErrorUtils.createHttpExceptionOptions(err, 'NoSuchKey'));
+			}
+			throw new InternalServerErrorException(null, ErrorUtils.createHttpExceptionOptions(err, 'S3ClientAdapter:head'));
+		}
+	}
+
 	public async deleteDirectory(path: string) {
 		try {
 			this.logger.log({ action: 'deleteDirectory', params: { path, bucket: this.config.bucket } });
 
-			const req = new ListObjectsCommand({
+			const req = new ListObjectsV2Command({
 				Bucket: this.config.bucket,
 				Prefix: path,
 			});
