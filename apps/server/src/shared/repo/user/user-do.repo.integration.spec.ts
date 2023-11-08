@@ -16,7 +16,7 @@ import {
 } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import {
 	cleanupCollections,
