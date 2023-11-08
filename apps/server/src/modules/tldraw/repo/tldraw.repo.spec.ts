@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
 import { tldrawEntityFactory } from '@src/modules/tldraw/factory';
 import { TldrawDrawing } from '@src/modules/tldraw/entities';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { TldrawRepo } from './tldraw.repo';
 
 describe(TldrawRepo.name, () => {
