@@ -135,13 +135,21 @@ export class FilesStorageController {
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response,
 		@Headers('Range') bytesRange?: string
-	): Promise<StreamableFile> {
+	): Promise<StreamableFile | void> {
 		const fileResponse = await this.filesStorageUC.downloadPreview(
 			currentUser.userId,
 			params,
 			previewParams,
 			bytesRange
 		);
+
+		if (req.headers['if-none-match'] === fileResponse.etag) {
+			response.status(304);
+
+			return undefined;
+		}
+
+		response.set({ ETag: fileResponse.etag });
 
 		const streamableFile = this.streamFileToClient(req, fileResponse, response, bytesRange);
 
