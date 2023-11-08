@@ -2013,6 +2013,26 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/RocketChatModule.html" data-type="entity-link" >RocketChatModule</a>
                             </li>
                             <li class="link">
+                                <a href="modules/RocketChatUserModule.html" data-type="entity-link" >RocketChatUserModule</a>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                        'data-bs-target="#injectables-links-module-RocketChatUserModule-1bffcb35c23161aabe2703344c352c825ed87c1b21fe6c9e100cf3c7f1378447d38366e54fb10b8ac968bfa57bdf9bbf086d414e1d52bbb013658866ef937268"' : 'data-bs-target="#xs-injectables-links-module-RocketChatUserModule-1bffcb35c23161aabe2703344c352c825ed87c1b21fe6c9e100cf3c7f1378447d38366e54fb10b8ac968bfa57bdf9bbf086d414e1d52bbb013658866ef937268"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-RocketChatUserModule-1bffcb35c23161aabe2703344c352c825ed87c1b21fe6c9e100cf3c7f1378447d38366e54fb10b8ac968bfa57bdf9bbf086d414e1d52bbb013658866ef937268"' :
+                                        'id="xs-injectables-links-module-RocketChatUserModule-1bffcb35c23161aabe2703344c352c825ed87c1b21fe6c9e100cf3c7f1378447d38366e54fb10b8ac968bfa57bdf9bbf086d414e1d52bbb013658866ef937268"' }>
+                                        <li class="link">
+                                            <a href="injectables/RocketChatUserRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >RocketChatUserRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/RocketChatUserService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >RocketChatUserService</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </li>
+                            <li class="link">
                                 <a href="modules/RoleModule.html" data-type="entity-link" >RoleModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
@@ -2873,6 +2893,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="entities/RichTextElementNode.html" data-type="entity-link" >RichTextElementNode</a>
+                                </li>
+                                <li class="link">
+                                    <a href="entities/RocketChatUserEntity.html" data-type="entity-link" >RocketChatUserEntity</a>
                                 </li>
                                 <li class="link">
                                     <a href="entities/Role.html" data-type="entity-link" >Role</a>
@@ -4304,6 +4327,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/RocketChatError.html" data-type="entity-link" >RocketChatError</a>
                             </li>
                             <li class="link">
+                                <a href="classes/RocketChatUser.html" data-type="entity-link" >RocketChatUser</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/RocketChatUserFactory.html" data-type="entity-link" >RocketChatUserFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/RocketChatUserMapper.html" data-type="entity-link" >RocketChatUserMapper</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/RoleDto.html" data-type="entity-link" >RoleDto</a>
                             </li>
                             <li class="link">
@@ -5346,6 +5378,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/RocketChatService.html" data-type="entity-link" >RocketChatService</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/RocketChatUserRepo.html" data-type="entity-link" >RocketChatUserRepo</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/RoleRepo.html" data-type="entity-link" >RoleRepo</a>
                                 </li>
                                 <li class="link">
@@ -6251,6 +6286,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/RocketChatOptions.html" data-type="entity-link" >RocketChatOptions</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/RocketChatUserEntityProps.html" data-type="entity-link" >RocketChatUserEntityProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/RocketChatUserProps.html" data-type="entity-link" >RocketChatUserProps</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/RpcMessage.html" data-type="entity-link" >RpcMessage</a>

@@ -619,6 +619,12 @@
                             <a href="#richTextElementNodeFactory" title="apps/server/src/shared/testing/factory/boardnode/rich-text-element-node.factory.ts" ><b>richTextElementNodeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../rich-text-element-node.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#rocketChatUserEntityFactory" title="apps/server/src/modules/rocketchat-user/entity/testing/rocket-chat-user.entity.factory.ts" ><b>rocketChatUserEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../rocket-chat-user.entity.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#rocketChatUserFactory" title="apps/server/src/modules/rocketchat-user/domain/testing/rocket-chat-user.factory.ts" ><b>rocketChatUserFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../rocket-chat-user.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#roleDtoFactory" title="apps/server/src/shared/testing/factory/role-dto.factory.ts" ><b>roleDtoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../role-dto.factory.ts)</a>
                         </li>
                         <li>
@@ -8257,6 +8263,78 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		return {
 			text: &#x60;&lt;p&gt;&lt;b&gt;text&lt;/b&gt; #${sequence}&lt;/p&gt;&#x60;,
 			inputFormat: InputFormat.RICH_TEXT_CK5,
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/rocketchat-user/entity/testing/rocket-chat-user.entity.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="rocketChatUserEntityFactory"></a>
+                    <span class="name">
+                        <span ><b>rocketChatUserEntityFactory</b></span>
+                        <a href="#rocketChatUserEntityFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>RocketChatUserFactory.define&lt;
+	RocketChatUserEntity,
+	RocketChatUserEntityProps
+&gt;(RocketChatUserEntity, ({ sequence }) &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		userId: new ObjectId(),
+		username: &#x60;username-${sequence}&#x60;,
+		rcId: &#x60;rcId-${sequence}&#x60;,
+		authToken: &#x60;aythToken-${sequence}&#x60;,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/rocketchat-user/domain/testing/rocket-chat-user.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="rocketChatUserFactory"></a>
+                    <span class="name">
+                        <span ><b>rocketChatUserFactory</b></span>
+                        <a href="#rocketChatUserFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;RocketChatUser, RocketChatUserProps&gt;(
+	RocketChatUser,
+	({ sequence }) &#x3D;&gt; {
+		return {
+			id: new ObjectId().toHexString(),
+			userId: new ObjectId().toHexString(),
+			username: &#x60;username-${sequence}&#x60;,
+			rcId: &#x60;rcId-${sequence}&#x60;,
+			authToken: &#x60;aythToken-${sequence}&#x60;,
+			createdAt: new Date(),
+			updatedAt: new Date(),
 		};
 	}
 )</code>
