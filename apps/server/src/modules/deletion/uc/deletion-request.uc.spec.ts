@@ -12,7 +12,7 @@ import { UserService } from '@modules/user';
 import { RocketChatUserService } from '@modules/rocketchat-user/service';
 import { RocketChatService } from '@modules/rocketchat';
 import { rocketChatUserFactory } from '@modules/rocketchat-user/domain/testing';
-import { RocketChatUser } from '@modules/rocketchat-user/domain';
+import { RocketChatUser } from '@modules/rocketchat-user';
 import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
