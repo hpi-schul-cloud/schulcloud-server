@@ -8,7 +8,7 @@ import { LessonService } from '@modules/lesson/service';
 import { CourseGroupService, CourseService } from '@modules/learnroom/service';
 import { FilesService } from '@modules/files/service';
 import { AccountService } from '@modules/account/services';
-import { RocketChatUserService } from '@modules/rocketchat-user/service/rocket-chat-user.service';
+import { RocketChatUserService } from '@modules/rocketchat-user';
 import { RocketChatService } from '@modules/rocketchat';
 import { DeletionRequestService } from '../services/deletion-request.service';
 import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
