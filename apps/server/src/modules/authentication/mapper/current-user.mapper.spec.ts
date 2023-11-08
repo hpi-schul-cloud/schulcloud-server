@@ -15,42 +15,78 @@ describe('CurrentUserMapper', () => {
 
 	describe('userToICurrentUser', () => {
 		describe('when mapping from a user entity to the current user object', () => {
-			it('should map with roles', () => {
-				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] });
-				const user = userFactory.buildWithId({
-					roles: [teacherRole],
-				});
-				const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user);
-				expect(currentUser).toMatchObject({
-					accountId,
-					systemId: undefined,
-					roles: [teacherRole.id],
-					schoolId: null,
+			describe('when user has roles', () => {
+				const setup = () => {
+					const teacherRole = roleFactory.buildWithId({
+						name: RoleName.TEACHER,
+						permissions: [Permission.STUDENT_EDIT],
+					});
+					const user = userFactory.buildWithId({
+						roles: [teacherRole],
+					});
+
+					return {
+						teacherRole,
+						user,
+					};
+				};
+
+				it('should map with roles', () => {
+					const { teacherRole, user } = setup();
+
+					const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user, false);
+
+					expect(currentUser).toMatchObject({
+						accountId,
+						systemId: undefined,
+						roles: [teacherRole.id],
+						schoolId: null,
+						isExternalUser: false,
+					});
 				});
 			});
 
-			it('should map without roles', () => {
-				const user = userFactory.buildWithId();
-				const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user);
-				expect(currentUser).toMatchObject({
-					accountId,
-					systemId: undefined,
-					roles: [],
-					schoolId: null,
+			describe('when user has no roles', () => {
+				it('should map without roles', () => {
+					const user = userFactory.buildWithId();
+
+					const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user, true);
+
+					expect(currentUser).toMatchObject({
+						accountId,
+						systemId: undefined,
+						roles: [],
+						schoolId: null,
+						isExternalUser: true,
+					});
 				});
 			});
 
-			it('should map system and school', () => {
-				const user = userFactory.buildWithId({
-					school: schoolFactory.buildWithId(),
-				});
-				const systemId = 'mockSystemId';
-				const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user, systemId);
-				expect(currentUser).toMatchObject({
-					accountId,
-					systemId,
-					roles: [],
-					schoolId: user.school.id,
+			describe('when systemId is provided', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId({
+						school: schoolFactory.buildWithId(),
+					});
+					const systemId = 'mockSystemId';
+
+					return {
+						user,
+						systemId,
+					};
+				};
+
+				it('should map system and school', () => {
+					const { user, systemId } = setup();
+
+					const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user, false, systemId);
+
+					expect(currentUser).toMatchObject({
+						accountId,
+						systemId,
+						roles: [],
+						schoolId: user.school.id,
+						isExternalUser: false,
+					});
 				});
 			});
 		});
@@ -301,35 +337,6 @@ describe('CurrentUserMapper', () => {
 				userId: currentUser.userId,
 				support: currentUser.impersonated,
 				isExternalUser: false,
-			});
-		});
-	});
-
-	describe('mapToLdapCurrentUser', () => {
-		const setup = () => {
-			const user = userFactory.buildWithId({
-				school: schoolFactory.buildWithId(),
-			});
-			const systemId = 'mockSystemId';
-
-			return {
-				user,
-				systemId,
-			};
-		};
-
-		it('should map to ldap current user', () => {
-			const { user, systemId } = setup();
-
-			const currentUser: ICurrentUser = CurrentUserMapper.mapToLdapCurrentUser(accountId, user, systemId);
-
-			expect(currentUser).toMatchObject({
-				accountId,
-				systemId,
-				roles: [],
-				schoolId: user.school.id,
-				userId: user.id,
-				isExternalUser: true,
 			});
 		});
 	});

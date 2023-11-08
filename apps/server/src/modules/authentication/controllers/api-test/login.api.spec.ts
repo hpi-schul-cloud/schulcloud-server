@@ -192,6 +192,7 @@ describe('Login Controller (api)', () => {
 				expect(decodedToken).toHaveProperty('accountId');
 				expect(decodedToken).toHaveProperty('schoolId');
 				expect(decodedToken).toHaveProperty('roles');
+				expect(decodedToken).toHaveProperty('isExternalUser');
 				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});
