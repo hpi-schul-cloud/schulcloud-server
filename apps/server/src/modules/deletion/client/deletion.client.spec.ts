@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { axiosResponseFactory } from '@shared/testing';
+import { DeletionRequestInputBuilder, DeletionRequestOutputBuilder } from '@modules/deletion';
 import { DeletionRequestOutput } from './interface';
 import { DeletionClient } from './deletion.client';
 
@@ -52,17 +53,12 @@ describe(DeletionClient.name, () => {
 	describe('queueDeletionRequest', () => {
 		describe('when received valid response with expected HTTP status code', () => {
 			const setup = () => {
-				const input = {
-					targetRef: {
-						domain: 'user',
-						id: '652f1625e9bc1a13bdaae48b',
-					},
-				};
+				const input = DeletionRequestInputBuilder.build('user', '652f1625e9bc1a13bdaae48b');
 
-				const output: DeletionRequestOutput = {
-					requestId: '6536ce29b595d7c8e5faf200',
-					deletionPlannedAt: new Date('2024-10-15T12:42:50.521Z'),
-				};
+				const output: DeletionRequestOutput = DeletionRequestOutputBuilder.build(
+					'6536ce29b595d7c8e5faf200',
+					new Date('2024-10-15T12:42:50.521Z')
+				);
 
 				const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
 					data: output,
@@ -85,18 +81,62 @@ describe(DeletionClient.name, () => {
 
 		describe('when received invalid HTTP status code in a response', () => {
 			const setup = () => {
-				const input = {
-					targetRef: {
-						domain: 'user',
-						id: '652f1625e9bc1a13bdaae48b',
-					},
-				};
+				const input = DeletionRequestInputBuilder.build('user', '652f1625e9bc1a13bdaae48b');
 
-				const output: DeletionRequestOutput = { requestId: '', deletionPlannedAt: new Date() };
+				const output: DeletionRequestOutput = DeletionRequestOutputBuilder.build('', new Date());
 
 				const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
 					data: output,
 					status: 200,
+				});
+
+				httpService.post.mockReturnValueOnce(of(response));
+
+				return { input };
+			};
+
+			it('should throw an exception', async () => {
+				const { input } = setup();
+
+				await expect(client.queueDeletionRequest(input)).rejects.toThrow(Error);
+			});
+		});
+
+		describe('when received no requestId in a response', () => {
+			const setup = () => {
+				const input = DeletionRequestInputBuilder.build('user', '652f1625e9bc1a13bdaae48b');
+
+				const output: DeletionRequestOutput = DeletionRequestOutputBuilder.build(
+					'',
+					new Date('2024-10-15T12:42:50.521Z')
+				);
+
+				const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
+					data: output,
+					status: 202,
+				});
+
+				httpService.post.mockReturnValueOnce(of(response));
+
+				return { input };
+			};
+
+			it('should throw an exception', async () => {
+				const { input } = setup();
+
+				await expect(client.queueDeletionRequest(input)).rejects.toThrow(Error);
+			});
+		});
+
+		describe('when received no deletionPlannedAt in a response', () => {
+			const setup = () => {
+				const input = DeletionRequestInputBuilder.build('user', '652f1625e9bc1a13bdaae48b');
+
+				const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
+					data: {
+						requestId: '6536ce29b595d7c8e5faf200',
+					},
+					status: 202,
 				});
 
 				httpService.post.mockReturnValueOnce(of(response));
