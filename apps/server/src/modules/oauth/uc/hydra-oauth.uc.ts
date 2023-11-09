@@ -22,8 +22,6 @@ export class HydraOauthUc {
 
 	private readonly MAX_REDIRECTS: number = 10;
 
-	private readonly HYDRA_PUBLIC_URI: string = Configuration.get('HYDRA_PUBLIC_URI') as string;
-
 	async getOauthToken(oauthClientId: string, code?: string, error?: string): Promise<OAuthTokenDto> {
 		if (error || !code) {
 			throw new OAuthSSOError(
