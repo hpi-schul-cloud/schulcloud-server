@@ -35,3 +35,7 @@ export interface DrawingElementProps extends BoardCompositeProps {
 	drawingName: string;
 	description: string;
 }
+
+export function isDrawingElement(reference: unknown): reference is DrawingElement {
+	return reference instanceof DrawingElement;
+}
