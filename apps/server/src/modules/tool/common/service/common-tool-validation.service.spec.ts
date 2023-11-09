@@ -597,6 +597,7 @@ describe('CommonToolValidationService', () => {
 				const setup = () => {
 					const undefinedRegex: CustomParameter = customParameterFactory.build({
 						name: 'undefinedRegex',
+						isOptional: false,
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.STRING,
 						regex: undefined,
@@ -629,6 +630,7 @@ describe('CommonToolValidationService', () => {
 				const setup = () => {
 					const validRegex: CustomParameter = customParameterFactory.build({
 						name: 'validRegex',
+						isOptional: false,
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.STRING,
 						regex: '[x]',
@@ -661,6 +663,7 @@ describe('CommonToolValidationService', () => {
 				const setup = () => {
 					const validRegex: CustomParameter = customParameterFactory.build({
 						name: 'validRegex',
+						isOptional: false,
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.STRING,
 						regex: '[x]',
@@ -686,6 +689,39 @@ describe('CommonToolValidationService', () => {
 					const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
 
 					expect(func).toThrowError('tool_param_value_regex');
+				});
+			});
+
+			describe('when parameter is optional and a regex is given, but the param value is undefined', () => {
+				const setup = () => {
+					const optionalRegex: CustomParameter = customParameterFactory.build({
+						name: 'optionalRegex',
+						isOptional: true,
+						scope: CustomParameterScope.SCHOOL,
+						type: CustomParameterType.STRING,
+						regex: '[x]',
+					});
+					const { externalTool, schoolExternalTool } = createTools(
+						{
+							parameters: [optionalRegex],
+						},
+						{
+							parameters: [{ name: 'optionalRegex', value: undefined }],
+						}
+					);
+
+					return {
+						externalTool,
+						schoolExternalTool,
+					};
+				};
+
+				it('should return without error', () => {
+					const { externalTool, schoolExternalTool } = setup();
+
+					const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+
+					expect(func).not.toThrowError('tool_param_value_regex');
 				});
 			});
 		});
