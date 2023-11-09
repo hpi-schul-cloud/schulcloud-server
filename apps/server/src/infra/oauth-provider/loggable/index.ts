@@ -1,1 +1,1 @@
-export * from './hydra-oauth-loggable-exception';
+export * from './hydra-oauth-failed-loggable-exception';

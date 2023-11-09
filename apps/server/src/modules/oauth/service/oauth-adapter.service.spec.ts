@@ -2,10 +2,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@shared/testing';
-import { AxiosError, AxiosResponse } from 'axios/index';
+import { axiosErrorFactory } from '@shared/testing/factory/axios-error.factory';
+import { AxiosError } from 'axios';
 import { of, throwError } from 'rxjs';
 import { OAuthGrantType } from '../interface/oauth-grant-type.enum';
-import { OAuthSSOError } from '../loggable';
+import { TokenRequestLoggableException } from '../loggable/token-request-loggable-exception';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
 
@@ -94,53 +95,62 @@ describe('OauthAdapterServive', () => {
 		});
 
 		describe('when no token got returned', () => {
+			const setup = () => {
+				const error = new Error('unknown error');
+				httpService.post.mockReturnValueOnce(throwError(() => error));
+
+				return {
+					error,
+				};
+			};
+
 			it('should throw an error', async () => {
-				httpService.post.mockReturnValueOnce(throwError(() => 'error'));
+				const { error } = setup();
 
 				const resp = service.sendAuthenticationCodeTokenRequest('tokenEndpoint', testPayload);
 
-				await expect(resp).rejects.toEqual(new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step'));
+				await expect(resp).rejects.toEqual(error);
 			});
 		});
 
 		describe('when error got returned', () => {
 			describe('when error is a unknown error', () => {
 				const setup = () => {
-					httpService.post.mockReturnValueOnce(throwError(() => new Error('unknown error')));
+					const error = new Error('unknown error');
+					httpService.post.mockReturnValueOnce(throwError(() => error));
+
+					return {
+						error,
+					};
 				};
 
 				it('should throw the default sso error', async () => {
-					setup();
+					const { error } = setup();
 
 					const resp = service.sendAuthenticationCodeTokenRequest('tokenEndpoint', testPayload);
 
-					await expect(resp).rejects.toEqual(new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step'));
+					await expect(resp).rejects.toEqual(error);
 				});
 			});
 
 			describe('when error is a axios error', () => {
 				const setup = () => {
-					const axiosError: AxiosError = {
-						isAxiosError: true,
-						response: {
-							data: {
-								error: {
-									message: 'Some error message',
-									code: 123,
-								},
-							},
-						} as AxiosResponse,
-					} as AxiosError;
+					const error = new Error('some error message');
+					const axiosError: AxiosError = axiosErrorFactory.withError(error).build();
 
 					httpService.post.mockReturnValueOnce(throwError(() => axiosError));
+
+					return {
+						axiosError,
+					};
 				};
 
 				it('should throw an error', async () => {
-					setup();
+					const { axiosError } = setup();
 
 					const resp = service.sendAuthenticationCodeTokenRequest('tokenEndpoint', testPayload);
 
-					await expect(resp).rejects.toEqual(new OAuthSSOError('Some error message', 'sso_auth_code_step'));
+					await expect(resp).rejects.toEqual(new TokenRequestLoggableException(axiosError));
 				});
 			});
 		});

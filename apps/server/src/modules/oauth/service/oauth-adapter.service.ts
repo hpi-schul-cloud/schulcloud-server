@@ -1,12 +1,10 @@
-import { HydraOauthLoggableException } from '@infra/oauth-provider/loggable';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common/decorators';
-import { isAxiosError } from '@shared/common';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosResponse, isAxiosError } from 'axios';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
-import { OAuthSSOError } from '../loggable';
+import { TokenRequestLoggableException } from '../loggable/token-request-loggable-exception';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 
 @Injectable()
@@ -44,16 +42,9 @@ export class OauthAdapterService {
 			responseToken = await lastValueFrom(observable);
 		} catch (error: unknown) {
 			if (isAxiosError(error)) {
-				const response = error.response as AxiosResponse;
-
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				const errorMessage: string = (response?.data?.error?.message as string) ?? 'Requesting token failed.';
-				throw new OAuthSSOError(errorMessage, 'sso_auth_code_step');
+				throw new TokenRequestLoggableException(error);
 			}
-		}
-
-		if (!responseToken) {
-			throw new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step');
+			throw error;
 		}
 
 		return responseToken.data;

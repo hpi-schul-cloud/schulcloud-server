@@ -1,8 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { isAxiosError } from '@shared/common';
-import { AxiosError, AxiosResponse, Method, RawAxiosRequestHeaders } from 'axios';
+import { AxiosResponse, isAxiosError, Method, RawAxiosRequestHeaders } from 'axios';
 import QueryString from 'qs';
 import { firstValueFrom, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -18,7 +17,7 @@ import {
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '../dto';
-import { HydraOauthLoggableException } from '../loggable';
+import { HydraOauthFailedLoggableException } from '../loggable';
 import { OauthProviderService } from '../oauth-provider.service';
 
 @Injectable()
@@ -176,10 +175,7 @@ export class HydraAdapter extends OauthProviderService {
 			.pipe(
 				catchError((error: unknown) => {
 					if (isAxiosError(error)) {
-						const responseData = error.response?.data;
-						const errorMessage = (responseData as { error: { message: string } }).error.message;
-						const errorCode = (responseData as { error: { code: number } }).error.code;
-						throw new HydraOauthLoggableException(url, method, errorMessage, errorCode);
+						throw new HydraOauthFailedLoggableException(error);
 					} else {
 						throw error;
 					}

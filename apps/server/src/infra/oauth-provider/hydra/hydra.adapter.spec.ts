@@ -13,11 +13,11 @@ import {
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@shared/testing';
-import { AxiosError, AxiosHeaders, AxiosRequestConfig, AxiosResponse, Method, RawAxiosRequestHeaders } from 'axios';
-
+import { axiosErrorFactory } from '@shared/testing/factory/axios-error.factory';
+import { AxiosError, AxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'axios';
 import { of, throwError } from 'rxjs';
 import { ProviderConsentSessionResponse } from '../dto';
-import { HydraOauthLoggableException } from '../loggable';
+import { HydraOauthFailedLoggableException } from '../loggable';
 import { HydraAdapter } from './hydra.adapter';
 import resetAllMocks = jest.resetAllMocks;
 
@@ -140,35 +140,24 @@ describe('HydraService', () => {
 		describe('when error occurs', () => {
 			describe('when error is an axios error', () => {
 				const setup = () => {
-					const axiosError: AxiosError<unknown> = {
-						isAxiosError: true,
-						name: 'AxiosError',
-						message: 'Axios error message',
-						config: {
-							headers: {} as AxiosHeaders,
+					const axiosError: AxiosError = axiosErrorFactory.build({
+						data: {
+							message: 'Some error message',
+							code: 123,
 						},
-						response: {
-							status: 400,
-							statusText: 'Bad Request',
-							headers: {} as AxiosHeaders,
-							data: {
-								error: {
-									message: 'Some error message',
-									code: 123,
-								},
-							},
-						} as AxiosResponse,
-					} as AxiosError;
+					});
 
 					httpService.request.mockReturnValueOnce(throwError(() => axiosError));
+
+					return {
+						axiosError,
+					};
 				};
 
 				it('should throw hydra oauth loggable exception', async () => {
-					setup();
+					const { axiosError } = setup();
 
-					await expect(service.listOAuth2Clients()).rejects.toThrow(
-						new HydraOauthLoggableException(`${hydraUri}/clients`, 'GET', 'Some error message', 123)
-					);
+					await expect(service.listOAuth2Clients()).rejects.toThrow(new HydraOauthFailedLoggableException(axiosError));
 				});
 			});
 
