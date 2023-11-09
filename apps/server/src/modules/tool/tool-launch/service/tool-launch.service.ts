@@ -1,12 +1,11 @@
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
-import { CommonToolService } from '../../common/service';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../../school-external-tool/service';
+import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ToolStatusOutdatedLoggableException } from '../error';
 import { ToolLaunchMapper } from '../mapper';
 import { ToolLaunchData, ToolLaunchRequest } from '../types';
@@ -16,8 +15,8 @@ import {
 	Lti11ToolLaunchStrategy,
 	OAuth2ToolLaunchStrategy,
 } from './launch-strategy';
-import { ContextExternalToolValidationService } from '../../context-external-tool/service';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
+import { ToolVersionService } from '../../context-external-tool/service/tool-version-service';
 
 @Injectable()
 export class ToolLaunchService {
@@ -29,9 +28,7 @@ export class ToolLaunchService {
 		private readonly basicToolLaunchStrategy: BasicToolLaunchStrategy,
 		private readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy,
 		private readonly oauth2ToolLaunchStrategy: OAuth2ToolLaunchStrategy,
-		private readonly commonToolService: CommonToolService,
-		private readonly contextExternalToolValidationService: ContextExternalToolValidationService,
-		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
+		private readonly toolVersionService: ToolVersionService,
 		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {
 		this.strategies = new Map();
@@ -88,36 +85,17 @@ export class ToolLaunchService {
 		};
 	}
 
-	private async determineToolConfigurationStatusThroughValidation(
-		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalTool
-	): Promise<ToolConfigurationStatus> {
-		try {
-			await this.schoolExternalToolValidationService.validate(schoolExternalTool);
-			await this.contextExternalToolValidationService.validate(contextExternalTool);
-			return ToolConfigurationStatus.LATEST;
-		} catch (err) {
-			return ToolConfigurationStatus.OUTDATED;
-		}
-	}
-
 	private async isToolStatusLatestOrThrow(
 		userId: EntityId,
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
 	): Promise<void> {
-		let status: ToolConfigurationStatus;
-
-		if (this.toolFeatures.toolStatusWithoutVersions) {
-			status = await this.determineToolConfigurationStatusThroughValidation(schoolExternalTool, contextExternalTool);
-		} else {
-			status = this.commonToolService.determineToolConfigurationStatus(
-				externalTool,
-				schoolExternalTool,
-				contextExternalTool
-			);
-		}
+		const status = await this.toolVersionService.determineToolConfigurationStatus(
+			externalTool,
+			schoolExternalTool,
+			contextExternalTool
+		);
 
 		if (status !== ToolConfigurationStatus.LATEST) {
 			throw new ToolStatusOutdatedLoggableException(userId, contextExternalTool.id ?? '');
