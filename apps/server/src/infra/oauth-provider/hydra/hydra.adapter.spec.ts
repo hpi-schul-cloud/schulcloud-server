@@ -138,36 +138,50 @@ describe('HydraService', () => {
 		});
 
 		describe('when error occurs', () => {
-			const setup = () => {
-				const axiosError: AxiosError<unknown> = {
-					isAxiosError: true,
-					name: 'AxiosError',
-					message: 'Axios error message',
-					config: {
-						headers: {} as AxiosHeaders,
-					},
-					response: {
-						status: 400,
-						statusText: 'Bad Request',
-						headers: {} as AxiosHeaders,
-						data: {
-							error: {
-								message: 'Some error message',
-								code: 123,
-							},
+			describe('when error is an axios error', () => {
+				const setup = () => {
+					const axiosError: AxiosError<unknown> = {
+						isAxiosError: true,
+						name: 'AxiosError',
+						message: 'Axios error message',
+						config: {
+							headers: {} as AxiosHeaders,
 						},
-					} as AxiosResponse,
-				} as AxiosError;
+						response: {
+							status: 400,
+							statusText: 'Bad Request',
+							headers: {} as AxiosHeaders,
+							data: {
+								error: {
+									message: 'Some error message',
+									code: 123,
+								},
+							},
+						} as AxiosResponse,
+					} as AxiosError;
 
-				httpService.request.mockReturnValue(throwError(() => axiosError));
-			};
+					httpService.request.mockReturnValueOnce(throwError(() => axiosError));
+				};
 
-			it('should throw hydra oauth loggable exception', async () => {
-				setup();
+				it('should throw hydra oauth loggable exception', async () => {
+					setup();
 
-				await expect(service.listOAuth2Clients()).rejects.toThrow(
-					new HydraOauthLoggableException(`${hydraUri}/clients`, 'GET', 'Some error message', 123)
-				);
+					await expect(service.listOAuth2Clients()).rejects.toThrow(
+						new HydraOauthLoggableException(`${hydraUri}/clients`, 'GET', 'Some error message', 123)
+					);
+				});
+			});
+
+			describe('when error is any other error', () => {
+				const setup = () => {
+					httpService.request.mockReturnValueOnce(throwError(() => new Error('unknown error')));
+				};
+
+				it('should throw the error', async () => {
+					setup();
+
+					await expect(service.listOAuth2Clients()).rejects.toThrow(new Error('unknown error'));
+				});
 			});
 		});
 	});
