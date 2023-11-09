@@ -6,6 +6,7 @@ import { ContentStorage, LibraryStorage } from '@src/modules/h5p-editor/service'
 import { LibraryAdministration, ContentTypeCache } from '@lumieducation/h5p-server';
 import { IHubContentType } from '@lumieducation/h5p-server/build/src/types';
 import { H5PLibraryManagementService } from './h5p-library-management.service';
+import { s3ConfigContent, s3ConfigLibraries } from '../h5p-library-management.config';
 
 jest.mock('@lumieducation/h5p-server', () => {
 	return {
@@ -52,6 +53,7 @@ describe('H5PLibraryManagementService', () => {
 
 	describe('uninstallUnwantedLibraries', () => {
 		it('should delete libraries not in the wanted list and with no dependents', async () => {
+			const s3ConfigLibrariess = s3ConfigLibraries;
 			libraryStorageMock.deleteLibrary = jest.fn().mockResolvedValue({});
 			await service.uninstallUnwantedLibraries(['a', 'b']);
 			expect(libraryStorageMock.deleteLibrary).toHaveBeenCalledWith({ machineName: 'c', dependentsCount: 0 });
@@ -99,5 +101,16 @@ describe('H5PLibraryManagementService', () => {
 			uninstallSpy.mockRestore();
 			installSpy.mockRestore();
 		});
+	});
+});
+
+describe('config', () => {
+	it('should get Object s3ConfigLibraries', () => {
+		const s3ConfigLibrariesObj = s3ConfigLibraries;
+		expect(s3ConfigLibrariesObj).toBeDefined();
+	});
+	it('should get Object s3ConfigLibraries', () => {
+		const s3ConfigContentObj = s3ConfigContent;
+		expect(s3ConfigContentObj).toBeDefined();
 	});
 });
