@@ -124,12 +124,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, externalToolParameterValidationService: <a href="../injectables/ExternalToolParameterValidationService.html" target="_self">ExternalToolParameterValidationService</a>, toolFeatures: <a href="../interfaces/IToolFeatures.html" target="_self">IToolFeatures</a>, externalToolLogoService: <a href="../classes/ExternalToolLogoService.html" target="_self">ExternalToolLogoService</a>)</code>
+<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, externalToolParameterValidationService: <a href="../injectables/ExternalToolParameterValidationService.html" target="_self">ExternalToolParameterValidationService</a>, externalToolLogoService: <a href="../classes/ExternalToolLogoService.html" target="_self">ExternalToolLogoService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -163,18 +163,6 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/ExternalToolParameterValidationService.html" target="_self" >ExternalToolParameterValidationService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>toolFeatures</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../interfaces/IToolFeatures.html" target="_self" >IToolFeatures</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -231,8 +219,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="86"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:86</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:84</a></div>
                         </td>
                     </tr>
 
@@ -300,8 +288,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="16"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -369,8 +357,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="76"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:76</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -439,8 +427,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="60"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:60</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:58</a></div>
                         </td>
                     </tr>
 
@@ -508,8 +496,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -573,9 +561,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
-import { IToolFeatures, ToolFeatures } from &#x27;../../tool-config&#x27;;
 import { ExternalTool } from &#x27;../domain&#x27;;
 import { ExternalToolLogoService } from &#x27;./external-tool-logo.service&#x27;;
 import { ExternalToolParameterValidationService } from &#x27;./external-tool-parameter-validation.service&#x27;;
@@ -586,7 +573,6 @@ export class ExternalToolValidationService {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
 		private readonly externalToolParameterValidationService: ExternalToolParameterValidationService,
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
 		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
 
