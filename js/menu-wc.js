@@ -6054,6 +6054,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/ILoggerConfig.html" data-type="entity-link" >ILoggerConfig</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/IMailConfig.html" data-type="entity-link" >IMailConfig</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/IMaterialProperties.html" data-type="entity-link" >IMaterialProperties</a>
                             </li>
                             <li class="link">

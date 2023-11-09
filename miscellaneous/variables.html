@@ -3397,6 +3397,9 @@ This allows adding console commands to execute provider methods.</p>
 	FEATURE_IDENTITY_MANAGEMENT_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_ENABLED&#x27;) as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED&#x27;) as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED&#x27;) as boolean,
+	ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS: (Configuration.get(&#x27;ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS&#x27;) as string)
+		.split(&#x27;,&#x27;)
+		.map((domain) &#x3D;&gt; domain.trim()),
 }</code>
                     </td>
                 </tr>

@@ -86,6 +86,7 @@
                             <code><a href="../interfaces/IAccountConfig.html" target="_self" >IAccountConfig</a></code>
                             <code><a href="../interfaces/IIdentityManagementConfig.html" target="_self" >IIdentityManagementConfig</a></code>
                             <code><a href="../interfaces/ICommonCartridgeConfig.html" target="_self" >ICommonCartridgeConfig</a></code>
+                            <code><a href="../interfaces/IMailConfig.html" target="_self" >IMailConfig</a></code>
             </p>
 
         <section data-compodoc="block-index">
@@ -201,6 +202,7 @@ import type { IAccountConfig } from &#x27;@modules/account&#x27;;
 import type { IFilesStorageClientConfig } from &#x27;@modules/files-storage-client&#x27;;
 import type { IUserConfig } from &#x27;@modules/user&#x27;;
 import type { ICommonCartridgeConfig } from &#x27;@modules/learnroom/common-cartridge&#x27;;
+import { IMailConfig } from &#x27;@src/infra/mail/interfaces/mail-config&#x27;;
 
 export enum NodeEnvType {
 	TEST &#x3D; &#x27;test&#x27;,
@@ -215,7 +217,8 @@ export interface IServerConfig
 		IFilesStorageClientConfig,
 		IAccountConfig,
 		IIdentityManagementConfig,
-		ICommonCartridgeConfig {
+		ICommonCartridgeConfig,
+		IMailConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 }
@@ -235,6 +238,9 @@ const config: IServerConfig &#x3D; {
 	FEATURE_IDENTITY_MANAGEMENT_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_ENABLED&#x27;) as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED&#x27;) as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED&#x27;) as boolean,
+	ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS: (Configuration.get(&#x27;ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS&#x27;) as string)
+		.split(&#x27;,&#x27;)
+		.map((domain) &#x3D;&gt; domain.trim()),
 };
 
 export const serverConfig &#x3D; () &#x3D;&gt; config;

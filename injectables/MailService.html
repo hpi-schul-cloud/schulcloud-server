@@ -75,6 +75,22 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#domainBlacklist" >domainBlacklist</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -84,6 +100,14 @@
                 <tr>
                     <td class="col-md-4">
                         <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#filterEmailAdresses" >filterEmailAdresses</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getMailDomain" >getMailDomain</a>
+                            </li>
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
@@ -107,12 +131,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(amqpConnection: AmqpConnection, options: <a href="../interfaces/MailServiceOptions.html" target="_self">MailServiceOptions</a>)</code>
+<code>constructor(amqpConnection: AmqpConnection, options: <a href="../interfaces/MailServiceOptions.html" target="_self">MailServiceOptions</a>, configService: ConfigService<IMailConfig | >)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/infra/mail/mail.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/infra/mail/mail.service.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -153,6 +177,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>configService</td>
+                                                  
+                                                        <td>
+                                                                    <code>ConfigService&lt;IMailConfig | &gt;</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -167,6 +203,144 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filterEmailAdresses"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>filterEmailAdresses</b></span>
+                        <a href="#filterEmailAdresses"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>filterEmailAdresses(mails: string[] | undefined)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">apps/server/src/infra/mail/mail.service.ts:39</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>mails</td>
+                                            <td>
+                                                        <code>string[] | undefined</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>[] | undefined</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMailDomain"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getMailDomain</b></span>
+                        <a href="#getMailDomain"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getMailDomain(mail: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/infra/mail/mail.service.ts:54</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>mail</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -190,8 +364,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/infra/mail/mail.service.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/infra/mail/mail.service.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -238,6 +412,40 @@
         </tbody>
     </table>
 </section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="domainBlacklist"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>domainBlacklist</b></span>
+                        <a href="#domainBlacklist"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>string[]</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/infra/mail/mail.service.ts:14</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
 
     </div>
 
@@ -245,8 +453,9 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AmqpConnection } from &#x27;@golevelup/nestjs-rabbitmq&#x27;;
 import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { Mail } from &#x27;./mail.interface&#x27;;
+import { IMailConfig } from &#x27;./interfaces/mail-config&#x27;;
 
 interface MailServiceOptions {
 	exchange: string;
@@ -255,13 +464,48 @@ interface MailServiceOptions {
 
 @Injectable()
 export class MailService {
+	private readonly domainBlacklist: string[];
+
 	constructor(
 		private readonly amqpConnection: AmqpConnection,
-		@Inject(&#x27;MAIL_SERVICE_OPTIONS&#x27;) private readonly options: MailServiceOptions
-	) {}
+		@Inject(&#x27;MAIL_SERVICE_OPTIONS&#x27;) private readonly options: MailServiceOptions,
+		private readonly configService: ConfigService&lt;IMailConfig, true&gt;
+	) {
+		this.domainBlacklist &#x3D; this.configService.get&lt;string[]&gt;(&#x27;ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS&#x27;);
+	}
 
 	public async send(data: Mail): Promise&lt;void&gt; {
+		if (this.domainBlacklist.length &gt; 0) {
+			data.recipients &#x3D; this.filterEmailAdresses(data.recipients) as string[];
+			data.cc &#x3D; this.filterEmailAdresses(data.cc);
+			data.bcc &#x3D; this.filterEmailAdresses(data.bcc);
+			data.replyTo &#x3D; this.filterEmailAdresses(data.replyTo);
+		}
+
+		if (data.recipients.length &#x3D;&#x3D;&#x3D; 0) {
+			return;
+		}
+
 		await this.amqpConnection.publish(this.options.exchange, this.options.routingKey, data, { persistent: true });
+	}
+
+	private filterEmailAdresses(mails: string[] | undefined): string[] | undefined {
+		if (mails &#x3D;&#x3D;&#x3D; undefined || mails &#x3D;&#x3D;&#x3D; null) {
+			return mails;
+		}
+		const mailWhitelist: string[] &#x3D; [];
+
+		for (const mail of mails) {
+			const mailDomain &#x3D; this.getMailDomain(mail);
+			if (mailDomain &amp;&amp; !this.domainBlacklist.includes(mailDomain)) {
+				mailWhitelist.push(mail);
+			}
+		}
+		return mailWhitelist;
+	}
+
+	private getMailDomain(mail: string): string {
+		return mail.split(&#x27;@&#x27;)[1];
 	}
 }
 </code></pre>

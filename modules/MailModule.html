@@ -100,8 +100,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="11"
-                                    class="link-to-prism">apps/server/src/infra/mail/mail.module.ts:11</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="13"
+                                    class="link-to-prism">apps/server/src/infra/mail/mail.module.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -153,7 +153,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module, DynamicModule } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { MailService } from &#x27;./mail.service&#x27;;
+import { IMailConfig } from &#x27;./interfaces/mail-config&#x27;;
 
 interface MailModuleOptions {
 	exchange: string;
@@ -171,6 +173,7 @@ export class MailModule {
 					provide: &#x27;MAIL_SERVICE_OPTIONS&#x27;,
 					useValue: { exchange: options.exchange, routingKey: options.routingKey },
 				},
+				ConfigService&lt;IMailConfig, true&gt;,
 			],
 			exports: [MailService],
 		};
