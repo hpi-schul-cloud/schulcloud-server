@@ -148,7 +148,7 @@ export class FilesStorageController {
 		response.set({ ETag: fileResponse.etag });
 
 		if (etag === fileResponse.etag) {
-			response.status(304);
+			response.status(HttpStatus.NOT_MODIFIED);
 
 			return undefined;
 		}
