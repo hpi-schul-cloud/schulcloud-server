@@ -1,8 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
+import { GroupTypes } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { GroupTypes } from '@modules/group';
 import { UUID } from 'bson';
 import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
 import {
@@ -56,6 +56,9 @@ describe('SanisResponseMapper', () => {
 						name: 'schoolName',
 						typ: 'SCHULE',
 						kennung: 'NI_123456_NI_ashd3838',
+						anschrift: {
+							ort: 'Hannover',
+						},
 					},
 					personenstatus: '',
 					gruppen: [
@@ -103,6 +106,7 @@ describe('SanisResponseMapper', () => {
 					externalId: externalSchoolId,
 					name: 'schoolName',
 					officialSchoolNumber: '123456_NI_ashd3838',
+					location: 'Hannover',
 				});
 			});
 		});
