@@ -90,9 +90,11 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#alternativeText" >alternativeText</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                 <a href="#caption" >caption</a>
                             </li>
@@ -120,7 +122,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/file-element.response.ts:5</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/file-element.response.ts:6</a></div>
                             </td>
                         </tr>
 
@@ -169,6 +171,7 @@
                     <a name="alternativeText"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>alternativeText</b></span>
                         <a href="#alternativeText"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -185,13 +188,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty()<br />@DecodeHtmlEntities()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/file-element.response.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/file-element.response.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -204,6 +207,7 @@
                 <td class="col-md-4">
                     <a name="caption"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                         <span ><b>caption</b></span>
                         <a href="#caption"><span class="icon ion-ios-link"></span></a>
@@ -221,13 +225,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty()<br />@DecodeHtmlEntities()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/file-element.response.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/file-element.response.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -247,6 +251,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+import { DecodeHtmlEntities } from &#x27;@shared/controller&#x27;;
 import { ContentElementType } from &#x27;@shared/domain&#x27;;
 import { TimestampsResponse } from &#x27;../timestamps.response&#x27;;
 
@@ -257,9 +262,11 @@ export class FileElementContent {
 	}
 
 	@ApiProperty()
+	@DecodeHtmlEntities()
 	caption: string;
 
 	@ApiProperty()
+	@DecodeHtmlEntities()
 	alternativeText: string;
 }
 
