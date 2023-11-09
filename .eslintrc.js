@@ -65,22 +65,24 @@ module.exports = {
 	overrides: [
 		{
 			files: ['apps/**/*.ts'],
+			env: {
+				node: true,
+				es6: true,
+			},
 			parser: '@typescript-eslint/parser',
-			plugins: ['@typescript-eslint/eslint-plugin'],
+			parserOptions: {
+				project: 'apps/server/tsconfig.lint.json',
+				sourceType: 'module',
+			},
+			plugins: ['@typescript-eslint/eslint-plugin', 'import'],
 			extends: [
 				'airbnb-typescript/base',
 				'plugin:@typescript-eslint/recommended',
 				'plugin:@typescript-eslint/recommended-requiring-type-checking',
 				'prettier',
 				'plugin:promise/recommended',
+				'plugin:import/typescript',
 			],
-			parserOptions: {
-				project: 'apps/server/tsconfig.lint.json',
-			},
-			env: {
-				node: true,
-				es6: true,
-			},
 			rules: {
 				'import/no-unresolved': 'off', // better handled by ts resolver
 				'import/no-extraneous-dependencies': 'off', // better handles by ts resolver
@@ -96,6 +98,17 @@ module.exports = {
 					'error',
 					{
 						allowSingleExtends: true,
+					},
+				],
+				'@typescript-eslint/no-restricted-imports': [
+					'warn',
+					{
+						patterns: [
+							{
+								group: ['@infra/*/*', '@modules/*/*'],
+								message: 'Do not deep import into a module',
+							},
+						],
 					},
 				],
 			},
