@@ -1,7 +1,5 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { HttpService } from '@nestjs/axios';
-import { Test, TestingModule } from '@nestjs/testing';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
@@ -12,11 +10,15 @@ import {
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '@infra/oauth-provider/dto';
+import { HttpService } from '@nestjs/axios';
+import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@shared/testing';
-import { AxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'axios';
-import { of } from 'rxjs';
+import { AxiosError, AxiosHeaders, AxiosRequestConfig, AxiosResponse, Method, RawAxiosRequestHeaders } from 'axios';
+
+import { of, throwError } from 'rxjs';
+import { ProviderConsentSessionResponse } from '../dto';
+import { HydraOauthLoggableException } from '../loggable';
 import { HydraAdapter } from './hydra.adapter';
-import { ProviderConsentSessionResponse } from '../dto/response/consent-session.response';
 import resetAllMocks = jest.resetAllMocks;
 
 class HydraAdapterSpec extends HydraAdapter {
@@ -66,115 +68,197 @@ describe('HydraService', () => {
 	});
 
 	describe('request', () => {
-		it('should return data when called with all parameters', async () => {
-			const data: { test: string } = {
-				test: 'data',
+		describe('when called with all parameters', () => {
+			const setup = () => {
+				const data: { test: string } = {
+					test: 'data',
+				};
+
+				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				return {
+					data,
+				};
 			};
 
-			httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+			it('should return data', async () => {
+				const { data } = setup();
 
-			const result: { test: string } = await service.requestSpec(
-				'GET',
-				'testUrl',
-				{ dataKey: 'dataValue' },
-				{ headerKey: 'headerValue' }
-			);
+				const result: { test: string } = await service.requestSpec(
+					'GET',
+					'testUrl',
+					{ dataKey: 'dataValue' },
+					{ headerKey: 'headerValue' }
+				);
 
-			expect(result).toEqual(data);
-			expect(httpService.request).toHaveBeenCalledWith(
-				expect.objectContaining({
-					url: 'testUrl',
-					method: 'GET',
-					headers: {
-						'X-Forwarded-Proto': 'https',
-						headerKey: 'headerValue',
-					},
-					data: { dataKey: 'dataValue' },
-				})
-			);
+				expect(result).toEqual(data);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: 'testUrl',
+						method: 'GET',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+							headerKey: 'headerValue',
+						},
+						data: { dataKey: 'dataValue' },
+					})
+				);
+			});
 		});
 
-		it('should return data when called with only necessary parameters', async () => {
-			const data: { test: string } = {
-				test: 'data',
+		describe('when called with only necessary parameters', () => {
+			const setup = () => {
+				const data: { test: string } = {
+					test: 'data',
+				};
+
+				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				return {
+					data,
+				};
 			};
 
-			httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+			it('should return data', async () => {
+				const { data } = setup();
 
-			const result: { test: string } = await service.requestSpec('GET', 'testUrl');
+				const result: { test: string } = await service.requestSpec('GET', 'testUrl');
 
-			expect(result).toEqual(data);
-			expect(httpService.request).toHaveBeenCalledWith(
-				expect.objectContaining({
-					url: 'testUrl',
-					method: 'GET',
-					headers: {
-						'X-Forwarded-Proto': 'https',
+				expect(result).toEqual(data);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: 'testUrl',
+						method: 'GET',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+					})
+				);
+			});
+		});
+
+		describe('when error occurs', () => {
+			const setup = () => {
+				const axiosError: AxiosError<unknown> = {
+					isAxiosError: true,
+					name: 'AxiosError',
+					message: 'Axios error message',
+					config: {
+						headers: {} as AxiosHeaders,
 					},
-				})
-			);
+					response: {
+						status: 400,
+						statusText: 'Bad Request',
+						headers: {} as AxiosHeaders,
+						data: {
+							error: {
+								message: 'Some error message',
+								code: 123,
+							},
+						},
+					} as AxiosResponse,
+				} as AxiosError;
+
+				httpService.request.mockReturnValue(throwError(() => axiosError));
+			};
+
+			it('should throw hydra oauth loggable exception', async () => {
+				setup();
+
+				await expect(service.listOAuth2Clients()).rejects.toThrow(
+					new HydraOauthLoggableException(`${hydraUri}/clients`, 'GET', 'Some error message', 123)
+				);
+			});
 		});
 	});
 
 	describe('Client Flow', () => {
 		describe('listOAuth2Clients', () => {
-			it('should list all oauth2 clients', async () => {
-				const data: ProviderOauthClient[] = [
-					{
-						client_id: 'client1',
-					},
-					{
-						client_id: 'client2',
-					},
-				];
-
-				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
-
-				const result: ProviderOauthClient[] = await service.listOAuth2Clients();
-
-				expect(result).toEqual(data);
-				expect(httpService.request).toHaveBeenCalledWith(
-					expect.objectContaining({
-						url: `${hydraUri}/clients`,
-						method: 'GET',
-						headers: {
-							'X-Forwarded-Proto': 'https',
+			describe('when only clientIds are given', () => {
+				const setup = () => {
+					const data: ProviderOauthClient[] = [
+						{
+							client_id: 'client1',
 						},
-					})
-				);
+						{
+							client_id: 'client2',
+						},
+					];
+
+					httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+					return {
+						data,
+					};
+				};
+
+				it('should list all oauth2 clients', async () => {
+					const { data } = setup();
+
+					const result: ProviderOauthClient[] = await service.listOAuth2Clients();
+
+					expect(result).toEqual(data);
+					expect(httpService.request).toHaveBeenCalledWith(
+						expect.objectContaining({
+							url: `${hydraUri}/clients`,
+							method: 'GET',
+							headers: {
+								'X-Forwarded-Proto': 'https',
+							},
+						})
+					);
+				});
 			});
 
-			it('should list all oauth2 clients within parameters', async () => {
-				const data: ProviderOauthClient[] = [
-					{
-						client_id: 'client1',
-						owner: 'clientOwner',
-					},
-				];
-
-				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
-
-				const result: ProviderOauthClient[] = await service.listOAuth2Clients(1, 0, 'client1', 'clientOwner');
-
-				expect(result).toEqual(data);
-				expect(httpService.request).toHaveBeenCalledWith(
-					expect.objectContaining({
-						url: `${hydraUri}/clients?limit=1&offset=0&client_name=client1&owner=clientOwner`,
-						method: 'GET',
-						headers: {
-							'X-Forwarded-Proto': 'https',
+			describe('when clientId and other parameters are given', () => {
+				const setup = () => {
+					const data: ProviderOauthClient[] = [
+						{
+							client_id: 'client1',
+							owner: 'clientOwner',
 						},
-					})
-				);
+					];
+
+					httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+					return {
+						data,
+					};
+				};
+
+				it('should list all oauth2 clients within parameters', async () => {
+					const { data } = setup();
+
+					const result: ProviderOauthClient[] = await service.listOAuth2Clients(1, 0, 'client1', 'clientOwner');
+
+					expect(result).toEqual(data);
+					expect(httpService.request).toHaveBeenCalledWith(
+						expect.objectContaining({
+							url: `${hydraUri}/clients?limit=1&offset=0&client_name=client1&owner=clientOwner`,
+							method: 'GET',
+							headers: {
+								'X-Forwarded-Proto': 'https',
+							},
+						})
+					);
+				});
 			});
 		});
 
 		describe('getOAuth2Client', () => {
-			it('should get oauth2 client', async () => {
+			const setup = () => {
 				const data: ProviderOauthClient = {
 					client_id: 'client',
 				};
 				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				return {
+					data,
+				};
+			};
+
+			it('should get oauth2 client', async () => {
+				const { data } = setup();
 
 				const result: ProviderOauthClient = await service.getOAuth2Client('clientId');
 
@@ -192,11 +276,19 @@ describe('HydraService', () => {
 		});
 
 		describe('createOAuth2Client', () => {
-			it('should create oauth2 client', async () => {
+			const setup = () => {
 				const data: ProviderOauthClient = {
 					client_id: 'client',
 				};
 				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				return {
+					data,
+				};
+			};
+
+			it('should create oauth2 client', async () => {
+				const { data } = setup();
 
 				const result: ProviderOauthClient = await service.createOAuth2Client(data);
 
@@ -215,11 +307,19 @@ describe('HydraService', () => {
 		});
 
 		describe('updateOAuth2Client', () => {
-			it('should update oauth2 client', async () => {
+			const setup = () => {
 				const data: ProviderOauthClient = {
 					client_id: 'client',
 				};
 				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				return {
+					data,
+				};
+			};
+
+			it('should update oauth2 client', async () => {
+				const { data } = setup();
 
 				const result: ProviderOauthClient = await service.updateOAuth2Client('clientId', data);
 
@@ -238,8 +338,12 @@ describe('HydraService', () => {
 		});
 
 		describe('deleteOAuth2Client', () => {
-			it('should delete oauth2 client', async () => {
+			const setup = () => {
 				httpService.request.mockReturnValue(of(createAxiosResponse({})));
+			};
+
+			it('should delete oauth2 client', async () => {
+				setup();
 
 				await service.deleteOAuth2Client('clientId');
 
@@ -268,26 +372,30 @@ describe('HydraService', () => {
 		});
 
 		describe('getConsentRequest', () => {
-			it('should make http request', async () => {
-				// Arrange
+			const setup = () => {
 				const config: AxiosRequestConfig = {
 					method: 'GET',
 					url: `${hydraUri}/oauth2/auth/requests/consent?consent_challenge=${challenge}`,
 				};
 				httpService.request.mockReturnValue(of(createAxiosResponse<ProviderConsentResponse>({ challenge })));
 
-				// Act
+				return {
+					config,
+				};
+			};
+
+			it('should make http request', async () => {
+				const { config } = setup();
+
 				const result: ProviderConsentResponse = await service.getConsentRequest(challenge);
 
-				// Assert
 				expect(result.challenge).toEqual(challenge);
 				expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
 			});
 		});
 
 		describe('acceptConsentRequest', () => {
-			it('should make http request', async () => {
-				// Arrange
+			const setup = () => {
 				const body: AcceptConsentRequestBody = {
 					grant_scope: ['offline', 'openid'],
 				};
@@ -301,18 +409,25 @@ describe('HydraService', () => {
 					of(createAxiosResponse<ProviderRedirectResponse>({ redirect_to: expectedRedirectTo }))
 				);
 
-				// Act
+				return {
+					body,
+					config,
+					expectedRedirectTo,
+				};
+			};
+
+			it('should make http request', async () => {
+				const { body, config, expectedRedirectTo } = setup();
+
 				const result: ProviderRedirectResponse = await service.acceptConsentRequest(challenge, body);
 
-				// Assert
 				expect(result.redirect_to).toEqual(expectedRedirectTo);
 				expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
 			});
 		});
 
 		describe('rejectConsentRequest', () => {
-			it('should make http request', async () => {
-				// Arrange
+			const setup = () => {
 				const body: RejectRequestBody = {
 					error: 'error',
 				};
@@ -326,19 +441,35 @@ describe('HydraService', () => {
 					of(createAxiosResponse<ProviderRedirectResponse>({ redirect_to: expectedRedirectTo }))
 				);
 
-				// Act
+				return {
+					body,
+					config,
+					expectedRedirectTo,
+				};
+			};
+
+			it('should make http request', async () => {
+				const { body, config, expectedRedirectTo } = setup();
+
 				const result: ProviderRedirectResponse = await service.rejectConsentRequest(challenge, body);
 
-				// Assert
 				expect(result.redirect_to).toEqual(expectedRedirectTo);
 				expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
 			});
 		});
 
 		describe('listConsentSessions', () => {
-			it('should list all consent sessions', async () => {
+			const setup = () => {
 				const response: ProviderConsentSessionResponse[] = [{ consent_request: { challenge: 'challenge' } }];
 				httpService.request.mockReturnValue(of(createAxiosResponse(response)));
+
+				return {
+					response,
+				};
+			};
+
+			it('should list all consent sessions', async () => {
+				const { response } = setup();
 
 				const result: ProviderConsentSessionResponse[] = await service.listConsentSessions('userId');
 
@@ -356,8 +487,12 @@ describe('HydraService', () => {
 		});
 
 		describe('revokeConsentSession', () => {
-			it('should revoke all consent sessions', async () => {
+			const setup = () => {
 				httpService.request.mockReturnValue(of(createAxiosResponse({})));
+			};
+
+			it('should revoke all consent sessions', async () => {
+				setup();
 
 				await service.revokeConsentSession('userId', 'clientId');
 
@@ -375,7 +510,7 @@ describe('HydraService', () => {
 
 		describe('Logout Flow', () => {
 			describe('acceptLogoutRequest', () => {
-				it('should make http request', async () => {
+				const setup = () => {
 					const responseMock: ProviderRedirectResponse = { redirect_to: 'redirect_mock' };
 					httpService.request.mockReturnValue(of(createAxiosResponse(responseMock)));
 					const config: AxiosRequestConfig = {
@@ -383,6 +518,15 @@ describe('HydraService', () => {
 						url: `${hydraUri}/oauth2/auth/requests/logout/accept?logout_challenge=challenge_mock`,
 						headers: { 'X-Forwarded-Proto': 'https' },
 					};
+
+					return {
+						responseMock,
+						config,
+					};
+				};
+
+				it('should make http request', async () => {
+					const { responseMock, config } = setup();
 
 					const response: ProviderRedirectResponse = await service.acceptLogoutRequest('challenge_mock');
 
@@ -394,11 +538,19 @@ describe('HydraService', () => {
 
 		describe('Miscellaneous', () => {
 			describe('introspectOAuth2Token', () => {
-				it('should return introspect', async () => {
+				const setup = () => {
 					const response: IntrospectResponse = {
 						active: true,
 					};
 					httpService.request.mockReturnValue(of(createAxiosResponse(response)));
+
+					return {
+						response,
+					};
+				};
+
+				it('should return introspect', async () => {
+					const { response } = setup();
 
 					const result: IntrospectResponse = await service.introspectOAuth2Token('token', 'scope');
 
@@ -418,8 +570,12 @@ describe('HydraService', () => {
 			});
 
 			describe('isInstanceAlive', () => {
-				it('should check if hydra is alive', async () => {
+				const setup = () => {
 					httpService.request.mockReturnValue(of(createAxiosResponse(true)));
+				};
+
+				it('should check if hydra is alive', async () => {
+					setup();
 
 					const result: boolean = await service.isInstanceAlive();
 
@@ -459,25 +615,30 @@ describe('HydraService', () => {
 			});
 
 			describe('getLoginRequest', () => {
-				it('should send login request', async () => {
-					// Arrange
+				const setup = () => {
 					const requestConfig: AxiosRequestConfig = {
 						method: 'GET',
 						url: `${hydraUri}/oauth2/auth/requests/login?login_challenge=${challenge}`,
 					};
 					httpService.request.mockReturnValue(of(createAxiosResponse<ProviderLoginResponse>(providerLoginResponse)));
 
-					// Act
+					return {
+						requestConfig,
+					};
+				};
+
+				it('should send login request', async () => {
+					const { requestConfig } = setup();
+
 					const response: ProviderLoginResponse = await service.getLoginRequest(challenge);
 
-					// Assert
 					expect(response).toEqual(providerLoginResponse);
 					expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(requestConfig));
 				});
 			});
 
 			describe('acceptLoginRequest', () => {
-				it('should send accept login request', async () => {
+				const setup = () => {
 					const body: AcceptLoginRequestBody = {
 						subject: '',
 						force_subject_identifier: '',
@@ -494,6 +655,16 @@ describe('HydraService', () => {
 						of(createAxiosResponse<ProviderRedirectResponse>({ redirect_to: expectedRedirectTo }))
 					);
 
+					return {
+						body,
+						config,
+						expectedRedirectTo,
+					};
+				};
+
+				it('should send accept login request', async () => {
+					const { body, config, expectedRedirectTo } = setup();
+
 					const result: ProviderRedirectResponse = await service.acceptLoginRequest(challenge, body);
 
 					expect(result.redirect_to).toEqual(expectedRedirectTo);
@@ -502,8 +673,7 @@ describe('HydraService', () => {
 			});
 
 			describe('rejectLoginRequest', () => {
-				it('should send reject login request', async () => {
-					// Arrange
+				const setup = () => {
 					const body: RejectRequestBody = {
 						error: 'error',
 					};
@@ -517,10 +687,18 @@ describe('HydraService', () => {
 						of(createAxiosResponse<ProviderRedirectResponse>({ redirect_to: expectedRedirectTo }))
 					);
 
-					// Act
+					return {
+						body,
+						config,
+						expectedRedirectTo,
+					};
+				};
+
+				it('should send reject login request', async () => {
+					const { body, config, expectedRedirectTo } = setup();
+
 					const result: ProviderRedirectResponse = await service.rejectLoginRequest(challenge, body);
 
-					// Assert
 					expect(result.redirect_to).toEqual(expectedRedirectTo);
 					expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
 				});

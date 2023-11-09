@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@shared/testing';
+import { AxiosError, AxiosResponse } from 'axios/index';
 import { of, throwError } from 'rxjs';
 import { OAuthGrantType } from '../interface/oauth-grant-type.enum';
 import { OAuthSSOError } from '../loggable';
@@ -99,6 +100,48 @@ describe('OauthAdapterServive', () => {
 				const resp = service.sendAuthenticationCodeTokenRequest('tokenEndpoint', testPayload);
 
 				await expect(resp).rejects.toEqual(new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step'));
+			});
+		});
+
+		describe('when error got returned', () => {
+			describe('when error is a unknown error', () => {
+				const setup = () => {
+					httpService.post.mockReturnValueOnce(throwError(() => new Error('unknown error')));
+				};
+
+				it('should throw the default sso error', async () => {
+					setup();
+
+					const resp = service.sendAuthenticationCodeTokenRequest('tokenEndpoint', testPayload);
+
+					await expect(resp).rejects.toEqual(new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step'));
+				});
+			});
+
+			describe('when error is a axios error', () => {
+				const setup = () => {
+					const axiosError: AxiosError = {
+						isAxiosError: true,
+						response: {
+							data: {
+								error: {
+									message: 'Some error message',
+									code: 123,
+								},
+							},
+						} as AxiosResponse,
+					} as AxiosError;
+
+					httpService.post.mockReturnValueOnce(throwError(() => axiosError));
+				};
+
+				it('should throw an error', async () => {
+					setup();
+
+					const resp = service.sendAuthenticationCodeTokenRequest('tokenEndpoint', testPayload);
+
+					await expect(resp).rejects.toEqual(new OAuthSSOError('Some error message', 'sso_auth_code_step'));
+				});
 			});
 		});
 	});

@@ -1,21 +1,24 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { AxiosResponse, Method, RawAxiosRequestHeaders } from 'axios';
+import { isAxiosError } from '@shared/common';
+import { AxiosError, AxiosResponse, Method, RawAxiosRequestHeaders } from 'axios';
 import QueryString from 'qs';
-import { Observable, firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { URL } from 'url';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
 	IntrospectResponse,
 	ProviderConsentResponse,
+	ProviderConsentSessionResponse,
 	ProviderLoginResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '../dto';
-import { ProviderConsentSessionResponse } from '../dto/response/consent-session.response';
+import { HydraOauthLoggableException } from '../loggable';
 import { OauthProviderService } from '../oauth-provider.service';
 
 @Injectable()
@@ -160,15 +163,29 @@ export class HydraAdapter extends OauthProviderService {
 		data?: unknown,
 		additionalHeaders: RawAxiosRequestHeaders = {}
 	): Promise<T> {
-		const observable: Observable<AxiosResponse<T>> = this.httpService.request({
-			url,
-			method,
-			headers: {
-				'X-Forwarded-Proto': 'https',
-				...additionalHeaders,
-			},
-			data,
-		});
+		const observable: Observable<AxiosResponse<T>> = this.httpService
+			.request({
+				url,
+				method,
+				headers: {
+					'X-Forwarded-Proto': 'https',
+					...additionalHeaders,
+				},
+				data,
+			})
+			.pipe(
+				catchError((error: unknown) => {
+					if (isAxiosError(error)) {
+						const responseData = error.response?.data;
+						const errorMessage = (responseData as { error: { message: string } }).error.message;
+						const errorCode = (responseData as { error: { code: number } }).error.code;
+						throw new HydraOauthLoggableException(url, method, errorMessage, errorCode);
+					} else {
+						throw error;
+					}
+				})
+			);
+
 		const response: AxiosResponse<T> = await firstValueFrom(observable);
 		return response.data;
 	}
