@@ -9,9 +9,10 @@ import {
 	ContextExternalToolValidationService,
 	ToolReferenceService,
 } from './service';
+import { ToolConfigModule } from '../tool-config.module';
 
 @Module({
-	imports: [CommonToolModule, ExternalToolModule, SchoolExternalToolModule, LoggerModule],
+	imports: [CommonToolModule, ExternalToolModule, SchoolExternalToolModule, LoggerModule, ToolConfigModule],
 	providers: [
 		ContextExternalToolService,
 		ContextExternalToolValidationService,

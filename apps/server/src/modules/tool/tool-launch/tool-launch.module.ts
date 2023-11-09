@@ -16,6 +16,7 @@ import {
 	AutoSchoolNumberStrategy,
 } from './service/auto-parameter-strategy';
 import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrategy } from './service/launch-strategy';
+import { ToolConfigModule } from '../tool-config.module';
 
 @Module({
 	imports: [
@@ -28,6 +29,7 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		forwardRef(() => PseudonymModule), // i do not like this solution, the root problem is on other place but not detectable for me
 		LearnroomModule,
 		BoardModule,
+		ToolConfigModule,
 	],
 	providers: [
 		ToolLaunchService,

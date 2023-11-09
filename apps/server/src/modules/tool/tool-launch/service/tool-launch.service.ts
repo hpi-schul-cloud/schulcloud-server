@@ -1,6 +1,5 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -18,6 +17,7 @@ import {
 	OAuth2ToolLaunchStrategy,
 } from './launch-strategy';
 import { ContextExternalToolValidationService } from '../../context-external-tool/service';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
 
 @Injectable()
 export class ToolLaunchService {
@@ -31,7 +31,8 @@ export class ToolLaunchService {
 		private readonly oauth2ToolLaunchStrategy: OAuth2ToolLaunchStrategy,
 		private readonly commonToolService: CommonToolService,
 		private readonly contextExternalToolValidationService: ContextExternalToolValidationService,
-		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService
+		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {
 		this.strategies = new Map();
 		this.strategies.set(ToolConfigType.BASIC, basicToolLaunchStrategy);
@@ -108,7 +109,7 @@ export class ToolLaunchService {
 	): Promise<void> {
 		let status: ToolConfigurationStatus;
 
-		if (Configuration.get('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED')) {
+		if (this.toolFeatures.toolStatusWithoutVersions) {
 			status = await this.determineToolConfigurationStatusThroughValidation(schoolExternalTool, contextExternalTool);
 		} else {
 			status = this.commonToolService.determineToolConfigurationStatus(

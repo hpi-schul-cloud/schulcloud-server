@@ -154,6 +154,7 @@ describe('ToolReferenceService', () => {
 			});
 		});
 
+		// TODO N21-1337 refactor after feature flag is removed
 		describe('when FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED is true', () => {
 			const setup = () => {
 				const contextExternalToolId = new ObjectId().toHexString();

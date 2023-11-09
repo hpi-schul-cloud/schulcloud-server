@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { externalToolFactory, schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
 
 describe('SchoolExternalToolValidationService', () => {
 	let module: TestingModule;
@@ -14,6 +14,7 @@ describe('SchoolExternalToolValidationService', () => {
 
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let commonToolValidationService: DeepMocked<CommonToolValidationService>;
+	let toolFeatures: DeepMocked<IToolFeatures>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -27,12 +28,19 @@ describe('SchoolExternalToolValidationService', () => {
 					provide: CommonToolValidationService,
 					useValue: createMock<CommonToolValidationService>(),
 				},
+				{
+					provide: ToolFeatures,
+					useValue: {
+						toolStatusWithoutVersions: false,
+					},
+				},
 			],
 		}).compile();
 
 		service = module.get(SchoolExternalToolValidationService);
 		externalToolService = module.get(ExternalToolService);
 		commonToolValidationService = module.get(CommonToolValidationService);
+		toolFeatures = module.get(ToolFeatures);
 	});
 
 	afterEach(() => {
@@ -56,7 +64,7 @@ describe('SchoolExternalToolValidationService', () => {
 			const schoolExternalToolId = schoolExternalTool.id as string;
 
 			externalToolService.findById.mockResolvedValue(externalTool);
-			Configuration.set('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED', true);
+			toolFeatures.toolStatusWithoutVersions = true;
 
 			return {
 				schoolExternalTool,
@@ -103,6 +111,7 @@ describe('SchoolExternalToolValidationService', () => {
 		});
 	});
 
+	// TODO N21-1337 refactor after feature flag is removed
 	describe('validate with FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED on false', () => {
 		describe('when version of externalTool and schoolExternalTool are different', () => {
 			const setup = (
@@ -121,7 +130,7 @@ describe('SchoolExternalToolValidationService', () => {
 				const schoolExternalToolId = schoolExternalTool.id as string;
 
 				externalToolService.findById.mockResolvedValue(externalTool);
-				Configuration.set('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED', false);
+				toolFeatures.toolStatusWithoutVersions = false;
 
 				return {
 					schoolExternalTool,

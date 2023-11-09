@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { ToolConfigurationStatus } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
@@ -11,6 +10,7 @@ import { ContextExternalTool, ToolReference } from '../domain';
 import { ToolReferenceMapper } from '../mapper';
 import { ContextExternalToolService } from './context-external-tool.service';
 import { ContextExternalToolValidationService } from './context-external-tool-validation.service';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
 
 @Injectable()
 export class ToolReferenceService {
@@ -21,7 +21,8 @@ export class ToolReferenceService {
 		private readonly commonToolService: CommonToolService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
 		private readonly contextExternalToolValidationService: ContextExternalToolValidationService,
-		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService
+		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {}
 
 	async getToolReference(contextExternalToolId: EntityId): Promise<ToolReference> {
@@ -34,7 +35,7 @@ export class ToolReferenceService {
 		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
 		let status: ToolConfigurationStatus;
-		if (Configuration.get('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED')) {
+		if (this.toolFeatures.toolStatusWithoutVersions) {
 			status = await this.determineToolConfigurationStatusThroughValidation(schoolExternalTool, contextExternalTool);
 		} else {
 			status = this.commonToolService.determineToolConfigurationStatus(
