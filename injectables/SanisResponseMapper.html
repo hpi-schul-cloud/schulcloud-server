@@ -203,8 +203,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="64"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:64</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -270,8 +270,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -339,8 +339,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="111"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:111</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="112"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:112</a></div>
                         </td>
                     </tr>
 
@@ -473,8 +473,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:53</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -557,10 +557,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { GroupTypes } from &#x27;@modules/group&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { RoleName } from &#x27;@shared/domain&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { GroupTypes } from &#x27;@modules/group&#x27;;
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from &#x27;../../dto&#x27;;
 import { GroupRoleUnknownLoggable } from &#x27;../../loggable&#x27;;
 import {
@@ -604,6 +604,7 @@ export class SanisResponseMapper {
 			name: source.personenkontexte[0].organisation.name,
 			externalId: source.personenkontexte[0].organisation.id.toString(),
 			officialSchoolNumber,
+			location: source.personenkontexte[0].organisation.anschrift?.ort,
 		});
 
 		return mapped;

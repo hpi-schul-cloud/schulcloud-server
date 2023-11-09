@@ -90,6 +90,10 @@
                                 <a href="#getFilteredGroupUsers" >getFilteredGroupUsers</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getSchoolName" >getSchoolName</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#provisionExternalGroup" >provisionExternalGroup</a>
                             </li>
@@ -278,8 +282,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="166"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:166</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="175"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:175</a></div>
                         </td>
                     </tr>
 
@@ -341,6 +345,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getSchoolName"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getSchoolName</b></span>
+                        <a href="#getSchoolName"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getSchoolName(externalSchool: <a href="../classes/ExternalSchoolDto.html" target="_self">ExternalSchoolDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:70</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>externalSchool</td>
+                                            <td>
+                                                            <code><a href="../classes/ExternalSchoolDto.html" target="_self" >ExternalSchoolDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="provisionExternalGroup"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -359,8 +432,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="121"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:121</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="130"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:130</a></div>
                         </td>
                     </tr>
 
@@ -521,8 +594,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="69"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:69</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:78</a></div>
                         </td>
                     </tr>
 
@@ -614,8 +687,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="191"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:191</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="200"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:200</a></div>
                         </td>
                     </tr>
 
@@ -691,11 +764,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
-import { EntityId, ExternalSource, FederalStateEntity, SchoolFeatures, SchoolYearEntity } from &#x27;@shared/domain&#x27;;
-import { LegacySchoolDo, RoleReference, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
-import { AccountService } from &#x27;@modules/account/services/account.service&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountService } from &#x27;@modules/account/services/account.service&#x27;;
 import { AccountSaveDto } from &#x27;@modules/account/services/dto&#x27;;
 import { Group, GroupService, GroupUser } from &#x27;@modules/group&#x27;;
 import { FederalStateService, LegacySchoolService, SchoolYearService } from &#x27;@modules/legacy-school&#x27;;
@@ -703,9 +772,13 @@ import { FederalStateNames } from &#x27;@modules/legacy-school/types&#x27;;
 import { RoleService } from &#x27;@modules/role&#x27;;
 import { RoleDto } from &#x27;@modules/role/service/dto/role.dto&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
+import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
+import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
+import { EntityId, ExternalSource, FederalStateEntity, SchoolFeatures, SchoolYearEntity } from &#x27;@shared/domain&#x27;;
+import { LegacySchoolDo, RoleReference, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
 import CryptoJS from &#x27;crypto-js&#x27;;
-import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from &#x27;../../../dto&#x27;;
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from &#x27;../../../loggable&#x27;;
 
@@ -730,7 +803,7 @@ export class OidcProvisioningService {
 		let school: LegacySchoolDo;
 		if (existingSchool) {
 			school &#x3D; existingSchool;
-			school.name &#x3D; externalSchool.name;
+			school.name &#x3D; this.getSchoolName(externalSchool);
 			school.officialSchoolNumber &#x3D; externalSchool.officialSchoolNumber ?? existingSchool.officialSchoolNumber;
 			if (!school.systems) {
 				school.systems &#x3D; [systemId];
@@ -745,7 +818,7 @@ export class OidcProvisioningService {
 
 			school &#x3D; new LegacySchoolDo({
 				externalId: externalSchool.externalId,
-				name: externalSchool.name,
+				name: this.getSchoolName(externalSchool),
 				officialSchoolNumber: externalSchool.officialSchoolNumber,
 				systems: [systemId],
 				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
@@ -756,7 +829,16 @@ export class OidcProvisioningService {
 		}
 
 		const savedSchool: LegacySchoolDo &#x3D; await this.schoolService.save(school, true);
+
 		return savedSchool;
+	}
+
+	private getSchoolName(externalSchool: ExternalSchoolDto): string {
+		const schoolName: string &#x3D; externalSchool.location
+			? &#x60;${externalSchool.name} (${externalSchool.location})&#x60;
+			: externalSchool.name;
+
+		return schoolName;
 	}
 
 	async provisionExternalUser(externalUser: ExternalUserDto, systemId: EntityId, schoolId?: string): Promise&lt;UserDO&gt; {

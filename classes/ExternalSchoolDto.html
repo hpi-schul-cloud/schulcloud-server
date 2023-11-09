@@ -92,6 +92,10 @@
                                 <a href="#externalId" >externalId</a>
                             </li>
                             <li>
+                                    <span class="modifier">Optional</span>
+                                <a href="#location" >location</a>
+                            </li>
+                            <li>
                                 <a href="#name" >name</a>
                             </li>
                             <li>
@@ -122,7 +126,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/provisioning/dto/external-school.dto.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/provisioning/dto/external-school.dto.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -185,6 +189,33 @@
                     <tr>
                         <td class="col-md-4">
                                 <div class="io-line">Defined in <a href="" data-line="2" class="link-to-prism">apps/server/src/modules/provisioning/dto/external-school.dto.ts:2</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="location"></a>
+                    <span class="name">
+                            <span class="modifier">Optional</span>
+                        <span ><b>location</b></span>
+                        <a href="#location"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/provisioning/dto/external-school.dto.ts:8</a></div>
                         </td>
                     </tr>
 
@@ -263,10 +294,13 @@
 
 	officialSchoolNumber?: string;
 
+	location?: string;
+
 	constructor(props: ExternalSchoolDto) {
 		this.externalId &#x3D; props.externalId;
 		this.name &#x3D; props.name;
 		this.officialSchoolNumber &#x3D; props.officialSchoolNumber;
+		this.location &#x3D; props.location;
 	}
 }
 </code></pre>

@@ -6306,6 +6306,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/S3Config-1.html" data-type="entity-link" >S3Config</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/SanisAnschriftResponse.html" data-type="entity-link" >SanisAnschriftResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/SanisGruppenResponse.html" data-type="entity-link" >SanisGruppenResponse</a>
                             </li>
                             <li class="link">
