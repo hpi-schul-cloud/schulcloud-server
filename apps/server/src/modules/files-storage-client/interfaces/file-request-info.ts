@@ -1,5 +1,5 @@
 import { EntityId } from '@shared/domain';
-import { FileRecordParentType } from '@infra/rabbitmq';
+import { FileRecordParentType } from '@shared/infra/rabbitmq';
 
 export interface IFileRequestInfo {
 	schoolId: EntityId;

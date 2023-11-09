@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, OauthConfig, SchoolFeatures, SystemEntity } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
+import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { legacySchoolDoFactory, setupEntities, systemFactory, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ProvisioningDto, ProvisioningService } from '@modules/provisioning';

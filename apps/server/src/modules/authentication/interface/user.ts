@@ -16,6 +16,11 @@ export interface ICurrentUser {
 	/** True if a support member impersonates the user */
 	impersonated?: boolean;
 
-	/** True if the user is an external user e.g. an oauth user or ldap user */
+	/** True if the user is an external user e.g. an oauth user */
 	isExternalUser: boolean;
+}
+
+export interface OauthCurrentUser extends ICurrentUser {
+	/** Contains the idToken of the external idp. Will be set during oAuth2 login and used for rp initiated logout  */
+	externalIdToken?: string;
 }

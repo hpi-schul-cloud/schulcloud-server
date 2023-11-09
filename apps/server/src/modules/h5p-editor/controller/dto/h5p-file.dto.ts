@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import { File } from '@infra/s3-client';
+import { File } from '@shared/infra/s3-client';
 
 export class H5pFileDto implements File {
 	constructor(file: H5pFileDto) {

@@ -4,7 +4,7 @@ import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMeta
 import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { S3ClientAdapter } from '@infra/s3-client';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import {
 	courseFactory,
 	h5pContentFactory,

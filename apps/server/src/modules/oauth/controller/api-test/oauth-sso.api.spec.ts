@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Account, EntityId, SchoolEntity, SystemEntity, User } from '@shared/domain';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
+import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import {
 	accountFactory,
 	cleanupCollections,

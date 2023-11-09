@@ -14,8 +14,8 @@ import {
 	VideoConferenceDO,
 } from '@shared/domain';
 import { VideoConferenceScope } from '@shared/domain/interface';
-import { CalendarService } from '@infra/calendar';
-import { CalendarEventDto } from '@infra/calendar/dto/calendar-event.dto';
+import { CalendarService } from '@shared/infra/calendar';
+import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';

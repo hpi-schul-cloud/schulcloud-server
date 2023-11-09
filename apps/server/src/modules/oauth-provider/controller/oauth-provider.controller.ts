@@ -1,14 +1,14 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
-// import should be @infra/oauth-provider
+// import should be @shared/infra/oauth-provider
 import {
 	ProviderConsentResponse,
 	ProviderLoginResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
 	ProviderConsentSessionResponse,
-} from '@infra/oauth-provider/dto';
+} from '@shared/infra/oauth-provider/dto';
 import { ApiTags } from '@nestjs/swagger';
 import { OauthProviderLogoutFlowUc } from '../uc/oauth-provider.logout-flow.uc';
 import { OauthProviderLoginFlowUc } from '../uc/oauth-provider.login-flow.uc';

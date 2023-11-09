@@ -1,8 +1,8 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { OauthProviderServiceModule } from '@infra/oauth-provider';
-import { EncryptionModule } from '@infra/encryption';
+import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
+import { EncryptionModule } from '@shared/infra/encryption';
 import { ExternalToolRepo } from '@shared/repo';
 import { ToolConfigModule } from '../tool-config.module';
 import {

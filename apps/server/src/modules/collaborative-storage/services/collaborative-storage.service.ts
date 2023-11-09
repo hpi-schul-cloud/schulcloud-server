@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
-import { CollaborativeStorageAdapter } from '@infra/collaborative-storage';
+import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage';
 import { TeamsRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';

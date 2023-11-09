@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, Page, SortOrder } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
 import { cleanupCollections, externalToolEntityFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';

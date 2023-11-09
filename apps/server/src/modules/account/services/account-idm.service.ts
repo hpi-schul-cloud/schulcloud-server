@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { Counted, EntityId, IdmAccount, IdmAccountUpdate } from '@shared/domain';
-import { IdentityManagementService, IdentityManagementOauthService } from '@infra/identity-management';
+import { IdentityManagementService, IdentityManagementOauthService } from '@shared/infra/identity-management';
 import { LegacyLogger } from '@src/core/logger';
 import { AccountIdmToDtoMapper } from '../mapper';
 import { AbstractAccountService } from './account.service.abstract';

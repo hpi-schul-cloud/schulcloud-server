@@ -1,6 +1,6 @@
 import { ITemporaryFile, ITemporaryFileStorage, IUser } from '@lumieducation/h5p-server';
 import { Inject, Injectable, NotAcceptableException } from '@nestjs/common';
-import { S3ClientAdapter } from '@infra/s3-client';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { ReadStream } from 'fs';
 import { Readable } from 'stream';
 import { H5pFileDto } from '../controller/dto/h5p-file.dto';

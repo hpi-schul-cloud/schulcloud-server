@@ -192,7 +192,6 @@ describe('Login Controller (api)', () => {
 				expect(decodedToken).toHaveProperty('accountId');
 				expect(decodedToken).toHaveProperty('schoolId');
 				expect(decodedToken).toHaveProperty('roles');
-				expect(decodedToken).toHaveProperty('isExternalUser');
 				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});
@@ -288,7 +287,7 @@ describe('Login Controller (api)', () => {
 					roles: [studentRole.id],
 					schoolId: school.id,
 					accountId: account.id,
-					isExternalUser: true,
+					isExternalUser: false,
 				});
 				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});

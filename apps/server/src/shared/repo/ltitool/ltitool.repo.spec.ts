@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ILtiToolProperties, LtiTool } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { LtiToolRepo } from '@shared/repo/ltitool/ltitool.repo';
 import { cleanupCollections } from '@shared/testing';
 import { ltiToolFactory } from '@shared/testing/factory/ltitool.factory';

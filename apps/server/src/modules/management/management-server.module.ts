@@ -2,8 +2,8 @@ import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { MongoDatabaseModuleOptions } from '@infra/database/mongo-memory-database/types';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { ManagementModule } from './management.module';
 

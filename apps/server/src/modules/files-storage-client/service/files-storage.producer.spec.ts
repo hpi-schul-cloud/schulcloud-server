@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ErrorMapper, FileRecordParentType, FilesStorageEvents, FilesStorageExchange } from '@infra/rabbitmq';
+import { ErrorMapper, FileRecordParentType, FilesStorageEvents, FilesStorageExchange } from '@shared/infra/rabbitmq';
 import { setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageProducer } from './files-storage.producer';

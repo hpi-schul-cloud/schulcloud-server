@@ -14,7 +14,7 @@ import {
 	VideoConferenceOptionsDO,
 	VideoConferenceScope,
 } from '@shared/domain';
-import { CalendarEventDto, CalendarService } from '@infra/calendar';
+import { CalendarEventDto, CalendarService } from '@shared/infra/calendar';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/learnroom';

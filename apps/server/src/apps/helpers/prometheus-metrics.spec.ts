@@ -5,7 +5,7 @@ import {
 	PrometheusMetricsConfig,
 	createAPIResponseTimeMetricMiddleware,
 	createPrometheusMetricsApp,
-} from '@infra/metrics';
+} from '@shared/infra/metrics';
 import { Logger } from '@src/core/logger';
 import express, { Express, NextFunction, Request, RequestHandler, Response } from 'express';
 import {
@@ -15,9 +15,9 @@ import {
 	createAndStartPrometheusMetricsAppIfEnabled,
 } from './prometheus-metrics';
 
-jest.mock('@infra/metrics', () => {
+jest.mock('@shared/infra/metrics', () => {
 	const moduleMock: unknown = {
-		...jest.requireActual('@infra/metrics'),
+		...jest.requireActual('@shared/infra/metrics'),
 		createAPIResponseTimeMetricMiddleware: jest.fn(),
 		createPrometheusMetricsApp: jest.fn(),
 	};

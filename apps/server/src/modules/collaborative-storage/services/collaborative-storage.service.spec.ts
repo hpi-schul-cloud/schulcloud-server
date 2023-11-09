@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName, TeamEntity } from '@shared/domain';
-import { CollaborativeStorageAdapter } from '@infra/collaborative-storage';
+import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage';
 import { TeamsRepo } from '@shared/repo';
 import { setupEntities } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';

@@ -2,7 +2,7 @@ import { ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IUser } from '@lumieducation/h5p-server';
 import { Test, TestingModule } from '@nestjs/testing';
-import { File, S3ClientAdapter } from '@infra/s3-client';
+import { File, S3ClientAdapter } from '@shared/infra/s3-client';
 import { ReadStream } from 'fs';
 import { Readable } from 'node:stream';
 import { GetH5pFileResponse } from '../controller/dto';

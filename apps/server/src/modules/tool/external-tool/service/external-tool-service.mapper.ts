@@ -1,4 +1,4 @@
-import { ProviderOauthClient } from '@infra/oauth-provider/dto';
+import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { Injectable } from '@nestjs/common';
 import { Oauth2ToolConfig } from '../domain';
 

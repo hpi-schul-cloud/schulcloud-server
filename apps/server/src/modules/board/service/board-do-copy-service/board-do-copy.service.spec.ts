@@ -18,7 +18,7 @@ import {
 	RichTextElement,
 	SubmissionContainerElement,
 } from '@shared/domain';
-import { FileRecordParentType } from '@infra/rabbitmq';
+import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import {
 	cardFactory,
 	columnBoardFactory,

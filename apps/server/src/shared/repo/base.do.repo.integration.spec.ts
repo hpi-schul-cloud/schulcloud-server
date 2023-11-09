@@ -2,7 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Entity, EntityName, Property } from '@mikro-orm/core';
 import { BaseDO, BaseEntityWithTimestamps } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { Injectable } from '@nestjs/common';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { LegacyLogger } from '@src/core/logger';

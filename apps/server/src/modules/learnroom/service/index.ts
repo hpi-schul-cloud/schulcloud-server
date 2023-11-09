@@ -4,4 +4,3 @@ export * from './column-board-target.service';
 export * from './common-cartridge-export.service';
 export * from './course.service';
 export * from './rooms.service';
-export * from './coursegroup.service';

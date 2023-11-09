@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { OauthProviderServiceModule } from '@infra/oauth-provider';
+import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { PseudonymModule } from '@modules/pseudonym';

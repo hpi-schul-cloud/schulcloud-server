@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { StorageProviderEntity } from '@shared/domain';
 import { FileEntity } from '../entity';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';

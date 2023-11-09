@@ -12,7 +12,7 @@ import {
 	SchoolEntity,
 	User,
 } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ImportUserRepo } from '.';
 
 describe('ImportUserRepo', () => {

@@ -6,7 +6,7 @@ import { H5pError, ILibraryMetadata, ILibraryName } from '@lumieducation/h5p-ser
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { S3ClientAdapter } from '@infra/s3-client';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { FileMetadata, InstalledLibrary } from '../entity/library.entity';
 import { H5P_LIBRARIES_S3_CONNECTION } from '../h5p-editor.config';
 import { LibraryRepo } from '../repo/library.repo';

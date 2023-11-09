@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 import { UserRepo } from '@shared/repo';
 import { AccountDto } from '@modules/account/services/dto';
 import { GuardAgainst } from '@shared/common/utils/guard-against';
-import { IdentityManagementOauthService, IIdentityManagementConfig } from '@infra/identity-management';
+import { IdentityManagementOauthService, IIdentityManagementConfig } from '@shared/infra/identity-management';
 import { CurrentUserMapper } from '../mapper';
 import { ICurrentUser } from '../interface';
 import { AuthenticationService } from '../services/authentication.service';
@@ -39,7 +39,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 			new Error(`login failing, because account ${account.id} has no userId`)
 		);
 		const user = await this.userRepo.findById(accountUserId, true);
-		const currentUser = CurrentUserMapper.userToICurrentUser(account.id, user, false);
+		const currentUser = CurrentUserMapper.userToICurrentUser(account.id, user);
 		return currentUser;
 	}
 

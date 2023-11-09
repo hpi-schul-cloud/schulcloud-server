@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, h5pTemporaryFileFactory } from '@shared/testing';
 import { H5pEditorTempFile } from '../entity';
 import { TemporaryFileRepo } from './temporary-file.repo';

@@ -2,7 +2,7 @@ import { Collection, Entity, Enum, ManyToMany, ManyToOne, Property } from '@mikr
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BaseEntityWithTimestamps } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections } from '@shared/testing';
 
 @Entity({ tableName: 'users' })

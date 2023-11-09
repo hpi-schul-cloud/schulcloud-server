@@ -4,7 +4,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain';
-import { IdentityManagementService } from '@infra/identity-management';
+import { IdentityManagementService } from '@shared/infra/identity-management';
 import { AccountLookupService } from './account-lookup.service';
 
 describe('AccountLookupService', () => {

@@ -1,4 +1,4 @@
-import { ConsoleWriterService } from '@infra/console/console-writer/console-writer.service';
+import { ConsoleWriterService } from '@shared/infra/console/console-writer/console-writer.service';
 import { Command, Console } from 'nestjs-console';
 import { DatabaseManagementUc } from '../uc/database-management.uc';
 

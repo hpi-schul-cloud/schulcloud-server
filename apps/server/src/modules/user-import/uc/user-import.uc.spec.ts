@@ -16,7 +16,7 @@ import {
 	SystemEntity,
 	User,
 } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';

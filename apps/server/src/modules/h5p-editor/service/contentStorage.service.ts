@@ -17,7 +17,7 @@ import {
 	NotFoundException,
 	UnprocessableEntityException,
 } from '@nestjs/common';
-import { S3ClientAdapter } from '@infra/s3-client';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { ErrorUtils } from '@src/core/error/utils';
 import { Readable } from 'stream';
 import { H5pFileDto } from '../controller/dto/h5p-file.dto';

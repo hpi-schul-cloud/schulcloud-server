@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConsoleWriterService } from '@infra/console';
+import { ConsoleWriterService } from '@shared/infra/console';
 import { DatabaseManagementUc } from '../uc/database-management.uc';
 import { DatabaseManagementConsole } from './database-management.console';
 

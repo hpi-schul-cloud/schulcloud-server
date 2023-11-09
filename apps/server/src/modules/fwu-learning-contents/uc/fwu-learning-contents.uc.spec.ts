@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { S3ClientAdapter } from '@infra/s3-client';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { FWU_CONTENT_S3_CONNECTION } from '../fwu-learning-contents.config';

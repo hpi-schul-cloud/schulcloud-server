@@ -6,14 +6,14 @@ import { ICurrentUser, OauthCurrentUser } from '../interface';
 import { CreateJwtPayload, JwtPayload } from '../interface/jwt-payload';
 
 export class CurrentUserMapper {
-	static userToICurrentUser(accountId: string, user: User, isExternalUser: boolean, systemId?: string): ICurrentUser {
+	static userToICurrentUser(accountId: string, user: User, systemId?: string): ICurrentUser {
 		return {
 			accountId,
 			systemId,
 			roles: user.roles.getItems().map((role: Role) => role.id),
 			schoolId: user.school.id,
 			userId: user.id,
-			isExternalUser,
+			isExternalUser: false,
 		};
 	}
 

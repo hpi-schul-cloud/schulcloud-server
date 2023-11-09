@@ -13,7 +13,7 @@ import {
 	SystemEntity,
 	UserLoginMigrationEntity,
 } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	legacySchoolDoFactory,
 	schoolFactory,

@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType, IComponentProperties, LessonEntity } from '@shared/domain';
 import { cleanupCollections, courseFactory, lessonFactory, materialFactory, taskFactory } from '@shared/testing';
 
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
 import { LessonRepo } from './lesson.repo';
 

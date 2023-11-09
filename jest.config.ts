@@ -26,7 +26,6 @@ let config: Config.InitialOptions = {
 		'^@shared/(.*)$': '<rootDir>/apps/server/src/shared/$1',
 		'^@src/(.*)$': '<rootDir>/apps/server/src/$1',
 		'^@modules/(.*)$': '<rootDir>/apps/server/src/modules/$1',
-		'^@infra/(.*)$': '<rootDir>/apps/server/src/infra/$1',
 	},
 	maxWorkers: 2, // limited for not taking all workers within of a single github action
 };

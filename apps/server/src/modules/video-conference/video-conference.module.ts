@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
-import { CalendarModule } from '@infra/calendar';
+import { CalendarModule } from '@shared/infra/calendar';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { AuthorizationModule } from '@modules/authorization';
 import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
