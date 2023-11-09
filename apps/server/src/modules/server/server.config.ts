@@ -5,7 +5,7 @@ import type { IAccountConfig } from '@modules/account';
 import type { IFilesStorageClientConfig } from '@modules/files-storage-client';
 import type { IUserConfig } from '@modules/user';
 import type { ICommonCartridgeConfig } from '@modules/learnroom/common-cartridge';
-import { IMailConfig } from '@shared/infra/mail/interfaces/mail-config';
+import { IMailConfig } from '@src/infra/mail/interfaces/mail-config';
 
 export enum NodeEnvType {
 	TEST = 'test',
