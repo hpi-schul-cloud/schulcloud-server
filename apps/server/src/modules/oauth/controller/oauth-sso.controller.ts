@@ -34,7 +34,7 @@ export class OauthSSOController {
 	): Promise<AuthorizationParams> {
 		let jwt: string;
 		const authHeader: string | undefined = req.headers.authorization;
-		if (authHeader && authHeader.toLowerCase().startsWith('bearer ')) {
+		if (authHeader?.toLowerCase()?.startsWith('bearer ')) {
 			[, jwt] = authHeader.split(' ');
 		} else {
 			throw new UnauthorizedException(
