@@ -120,6 +120,7 @@ export class FilesStorageController {
 	@ApiOperation({ summary: 'Streamable download of a preview file.' })
 	@ApiResponse({ status: 200, type: StreamableFile })
 	@ApiResponse({ status: 206, type: StreamableFile })
+	@ApiResponse({ status: 304, description: 'Not Modified' })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
@@ -134,14 +135,23 @@ export class FilesStorageController {
 		@Query() previewParams: PreviewParams,
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response,
-		@Headers('Range') bytesRange?: string
-	): Promise<StreamableFile> {
+		@Headers('Range') bytesRange?: string,
+		@Headers('If-None-Match') etag?: string
+	): Promise<StreamableFile | void> {
 		const fileResponse = await this.filesStorageUC.downloadPreview(
 			currentUser.userId,
 			params,
 			previewParams,
 			bytesRange
 		);
+
+		response.set({ ETag: fileResponse.etag });
+
+		if (etag === fileResponse.etag) {
+			response.status(HttpStatus.NOT_MODIFIED);
+
+			return undefined;
+		}
 
 		const streamableFile = this.streamFileToClient(req, fileResponse, response, bytesRange);
 
