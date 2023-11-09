@@ -1,4 +1,4 @@
-import { AcceptLoginRequestBody } from '@shared/infra/oauth-provider/dto';
+import { AcceptLoginRequestBody } from '@infra/oauth-provider/dto';
 import { LoginRequestBody } from '@modules/oauth-provider/controller/dto';
 
 export class OauthProviderRequestMapper {
