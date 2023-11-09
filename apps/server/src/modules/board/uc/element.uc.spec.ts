@@ -3,16 +3,21 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, InputFormat } from '@shared/domain';
 import {
 	fileElementFactory,
+	drawingElementFactory,
 	richTextElementFactory,
 	setupEntities,
 	submissionContainerElementFactory,
 	submissionItemFactory,
 	userFactory,
+	axiosResponseFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService, Action } from '@modules/authorization';
 import { ObjectId } from 'bson';
 import { ForbiddenException } from '@nestjs/common';
+import { AxiosResponse } from 'axios';
+import { of } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { ElementUc } from './element.uc';
 
@@ -22,6 +27,7 @@ describe(ElementUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let elementService: DeepMocked<ContentElementService>;
+	let httpService: DeepMocked<HttpService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -47,6 +53,10 @@ describe(ElementUc.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
+				},
 			],
 		}).compile();
 
@@ -58,6 +68,7 @@ describe(ElementUc.name, () => {
 			new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
 		);
 		elementService = module.get(ContentElementService);
+		httpService = module.get(HttpService);
 		await setupEntities();
 	});
 
@@ -179,16 +190,18 @@ describe(ElementUc.name, () => {
 				expect(elementService.delete).toHaveBeenCalledWith(element);
 			});
 		});
+
 		describe('when deleting a content element', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const element = richTextElementFactory.build();
+				const drawingElement = drawingElementFactory.build();
 
 				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
 					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
 				);
 
-				return { user, element };
+				return { user, element, drawingElement };
 			};
 
 			it('should call the service to find the element', async () => {
@@ -206,6 +219,20 @@ describe(ElementUc.name, () => {
 				await uc.deleteElement(user.id, element.id);
 
 				expect(elementService.delete).toHaveBeenCalledWith(element);
+			});
+
+			it('should call external controller via delete method to clear drawing bin data', async () => {
+				const { user, drawingElement } = setup();
+				elementService.findById.mockResolvedValueOnce(drawingElement);
+				const axiosResponse: AxiosResponse<string> = axiosResponseFactory.build({
+					data: '',
+				});
+
+				httpService.delete.mockReturnValueOnce(of(axiosResponse));
+
+				await uc.deleteElement(user.id, drawingElement.id, 'auth');
+
+				expect(httpService.delete).toHaveBeenCalled();
 			});
 		});
 	});

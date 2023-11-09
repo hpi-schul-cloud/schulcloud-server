@@ -45,7 +45,7 @@ export class ElementUc extends BaseUc {
 		return element;
 	}
 
-	async deleteElement(userId: EntityId, elementId: EntityId, auth: string): Promise<void> {
+	async deleteElement(userId: EntityId, elementId: EntityId, auth = ''): Promise<void> {
 		const element = await this.getElementWithWritePermission(userId, elementId);
 
 		await this.elementService.delete(element);
