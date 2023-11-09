@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Permission, Role, RoleName, SchoolEntity, User } from '@shared/domain';
-import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
+import { IdentityManagementService } from '@infra/identity-management/identity-management.service';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '@modules/account/mapper';
 import { AccountDto } from '@modules/account/services/dto';

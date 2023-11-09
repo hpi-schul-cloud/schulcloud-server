@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PreviewGeneratorConsumerModule } from '@shared/infra/preview-generator';
+import { PreviewGeneratorConsumerModule } from '@infra/preview-generator';
 import { defaultConfig, s3Config } from './files-storage.config';
 
 @Module({
