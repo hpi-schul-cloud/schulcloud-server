@@ -5,6 +5,10 @@ metadata:
   labels:
     app: api
     cronjob: delete-s3-files
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
   name: api-delete-s3-files-cronjob
 spec:
   concurrencyPolicy: Forbid
@@ -13,6 +17,10 @@ spec:
     labels:
       app: api
       cronjob: delete-s3-files
+      app.kubernetes.io/part-of: schulcloud-verbund
+      app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+      git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+      git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
     spec:
       template:
         spec:

@@ -5,6 +5,10 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: management-deployment
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
 spec:
   replicas: {{ API_MANAGEMENT_REPLICAS|default("1", true) }}
   strategy:
@@ -20,6 +24,10 @@ spec:
     metadata:
       labels:
         app: management-deployment
+        app.kubernetes.io/part-of: schulcloud-verbund
+        app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+        git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
     spec:
       securityContext:
         runAsUser: 1000

@@ -4,6 +4,10 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: api-tsp-sync-cronjob
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
   name: api-tsp-sync-school-cronjob
 spec:
   schedule: "{{ SERVER_TSP_SYNC_SCHOOL_CRONJOB|default("39 3 * * *", true) }}"
@@ -13,6 +17,10 @@ spec:
         metadata:
           labels:
             app: api-tsp-sync-cronjob
+            app.kubernetes.io/part-of: schulcloud-verbund
+            app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+            git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
         spec:
           containers:
           - name: api-tsp-sync-school-cronjob

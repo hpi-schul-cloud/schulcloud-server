@@ -4,6 +4,10 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: api-ldapsync-cronjob
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
   name: api-ldapsync-full-cronjob
 spec:
   schedule: "{{ SERVER_LDAP_SYNC_FULL_CRONJOB|default("0 3 * * 3,6", true) }}"
