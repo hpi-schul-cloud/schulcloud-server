@@ -1,6 +1,6 @@
 import { DoBaseFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { SchoolYear, SchoolYearProps } from '../domain';
+import { SchoolYear, SchoolYearProps } from '../do';
 
 export const schoolYearFactory = DoBaseFactory.define<SchoolYear, SchoolYearProps>(SchoolYear, () => {
 	const id = new ObjectId().toHexString();

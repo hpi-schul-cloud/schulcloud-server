@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain';
 import { ObjectId } from 'bson';
-import { schoolFactory } from '../../testing/school.factory';
+import { schoolFactory } from '../testing';
 import { SchoolRepo } from '../interface';
 import { SchoolService } from './school.service';
 

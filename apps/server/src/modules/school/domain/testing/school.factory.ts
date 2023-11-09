@@ -1,6 +1,6 @@
 import { BaseFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { School, SchoolProps } from '../domain';
+import { School, SchoolProps } from '../do';
 import { federalStateFactory } from './federal-state.factory';
 import { schoolYearFactory } from './school-year.factory';
 
