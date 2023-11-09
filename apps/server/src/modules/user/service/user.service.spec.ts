@@ -9,9 +9,9 @@ import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { AccountService, AccountDto } from '@modules/account';
 import { RoleService } from '@modules/role';
-import { UserService } from '@modules/user';
-import { UserDto } from '@modules/user/uc/dto/user.dto';
 import { OauthCurrentUser } from '@modules/authentication/interface';
+import { UserDto } from '../uc/dto/user.dto';
+import { UserService } from './user.service';
 import { UserQuery } from './user-query.type';
 
 describe('UserService', () => {
