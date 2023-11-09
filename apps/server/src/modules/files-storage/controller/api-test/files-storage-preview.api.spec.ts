@@ -346,7 +346,7 @@ describe('File Controller (API) - preview', () => {
 					});
 
 					describe('WHEN header contains matching etag', () => {
-						it('should return status 200 for successful download', async () => {
+						it('should return status 304', async () => {
 							const { uploadedFile } = await setup();
 							const query = {
 								...defaultQueryParameters,
