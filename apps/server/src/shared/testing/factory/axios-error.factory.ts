@@ -6,7 +6,6 @@ import { axiosResponseFactory } from './axios-response.factory';
 import { BaseFactory } from './base.factory';
 
 type AxiosErrorProps<T> = {
-	data: T;
 	status: number;
 	statusText: string;
 	headers: AxiosHeaders;
@@ -20,8 +19,6 @@ type AxiosErrorProps<T> = {
 };
 
 class AxiosErrorImp<T> implements AxiosError {
-	data: T;
-
 	status: number;
 
 	statusText: string;
@@ -43,7 +40,6 @@ class AxiosErrorImp<T> implements AxiosError {
 	stack: string;
 
 	constructor(props: AxiosErrorProps<T>) {
-		this.data = props.data;
 		this.status = props.status;
 		this.statusText = props.statusText;
 		this.headers = new AxiosHeaders(props.headers);
@@ -73,12 +69,6 @@ export class AxiosErrorFactory extends BaseFactory<AxiosErrorImp<unknown>, Axios
 
 export const axiosErrorFactory = AxiosErrorFactory.define(AxiosErrorImp, () => {
 	return {
-		data: {
-			error: {
-				message: 'Some error message',
-				code: '123',
-			},
-		},
 		status: HttpStatus.BAD_REQUEST,
 		statusText: 'Bad Request',
 		headers: new AxiosHeaders(),
@@ -88,6 +78,6 @@ export const axiosErrorFactory = AxiosErrorFactory.define(AxiosErrorImp, () => {
 		message: 'Bad Request',
 		name: 'BadRequest',
 		response: axiosResponseFactory.build({ status: HttpStatus.BAD_REQUEST }),
-		stack: '',
+		stack: 'mockStack',
 	};
 });

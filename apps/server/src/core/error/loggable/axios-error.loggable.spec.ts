@@ -1,43 +1,28 @@
+import { axiosErrorFactory } from '@shared/testing/factory/axios-error.factory';
 import { AxiosError } from 'axios';
 import { AxiosErrorLoggable } from './axios-error.loggable';
 
 describe(AxiosErrorLoggable.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const axiosError = {
-				response: {
-					data: {
-						error: {
-							message: 'mockMessage',
-						},
-					},
-				},
-				status: 400,
-				stack: 'mockStack',
-			} as unknown as AxiosError;
+			const error = new Error('some error message');
 			const type = 'mockType';
+			const axiosError: AxiosError = axiosErrorFactory.withError(error).build();
+
 			const axiosErrorLoggable = new AxiosErrorLoggable(axiosError, type);
-			return { axiosErrorLoggable };
+
+			return { axiosErrorLoggable, error, axiosError };
 		};
 
 		it('should return error log message', () => {
-			const { axiosErrorLoggable } = setup();
+			const { axiosErrorLoggable, error, axiosError } = setup();
 
 			const result = axiosErrorLoggable.getLogMessage();
 
 			expect(result).toEqual({
 				type: 'mockType',
-				error: {
-					response: {
-						data: {
-							error: {
-								message: 'mockMessage',
-							},
-						},
-					},
-					status: 400,
-					stack: 'mockStack',
-				},
+				message: axiosError.message,
+				data: error,
 				stack: 'mockStack',
 			});
 		});

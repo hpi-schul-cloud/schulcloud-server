@@ -26,7 +26,7 @@ describe(HydraOauthFailedLoggableException.name, () => {
 				type: 'HYDRA_OAUTH_FAILED',
 				message: axiosError.message,
 				stack: axiosError.stack,
-				error,
+				data: error,
 			});
 		});
 	});

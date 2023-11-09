@@ -24,7 +24,7 @@ describe(TokenRequestLoggableException.name, () => {
 			expect(logMessage).toStrictEqual({
 				type: 'OAUTH_TOKEN_REQUEST_ERROR',
 				message: axiosError.message,
-				error,
+				data: error,
 				stack: axiosError.stack,
 			});
 		});
