@@ -15,7 +15,7 @@ import {
 	IToolLaunchStrategy,
 	Lti11ToolLaunchStrategy,
 	OAuth2ToolLaunchStrategy,
-} from './strategy';
+} from './launch-strategy';
 
 @Injectable()
 export class ToolLaunchService {

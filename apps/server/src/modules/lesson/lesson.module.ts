@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { FeathersServiceProvider } from '@shared/infra/feathers';
+import { FeathersServiceProvider } from '@infra/feathers';
 import { LessonRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { CopyHelperModule } from '@modules/copy-helper';

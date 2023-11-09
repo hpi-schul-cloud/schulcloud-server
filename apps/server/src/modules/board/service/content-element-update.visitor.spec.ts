@@ -11,9 +11,8 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
-import { ExternalToolContentBody, FileContentBody, RichTextContentBody } from '../controller/dto';
+import { ExternalToolContentBody, FileContentBody, LinkContentBody, RichTextContentBody } from '../controller/dto';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
-import { OpenGraphProxyService } from './open-graph-proxy.service';
 
 describe(ContentElementUpdateVisitor.name, () => {
 	describe('when visiting an unsupported component', () => {
@@ -25,8 +24,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
 			const submissionItem = submissionItemFactory.build();
-			const openGraphProxyService = new OpenGraphProxyService();
-			const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
+			const updater = new ContentElementUpdateVisitor(content);
 
 			return { board, column, card, submissionItem, updater };
 		};
@@ -66,8 +64,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const content = new RichTextContentBody();
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
-			const openGraphProxyService = new OpenGraphProxyService();
-			const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
+			const updater = new ContentElementUpdateVisitor(content);
 
 			return { fileElement, updater };
 		};
@@ -79,31 +76,12 @@ describe(ContentElementUpdateVisitor.name, () => {
 		});
 	});
 
-	describe('when visiting a link element using the wrong content', () => {
-		const setup = () => {
-			const linkElement = linkElementFactory.build();
-			const content = new FileContentBody();
-			content.caption = 'a caption';
-			const openGraphProxyService = new OpenGraphProxyService();
-			const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
-
-			return { linkElement, updater };
-		};
-
-		it('should throw an error', async () => {
-			const { linkElement, updater } = setup();
-
-			await expect(() => updater.visitLinkElementAsync(linkElement)).rejects.toThrow();
-		});
-	});
-
 	describe('when visiting a rich text element using the wrong content', () => {
 		const setup = () => {
 			const richTextElement = richTextElementFactory.build();
 			const content = new FileContentBody();
 			content.caption = 'a caption';
-			const openGraphProxyService = new OpenGraphProxyService();
-			const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
+			const updater = new ContentElementUpdateVisitor(content);
 
 			return { richTextElement, updater };
 		};
@@ -121,8 +99,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const content = new RichTextContentBody();
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
-			const openGraphProxyService = new OpenGraphProxyService();
-			const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
+			const updater = new ContentElementUpdateVisitor(content);
 
 			return { submissionContainerElement, updater };
 		};
@@ -134,14 +111,76 @@ describe(ContentElementUpdateVisitor.name, () => {
 		});
 	});
 
+	describe('when visiting a link element', () => {
+		describe('when content is valid', () => {
+			const setup = () => {
+				const linkElement = linkElementFactory.build();
+				const content = new LinkContentBody();
+				content.url = 'https://super-example.com/';
+				content.title = 'SuperExample - the best examples in the web';
+				content.imageUrl = '/preview/image.jpg';
+				const updater = new ContentElementUpdateVisitor(content);
+
+				return { linkElement, content, updater };
+			};
+
+			it('should update the content', async () => {
+				const { linkElement, content, updater } = setup();
+
+				await updater.visitLinkElementAsync(linkElement);
+
+				expect(linkElement.url).toEqual(content.url);
+				expect(linkElement.title).toEqual(content.title);
+				expect(linkElement.imageUrl).toEqual(content.imageUrl);
+			});
+		});
+
+		describe('when content is not a link element', () => {
+			const setup = () => {
+				const linkElement = linkElementFactory.build();
+				const content = new FileContentBody();
+				content.caption = 'a caption';
+				const updater = new ContentElementUpdateVisitor(content);
+
+				return { linkElement, updater };
+			};
+
+			it('should throw an error', async () => {
+				const { linkElement, updater } = setup();
+
+				await expect(() => updater.visitLinkElementAsync(linkElement)).rejects.toThrow();
+			});
+		});
+
+		describe('when imageUrl for preview image is not a relative url', () => {
+			const setup = () => {
+				const linkElement = linkElementFactory.build();
+				const content = new LinkContentBody();
+				content.url = 'https://super-example.com/';
+				content.title = 'SuperExample - the best examples in the web';
+				content.imageUrl = 'https://www.external.de/fake-preview-image.jpg';
+				const updater = new ContentElementUpdateVisitor(content);
+
+				return { linkElement, content, updater };
+			};
+
+			it('should ignore the image url', async () => {
+				const { linkElement, updater } = setup();
+
+				await updater.visitLinkElementAsync(linkElement);
+
+				expect(linkElement.imageUrl).toBe('');
+			});
+		});
+	});
+
 	describe('when visiting a external tool element', () => {
 		describe('when visiting a external tool element with valid content', () => {
 			const setup = () => {
 				const externalToolElement = externalToolElementFactory.build({ contextExternalToolId: undefined });
 				const content = new ExternalToolContentBody();
 				content.contextExternalToolId = new ObjectId().toHexString();
-				const openGraphProxyService = new OpenGraphProxyService();
-				const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
+				const updater = new ContentElementUpdateVisitor(content);
 
 				return { externalToolElement, updater, content };
 			};
@@ -161,8 +200,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 				const content = new RichTextContentBody();
 				content.text = 'a text';
 				content.inputFormat = InputFormat.RICH_TEXT_CK5;
-				const openGraphProxyService = new OpenGraphProxyService();
-				const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
+				const updater = new ContentElementUpdateVisitor(content);
 
 				return { externalToolElement, updater };
 			};
@@ -178,8 +216,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const setup = () => {
 				const externalToolElement = externalToolElementFactory.build();
 				const content = new ExternalToolContentBody();
-				const openGraphProxyService = new OpenGraphProxyService();
-				const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
+				const updater = new ContentElementUpdateVisitor(content);
 
 				return { externalToolElement, updater };
 			};

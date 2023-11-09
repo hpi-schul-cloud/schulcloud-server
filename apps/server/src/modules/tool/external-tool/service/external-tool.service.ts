@@ -1,8 +1,8 @@
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, IFindOptions, Page } from '@shared/domain';
-import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { OauthProviderService } from '@shared/infra/oauth-provider';
-import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
+import { DefaultEncryptionService, IEncryptionService } from '@infra/encryption';
+import { OauthProviderService } from '@infra/oauth-provider';
+import { ProviderOauthClient } from '@infra/oauth-provider/dto';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { TokenEndpointAuthMethod } from '../../common/enum';
