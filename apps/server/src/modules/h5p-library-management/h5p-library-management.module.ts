@@ -11,7 +11,7 @@ import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
 import { UserModule } from '../user';
 
-import { config, s3ConfigContent, s3ConfigLibraries } from './h5p-library-management.config';
+import { config, s3ConfigContent, s3ConfigLibraries } from '../h5p-editor/h5p-editor.config';
 import { H5PContentRepo, LibraryRepo } from '../h5p-editor/repo';
 import { ContentStorage, LibraryStorage } from '../h5p-editor/service';
 

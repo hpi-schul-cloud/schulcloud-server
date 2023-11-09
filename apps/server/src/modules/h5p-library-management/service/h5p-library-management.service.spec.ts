@@ -5,8 +5,8 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ContentStorage, LibraryStorage } from '@src/modules/h5p-editor/service';
 import { LibraryAdministration, ContentTypeCache } from '@lumieducation/h5p-server';
 import { IHubContentType } from '@lumieducation/h5p-server/build/src/types';
+import { s3ConfigContent, s3ConfigLibraries } from '@src/modules/h5p-editor/h5p-editor.config';
 import { H5PLibraryManagementService } from './h5p-library-management.service';
-import { s3ConfigContent, s3ConfigLibraries } from '../h5p-library-management.config';
 
 jest.mock('@lumieducation/h5p-server', () => {
 	return {
