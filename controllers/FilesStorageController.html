@@ -158,6 +158,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#downloadPreview" >downloadPreview</a>
                             </li>
@@ -279,8 +280,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="295"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:295</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="305"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:305</a></div>
                         </td>
                     </tr>
 
@@ -386,8 +387,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="312"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:312</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="322"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:322</a></div>
                         </td>
                     </tr>
 
@@ -493,8 +494,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="229"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:229</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="239"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:239</a></div>
                         </td>
                     </tr>
 
@@ -588,8 +589,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="246"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:246</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="256"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:256</a></div>
                         </td>
                     </tr>
 
@@ -798,6 +799,7 @@
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Async</span>
                         <span ><b>downloadPreview</b></span>
                         <a href="#downloadPreview"><span class="icon ion-ios-link"></span></a>
@@ -807,7 +809,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>downloadPreview(params: <a href="../classes/DownloadFileParams.html" target="_self">DownloadFileParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, previewParams: <a href="../classes/PreviewParams.html" target="_self">PreviewParams</a>, req: Request, response: Response, bytesRange?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>downloadPreview(params: <a href="../classes/DownloadFileParams.html" target="_self">DownloadFileParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, previewParams: <a href="../classes/PreviewParams.html" target="_self">PreviewParams</a>, req: Request, response: Response, bytesRange?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, etag?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -815,14 +817,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@ApiOperation({summary: &#x27;Streamable download of a preview file.&#x27;})<br />@ApiResponse({status: 200, type: StreamableFile})<br />@ApiResponse({status: 206, type: StreamableFile})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@ApiResponse({status: 422, type: UnprocessableEntityException})<br />@ApiResponse({status: 500, type: InternalServerErrorException})<br />@ApiHeader({name: &#x27;Range&#x27;, required: false})<br />@Get(&#x27;/preview/:fileRecordId/:fileName&#x27;)<br />@RequestTimeout(undefined.INCOMING_REQUEST_TIMEOUT)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Streamable download of a preview file.&#x27;})<br />@ApiResponse({status: 200, type: StreamableFile})<br />@ApiResponse({status: 206, type: StreamableFile})<br />@ApiResponse({status: 304, description: &#x27;Not Modified&#x27;})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@ApiResponse({status: 422, type: UnprocessableEntityException})<br />@ApiResponse({status: 500, type: InternalServerErrorException})<br />@ApiHeader({name: &#x27;Range&#x27;, required: false})<br />@Get(&#x27;/preview/:fileRecordId/:fileName&#x27;)<br />@RequestTimeout(undefined.INCOMING_REQUEST_TIMEOUT)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="131"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:131</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="132"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:132</a></div>
                         </td>
                     </tr>
 
@@ -914,11 +916,23 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>etag</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;StreamableFile&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;StreamableFile | void&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -962,8 +976,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="183"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:183</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="193"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:193</a></div>
                         </td>
                     </tr>
 
@@ -1070,8 +1084,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="207"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:207</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="217"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:217</a></div>
                         </td>
                     </tr>
 
@@ -1175,8 +1189,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="262"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:262</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="272"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:272</a></div>
                         </td>
                     </tr>
 
@@ -1268,8 +1282,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="278"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:278</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="288"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:288</a></div>
                         </td>
                     </tr>
 
@@ -1349,8 +1363,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="151"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:151</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="161"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:161</a></div>
                         </td>
                     </tr>
 
@@ -1785,6 +1799,7 @@ export class FilesStorageController {
 	@ApiOperation({ summary: &#x27;Streamable download of a preview file.&#x27; })
 	@ApiResponse({ status: 200, type: StreamableFile })
 	@ApiResponse({ status: 206, type: StreamableFile })
+	@ApiResponse({ status: 304, description: &#x27;Not Modified&#x27; })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
@@ -1799,14 +1814,23 @@ export class FilesStorageController {
 		@Query() previewParams: PreviewParams,
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response,
-		@Headers(&#x27;Range&#x27;) bytesRange?: string
-	): Promise&lt;StreamableFile&gt; {
+		@Headers(&#x27;Range&#x27;) bytesRange?: string,
+		@Headers(&#x27;If-None-Match&#x27;) etag?: string
+	): Promise&lt;StreamableFile | void&gt; {
 		const fileResponse &#x3D; await this.filesStorageUC.downloadPreview(
 			currentUser.userId,
 			params,
 			previewParams,
 			bytesRange
 		);
+
+		response.set({ ETag: fileResponse.etag });
+
+		if (etag &#x3D;&#x3D;&#x3D; fileResponse.etag) {
+			response.status(HttpStatus.NOT_MODIFIED);
+
+			return undefined;
+		}
 
 		const streamableFile &#x3D; this.streamFileToClient(req, fileResponse, response, bytesRange);
 
