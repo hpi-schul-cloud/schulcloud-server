@@ -345,6 +345,25 @@ describe('File Controller (API) - preview', () => {
 						});
 					});
 
+					describe('WHEN header contains not matching etag', () => {
+						it('should return status 200 for successful download', async () => {
+							const { uploadedFile } = await setup();
+							const query = {
+								...defaultQueryParameters,
+								forceUpdate: false,
+							};
+							const etag = 'otherTag';
+
+							const response = await api.getPreviewWithEtag(
+								`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
+								etag,
+								query
+							);
+
+							expect(response.status).toEqual(200);
+						});
+					});
+
 					describe('WHEN header contains matching etag', () => {
 						it('should return status 304', async () => {
 							const { uploadedFile } = await setup();
