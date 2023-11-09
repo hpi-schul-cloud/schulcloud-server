@@ -1,14 +1,14 @@
-import { Controller, Post, Query } from '@nestjs/common';
+import { Controller, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { ForbiddenOperationError, ValidationError } from '@shared/common';
+import { AuthGuard } from '@nestjs/passport';
 import { DeletionRequestUc } from '../uc/deletion-request.uc';
 import { DeletionExecutionParams } from './dto';
 
 @ApiTags('DeletionExecutions')
-@Authenticate('jwt')
+@UseGuards(AuthGuard('api-key'))
 @Controller('deletionExecutions')
-export class AccountController {
+export class DeletionExecutionsController {
 	constructor(private readonly deletionRequestUc: DeletionRequestUc) {}
 
 	@Post()

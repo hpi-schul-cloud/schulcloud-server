@@ -6,6 +6,7 @@ import type { IFilesStorageClientConfig } from '@modules/files-storage-client';
 import type { IUserConfig } from '@modules/user';
 import type { ICommonCartridgeConfig } from '@modules/learnroom/common-cartridge';
 import { IMailConfig } from '@src/infra/mail/interfaces/mail-config';
+import { IXApiKeyConfig } from '../authentication/config/x-api-key.config';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -21,7 +22,8 @@ export interface IServerConfig
 		IAccountConfig,
 		IIdentityManagementConfig,
 		ICommonCartridgeConfig,
-		IMailConfig {
+		IMailConfig,
+		IXApiKeyConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 }
@@ -44,6 +46,9 @@ const config: IServerConfig = {
 	ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS: (Configuration.get('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS') as string)
 		.split(',')
 		.map((domain) => domain.trim()),
+	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
+		.split(',')
+		.map((apiKey) => apiKey.trim()),
 };
 
 export const serverConfig = () => config;

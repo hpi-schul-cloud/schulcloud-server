@@ -1410,6 +1410,26 @@
 					"SECRET_ES_MERLIN_COUNTIES_CREDENTIALS"
 				]
 			}
+		},
+		"ADMIN_API": {
+			"type": "object",
+			"description": "Configuration of the schulcloud-server's admin API.",
+			"properties": {
+				"ENABLED": {
+					"type": "boolean",
+					"default": true,
+					"description": "Flag to turn on/off the Admin API."
+				},
+				"PORT": {
+					"type": "number",
+					"default": 4030,
+					"description": "Port of the exposed Admin API server."
+				},
+				"ALLOWED_API_KEYS": {
+					"type": "string",
+					"description": "Allowed Admin API keys (for accessing the Admin API)."
+				}
+			}
 		}
 	}
 }
