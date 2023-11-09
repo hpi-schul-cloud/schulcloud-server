@@ -105,7 +105,7 @@ module.exports = {
 					{
 						patterns: [
 							{
-								group: ['@infra/*/*', '@modules/*/*'],
+								group: ['@infra/*/*', '@modules/*/*', '!*.module'],
 								message: 'Do not deep import from a module',
 							},
 						],
