@@ -10,6 +10,7 @@ export interface TldrawConfig {
 	FEATURE_TLDRAW_ENABLED: boolean;
 	TLDRAW_PING_TIMEOUT: number;
 	TLDRAW_GC_ENABLED: number;
+	REDIS_URI: string;
 }
 
 const tldrawConnectionString: string = Configuration.get('TLDRAW_DB_URL') as string;
@@ -24,6 +25,7 @@ const tldrawConfig = {
 	CONNECTION_STRING: tldrawConnectionString,
 	TLDRAW_PING_TIMEOUT: Configuration.get('TLDRAW__PING_TIMEOUT') as number,
 	TLDRAW_GC_ENABLED: Configuration.get('TLDRAW__GC_ENABLED') as boolean,
+	REDIS_URI: Configuration.get('REDIS_URI') as string,
 };
 
 export const SOCKET_PORT = Configuration.get('TLDRAW__SOCKET_PORT') as number;

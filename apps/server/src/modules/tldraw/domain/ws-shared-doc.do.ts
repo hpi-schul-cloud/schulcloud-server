@@ -1,8 +1,8 @@
-import { Doc } from 'yjs';
+import { applyUpdate, Doc } from 'yjs';
 import WebSocket from 'ws';
-import { Awareness, encodeAwarenessUpdate } from 'y-protocols/awareness';
+import { applyAwarenessUpdate, Awareness, encodeAwarenessUpdate } from 'y-protocols/awareness';
 import { encoding } from 'lib0';
-import { WSMessageType } from '../types/connection-enum';
+import { WSMessageType } from '@modules/tldraw/types';
 import { TldrawWsService } from '../service';
 
 export class WsSharedDocDo extends Doc {
@@ -11,6 +11,8 @@ export class WsSharedDocDo extends Doc {
 	public conns: Map<WebSocket, Set<number>>;
 
 	public awareness: Awareness;
+
+	public awarenessChannel: string;
 
 	/**
 	 * @param {string} name
@@ -23,10 +25,24 @@ export class WsSharedDocDo extends Doc {
 		this.conns = new Map();
 		this.awareness = new Awareness(this);
 		this.awareness.setLocalState(null);
+		this.awarenessChannel = `${name}-awareness`;
 
 		this.awareness.on('update', this.awarenessChangeHandler);
 		this.on('update', (update: Uint8Array, origin, doc: WsSharedDocDo) => {
 			this.tldrawService.updateHandler(update, origin, doc);
+		});
+
+		// eslint-disable-next-line promise/always-return
+		void this.tldrawService.sub.subscribe([this.name, this.awarenessChannel]).then(() => {
+			this.tldrawService.sub.on('messageBuffer', (channel: string, update: Uint8Array) => {
+				const channelId = channel;
+
+				if (channelId === this.name) {
+					applyUpdate(this, update, this.tldrawService.sub);
+				} else if (channelId === this.awarenessChannel) {
+					applyAwarenessUpdate(this.awareness, update, this.tldrawService.sub);
+				}
+			});
 		});
 	}
 
@@ -73,8 +89,7 @@ export class WsSharedDocDo extends Doc {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, WSMessageType.AWARENESS);
 		encoding.writeVarUint8Array(encoder, encodeAwarenessUpdate(this.awareness, changedClients));
-		const message = encoding.toUint8Array(encoder);
-		return message;
+		return encoding.toUint8Array(encoder);
 	}
 
 	/**

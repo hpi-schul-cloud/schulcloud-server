@@ -6,14 +6,14 @@ import { Logger } from '@src/core/logger';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { TldrawDrawing } from '@src/modules/tldraw/entities';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
-import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
+import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { AuthorizationModule } from '@modules/authorization';
 import { config } from './config';
-import { TldrawService } from './service/tldraw.service';
-import { TldrawBoardRepo } from './repo';
 import { TldrawController } from './controller/tldraw.controller';
+import { TldrawService } from './service/tldraw.service';
 import { TldrawRepo } from './repo/tldraw.repo';
+import { TldrawBoardRepo } from './repo';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>

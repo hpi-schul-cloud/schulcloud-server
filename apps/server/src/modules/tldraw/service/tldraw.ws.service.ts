@@ -7,6 +7,11 @@ import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } fr
 import { encoding, decoding, map } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
 import { TldrawBoardRepo } from '@src/modules/tldraw/repo';
+import * as mutex from 'lib0/mutex';
+import Redis from 'ioredis';
+import { Buffer } from 'node:buffer';
+import { getDocUpdatesFromQueue, pushDocUpdatesToQueue } from '@modules/tldraw/redis';
+import { applyUpdate, Doc } from 'yjs';
 
 @Injectable()
 export class TldrawWsService {
@@ -16,11 +21,23 @@ export class TldrawWsService {
 
 	public docs = new Map();
 
+	private mux: mutex.mutex;
+
+	private readonly redisUri: string;
+
+	private pub: Redis.Redis;
+
+	sub: Redis.Redis;
+
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly tldrawBoardRepo: TldrawBoardRepo
 	) {
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
+		this.redisUri = this.configService.get<string>('REDIS_URI');
+		this.mux = mutex.createMutex();
+		this.pub = new Redis(this.redisUri);
+		this.sub = new Redis(this.redisUri);
 	}
 
 	public setPersistence(persistence_: Persitence): void {
@@ -82,13 +99,18 @@ export class TldrawWsService {
 	 * @param {WsSharedDocDo} doc
 	 */
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
-		const encoder = encoding.createEncoder();
-		encoding.writeVarUint(encoder, WSMessageType.SYNC);
-		writeUpdate(encoder, update);
-		const message = encoding.toUint8Array(encoder);
-		doc.conns.forEach((_, conn) => {
-			this.send(doc, conn, message);
-		});
+		const isOriginWSConn = origin instanceof WebSocket && doc.conns.has(origin);
+
+		if (isOriginWSConn) {
+			void Promise.all([
+				this.pub.publishBuffer(doc.name, Buffer.from(update)),
+				pushDocUpdatesToQueue(this.pub, doc, update),
+			]);
+
+			this.propagateUpdate(update, doc);
+		} else {
+			this.propagateUpdate(update, doc);
+		}
 	}
 
 	/**
@@ -109,7 +131,7 @@ export class TldrawWsService {
 		});
 	}
 
-	public messageHandler(conn: WebSocket, doc: WsSharedDocDo, message: Uint8Array): void {
+	public async messageHandler(conn: WebSocket, doc: WsSharedDocDo, message: Uint8Array): Promise<void> {
 		try {
 			const encoder = encoding.createEncoder();
 			const decoder = decoding.createDecoder(message);
@@ -127,7 +149,9 @@ export class TldrawWsService {
 					}
 					break;
 				case WSMessageType.AWARENESS: {
-					applyAwarenessUpdate(doc.awareness, decoding.readVarUint8Array(decoder), conn);
+					const update = decoding.readVarUint8Array(decoder);
+					await this.pub.publishBuffer(doc.awarenessChannel, Buffer.from(update));
+					applyAwarenessUpdate(doc.awareness, update, conn);
 					break;
 				}
 				default:
@@ -142,7 +166,7 @@ export class TldrawWsService {
 	 * @param {WebSocket} ws
 	 * @param {string} docName
 	 */
-	public setupWSConnection(ws: WebSocket, docName = 'GLOBAL'): void {
+	public async setupWSConnection(ws: WebSocket, docName = 'GLOBAL'): Promise<void> {
 		ws.binaryType = 'arraybuffer';
 		// get doc, initialize if it does not exist yet
 		const doc = this.getYDoc(docName, true);
@@ -150,7 +174,15 @@ export class TldrawWsService {
 
 		// listen and reply to events
 		ws.on('message', (message: ArrayBufferLike) => {
-			this.messageHandler(ws, doc, new Uint8Array(message));
+			void this.messageHandler(ws, doc, new Uint8Array(message));
+		});
+
+		const redisUpdates = await getDocUpdatesFromQueue(this.sub, doc);
+		const redisYDoc = new Doc();
+		redisYDoc.transact(() => {
+			for (const u of redisUpdates) {
+				applyUpdate(redisYDoc, u);
+			}
 		});
 
 		// Check if connection is still alive
@@ -204,5 +236,15 @@ export class TldrawWsService {
 
 	public async flushDocument(docName: string): Promise<void> {
 		await this.tldrawBoardRepo.flushDocument(docName);
+	}
+
+	private propagateUpdate(update: Uint8Array, doc: WsSharedDocDo): void {
+		const encoder = encoding.createEncoder();
+		encoding.writeVarUint(encoder, WSMessageType.SYNC);
+		writeUpdate(encoder, update);
+		const message = encoding.toUint8Array(encoder);
+		doc.conns.forEach((_, conn) => {
+			this.send(doc, conn, message);
+		});
 	}
 }
