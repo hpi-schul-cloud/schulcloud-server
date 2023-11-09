@@ -1,17 +1,15 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { EntityId, Page, Permission, LegacySchoolDo, User, UserLoginMigrationDO } from '@shared/domain';
-import { LegacyLogger } from '@src/core/logger';
 import { AuthenticationService } from '@modules/authentication/services/authentication.service';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { OAuthTokenDto } from '@modules/oauth';
 import { OAuthService } from '@modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@modules/provisioning';
 import { OauthDataDto } from '@modules/provisioning/dto';
-import { OAuthMigrationError, SchoolMigrationError, UserLoginMigrationError } from '../error';
-import { PageTypes } from '../interface/page-types.enum';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { EntityId, LegacySchoolDo, Page, Permission, User, UserLoginMigrationDO } from '@shared/domain';
+import { LegacyLogger } from '@src/core/logger';
+import { ExternalSchoolNumberMissingLoggableException } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
-import { MigrationDto, PageContentDto } from '../service/dto';
 import { UserLoginMigrationQuery } from './dto';
 
 @Injectable()
@@ -26,16 +24,6 @@ export class UserLoginMigrationUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly logger: LegacyLogger
 	) {}
-
-	async getPageContent(pageType: PageTypes, sourceSystem: string, targetSystem: string): Promise<PageContentDto> {
-		const content: PageContentDto = await this.userMigrationService.getPageContent(
-			pageType,
-			sourceSystem,
-			targetSystem
-		);
-
-		return content;
-	}
 
 	async getMigrations(userId: EntityId, query: UserLoginMigrationQuery): Promise<Page<UserLoginMigrationDO>> {
 		let page = new Page<UserLoginMigrationDO>([], 0);
@@ -95,40 +83,25 @@ export class UserLoginMigrationUc {
 		this.logMigrationInformation(currentUserId, undefined, data, targetSystemId);
 
 		if (data.externalSchool) {
-			let schoolToMigrate: LegacySchoolDo | null;
-			// TODO: N21-820 after fully switching to the new client login flow, try/catch will be obsolete and schoolToMigrate should throw correct errors
-			try {
-				schoolToMigrate = await this.schoolMigrationService.schoolToMigrate(
-					currentUserId,
-					data.externalSchool.externalId,
-					data.externalSchool.officialSchoolNumber
-				);
-			} catch (error: unknown) {
-				let details: Record<string, unknown> | undefined;
-
-				if (
-					error instanceof OAuthMigrationError &&
-					error.officialSchoolNumberFromSource &&
-					error.officialSchoolNumberFromTarget
-				) {
-					details = {
-						sourceSchoolNumber: error.officialSchoolNumberFromSource,
-						targetSchoolNumber: error.officialSchoolNumberFromTarget,
-					};
-				}
-
-				throw new SchoolMigrationError(details, error);
+			if (!data.externalSchool.officialSchoolNumber) {
+				throw new ExternalSchoolNumberMissingLoggableException(data.externalSchool.externalId);
 			}
+
+			const schoolToMigrate: LegacySchoolDo | null = await this.schoolMigrationService.getSchoolForMigration(
+				currentUserId,
+				data.externalSchool.externalId,
+				data.externalSchool.officialSchoolNumber
+			);
 
 			this.logMigrationInformation(
 				currentUserId,
-				`Found school with officialSchoolNumber (${data.externalSchool.officialSchoolNumber ?? ''})`
+				`Found school with officialSchoolNumber (${data.externalSchool.officialSchoolNumber})`
 			);
 
 			if (schoolToMigrate) {
 				await this.schoolMigrationService.migrateSchool(
-					data.externalSchool.externalId,
 					schoolToMigrate,
+					data.externalSchool.externalId,
 					targetSystemId
 				);
 
@@ -136,18 +109,9 @@ export class UserLoginMigrationUc {
 			}
 		}
 
-		const migrationDto: MigrationDto = await this.userMigrationService.migrateUser(
-			currentUserId,
-			data.externalUser.externalId,
-			targetSystemId
-		);
+		await this.userMigrationService.migrateUser(currentUserId, data.externalUser.externalId, targetSystemId);
 
-		// TODO: N21-820 after implementation of new client login flow, redirects will be obsolete and migrate should throw errors directly
-		if (migrationDto.redirect.includes('migration/error')) {
-			throw new UserLoginMigrationError({ userId: currentUserId });
-		}
-
-		this.logMigrationInformation(currentUserId, `Successfully migrated user and redirects to ${migrationDto.redirect}`);
+		// TODO this.logMigrationInformation(currentUserId, `Successfully migrated user and redirects to ${migrationDto.redirect}`);
 
 		await this.authenticationService.removeJwtFromWhitelist(userJwt);
 	}

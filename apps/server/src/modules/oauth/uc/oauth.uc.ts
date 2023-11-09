@@ -1,19 +1,13 @@
-import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, UserDO } from '@shared/domain';
-import { ISession } from '@shared/domain/types/session';
-import { LegacyLogger } from '@src/core/logger';
+import { OauthCurrentUser } from '@modules/authentication/interface';
 import { AuthenticationService } from '@modules/authentication/services/authentication.service';
-import { ProvisioningService } from '@modules/provisioning';
-import { OauthDataDto } from '@modules/provisioning/dto';
 import { SystemService } from '@modules/system';
 import { SystemDto } from '@modules/system/service/dto/system.dto';
 import { UserService } from '@modules/user';
-import { UserMigrationService } from '@modules/user-login-migration';
-import { SchoolMigrationService } from '@modules/user-login-migration/service';
-import { MigrationDto } from '@modules/user-login-migration/service/dto';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { EntityId, UserDO } from '@shared/domain';
+import { ISession } from '@shared/domain/types/session';
+import { LegacyLogger } from '@src/core/logger';
 import { nanoid } from 'nanoid';
-import { OauthCurrentUser } from '@modules/authentication/interface';
-import { AuthorizationParams } from '../controller/dto';
 import { OAuthTokenDto } from '../interface';
 import { OAuthProcessDto } from '../service/dto';
 import { OAuthService } from '../service/oauth.service';
@@ -28,10 +22,7 @@ export class OauthUc {
 		private readonly oauthService: OAuthService,
 		private readonly authenticationService: AuthenticationService,
 		private readonly systemService: SystemService,
-		private readonly provisioningService: ProvisioningService,
 		private readonly userService: UserService,
-		private readonly userMigrationService: UserMigrationService,
-		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(OauthUc.name);
@@ -92,51 +83,6 @@ export class OauthUc {
 		});
 
 		return response;
-	}
-
-	async migrate(
-		userJwt: string,
-		currentUserId: string,
-		query: AuthorizationParams,
-		cachedState: OauthLoginStateDto
-	): Promise<MigrationDto> {
-		const { state, systemId, userLoginMigration } = cachedState;
-
-		if (state !== query.state) {
-			throw new UnauthorizedException(`Invalid state. Got: ${query.state} Expected: ${state}`);
-		}
-
-		const redirectUri: string = this.oauthService.getRedirectUri(userLoginMigration);
-
-		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(
-			systemId,
-			redirectUri,
-			query.code,
-			query.error
-		);
-
-		const data: OauthDataDto = await this.provisioningService.getData(systemId, tokenDto.idToken, tokenDto.accessToken);
-
-		if (data.externalSchool) {
-			const schoolToMigrate: LegacySchoolDo | null = await this.schoolMigrationService.schoolToMigrate(
-				currentUserId,
-				data.externalSchool.externalId,
-				data.externalSchool.officialSchoolNumber
-			);
-			if (schoolToMigrate) {
-				await this.schoolMigrationService.migrateSchool(data.externalSchool.externalId, schoolToMigrate, systemId);
-			}
-		}
-
-		const migrationDto: MigrationDto = await this.userMigrationService.migrateUser(
-			currentUserId,
-			data.externalUser.externalId,
-			systemId
-		);
-
-		await this.authenticationService.removeJwtFromWhitelist(userJwt);
-
-		return migrationDto;
 	}
 
 	private async getJwtForUser(userId: EntityId): Promise<string> {

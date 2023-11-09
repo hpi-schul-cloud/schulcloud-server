@@ -1,19 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ValidationError } from '@shared/common';
 import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
 import { legacySchoolDoFactory, setupEntities, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser } from '@modules/authentication';
-import { LegacySchoolService } from '@modules/legacy-school';
-import { UserService } from '@modules/user';
-import { OAuthMigrationError } from '@modules/user-login-migration/error/oauth-migration.error';
+import {
+	SchoolMigrationDatabaseOperationFailedLoggableException,
+	SchoolNumberMismatchLoggableException,
+} from '../loggable';
 import { SchoolMigrationService } from './school-migration.service';
 
-describe('SchoolMigrationService', () => {
+describe(SchoolMigrationService.name, () => {
 	let module: TestingModule;
 	let service: SchoolMigrationService;
 
@@ -59,319 +60,223 @@ describe('SchoolMigrationService', () => {
 		await module.close();
 	});
 
-	describe('validateGracePeriod is called', () => {
-		describe('when current date is before finish date', () => {
+	describe('migrateSchool', () => {
+		describe('when a school without systems successfully migrates', () => {
 			const setup = () => {
-				jest.setSystemTime(new Date('2023-05-01'));
-
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					schoolId: 'schoolId',
-					targetSystemId: 'systemId',
-					startedAt: new Date('2023-05-01'),
-					closedAt: new Date('2023-05-01'),
-					finishedAt: new Date('2023-05-02'),
-				});
-
-				return {
-					userLoginMigration,
-				};
-			};
-
-			it('should not throw', () => {
-				const { userLoginMigration } = setup();
-
-				const func = () => service.validateGracePeriod(userLoginMigration);
-
-				expect(func).not.toThrow();
-			});
-		});
-
-		describe('when current date is after finish date', () => {
-			const setup = () => {
-				jest.setSystemTime(new Date('2023-05-03'));
-
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					schoolId: 'schoolId',
-					targetSystemId: 'systemId',
-					startedAt: new Date('2023-05-01'),
-					closedAt: new Date('2023-05-01'),
-					finishedAt: new Date('2023-05-02'),
-				});
-
-				return {
-					userLoginMigration,
-				};
-			};
-
-			it('should throw validation error', () => {
-				const { userLoginMigration } = setup();
-
-				const func = () => service.validateGracePeriod(userLoginMigration);
-
-				expect(func).toThrow(
-					new ValidationError('grace_period_expired: The grace period after finishing migration has expired')
-				);
-			});
-		});
-	});
-
-	describe('schoolToMigrate is called', () => {
-		describe('when school number is missing', () => {
-			const setup = () => {
-				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'firstExternalId',
+					systems: [],
 				});
-
-				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
-
-				const currentUser: ICurrentUser = {
-					userId: userDO.id,
-					schoolId: userDO.schoolId,
-					systemId: 'systemId',
-				} as ICurrentUser;
+				const targetSystemId = 'targetSystemId';
+				const targetExternalId = 'targetExternalId';
 
 				return {
-					externalId: schoolDO.externalId as string,
-					currentUser,
+					school,
+					targetSystemId,
+					sourceExternalId: school.externalId,
+					targetExternalId,
 				};
 			};
 
-			it('should throw an error', async () => {
-				const { currentUser, externalId } = setup();
+			it('should save the migrated school and add the system', async () => {
+				const { school, targetSystemId, targetExternalId, sourceExternalId } = setup();
 
-				const func = () => service.schoolToMigrate(currentUser.userId, externalId, undefined);
+				await service.migrateSchool({ ...school }, targetExternalId, targetSystemId);
 
-				await expect(func()).rejects.toThrow(
-					new OAuthMigrationError(
-						'Official school number from target migration system is missing',
-						'ext_official_school_number_missing'
-					)
-				);
+				expect(schoolService.save).toHaveBeenCalledWith({
+					...school,
+					externalId: targetExternalId,
+					previousExternalId: sourceExternalId,
+					systems: [targetSystemId],
+				});
 			});
 		});
 
-		describe('when school could not be found with official school number', () => {
+		describe('when a school with systems successfully migrates', () => {
 			const setup = () => {
-				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'firstExternalId',
+					systems: ['otherSystemId'],
 				});
-
-				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
+				const targetSystemId = 'targetSystemId';
+				const targetExternalId = 'targetExternalId';
 
 				return {
-					currentUserId: userDO.id as string,
-					officialSchoolNumber: schoolDO.officialSchoolNumber,
-					schoolDO,
-					externalId: schoolDO.externalId as string,
-					userDO,
+					school,
+					targetSystemId,
+					sourceExternalId: school.externalId,
+					targetExternalId,
 				};
 			};
 
-			it('should throw an error', async () => {
-				const { currentUserId, externalId, officialSchoolNumber, userDO, schoolDO } = setup();
-				userService.findById.mockResolvedValue(userDO);
-				schoolService.getSchoolById.mockResolvedValue(schoolDO);
-				schoolService.getSchoolBySchoolNumber.mockResolvedValue(null);
+			it('should save the migrated school and add the system', async () => {
+				const { school, targetSystemId, targetExternalId, sourceExternalId } = setup();
 
-				const func = () => service.schoolToMigrate(currentUserId, externalId, officialSchoolNumber);
+				await service.migrateSchool({ ...school }, targetExternalId, targetSystemId);
 
-				await expect(func()).rejects.toThrow(
-					new OAuthMigrationError(
-						'Could not find school by official school number from target migration system',
-						'ext_official_school_missing'
-					)
-				);
-			});
-		});
-
-		describe('when current users school not match with school of to migrate user ', () => {
-			const setup = () => {
-				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
-					id: 'schoolId',
-					name: 'schoolName',
-					officialSchoolNumber: 'officialSchoolNumber',
-					externalId: 'firstExternalId',
+				expect(schoolService.save).toHaveBeenCalledWith({
+					...school,
+					externalId: targetExternalId,
+					previousExternalId: sourceExternalId,
+					systems: ['otherSystemId', targetSystemId],
 				});
-
-				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
-
-				return {
-					currentUserId: userDO.id as string,
-					schoolDO,
-					externalId: schoolDO.externalId as string,
-					userDO,
-				};
-			};
-
-			it('should throw an error', async () => {
-				const { currentUserId, externalId, schoolDO, userDO } = setup();
-				schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDO);
-				schoolDO.officialSchoolNumber = 'OfficialSchoolnumberMismatch';
-				schoolService.getSchoolById.mockResolvedValue(schoolDO);
-
-				userService.findById.mockResolvedValue(userDO);
-
-				const func = () => service.schoolToMigrate(currentUserId, externalId, 'targetSchoolNumber');
-
-				await expect(func()).rejects.toThrow(
-					new OAuthMigrationError(
-						'Current users school is not the same as school found by official school number from target migration system',
-						'ext_official_school_number_mismatch',
-						'targetSchoolNumber',
-						schoolDO.officialSchoolNumber
-					)
-				);
 			});
 		});
 
-		describe('when school was already migrated', () => {
+		describe('when saving to the database fails', () => {
 			const setup = () => {
-				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
-					id: 'schoolId',
-					name: 'schoolName',
-					officialSchoolNumber: 'officialSchoolNumber',
-					externalId: 'firstExternalId',
-				});
-
-				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
-
-				return {
-					currentUserId: userDO.id as string,
-					schoolDO,
-					externalId: schoolDO.externalId as string,
-					userDO,
-				};
-			};
-
-			it('should return null ', async () => {
-				const { currentUserId, externalId, schoolDO, userDO } = setup();
-				userService.findById.mockResolvedValue(userDO);
-				schoolService.getSchoolById.mockResolvedValue(schoolDO);
-				schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDO);
-
-				const result: LegacySchoolDo | null = await service.schoolToMigrate(
-					currentUserId,
-					externalId,
-					schoolDO.officialSchoolNumber
-				);
-
-				expect(result).toBeNull();
-			});
-		});
-
-		describe('when school has to be migrated', () => {
-			const setup = () => {
-				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
-					id: 'schoolId',
-					name: 'schoolName',
-					officialSchoolNumber: 'officialSchoolNumber',
-					externalId: 'firstExternalId',
-				});
-
-				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
-
-				return {
-					currentUserId: userDO.id as string,
-					schoolDO,
-					userDO,
-				};
-			};
-
-			it('should return migrated school', async () => {
-				const { currentUserId, schoolDO, userDO } = setup();
-				schoolService.getSchoolById.mockResolvedValue(schoolDO);
-				schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDO);
-				userService.findById.mockResolvedValue(userDO);
-
-				const result: LegacySchoolDo | null = await service.schoolToMigrate(
-					currentUserId,
-					'newExternalId',
-					schoolDO.officialSchoolNumber
-				);
-
-				expect(result).toEqual(schoolDO);
-			});
-		});
-	});
-
-	describe('migrateSchool is called', () => {
-		describe('when school will be migrated', () => {
-			const setup = () => {
-				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'firstExternalId',
 				});
 				const targetSystemId = 'targetSystemId';
+				const targetExternalId = 'targetExternalId';
+
+				const error = new Error('Cannot save');
+
+				schoolService.save.mockRejectedValueOnce(error);
 
 				return {
-					schoolDO,
+					school,
 					targetSystemId,
-					firstExternalId: schoolDO.externalId,
+					sourceExternalId: school.externalId,
+					targetExternalId,
+					error,
 				};
 			};
 
-			it('should save the migrated school', async () => {
-				const { schoolDO, targetSystemId, firstExternalId } = setup();
-				const newExternalId = 'newExternalId';
+			it('should roll back any changes to the school', async () => {
+				const { school, targetSystemId, targetExternalId } = setup();
 
-				await service.migrateSchool(newExternalId, schoolDO, targetSystemId);
+				await expect(service.migrateSchool({ ...school }, targetExternalId, targetSystemId)).rejects.toThrow();
 
-				expect(schoolService.save).toHaveBeenCalledWith(
-					expect.objectContaining<Partial<LegacySchoolDo>>({
-						systems: [targetSystemId],
-						previousExternalId: firstExternalId,
-						externalId: newExternalId,
-					})
+				expect(schoolService.save).toHaveBeenLastCalledWith(school);
+			});
+
+			it('should throw an error', async () => {
+				const { school, targetSystemId, targetExternalId, error } = setup();
+
+				await expect(service.migrateSchool({ ...school }, targetExternalId, targetSystemId)).rejects.toThrow(
+					new SchoolMigrationDatabaseOperationFailedLoggableException(school.id, error)
 				);
 			});
+		});
+	});
 
-			describe('when there are other systems before', () => {
-				it('should add the system to migrated school', async () => {
-					const { schoolDO, targetSystemId } = setup();
-					schoolDO.systems = ['existingSystem'];
-
-					await service.migrateSchool('newExternalId', schoolDO, targetSystemId);
-
-					expect(schoolService.save).toHaveBeenCalledWith(
-						expect.objectContaining<Partial<LegacySchoolDo>>({
-							systems: ['existingSystem', targetSystemId],
-						})
-					);
+	describe('getSchoolForMigration', () => {
+		describe('when the school has to be migrated', () => {
+			const setup = () => {
+				const officialSchoolNumber = 'officialSchoolNumber';
+				const sourceExternalId = 'sourceExternalId';
+				const targetExternalId = 'targetExternalId';
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+					id: 'schoolId',
+					name: 'schoolName',
+					officialSchoolNumber,
+					externalId: sourceExternalId,
 				});
+
+				const user: UserDO = userDoFactory.build({ id: new ObjectId().toHexString(), schoolId: school.id });
+
+				userService.findById.mockResolvedValue(user);
+				schoolService.getSchoolById.mockResolvedValue(school);
+
+				return {
+					userId: user.id as string,
+					user,
+					officialSchoolNumber,
+					school,
+					targetExternalId,
+				};
+			};
+
+			it('should return the school', async () => {
+				const { userId, targetExternalId, officialSchoolNumber, school } = setup();
+
+				const result = await service.getSchoolForMigration(userId, targetExternalId, officialSchoolNumber);
+
+				expect(result).toEqual(school);
 			});
+		});
 
-			describe('when there are no systems in School', () => {
-				it('should add the system to migrated school', async () => {
-					const { schoolDO, targetSystemId } = setup();
-					schoolDO.systems = undefined;
-
-					await service.migrateSchool('newExternalId', schoolDO, targetSystemId);
-
-					expect(schoolService.save).toHaveBeenCalledWith(
-						expect.objectContaining<Partial<LegacySchoolDo>>({
-							systems: [targetSystemId],
-						})
-					);
+		describe('when the school is already migrated', () => {
+			const setup = () => {
+				const officialSchoolNumber = 'officialSchoolNumber';
+				const sourceExternalId = 'sourceExternalId';
+				const targetExternalId = 'targetExternalId';
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+					id: 'schoolId',
+					name: 'schoolName',
+					officialSchoolNumber,
+					externalId: targetExternalId,
+					previousExternalId: sourceExternalId,
 				});
+
+				const user: UserDO = userDoFactory.build({ id: new ObjectId().toHexString(), schoolId: school.id });
+
+				userService.findById.mockResolvedValue(user);
+				schoolService.getSchoolById.mockResolvedValue(school);
+
+				return {
+					userId: user.id as string,
+					user,
+					officialSchoolNumber,
+					school,
+					targetExternalId,
+				};
+			};
+
+			it('should return null', async () => {
+				const { userId, targetExternalId, officialSchoolNumber } = setup();
+
+				const result = await service.getSchoolForMigration(userId, targetExternalId, officialSchoolNumber);
+
+				expect(result).toBeNull();
 			});
+		});
 
-			describe('when an error occurred', () => {
-				it('should save the old schoolDo (rollback the migration)', async () => {
-					const { schoolDO, targetSystemId } = setup();
-					schoolService.save.mockRejectedValueOnce(new Error());
-
-					await service.migrateSchool('newExternalId', schoolDO, targetSystemId);
-
-					expect(schoolService.save).toHaveBeenCalledWith(schoolDO);
+		describe('when the school number from the external system is not the same as the school number of the users school', () => {
+			const setup = () => {
+				const officialSchoolNumber = 'officialSchoolNumber';
+				const otherOfficialSchoolNumber = 'notTheSameOfficialSchoolNumber';
+				const sourceExternalId = 'sourceExternalId';
+				const targetExternalId = 'targetExternalId';
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+					id: 'schoolId',
+					name: 'schoolName',
+					officialSchoolNumber,
+					externalId: sourceExternalId,
 				});
+
+				const user: UserDO = userDoFactory.build({ id: new ObjectId().toHexString(), schoolId: school.id });
+
+				userService.findById.mockResolvedValue(user);
+				schoolService.getSchoolById.mockResolvedValue(school);
+
+				return {
+					userId: user.id as string,
+					user,
+					officialSchoolNumber,
+					otherOfficialSchoolNumber,
+					school,
+					targetExternalId,
+				};
+			};
+
+			it('should throw a school number mismatch error', async () => {
+				const { userId, targetExternalId, officialSchoolNumber, otherOfficialSchoolNumber } = setup();
+
+				await expect(
+					service.getSchoolForMigration(userId, targetExternalId, otherOfficialSchoolNumber)
+				).rejects.toThrow(new SchoolNumberMismatchLoggableException(officialSchoolNumber, otherOfficialSchoolNumber));
 			});
 		});
 	});

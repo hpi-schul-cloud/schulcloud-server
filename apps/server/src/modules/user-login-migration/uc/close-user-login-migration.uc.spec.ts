@@ -1,13 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, UserLoginMigrationDO } from '@shared/domain';
 import { setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
-import { Action, AuthorizationService } from '@modules/authorization';
-import { UserLoginMigrationNotFoundLoggableException } from '../error';
+import { UserLoginMigrationNotFoundLoggableException } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationRevertService, UserLoginMigrationService } from '../service';
 import { CloseUserLoginMigrationUc } from './close-user-login-migration.uc';
 
-describe('CloseUserLoginMigrationUc', () => {
+describe(CloseUserLoginMigrationUc.name, () => {
 	let module: TestingModule;
 	let uc: CloseUserLoginMigrationUc;
 
@@ -65,12 +66,12 @@ describe('CloseUserLoginMigrationUc', () => {
 					...userLoginMigration,
 					closedAt: new Date(2023, 1),
 				});
-				const schoolId = 'schoolId';
+				const schoolId = new ObjectId().toHexString();
 
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
-				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				userLoginMigrationService.closeMigration.mockResolvedValue(closedUserLoginMigration);
-				schoolMigrationService.hasSchoolMigratedUser.mockResolvedValue(true);
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				userLoginMigrationService.closeMigration.mockResolvedValueOnce(closedUserLoginMigration);
+				schoolMigrationService.hasSchoolMigratedUser.mockResolvedValueOnce(true);
 
 				return {
 					user,
@@ -85,10 +86,11 @@ describe('CloseUserLoginMigrationUc', () => {
 
 				await uc.closeMigration(user.id, schoolId);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, userLoginMigration, {
-					requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
-					action: Action.write,
-				});
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+					user,
+					userLoginMigration,
+					AuthorizationContextBuilder.write([Permission.USER_LOGIN_MIGRATION_ADMIN])
+				);
 			});
 
 			it('should close the migration', async () => {
@@ -119,9 +121,9 @@ describe('CloseUserLoginMigrationUc', () => {
 		describe('when no user login migration exists', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const schoolId = 'schoolId';
+				const schoolId = new ObjectId().toHexString();
 
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(null);
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(null);
 
 				return {
 					user,
@@ -148,10 +150,10 @@ describe('CloseUserLoginMigrationUc', () => {
 				});
 				const schoolId = 'schoolId';
 
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
-				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				userLoginMigrationService.closeMigration.mockResolvedValue(closedUserLoginMigration);
-				schoolMigrationService.hasSchoolMigratedUser.mockResolvedValue(false);
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				userLoginMigrationService.closeMigration.mockResolvedValueOnce(closedUserLoginMigration);
+				schoolMigrationService.hasSchoolMigratedUser.mockResolvedValueOnce(false);
 
 				return {
 					user,
@@ -166,10 +168,11 @@ describe('CloseUserLoginMigrationUc', () => {
 
 				await uc.closeMigration(user.id, schoolId);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, userLoginMigration, {
-					requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
-					action: Action.write,
-				});
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+					user,
+					userLoginMigration,
+					AuthorizationContextBuilder.write([Permission.USER_LOGIN_MIGRATION_ADMIN])
+				);
 			});
 
 			it('should revert the start of the migration', async () => {
@@ -188,48 +191,12 @@ describe('CloseUserLoginMigrationUc', () => {
 				expect(schoolMigrationService.markUnmigratedUsersAsOutdated).not.toHaveBeenCalled();
 			});
 
-			it('should return  undefined', async () => {
+			it('should return undefined', async () => {
 				const { user, schoolId } = setup();
 
 				const result = await uc.closeMigration(user.id, schoolId);
 
 				expect(result).toBeUndefined();
-			});
-		});
-
-		describe('when the user login migration was already closed', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
-					closedAt: new Date(2023, 1),
-				});
-				const schoolId = 'schoolId';
-
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
-				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				schoolMigrationService.hasSchoolMigratedUser.mockResolvedValue(false);
-
-				return {
-					user,
-					schoolId,
-					userLoginMigration,
-				};
-			};
-
-			it('should not modify the user login migration', async () => {
-				const { user, schoolId } = setup();
-
-				await uc.closeMigration(user.id, schoolId);
-
-				expect(userLoginMigrationService.closeMigration).not.toHaveBeenCalled();
-			});
-
-			it('should return the already closed user login migration', async () => {
-				const { user, schoolId, userLoginMigration } = setup();
-
-				const result = await uc.closeMigration(user.id, schoolId);
-
-				expect(result).toEqual(userLoginMigration);
 			});
 		});
 	});

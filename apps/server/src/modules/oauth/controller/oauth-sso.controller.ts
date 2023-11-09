@@ -1,31 +1,15 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import {
-	Controller,
-	Get,
-	InternalServerErrorException,
-	Param,
-	Query,
-	Req,
-	Res,
-	Session,
-	UnauthorizedException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
-import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { Controller, Get, Param, Query, Req, Res, Session, UnauthorizedException } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ISession } from '@shared/domain/types/session';
 import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser, Authenticate, CurrentUser, JWT } from '@modules/authentication';
-import { OAuthMigrationError } from '@modules/user-login-migration/error/oauth-migration.error';
-import { MigrationDto } from '@modules/user-login-migration/service/dto';
 import { CookieOptions, Request, Response } from 'express';
-import { HydraOauthUc } from '../uc/hydra-oauth.uc';
-import { UserMigrationResponse } from './dto/user-migration.response';
-import { OAuthSSOError } from '../loggable/oauth-sso.error';
 import { OAuthTokenDto } from '../interface';
+import { OAuthSSOError } from '../loggable';
 import { OauthLoginStateMapper } from '../mapper/oauth-login-state.mapper';
-import { UserMigrationMapper } from '../mapper/user-migration.mapper';
 import { OAuthProcessDto } from '../service/dto';
-import { OauthUc } from '../uc';
+import { HydraOauthUc, OauthUc } from '../uc';
 import { OauthLoginStateDto } from '../uc/dto/oauth-login-state.dto';
 import { AuthorizationParams, SSOLoginQuery, SystemIdParams } from './dto';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
@@ -57,24 +41,6 @@ export class OauthSSOController {
 
 		if (provider) {
 			errorRedirect.searchParams.append('provider', provider);
-		}
-
-		res.redirect(errorRedirect.toString());
-	}
-
-	private migrationErrorHandler(error: unknown, session: ISession, res: Response) {
-		const migrationError: OAuthMigrationError =
-			error instanceof OAuthMigrationError ? error : new OAuthMigrationError();
-
-		session.destroy((err) => {
-			this.logger.log(err);
-		});
-
-		const errorRedirect: URL = new URL('/migration/error', this.clientUrl);
-
-		if (migrationError.officialSchoolNumberFromSource && migrationError.officialSchoolNumberFromTarget) {
-			errorRedirect.searchParams.append('sourceSchoolNumber', migrationError.officialSchoolNumberFromSource);
-			errorRedirect.searchParams.append('targetSchoolNumber', migrationError.officialSchoolNumberFromTarget);
 		}
 
 		res.redirect(errorRedirect.toString());
@@ -174,31 +140,5 @@ export class OauthSSOController {
 			);
 		}
 		return this.hydraUc.requestAuthCode(currentUser.userId, jwt, oauthClientId);
-	}
-
-	@Get('oauth/migration')
-	@Authenticate('jwt')
-	@ApiOkResponse({ description: 'The User has been succesfully migrated.' })
-	@ApiResponse({ type: InternalServerErrorException, description: 'The migration of the User was not possible. ' })
-	async migrateUser(
-		@JWT() jwt: string,
-		@Session() session: ISession,
-		@CurrentUser() currentUser: ICurrentUser,
-		@Query() query: AuthorizationParams,
-		@Res() res: Response
-	): Promise<void> {
-		const oauthLoginState: OauthLoginStateDto = this.sessionHandler(session, query);
-
-		if (!currentUser.systemId) {
-			throw new UnprocessableEntityException('Current user does not have a system.');
-		}
-
-		try {
-			const migration: MigrationDto = await this.oauthUc.migrate(jwt, currentUser.userId, query, oauthLoginState);
-			const response: UserMigrationResponse = UserMigrationMapper.mapDtoToResponse(migration);
-			res.redirect(response.redirect);
-		} catch (error) {
-			this.migrationErrorHandler(error, session, res);
-		}
 	}
 }
