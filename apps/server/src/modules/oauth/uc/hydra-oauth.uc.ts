@@ -1,12 +1,11 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { OauthConfig } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { AuthorizationParams } from '../controller/dto';
-import { OAuthSSOError } from '../loggable/oauth-sso.error';
 import { OAuthTokenDto } from '../interface';
+import { OAuthSSOError } from '../loggable';
 import { HydraSsoService } from '../service/hydra.service';
 import { OAuthService } from '../service/oauth.service';
 
