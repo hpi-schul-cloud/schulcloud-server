@@ -87,7 +87,7 @@ export class CommonToolValidationService {
 	}
 
 	private checkParameterRegex(foundEntry: CustomParameterEntry, param: CustomParameter): void {
-		if (foundEntry.value !== undefined && param.regex && !new RegExp(param.regex).test(foundEntry.value ?? '')) {
+		if (param.regex && !new RegExp(param.regex).test(foundEntry.value ?? '')) {
 			throw new ValidationError(
 				`tool_param_value_regex: The given entry for the parameter with name ${foundEntry.name} does not fit the regex.`
 			);
