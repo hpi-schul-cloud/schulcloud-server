@@ -4,7 +4,7 @@ import { AxiosResponse, isAxiosError } from 'axios';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
-import { TokenRequestLoggableException } from '../loggable/token-request-loggable-exception';
+import { TokenRequestLoggableException } from '../loggable';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 
 @Injectable()
@@ -37,7 +37,7 @@ export class OauthAdapterService {
 	private async resolveTokenRequest(
 		observable: Observable<AxiosResponse<OauthTokenResponse, unknown>>
 	): Promise<OauthTokenResponse> {
-		let responseToken: AxiosResponse<OauthTokenResponse> | undefined;
+		let responseToken: AxiosResponse<OauthTokenResponse>;
 		try {
 			responseToken = await lastValueFrom(observable);
 		} catch (error: unknown) {

@@ -13,7 +13,7 @@ import {
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@shared/testing';
-import { axiosErrorFactory } from '@shared/testing/factory/axios-error.factory';
+import { axiosErrorFactory } from '@shared/testing/factory';
 import { AxiosError, AxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'axios';
 import { of, throwError } from 'rxjs';
 import { ProviderConsentSessionResponse } from '../dto';
@@ -140,7 +140,9 @@ describe('HydraService', () => {
 		describe('when error occurs', () => {
 			describe('when error is an axios error', () => {
 				const setup = () => {
-					const error = new Error('Some error message');
+					const error = {
+						error: 'invalid_request',
+					};
 					const axiosError: AxiosError = axiosErrorFactory.withError(error).build({});
 
 					httpService.request.mockReturnValueOnce(throwError(() => axiosError));

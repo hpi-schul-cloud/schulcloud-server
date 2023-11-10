@@ -1,11 +1,13 @@
-import { axiosErrorFactory } from '@shared/testing/factory/axios-error.factory';
+import { axiosErrorFactory } from '@shared/testing/factory';
 import { AxiosError } from 'axios';
 import { AxiosErrorLoggable } from './axios-error.loggable';
 
 describe(AxiosErrorLoggable.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const error = new Error('some error message');
+			const error = {
+				error: 'invalid_request',
+			};
 			const type = 'mockType';
 			const axiosError: AxiosError = axiosErrorFactory.withError(error).build();
 
@@ -22,7 +24,7 @@ describe(AxiosErrorLoggable.name, () => {
 			expect(result).toEqual({
 				type: 'mockType',
 				message: axiosError.message,
-				data: error,
+				data: JSON.stringify(error),
 				stack: 'mockStack',
 			});
 		});

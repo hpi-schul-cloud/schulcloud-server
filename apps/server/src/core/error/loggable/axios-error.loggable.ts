@@ -11,7 +11,7 @@ export class AxiosErrorLoggable extends HttpException implements Loggable {
 		return {
 			message: this.axiosError.message,
 			type: this.type,
-			data: this.axiosError.response?.data as string,
+			data: JSON.stringify(this.axiosError.response?.data),
 			stack: this.axiosError.stack,
 		};
 	}

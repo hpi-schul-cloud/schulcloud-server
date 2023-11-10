@@ -1,11 +1,13 @@
-import { axiosErrorFactory } from '@shared/testing/factory/axios-error.factory';
+import { axiosErrorFactory } from '@shared/testing/factory';
 import { AxiosError } from 'axios';
 import { TokenRequestLoggableException } from './token-request-loggable-exception';
 
 describe(TokenRequestLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const error = new Error('some error message');
+			const error = {
+				error: 'invalid_request',
+			};
 			const axiosError: AxiosError = axiosErrorFactory.withError(error).build();
 			const exception = new TokenRequestLoggableException(axiosError);
 
@@ -24,7 +26,7 @@ describe(TokenRequestLoggableException.name, () => {
 			expect(logMessage).toStrictEqual({
 				type: 'OAUTH_TOKEN_REQUEST_ERROR',
 				message: axiosError.message,
-				data: error,
+				data: JSON.stringify(error),
 				stack: axiosError.stack,
 			});
 		});

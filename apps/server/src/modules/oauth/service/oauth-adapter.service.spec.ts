@@ -2,11 +2,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@shared/testing';
-import { axiosErrorFactory } from '@shared/testing/factory/axios-error.factory';
+import { axiosErrorFactory } from '@shared/testing/factory';
 import { AxiosError } from 'axios';
 import { of, throwError } from 'rxjs';
 import { OAuthGrantType } from '../interface/oauth-grant-type.enum';
-import { TokenRequestLoggableException } from '../loggable/token-request-loggable-exception';
+import { TokenRequestLoggableException } from '../loggable';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
 
@@ -135,7 +135,9 @@ describe('OauthAdapterServive', () => {
 
 			describe('when error is a axios error', () => {
 				const setup = () => {
-					const error = new Error('some error message');
+					const error = {
+						error: 'invalid_request',
+					};
 					const axiosError: AxiosError = axiosErrorFactory.withError(error).build();
 
 					httpService.post.mockReturnValueOnce(throwError(() => axiosError));

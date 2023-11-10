@@ -1,11 +1,13 @@
-import { axiosErrorFactory } from '@shared/testing/factory/axios-error.factory';
+import { axiosErrorFactory } from '@shared/testing/factory';
 import { AxiosError } from 'axios';
 import { HydraOauthFailedLoggableException } from './hydra-oauth-failed-loggable-exception';
 
 describe(HydraOauthFailedLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const error = new Error('Hydra oauth error occurred');
+			const error = {
+				error: 'invalid_request',
+			};
 			const axiosError: AxiosError = axiosErrorFactory.withError(error).build({ stack: 'someStack' });
 
 			const exception = new HydraOauthFailedLoggableException(axiosError);
@@ -26,7 +28,7 @@ describe(HydraOauthFailedLoggableException.name, () => {
 				type: 'HYDRA_OAUTH_FAILED',
 				message: axiosError.message,
 				stack: axiosError.stack,
-				data: error,
+				data: JSON.stringify(error),
 			});
 		});
 	});
