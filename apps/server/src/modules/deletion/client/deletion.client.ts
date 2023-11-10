@@ -13,6 +13,8 @@ export class DeletionClient {
 
 	private readonly postDeletionRequestsEndpoint: string;
 
+	private readonly postDeletionExecutionsEndpoint: string;
+
 	constructor(
 		private readonly httpService: HttpService,
 		private readonly configService: ConfigService<DeletionClientConfig, true>
@@ -22,6 +24,7 @@ export class DeletionClient {
 
 		// Prepare the POST /deletionRequests endpoint beforehand to not do it on every client call.
 		this.postDeletionRequestsEndpoint = new URL('/admin/api/v1/deletionRequests', this.baseUrl).toString();
+		this.postDeletionExecutionsEndpoint = new URL('/admin/api/v1/deletionExecutions', this.baseUrl).toString();
 	}
 
 	async queueDeletionRequest(input: DeletionRequestInput): Promise<DeletionRequestOutput> {
@@ -50,6 +53,32 @@ export class DeletionClient {
 			})
 			.catch((err: Error) => {
 				// Throw an error if sending/processing deletion request by the client failed in any way.
+				throw new Error(`failed to send/process a deletion request: ${err.toString()}`);
+			});
+	}
+
+	async executeDeletions(limit?: number): Promise<void> {
+		let requestConfig = {};
+
+		if (limit && limit > 0) {
+			requestConfig = { ...this.defaultHeaders(), params: { limit } };
+		} else {
+			requestConfig = { ...this.defaultHeaders() };
+		}
+
+		const request = this.httpService.post(this.postDeletionExecutionsEndpoint, null, requestConfig);
+
+		return firstValueFrom(request)
+			.then((resp: AxiosResponse) => {
+				// Throw an error if any other status code (other than expected "204 No Content" is returned).
+				if (resp.status !== 204) {
+					throw new Error(`invalid HTTP status code in a response from the server - ${resp.status} instead of 204`);
+				}
+
+				return undefined;
+			})
+			.catch((err: Error) => {
+				// Throw an error if sending/processing deletion executions request by the client failed in any way.
 				throw new Error(`failed to send/process a deletion request: ${err.toString()}`);
 			});
 	}

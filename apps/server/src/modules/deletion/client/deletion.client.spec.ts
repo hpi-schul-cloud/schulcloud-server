@@ -151,4 +151,42 @@ describe(DeletionClient.name, () => {
 			});
 		});
 	});
+
+	describe('executeDeletions', () => {
+		describe('when received valid response with expected HTTP status code', () => {
+			const setup = () => {
+				const limit = 10;
+
+				const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
+					status: 204,
+				});
+
+				httpService.post.mockReturnValueOnce(of(response));
+
+				return { limit };
+			};
+
+			it('should return proper output', async () => {
+				const { limit } = setup();
+
+				await expect(client.executeDeletions(limit)).resolves.not.toThrow();
+			});
+		});
+
+		describe('when received invalid HTTP status code in a response', () => {
+			const setup = () => {
+				const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
+					status: 200,
+				});
+
+				httpService.post.mockReturnValueOnce(of(response));
+			};
+
+			it('should throw an exception', async () => {
+				setup();
+
+				await expect(client.executeDeletions()).rejects.toThrow(Error);
+			});
+		});
+	});
 });
