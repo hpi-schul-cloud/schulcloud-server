@@ -94,19 +94,19 @@ describe(CloseUserLoginMigrationUc.name, () => {
 			});
 
 			it('should close the migration', async () => {
-				const { user, schoolId } = setup();
+				const { user, schoolId, userLoginMigration } = setup();
 
 				await uc.closeMigration(user.id, schoolId);
 
-				expect(userLoginMigrationService.closeMigration).toHaveBeenCalledWith(schoolId);
+				expect(userLoginMigrationService.closeMigration).toHaveBeenCalledWith(userLoginMigration);
 			});
 
 			it('should mark all un-migrated users as outdated', async () => {
-				const { user, schoolId } = setup();
+				const { user, schoolId, closedUserLoginMigration } = setup();
 
 				await uc.closeMigration(user.id, schoolId);
 
-				expect(schoolMigrationService.markUnmigratedUsersAsOutdated).toHaveBeenCalledWith(schoolId);
+				expect(schoolMigrationService.markUnmigratedUsersAsOutdated).toHaveBeenCalledWith(closedUserLoginMigration);
 			});
 
 			it('should return the closed user login migration', async () => {

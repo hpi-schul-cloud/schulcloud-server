@@ -46,7 +46,7 @@ describe(UserMigrationService.name, () => {
 		jest.resetAllMocks();
 	});
 
-	describe('migrateUser is called', () => {
+	describe('migrateUser', () => {
 		const mockDate = new Date(2020, 1, 1);
 
 		beforeAll(() => {
@@ -85,8 +85,8 @@ describe(UserMigrationService.name, () => {
 					systemId: sourceSystemId,
 				});
 
-				userService.findById.mockResolvedValueOnce(user);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(accountDto);
+				userService.findById.mockResolvedValueOnce({ ...user });
+				accountService.findByUserIdOrFail.mockResolvedValueOnce({ ...accountDto });
 
 				return {
 					user,
@@ -173,8 +173,8 @@ describe(UserMigrationService.name, () => {
 
 				const error = new Error('Cannot save');
 
-				userService.findById.mockResolvedValueOnce(user);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(accountDto);
+				userService.findById.mockResolvedValueOnce({ ...user });
+				accountService.findByUserIdOrFail.mockResolvedValueOnce({ ...accountDto });
 
 				userService.save.mockRejectedValueOnce(error);
 

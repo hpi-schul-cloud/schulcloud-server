@@ -2,7 +2,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
-import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
@@ -296,38 +295,24 @@ describe(SchoolMigrationService.name, () => {
 
 				const users: UserDO[] = userDoFactory.buildListWithId(3, { outdatedSince: undefined });
 
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
 				userService.findUsers.mockResolvedValue(new Page(users, users.length));
 
 				return {
 					closedAt,
+					userLoginMigration,
 				};
 			};
 
 			it('should save migrated user with removed outdatedSince entry', async () => {
-				const { closedAt } = setup();
+				const { closedAt, userLoginMigration } = setup();
 
-				await service.markUnmigratedUsersAsOutdated('schoolId');
+				await service.markUnmigratedUsersAsOutdated(userLoginMigration);
 
 				expect(userService.saveAll).toHaveBeenCalledWith([
 					expect.objectContaining<Partial<UserDO>>({ outdatedSince: closedAt }),
 					expect.objectContaining<Partial<UserDO>>({ outdatedSince: closedAt }),
 					expect.objectContaining<Partial<UserDO>>({ outdatedSince: closedAt }),
 				]);
-			});
-		});
-
-		describe('when the school has no migration', () => {
-			const setup = () => {
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
-			};
-
-			it('should throw an UnprocessableEntityException', async () => {
-				setup();
-
-				const func = async () => service.markUnmigratedUsersAsOutdated('schoolId');
-
-				await expect(func).rejects.toThrow(UnprocessableEntityException);
 			});
 		});
 	});
@@ -345,34 +330,23 @@ describe(SchoolMigrationService.name, () => {
 
 				const users: UserDO[] = userDoFactory.buildListWithId(3, { outdatedSince: new Date('2023-05-02') });
 
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
 				userService.findUsers.mockResolvedValue(new Page(users, users.length));
+
+				return {
+					userLoginMigration,
+				};
 			};
 
 			it('should save migrated user with removed outdatedSince entry', async () => {
-				setup();
+				const { userLoginMigration } = setup();
 
-				await service.unmarkOutdatedUsers('schoolId');
+				await service.unmarkOutdatedUsers(userLoginMigration);
 
 				expect(userService.saveAll).toHaveBeenCalledWith([
 					expect.objectContaining<Partial<UserDO>>({ outdatedSince: undefined }),
 					expect.objectContaining<Partial<UserDO>>({ outdatedSince: undefined }),
 					expect.objectContaining<Partial<UserDO>>({ outdatedSince: undefined }),
 				]);
-			});
-		});
-
-		describe('when the school has no migration', () => {
-			const setup = () => {
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
-			};
-
-			it('should throw an UnprocessableEntityException', async () => {
-				setup();
-
-				const func = async () => service.unmarkOutdatedUsers('schoolId');
-
-				await expect(func).rejects.toThrow(UnprocessableEntityException);
 			});
 		});
 	});

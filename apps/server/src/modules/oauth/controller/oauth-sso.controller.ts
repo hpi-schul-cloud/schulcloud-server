@@ -1,116 +1,18 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Controller, Get, Param, Query, Req, Res, Session, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Param, Query, Req, UnauthorizedException } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ISession } from '@shared/domain/types/session';
 import { LegacyLogger } from '@src/core/logger';
-import { CookieOptions, Request, Response } from 'express';
+import { Request } from 'express';
 import { OAuthTokenDto } from '../interface';
-import { OAuthSSOError } from '../loggable';
-import { OauthLoginStateMapper } from '../mapper/oauth-login-state.mapper';
-import { OAuthProcessDto } from '../service/dto';
-import { HydraOauthUc, OauthUc } from '../uc';
-import { OauthLoginStateDto } from '../uc/dto/oauth-login-state.dto';
-import { AuthorizationParams, SSOLoginQuery, SystemIdParams } from './dto';
+import { HydraOauthUc } from '../uc';
+import { AuthorizationParams } from './dto';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
 
 @ApiTags('SSO')
 @Controller('sso')
 export class OauthSSOController {
-	private readonly clientUrl: string;
-
-	constructor(
-		private readonly oauthUc: OauthUc,
-		private readonly hydraUc: HydraOauthUc,
-		private readonly logger: LegacyLogger
-	) {
+	constructor(private readonly hydraUc: HydraOauthUc, private readonly logger: LegacyLogger) {
 		this.logger.setContext(OauthSSOController.name);
-		this.clientUrl = Configuration.get('HOST') as string;
-	}
-
-	private errorHandler(error: unknown, session: ISession, res: Response, provider?: string) {
-		this.logger.error(error);
-		const ssoError: OAuthSSOError = error instanceof OAuthSSOError ? error : new OAuthSSOError();
-
-		session.destroy((err) => {
-			this.logger.log(err);
-		});
-
-		const errorRedirect: URL = new URL('/login', this.clientUrl);
-		errorRedirect.searchParams.append('error', ssoError.errorcode);
-
-		if (provider) {
-			errorRedirect.searchParams.append('provider', provider);
-		}
-
-		res.redirect(errorRedirect.toString());
-	}
-
-	private sessionHandler(session: ISession, query: AuthorizationParams): OauthLoginStateDto {
-		if (!session.oauthLoginState) {
-			throw new UnauthorizedException('Oauth session not found');
-		}
-
-		const oauthLoginState: OauthLoginStateDto = OauthLoginStateMapper.mapSessionToDto(session);
-
-		if (oauthLoginState.state !== query.state) {
-			throw new UnauthorizedException(`Invalid state. Got: ${query.state} Expected: ${oauthLoginState.state}`);
-		}
-
-		return oauthLoginState;
-	}
-
-	@Get('login/:systemId')
-	async getAuthenticationUrl(
-		@Session() session: ISession,
-		@Res() res: Response,
-		@Param() params: SystemIdParams,
-		@Query() query: SSOLoginQuery
-	): Promise<void> {
-		try {
-			const redirect: string = await this.oauthUc.startOauthLogin(
-				session,
-				params.systemId,
-				query.migration || false,
-				query.postLoginRedirect
-			);
-
-			res.redirect(redirect);
-		} catch (error) {
-			this.errorHandler(error, session, res);
-		}
-	}
-
-	@Get('oauth')
-	async startOauthAuthorizationCodeFlow(
-		@Session() session: ISession,
-		@Res() res: Response,
-		@Query() query: AuthorizationParams
-	): Promise<void> {
-		const oauthLoginState: OauthLoginStateDto = this.sessionHandler(session, query);
-
-		try {
-			const oauthProcessDto: OAuthProcessDto = await this.oauthUc.processOAuthLogin(
-				oauthLoginState,
-				query.code,
-				query.error
-			);
-
-			if (oauthProcessDto.jwt) {
-				const cookieDefaultOptions: CookieOptions = {
-					httpOnly: Configuration.get('COOKIE__HTTP_ONLY') as boolean,
-					sameSite: Configuration.get('COOKIE__SAME_SITE') as 'lax' | 'strict' | 'none',
-					secure: Configuration.get('COOKIE__SECURE') as boolean,
-					expires: new Date(Date.now() + (Configuration.get('COOKIE__EXPIRES_SECONDS') as number)),
-				};
-
-				res.cookie('jwt', oauthProcessDto.jwt, cookieDefaultOptions);
-			}
-
-			res.redirect(oauthProcessDto.redirect);
-		} catch (error) {
-			this.errorHandler(error, session, res, oauthLoginState.provider);
-		}
 	}
 
 	@Get('hydra/:oauthClientId')

@@ -384,8 +384,8 @@ describe(UserLoginMigrationUc.name, () => {
 				await uc.migrate('jwt', 'currentUserId', 'systemId', 'code', 'redirectUri');
 
 				expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
-					oauthData.externalSchool?.externalId,
 					schoolDO,
+					oauthData.externalSchool?.externalId,
 					'systemId'
 				);
 			});
