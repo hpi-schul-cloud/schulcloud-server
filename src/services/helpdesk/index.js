@@ -1,4 +1,4 @@
-const service = require('feathers-mongoose');
+const service = require('../../utils/feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
@@ -9,7 +9,11 @@ const { BODYPARSER_JSON_LIMIT, MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE } =
 
 if (BODYPARSER_JSON_LIMIT === undefined) {
 	/* eslint-disable-next-line  */
-	logger.warning(`please set the environment variable BODYPARSER_JSON_LIMIT to min. '${Math.ceil(1.36*(MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE/1024/1024))}mb' for helpdesk to work correctly! (Currently: ${BODYPARSER_JSON_LIMIT})`);
+	logger.warning(
+		`please set the environment variable BODYPARSER_JSON_LIMIT to min. '${Math.ceil(
+			1.36 * (MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE / 1024 / 1024)
+		)}mb' for helpdesk to work correctly! (Currently: ${BODYPARSER_JSON_LIMIT})`
+	);
 }
 
 module.exports = function () {
