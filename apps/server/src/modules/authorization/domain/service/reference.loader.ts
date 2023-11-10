@@ -44,7 +44,7 @@ export class ReferenceLoader {
 		private readonly courseGroupRepo: CourseGroupRepo,
 		private readonly taskRepo: TaskRepo,
 		private readonly schoolRepo: LegacySchoolRepo,
-		private readonly lessonRepo: LessonService,
+		private readonly lessonService: LessonService,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
@@ -56,7 +56,7 @@ export class ReferenceLoader {
 		this.repos.set(AuthorizableReferenceType.CourseGroup, { repo: this.courseGroupRepo });
 		this.repos.set(AuthorizableReferenceType.User, { repo: this.userRepo });
 		this.repos.set(AuthorizableReferenceType.School, { repo: this.schoolRepo });
-		this.repos.set(AuthorizableReferenceType.Lesson, { repo: this.lessonRepo });
+		this.repos.set(AuthorizableReferenceType.Lesson, { repo: this.lessonService });
 		this.repos.set(AuthorizableReferenceType.Team, { repo: this.teamsRepo, populate: true });
 		this.repos.set(AuthorizableReferenceType.Submission, { repo: this.submissionRepo });
 		this.repos.set(AuthorizableReferenceType.SchoolExternalToolEntity, { repo: this.schoolExternalToolRepo });
