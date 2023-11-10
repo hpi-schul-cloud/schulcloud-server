@@ -1,4 +1,4 @@
-const service = require('feathers-mongoose');
+const service = require('../../../utils/feathers-mongoose');
 const Ajv = require('ajv');
 const auth = require('@feathersjs/authentication');
 const { iff, isProvider, validateSchema, disallow } = require('feathers-hooks-common');
