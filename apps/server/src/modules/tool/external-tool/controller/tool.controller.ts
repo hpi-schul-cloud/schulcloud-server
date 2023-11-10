@@ -19,7 +19,9 @@ import { Response } from 'express';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalTool } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
+import { ExternalToolMetadata } from '../domain/external-tool-metadata';
 import { ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
+import { ExternalToolMetadataMapper } from '../mapper/external-tool-metadata.mapper';
 import { ExternalToolLogoService } from '../service';
 import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate } from '../uc';
 import {
@@ -31,6 +33,7 @@ import {
 	ExternalToolUpdateParams,
 	SortExternalToolParams,
 } from './dto';
+import { ExternalToolMetadataResponse } from './dto/response/external-tool-metadata.response';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -164,5 +167,26 @@ export class ToolController {
 		res.setHeader('Content-Type', externalToolLogo.contentType);
 		res.setHeader('Cache-Control', 'must-revalidate');
 		res.send(externalToolLogo.logo);
+	}
+
+	@Get('/:externalToolId/metadata')
+	@ApiOperation({ summary: 'Gets the metadata of an external tool.' })
+	@ApiOkResponse({
+		description: 'Metadata of external tool fetched successfully.',
+	})
+	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
+	async getMetaDataForExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ExternalToolIdParams
+	): Promise<ExternalToolMetadataResponse> {
+		const externalToolMetadata: ExternalToolMetadata = await this.externalToolUc.getMetadataForExternalTool(
+			currentUser.userId,
+			params.externalToolId
+		);
+
+		const mapped: ExternalToolMetadataResponse =
+			ExternalToolMetadataMapper.mapToExternalToolMetadataResponse(externalToolMetadata);
+
+		return mapped;
 	}
 }

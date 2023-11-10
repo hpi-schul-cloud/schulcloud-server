@@ -2,7 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { EntityId, IFindOptions, Page, Permission, User } from '@shared/domain';
 import { AuthorizationService } from '@modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
+import { ExternalToolMetadataService } from '../service/external-tool-metadata.service';
 import { ExternalTool, ExternalToolConfig } from '../domain';
+import { ExternalToolMetadata } from '../domain/external-tool-metadata';
 import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
 
@@ -12,7 +14,8 @@ export class ExternalToolUc {
 		private readonly externalToolService: ExternalToolService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly toolValidationService: ExternalToolValidationService,
-		private readonly externalToolLogoService: ExternalToolLogoService
+		private readonly externalToolLogoService: ExternalToolLogoService,
+		private readonly externaltoolMetadataService: ExternalToolMetadataService
 	) {}
 
 	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
@@ -72,6 +75,13 @@ export class ExternalToolUc {
 
 		const promise: Promise<void> = this.externalToolService.deleteExternalTool(toolId);
 		return promise;
+	}
+
+	async getMetadataForExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolMetadata> {
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
+		const metadata: ExternalToolMetadata = await this.externaltoolMetadataService.getMetadataComplicated(toolId);
+		return metadata;
 	}
 
 	private async ensurePermission(userId: EntityId, permission: Permission) {
