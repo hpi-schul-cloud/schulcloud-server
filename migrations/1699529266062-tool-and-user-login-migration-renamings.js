@@ -1,14 +1,25 @@
 const mongoose = require('mongoose');
 const { info, error } = require('../src/logger');
-
 const { connect, close } = require('../src/utils/database');
 
-async function renameCollection(oldName, newName) {
+async function renameAndDeleteCollection(oldName, newName) {
 	try {
-		await mongoose.connection.collection(oldName).rename(newName);
+		const { connection } = mongoose;
+
+		// Check whether the new collection already exists
+		const newCollectionExists = await connection.db.listCollections({ name: newName }).hasNext();
+
+		if (newCollectionExists) {
+			// If the new collection already exists, delete it
+			await connection.collection(newName).drop();
+			info(`Dropped existing collection ${newName}`);
+		}
+
+		// Rename the old collection to the new collection
+		await connection.collection(oldName).rename(newName);
 		info(`Renamed collection ${oldName} to ${newName}`);
 	} catch (err) {
-		error(`Error renaming collection ${oldName} to ${newName}: ${err.message}`);
+		error(`Error renaming and deleting collection ${oldName} to ${newName}: ${err.message}`);
 		throw err;
 	}
 }
@@ -17,13 +28,10 @@ module.exports = {
 	up: async function up() {
 		await connect();
 
-		await renameCollection('user_login_migrations', 'user-login-migrations');
-
-		await renameCollection('external_tools', 'external-tools');
-
-		await renameCollection('context_external_tools', 'context-external-tools');
-
-		await renameCollection('school_external_tools', 'school-external-tools');
+		await renameAndDeleteCollection('user_login_migrations', 'user-login-migrations');
+		await renameAndDeleteCollection('external_tools', 'external-tools');
+		await renameAndDeleteCollection('context_external_tools', 'context-external-tools');
+		await renameAndDeleteCollection('school_external_tools', 'school-external-tools');
 
 		await close();
 	},
@@ -31,13 +39,10 @@ module.exports = {
 	down: async function down() {
 		await connect();
 
-		await renameCollection('user-login-migrations', 'user_login_migrations');
-
-		await renameCollection('external-tools', 'external_tools');
-
-		await renameCollection('context-external-tools', 'context_external_tools');
-
-		await renameCollection('school-external-tools', 'school_external_tools');
+		await renameAndDeleteCollection('user-login-migrations', 'user_login_migrations');
+		await renameAndDeleteCollection('external-tools', 'external_tools');
+		await renameAndDeleteCollection('context-external-tools', 'context_external_tools');
+		await renameAndDeleteCollection('school-external-tools', 'school_external_tools');
 
 		await close();
 	},
