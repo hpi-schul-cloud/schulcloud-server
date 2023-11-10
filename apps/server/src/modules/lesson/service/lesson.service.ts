@@ -1,7 +1,7 @@
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { Counted, EntityId, IComponentProperties, LessonEntity } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 
 @Injectable()
 export class LessonService {
@@ -20,8 +20,8 @@ export class LessonService {
 		return this.lessonRepo.findById(lessonId);
 	}
 
-	async findByCourseIds(courseIds: EntityId[]): Promise<Counted<LessonEntity[]>> {
-		return this.lessonRepo.findAllByCourseIds(courseIds);
+	async findByCourseIds(courseIds: EntityId[], filters?: { hidden?: boolean }): Promise<Counted<LessonEntity[]>> {
+		return this.lessonRepo.findAllByCourseIds(courseIds, filters);
 	}
 
 	async findAllLessonsByUserId(userId: EntityId): Promise<LessonEntity[]> {

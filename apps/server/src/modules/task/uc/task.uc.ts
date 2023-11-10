@@ -1,3 +1,4 @@
+import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import {
 	Counted,
@@ -11,8 +12,8 @@ import {
 	TaskWithStatusVo,
 	User,
 } from '@shared/domain';
-import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
-import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { CourseRepo, TaskRepo } from '@shared/repo';
+import { LessonService } from '@src/modules/lesson';
 import { TaskService } from '../service';
 
 @Injectable()
@@ -21,7 +22,7 @@ export class TaskUC {
 		private readonly taskRepo: TaskRepo,
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
-		private readonly lessonRepo: LessonRepo,
+		private readonly lessonService: LessonService,
 		private readonly taskService: TaskService
 	) {}
 
@@ -206,8 +207,8 @@ export class TaskUC {
 		// idea as combined query:
 		// [{courseIds: onlyWriteCoursesIds}, { courseIds: onlyReadCourses, filter: { hidden: false }}]
 		const [[writeLessons], [readLessons]] = await Promise.all([
-			this.lessonRepo.findAllByCourseIds(writeCourseIds),
-			this.lessonRepo.findAllByCourseIds(readCourseIds, { hidden: false }),
+			this.lessonService.findByCourseIds(writeCourseIds),
+			this.lessonService.findByCourseIds(readCourseIds, { hidden: false }),
 		]);
 
 		const permittedLessons = [...writeLessons, ...readLessons];

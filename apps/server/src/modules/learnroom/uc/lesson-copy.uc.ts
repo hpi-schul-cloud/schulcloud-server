@@ -1,19 +1,18 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
+import { LessonCopyParentParams, LessonCopyService, LessonService } from '@modules/lesson';
 import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Course, EntityId, LessonEntity, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
-import { CourseRepo, LessonRepo } from '@shared/repo';
-import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
-import { LessonCopyParentParams } from '@modules/lesson';
-import { LessonCopyService } from '@modules/lesson/service';
+import { CourseRepo } from '@shared/repo';
 
 @Injectable()
 export class LessonCopyUC {
 	constructor(
 		private readonly authorisation: AuthorizationService,
 		private readonly lessonCopyService: LessonCopyService,
-		private readonly lessonRepo: LessonRepo,
+		private readonly lessonService: LessonService,
 		private readonly courseRepo: CourseRepo,
 		private readonly copyHelperService: CopyHelperService
 	) {}
@@ -23,7 +22,7 @@ export class LessonCopyUC {
 
 		const [user, originalLesson]: [User, LessonEntity] = await Promise.all([
 			this.authorisation.getUserWithPermissions(userId),
-			this.lessonRepo.findById(lessonId),
+			this.lessonService.findById(lessonId),
 		]);
 
 		this.checkOriginalLessonAuthorization(user, originalLesson);
@@ -37,7 +36,7 @@ export class LessonCopyUC {
 		this.checkDestinationCourseAuthorization(user, destinationCourse);
 
 		// should be a seperate private method
-		const [existingLessons] = await this.lessonRepo.findAllByCourseIds([originalLesson.course.id]);
+		const [existingLessons] = await this.lessonService.findByCourseIds([originalLesson.course.id]);
 		const existingNames = existingLessons.map((l) => l.name);
 		const copyName = this.copyHelperService.deriveCopyName(originalLesson.name, existingNames);
 
