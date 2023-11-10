@@ -5,6 +5,7 @@ import type { IAccountConfig } from '@modules/account';
 import type { IFilesStorageClientConfig } from '@modules/files-storage-client';
 import type { IUserConfig } from '@modules/user';
 import type { ICommonCartridgeConfig } from '@modules/learnroom/common-cartridge';
+import { IMailConfig } from '@src/infra/mail/interfaces/mail-config';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -19,7 +20,8 @@ export interface IServerConfig
 		IFilesStorageClientConfig,
 		IAccountConfig,
 		IIdentityManagementConfig,
-		ICommonCartridgeConfig {
+		ICommonCartridgeConfig,
+		IMailConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 }
@@ -39,6 +41,9 @@ const config: IServerConfig = {
 	FEATURE_IDENTITY_MANAGEMENT_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
+	ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS: (Configuration.get('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS') as string)
+		.split(',')
+		.map((domain) => domain.trim()),
 };
 
 export const serverConfig = () => config;
