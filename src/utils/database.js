@@ -88,11 +88,8 @@ function connect() {
 
 	const mongooseOptions = {
 		autoIndex: NODE_ENV !== ENVIRONMENTS.PRODUCTION,
-		poolSize: MONGOOSE_CONNECTION_POOL_SIZE,
+		minPoolSize: MONGOOSE_CONNECTION_POOL_SIZE, //https://mongoosejs.com/docs/migrating_to_6.html#mongodb-driver-40 ??
 		useNewUrlParser: true,
-		useFindAndModify: false,
-		useCreateIndex: true,
-		useUnifiedTopology: true,
 	};
 
 	addAuthenticationToMongooseOptions(options.username, options.password, mongooseOptions);

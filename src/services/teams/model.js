@@ -51,6 +51,8 @@ const teamsSchema = getUserGroupSchema({
 	color: { type: String, default: '#ACACAC' },
 	features: [{ type: String, enum: Object.values(TEAM_FEATURES) }],
 	filePermission: [permissionSchema],
+	// https://mongoosejs.com/docs/migrating_to_6.html#strictpopulate
+	ltiToolIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
 });
 
 /*
