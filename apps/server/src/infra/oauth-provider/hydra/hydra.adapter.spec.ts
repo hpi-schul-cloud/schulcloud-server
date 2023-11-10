@@ -140,12 +140,8 @@ describe('HydraService', () => {
 		describe('when error occurs', () => {
 			describe('when error is an axios error', () => {
 				const setup = () => {
-					const axiosError: AxiosError = axiosErrorFactory.build({
-						data: {
-							message: 'Some error message',
-							code: 123,
-						},
-					});
+					const error = new Error('Some error message');
+					const axiosError: AxiosError = axiosErrorFactory.withError(error).build({});
 
 					httpService.request.mockReturnValueOnce(throwError(() => axiosError));
 
