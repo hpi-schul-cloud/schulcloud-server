@@ -390,8 +390,8 @@ data:
                       }'
 
             # Add Bettermarks' tools configuration as an external tool
-            # (stored in the 'external_tools' collection) that uses OAuth.
-            mongosh $DATABASE__URL --eval 'db.external_tools.replaceOne(
+            # (stored in the 'external-tools' collection) that uses OAuth.
+            mongosh $DATABASE__URL --eval 'db.external-tools.replaceOne(
                 {
                   "name": "bettermarks",
                   "config_type": "oauth2"
@@ -486,9 +486,9 @@ data:
          echo "POSTed nextcloud to hydra."
 
          # Add Nextcloud' tools configuration as an external tool
-         # (stored in the 'external_tools' collection) that uses OAuth.
-         echo "Inserting nextcloud to external_tools..."
-         mongosh $DATABASE__URL --eval 'db.external_tools.update(
+         # (stored in the 'external-tools' collection) that uses OAuth.
+         echo "Inserting nextcloud to external-tools..."
+         mongosh $DATABASE__URL --eval 'db.external-tools.update(
              {
                "name": "nextcloud",
                "config_type": "oauth2"
@@ -512,7 +512,7 @@ data:
                "upsert": true
              }
          );'
-         echo "Inserted nextcloud to external_tools."
+         echo "Inserted nextcloud to external-tools."
 
          echo "Nextcloud config data init performed successfully."
     fi

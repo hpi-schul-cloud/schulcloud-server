@@ -5,7 +5,7 @@ import { BaseEntityWithTimestamps } from './base.entity';
 
 export type IUserLoginMigration = Readonly<Omit<UserLoginMigrationEntity, keyof BaseEntityWithTimestamps>>;
 
-@Entity({ tableName: 'user_login_migrations' })
+@Entity({ tableName: 'user-login-migrations' })
 export class UserLoginMigrationEntity extends BaseEntityWithTimestamps {
 	@OneToOne(() => SchoolEntity, undefined, { nullable: false })
 	school: SchoolEntity;
