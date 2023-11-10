@@ -481,7 +481,7 @@ import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } 
 
 export type IExternalToolProperties &#x3D; Readonly&lt;Omit&lt;ExternalToolEntity, keyof BaseEntityWithTimestamps&gt;&gt;;
 
-@Entity({ tableName: &#x27;external_tools&#x27; })
+@Entity({ tableName: &#x27;external-tools&#x27; })
 export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	@Unique()
 	@Property()

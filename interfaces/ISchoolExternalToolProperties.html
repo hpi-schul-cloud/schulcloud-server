@@ -280,7 +280,7 @@ export interface ISchoolExternalToolProperties {
 	toolVersion: number;
 }
 
-@Entity({ tableName: &#x27;school_external_tools&#x27; })
+@Entity({ tableName: &#x27;school-external-tools&#x27; })
 export class SchoolExternalToolEntity extends BaseEntityWithTimestamps {
 	@ManyToOne()
 	tool: ExternalToolEntity;

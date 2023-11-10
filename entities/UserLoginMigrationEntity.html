@@ -398,7 +398,7 @@ import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 
 export type IUserLoginMigration &#x3D; Readonly&lt;Omit&lt;UserLoginMigrationEntity, keyof BaseEntityWithTimestamps&gt;&gt;;
 
-@Entity({ tableName: &#x27;user_login_migrations&#x27; })
+@Entity({ tableName: &#x27;user-login-migrations&#x27; })
 export class UserLoginMigrationEntity extends BaseEntityWithTimestamps {
 	@OneToOne(() &#x3D;&gt; SchoolEntity, undefined, { nullable: false })
 	school: SchoolEntity;
