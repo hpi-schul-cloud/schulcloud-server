@@ -2,24 +2,22 @@ const mongoose = require('mongoose');
 const { info, error } = require('../src/logger');
 const { connect, close } = require('../src/utils/database');
 
-async function renameAndDeleteCollection(oldName, newName) {
+async function aggregateAndDropCollection(oldName, newName) {
 	try {
 		const { connection } = mongoose;
 
-		// Check whether the new collection already exists
-		const newCollectionExists = await connection.db.listCollections({ name: newName }).hasNext();
+		// Aggregation pipeline for copying the documents
+		const pipeline = [{ $match: {} }, { $out: newName }];
 
-		if (newCollectionExists) {
-			// If the new collection already exists, delete it
-			await connection.collection(newName).drop();
-			info(`Dropped existing collection ${newName}`);
-		}
+		// Copy documents from the old collection to the new collection
+		await connection.collection(oldName).aggregate(pipeline).toArray();
+		info(`Aggregated and copied documents from ${oldName} to ${newName}`);
 
-		// Rename the old collection to the new collection
-		await connection.collection(oldName).rename(newName);
-		info(`Renamed collection ${oldName} to ${newName}`);
+		// Delete old collection
+		await connection.collection(oldName).drop();
+		info(`Dropped collection ${oldName}`);
 	} catch (err) {
-		error(`Error renaming and deleting collection ${oldName} to ${newName}: ${err.message}`);
+		error(`Error aggregating, copying, and deleting collection ${oldName} to ${newName}: ${err.message}`);
 		throw err;
 	}
 }
@@ -28,10 +26,10 @@ module.exports = {
 	up: async function up() {
 		await connect();
 
-		await renameAndDeleteCollection('user_login_migrations', 'user-login-migrations');
-		await renameAndDeleteCollection('external_tools', 'external-tools');
-		await renameAndDeleteCollection('context_external_tools', 'context-external-tools');
-		await renameAndDeleteCollection('school_external_tools', 'school-external-tools');
+		await aggregateAndDropCollection('user_login_migrations', 'user-login-migrations');
+		await aggregateAndDropCollection('external_tools', 'external-tools');
+		await aggregateAndDropCollection('context_external_tools', 'context-external-tools');
+		await aggregateAndDropCollection('school_external_tools', 'school-external-tools');
 
 		await close();
 	},
@@ -39,10 +37,10 @@ module.exports = {
 	down: async function down() {
 		await connect();
 
-		await renameAndDeleteCollection('user-login-migrations', 'user_login_migrations');
-		await renameAndDeleteCollection('external-tools', 'external_tools');
-		await renameAndDeleteCollection('context-external-tools', 'context_external_tools');
-		await renameAndDeleteCollection('school-external-tools', 'school_external_tools');
+		await aggregateAndDropCollection('user-login-migrations', 'user_login_migrations');
+		await aggregateAndDropCollection('external-tools', 'external_tools');
+		await aggregateAndDropCollection('context-external-tools', 'context_external_tools');
+		await aggregateAndDropCollection('school-external-tools', 'school_external_tools');
 
 		await close();
 	},
