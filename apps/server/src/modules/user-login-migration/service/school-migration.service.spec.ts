@@ -67,7 +67,7 @@ describe(SchoolMigrationService.name, () => {
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'firstExternalId',
-					systems: [],
+					systems: undefined,
 				});
 				const targetSystemId = 'targetSystemId';
 				const targetExternalId = 'targetExternalId';

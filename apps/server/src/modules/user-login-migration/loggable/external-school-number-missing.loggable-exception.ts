@@ -2,7 +2,7 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class ExternalSchoolNumberMissingLoggableException extends UnprocessableEntityException implements Loggable {
-	constructor(private readonly schoolExternalId: string) {
+	constructor(private readonly externalSchoolId: string) {
 		super();
 	}
 
@@ -12,7 +12,7 @@ export class ExternalSchoolNumberMissingLoggableException extends UnprocessableE
 			message: 'The external system did not provide a official school number for the school.',
 			stack: this.stack,
 			data: {
-				schoolExternalId: this.schoolExternalId,
+				externalSchoolId: this.externalSchoolId,
 			},
 		};
 	}
