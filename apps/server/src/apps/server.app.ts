@@ -21,6 +21,7 @@ import { join } from 'path';
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
 import { FeathersRosterService } from '@modules/pseudonym';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import legacyAppPromise = require('../../../../src/app');
 
 import { AppStartLoggable } from './helpers/app-start-loggable';
@@ -28,6 +29,7 @@ import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
 } from './helpers/prometheus-metrics';
+import { createAndStartAdminApiServer } from './helpers/admin-api-setup-helper';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -126,6 +128,10 @@ async function bootstrap() {
 
 		createAndStartPrometheusMetricsAppIfEnabled(logger);
 	});
+
+	if (Configuration.get('ADMIN_API__ENABLED') === true) {
+		await createAndStartAdminApiServer(logger);
+	}
 
 	console.log('#################################');
 	console.log(`### Start Server              ###`);

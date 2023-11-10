@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ForbiddenOperationError, ValidationError } from '@shared/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -45,7 +45,7 @@ export class DeletionRequestsController {
 		return this.deletionRequestUc.findById(requestId);
 	}
 
-	@Get(':requestId')
+	@Delete(':requestId')
 	@ApiOperation({
 		summary: 'Canceling a deletion request',
 	})

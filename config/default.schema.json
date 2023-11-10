@@ -1267,6 +1267,27 @@
 			"default": false,
 			"description": "Enables feature that allows the insecure LDAP URL (with ldap:// protocol)."
 		},
+		"ADMIN_API": {
+			"type": "object", 
+			"description": "Configuration of the schulcloud-server's admin API.",
+			"properties": {
+				"ENABLED": {
+					"type": "boolean",
+					"default": true,
+					"description": "Flag to turn on/off the Admin API."
+				},
+				"PORT": {
+					"type": "number",
+					"default": 4030,
+					"description": "Port of the exposed Admin API server."
+				},
+				"ALLOWED_API_KEYS": {
+					"type": "string",
+					"default": "",
+					"description": "Allowed Admin API keys (for accessing the Admin API)."
+				}
+			}
+		},
 		"FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1409,26 +1430,6 @@
 					"ES_MERLIN_AUTH_URL",
 					"SECRET_ES_MERLIN_COUNTIES_CREDENTIALS"
 				]
-			}
-		},
-		"ADMIN_API": {
-			"type": "object",
-			"description": "Configuration of the schulcloud-server's admin API.",
-			"properties": {
-				"ENABLED": {
-					"type": "boolean",
-					"default": true,
-					"description": "Flag to turn on/off the Admin API."
-				},
-				"PORT": {
-					"type": "number",
-					"default": 4030,
-					"description": "Port of the exposed Admin API server."
-				},
-				"ALLOWED_API_KEYS": {
-					"type": "string",
-					"description": "Allowed Admin API keys (for accessing the Admin API)."
-				}
 			}
 		}
 	}

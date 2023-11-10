@@ -87,7 +87,11 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
 };
 
-const setupSessions = (consumer: MiddlewareConsumer, redisClient: RedisClient | undefined, logger: LegacyLogger) => {
+export const setupSessions = (
+	consumer: MiddlewareConsumer,
+	redisClient: RedisClient | undefined,
+	logger: LegacyLogger
+) => {
 	const sessionDuration: number = Configuration.get('SESSION__EXPIRES_SECONDS') as number;
 
 	let store: connectRedis.RedisStore | undefined;
