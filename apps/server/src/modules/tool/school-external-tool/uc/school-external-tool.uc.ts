@@ -4,7 +4,9 @@ import { AuthorizationContext, AuthorizationContextBuilder } from '@modules/auth
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { SchoolExternalTool } from '../domain';
+import { SchoolExternalToolMetadata } from '../domain/school-external-tool-metadata';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
+import { SchoolExternalToolMetadataService } from '../service/school-external-tool-metadata.service';
 import { SchoolExternalToolDto, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 
 @Injectable()
@@ -13,6 +15,7 @@ export class SchoolExternalToolUc {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
+		private readonly schoolexternaltoolMetadataService: SchoolExternalToolMetadataService,
 		private readonly toolPermissionHelper: ToolPermissionHelper
 	) {}
 
@@ -94,5 +97,21 @@ export class SchoolExternalToolUc {
 
 		const saved = await this.schoolExternalToolService.saveSchoolExternalTool(updated);
 		return saved;
+	}
+
+	async getMetadataForSchoolExternalTool(
+		userId: EntityId,
+		schoolExternalToolId: EntityId
+	): Promise<SchoolExternalToolMetadata> {
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
+
+		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
+
+		const metadata: SchoolExternalToolMetadata = await this.schoolexternaltoolMetadataService.getMetadata(
+			schoolExternalToolId
+		);
+
+		return metadata;
 	}
 }
