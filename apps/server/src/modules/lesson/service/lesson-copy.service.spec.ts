@@ -18,7 +18,6 @@ import {
 	Material,
 } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { LessonRepo } from '@shared/repo';
 import {
 	courseFactory,
 	lessonFactory,
@@ -27,6 +26,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { LessonRepo } from '../repository';
 import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
 import { NexboardService } from './nexboard.service';

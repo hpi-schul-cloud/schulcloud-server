@@ -14,8 +14,8 @@ import {
 	LessonEntity,
 	Material,
 } from '@shared/domain';
-import { LessonRepo } from '@shared/repo';
 import { randomBytes } from 'crypto';
+import { LessonRepo } from '../repository';
 import { LessonCopyParams } from '../types';
 import { EtherpadService } from './etherpad.service';
 import { NexboardService } from './nexboard.service';
