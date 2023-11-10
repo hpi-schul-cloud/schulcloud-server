@@ -10,7 +10,7 @@ import { TldrawBoardRepo } from '@src/modules/tldraw/repo';
 import * as mutex from 'lib0/mutex';
 import Redis from 'ioredis';
 import { Buffer } from 'node:buffer';
-import { getDocUpdatesFromQueue, pushDocUpdatesToQueue } from '@modules/tldraw/redis';
+import { getDocUpdatesFromQueue, pushDocUpdatesToQueue } from '@src/modules/tldraw/redis';
 import { applyUpdate, Doc } from 'yjs';
 
 @Injectable()
