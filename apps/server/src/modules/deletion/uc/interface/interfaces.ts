@@ -2,8 +2,8 @@ import { EntityId } from '@shared/domain';
 import { DeletionDomainModel } from '../../domain/types/deletion-domain-model.enum';
 
 export interface DeletionTargetRef {
-	targetRefDomain: DeletionDomainModel;
-	targetRefId: EntityId;
+	domain: DeletionDomainModel;
+	id: EntityId;
 }
 
 export interface DeletionLogStatistic {

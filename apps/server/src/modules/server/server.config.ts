@@ -49,7 +49,6 @@ const config: IServerConfig = {
 	ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS: (Configuration.get('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS') as string)
 		.split(',')
 		.map((domain) => domain.trim()),
-	
 };
 
 export const serverConfig = () => config;

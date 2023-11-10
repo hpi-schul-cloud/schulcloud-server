@@ -43,8 +43,8 @@ export class DeletionRequestUc {
 
 	async createDeletionRequest(deletionRequest: DeletionRequestBodyProps): Promise<DeletionRequestResponse> {
 		const result = await this.deletionRequestService.createDeletionRequest(
-			deletionRequest.targetRef.targetRefId,
-			deletionRequest.targetRef.targetRefDomain,
+			deletionRequest.targetRef.id,
+			deletionRequest.targetRef.domain,
 			deletionRequest.deleteInMinutes
 		);
 

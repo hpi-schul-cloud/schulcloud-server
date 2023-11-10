@@ -3,8 +3,8 @@ import { DeletionDomainModel } from '../../domain/types/deletion-domain-model.en
 import { DeletionTargetRef } from '../interface';
 
 export class DeletionTargetRefBuilder {
-	static build(targetRefDomain: DeletionDomainModel, targetRefId: EntityId): DeletionTargetRef {
-		const deletionTargetRef = { targetRefDomain, targetRefId };
+	static build(domain: DeletionDomainModel, id: EntityId): DeletionTargetRef {
+		const deletionTargetRef = { domain, id };
 
 		return deletionTargetRef;
 	}

@@ -12,7 +12,7 @@ import { DeletionModule } from '../deletion';
 import { defaultMikroOrmOptions, setupSessions } from './server.module';
 import { serverConfig } from './server.config';
 
-const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),DeletionModule];
+const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConfig)), DeletionModule];
 
 @Module({
 	imports: [

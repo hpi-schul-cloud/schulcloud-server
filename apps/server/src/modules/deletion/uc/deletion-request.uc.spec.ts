@@ -120,8 +120,8 @@ describe(DeletionRequestUc.name, () => {
 				jest.clearAllMocks();
 				const deletionRequestToCreate: DeletionRequestBodyProps = {
 					targetRef: {
-						targetRefDomain: DeletionDomainModel.USER,
-						targetRefId: '653e4833cc39e5907a1e18d2',
+						domain: DeletionDomainModel.USER,
+						id: '653e4833cc39e5907a1e18d2',
 					},
 					deleteInMinutes: 1440,
 				};
@@ -139,8 +139,8 @@ describe(DeletionRequestUc.name, () => {
 				await uc.createDeletionRequest(deletionRequestToCreate);
 
 				expect(deletionRequestService.createDeletionRequest).toHaveBeenCalledWith(
-					deletionRequestToCreate.targetRef.targetRefId,
-					deletionRequestToCreate.targetRef.targetRefDomain,
+					deletionRequestToCreate.targetRef.id,
+					deletionRequestToCreate.targetRef.domain,
 					deletionRequestToCreate.deleteInMinutes
 				);
 			});
@@ -397,8 +397,8 @@ describe(DeletionRequestUc.name, () => {
 
 				const executedDeletionRequestSummary: DeletionRequestLogResponse = {
 					targetRef: {
-						targetRefDomain: deletionRequestExecuted.targetRefDomain,
-						targetRefId: deletionRequestExecuted.targetRefId,
+						domain: deletionRequestExecuted.targetRefDomain,
+						id: deletionRequestExecuted.targetRefId,
 					},
 					deletionPlannedAt: deletionRequestExecuted.deleteAfter,
 					statistics: [
@@ -453,8 +453,8 @@ describe(DeletionRequestUc.name, () => {
 				const deletionRequest = deletionRequestFactory.build();
 				const notExecutedDeletionRequestSummary: DeletionRequestLogResponse = {
 					targetRef: {
-						targetRefDomain: deletionRequest.targetRefDomain,
-						targetRefId: deletionRequest.targetRefId,
+						domain: deletionRequest.targetRefDomain,
+						id: deletionRequest.targetRefId,
 					},
 					deletionPlannedAt: deletionRequest.deleteAfter,
 				};

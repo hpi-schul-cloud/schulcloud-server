@@ -14,7 +14,7 @@ describe(DeletionTargetRefBuilder.name, () => {
 		const result = DeletionTargetRefBuilder.build(domain, refId);
 
 		// Assert
-		expect(result.targetRefDomain).toEqual(domain);
-		expect(result.targetRefId).toEqual(refId);
+		expect(result.domain).toEqual(domain);
+		expect(result.id).toEqual(refId);
 	});
 });
