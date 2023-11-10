@@ -2,9 +2,10 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { Injectable } from '@nestjs/common';
 import { Counted, EntityId, IComponentProperties, LessonEntity } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
+import { AuthorizationLoaderService } from '@src/modules/authorization';
 
 @Injectable()
-export class LessonService {
+export class LessonService implements AuthorizationLoaderService {
 	constructor(
 		private readonly lessonRepo: LessonRepo,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService

@@ -1,24 +1,24 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { BoardDoAuthorizableService } from '@modules/board';
+import { ContextExternalToolAuthorizableService } from '@modules/tool';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain';
 import {
 	CourseGroupRepo,
 	CourseRepo,
-	LessonRepo,
-	SchoolExternalToolRepo,
 	LegacySchoolRepo,
+	SchoolExternalToolRepo,
 	SubmissionRepo,
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { BoardDoAuthorizableService } from '@modules/board';
-import { ContextExternalToolAuthorizableService } from '@modules/tool/context-external-tool/service/context-external-tool-authorizable.service';
-import { ReferenceLoader } from './reference.loader';
+import { LessonService } from '@src/modules/lesson';
 import { AuthorizableReferenceType } from '../type';
+import { ReferenceLoader } from './reference.loader';
 
 describe('reference.loader', () => {
 	let service: ReferenceLoader;
@@ -27,7 +27,7 @@ describe('reference.loader', () => {
 	let courseGroupRepo: DeepMocked<CourseGroupRepo>;
 	let taskRepo: DeepMocked<TaskRepo>;
 	let schoolRepo: DeepMocked<LegacySchoolRepo>;
-	let lessonRepo: DeepMocked<LessonRepo>;
+	let lessonService: DeepMocked<LessonService>;
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let submissionRepo: DeepMocked<SubmissionRepo>;
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
@@ -62,8 +62,8 @@ describe('reference.loader', () => {
 					useValue: createMock<LegacySchoolRepo>(),
 				},
 				{
-					provide: LessonRepo,
-					useValue: createMock<LessonRepo>(),
+					provide: LessonService,
+					useValue: createMock<LessonService>(),
 				},
 				{
 					provide: TeamsRepo,
@@ -94,7 +94,7 @@ describe('reference.loader', () => {
 		courseGroupRepo = await module.get(CourseGroupRepo);
 		taskRepo = await module.get(TaskRepo);
 		schoolRepo = await module.get(LegacySchoolRepo);
-		lessonRepo = await module.get(LessonRepo);
+		lessonService = await module.get(LessonService);
 		teamsRepo = await module.get(TeamsRepo);
 		submissionRepo = await module.get(SubmissionRepo);
 		schoolExternalToolRepo = await module.get(SchoolExternalToolRepo);
@@ -144,7 +144,7 @@ describe('reference.loader', () => {
 		it('should call lessonRepo.findById', async () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.Lesson, entityId);
 
-			expect(lessonRepo.findById).toBeCalledWith(entityId);
+			expect(lessonService.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call teamsRepo.findById', async () => {

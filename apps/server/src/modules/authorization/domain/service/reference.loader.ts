@@ -1,19 +1,19 @@
+import { BoardDoAuthorizableService } from '@modules/board';
+import { ContextExternalToolAuthorizableService } from '@modules/tool';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { BaseDO, EntityId } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import {
 	CourseGroupRepo,
 	CourseRepo,
-	LessonRepo,
-	SchoolExternalToolRepo,
 	LegacySchoolRepo,
+	SchoolExternalToolRepo,
 	SubmissionRepo,
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
-import { BoardDoAuthorizableService } from '@modules/board';
-import { ContextExternalToolAuthorizableService } from '@modules/tool/context-external-tool/service';
+import { LessonService } from '@src/modules/lesson';
 import { AuthorizableReferenceType } from '../type';
 
 type RepoType =
@@ -21,13 +21,13 @@ type RepoType =
 	| CourseRepo
 	| UserRepo
 	| LegacySchoolRepo
-	| LessonRepo
 	| TeamsRepo
 	| CourseGroupRepo
 	| SubmissionRepo
 	| SchoolExternalToolRepo
 	| BoardDoAuthorizableService
-	| ContextExternalToolAuthorizableService;
+	| ContextExternalToolAuthorizableService
+	| LessonService;
 
 interface IRepoLoader {
 	repo: RepoType;
@@ -44,7 +44,7 @@ export class ReferenceLoader {
 		private readonly courseGroupRepo: CourseGroupRepo,
 		private readonly taskRepo: TaskRepo,
 		private readonly schoolRepo: LegacySchoolRepo,
-		private readonly lessonRepo: LessonRepo,
+		private readonly lessonRepo: LessonService,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
