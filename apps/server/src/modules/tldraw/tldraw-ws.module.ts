@@ -3,14 +3,14 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
-import { RedisModule } from '@infra/redis';
+import { IoredisModule } from '@infra/ioredis';
 import { TldrawBoardRepo } from './repo';
 import { TldrawWsService } from './service';
 import { TldrawWs } from './controller';
 import { config } from './config';
 
 @Module({
-	imports: [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config)), RedisModule],
+	imports: [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config)), IoredisModule],
 	providers: [Logger, TldrawWs, TldrawWsService, TldrawBoardRepo],
 })
 export class TldrawWsModule {}

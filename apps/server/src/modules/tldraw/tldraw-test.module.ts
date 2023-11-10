@@ -5,6 +5,7 @@ import { LoggerModule } from '@src/core/logger';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { Course, User } from '@shared/domain';
+import { IoredisModule } from '@infra/ioredis';
 import { AuthenticationApiModule } from '../authentication/authentication-api.module';
 import { TldrawWsModule } from './tldraw-ws.module';
 import { TldrawWs } from './controller';
@@ -19,6 +20,7 @@ const imports = [
 	AuthenticationModule,
 	CoreModule,
 	LoggerModule,
+	IoredisModule,
 ];
 const providers = [TldrawWs, TldrawBoardRepo, TldrawWsService];
 @Module({
