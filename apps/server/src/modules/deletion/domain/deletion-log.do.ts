@@ -11,6 +11,7 @@ export interface DeletionLogProps extends AuthorizableObject {
 	modifiedCount?: number;
 	deletedCount?: number;
 	deletionRequestId?: EntityId;
+	performedAt?: Date;
 }
 
 export class DeletionLog extends DomainObject<DeletionLogProps> {
@@ -40,5 +41,9 @@ export class DeletionLog extends DomainObject<DeletionLogProps> {
 
 	get deletionRequestId(): EntityId | undefined {
 		return this.props.deletionRequestId;
+	}
+
+	get performedAt(): Date | undefined {
+		return this.props.performedAt;
 	}
 }

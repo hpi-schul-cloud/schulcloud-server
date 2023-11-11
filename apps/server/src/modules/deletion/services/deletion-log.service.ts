@@ -19,6 +19,7 @@ export class DeletionLogService {
 	): Promise<void> {
 		const newDeletionLog = new DeletionLog({
 			id: new ObjectId().toHexString(),
+			performedAt: new Date(),
 			domain,
 			deletionRequestId,
 			operation,

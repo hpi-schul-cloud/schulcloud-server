@@ -12,6 +12,7 @@ export const deletionLogFactory = DoBaseFactory.define<DeletionLog, DeletionLogP
 		modifiedCount: 0,
 		deletedCount: 1,
 		deletionRequestId: new ObjectId().toHexString(),
+		performedAt: new Date(),
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};

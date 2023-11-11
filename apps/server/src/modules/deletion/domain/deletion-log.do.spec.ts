@@ -41,6 +41,7 @@ describe(DeletionLog.name, () => {
 					modifiedCount: 0,
 					deletedCount: 1,
 					deletionRequestId: new ObjectId().toHexString(),
+					performedAt: new Date(),
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				};
@@ -59,6 +60,7 @@ describe(DeletionLog.name, () => {
 					modifiedCount: deletionLogDo.modifiedCount,
 					deletedCount: deletionLogDo.deletedCount,
 					deletionRequestId: deletionLogDo.deletionRequestId,
+					performedAt: deletionLogDo.performedAt,
 					createdAt: deletionLogDo.createdAt,
 					updatedAt: deletionLogDo.updatedAt,
 				};

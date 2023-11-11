@@ -1,4 +1,4 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
@@ -12,6 +12,7 @@ export interface DeletionLogEntityProps {
 	modifiedCount?: number;
 	deletedCount?: number;
 	deletionRequestId?: ObjectId;
+	performedAt?: Date;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
@@ -32,6 +33,10 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	deletionRequestId?: ObjectId;
+
+	@Property({ nullable: true })
+	@Index({ options: { expireAfterSeconds: 7776000 } })
+	performedAt?: Date;
 
 	constructor(props: DeletionLogEntityProps) {
 		super();
@@ -63,6 +68,10 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 
 		if (props.updatedAt !== undefined) {
 			this.updatedAt = props.updatedAt;
+		}
+
+		if (props.performedAt !== undefined) {
+			this.performedAt = props.performedAt;
 		}
 	}
 }

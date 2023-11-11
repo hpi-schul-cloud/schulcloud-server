@@ -64,6 +64,7 @@ describe(DeletionLogService.name, () => {
 				expect(deletionLogRepo.create).toHaveBeenCalledWith(
 					expect.objectContaining({
 						id: expect.any(String),
+						performedAt: expect.any(Date),
 						deletionRequestId,
 						domain,
 						operation,

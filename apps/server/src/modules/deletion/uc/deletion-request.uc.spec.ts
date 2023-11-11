@@ -114,10 +114,13 @@ describe(DeletionRequestUc.name, () => {
 		await setupEntities();
 	});
 
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	describe('createDeletionRequest', () => {
 		describe('when creating a deletionRequest', () => {
 			const setup = () => {
-				jest.clearAllMocks();
 				const deletionRequestToCreate: DeletionRequestBodyProps = {
 					targetRef: {
 						domain: DeletionDomainModel.USER,
@@ -166,7 +169,6 @@ describe(DeletionRequestUc.name, () => {
 	describe('executeDeletionRequests', () => {
 		describe('when executing deletionRequests', () => {
 			const setup = () => {
-				jest.clearAllMocks();
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
 				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build({
 					userId: deletionRequestToExecute.targetRefId,
@@ -352,7 +354,6 @@ describe(DeletionRequestUc.name, () => {
 
 		describe('when an error occurred', () => {
 			const setup = () => {
-				jest.clearAllMocks();
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
 
 				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
@@ -385,7 +386,6 @@ describe(DeletionRequestUc.name, () => {
 	describe('findById', () => {
 		describe('when searching for logs for deletionRequest which was executed', () => {
 			const setup = () => {
-				jest.clearAllMocks();
 				const deletionRequestExecuted = deletionRequestFactory.build({ status: DeletionStatusModel.SUCCESS });
 				const deletionLogExecuted1 = deletionLogFactory.build({ deletionRequestId: deletionRequestExecuted.id });
 				const deletionLogExecuted2 = deletionLogFactory.build({
@@ -449,7 +449,6 @@ describe(DeletionRequestUc.name, () => {
 
 		describe('when searching for logs for deletionRequest which was not executed', () => {
 			const setup = () => {
-				jest.clearAllMocks();
 				const deletionRequest = deletionRequestFactory.build();
 				const notExecutedDeletionRequestSummary: DeletionRequestLogResponse = {
 					targetRef: {
@@ -491,7 +490,6 @@ describe(DeletionRequestUc.name, () => {
 	describe('deleteDeletionRequestById', () => {
 		describe('when deleting a deletionRequestId', () => {
 			const setup = () => {
-				jest.clearAllMocks();
 				const deletionRequest = deletionRequestFactory.build();
 
 				return {
