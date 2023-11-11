@@ -6,7 +6,7 @@ import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } 
 
 export type IExternalToolProperties = Readonly<Omit<ExternalToolEntity, keyof BaseEntityWithTimestamps>>;
 
-@Entity({ tableName: 'external_tools' })
+@Entity({ tableName: 'external-tools' })
 export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	@Unique()
 	@Property()
