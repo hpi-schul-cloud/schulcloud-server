@@ -209,7 +209,7 @@ describe('TldrawWSService', () => {
 			it('should call send method when received message of type SYNC', async () => {
 				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([0, 1]);
 
-				service.messageHandler(ws, doc, msg);
+				await service.messageHandler(ws, doc, msg);
 
 				expect(sendSpy).toHaveBeenCalledTimes(1);
 
@@ -221,7 +221,7 @@ describe('TldrawWSService', () => {
 
 			it('should not call send method when received message of type AWARENESS', async () => {
 				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([1, 1, 0]);
-				service.messageHandler(ws, doc, msg);
+				await service.messageHandler(ws, doc, msg);
 
 				expect(sendSpy).toHaveBeenCalledTimes(0);
 				expect(applyAwarenessUpdateSpy).toHaveBeenCalledTimes(1);
@@ -234,7 +234,7 @@ describe('TldrawWSService', () => {
 
 			it('should do nothing when received message unknown type', async () => {
 				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([2]);
-				service.messageHandler(ws, doc, msg);
+				await service.messageHandler(ws, doc, msg);
 
 				expect(sendSpy).toHaveBeenCalledTimes(0);
 				expect(applyAwarenessUpdateSpy).toHaveBeenCalledTimes(0);
@@ -267,7 +267,7 @@ describe('TldrawWSService', () => {
 			it('should not call send method', async () => {
 				const { sendSpy, doc, msg } = await setup();
 
-				service.messageHandler(ws, doc, msg);
+				await service.messageHandler(ws, doc, msg);
 
 				expect(sendSpy).toHaveBeenCalledTimes(0);
 
@@ -285,7 +285,7 @@ describe('TldrawWSService', () => {
 				doc.awareness.states.set(1, ['test1']);
 				doc.awareness.states.set(2, ['test2']);
 
-				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockImplementationOnce(() => {});
+				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockImplementationOnce(() => Promise.resolve());
 				const sendSpy = jest.spyOn(service, 'send');
 				const getYDocSpy = jest.spyOn(service, 'getYDoc').mockImplementationOnce(() => doc);
 				const { msg } = createMessage([0]);
@@ -301,7 +301,7 @@ describe('TldrawWSService', () => {
 			it('should send to every client', async () => {
 				const { messageHandlerSpy, sendSpy, getYDocSpy } = await setup();
 
-				service.setupWSConnection(ws);
+				await service.setupWSConnection(ws);
 
 				expect(sendSpy).toHaveBeenCalledTimes(2);
 
@@ -340,7 +340,7 @@ describe('TldrawWSService', () => {
 			const setup = async () => {
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
-				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockImplementationOnce(() => {});
+				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockImplementationOnce(() => Promise.resolve());
 				const closeConnSpy = jest.spyOn(service, 'closeConn');
 				jest.spyOn(ws, 'ping').mockImplementationOnce(() => {
 					throw new Error('error');
@@ -355,7 +355,7 @@ describe('TldrawWSService', () => {
 			it('should close connection', async () => {
 				const { messageHandlerSpy, closeConnSpy } = await setup();
 
-				service.setupWSConnection(ws);
+				await service.setupWSConnection(ws);
 
 				await delay(10);
 
@@ -390,7 +390,7 @@ describe('TldrawWSService', () => {
 			it('should handle message', async () => {
 				const { messageHandlerSpy, msg, readSyncMessageSpy } = await setup([0, 1]);
 
-				service.setupWSConnection(ws);
+				await service.setupWSConnection(ws);
 				ws.emit('message', msg);
 
 				expect(messageHandlerSpy).toHaveBeenCalledTimes(1);

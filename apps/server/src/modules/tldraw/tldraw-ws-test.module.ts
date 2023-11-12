@@ -3,6 +3,7 @@ import { MongoMemoryDatabaseModule, MongoDatabaseModuleOptions } from '@infra/da
 import { CoreModule } from '@src/core';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
+import { IoredisModule } from '@infra/ioredis';
 import { TldrawBoardRepo } from './repo';
 import { TldrawWsService } from './service';
 import { config } from './config';
@@ -18,7 +19,7 @@ export class TldrawWsTestModule {
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
 			module: TldrawWsTestModule,
-			imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...options })],
+			imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...options }), IoredisModule],
 			providers,
 		};
 	}
