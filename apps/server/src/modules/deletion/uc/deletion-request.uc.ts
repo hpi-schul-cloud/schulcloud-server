@@ -208,14 +208,19 @@ export class DeletionRequestUc {
 		await this.logDeletion(deletionRequest, DeletionDomainModel.USER, DeletionOperationModel.DELETE, 0, userDeleted);
 	}
 
-	private async removeUserFromRocketChat(deletionRequest: DeletionRequest): Promise<number> {
+	private async removeUserFromRocketChat(deletionRequest: DeletionRequest) {
 		const rocketChatUser = await this.rocketChatUserService.findByUserId(deletionRequest.targetRefId);
 
 		const [, rocketChatUserDeleted] = await Promise.all([
 			this.rocketChatService.deleteUser(rocketChatUser.username),
 			this.rocketChatUserService.deleteByUserId(rocketChatUser.userId),
 		]);
-
-		return rocketChatUserDeleted;
+		await this.logDeletion(
+			deletionRequest,
+			DeletionDomainModel.ROCKETCHATUSER,
+			DeletionOperationModel.DELETE,
+			0,
+			rocketChatUserDeleted
+		);
 	}
 }
