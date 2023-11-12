@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNumber } from 'class-validator';
 import { DeletionTargetRef } from '../../uc/interface';
 
@@ -10,9 +10,9 @@ export class DeletionRequestBodyProps {
 	targetRef!: DeletionTargetRef;
 
 	@IsNumber()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		required: true,
 		nullable: false,
 	})
-	deleteInMinutes?: number;
+	deleteInMinutes?: number = 43200;
 }

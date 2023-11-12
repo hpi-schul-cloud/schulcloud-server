@@ -8,6 +8,7 @@ import { AppStartLoggable } from './app-start-loggable';
 
 export const createAndStartAdminApiServer = async (logger: Logger) => {
 	const nestAdminServerExpress = express();
+	nestAdminServerExpress.disable('x-powered-by');
 	const nestAdminServerExpressAdapter = new ExpressAdapter(nestAdminServerExpress);
 	const nestAdminServerApp = await NestFactory.create(AdminApiServerModule, nestAdminServerExpressAdapter);
 
