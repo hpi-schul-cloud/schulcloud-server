@@ -19,7 +19,7 @@ import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum'
 import { DeletionLog } from '../domain/deletion-log.do';
 import { DeletionLogStatistic } from './interface/interfaces';
 import { DeletionLogStatisticBuilder } from './builder/deletion-log-statistic.builder';
-import { DeletionRequestLogResponseBuilder } from './builder/deletion-request-log.builder';
+import { DeletionRequestLogResponseBuilder } from './builder/deletion-request-log-response.builder';
 import { DeletionTargetRefBuilder } from './builder/deletion-target-ref.builder';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 
