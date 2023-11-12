@@ -1,6 +1,7 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	AnyBoardDo,
+	AnyContentElementDo,
 	EntityId,
 	isSubmissionContainerElement,
 	isSubmissionItem,
@@ -12,26 +13,50 @@ import { AuthorizationService, Action } from '@modules/authorization';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { SubmissionItemService } from '../service/submission-item.service';
+import { BaseUc } from './base.uc';
 
 @Injectable()
-export class ElementUc {
+export class ElementUc extends BaseUc {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService))
-		private readonly authorizationService: AuthorizationService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		protected readonly authorizationService: AuthorizationService,
+		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly elementService: ContentElementService,
 		private readonly submissionItemService: SubmissionItemService,
 		private readonly logger: Logger
 	) {
+		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(ElementUc.name);
 	}
 
-	async updateElementContent(userId: EntityId, elementId: EntityId, content: AnyElementContentBody) {
-		let element = await this.elementService.findById(elementId);
+	async updateElementContent(
+		userId: EntityId,
+		elementId: EntityId,
+		content: AnyElementContentBody
+	): Promise<AnyContentElementDo> {
+		const element = await this.getElementWithWritePermission(userId, elementId);
 
-		await this.checkPermission(userId, element, Action.write);
+		await this.elementService.update(element, content);
+		return element;
+	}
 
-		element = await this.elementService.update(element, content);
+	async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
+		const element = await this.getElementWithWritePermission(userId, elementId);
+
+		await this.elementService.delete(element);
+	}
+
+	private async getElementWithWritePermission(userId: EntityId, elementId: EntityId): Promise<AnyContentElementDo> {
+		const element = await this.elementService.findById(elementId);
+
+		const parent: AnyBoardDo = await this.elementService.findParentOfId(elementId);
+
+		if (isSubmissionItem(parent)) {
+			await this.checkSubmissionItemWritePermission(userId, parent);
+		} else {
+			await this.checkPermission(userId, element, Action.write);
+		}
+
 		return element;
 	}
 
@@ -43,16 +68,12 @@ export class ElementUc {
 		const submissionContainerElement = await this.elementService.findById(contentElementId);
 
 		if (!isSubmissionContainerElement(submissionContainerElement)) {
-			throw new HttpException(
-				'Cannot create submission-item for non submission-container-element',
-				HttpStatus.UNPROCESSABLE_ENTITY
-			);
+			throw new UnprocessableEntityException('Cannot create submission-item for non submission-container-element');
 		}
 
 		if (!submissionContainerElement.children.every((child) => isSubmissionItem(child))) {
-			throw new HttpException(
-				'Children of submission-container-element must be of type submission-item',
-				HttpStatus.UNPROCESSABLE_ENTITY
+			throw new UnprocessableEntityException(
+				'Children of submission-container-element must be of type submission-item'
 			);
 		}
 
@@ -60,9 +81,8 @@ export class ElementUc {
 			.filter(isSubmissionItem)
 			.find((item) => item.userId === userId);
 		if (userSubmissionExists) {
-			throw new HttpException(
-				'User is not allowed to have multiple submission-items per submission-container-element',
-				HttpStatus.NOT_ACCEPTABLE
+			throw new ForbiddenException(
+				'User is not allowed to have multiple submission-items per submission-container-element'
 			);
 		}
 
@@ -71,19 +91,5 @@ export class ElementUc {
 		const submissionItem = await this.submissionItemService.create(userId, submissionContainerElement, { completed });
 
 		return submissionItem;
-	}
-
-	private async checkPermission(
-		userId: EntityId,
-		boardDo: AnyBoardDo,
-		action: Action,
-		requiredUserRole?: UserRoleEnum
-	): Promise<void> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
-		if (requiredUserRole) boardDoAuthorizable.requiredUserRole = requiredUserRole;
-		const context = { action, requiredPermissions: [] };
-
-		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
 	}
 }

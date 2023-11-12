@@ -1,5 +1,3 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, Page, Permission, SchoolYearEntity, SortOrder, User, UserDO } from '@shared/domain';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
@@ -8,11 +6,15 @@ import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { SystemDto, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
+import { Injectable } from '@nestjs/common';
+import { EntityId, LegacySchoolDo, Page, Permission, SchoolYearEntity, SortOrder, User, UserDO } from '@shared/domain';
 import { Group, GroupUser } from '../domain';
 import { GroupService } from '../service';
 import { SortHelper } from '../util';
 import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from './dto';
 import { GroupUcMapper } from './mapper/group-uc.mapper';
+import { SchoolYearQueryType } from '../controller/dto/interface';
+import { UnknownQueryTypeLoggableException } from '../loggable';
 
 @Injectable()
 export class GroupUc {
@@ -27,9 +29,10 @@ export class GroupUc {
 		private readonly schoolYearService: SchoolYearService
 	) {}
 
-	public async findAllClassesForSchool(
+	public async findAllClasses(
 		userId: EntityId,
 		schoolId: EntityId,
+		schoolYearQueryType?: SchoolYearQueryType,
 		skip = 0,
 		limit?: number,
 		sortBy: keyof ClassInfoDto = 'name',
@@ -41,10 +44,20 @@ export class GroupUc {
 		this.authorizationService.checkPermission(
 			user,
 			school,
-			AuthorizationContextBuilder.read([Permission.CLASS_LIST, Permission.GROUP_LIST])
+			AuthorizationContextBuilder.read([Permission.CLASS_VIEW, Permission.GROUP_VIEW])
 		);
 
-		const combinedClassInfo: ClassInfoDto[] = await this.findCombinedClassListForSchool(schoolId);
+		const canSeeFullList: boolean = this.authorizationService.hasAllPermissions(user, [
+			Permission.CLASS_FULL_ADMIN,
+			Permission.GROUP_FULL_ADMIN,
+		]);
+
+		let combinedClassInfo: ClassInfoDto[];
+		if (canSeeFullList) {
+			combinedClassInfo = await this.findCombinedClassListForSchool(schoolId, schoolYearQueryType);
+		} else {
+			combinedClassInfo = await this.findCombinedClassListForUser(userId, schoolYearQueryType);
+		}
 
 		combinedClassInfo.sort((a: ClassInfoDto, b: ClassInfoDto): number =>
 			SortHelper.genericSortFunction(a[sortBy], b[sortBy], sortOrder)
@@ -57,37 +70,141 @@ export class GroupUc {
 		return page;
 	}
 
-	private async findCombinedClassListForSchool(schoolId: string): Promise<ClassInfoDto[]> {
-		const [classInfosFromClasses, classInfosFromGroups] = await Promise.all([
-			await this.findClassesForSchool(schoolId),
-			await this.findGroupsOfTypeClassForSchool(schoolId),
-		]);
+	private async findCombinedClassListForSchool(
+		schoolId: EntityId,
+		schoolYearQueryType?: SchoolYearQueryType
+	): Promise<ClassInfoDto[]> {
+		let classInfosFromGroups: ClassInfoDto[] = [];
+
+		const classInfosFromClasses = await this.findClassesForSchool(schoolId, schoolYearQueryType);
+
+		if (!schoolYearQueryType || schoolYearQueryType === SchoolYearQueryType.CURRENT_YEAR) {
+			classInfosFromGroups = await this.findGroupsOfTypeClassForSchool(schoolId);
+		}
 
 		const combinedClassInfo: ClassInfoDto[] = [...classInfosFromClasses, ...classInfosFromGroups];
 
 		return combinedClassInfo;
 	}
 
-	private async findClassesForSchool(schoolId: EntityId): Promise<ClassInfoDto[]> {
+	private async findCombinedClassListForUser(
+		userId: EntityId,
+		schoolYearQueryType?: SchoolYearQueryType
+	): Promise<ClassInfoDto[]> {
+		let classInfosFromGroups: ClassInfoDto[] = [];
+
+		const classInfosFromClasses = await this.findClassesForUser(userId, schoolYearQueryType);
+
+		if (!schoolYearQueryType || schoolYearQueryType === SchoolYearQueryType.CURRENT_YEAR) {
+			classInfosFromGroups = await this.findGroupsOfTypeClassForUser(userId);
+		}
+
+		const combinedClassInfo: ClassInfoDto[] = [...classInfosFromClasses, ...classInfosFromGroups];
+
+		return combinedClassInfo;
+	}
+
+	private async findClassesForSchool(
+		schoolId: EntityId,
+		schoolYearQueryType?: SchoolYearQueryType
+	): Promise<ClassInfoDto[]> {
 		const classes: Class[] = await this.classService.findClassesForSchool(schoolId);
 
-		const classInfosFromClasses: ClassInfoDto[] = await Promise.all(
-			classes.map(async (clazz: Class): Promise<ClassInfoDto> => {
-				const teachers: UserDO[] = await Promise.all(
-					clazz.teacherIds.map((teacherId: EntityId) => this.userService.findById(teacherId))
-				);
+		const classInfosFromClasses: ClassInfoDto[] = await this.getClassInfosFromClasses(classes, schoolYearQueryType);
 
+		return classInfosFromClasses;
+	}
+
+	private async findClassesForUser(
+		userId: EntityId,
+		schoolYearQueryType?: SchoolYearQueryType
+	): Promise<ClassInfoDto[]> {
+		const classes: Class[] = await this.classService.findAllByUserId(userId);
+
+		const classInfosFromClasses: ClassInfoDto[] = await this.getClassInfosFromClasses(classes, schoolYearQueryType);
+
+		return classInfosFromClasses;
+	}
+
+	private async getClassInfosFromClasses(
+		classes: Class[],
+		schoolYearQueryType?: SchoolYearQueryType
+	): Promise<ClassInfoDto[]> {
+		const currentYear: SchoolYearEntity = await this.schoolYearService.getCurrentSchoolYear();
+
+		const classesWithSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[] = await this.addSchoolYearsToClasses(
+			classes
+		);
+
+		const filteredClassesForSchoolYear = classesWithSchoolYear.filter((classWithSchoolYear) =>
+			this.isClassOfQueryType(currentYear, classWithSchoolYear.schoolYear, schoolYearQueryType)
+		);
+
+		const classInfosFromClasses = await this.mapClassInfosFromClasses(filteredClassesForSchoolYear);
+
+		return classInfosFromClasses;
+	}
+
+	private async addSchoolYearsToClasses(classes: Class[]): Promise<{ clazz: Class; schoolYear?: SchoolYearEntity }[]> {
+		const classesWithSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[] = await Promise.all(
+			classes.map(async (clazz) => {
 				let schoolYear: SchoolYearEntity | undefined;
 				if (clazz.year) {
 					schoolYear = await this.schoolYearService.findById(clazz.year);
 				}
 
-				const mapped: ClassInfoDto = GroupUcMapper.mapClassToClassInfoDto(clazz, teachers, schoolYear);
+				return {
+					clazz,
+					schoolYear,
+				};
+			})
+		);
+		return classesWithSchoolYear;
+	}
+
+	private isClassOfQueryType(
+		currentYear: SchoolYearEntity,
+		schoolYear?: SchoolYearEntity,
+		schoolYearQueryType?: SchoolYearQueryType
+	): boolean {
+		if (schoolYearQueryType === undefined) {
+			return true;
+		}
+
+		if (schoolYear === undefined) {
+			return schoolYearQueryType === SchoolYearQueryType.CURRENT_YEAR;
+		}
+
+		switch (schoolYearQueryType) {
+			case SchoolYearQueryType.CURRENT_YEAR:
+				return schoolYear.startDate === currentYear.startDate;
+			case SchoolYearQueryType.NEXT_YEAR:
+				return schoolYear.startDate > currentYear.startDate;
+			case SchoolYearQueryType.PREVIOUS_YEARS:
+				return schoolYear.startDate < currentYear.startDate;
+			default:
+				throw new UnknownQueryTypeLoggableException(schoolYearQueryType);
+		}
+	}
+
+	private async mapClassInfosFromClasses(
+		filteredClassesForSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[]
+	): Promise<ClassInfoDto[]> {
+		const classInfosFromClasses = await Promise.all(
+			filteredClassesForSchoolYear.map(async (classWithSchoolYear): Promise<ClassInfoDto> => {
+				const teachers: UserDO[] = await Promise.all(
+					classWithSchoolYear.clazz.teacherIds.map((teacherId: EntityId) => this.userService.findById(teacherId))
+				);
+
+				const mapped: ClassInfoDto = GroupUcMapper.mapClassToClassInfoDto(
+					classWithSchoolYear.clazz,
+					teachers,
+					classWithSchoolYear.schoolYear
+				);
 
 				return mapped;
 			})
 		);
-
 		return classInfosFromClasses;
 	}
 
@@ -97,21 +214,37 @@ export class GroupUc {
 		const systemMap: Map<EntityId, SystemDto> = await this.findSystemNamesForGroups(groupsOfTypeClass);
 
 		const classInfosFromGroups: ClassInfoDto[] = await Promise.all(
-			groupsOfTypeClass.map(async (group: Group): Promise<ClassInfoDto> => {
-				let system: SystemDto | undefined;
-				if (group.externalSource) {
-					system = systemMap.get(group.externalSource.systemId);
-				}
-
-				const resolvedUsers: ResolvedGroupUser[] = await this.findUsersForGroup(group);
-
-				const mapped: ClassInfoDto = GroupUcMapper.mapGroupToClassInfoDto(group, resolvedUsers, system);
-
-				return mapped;
-			})
+			groupsOfTypeClass.map(async (group: Group): Promise<ClassInfoDto> => this.getClassInfoFromGroup(group, systemMap))
 		);
 
 		return classInfosFromGroups;
+	}
+
+	private async findGroupsOfTypeClassForUser(userId: EntityId): Promise<ClassInfoDto[]> {
+		const user: UserDO = await this.userService.findById(userId);
+
+		const groupsOfTypeClass: Group[] = await this.groupService.findByUser(user);
+
+		const systemMap: Map<EntityId, SystemDto> = await this.findSystemNamesForGroups(groupsOfTypeClass);
+
+		const classInfosFromGroups: ClassInfoDto[] = await Promise.all(
+			groupsOfTypeClass.map(async (group: Group): Promise<ClassInfoDto> => this.getClassInfoFromGroup(group, systemMap))
+		);
+
+		return classInfosFromGroups;
+	}
+
+	private async getClassInfoFromGroup(group: Group, systemMap: Map<EntityId, SystemDto>): Promise<ClassInfoDto> {
+		let system: SystemDto | undefined;
+		if (group.externalSource) {
+			system = systemMap.get(group.externalSource.systemId);
+		}
+
+		const resolvedUsers: ResolvedGroupUser[] = await this.findUsersForGroup(group);
+
+		const mapped: ClassInfoDto = GroupUcMapper.mapGroupToClassInfoDto(group, resolvedUsers, system);
+
+		return mapped;
 	}
 
 	private async findSystemNamesForGroups(groups: Group[]): Promise<Map<EntityId, SystemDto>> {

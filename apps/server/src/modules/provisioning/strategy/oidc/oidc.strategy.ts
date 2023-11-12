@@ -23,18 +23,20 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 			school?.id
 		);
 
-		if (Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED') && data.externalGroups) {
+		if (Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED')) {
 			await this.oidcProvisioningService.removeExternalGroupsAndAffiliation(
 				data.externalUser.externalId,
-				data.externalGroups,
+				data.externalGroups ?? [],
 				data.system.systemId
 			);
 
-			await Promise.all(
-				data.externalGroups.map((externalGroup) =>
-					this.oidcProvisioningService.provisionExternalGroup(externalGroup, data.system.systemId)
-				)
-			);
+			if (data.externalGroups) {
+				await Promise.all(
+					data.externalGroups.map((externalGroup) =>
+						this.oidcProvisioningService.provisionExternalGroup(externalGroup, data.system.systemId)
+					)
+				);
+			}
 		}
 
 		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { IdentityManagementModule } from '@shared/infra/identity-management/identity-management.module';
+import { IdentityManagementModule } from '@infra/identity-management/identity-management.module';
 import { SystemRepo } from '@shared/repo';
 import { SystemService } from '@modules/system/service/system.service';
 import { SystemOidcService } from './service/system-oidc.service';
