@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { UserRepo } from '@shared/repo';
+import { UserRepo, PermissionContextRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { FeathersModule } from '@infra/feathers';
 import {
@@ -19,6 +19,7 @@ import {
 } from './domain/rules';
 import { AuthorizationHelper, AuthorizationService, RuleManager } from './domain';
 import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
+import { PermissionContextService } from './permission-context/service/permission-context.service';
 
 @Module({
 	imports: [FeathersModule, LoggerModule],
@@ -27,6 +28,7 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 		FeathersAuthProvider,
 		AuthorizationService,
 		UserRepo,
+		PermissionContextRepo,
 		RuleManager,
 		AuthorizationHelper,
 		// rules
@@ -44,6 +46,6 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 		UserLoginMigrationRule,
 		LegacySchoolRule,
 	],
-	exports: [FeathersAuthorizationService, AuthorizationService],
+	exports: [FeathersAuthorizationService, AuthorizationService, PermissionContextService],
 })
 export class AuthorizationModule {}

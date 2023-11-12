@@ -21,7 +21,6 @@ export class PermissionContextEntity extends BaseEntityWithTimestamps {
 	@Index()
 	contextReference: ObjectId;
 
-	@Property()
 	@Index()
 	@ManyToOne(() => Role, { nullable: true })
 	role: Role | null;
