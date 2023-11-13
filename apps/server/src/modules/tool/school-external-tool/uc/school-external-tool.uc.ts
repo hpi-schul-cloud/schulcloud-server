@@ -3,10 +3,12 @@ import { EntityId, Permission } from '@shared/domain';
 import { AuthorizationContext, AuthorizationContextBuilder } from '@modules/authorization';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalToolService } from '../../context-external-tool/service';
-import { SchoolExternalTool } from '../domain';
-import { SchoolExternalToolMetadata } from '../domain/school-external-tool-metadata';
-import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
-import { SchoolExternalToolMetadataService } from '../service/school-external-tool-metadata.service';
+import { SchoolExternalTool, SchoolExternalToolMetadata } from '../domain';
+import {
+	SchoolExternalToolService,
+	SchoolExternalToolValidationService,
+	SchoolExternalToolMetadataService,
+} from '../service';
 import { SchoolExternalToolDto, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 
 @Injectable()

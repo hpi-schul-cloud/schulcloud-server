@@ -14,10 +14,12 @@ import { Body, Controller, Delete, Get, Param, Post, Query, Put, HttpCode, HttpS
 import { ValidationError } from '@shared/common';
 import { LegacyLogger } from '@src/core/logger';
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { SchoolExternalToolMetadata } from '../domain/school-external-tool-metadata';
-import { SchoolExternalToolRequestMapper, SchoolExternalToolResponseMapper } from '../mapper';
+import {
+	SchoolExternalToolRequestMapper,
+	SchoolExternalToolResponseMapper,
+	SchoolExternalToolMetadataMapper,
+} from '../mapper';
 import { ExternalToolSearchListResponse } from '../../external-tool/controller/dto';
-import { SchoolExternalToolMetadataMapper } from '../mapper/school-external-tool-metadata.mapper';
 import {
 	SchoolExternalToolIdParams,
 	SchoolExternalToolPostParams,
@@ -27,7 +29,7 @@ import {
 } from './dto';
 import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolUc } from '../uc';
-import { SchoolExternalTool } from '../domain';
+import { SchoolExternalTool, SchoolExternalToolMetadata } from '../domain';
 import { SchoolExternalToolMetadataResponse } from './dto/school-external-tool-metadata.response';
 
 @ApiTags('Tool')
