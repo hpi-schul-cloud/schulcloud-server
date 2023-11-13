@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecordParentType } from '@shared/infra/rabbitmq';
+import { FileRecordParentType } from '@infra/rabbitmq';
 import {
 	columnBoardFactory,
 	columnFactory,

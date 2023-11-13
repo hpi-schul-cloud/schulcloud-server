@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { EntityId, LegacySchoolDo, OauthConfig, SchoolFeatures, UserDO } from '@shared/domain';
-import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
+import { DefaultEncryptionService, IEncryptionService } from '@infra/encryption';
 import { LegacyLogger } from '@src/core/logger';
 import { ProvisioningService } from '@modules/provisioning';
 import { OauthDataDto } from '@modules/provisioning/dto';
@@ -184,31 +184,6 @@ export class OAuthService {
 		}
 
 		return redirect;
-	}
-
-	getAuthenticationUrl(oauthConfig: OauthConfig, state: string, migration: boolean): string {
-		const redirectUri: string = this.getRedirectUri(migration);
-
-		const authenticationUrl: URL = new URL(oauthConfig.authEndpoint);
-		authenticationUrl.searchParams.append('client_id', oauthConfig.clientId);
-		authenticationUrl.searchParams.append('redirect_uri', redirectUri);
-		authenticationUrl.searchParams.append('response_type', oauthConfig.responseType);
-		authenticationUrl.searchParams.append('scope', oauthConfig.scope);
-		authenticationUrl.searchParams.append('state', state);
-		if (oauthConfig.idpHint) {
-			authenticationUrl.searchParams.append('kc_idp_hint', oauthConfig.idpHint);
-		}
-
-		return authenticationUrl.toString();
-	}
-
-	getRedirectUri(migration: boolean) {
-		const publicBackendUrl: string = Configuration.get('PUBLIC_BACKEND_URL') as string;
-
-		const path: string = migration ? 'api/v3/sso/oauth/migration' : 'api/v3/sso/oauth';
-		const redirectUri: URL = new URL(path, publicBackendUrl);
-
-		return redirectUri.toString();
 	}
 
 	private buildTokenRequestPayload(

@@ -1,23 +1,23 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, OauthConfig, SchoolFeatures, SystemEntity } from '@shared/domain';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { legacySchoolDoFactory, setupEntities, systemFactory, userDoFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { ProvisioningDto, ProvisioningService } from '@modules/provisioning';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@modules/provisioning/dto';
-import { LegacySchoolService } from '@modules/legacy-school';
 import { OauthConfigDto } from '@modules/system/service';
 import { SystemDto } from '@modules/system/service/dto/system.dto';
 import { SystemService } from '@modules/system/service/system.service';
 import { UserService } from '@modules/user';
 import { MigrationCheckService, UserMigrationService } from '@modules/user-login-migration';
+import { Test, TestingModule } from '@nestjs/testing';
+import { LegacySchoolDo, OauthConfig, SchoolFeatures, SystemEntity } from '@shared/domain';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { legacySchoolDoFactory, setupEntities, systemFactory, userDoFactory } from '@shared/testing';
+import { LegacyLogger } from '@src/core/logger';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthSSOError, UserNotFoundAfterProvisioningLoggableException } from '../loggable';
 import { OAuthTokenDto } from '../interface';
+import { OAuthSSOError, UserNotFoundAfterProvisioningLoggableException } from '../loggable';
 import { OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
 import { OAuthService } from './oauth.service';
@@ -557,82 +557,6 @@ describe('OAuthService', () => {
 				const func = () => service.provisionUser('systemId', 'idToken', 'accessToken');
 
 				await expect(func).rejects.toThrow(UserNotFoundAfterProvisioningLoggableException);
-			});
-		});
-	});
-
-	describe('getAuthenticationUrl is called', () => {
-		describe('when a normal authentication url is requested', () => {
-			it('should return a authentication url', () => {
-				const oauthConfig: OauthConfig = new OauthConfig({
-					clientId: '12345',
-					clientSecret: 'mocksecret',
-					tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
-					grantType: 'authorization_code',
-					redirectUri: 'http://mockhost:3030/api/v3/sso/oauth/testsystemId',
-					scope: 'openid uuid',
-					responseType: 'code',
-					authEndpoint: 'http://mock.de/auth',
-					provider: 'mock_type',
-					logoutEndpoint: 'http://mock.de/logout',
-					issuer: 'mock_issuer',
-					jwksEndpoint: 'http://mock.de/jwks',
-				});
-
-				const result: string = service.getAuthenticationUrl(oauthConfig, 'state', false);
-
-				expect(result).toEqual(
-					'http://mock.de/auth?client_id=12345&redirect_uri=https%3A%2F%2Fmock.de%2Fapi%2Fv3%2Fsso%2Foauth&response_type=code&scope=openid+uuid&state=state'
-				);
-			});
-		});
-
-		describe('when a migration authentication url is requested', () => {
-			it('should return a authentication url', () => {
-				const oauthConfig: OauthConfig = new OauthConfig({
-					clientId: '12345',
-					clientSecret: 'mocksecret',
-					tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
-					grantType: 'authorization_code',
-					redirectUri: 'http://mockhost.de/api/v3/sso/oauth/testsystemId',
-					scope: 'openid uuid',
-					responseType: 'code',
-					authEndpoint: 'http://mock.de/auth',
-					provider: 'mock_type',
-					logoutEndpoint: 'http://mock.de/logout',
-					issuer: 'mock_issuer',
-					jwksEndpoint: 'http://mock.de/jwks',
-				});
-
-				const result: string = service.getAuthenticationUrl(oauthConfig, 'state', true);
-
-				expect(result).toEqual(
-					'http://mock.de/auth?client_id=12345&redirect_uri=https%3A%2F%2Fmock.de%2Fapi%2Fv3%2Fsso%2Foauth%2Fmigration&response_type=code&scope=openid+uuid&state=state'
-				);
-			});
-
-			it('should return add an idp hint if existing authentication url', () => {
-				const oauthConfig: OauthConfig = new OauthConfig({
-					clientId: '12345',
-					clientSecret: 'mocksecret',
-					tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
-					grantType: 'authorization_code',
-					redirectUri: 'http://mockhost.de/api/v3/sso/oauth/testsystemId',
-					scope: 'openid uuid',
-					responseType: 'code',
-					authEndpoint: 'http://mock.de/auth',
-					provider: 'mock_type',
-					logoutEndpoint: 'http://mock.de/logout',
-					issuer: 'mock_issuer',
-					jwksEndpoint: 'http://mock.de/jwks',
-					idpHint: 'TheIdpHint',
-				});
-
-				const result: string = service.getAuthenticationUrl(oauthConfig, 'state', true);
-
-				expect(result).toEqual(
-					'http://mock.de/auth?client_id=12345&redirect_uri=https%3A%2F%2Fmock.de%2Fapi%2Fv3%2Fsso%2Foauth%2Fmigration&response_type=code&scope=openid+uuid&state=state&kc_idp_hint=TheIdpHint'
-				);
 			});
 		});
 	});

@@ -1,7 +1,7 @@
+import { GroupTypes } from '@modules/group';
 import { Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { GroupTypes } from '@modules/group';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
 import { GroupRoleUnknownLoggable } from '../../loggable';
 import {
@@ -45,6 +45,7 @@ export class SanisResponseMapper {
 			name: source.personenkontexte[0].organisation.name,
 			externalId: source.personenkontexte[0].organisation.id.toString(),
 			officialSchoolNumber,
+			location: source.personenkontexte[0].organisation.anschrift?.ort,
 		});
 
 		return mapped;

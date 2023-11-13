@@ -1,9 +1,6 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
 
-/**
- * @deprecated
- */
 export class AuthorizationParams {
 	@IsOptional()
 	@IsString()
