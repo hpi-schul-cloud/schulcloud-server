@@ -7,6 +7,12 @@ const bootstrap = new BootstrapConsole({
 	useDecorators: true,
 });
 
+const logErrorAndSetExitCode = (err: unknown) => {
+	// eslint-disable-next-line no-console
+	console.error(err);
+	process.exitCode = 1;
+};
+
 bootstrap
 	.init()
 	.then(async (app) => {
@@ -18,13 +24,7 @@ bootstrap
 		} catch (err) {
 			await app.close();
 
-			// eslint-disable-next-line no-console
-			console.error(err);
-			process.exitCode = 1;
+			logErrorAndSetExitCode(err);
 		}
 	})
-	.catch((err) => {
-		// eslint-disable-next-line no-console
-		console.error(err);
-		process.exitCode = 1;
-	});
+	.catch((err) => logErrorAndSetExitCode(err));
