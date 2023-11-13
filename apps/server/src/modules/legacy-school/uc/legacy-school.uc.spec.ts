@@ -4,13 +4,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@shared/testing/factory';
 import { AuthorizationService } from '@modules/authorization';
-import { LegacySchoolService } from '@modules/legacy-school/service';
-import { LegacySchoolUc } from '@modules/legacy-school/uc';
 import {
 	SchoolMigrationService,
 	UserLoginMigrationRevertService,
 	UserLoginMigrationService,
 } from '@modules/user-login-migration';
+import { LegacySchoolService } from '../service';
+import { LegacySchoolUc } from './legacy-school.uc';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
 
 describe('LegacySchoolUc', () => {
