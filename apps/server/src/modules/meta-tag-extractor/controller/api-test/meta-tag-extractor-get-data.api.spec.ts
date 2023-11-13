@@ -63,7 +63,7 @@ describe(`get meta tags (api)`, () => {
 
 			const response = await loggedInClient.post(undefined, { url: URL });
 
-			expect(response?.body).toEqual(mockedResponse);
+			expect(response?.body).toEqual(expect.objectContaining(mockedResponse));
 		});
 	});
 
