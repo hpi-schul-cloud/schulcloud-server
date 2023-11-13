@@ -1,5 +1,5 @@
 import { GetFile, S3ClientAdapter } from '@infra/s3-client';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { subClass } from 'gm';
 import { PassThrough } from 'stream';
@@ -20,6 +20,9 @@ export class PreviewGeneratorService {
 		const { originFilePath, previewFilePath, previewOptions } = params;
 
 		const original = await this.downloadOriginFile(originFilePath);
+
+		this.checkIfPreviewPossible(original, params);
+
 		const preview = this.resizeAndConvert(original, previewOptions);
 
 		const file = PreviewGeneratorBuilder.buildFile(preview, params.previewOptions);
@@ -32,6 +35,16 @@ export class PreviewGeneratorService {
 			previewFilePath,
 			status: true,
 		};
+	}
+
+	private checkIfPreviewPossible(original: GetFile, params: PreviewFileOptions): void | UnprocessableEntityException {
+		const isPreviewPossible =
+			original.contentType && Object.values<string>(PreviewInputMimeTypes).includes(original.contentType);
+
+		if (!isPreviewPossible) {
+			this.logger.warning(new PreviewActionsLoggable('PreviewGeneratorService.previewNotPossible', params));
+			throw new UnprocessableEntityException();
+		}
 	}
 
 	private async downloadOriginFile(pathToFile: string): Promise<GetFile> {
