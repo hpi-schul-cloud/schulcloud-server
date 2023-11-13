@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BatchDeletionSummaryDetailBuilder } from '@modules/deletion/uc/builder';
+import { BatchDeletionSummaryDetailBuilder } from './builder';
 import {
 	ReferencesService,
 	BatchDeletionService,
