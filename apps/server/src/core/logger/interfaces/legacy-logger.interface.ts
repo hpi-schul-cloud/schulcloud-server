@@ -7,7 +7,7 @@ export type RequestLoggingBody = {
 /**
  * @deprecated The new logger for loggables should be used.
  */
-export interface ILegacyLogger {
+export interface LegacyLoggerInterface {
 	http(message: RequestLoggingBody, context?: string): void;
 	log(message: unknown, context?: string): void;
 	error(message: unknown, trace?: string, context?: string): void;
