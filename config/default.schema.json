@@ -1345,7 +1345,6 @@
 			"properties": {
 				"BASE_URL": {
 					"type": "string",
-					"default": "http://localhost:4030",
 					"description": "Base URL of the Admin API."
 				},
 				"API_KEY": {
@@ -1353,7 +1352,9 @@
 					"description": "API key for accessing the Admin API."
 				}
 			},
-			"default": {}
+			"default": {
+				"BASE_URL": "http://localhost:4030"
+			}
 		}
 	},
 	"required": [],
