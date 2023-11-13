@@ -7,7 +7,6 @@ import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { DeletionLogEntity, DeletionRequestEntity } from '@src/modules/deletion/entity';
 import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
-import { FileEntity } from '@src/modules/files/entity';
 import { Account } from './account.entity';
 import {
 	BoardNode,
@@ -77,7 +76,6 @@ export const ALL_ENTITIES = [
 	DashboardModelEntity,
 	ExternalToolEntity,
 	FederalStateEntity,
-	FileEntity,
 	ImportUser,
 	LessonEntity,
 	LessonBoardElement,
