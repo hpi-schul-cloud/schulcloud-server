@@ -12,14 +12,14 @@ import { ToolLaunchMapper } from '../mapper';
 import { ToolLaunchData, ToolLaunchRequest } from '../types';
 import {
 	BasicToolLaunchStrategy,
-	IToolLaunchStrategy,
 	Lti11ToolLaunchStrategy,
 	OAuth2ToolLaunchStrategy,
+	ToolLaunchStrategy,
 } from './launch-strategy';
 
 @Injectable()
 export class ToolLaunchService {
-	private strategies: Map<ToolConfigType, IToolLaunchStrategy>;
+	private strategies: Map<ToolConfigType, ToolLaunchStrategy>;
 
 	constructor(
 		private readonly schoolExternalToolService: SchoolExternalToolService,
@@ -37,7 +37,7 @@ export class ToolLaunchService {
 
 	generateLaunchRequest(toolLaunchData: ToolLaunchData): ToolLaunchRequest {
 		const toolConfigType: ToolConfigType = ToolLaunchMapper.mapToToolConfigType(toolLaunchData.type);
-		const strategy: IToolLaunchStrategy | undefined = this.strategies.get(toolConfigType);
+		const strategy: ToolLaunchStrategy | undefined = this.strategies.get(toolConfigType);
 
 		if (!strategy) {
 			throw new InternalServerErrorException('Unknown tool launch data type');
@@ -55,7 +55,7 @@ export class ToolLaunchService {
 
 		this.isToolStatusLatestOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
 
-		const strategy: IToolLaunchStrategy | undefined = this.strategies.get(externalTool.config.type);
+		const strategy: ToolLaunchStrategy | undefined = this.strategies.get(externalTool.config.type);
 
 		if (!strategy) {
 			throw new InternalServerErrorException('Unknown tool config type');

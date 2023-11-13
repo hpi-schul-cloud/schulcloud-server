@@ -17,10 +17,10 @@ import {
 	AutoSchoolNumberStrategy,
 } from '../auto-parameter-strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
-import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
+import { ToolLaunchStrategy } from './tool-launch-strategy.interface';
 
 @Injectable()
-export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
+export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 	private readonly autoParameterStrategyMap: Map<CustomParameterType, AutoParameterStrategy>;
 
 	constructor(
