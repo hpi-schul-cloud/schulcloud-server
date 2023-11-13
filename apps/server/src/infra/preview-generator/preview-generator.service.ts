@@ -1,10 +1,9 @@
-import { Injectable } from '@nestjs/common';
 import { GetFile, S3ClientAdapter } from '@infra/s3-client';
+import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { PreviewInputMimeTypes } from '@src/modules/files-storage/interface';
 import { subClass } from 'gm';
 import { PassThrough } from 'stream';
-import { PreviewFileOptions, PreviewOptions, PreviewResponseMessage } from './interface';
+import { PreviewFileOptions, PreviewInputMimeTypes, PreviewOptions, PreviewResponseMessage } from './interface';
 import { PreviewActionsLoggable } from './loggable/preview-actions.loggable';
 import { PreviewGeneratorBuilder } from './preview-generator.builder';
 
