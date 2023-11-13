@@ -59,7 +59,7 @@ describe('H5PLibraryManagementService', () => {
 	describe('uninstallUnwantedLibraries', () => {
 		it('should delete libraries not in the wanted list and with no dependents', async () => {
 			const s3ConfigLibrariess = s3ConfigLibraries;
-			libraryStorageMock.deleteLibrary = jest.fn().mockResolvedValue({});
+			libraryStorageMock.deleteLibrary.mockRejectedValueOnce({});
 			await service.uninstallUnwantedLibraries(['a', 'b']);
 			expect(libraryStorageMock.deleteLibrary).toHaveBeenCalledWith({ machineName: 'c', dependentsCount: 0 });
 			expect(libraryStorageMock.deleteLibrary).not.toHaveBeenCalledWith({ machineName: 'a', dependentsCount: 0 });
