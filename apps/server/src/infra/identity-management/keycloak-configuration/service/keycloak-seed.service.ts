@@ -4,7 +4,7 @@ import { LegacyLogger } from '@src/core/logger';
 import fs from 'node:fs/promises';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { JsonAccount } from '../interface/json-account.interface';
-import { IJsonUser } from '../interface/json-user.interface';
+import { JsonUser } from '../interface/json-user.interface';
 import {
 	IKeycloakConfigurationInputFiles,
 	KeycloakConfigurationInputFiles,
@@ -57,7 +57,7 @@ export class KeycloakSeedService {
 		return deletedUsers;
 	}
 
-	private async createOrUpdateIdmAccount(account: JsonAccount, user: IJsonUser): Promise<boolean> {
+	private async createOrUpdateIdmAccount(account: JsonAccount, user: JsonUser): Promise<boolean> {
 		const idmUserRepresentation: UserRepresentation = {
 			username: account.username,
 			firstName: user.firstName,
@@ -96,8 +96,8 @@ export class KeycloakSeedService {
 		return JSON.parse(data) as JsonAccount[];
 	}
 
-	private async loadUsers(): Promise<IJsonUser[]> {
+	private async loadUsers(): Promise<JsonUser[]> {
 		const data = await fs.readFile(this.inputFiles.usersFile, { encoding: 'utf-8' });
-		return JSON.parse(data) as IJsonUser[];
+		return JSON.parse(data) as JsonUser[];
 	}
 }
