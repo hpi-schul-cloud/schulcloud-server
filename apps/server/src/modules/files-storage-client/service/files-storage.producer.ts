@@ -1,9 +1,9 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import {
+	CopyFilesOfParentParams,
 	FilesStorageEvents,
 	FilesStorageExchange,
 	ICopyFileDO,
-	ICopyFilesOfParentParams,
 	IFileDO,
 	IFileRecordParams,
 	RpcMessageProducer,
@@ -25,7 +25,7 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		this.logger.setContext(FilesStorageProducer.name);
 	}
 
-	async copyFilesOfParent(payload: ICopyFilesOfParentParams): Promise<ICopyFileDO[]> {
+	async copyFilesOfParent(payload: CopyFilesOfParentParams): Promise<ICopyFileDO[]> {
 		this.logger.debug({ action: 'copyFilesOfParent:started', payload });
 		const response = await this.request<ICopyFileDO[]>(FilesStorageEvents.COPY_FILES_OF_PARENT, payload);
 

@@ -5,7 +5,7 @@ import type { FilesStorageClientConfig } from '@modules/files-storage-client';
 import type { ICommonCartridgeConfig } from '@modules/learnroom/common-cartridge';
 import type { IUserConfig } from '@modules/user';
 import type { CoreModuleConfig } from '@src/core';
-import { IMailConfig } from '@src/infra/mail/interfaces/mail-config';
+import { MailConfig } from '@src/infra/mail/interfaces/mail-config';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -21,7 +21,7 @@ export interface IServerConfig
 		AccountConfig,
 		IdentityManagementConfig,
 		ICommonCartridgeConfig,
-		IMailConfig {
+		MailConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 }

@@ -27,7 +27,7 @@ export enum FileRecordParentType {
 	'BoardNode' = 'boardnodes',
 }
 
-export interface ICopyFilesOfParentParams {
+export interface CopyFilesOfParentParams {
 	userId: EntityId;
 	source: IFileRecordParams;
 	target: IFileRecordParams;
