@@ -1,4 +1,4 @@
-import { ConsoleWriterService } from '@shared/infra/console';
+import { ConsoleWriterService } from '@infra/console';
 import { ObjectId } from 'bson';
 import { Command, Console } from 'nestjs-console';
 import { BoardManagementUc } from '../uc/board-management.uc';

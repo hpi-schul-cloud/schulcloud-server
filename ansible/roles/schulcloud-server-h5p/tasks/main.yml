@@ -1,4 +1,4 @@
-  - name: H5pEditorService
+  - name: H5PEditorProvider
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
