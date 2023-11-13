@@ -1,6 +1,6 @@
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { Inject, Injectable } from '@nestjs/common';
-import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
+import { KeycloakSettings, KeycloakSettingsInterface } from '../interface/keycloak-settings.interface';
 
 @Injectable()
 export class KeycloakAdministrationService {
@@ -10,7 +10,7 @@ export class KeycloakAdministrationService {
 
 	public constructor(
 		private readonly kcAdminClient: KeycloakAdminClient,
-		@Inject(KeycloakSettings) private readonly kcSettings: IKeycloakSettings
+		@Inject(KeycloakSettings) private readonly kcSettings: KeycloakSettingsInterface
 	) {
 		this.kcAdminClient.setConfig({
 			baseUrl: kcSettings.baseUrl,
