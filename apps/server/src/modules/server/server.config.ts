@@ -14,7 +14,7 @@ export enum NodeEnvType {
 	MIGRATION = 'migration',
 }
 
-export interface IServerConfig
+export interface ServerConfig
 	extends CoreModuleConfig,
 		IUserConfig,
 		FilesStorageClientConfig,
@@ -26,7 +26,7 @@ export interface IServerConfig
 	SC_DOMAIN: string;
 }
 
-const config: IServerConfig = {
+const config: ServerConfig = {
 	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
