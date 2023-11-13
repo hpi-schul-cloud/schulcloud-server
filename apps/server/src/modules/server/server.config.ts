@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { AccountConfig } from '@modules/account';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
-import type { ICommonCartridgeConfig } from '@modules/learnroom/common-cartridge';
+import type { CommonCartridgeConfig } from '@modules/learnroom/common-cartridge';
 import type { IUserConfig } from '@modules/user';
 import type { CoreModuleConfig } from '@src/core';
 import { MailConfig } from '@src/infra/mail/interfaces/mail-config';
@@ -20,7 +20,7 @@ export interface IServerConfig
 		FilesStorageClientConfig,
 		AccountConfig,
 		IdentityManagementConfig,
-		ICommonCartridgeConfig,
+		CommonCartridgeConfig,
 		MailConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
