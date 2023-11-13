@@ -21,6 +21,7 @@ export * from './import-user.factory';
 export * from './lesson.factory';
 export * from './material.factory';
 export * from './news.factory';
+export * from './permission-context.factory';
 export * from './role-dto.factory';
 export * from './role.factory';
 export * from './school-external-tool-entity.factory';

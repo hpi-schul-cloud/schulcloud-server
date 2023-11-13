@@ -10,8 +10,6 @@ export interface IPermissionContextProperties {
 	include_permissions: Permission[];
 	exclude_permissions: Permission[];
 	parent_context: PermissionContextEntity | null;
-	createdAt: Date;
-	updatedAt: Date;
 }
 
 // TODO: add test
@@ -31,7 +29,7 @@ export class PermissionContextEntity extends BaseEntityWithTimestamps {
 	@Property()
 	excluded_permissions: Permission[] = [];
 
-	@Property()
+	@ManyToOne(() => PermissionContextEntity, { nullable: true })
 	@Index()
 	parent_context: PermissionContextEntity | null;
 
