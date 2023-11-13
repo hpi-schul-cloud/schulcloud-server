@@ -13,7 +13,7 @@ import { AxiosResponse } from 'axios';
 import { HydraOauthUc } from '.';
 import { AuthorizationParams } from '../controller/dto';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
-import { OAuthSSOError } from '../loggable/oauth-sso.error';
+import { OAuthSSOError } from '../loggable';
 import { OAuthTokenDto } from '../interface';
 
 class HydraOauthUcSpec extends HydraOauthUc {
