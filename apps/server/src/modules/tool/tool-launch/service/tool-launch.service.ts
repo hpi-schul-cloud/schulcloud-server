@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -15,7 +15,6 @@ import {
 	Lti11ToolLaunchStrategy,
 	OAuth2ToolLaunchStrategy,
 } from './launch-strategy';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ToolVersionService } from '../../context-external-tool/service/tool-version-service';
 
 @Injectable()
@@ -28,8 +27,7 @@ export class ToolLaunchService {
 		private readonly basicToolLaunchStrategy: BasicToolLaunchStrategy,
 		private readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy,
 		private readonly oauth2ToolLaunchStrategy: OAuth2ToolLaunchStrategy,
-		private readonly toolVersionService: ToolVersionService,
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
+		private readonly toolVersionService: ToolVersionService
 	) {
 		this.strategies = new Map();
 		this.strategies.set(ToolConfigType.BASIC, basicToolLaunchStrategy);

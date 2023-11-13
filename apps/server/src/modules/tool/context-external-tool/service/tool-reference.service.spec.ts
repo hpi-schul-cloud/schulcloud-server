@@ -2,16 +2,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
-import { ApiValidationError } from '@shared/common';
 import { ToolConfigurationStatus } from '../../common/enum';
-import { CommonToolService } from '../../common/service';
 import { ExternalToolLogoService, ExternalToolService } from '../../external-tool/service';
-import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../../school-external-tool/service';
+import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ToolReference } from '../domain';
 import { ContextExternalToolService } from './context-external-tool.service';
 import { ToolReferenceService } from './tool-reference.service';
-import { ContextExternalToolValidationService } from './context-external-tool-validation.service';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
+import { ToolVersionService } from './tool-version-service';
 
 describe('ToolReferenceService', () => {
 	let module: TestingModule;
@@ -20,11 +17,8 @@ describe('ToolReferenceService', () => {
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
-	let commonToolService: DeepMocked<CommonToolService>;
+	let toolVersionService: DeepMocked<ToolVersionService>;
 	let externalToolLogoService: DeepMocked<ExternalToolLogoService>;
-	let contextExternalToolValidationService: DeepMocked<ContextExternalToolValidationService>;
-	let schoolExternalToolValidationService: DeepMocked<SchoolExternalToolValidationService>;
-	let toolFeatures: DeepMocked<IToolFeatures>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -43,26 +37,12 @@ describe('ToolReferenceService', () => {
 					useValue: createMock<ContextExternalToolService>(),
 				},
 				{
-					provide: CommonToolService,
-					useValue: createMock<CommonToolService>(),
+					provide: ToolVersionService,
+					useValue: createMock<ToolVersionService>(),
 				},
 				{
 					provide: ExternalToolLogoService,
 					useValue: createMock<ExternalToolLogoService>(),
-				},
-				{
-					provide: ContextExternalToolValidationService,
-					useValue: createMock<ContextExternalToolValidationService>(),
-				},
-				{
-					provide: SchoolExternalToolValidationService,
-					useValue: createMock<SchoolExternalToolValidationService>(),
-				},
-				{
-					provide: ToolFeatures,
-					useValue: {
-						toolStatusWithoutVersions: false,
-					},
 				},
 			],
 		}).compile();
@@ -71,11 +51,8 @@ describe('ToolReferenceService', () => {
 		externalToolService = module.get(ExternalToolService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		contextExternalToolService = module.get(ContextExternalToolService);
-		commonToolService = module.get(CommonToolService);
+		toolVersionService = module.get(ToolVersionService);
 		externalToolLogoService = module.get(ExternalToolLogoService);
-		contextExternalToolValidationService = module.get(ContextExternalToolValidationService);
-		schoolExternalToolValidationService = module.get(SchoolExternalToolValidationService);
-		toolFeatures = module.get(ToolFeatures);
 	});
 
 	afterAll(async () => {
@@ -102,10 +79,8 @@ describe('ToolReferenceService', () => {
 				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
-				commonToolService.determineToolConfigurationStatus.mockReturnValue(ToolConfigurationStatus.OUTDATED);
+				toolVersionService.determineToolConfigurationStatus.mockResolvedValue(ToolConfigurationStatus.OUTDATED);
 				externalToolLogoService.buildLogoUrl.mockReturnValue(logoUrl);
-
-				toolFeatures.toolStatusWithoutVersions = false;
 
 				return {
 					contextExternalToolId,
@@ -121,7 +96,7 @@ describe('ToolReferenceService', () => {
 
 				await service.getToolReference(contextExternalToolId);
 
-				expect(commonToolService.determineToolConfigurationStatus).toHaveBeenCalledWith(
+				expect(toolVersionService.determineToolConfigurationStatus).toHaveBeenCalledWith(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
@@ -151,53 +126,6 @@ describe('ToolReferenceService', () => {
 					status: ToolConfigurationStatus.OUTDATED,
 					contextToolId: contextExternalToolId,
 				});
-			});
-		});
-
-		// TODO N21-1337 refactor after feature flag is removed
-		describe('when FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED is true', () => {
-			const setup = () => {
-				const contextExternalToolId = new ObjectId().toHexString();
-				const externalTool = externalToolFactory.buildWithId();
-				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-					toolId: externalTool.id as string,
-				});
-				const contextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
-					.buildWithId(undefined, contextExternalToolId);
-				const logoUrl = 'logoUrl';
-
-				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
-				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
-				externalToolService.findById.mockResolvedValueOnce(externalTool);
-				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.OUTDATED);
-				externalToolLogoService.buildLogoUrl.mockReturnValue(logoUrl);
-
-				schoolExternalToolValidationService.validate.mockRejectedValueOnce(ApiValidationError);
-				toolFeatures.toolStatusWithoutVersions = true;
-
-				return {
-					contextExternalToolId,
-					schoolExternalTool,
-					contextExternalTool,
-				};
-			};
-
-			it('should determine the tool status through validation', async () => {
-				const { contextExternalToolId, schoolExternalTool } = setup();
-
-				await service.getToolReference(contextExternalToolId);
-
-				expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
-				expect(contextExternalToolValidationService.validate).not.toHaveBeenCalled();
-			});
-
-			it('should get the outdated status', async () => {
-				const { contextExternalToolId } = setup();
-
-				const toolReference: ToolReference = await service.getToolReference(contextExternalToolId);
-
-				expect(toolReference).toEqual(expect.objectContaining({ status: ToolConfigurationStatus.OUTDATED }));
 			});
 		});
 	});

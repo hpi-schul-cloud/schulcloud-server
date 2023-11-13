@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolLogoService, ExternalToolService } from '../../external-tool/service';
@@ -7,7 +7,6 @@ import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ContextExternalTool, ToolReference } from '../domain';
 import { ToolReferenceMapper } from '../mapper';
 import { ContextExternalToolService } from './context-external-tool.service';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ToolVersionService } from './tool-version-service';
 
 @Injectable()
@@ -17,7 +16,6 @@ export class ToolReferenceService {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
 		private readonly toolVersionService: ToolVersionService
 	) {}
 
