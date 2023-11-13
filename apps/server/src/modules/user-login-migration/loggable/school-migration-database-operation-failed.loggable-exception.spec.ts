@@ -1,21 +1,21 @@
-import { ObjectId } from '@mikro-orm/mongodb';
+import { legacySchoolDoFactory } from '@shared/testing';
 import { SchoolMigrationDatabaseOperationFailedLoggableException } from './school-migration-database-operation-failed.loggable-exception';
 
 describe(SchoolMigrationDatabaseOperationFailedLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const schoolId = new ObjectId().toHexString();
+			const school = legacySchoolDoFactory.buildWithId();
 
-			const exception = new SchoolMigrationDatabaseOperationFailedLoggableException(schoolId, new Error());
+			const exception = new SchoolMigrationDatabaseOperationFailedLoggableException(school, 'migration', new Error());
 
 			return {
 				exception,
-				schoolId,
+				school,
 			};
 		};
 
 		it('should return the correct log message', () => {
-			const { exception, schoolId } = setup();
+			const { exception, school } = setup();
 
 			const message = exception.getLogMessage();
 
@@ -23,7 +23,8 @@ describe(SchoolMigrationDatabaseOperationFailedLoggableException.name, () => {
 				type: 'SCHOOL_LOGIN_MIGRATION_DATABASE_OPERATION_FAILED',
 				stack: expect.any(String),
 				data: {
-					schoolId,
+					schoolId: school.id,
+					operation: 'migration',
 				},
 			});
 		});

@@ -6,7 +6,7 @@ describe(UserMigrationDatabaseOperationFailedLoggableException.name, () => {
 		const setup = () => {
 			const userId = new ObjectId().toHexString();
 
-			const exception = new UserMigrationDatabaseOperationFailedLoggableException(userId, new Error());
+			const exception = new UserMigrationDatabaseOperationFailedLoggableException(userId, 'migration', new Error());
 
 			return {
 				exception,
@@ -24,6 +24,7 @@ describe(UserMigrationDatabaseOperationFailedLoggableException.name, () => {
 				stack: expect.any(String),
 				data: {
 					userId,
+					operation: 'migration',
 				},
 			});
 		});

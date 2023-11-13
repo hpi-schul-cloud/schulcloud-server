@@ -2,14 +2,20 @@ import { AccountService } from '@modules/account/services/account.service';
 import { AccountDto } from '@modules/account/services/dto';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Logger } from '@src/core/logger';
 import { UserMigrationDatabaseOperationFailedLoggableException } from '../loggable';
 
 @Injectable()
 export class UserMigrationService {
-	constructor(private readonly userService: UserService, private readonly accountService: AccountService) {}
+	constructor(
+		private readonly userService: UserService,
+		private readonly accountService: AccountService,
+		private readonly logger: Logger
+	) {}
 
-	async migrateUser(currentUserId: string, externalUserId: string, targetSystemId: string): Promise<void> {
+	async migrateUser(currentUserId: EntityId, externalUserId: string, targetSystemId: EntityId): Promise<void> {
 		const userDO: UserDO = await this.userService.findById(currentUserId);
 		const account: AccountDto = await this.accountService.findByUserIdOrFail(currentUserId);
 
@@ -19,9 +25,9 @@ export class UserMigrationService {
 		try {
 			await this.doMigration(userDO, externalUserId, account, targetSystemId);
 		} catch (error: unknown) {
-			await this.rollbackMigration(userDOCopy, accountCopy);
+			await this.tryRollbackMigration(currentUserId, userDOCopy, accountCopy);
 
-			throw new UserMigrationDatabaseOperationFailedLoggableException(currentUserId, error);
+			throw new UserMigrationDatabaseOperationFailedLoggableException(currentUserId, 'migration', error);
 		}
 	}
 
@@ -40,8 +46,16 @@ export class UserMigrationService {
 		await this.accountService.save(account);
 	}
 
-	private async rollbackMigration(userDOCopy: UserDO, accountCopy: AccountDto): Promise<void> {
-		await this.userService.save(userDOCopy);
-		await this.accountService.save(accountCopy);
+	private async tryRollbackMigration(
+		currentUserId: EntityId,
+		userDOCopy: UserDO,
+		accountCopy: AccountDto
+	): Promise<void> {
+		try {
+			await this.userService.save(userDOCopy);
+			await this.accountService.save(accountCopy);
+		} catch (error: unknown) {
+			this.logger.warning(new UserMigrationDatabaseOperationFailedLoggableException(currentUserId, 'rollback', error));
+		}
 	}
 }

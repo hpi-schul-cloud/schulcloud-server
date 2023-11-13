@@ -3,7 +3,7 @@ import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger, Logger } from '@src/core/logger';
 import { performance } from 'perf_hooks';
 import {
 	SchoolMigrationDatabaseOperationFailedLoggableException,
@@ -14,7 +14,8 @@ import {
 export class SchoolMigrationService {
 	constructor(
 		private readonly schoolService: LegacySchoolService,
-		private readonly logger: LegacyLogger,
+		private readonly legacyLogger: LegacyLogger,
+		private readonly logger: Logger,
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
 	) {}
@@ -25,9 +26,9 @@ export class SchoolMigrationService {
 		try {
 			await this.doMigration(externalId, existingSchool, targetSystemId);
 		} catch (error: unknown) {
-			await this.rollbackMigration(schoolDOCopy);
+			await this.tryRollbackMigration(schoolDOCopy);
 
-			throw new SchoolMigrationDatabaseOperationFailedLoggableException(existingSchool.id, error);
+			throw new SchoolMigrationDatabaseOperationFailedLoggableException(existingSchool, 'migration', error);
 		}
 	}
 
@@ -44,8 +45,14 @@ export class SchoolMigrationService {
 		await this.schoolService.save(school);
 	}
 
-	private async rollbackMigration(originalSchoolDO: LegacySchoolDo) {
-		await this.schoolService.save(originalSchoolDO);
+	private async tryRollbackMigration(originalSchoolDO: LegacySchoolDo) {
+		try {
+			await this.schoolService.save(originalSchoolDO);
+		} catch (error: unknown) {
+			this.logger.warning(
+				new SchoolMigrationDatabaseOperationFailedLoggableException(originalSchoolDO, 'rollback', error)
+			);
+		}
 	}
 
 	async getSchoolForMigration(
@@ -98,7 +105,7 @@ export class SchoolMigrationService {
 		await this.userService.saveAll(notMigratedUsers.data);
 
 		const endTime: number = performance.now();
-		this.logger.warn(
+		this.legacyLogger.warn(
 			`markUnmigratedUsersAsOutdated for schoolId ${userLoginMigration.schoolId} took ${
 				endTime - startTime
 			} milliseconds`
@@ -120,7 +127,7 @@ export class SchoolMigrationService {
 		await this.userService.saveAll(migratedUsers.data);
 
 		const endTime: number = performance.now();
-		this.logger.warn(
+		this.legacyLogger.warn(
 			`unmarkOutdatedUsers for schoolId ${userLoginMigration.schoolId} took ${endTime - startTime} milliseconds`
 		);
 	}

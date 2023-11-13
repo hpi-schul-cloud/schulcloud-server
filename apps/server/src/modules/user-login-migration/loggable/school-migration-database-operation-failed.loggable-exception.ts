@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { LegacySchoolDo } from '@shared/domain';
 import { ErrorUtils } from '@src/core/error/utils';
 import { ErrorLogMessage, Loggable } from '@src/core/logger';
 
@@ -8,7 +8,11 @@ export class SchoolMigrationDatabaseOperationFailedLoggableException
 	implements Loggable
 {
 	// TODO: Remove undefined type from schoolId when using the new School DO
-	constructor(private readonly schoolId: EntityId | undefined, error: unknown) {
+	constructor(
+		private readonly school: LegacySchoolDo,
+		private readonly operation: 'migration' | 'rollback',
+		error: unknown
+	) {
 		super(ErrorUtils.createHttpExceptionOptions(error));
 	}
 
@@ -17,7 +21,8 @@ export class SchoolMigrationDatabaseOperationFailedLoggableException
 			type: 'SCHOOL_LOGIN_MIGRATION_DATABASE_OPERATION_FAILED',
 			stack: this.stack,
 			data: {
-				schoolId: this.schoolId,
+				schoolId: this.school.id,
+				operation: this.operation,
 			},
 		};
 	}

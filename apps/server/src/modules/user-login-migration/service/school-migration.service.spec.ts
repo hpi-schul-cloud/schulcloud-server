@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
 import { legacySchoolDoFactory, setupEntities, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger, Logger } from '@src/core/logger';
 import {
 	SchoolMigrationDatabaseOperationFailedLoggableException,
 	SchoolNumberMismatchLoggableException,
@@ -20,6 +20,7 @@ describe(SchoolMigrationService.name, () => {
 	let userService: DeepMocked<UserService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
 	let userLoginMigrationRepo: DeepMocked<UserLoginMigrationRepo>;
+	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		jest.useFakeTimers();
@@ -40,6 +41,10 @@ describe(SchoolMigrationService.name, () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+				{
 					provide: UserLoginMigrationRepo,
 					useValue: createMock<UserLoginMigrationRepo>(),
 				},
@@ -50,6 +55,7 @@ describe(SchoolMigrationService.name, () => {
 		schoolService = module.get(LegacySchoolService);
 		userService = module.get(UserService);
 		userLoginMigrationRepo = module.get(UserLoginMigrationRepo);
+		logger = module.get(Logger);
 
 		await setupEntities();
 	});
@@ -142,6 +148,7 @@ describe(SchoolMigrationService.name, () => {
 				const error = new Error('Cannot save');
 
 				schoolService.save.mockRejectedValueOnce(error);
+				schoolService.save.mockRejectedValueOnce(error);
 
 				return {
 					school,
@@ -160,11 +167,21 @@ describe(SchoolMigrationService.name, () => {
 				expect(schoolService.save).toHaveBeenLastCalledWith(school);
 			});
 
+			it('should log a rollback error', async () => {
+				const { school, targetSystemId, targetExternalId, error } = setup();
+
+				await expect(service.migrateSchool({ ...school }, targetExternalId, targetSystemId)).rejects.toThrow();
+
+				expect(logger.warning).toHaveBeenCalledWith(
+					new SchoolMigrationDatabaseOperationFailedLoggableException(school, 'rollback', error)
+				);
+			});
+
 			it('should throw an error', async () => {
 				const { school, targetSystemId, targetExternalId, error } = setup();
 
 				await expect(service.migrateSchool({ ...school }, targetExternalId, targetSystemId)).rejects.toThrow(
-					new SchoolMigrationDatabaseOperationFailedLoggableException(school.id, error)
+					new SchoolMigrationDatabaseOperationFailedLoggableException(school, 'migration', error)
 				);
 			});
 		});

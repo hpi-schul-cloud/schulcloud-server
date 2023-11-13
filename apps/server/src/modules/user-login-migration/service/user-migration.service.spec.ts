@@ -6,6 +6,7 @@ import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain';
 import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { UserMigrationDatabaseOperationFailedLoggableException } from '../loggable';
 import { UserMigrationService } from './user-migration.service';
 
@@ -15,6 +16,7 @@ describe(UserMigrationService.name, () => {
 
 	let userService: DeepMocked<UserService>;
 	let accountService: DeepMocked<AccountService>;
+	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -28,12 +30,17 @@ describe(UserMigrationService.name, () => {
 					provide: AccountService,
 					useValue: createMock<AccountService>(),
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(UserMigrationService);
 		userService = module.get(UserService);
 		accountService = module.get(AccountService);
+		logger = module.get(Logger);
 
 		await setupEntities();
 	});
@@ -177,6 +184,7 @@ describe(UserMigrationService.name, () => {
 				accountService.findByUserIdOrFail.mockResolvedValueOnce({ ...accountDto });
 
 				userService.save.mockRejectedValueOnce(error);
+				accountService.save.mockRejectedValueOnce(error);
 
 				return {
 					user,
@@ -206,11 +214,21 @@ describe(UserMigrationService.name, () => {
 				expect(accountService.save).toHaveBeenLastCalledWith(accountDto);
 			});
 
+			it('should log a rollback error', async () => {
+				const { userId, targetExternalId, targetSystemId, error } = setup();
+
+				await expect(service.migrateUser(userId, targetExternalId, targetSystemId)).rejects.toThrow();
+
+				expect(logger.warning).toHaveBeenCalledWith(
+					new UserMigrationDatabaseOperationFailedLoggableException(userId, 'rollback', error)
+				);
+			});
+
 			it('should throw an error', async () => {
 				const { userId, targetExternalId, targetSystemId, error } = setup();
 
 				await expect(service.migrateUser(userId, targetExternalId, targetSystemId)).rejects.toThrow(
-					new UserMigrationDatabaseOperationFailedLoggableException(userId, error)
+					new UserMigrationDatabaseOperationFailedLoggableException(userId, 'migration', error)
 				);
 			});
 		});
