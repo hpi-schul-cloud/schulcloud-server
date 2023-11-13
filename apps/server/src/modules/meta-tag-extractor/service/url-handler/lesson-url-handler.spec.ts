@@ -1,0 +1,50 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
+import { LessonEntity } from '@shared/domain';
+import { setupEntities } from '@shared/testing';
+import { LessonService } from '@src/modules/lesson/service';
+import { LessonUrlHandler } from './lesson-url-handler';
+
+describe(LessonUrlHandler.name, () => {
+	let module: TestingModule;
+	let lessonService: DeepMocked<LessonService>;
+	let lessonUrlHandler: LessonUrlHandler;
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			providers: [
+				LessonUrlHandler,
+				{
+					provide: LessonService,
+					useValue: createMock<LessonService>(),
+				},
+			],
+		}).compile();
+
+		lessonService = module.get(LessonService);
+		lessonUrlHandler = module.get(LessonUrlHandler);
+		await setupEntities();
+	});
+
+	describe('getMetaData', () => {
+		it('should call lessonService with the correct id', async () => {
+			const id = 'af322312feae';
+			const url = `htttps://localhost/topics/${id}`;
+
+			await lessonUrlHandler.getMetaData(url);
+
+			expect(lessonService.findById).toHaveBeenCalledWith(id);
+		});
+
+		it('should take the title from the lessons name', async () => {
+			const id = 'af322312feae';
+			const url = `htttps://localhost/topics/${id}`;
+			const lessonName = 'My lesson';
+			lessonService.findById.mockResolvedValue({ name: lessonName } as LessonEntity);
+
+			const result = await lessonUrlHandler.getMetaData(url);
+
+			expect(result).toEqual(expect.objectContaining({ title: lessonName, type: 'lesson' }));
+		});
+	});
+});
