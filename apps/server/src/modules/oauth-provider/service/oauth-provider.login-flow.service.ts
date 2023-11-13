@@ -1,18 +1,18 @@
+import { LtiToolService } from '@modules/lti-tool/service';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { ExternalToolService } from '@modules/tool/external-tool/service';
+import { ToolFeatures, ToolFeaturesInterface } from '@modules/tool/tool-config';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiToolService } from '@modules/lti-tool/service';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { ExternalToolService } from '@modules/tool/external-tool/service';
-import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 
 @Injectable()
 export class OauthProviderLoginFlowService {
 	constructor(
 		private readonly ltiToolService: LtiToolService,
 		private readonly externalToolService: ExternalToolService,
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
+		@Inject(ToolFeatures) private readonly toolFeatures: ToolFeaturesInterface
 	) {}
 
 	public async findToolByClientId(clientId: string): Promise<ExternalTool | LtiToolDO> {

@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
 export const ToolFeatures = Symbol('ToolFeatures');
 
-export interface IToolFeatures {
+export interface ToolFeaturesInterface {
 	ctlToolsTabEnabled: boolean;
 	ltiToolsTabEnabled: boolean;
 	contextConfigurationEnabled: boolean;
@@ -11,7 +11,7 @@ export interface IToolFeatures {
 }
 
 export default class ToolConfiguration {
-	static toolFeatures: IToolFeatures = {
+	static toolFeatures: ToolFeaturesInterface = {
 		ctlToolsTabEnabled: Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED') as boolean,
 		ltiToolsTabEnabled: Configuration.get('FEATURE_LTI_TOOLS_TAB_ENABLED') as boolean,
 		contextConfigurationEnabled: Configuration.get('FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED') as boolean,
