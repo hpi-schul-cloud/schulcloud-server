@@ -12,7 +12,8 @@ import Redis from 'ioredis';
 			provide: IOREDIS,
 			useFactory: (logger: LegacyLogger) => {
 				logger.setContext(IoredisModule.name);
-
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+				logger.log(`Redis URI:${Configuration.get('REDIS_URI')}`);
 				if (Configuration.has('REDIS_URI')) {
 					const redisUrl: string = Configuration.get('REDIS_URI') as string;
 					const ioredisClient = new Redis(redisUrl);
