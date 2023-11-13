@@ -1,7 +1,6 @@
-import { RoleService } from '@modules/role/service/role.service';
-import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain';
+import { RoleService, RoleDto } from '../service';
 
 @Injectable()
 export class RoleUc {
