@@ -37,7 +37,7 @@ import {
 } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';
 import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
-import { IScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
+import { ScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
 
 const PermissionMapping = {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,
@@ -86,7 +86,7 @@ export class VideoConferenceDeprecatedUc {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
-		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
+		const scopeInfo: ScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
 
 		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
 
@@ -150,7 +150,7 @@ export class VideoConferenceDeprecatedUc {
 
 		await this.throwOnFeaturesDisabled(schoolId);
 
-		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
+		const scopeInfo: ScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
 
 		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
 
@@ -205,7 +205,7 @@ export class VideoConferenceDeprecatedUc {
 
 		await this.throwOnFeaturesDisabled(schoolId);
 
-		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
+		const scopeInfo: ScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
 
 		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
 
@@ -337,13 +337,13 @@ export class VideoConferenceDeprecatedUc {
 	 * @param {EntityId} userId
 	 * @param {VideoConferenceScope} conferenceScope
 	 * @param {EntityId} refId eventId or courseId, depending on scope.
-	 * @returns {Promise<IScopeInfo>}
+	 * @returns {Promise<ScopeInfo>}
 	 */
 	protected async getScopeInfo(
 		userId: EntityId,
 		conferenceScope: VideoConferenceScope,
 		refId: string
-	): Promise<IScopeInfo> {
+	): Promise<ScopeInfo> {
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE: {
 				const course: Course = await this.courseService.findById(refId);

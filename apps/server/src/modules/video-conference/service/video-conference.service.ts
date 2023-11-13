@@ -23,7 +23,7 @@ import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
 import { VideoConferenceOptions, VideoConferenceSettings, VideoConferenceSettingsInterface } from '../interface';
-import { IScopeInfo, VideoConferenceState } from '../uc/dto';
+import { ScopeInfo, VideoConferenceState } from '../uc/dto';
 
 @Injectable()
 export class VideoConferenceService {
@@ -165,7 +165,7 @@ export class VideoConferenceService {
 		return text.replace(/[^\dA-Za-zÀ-ÖØ-öø-ÿ.\-=_`´ ]/g, '');
 	}
 
-	async getScopeInfo(userId: EntityId, scopeId: string, scope: VideoConferenceScope): Promise<IScopeInfo> {
+	async getScopeInfo(userId: EntityId, scopeId: string, scope: VideoConferenceScope): Promise<ScopeInfo> {
 		switch (scope) {
 			case VideoConferenceScope.COURSE: {
 				const course: Course = await this.courseService.findById(scopeId);
@@ -197,7 +197,7 @@ export class VideoConferenceService {
 		scopeId: EntityId,
 		scope: VideoConferenceScope
 	): Promise<{ role: BBBRole; isGuest: boolean }> {
-		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, scopeId, scope);
+		const scopeInfo: ScopeInfo = await this.getScopeInfo(userId, scopeId, scope);
 
 		const role: BBBRole = await this.determineBbbRole(userId, scopeInfo.scopeId, scope);
 
