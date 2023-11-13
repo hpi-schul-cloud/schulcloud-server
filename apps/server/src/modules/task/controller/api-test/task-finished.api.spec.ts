@@ -14,9 +14,9 @@ import {
 } from '@shared/testing';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server/server.module';
-import { TaskListResponse } from '@modules/task/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
+import { TaskListResponse } from '../dto';
 
 class API {
 	app: INestApplication;

@@ -11,7 +11,7 @@ import {
 	taskFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@modules/server/server.module';
-import { TaskListResponse } from '@modules/task/controller/dto';
+import { TaskListResponse } from '../dto';
 
 const tomorrow = new Date(Date.now() + 86400000);
 

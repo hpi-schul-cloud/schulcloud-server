@@ -17,9 +17,9 @@ import {
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server/server.module';
-import { SubmissionStatusListResponse } from '@modules/task/controller/dto/submission.response';
 import { Request } from 'express';
 import request from 'supertest';
+import { SubmissionStatusListResponse } from '../dto/submission.response';
 
 class API {
 	app: INestApplication;

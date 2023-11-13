@@ -3,7 +3,7 @@ import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
 import { ITaskStatus, Permission, SortOrder } from '@shared/domain';
-import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo } from '@shared/repo';
 import {
 	courseFactory,
 	lessonFactory,
@@ -16,6 +16,7 @@ import {
 import { Action, AuthorizationService } from '@modules/authorization';
 import { TaskService } from '../service';
 import { TaskUC } from './task.uc';
+import { TaskRepo } from '../repo';
 
 describe('TaskUC', () => {
 	let module: TestingModule;

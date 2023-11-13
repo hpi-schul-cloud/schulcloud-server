@@ -5,11 +5,11 @@ import { EntityId, News, NewsTargetModel } from '@shared/domain';
 import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { FeathersAuthorizationService } from '@modules/authorization';
-import { CreateNewsParams, NewsListResponse, NewsResponse, UpdateNewsParams } from '@modules/news/controller/dto';
 import { ServerTestModule } from '@modules/server/server.module';
 import { Request } from 'express';
 import moment from 'moment';
 import request from 'supertest';
+import { CreateNewsParams, NewsListResponse, NewsResponse, UpdateNewsParams } from '../dto';
 
 describe('News Controller (API)', () => {
 	let app: INestApplication;

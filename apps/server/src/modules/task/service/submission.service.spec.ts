@@ -2,9 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Counted, Submission } from '@shared/domain';
 import { FileRecordParentType } from '@infra/rabbitmq';
-import { SubmissionRepo } from '@shared/repo';
 import { setupEntities, submissionFactory, taskFactory } from '@shared/testing';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { SubmissionRepo } from '../repo';
 import { SubmissionService } from './submission.service';
 
 describe('Submission Service', () => {
