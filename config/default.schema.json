@@ -1352,7 +1352,8 @@
 					"type": "string",
 					"description": "API key for accessing the Admin API."
 				}
-			}
+			},
+			"default": {}
 		}
 	},
 	"required": [],
