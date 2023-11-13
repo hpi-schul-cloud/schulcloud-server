@@ -1757,13 +1757,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/OauthApiModule.html" data-type="entity-link" >OauthApiModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-OauthApiModule-3dd14f2c4479f20a5a3315417be348dc129c0604bf62f78d83a7317758adf14c097117f016e17acb5d20b28f892fa07f7903a054abbef93d3d1817ef43d83220"' : 'data-bs-target="#xs-controllers-links-module-OauthApiModule-3dd14f2c4479f20a5a3315417be348dc129c0604bf62f78d83a7317758adf14c097117f016e17acb5d20b28f892fa07f7903a054abbef93d3d1817ef43d83220"' }>
+                                            'data-bs-target="#controllers-links-module-OauthApiModule-d42edfa92d0eae1f599894ce8487be1c3a611439abf3da2b7598cc06adc79a483bcbd8a742e453e7f8a484ec77ccdc20b086a978927d430ee01a0b9c1279bef2"' : 'data-bs-target="#xs-controllers-links-module-OauthApiModule-d42edfa92d0eae1f599894ce8487be1c3a611439abf3da2b7598cc06adc79a483bcbd8a742e453e7f8a484ec77ccdc20b086a978927d430ee01a0b9c1279bef2"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-OauthApiModule-3dd14f2c4479f20a5a3315417be348dc129c0604bf62f78d83a7317758adf14c097117f016e17acb5d20b28f892fa07f7903a054abbef93d3d1817ef43d83220"' :
-                                            'id="xs-controllers-links-module-OauthApiModule-3dd14f2c4479f20a5a3315417be348dc129c0604bf62f78d83a7317758adf14c097117f016e17acb5d20b28f892fa07f7903a054abbef93d3d1817ef43d83220"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-OauthApiModule-d42edfa92d0eae1f599894ce8487be1c3a611439abf3da2b7598cc06adc79a483bcbd8a742e453e7f8a484ec77ccdc20b086a978927d430ee01a0b9c1279bef2"' :
+                                            'id="xs-controllers-links-module-OauthApiModule-d42edfa92d0eae1f599894ce8487be1c3a611439abf3da2b7598cc06adc79a483bcbd8a742e453e7f8a484ec77ccdc20b086a978927d430ee01a0b9c1279bef2"' }>
                                             <li class="link">
                                                 <a href="controllers/OauthSSOController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >OauthSSOController</a>
                                             </li>
@@ -1771,18 +1771,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-OauthApiModule-3dd14f2c4479f20a5a3315417be348dc129c0604bf62f78d83a7317758adf14c097117f016e17acb5d20b28f892fa07f7903a054abbef93d3d1817ef43d83220"' : 'data-bs-target="#xs-injectables-links-module-OauthApiModule-3dd14f2c4479f20a5a3315417be348dc129c0604bf62f78d83a7317758adf14c097117f016e17acb5d20b28f892fa07f7903a054abbef93d3d1817ef43d83220"' }>
+                                        'data-bs-target="#injectables-links-module-OauthApiModule-d42edfa92d0eae1f599894ce8487be1c3a611439abf3da2b7598cc06adc79a483bcbd8a742e453e7f8a484ec77ccdc20b086a978927d430ee01a0b9c1279bef2"' : 'data-bs-target="#xs-injectables-links-module-OauthApiModule-d42edfa92d0eae1f599894ce8487be1c3a611439abf3da2b7598cc06adc79a483bcbd8a742e453e7f8a484ec77ccdc20b086a978927d430ee01a0b9c1279bef2"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-OauthApiModule-3dd14f2c4479f20a5a3315417be348dc129c0604bf62f78d83a7317758adf14c097117f016e17acb5d20b28f892fa07f7903a054abbef93d3d1817ef43d83220"' :
-                                        'id="xs-injectables-links-module-OauthApiModule-3dd14f2c4479f20a5a3315417be348dc129c0604bf62f78d83a7317758adf14c097117f016e17acb5d20b28f892fa07f7903a054abbef93d3d1817ef43d83220"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-OauthApiModule-d42edfa92d0eae1f599894ce8487be1c3a611439abf3da2b7598cc06adc79a483bcbd8a742e453e7f8a484ec77ccdc20b086a978927d430ee01a0b9c1279bef2"' :
+                                        'id="xs-injectables-links-module-OauthApiModule-d42edfa92d0eae1f599894ce8487be1c3a611439abf3da2b7598cc06adc79a483bcbd8a742e453e7f8a484ec77ccdc20b086a978927d430ee01a0b9c1279bef2"' }>
                                         <li class="link">
                                             <a href="injectables/HydraOauthUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >HydraOauthUc</a>
-                                        </li>
-                                        <li class="link">
-                                            <a href="injectables/OauthUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" class="deprecated-name">OauthUc</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -3034,7 +3031,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/AuthorizationError.html" data-type="entity-link" >AuthorizationError</a>
                             </li>
                             <li class="link">
-                                <a href="classes/AuthorizationParams.html" data-type="entity-link" class="deprecated-name">AuthorizationParams</a>
+                                <a href="classes/AuthorizationParams.html" data-type="entity-link" >AuthorizationParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/AxiosErrorFactory.html" data-type="entity-link" >AxiosErrorFactory</a>
@@ -4127,12 +4124,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/OauthLoginResponse.html" data-type="entity-link" >OauthLoginResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/OauthLoginStateDto.html" data-type="entity-link" >OauthLoginStateDto</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/OauthLoginStateMapper.html" data-type="entity-link" >OauthLoginStateMapper</a>
                             </li>
                             <li class="link">
                                 <a href="classes/OauthMigrationDto.html" data-type="entity-link" >OauthMigrationDto</a>
@@ -5340,9 +5331,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/OauthProviderUc.html" data-type="entity-link" >OauthProviderUc</a>
-                                </li>
-                                <li class="link">
-                                    <a href="injectables/OauthUc.html" data-type="entity-link" class="deprecated-name">OauthUc</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/OidcMockProvisioningStrategy.html" data-type="entity-link" >OidcMockProvisioningStrategy</a>
