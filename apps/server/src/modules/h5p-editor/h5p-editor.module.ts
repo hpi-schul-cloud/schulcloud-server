@@ -65,5 +65,7 @@ const providers = [
 	imports,
 	controllers,
 	providers,
+	exports: [ContentStorage, LibraryStorage],
 })
 export class H5PEditorModule {}
+export { LibraryStorage, ContentStorage, s3ConfigLibraries, s3ConfigContent };
