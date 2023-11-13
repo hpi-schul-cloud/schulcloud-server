@@ -1,11 +1,11 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import {
 	CopyFilesOfParentParams,
+	FileRecordParams,
 	FilesStorageEvents,
 	FilesStorageExchange,
 	ICopyFileDO,
 	IFileDO,
-	IFileRecordParams,
 	RpcMessageProducer,
 } from '@infra/rabbitmq';
 import { Injectable } from '@nestjs/common';
@@ -34,7 +34,7 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		return response;
 	}
 
-	async listFilesOfParent(payload: IFileRecordParams): Promise<IFileDO[]> {
+	async listFilesOfParent(payload: FileRecordParams): Promise<IFileDO[]> {
 		this.logger.debug({ action: 'listFilesOfParent:started', payload });
 		const response = await this.request<IFileDO[]>(FilesStorageEvents.LIST_FILES_OF_PARENT, payload);
 

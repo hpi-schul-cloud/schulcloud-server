@@ -29,11 +29,11 @@ export enum FileRecordParentType {
 
 export interface CopyFilesOfParentParams {
 	userId: EntityId;
-	source: IFileRecordParams;
-	target: IFileRecordParams;
+	source: FileRecordParams;
+	target: FileRecordParams;
 }
 
-export interface IFileRecordParams {
+export interface FileRecordParams {
 	schoolId: EntityId;
 	parentId: EntityId;
 	parentType: FileRecordParentType;
