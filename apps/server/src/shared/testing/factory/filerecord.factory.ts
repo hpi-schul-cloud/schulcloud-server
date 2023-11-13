@@ -1,5 +1,5 @@
+import { FileRecordParentType } from '@infra/rabbitmq';
 import { FileRecord, FileRecordProperties, FileRecordSecurityCheck } from '@modules/files-storage/entity';
-import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';

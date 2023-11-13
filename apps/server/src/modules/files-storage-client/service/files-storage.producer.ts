@@ -11,8 +11,8 @@ import {
 	IFileDO,
 	IFileRecordParams,
 	RpcMessageProducer,
-} from '@src/shared/infra/rabbitmq';
-import { FilesStorageClientConfig } from '../interfaces';
+} from '@infra/rabbitmq';
+import { IFilesStorageClientConfig } from '../interfaces';
 
 @Injectable()
 export class FilesStorageProducer extends RpcMessageProducer {

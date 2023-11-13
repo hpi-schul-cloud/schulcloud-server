@@ -1,7 +1,7 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
-import { CacheService } from '@shared/infra/cache';
-import { CacheStoreType } from '@shared/infra/cache/interface/cache-store-type.enum';
+import { CacheService } from '@infra/cache';
+import { CacheStoreType } from '@infra/cache/interface/cache-store-type.enum';
 import {
 	addTokenToWhitelist,
 	createRedisIdentifierFromJwtData,

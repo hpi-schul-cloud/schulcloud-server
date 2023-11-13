@@ -1,3 +1,5 @@
+import { SanisAnschriftResponse } from './sanis-anschrift-response';
+
 export interface SanisOrganisationResponse {
 	id: string;
 
@@ -6,4 +8,6 @@ export interface SanisOrganisationResponse {
 	name: string;
 
 	typ: string;
+
+	anschrift?: SanisAnschriftResponse;
 }

@@ -1,16 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { DynamicModule, Inject, MiddlewareConsumer, Module, NestModule, NotFoundException } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { ALL_ENTITIES } from '@shared/domain';
-import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { MailModule } from '@shared/infra/mail';
-import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
-import { REDIS_CLIENT, RedisModule } from '@shared/infra/redis';
-import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
-import { CoreModule } from '@src/core';
-import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import { AccountApiModule } from '@modules/account/account-api.module';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 import { BoardApiModule } from '@modules/board/board-api.module';
@@ -18,25 +8,36 @@ import { CollaborativeStorageModule } from '@modules/collaborative-storage';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
+import { LegacySchoolApiModule } from '@modules/legacy-school/legacy-school-api.module';
 import { LessonApiModule } from '@modules/lesson/lesson-api.module';
+import { MetaTagExtractorApiModule, MetaTagExtractorModule } from '@modules/meta-tag-extractor';
 import { NewsModule } from '@modules/news';
 import { OauthProviderApiModule } from '@modules/oauth-provider';
 import { OauthApiModule } from '@modules/oauth/oauth-api.module';
+import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
 import { RocketChatModule } from '@modules/rocketchat';
-import { LegacySchoolApiModule } from '@modules/legacy-school/legacy-school-api.module';
 import { SharingApiModule } from '@modules/sharing/sharing.module';
 import { SystemApiModule } from '@modules/system/system-api.module';
 import { TaskApiModule } from '@modules/task/task-api.module';
+import { TeamsApiModule } from '@modules/teams/teams-api.module';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
 import { ImportUserModule } from '@modules/user-import';
 import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-login-migration-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
+import { DynamicModule, Inject, MiddlewareConsumer, Module, NestModule, NotFoundException } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { ALL_ENTITIES } from '@shared/domain';
+import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
+import { MailModule } from '@infra/mail';
+import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
+import { RedisModule, REDIS_CLIENT } from '@infra/redis';
+import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { CoreModule } from '@src/core';
+import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import { RedisClient } from 'redis';
-import { TeamsApiModule } from '@modules/teams/teams-api.module';
-import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
@@ -47,6 +48,7 @@ const serverModules = [
 	AccountApiModule,
 	CollaborativeStorageModule,
 	OauthApiModule,
+	MetaTagExtractorModule,
 	TaskApiModule,
 	LessonApiModule,
 	NewsModule,
@@ -75,6 +77,7 @@ const serverModules = [
 	BoardApiModule,
 	GroupApiModule,
 	TeamsApiModule,
+	MetaTagExtractorApiModule,
 	PseudonymApiModule,
 ];
 

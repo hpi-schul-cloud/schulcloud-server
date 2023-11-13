@@ -436,6 +436,7 @@ describe('LdapStrategy', () => {
 					schoolId: school.id,
 					systemId: system.id,
 					accountId: account.id,
+					isExternalUser: true,
 				});
 			});
 		});
@@ -500,6 +501,7 @@ describe('LdapStrategy', () => {
 					schoolId: school.id,
 					systemId: system.id,
 					accountId: account.id,
+					isExternalUser: true,
 				});
 			});
 		});
