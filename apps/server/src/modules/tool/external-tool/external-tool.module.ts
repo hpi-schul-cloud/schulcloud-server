@@ -13,6 +13,7 @@ import {
 	ExternalToolServiceMapper,
 	ExternalToolValidationService,
 	ExternalToolVersionService,
+	ExternalToolMetadataService,
 } from './service';
 import { CommonToolModule } from '../common';
 
@@ -27,6 +28,7 @@ import { CommonToolModule } from '../common';
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
 		ExternalToolRepo,
+		ExternalToolMetadataService,
 	],
 	exports: [
 		ExternalToolService,
@@ -34,6 +36,7 @@ import { CommonToolModule } from '../common';
 		ExternalToolVersionService,
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
+		ExternalToolMetadataService,
 	],
 })
 export class ExternalToolModule {}

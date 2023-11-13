@@ -2,10 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { EntityId, IFindOptions, Page, Permission, User } from '@shared/domain';
 import { AuthorizationService } from '@modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { ExternalToolMetadataService } from '../service/external-tool-metadata.service';
-import { ExternalTool, ExternalToolConfig } from '../domain';
-import { ExternalToolMetadata } from '../domain/external-tool-metadata';
-import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
+import { ExternalTool, ExternalToolConfig, ExternalToolMetadata } from '../domain';
+import {
+	ExternalToolLogoService,
+	ExternalToolService,
+	ExternalToolValidationService,
+	ExternalToolMetadataService,
+} from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
 
 @Injectable()
@@ -80,7 +83,7 @@ export class ExternalToolUc {
 	async getMetadataForExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolMetadata> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		const metadata: ExternalToolMetadata = await this.externaltoolMetadataService.getMetadataComplicated(toolId);
+		const metadata: ExternalToolMetadata = await this.externaltoolMetadataService.getMetaData(toolId);
 		return metadata;
 	}
 

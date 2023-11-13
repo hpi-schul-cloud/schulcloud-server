@@ -17,11 +17,10 @@ import { LegacyLogger } from '@src/core/logger';
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Response } from 'express';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { ExternalTool } from '../domain';
+import { ExternalTool, ExternalToolMetadata } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
-import { ExternalToolMetadata } from '../domain/external-tool-metadata';
-import { ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
-import { ExternalToolMetadataMapper } from '../mapper/external-tool-metadata.mapper';
+
+import { ExternalToolRequestMapper, ExternalToolResponseMapper, ExternalToolMetadataMapper } from '../mapper';
 import { ExternalToolLogoService } from '../service';
 import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate } from '../uc';
 import {

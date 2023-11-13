@@ -53,13 +53,12 @@ export class ContextExternalToolRepo extends BaseDORepo<
 		return dos;
 	}
 
-	async countContextExternalToolsBySchoolToolIdAndContextType(
-		toolContextType: ToolContextType,
-		schoolToolId: EntityId
+	async countContextExternalToolsBySchoolToolIdsAndContextType(
+		contextType: ToolContextType,
+		schoolExternalToolIds: string[]
 	) {
 		const contextExternalToolCount = await this._em.count(this.entityName, {
-			schoolTool: schoolToolId,
-			contextType: toolContextType,
+			$and: [{ schoolTool: { $in: schoolExternalToolIds }, contextType }],
 		});
 
 		return contextExternalToolCount;

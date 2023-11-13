@@ -4,7 +4,7 @@ import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } fro
 import { Logger } from '@src/core/logger';
 import { ToolContextType } from '../../common/enum';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ExternalToolMetadata } from '../domain/external-tool-metadata';
+import { ExternalToolMetadata } from '../domain';
 
 @Injectable()
 export class ExternalToolMetadataService {
@@ -15,47 +15,40 @@ export class ExternalToolMetadataService {
 		private readonly contextToolRepo: ContextExternalToolRepo
 	) {}
 
-	async getMetadataComplicated(toolId: EntityId) {
-		const schoolExternalToolCount: number = await this.schoolToolRepo.countSchoolExternalToolsByExternalToolId(toolId);
-
+	async getMetaData(toolId: EntityId) {
 		const schoolExternalTools = await this.schoolToolRepo.findByExternalToolId(toolId);
-		let contextExternalToolCountPerContext: number;
+		if (schoolExternalTools.length < 0) {
+			throw Error('Metadata of tool could not be loaded because no SchoolExternalTool was found');
+		}
+		const schoolExternalToolIds: string[] = schoolExternalTools.map(
+			(schoolExternalTool: SchoolExternalTool): string =>
+				// We can be sure that the repo returns the id
+				schoolExternalTool.id as string
+		);
 
-		const toolCountPerContext: { ToolContextType; number }[] = await Promise.all(
-			Object.values(ToolContextType).map(async (contextType: ToolContextType): Promise<{ ToolContextType; number }> => {
-				const contextExternalToolCountPerSchool = await Promise.all(
-					schoolExternalTools.map(async (schoolExternalTool: SchoolExternalTool) => {
-						if (schoolExternalTool.id !== undefined) {
-							const countPerContext: number =
-								await this.contextToolRepo.countContextExternalToolsBySchoolToolIdAndContextType(
-									contextType,
-									schoolExternalTool.id
-								);
-							return countPerContext;
-						}
-						throw new Error('SchoolExternalTool id is undefined');
-					})
-				);
+		const contextTools = await Promise.all(
+			Object.values(ToolContextType).map(async (contextType: ToolContextType) => {
+				const countPerContext: number =
+					await this.contextToolRepo.countContextExternalToolsBySchoolToolIdsAndContextType(
+						contextType,
+						schoolExternalToolIds
+					);
 
-				contextExternalToolCountPerSchool.forEach((countPerContext: number) => {
-					contextExternalToolCountPerContext += countPerContext;
-				});
-
-				return { ToolContextType: contextType, number: contextExternalToolCountPerContext };
+				return { contextType, number: countPerContext };
 			})
 		);
 
-		const externaltoolMetadata = this.createExternalToolMetadata(schoolExternalToolCount, toolCountPerContext);
+		const externaltoolMetadata = this.createExternalToolMetadata(schoolExternalTools.length, contextTools);
 
 		return externaltoolMetadata;
 	}
 
 	private createContextExternalToolMetaData(
-		toolCountPerContext: { ToolContextType; number }[]
+		toolCountPerContext: { contextType: ToolContextType; number: number }[]
 	): Map<ToolContextType, number> {
 		const contextExternalToolMetadata: Map<ToolContextType, number> = new Map(
-			toolCountPerContext.map((contextExternalToolCountPerSchool: { ToolContextType; number }) => [
-				contextExternalToolCountPerSchool.ToolContextType,
+			toolCountPerContext.map((contextExternalToolCountPerSchool: { contextType: ToolContextType; number: number }) => [
+				contextExternalToolCountPerSchool.contextType,
 				contextExternalToolCountPerSchool.number,
 			])
 		);
@@ -65,7 +58,7 @@ export class ExternalToolMetadataService {
 
 	private createExternalToolMetadata(
 		schoolExternalToolCount: number,
-		contextExternalToolCountPerContext: { ToolContextType; number }[]
+		contextExternalToolCountPerContext: { contextType; number }[]
 	): ExternalToolMetadata {
 		const externaltoolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
 			schoolExternalToolCount,
