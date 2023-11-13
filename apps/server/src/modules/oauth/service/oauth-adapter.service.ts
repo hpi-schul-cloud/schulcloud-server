@@ -1,10 +1,10 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common/decorators';
-import { AxiosResponse } from 'axios';
+import { AxiosResponse, isAxiosError } from 'axios';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
-import { OAuthSSOError } from '../loggable';
+import { TokenRequestLoggableException } from '../loggable';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 
 @Injectable()
@@ -40,8 +40,11 @@ export class OauthAdapterService {
 		let responseToken: AxiosResponse<OauthTokenResponse>;
 		try {
 			responseToken = await lastValueFrom(observable);
-		} catch (error) {
-			throw new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step');
+		} catch (error: unknown) {
+			if (isAxiosError(error)) {
+				throw new TokenRequestLoggableException(error);
+			}
+			throw error;
 		}
 
 		return responseToken.data;
