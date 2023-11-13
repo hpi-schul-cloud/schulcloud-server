@@ -7,6 +7,11 @@ import { MetaTagExtractorService } from './meta-tag-extractor.service';
 import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
 import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } from './url-handler';
 
+const INTERNAL_DOMAIN = 'my-school-cloud.org';
+const INTERNAL_URL = `https://${INTERNAL_DOMAIN}/my-article`;
+const UNKNOWN_INTERNAL_URL = `https://${INTERNAL_DOMAIN}/playground/23hafe23234`;
+const EXTERNAL_URL = 'https://de.wikipedia.org/example-article';
+
 describe(MetaTagExtractorService.name, () => {
 	let module: TestingModule;
 	let taskUrlHandler: DeepMocked<TaskUrlHandler>;
@@ -58,7 +63,7 @@ describe(MetaTagExtractorService.name, () => {
 
 	describe('isInternalUrl', () => {
 		const setup = () => {
-			Configuration.set('SC_DOMAIN', 'localhost');
+			Configuration.set('SC_DOMAIN', INTERNAL_DOMAIN);
 			taskUrlHandler.doesUrlMatch.mockReturnValueOnce(false);
 			lessonUrlHandler.doesUrlMatch.mockReturnValueOnce(false);
 			courseUrlHandler.doesUrlMatch.mockReturnValueOnce(false);
@@ -68,42 +73,39 @@ describe(MetaTagExtractorService.name, () => {
 		it('should return true for internal urls', () => {
 			setup();
 
-			const INTERNAL_URL = 'https://localhost/my-article';
 			expect(service.isInternalUrl(INTERNAL_URL)).toBe(true);
 		});
 
 		it('should return false for external urls', () => {
 			setup();
 
-			const EXTERNAL_URL = 'https://de.wikipedia.org/example-article';
 			expect(service.isInternalUrl(EXTERNAL_URL)).toBe(false);
 		});
 	});
 
 	describe('tryInternalLinkMetaTags', () => {
 		const setup = () => {
-			Configuration.set('SC_DOMAIN', 'localhost');
+			Configuration.set('SC_DOMAIN', INTERNAL_DOMAIN);
 			taskUrlHandler.doesUrlMatch.mockReturnValueOnce(false);
 			lessonUrlHandler.doesUrlMatch.mockReturnValueOnce(false);
 			boardUrlHandler.doesUrlMatch.mockReturnValueOnce(false);
-			const url = 'https://localhost/fitting-url';
 			const mockedMetaTags: MetaData = {
 				title: 'My Title',
-				url,
+				url: INTERNAL_URL,
 				description: '',
 				type: 'course',
 			};
 
-			return { mockedMetaTags, url };
+			return { mockedMetaTags };
 		};
 
 		describe('when url matches to a handler', () => {
 			it('should return the handlers meta tags', async () => {
-				const { mockedMetaTags, url } = setup();
+				const { mockedMetaTags } = setup();
 				courseUrlHandler.doesUrlMatch.mockReturnValueOnce(true);
 				courseUrlHandler.getMetaData.mockResolvedValueOnce(mockedMetaTags);
 
-				const result = await service.tryInternalLinkMetaTags(url);
+				const result = await service.tryInternalLinkMetaTags(INTERNAL_URL);
 
 				expect(result).toEqual(mockedMetaTags);
 			});
@@ -114,10 +116,20 @@ describe(MetaTagExtractorService.name, () => {
 				setup();
 				courseUrlHandler.doesUrlMatch.mockReturnValueOnce(false);
 
-				const internalUrl = 'https://localhost/playground/23hafe23234';
-				const result = await service.tryInternalLinkMetaTags(internalUrl);
+				const result = await service.tryInternalLinkMetaTags(UNKNOWN_INTERNAL_URL);
 
 				expect(result).toEqual(expect.objectContaining({ type: 'unknown' }));
+			});
+		});
+
+		describe('when url is external', () => {
+			it('should return undefined', async () => {
+				setup();
+				courseUrlHandler.doesUrlMatch.mockReturnValueOnce(false);
+
+				const result = await service.tryInternalLinkMetaTags(EXTERNAL_URL);
+
+				expect(result).toBeUndefined();
 			});
 		});
 	});
