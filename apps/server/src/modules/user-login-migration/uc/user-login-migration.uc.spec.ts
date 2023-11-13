@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthenticationService } from '@modules/authentication/services/authentication.service';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
@@ -18,8 +19,9 @@ import {
 	userFactory,
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { ExternalSchoolNumberMissingLoggableException } from '../loggable';
+import { InvalidUserLoginMigrationLoggableException } from '../loggable/invalid-user-login-migration.loggable-exception';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { UserLoginMigrationUc } from './user-login-migration.uc';
 
@@ -74,8 +76,8 @@ describe(UserLoginMigrationUc.name, () => {
 					useValue: createMock<LegacySchoolService>(),
 				},
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
@@ -278,6 +280,14 @@ describe(UserLoginMigrationUc.name, () => {
 					accessToken: 'accessToken',
 				});
 
+				const userLoginMigration = userLoginMigrationDOFactory.build({
+					id: new ObjectId().toHexString(),
+					targetSystemId: 'systemId',
+					closedAt: undefined,
+					finishedAt: undefined,
+				});
+
+				userLoginMigrationService.findMigrationByUser.mockResolvedValueOnce(userLoginMigration);
 				oAuthService.authenticateUser.mockResolvedValueOnce(tokenDto);
 				provisioningService.getData.mockResolvedValueOnce(oauthData);
 
@@ -356,6 +366,14 @@ describe(UserLoginMigrationUc.name, () => {
 					accessToken: 'accessToken',
 				});
 
+				const userLoginMigration = userLoginMigrationDOFactory.build({
+					id: new ObjectId().toHexString(),
+					targetSystemId: 'systemId',
+					closedAt: undefined,
+					finishedAt: undefined,
+				});
+
+				userLoginMigrationService.findMigrationByUser.mockResolvedValueOnce(userLoginMigration);
 				oAuthService.authenticateUser.mockResolvedValueOnce(tokenDto);
 				provisioningService.getData.mockResolvedValueOnce(oauthData);
 				schoolMigrationService.getSchoolForMigration.mockResolvedValueOnce(schoolDO);
@@ -414,6 +432,14 @@ describe(UserLoginMigrationUc.name, () => {
 					accessToken: 'accessToken',
 				});
 
+				const userLoginMigration = userLoginMigrationDOFactory.build({
+					id: new ObjectId().toHexString(),
+					targetSystemId: 'systemId',
+					closedAt: undefined,
+					finishedAt: undefined,
+				});
+
+				userLoginMigrationService.findMigrationByUser.mockResolvedValueOnce(userLoginMigration);
 				oAuthService.authenticateUser.mockResolvedValueOnce(tokenDto);
 				provisioningService.getData.mockResolvedValueOnce(oauthData);
 				schoolMigrationService.getSchoolForMigration.mockResolvedValueOnce(null);
@@ -450,6 +476,14 @@ describe(UserLoginMigrationUc.name, () => {
 					accessToken: 'accessToken',
 				});
 
+				const userLoginMigration = userLoginMigrationDOFactory.build({
+					id: new ObjectId().toHexString(),
+					targetSystemId: 'systemId',
+					closedAt: undefined,
+					finishedAt: undefined,
+				});
+
+				userLoginMigrationService.findMigrationByUser.mockResolvedValueOnce(userLoginMigration);
 				oAuthService.authenticateUser.mockResolvedValueOnce(tokenDto);
 				provisioningService.getData.mockResolvedValueOnce(oauthData);
 				schoolMigrationService.getSchoolForMigration.mockResolvedValueOnce(null);
@@ -487,6 +521,14 @@ describe(UserLoginMigrationUc.name, () => {
 					accessToken: 'accessToken',
 				});
 
+				const userLoginMigration = userLoginMigrationDOFactory.build({
+					id: new ObjectId().toHexString(),
+					targetSystemId: 'systemId',
+					closedAt: undefined,
+					finishedAt: undefined,
+				});
+
+				userLoginMigrationService.findMigrationByUser.mockResolvedValueOnce(userLoginMigration);
 				oAuthService.authenticateUser.mockResolvedValueOnce(tokenDto);
 				provisioningService.getData.mockResolvedValueOnce(oauthData);
 				schoolMigrationService.getSchoolForMigration.mockResolvedValueOnce(null);
@@ -501,6 +543,61 @@ describe(UserLoginMigrationUc.name, () => {
 
 				await expect(uc.migrate('jwt', 'currentUserId', 'systemId', 'code', 'redirectUri')).rejects.toThrow(
 					new ExternalSchoolNumberMissingLoggableException(oauthData.externalSchool?.externalId as string)
+				);
+			});
+		});
+
+		describe('when no user login migration is running', () => {
+			const setup = () => {
+				userLoginMigrationService.findMigrationByUser.mockResolvedValueOnce(null);
+			};
+
+			it('should throw an error', async () => {
+				setup();
+
+				await expect(uc.migrate('jwt', 'currentUserId', 'systemId', 'code', 'redirectUri')).rejects.toThrow(
+					InvalidUserLoginMigrationLoggableException
+				);
+			});
+		});
+
+		describe('when the user login migration is closed', () => {
+			const setup = () => {
+				const userLoginMigration = userLoginMigrationDOFactory.build({
+					id: new ObjectId().toHexString(),
+					targetSystemId: 'systemId',
+					closedAt: new Date(),
+				});
+
+				userLoginMigrationService.findMigrationByUser.mockResolvedValueOnce(userLoginMigration);
+			};
+
+			it('should throw an error', async () => {
+				setup();
+
+				await expect(uc.migrate('jwt', 'currentUserId', 'systemId', 'code', 'redirectUri')).rejects.toThrow(
+					InvalidUserLoginMigrationLoggableException
+				);
+			});
+		});
+
+		describe('when trying to migrate to the wrong system', () => {
+			const setup = () => {
+				const userLoginMigration = userLoginMigrationDOFactory.build({
+					id: new ObjectId().toHexString(),
+					targetSystemId: 'wrongSystemId',
+					closedAt: undefined,
+					finishedAt: undefined,
+				});
+
+				userLoginMigrationService.findMigrationByUser.mockResolvedValueOnce(userLoginMigration);
+			};
+
+			it('should throw an error', async () => {
+				setup();
+
+				await expect(uc.migrate('jwt', 'currentUserId', 'systemId', 'code', 'redirectUri')).rejects.toThrow(
+					InvalidUserLoginMigrationLoggableException
 				);
 			});
 		});

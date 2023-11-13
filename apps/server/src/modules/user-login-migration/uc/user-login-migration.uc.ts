@@ -7,8 +7,14 @@ import { OauthDataDto } from '@modules/provisioning/dto';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { EntityId, LegacySchoolDo, Page, Permission, User, UserLoginMigrationDO } from '@shared/domain';
-import { LegacyLogger } from '@src/core/logger';
-import { ExternalSchoolNumberMissingLoggableException } from '../loggable';
+import { Logger } from '@src/core/logger';
+import {
+	ExternalSchoolNumberMissingLoggableException,
+	InvalidUserLoginMigrationLoggableException,
+	SchoolMigrationSuccessfulLoggable,
+	UserMigrationStartedLoggable,
+	UserMigrationSuccessfulLoggable,
+} from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { UserLoginMigrationQuery } from './dto';
 
@@ -22,7 +28,7 @@ export class UserLoginMigrationUc {
 		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly authenticationService: AuthenticationService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly logger: LegacyLogger
+		private readonly logger: Logger
 	) {}
 
 	async getMigrations(userId: EntityId, query: UserLoginMigrationQuery): Promise<Page<UserLoginMigrationDO>> {
@@ -65,22 +71,28 @@ export class UserLoginMigrationUc {
 
 	async migrate(
 		userJwt: string,
-		currentUserId: string,
+		currentUserId: EntityId,
 		targetSystemId: EntityId,
 		code: string,
 		redirectUri: string
 	): Promise<void> {
+		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationByUser(
+			currentUserId
+		);
+
+		if (!userLoginMigration || userLoginMigration.closedAt || userLoginMigration.targetSystemId !== targetSystemId) {
+			throw new InvalidUserLoginMigrationLoggableException(currentUserId, targetSystemId);
+		}
+
 		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(targetSystemId, redirectUri, code);
 
-		this.logMigrationInformation(currentUserId, `Migrates to targetSystem with id ${targetSystemId}`);
+		this.logger.debug(new UserMigrationStartedLoggable(currentUserId, userLoginMigration));
 
 		const data: OauthDataDto = await this.provisioningService.getData(
 			targetSystemId,
 			tokenDto.idToken,
 			tokenDto.accessToken
 		);
-
-		this.logMigrationInformation(currentUserId, undefined, data, targetSystemId);
 
 		if (data.externalSchool) {
 			if (!data.externalSchool.officialSchoolNumber) {
@@ -93,11 +105,6 @@ export class UserLoginMigrationUc {
 				data.externalSchool.officialSchoolNumber
 			);
 
-			this.logMigrationInformation(
-				currentUserId,
-				`Found school with officialSchoolNumber (${data.externalSchool.officialSchoolNumber})`
-			);
-
 			if (schoolToMigrate) {
 				await this.schoolMigrationService.migrateSchool(
 					schoolToMigrate,
@@ -105,38 +112,14 @@ export class UserLoginMigrationUc {
 					targetSystemId
 				);
 
-				this.logMigrationInformation(currentUserId, undefined, data, data.system.systemId, schoolToMigrate);
+				this.logger.debug(new SchoolMigrationSuccessfulLoggable(schoolToMigrate, userLoginMigration));
 			}
 		}
 
 		await this.userMigrationService.migrateUser(currentUserId, data.externalUser.externalId, targetSystemId);
 
-		// TODO this.logMigrationInformation(currentUserId, `Successfully migrated user and redirects to ${migrationDto.redirect}`);
+		this.logger.debug(new UserMigrationSuccessfulLoggable(currentUserId, userLoginMigration));
 
 		await this.authenticationService.removeJwtFromWhitelist(userJwt);
-	}
-
-	private logMigrationInformation(
-		userId: string,
-		text?: string,
-		oauthData?: OauthDataDto,
-		targetSystemId?: string,
-		school?: LegacySchoolDo
-	) {
-		let message = `MIGRATION (userId: ${userId}): ${text ?? ''}`;
-		if (!school && oauthData) {
-			message += `Provisioning data received from targetSystem (${targetSystemId ?? 'N/A'} with data: 
-			{ 
-				"officialSchoolNumber": ${oauthData.externalSchool?.officialSchoolNumber ?? 'N/A'},
-				"externalSchoolId": ${oauthData.externalSchool?.externalId ?? ''}
-				"externalUserId": ${oauthData.externalUser.externalId},
-			})`;
-		}
-		if (school && oauthData) {
-			message += `Successfully migrated school (${school.name} - (${school.id ?? 'N/A'}) to targetSystem ${
-				targetSystemId ?? 'N/A'
-			} which has the externalSchoolId ${oauthData.externalSchool?.externalId ?? 'N/A'}`;
-		}
-		this.logger.debug(message);
 	}
 }

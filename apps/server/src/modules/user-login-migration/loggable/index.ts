@@ -8,3 +8,5 @@ export * from './school-number-mismatch.loggable-exception';
 export * from './external-school-number-missing.loggable-exception';
 export * from './user-migration-database-operation-failed.loggable-exception';
 export * from './school-migration-database-operation-failed.loggable-exception';
+export * from './invalid-user-login-migration.loggable-exception';
+export * from './debug';
