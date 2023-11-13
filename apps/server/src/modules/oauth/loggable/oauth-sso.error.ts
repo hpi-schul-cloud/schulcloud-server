@@ -1,6 +1,10 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { SSOErrorCode } from './sso-error-code.enum';
 
+/**
+ * @deprecated Please create a loggable instead.
+ * This will be removed with: https://ticketsystem.dbildungscloud.de/browse/N21-1483
+ */
 export class OAuthSSOError extends InternalServerErrorException {
 	readonly message: string;
 
