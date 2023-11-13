@@ -6,15 +6,15 @@ import { KeycloakAdministrationService } from '../../keycloak-administration/ser
 import { JsonAccount } from '../interface/json-account.interface';
 import { JsonUser } from '../interface/json-user.interface';
 import {
-	IKeycloakConfigurationInputFiles,
 	KeycloakConfigurationInputFiles,
+	KeycloakConfigurationInputFilesInterface,
 } from '../interface/keycloak-configuration-input-files.interface';
 
 export class KeycloakSeedService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly logger: LegacyLogger,
-		@Inject(KeycloakConfigurationInputFiles) private readonly inputFiles: IKeycloakConfigurationInputFiles
+		@Inject(KeycloakConfigurationInputFiles) private readonly inputFiles: KeycloakConfigurationInputFilesInterface
 	) {}
 
 	async seed(): Promise<number> {

@@ -1,6 +1,6 @@
 export const KeycloakConfigurationInputFiles = Symbol('KeycloakConfigurationInputFiles');
 
-export interface IKeycloakConfigurationInputFiles {
+export interface KeycloakConfigurationInputFilesInterface {
 	accountsFile: string;
 	usersFile: string;
 }

@@ -1,7 +1,7 @@
-import { IKeycloakConfigurationInputFiles } from './interface/keycloak-configuration-input-files.interface';
+import { KeycloakConfigurationInputFilesInterface } from './interface/keycloak-configuration-input-files.interface';
 
 export default class KeycloakConfiguration {
-	static keycloakInputFiles: IKeycloakConfigurationInputFiles = {
+	static keycloakInputFiles: KeycloakConfigurationInputFilesInterface = {
 		accountsFile: './backup/setup/accounts.json',
 		usersFile: './backup/setup/users.json',
 	};
