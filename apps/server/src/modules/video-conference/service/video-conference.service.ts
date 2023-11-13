@@ -1,3 +1,8 @@
+import { CalendarEventDto, CalendarService } from '@infra/calendar';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { CourseService } from '@modules/learnroom';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import {
 	Course,
@@ -14,21 +19,16 @@ import {
 	VideoConferenceOptionsDO,
 	VideoConferenceScope,
 } from '@shared/domain';
-import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { CourseService } from '@modules/learnroom';
-import { LegacySchoolService } from '@modules/legacy-school';
-import { UserService } from '@modules/user';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
-import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
+import { VideoConferenceOptions, VideoConferenceSettings, VideoConferenceSettingsInterface } from '../interface';
 import { IScopeInfo, VideoConferenceState } from '../uc/dto';
 
 @Injectable()
 export class VideoConferenceService {
 	constructor(
-		@Inject(VideoConferenceSettings) private readonly vcSettings: IVideoConferenceSettings,
+		@Inject(VideoConferenceSettings) private readonly vcSettings: VideoConferenceSettingsInterface,
 		private readonly courseService: CourseService,
 		private readonly calendarService: CalendarService,
 		private readonly authorizationService: AuthorizationService,
