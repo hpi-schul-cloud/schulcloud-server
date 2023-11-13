@@ -43,7 +43,7 @@ describe('PermissionContextEntity Entity', () => {
 
 			it('should resolve nested permissions', () => {
 				const { user, permissionContext } = setup();
-				const resolvedPermissions = permissionContext.resolvedPermissions(user);
+				const resolvedPermissions = permissionContext.resolvedPermissions(user.id);
 				expect(resolvedPermissions.sort()).toEqual([Permission.ADD_SCHOOL_MEMBERS, Permission.ACCOUNT_EDIT].sort());
 			});
 		});

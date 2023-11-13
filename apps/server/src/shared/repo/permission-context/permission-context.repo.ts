@@ -1,6 +1,6 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { PermissionContextEntity } from '@shared/domain';
+import { EntityId, PermissionContextEntity } from '@shared/domain';
 import { BaseRepo } from '../base.repo';
 
 // TODO: add test
@@ -10,7 +10,7 @@ export class PermissionContextRepo extends BaseRepo<PermissionContextEntity> {
 		return PermissionContextEntity;
 	}
 
-	findByContextReference(contextReference: ObjectId): Promise<PermissionContextEntity> {
-		return this._em.findOneOrFail(PermissionContextEntity, { contextReference });
+	findByContextReference(contextReference: EntityId): Promise<PermissionContextEntity> {
+		return this._em.findOneOrFail(PermissionContextEntity, { contextReference: new ObjectId(contextReference) });
 	}
 }

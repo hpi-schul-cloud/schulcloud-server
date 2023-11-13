@@ -1,8 +1,8 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { BoardExternalReference, Column, ColumnBoard, EntityId } from '@shared/domain';
+import { forwardRef, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BoardExternalReference, Column, ColumnBoard, EntityId, Permission } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@modules/authorization/domain';
-import { Action } from '@modules/authorization';
+import { Action, PermissionContextService } from '@modules/authorization';
 import { CardService, ColumnBoardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 import { BaseUc } from './base.uc';
@@ -16,17 +16,31 @@ export class BoardUc extends BaseUc {
 		private readonly cardService: CardService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnService: ColumnService,
-		private readonly logger: LegacyLogger
+		private readonly logger: LegacyLogger,
+		protected readonly permissionContextService: PermissionContextService
 	) {
 		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(BoardUc.name);
 	}
 
+	private async pocCheckPermission(
+		userId: EntityId,
+		contextReference: EntityId,
+		permissionsToContain: Permission[]
+	): Promise<void> {
+		const permissions = await this.permissionContextService.resolvePermissions(userId, contextReference);
+		const hasPermission = permissionsToContain.every((permission) => permissions.includes(permission));
+		if (!hasPermission) {
+			throw new UnauthorizedException();
+		}
+	}
+
 	async findBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {
 		this.logger.debug({ action: 'findBoard', userId, boardId });
+		await this.pocCheckPermission(userId, boardId, [Permission.BOARD_READ]);
 
 		const board = await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.read);
+		// await this.checkPermission(userId, board, Action.read);
 
 		return board;
 	}
@@ -34,8 +48,9 @@ export class BoardUc extends BaseUc {
 	async findBoardContext(userId: EntityId, boardId: EntityId): Promise<BoardExternalReference> {
 		this.logger.debug({ action: 'findBoardContext', userId, boardId });
 
+		await this.pocCheckPermission(userId, boardId, [Permission.BOARD_READ]);
 		const board = await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.read);
+		// await this.checkPermission(userId, board, Action.read);
 
 		return board.context;
 	}

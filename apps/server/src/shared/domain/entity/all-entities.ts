@@ -46,6 +46,7 @@ import { TeamEntity, TeamUserEntity } from './team.entity';
 import { UserLoginMigrationEntity } from './user-login-migration.entity';
 import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
+import { PermissionContextEntity } from './permission-context.entity';
 
 export const ALL_ENTITIES = [
 	Account,
@@ -100,4 +101,5 @@ export const ALL_ENTITIES = [
 	UserLoginMigrationEntity,
 	VideoConference,
 	GroupEntity,
+	PermissionContextEntity,
 ];

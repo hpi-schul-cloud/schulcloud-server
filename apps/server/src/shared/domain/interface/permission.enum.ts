@@ -1,4 +1,14 @@
+// NOTE: we should remove enum and replace them with type of string
+// to be able to group them and merge them into Permission type
+// currently typescript does not allow merging of enums
 export enum Permission {
+	/** POC: BOARD PERMISSIONS */
+	BOARD_READ = 'BOARD_READ',
+	BOARD_CREATE = 'BOARD_CREATE',
+	BOARD_CREATE_COLUMN = 'BOARD_CREATE_COLUMN',
+	BOARD_DELETE = 'BOARD_DELETE',
+	BOARD_UPDATE_TITLE = 'BOARD_UPDATE_TITLE',
+	/** POC END: BOARD PERMISSIONS */
 	ACCOUNT_CREATE = 'ACCOUNT_CREATE',
 	ACCOUNT_EDIT = 'ACCOUNT_EDIT',
 	ADD_SCHOOL_MEMBERS = 'ADD_SCHOOL_MEMBERS',

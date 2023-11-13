@@ -1,6 +1,6 @@
 /* istanbul ignore file */
-import { ObjectId } from 'bson';
-import { PermissionContextEntity, IPermissionContextProperties, UserDelta } from '@shared/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { PermissionContextEntity, IPermissionContextProperties, UserDelta, EntityId } from '@shared/domain';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
@@ -17,7 +17,7 @@ class PermissionContextFactory extends BaseFactory<PermissionContextEntity, IPer
 		return this.params(params);
 	}
 
-	withContextReference(contextReference: ObjectId): this {
+	withContextReference(contextReference: EntityId): this {
 		const params: DeepPartial<IPermissionContextProperties> = { contextReference };
 
 		return this.params(params);

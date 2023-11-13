@@ -1,4 +1,3 @@
-import { ObjectId } from 'bson';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { permissionContextFactory, setupEntities, userFactory } from '@shared/testing';
@@ -50,10 +49,10 @@ describe('PermissionContextService', () => {
 
 			it('should call permissionContextRepo', async () => {
 				const { user, spy } = setup();
-				const oid = new ObjectId();
-				const resolvedPermissions = await service.resolvePermissions(user, oid);
+				const id = 'TEST ID';
+				const resolvedPermissions = await service.resolvePermissions(user.id, id);
 				expect(resolvedPermissions).toEqual([]);
-				expect(spy).toBeCalledWith(oid);
+				expect(spy).toBeCalledWith(id);
 			});
 		});
 	});

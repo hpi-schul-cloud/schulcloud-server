@@ -1,5 +1,5 @@
-import { Embeddable, Entity, Index, ManyToOne, Property } from '@mikro-orm/core';
-import { ObjectId } from 'bson';
+import { Embeddable, Entity, Index, ManyToOne, Property, Unique } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { Permission } from '../interface';
 import { User } from './user.entity';
@@ -28,11 +28,10 @@ export interface IPermissionContextProperties {
 	parentContext: PermissionContextEntity | null;
 }
 
-// TODO: add test
 @Entity({ tableName: 'permission-context' })
 export class PermissionContextEntity extends BaseEntityWithTimestamps {
 	@Property()
-	@Index()
+	@Unique()
 	contextReference: ObjectId;
 
 	@Property()
@@ -54,19 +53,19 @@ export class PermissionContextEntity extends BaseEntityWithTimestamps {
 		this.userDelta = props.userDelta ?? new UserDelta([]);
 	}
 
-	private resolveUserDelta(user: User): {
+	private resolveUserDelta(userId: User['id']): {
 		includedPermissions: Permission[];
 		excludedPermissions: Permission[];
 	} {
-		const userDelta = this.userDelta[user.id] ?? { includedPermissions: [], excludedPermissions: [] };
+		const userDelta = this.userDelta[userId] ?? { includedPermissions: [], excludedPermissions: [] };
 
 		return userDelta;
 	}
 
-	public resolvedPermissions(user: User): Permission[] {
-		const parentPermissions = this.parentContext?.resolvedPermissions(user) ?? [];
+	public resolvedPermissions(userId: User['id']): Permission[] {
+		const parentPermissions = this.parentContext?.resolvedPermissions(userId) ?? [];
 
-		const userDelta = this.resolveUserDelta(user);
+		const userDelta = this.resolveUserDelta(userId);
 
 		const finalPermissions = parentPermissions
 			.concat(userDelta.includedPermissions)
