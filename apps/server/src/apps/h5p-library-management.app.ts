@@ -7,8 +7,10 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { LegacyLogger } from '@src/core/logger';
-import { H5PLibraryManagementModule } from '@src/modules/h5p-library-management/h5p-library-management.module';
-import { H5PLibraryManagementService } from '@src/modules/h5p-library-management/service/h5p-library-management.service';
+import {
+	H5PLibraryManagementModule,
+	H5PLibraryManagementService,
+} from '@modules/h5p-library-management/h5p-library-management.module';
 
 async function bootstrap() {
 	sourceMapInstall();

@@ -50,5 +50,7 @@ const providers = [Logger, H5PLibraryManagementService, ContentStorage, H5PConte
 	imports,
 	controllers,
 	providers,
+	exports: [H5PLibraryManagementService],
 })
 export class H5PLibraryManagementModule {}
+export { H5PLibraryManagementService };
