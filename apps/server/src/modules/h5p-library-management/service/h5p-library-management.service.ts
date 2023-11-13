@@ -55,7 +55,8 @@ export class H5PLibraryManagementService {
 	}
 
 	async uninstallUnwantedLibraries(wantedLibraries: string[]) {
-		for (const installedLibrary of await this.libraryAdministration.getLibraries()) {
+		const installedLibraries = await this.libraryAdministration.getLibraries();
+		for (const installedLibrary of installedLibraries) {
 			if (!wantedLibraries.includes(installedLibrary.machineName) && installedLibrary.dependentsCount === 0) {
 				// force removal, don't let content prevent it, therefore use libraryStorage directly
 				// also to avoid conflicts, remove one-by-one, not using for-await:
