@@ -4,17 +4,14 @@ import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
-
 import { S3ClientModule } from '@infra/s3-client';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
 import { UserModule } from '../user';
-
 import { config, s3ConfigContent, s3ConfigLibraries } from '../h5p-editor/h5p-editor.config';
 import { H5PContentRepo, LibraryRepo } from '../h5p-editor/repo';
 import { ContentStorage, LibraryStorage } from '../h5p-editor/service';
-
 import { H5PContent, InstalledLibrary } from '../h5p-editor/entity';
 import { H5PLibraryManagementService } from './service/h5p-library-management.service';
 
