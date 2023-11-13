@@ -1,8 +1,4 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { EntityId } from '@shared/domain';
-import { LegacyLogger } from '@src/core/logger';
 import {
 	FilesStorageEvents,
 	FilesStorageExchange,
@@ -12,7 +8,11 @@ import {
 	IFileRecordParams,
 	RpcMessageProducer,
 } from '@infra/rabbitmq';
-import { IFilesStorageClientConfig } from '../interfaces';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { EntityId } from '@shared/domain';
+import { LegacyLogger } from '@src/core/logger';
+import { FilesStorageClientConfig } from '../interfaces';
 
 @Injectable()
 export class FilesStorageProducer extends RpcMessageProducer {
