@@ -1,18 +1,18 @@
 /* istanbul ignore file */
 import { ObjectId } from 'bson';
-import { PermissionContextEntity, IPermissionContextProperties, Role } from '@shared/domain';
+import { PermissionContextEntity, IPermissionContextProperties, UserDelta } from '@shared/domain';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
 class PermissionContextFactory extends BaseFactory<PermissionContextEntity, IPermissionContextProperties> {
-	withRole(role: Role): this {
-		const params: DeepPartial<IPermissionContextProperties> = { role };
+	withUserDelta(userDelta: IPermissionContextProperties['userDelta']): this {
+		const params: DeepPartial<IPermissionContextProperties> = { userDelta };
 
 		return this.params(params);
 	}
 
 	withParentContext(parentContext: PermissionContextEntity): this {
-		const params: DeepPartial<IPermissionContextProperties> = { parent_context: parentContext };
+		const params: DeepPartial<IPermissionContextProperties> = { parentContext };
 
 		return this.params(params);
 	}
@@ -26,10 +26,8 @@ class PermissionContextFactory extends BaseFactory<PermissionContextEntity, IPer
 
 export const permissionContextFactory = PermissionContextFactory.define(PermissionContextEntity, () => {
 	return {
-		include_permissions: [],
-		exclude_permissions: [],
-		parent_context: null,
-		role: null,
+		userDelta: new UserDelta([]),
+		parentContext: null,
 		contextReference: new ObjectId(),
 	};
 });

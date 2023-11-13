@@ -10,7 +10,7 @@ export class PermissionContextRepo extends BaseRepo<PermissionContextEntity> {
 		return PermissionContextEntity;
 	}
 
-	findByContextReference(contextReference: ObjectId): Promise<PermissionContextEntity[]> {
-		return this._em.find(PermissionContextEntity, { contextReference });
+	findByContextReference(contextReference: ObjectId): Promise<PermissionContextEntity> {
+		return this._em.findOneOrFail(PermissionContextEntity, { contextReference });
 	}
 }
