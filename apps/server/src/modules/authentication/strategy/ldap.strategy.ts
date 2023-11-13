@@ -7,7 +7,7 @@ import { ErrorLoggable } from '@src/core/error/loggable/error.loggable';
 import { Logger } from '@src/core/logger';
 import { Strategy } from 'passport-custom';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
-import { ICurrentUser } from '../interface';
+import { CurrentUserInterface } from '../interface';
 import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapService } from '../services/ldap.service';
@@ -25,7 +25,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		super();
 	}
 
-	async validate(request: { body: LdapAuthorizationBodyParams }): Promise<ICurrentUser> {
+	async validate(request: { body: LdapAuthorizationBodyParams }): Promise<CurrentUserInterface> {
 		const { username, password, systemId, schoolId } = this.extractParamsFromRequest(request);
 
 		const system: SystemEntity = await this.systemRepo.findById(systemId);
@@ -48,7 +48,12 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 
 		await this.checkCredentials(account, system, ldapDn, password);
 
-		const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(account.id, user, true, systemId);
+		const currentUser: CurrentUserInterface = CurrentUserMapper.userToCurrentUserInterface(
+			account.id,
+			user,
+			true,
+			systemId
+		);
 
 		return currentUser;
 	}
