@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Submission } from '@shared/domain';
+import { Submission } from '@shared/domain/entity';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import {
 	cleanupCollections,

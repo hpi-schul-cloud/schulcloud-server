@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Task } from '@shared/domain/entity';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { BaseRepo } from '../base.repo';
+import { BaseRepo } from '@shared/repo';
 import { TaskScope } from './task-scope';
 
 @Injectable()

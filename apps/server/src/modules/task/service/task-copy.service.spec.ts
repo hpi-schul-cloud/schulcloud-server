@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Task } from '@shared/domain/entity';
-import { TaskRepo } from '@shared/repo';
 import {
 	courseFactory,
 	lessonFactory,
@@ -13,6 +12,7 @@ import {
 } from '@shared/testing';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
 import { CopyFilesService } from '@modules/files-storage-client';
+import { TaskRepo } from '../repo';
 import { TaskCopyService } from './task-copy.service';
 
 describe('task copy service', () => {

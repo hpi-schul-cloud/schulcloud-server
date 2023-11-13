@@ -1,7 +1,8 @@
 import { FilterQuery } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { Counted, CourseGroup, EntityId, Submission } from '@shared/domain';
-import { BaseRepo } from '../base.repo';
+import { Counted, EntityId } from '@shared/domain/types';
+import { Submission, CourseGroup } from '@shared/domain/entity';
+import { BaseRepo } from '@shared/repo';
 
 // TODO: add scope helper
 

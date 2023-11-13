@@ -7,11 +7,10 @@ import {
 	LessonRepo,
 	SchoolExternalToolRepo,
 	LegacySchoolRepo,
-	SubmissionRepo,
-	TaskRepo,
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
+import { SubmissionRepo, TaskRepo } from '@modules/task/repo';
 import { BoardDoAuthorizableService } from '@modules/board';
 import { ContextExternalToolAuthorizableService } from '@modules/tool/context-external-tool/service';
 import { AuthorizableReferenceType } from '../type';

@@ -5,14 +5,13 @@ import {
 	LessonRepo,
 	SchoolExternalToolRepo,
 	LegacySchoolRepo,
-	SubmissionRepo,
-	TaskRepo,
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
 import { ToolModule } from '@modules/tool';
 import { LoggerModule } from '@src/core/logger';
 import { BoardModule } from '@modules/board';
+import { SubmissionRepo, TaskRepo } from '@modules/task/repo';
 import { ReferenceLoader, AuthorizationReferenceService, AuthorizationHelper } from './domain';
 import { AuthorizationModule } from './authorization.module';
 

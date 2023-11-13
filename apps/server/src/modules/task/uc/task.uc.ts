@@ -11,9 +11,10 @@ import {
 	TaskWithStatusVo,
 	User,
 } from '@shared/domain';
-import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo } from '@shared/repo';
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { TaskService } from '../service';
+import { TaskRepo } from '../repo';
 
 @Injectable()
 export class TaskUC {
