@@ -7,6 +7,9 @@ metadata:
     app: amqp-files
     app.kubernetes.io/part-of: schulcloud-verbund
     app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    app.kubernetes.io/name: amqp-files
+    app.kubernetes.io/component: queue
+    app.kubernetes.io/managed-by: ansible
     git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
 spec:
@@ -27,6 +30,9 @@ spec:
         app: amqp-files
         app.kubernetes.io/part-of: schulcloud-verbund
         app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        app.kubernetes.io/name: amqp-files
+        app.kubernetes.io/component: queue
+        app.kubernetes.io/managed-by: ansible
         git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
         git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
     spec:
