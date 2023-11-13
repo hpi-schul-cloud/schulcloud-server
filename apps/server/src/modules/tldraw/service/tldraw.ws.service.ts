@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TldrawConfig } from '@src/modules/tldraw/config';
 import { Persitence, WSConnectionState, WSMessageType, WsSharedDocDo } from '@src/modules/tldraw/types';
@@ -11,7 +11,6 @@ import * as mutex from 'lib0/mutex';
 import { Buffer } from 'node:buffer';
 import { getDocUpdatesFromQueue, pushDocUpdatesToQueue } from '@src/modules/tldraw/redis';
 import { applyUpdate, Doc } from 'yjs';
-import { IOREDIS } from '@infra/ioredis';
 import Redis from 'ioredis';
 
 @Injectable()
@@ -22,16 +21,21 @@ export class TldrawWsService {
 
 	public docs = new Map();
 
+	public sub: Redis.Redis;
+
 	private mux: mutex.mutex;
+
+	private readonly pub: Redis.Redis;
 
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
-		private readonly tldrawBoardRepo: TldrawBoardRepo,
-		@Inject(IOREDIS) private readonly pub: Redis.Redis,
-		@Inject(IOREDIS) readonly sub: Redis.Redis
+		private readonly tldrawBoardRepo: TldrawBoardRepo
 	) {
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
+		const redisUrl: string = this.configService.get<string>('REDIS_URI');
 		this.mux = mutex.createMutex();
+		this.sub = new Redis(redisUrl);
+		this.pub = new Redis(redisUrl);
 	}
 
 	public setPersistence(persistence_: Persitence): void {
