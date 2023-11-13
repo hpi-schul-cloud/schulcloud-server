@@ -1,7 +1,9 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { News, NewsTargetModel, SortOrder } from '@shared/domain';
+import { NewsTargetModel } from '@shared/domain/types';
+import { SortOrder } from '@shared/domain/interface';
+import { News } from '@shared/domain/entity';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import {
 	courseNewsFactory,

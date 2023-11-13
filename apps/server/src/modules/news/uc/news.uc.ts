@@ -11,10 +11,10 @@ import {
 	Permission,
 	SortOrder,
 } from '@shared/domain';
-import { NewsRepo, NewsTargetFilter } from '@shared/repo';
 import { CrudOperation } from '@shared/types';
 import { Logger } from '@src/core/logger';
 import { FeathersAuthorizationService } from '@modules/authorization';
+import { NewsRepo, NewsTargetFilter } from '../repo';
 import { NewsCrudOperationLoggable } from '../loggable/news-crud-operation.loggable';
 
 type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;

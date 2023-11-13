@@ -1,9 +1,10 @@
-import { News, NewsTargetModel } from '@shared/domain';
+import { NewsTargetModel } from '@shared/domain/types';
+import { News } from '@shared/domain/entity';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { FilterQuery } from '@mikro-orm/core';
 import { NewsScope } from './news-scope';
 import { NewsTargetFilter } from './news-target-filter';
-import { EmptyResultQuery } from '../query';
+import { EmptyResultQuery } from '../../../../shared/repo/query';
 
 describe('News Scope', () => {
 	describe('build scope query', () => {

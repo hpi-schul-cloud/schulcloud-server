@@ -1,7 +1,7 @@
 import { Collection, Entity, Enum, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BaseEntityWithTimestamps } from '@shared/domain';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections } from '@shared/testing';
 
