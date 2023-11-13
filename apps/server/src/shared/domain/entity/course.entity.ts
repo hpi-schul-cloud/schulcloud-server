@@ -1,8 +1,8 @@
 import { Collection, Entity, Enum, Index, ManyToMany, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/core';
-import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
-import { IEntityWithSchool, ILearnroom } from '@shared/domain/interface';
 import { ClassEntity } from '@modules/class/entity/class.entity';
 import { GroupEntity } from '@modules/group/entity/group.entity';
+import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
+import { IEntityWithSchool, ILearnroom } from '@shared/domain/interface';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CourseGroup } from './coursegroup.entity';
@@ -11,7 +11,7 @@ import { SchoolEntity } from './school.entity';
 import type { ITaskParent } from './task.entity';
 import type { User } from './user.entity';
 
-export interface ICourseProperties {
+export interface CourseProperties {
 	name?: string;
 	description?: string;
 	school: SchoolEntity;
@@ -105,7 +105,7 @@ export class Course
 	@ManyToMany(() => GroupEntity, undefined, { fieldName: 'groupIds' })
 	groups = new Collection<GroupEntity>(this);
 
-	constructor(props: ICourseProperties) {
+	constructor(props: CourseProperties) {
 		super();
 		if (props.name) this.name = props.name;
 		if (props.description) this.description = props.description;
