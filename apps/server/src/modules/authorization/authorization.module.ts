@@ -27,6 +27,7 @@ import { PermissionContextService } from './permission-context/service/permissio
 		FeathersAuthorizationService,
 		FeathersAuthProvider,
 		AuthorizationService,
+		PermissionContextService,
 		UserRepo,
 		PermissionContextRepo,
 		RuleManager,
