@@ -1,17 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
-import { AccountService } from '@modules/account/services';
+import { AccountService } from '@modules/account';
 import { ClassService } from '@modules/class';
-import { CourseGroupService, CourseService } from '@modules/learnroom/service';
-import { FilesService } from '@modules/files/service';
-import { LessonService } from '@modules/lesson/service';
+import { CourseGroupService, CourseService } from '@modules/learnroom';
+import { FilesService } from '@modules/files';
+import { LessonService } from '@modules/lesson';
 import { PseudonymService } from '@modules/pseudonym';
 import { TeamService } from '@modules/teams';
 import { UserService } from '@modules/user';
 import { RocketChatService } from '@modules/rocketchat';
-import { rocketChatUserFactory } from '@modules/rocketchat-user/domain/testing';
-import { RocketChatUser, RocketChatUserService } from '@modules/rocketchat-user';
+import { RocketChatUser, RocketChatUserService, rocketChatUserFactory } from '@modules/rocketchat-user';
 import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
@@ -348,7 +347,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(9);
+				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(10);
 			});
 		});
 
