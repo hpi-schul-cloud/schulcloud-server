@@ -9,11 +9,13 @@ import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
 export class MetaTagExtractorService {
 	constructor(private readonly internalLinkMataTagService: MetaTagInternalUrlService) {}
 
+	// WIP: fetch => get
 	async fetchMetaData(url: string): Promise<MetaData> {
 		if (url.length === 0) {
 			throw new Error(`MetaTagExtractorService requires a valid URL. Given URL: ${url}`);
 		}
 
+		// WIP: make that nicer
 		const metaData =
 			(await this.internalLinkMataTagService.tryInternalLinkMetaTags(url)) ??
 			(await this.tryExtractMetaTags(url)) ??

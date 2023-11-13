@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { MetaTagExtractorService } from '../../service';
 
-const URL = 'https://test.de';
+const URL = 'https://best-example.de/my-article';
 
 const mockedResponse = {
 	url: URL,
@@ -13,7 +13,7 @@ const mockedResponse = {
 	description: 'with great description',
 };
 
-describe(`get data (api)`, () => {
+describe(`get meta tags (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;

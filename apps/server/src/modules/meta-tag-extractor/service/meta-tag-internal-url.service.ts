@@ -18,14 +18,15 @@ export class MetaTagInternalUrlService {
 	}
 
 	async tryInternalLinkMetaTags(url: string): Promise<MetaData | undefined> {
-		if (this.isInternalLink(url)) {
+		if (this.isInternalUrl(url)) {
 			return this.composeMetaTags(url);
 		}
 		return Promise.resolve(undefined);
 	}
 
-	isInternalLink(url: string) {
-		const domain = (Configuration.get('SC_DOMAIN') as string) ?? 'nothing-configured-for-internal-links.de';
+	isInternalUrl(url: string) {
+		let domain = Configuration.get('SC_DOMAIN') as string;
+		domain = domain !== '' ? 'nothing-configured-for-internal-url.de' : domain;
 		const isInternal = url.toLowerCase().includes(domain.toLowerCase());
 		return isInternal;
 	}
