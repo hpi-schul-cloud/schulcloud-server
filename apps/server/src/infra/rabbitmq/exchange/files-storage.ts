@@ -45,7 +45,7 @@ export interface CopyFileDO {
 	name: string;
 }
 
-export interface IFileDO {
+export interface FileDO {
 	id: string;
 	name: string;
 	parentId: string;

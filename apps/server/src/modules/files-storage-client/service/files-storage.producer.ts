@@ -2,10 +2,10 @@ import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import {
 	CopyFileDO,
 	CopyFilesOfParentParams,
+	FileDO,
 	FileRecordParams,
 	FilesStorageEvents,
 	FilesStorageExchange,
-	IFileDO,
 	RpcMessageProducer,
 } from '@infra/rabbitmq';
 import { Injectable } from '@nestjs/common';
@@ -34,18 +34,18 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		return response;
 	}
 
-	async listFilesOfParent(payload: FileRecordParams): Promise<IFileDO[]> {
+	async listFilesOfParent(payload: FileRecordParams): Promise<FileDO[]> {
 		this.logger.debug({ action: 'listFilesOfParent:started', payload });
-		const response = await this.request<IFileDO[]>(FilesStorageEvents.LIST_FILES_OF_PARENT, payload);
+		const response = await this.request<FileDO[]>(FilesStorageEvents.LIST_FILES_OF_PARENT, payload);
 
 		this.logger.debug({ action: 'listFilesOfParent:finished', payload });
 
 		return response;
 	}
 
-	async deleteFilesOfParent(payload: EntityId): Promise<IFileDO[]> {
+	async deleteFilesOfParent(payload: EntityId): Promise<FileDO[]> {
 		this.logger.debug({ action: 'deleteFilesOfParent:started', payload });
-		const response = await this.request<IFileDO[]>(FilesStorageEvents.DELETE_FILES_OF_PARENT, payload);
+		const response = await this.request<FileDO[]>(FilesStorageEvents.DELETE_FILES_OF_PARENT, payload);
 
 		this.logger.debug({ action: 'deleteFilesOfParent:finished', payload });
 
