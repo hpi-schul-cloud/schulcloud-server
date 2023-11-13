@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { BatchDeletionSummaryBuilder } from '@modules/deletion/uc/builder/batch-deletion-summary.builder';
 import { BatchDeletionSummaryDetailBuilder } from './builder';
 import {
 	ReferencesService,
@@ -46,13 +47,7 @@ export class BatchDeletionUc {
 			);
 		}
 
-		const summary: BatchDeletionSummary = {
-			executionTimeMilliseconds: endTime - startTime,
-			overallStatus: BatchDeletionSummaryOverallStatus.FAILURE,
-			successCount: 0,
-			failureCount: 0,
-			details: [],
-		};
+		const summary: BatchDeletionSummary = BatchDeletionSummaryBuilder.build(endTime - startTime);
 
 		// Go through every received output and, in case of an error presence increase
 		// a failure count or, in case of no error, increase a success count.
