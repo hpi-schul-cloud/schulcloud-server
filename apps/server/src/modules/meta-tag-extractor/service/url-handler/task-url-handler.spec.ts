@@ -29,7 +29,7 @@ describe(TaskUrlHandler.name, () => {
 	describe('getMetaData', () => {
 		it('should call taskService with the correct id', async () => {
 			const id = 'af322312feae';
-			const url = `htttps://localhost/homework/${id}`;
+			const url = `https://localhost/homework/${id}`;
 
 			await taskUrlHandler.getMetaData(url);
 
@@ -38,7 +38,7 @@ describe(TaskUrlHandler.name, () => {
 
 		it('should take the title from the tasks name', async () => {
 			const id = 'af322312feae';
-			const url = `htttps://localhost/homework/${id}`;
+			const url = `https://localhost/homework/${id}`;
 			const taskName = 'My Task';
 			taskService.findById.mockResolvedValue({ name: taskName } as Task);
 

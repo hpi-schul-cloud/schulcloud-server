@@ -29,7 +29,7 @@ describe(LessonUrlHandler.name, () => {
 	describe('getMetaData', () => {
 		it('should call lessonService with the correct id', async () => {
 			const id = 'af322312feae';
-			const url = `htttps://localhost/topics/${id}`;
+			const url = `https://localhost/topics/${id}`;
 
 			await lessonUrlHandler.getMetaData(url);
 
@@ -38,7 +38,7 @@ describe(LessonUrlHandler.name, () => {
 
 		it('should take the title from the lessons name', async () => {
 			const id = 'af322312feae';
-			const url = `htttps://localhost/topics/${id}`;
+			const url = `https://localhost/topics/${id}`;
 			const lessonName = 'My lesson';
 			lessonService.findById.mockResolvedValue({ name: lessonName } as LessonEntity);
 

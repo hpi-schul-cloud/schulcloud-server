@@ -29,7 +29,7 @@ describe(CourseUrlHandler.name, () => {
 	describe('getMetaData', () => {
 		it('should call courseService with the correct id', async () => {
 			const id = 'af322312feae';
-			const url = `htttps://localhost/rooms/${id}`;
+			const url = `https://localhost/rooms/${id}`;
 
 			await courseUrlHandler.getMetaData(url);
 
@@ -38,7 +38,7 @@ describe(CourseUrlHandler.name, () => {
 
 		it('should take the title from the course name', async () => {
 			const id = 'af322312feae';
-			const url = `htttps://localhost/rooms/${id}`;
+			const url = `https://localhost/rooms/${id}`;
 			const courseName = 'My Course';
 			courseService.findById.mockResolvedValue({ name: courseName } as Course);
 
