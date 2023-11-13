@@ -61,7 +61,7 @@ export class AdminApiServerTestModule implements NestModule {
 
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
-			module: AdminApiServerModule,
+			module: AdminApiServerTestModule,
 			imports: [
 				...serverModules,
 				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options }),
