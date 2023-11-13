@@ -39,7 +39,7 @@ export interface FileRecordParams {
 	parentType: FileRecordParentType;
 }
 
-export interface ICopyFileDO {
+export interface CopyFileDO {
 	id?: EntityId;
 	sourceId: EntityId;
 	name: string;

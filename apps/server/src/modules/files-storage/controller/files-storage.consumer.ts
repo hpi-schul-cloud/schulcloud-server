@@ -1,10 +1,10 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
+import { CopyFileDO, FilesStorageEvents, FilesStorageExchange, IFileDO } from '@infra/rabbitmq';
+import { RpcMessage } from '@infra/rabbitmq/rpc-message';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { RpcMessage } from '@infra/rabbitmq/rpc-message';
 import { LegacyLogger } from '@src/core/logger';
-import { FilesStorageEvents, FilesStorageExchange, ICopyFileDO, IFileDO } from '@infra/rabbitmq';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
@@ -30,7 +30,7 @@ export class FilesStorageConsumer {
 	@UseRequestContext()
 	public async copyFilesOfParent(
 		@RabbitPayload() payload: CopyFilesOfParentPayload
-	): Promise<RpcMessage<ICopyFileDO[]>> {
+	): Promise<RpcMessage<CopyFileDO[]>> {
 		this.logger.debug({ action: 'copyFilesOfParent', payload });
 
 		const { userId, source, target } = payload;
