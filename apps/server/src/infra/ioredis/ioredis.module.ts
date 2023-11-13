@@ -15,12 +15,12 @@ import Redis from 'ioredis';
 
 				if (Configuration.has('REDIS_URI')) {
 					const redisUrl: string = Configuration.get('REDIS_URI') as string;
-					const ioredis: Redis.Redis = new Redis(redisUrl);
+					const ioredisClient = new Redis(redisUrl);
 
-					ioredis.on('error', (error) => logger.error(error));
-					ioredis.on('connect', (msg) => logger.log(msg));
+					ioredisClient.on('error', (error) => logger.error(error));
+					ioredisClient.on('connect', (msg) => logger.log(msg));
 
-					return ioredis;
+					return ioredisClient;
 				}
 
 				return undefined;

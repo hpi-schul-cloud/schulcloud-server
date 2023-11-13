@@ -12,7 +12,7 @@ import { Buffer } from 'node:buffer';
 import { getDocUpdatesFromQueue, pushDocUpdatesToQueue } from '@src/modules/tldraw/redis';
 import { applyUpdate, Doc } from 'yjs';
 import { IOREDIS } from '@infra/ioredis';
-import * as ioRedis from 'ioredis';
+import Redis from 'ioredis';
 
 @Injectable()
 export class TldrawWsService {
@@ -27,8 +27,8 @@ export class TldrawWsService {
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
-		@Inject(IOREDIS) private readonly pub: ioRedis.Redis,
-		@Inject(IOREDIS) readonly sub: ioRedis.Redis
+		@Inject(IOREDIS) private readonly pub: Redis.Redis,
+		@Inject(IOREDIS) readonly sub: Redis.Redis
 	) {
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
 		this.mux = mutex.createMutex();
