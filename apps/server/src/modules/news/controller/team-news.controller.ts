@@ -1,6 +1,6 @@
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { PaginationParams } from '@shared/controller';
 import { NewsMapper } from '../mapper/news.mapper';
 import { NewsUc } from '../uc';
@@ -18,7 +18,7 @@ export class TeamNewsController {
 	@Get(':teamId/news')
 	async findAllForTeam(
 		@Param() urlParams: TeamUrlParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Query() scope: FilterNewsParams,
 		@Query() pagination: PaginationParams
 	): Promise<NewsListResponse> {

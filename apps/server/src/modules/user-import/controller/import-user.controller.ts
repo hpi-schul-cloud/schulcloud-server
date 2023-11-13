@@ -1,8 +1,8 @@
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller';
 import { IFindOptions, ImportUser, User } from '@shared/domain';
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { ImportUserMapper } from '../mapper/import-user.mapper';
 import { UserMatchMapper } from '../mapper/user-match.mapper';
 import { UserImportUc } from '../uc/user-import.uc';
@@ -27,7 +27,7 @@ export class ImportUserController {
 
 	@Get()
 	async findAllImportUsers(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Query() scope: FilterImportUserParams,
 		@Query() sortingQuery: SortImportUserParams,
 		@Query() pagination: PaginationParams
@@ -46,7 +46,7 @@ export class ImportUserController {
 	@Patch(':importUserId/match')
 	async setMatch(
 		@Param() urlParams: ImportUserUrlParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Body() params: UpdateMatchParams
 	): Promise<ImportUserResponse> {
 		const result = await this.userImportUc.setMatch(currentUser.userId, urlParams.importUserId, params.userId);
@@ -58,7 +58,7 @@ export class ImportUserController {
 	@Delete(':importUserId/match')
 	async removeMatch(
 		@Param() urlParams: ImportUserUrlParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<ImportUserResponse> {
 		const result = await this.userImportUc.removeMatch(currentUser.userId, urlParams.importUserId);
 		const response = ImportUserMapper.mapToResponse(result);
@@ -69,7 +69,7 @@ export class ImportUserController {
 	@Patch(':importUserId/flag')
 	async updateFlag(
 		@Param() urlParams: ImportUserUrlParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Body() params: UpdateFlagParams
 	): Promise<ImportUserResponse> {
 		const result = await this.userImportUc.updateFlag(currentUser.userId, urlParams.importUserId, params.flagged);
@@ -80,7 +80,7 @@ export class ImportUserController {
 
 	@Get('unassigned')
 	async findAllUnmatchedUsers(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Query() scope: FilterUserParams,
 		@Query() pagination: PaginationParams
 	): Promise<UserMatchListResponse> {
@@ -96,20 +96,20 @@ export class ImportUserController {
 	}
 
 	@Post('migrate')
-	async saveAllUsersMatches(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+	async saveAllUsersMatches(@CurrentUser() currentUser: CurrentUserInterface): Promise<void> {
 		await this.userImportUc.saveAllUsersMatches(currentUser.userId);
 	}
 
 	@Post('startUserMigration')
 	async startSchoolInUserMigration(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Query('useCentralLdap') useCentralLdap?: boolean
 	): Promise<void> {
 		await this.userImportUc.startSchoolInUserMigration(currentUser.userId, useCentralLdap);
 	}
 
 	@Post('startSync')
-	async endSchoolInMaintenance(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+	async endSchoolInMaintenance(@CurrentUser() currentUser: CurrentUserInterface): Promise<void> {
 		await this.userImportUc.endSchoolInMaintenance(currentUser.userId);
 	}
 }

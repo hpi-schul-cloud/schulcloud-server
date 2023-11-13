@@ -1,3 +1,4 @@
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
 import { Controller, Get, Param } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
@@ -7,11 +8,10 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { ToolLaunchUc } from '../uc';
-import { ToolLaunchParams, ToolLaunchRequestResponse } from './dto';
 import { ToolLaunchMapper } from '../mapper';
 import { ToolLaunchRequest } from '../types';
+import { ToolLaunchUc } from '../uc';
+import { ToolLaunchParams, ToolLaunchRequestResponse } from './dto';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -26,7 +26,7 @@ export class ToolLaunchController {
 	@ApiForbiddenResponse({ description: 'Forbidden' })
 	@ApiBadRequestResponse({ description: 'Outdated tools cannot be launched' })
 	async getToolLaunchRequest(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: ToolLaunchParams
 	): Promise<ToolLaunchRequestResponse> {
 		const toolLaunchRequest: ToolLaunchRequest = await this.toolLaunchUc.getToolLaunchRequest(

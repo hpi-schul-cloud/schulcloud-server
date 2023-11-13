@@ -1,3 +1,4 @@
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
 import {
 	Body,
 	Controller,
@@ -12,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { BoardUc } from '../uc';
 import { BoardResponse, BoardUrlParams, ColumnResponse, RenameBodyParams } from './dto';
 import { BoardContextResponse } from './dto/board/board-context.reponse';
@@ -32,7 +32,7 @@ export class BoardController {
 	@Get(':boardId')
 	async getBoardSkeleton(
 		@Param() urlParams: BoardUrlParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<BoardResponse> {
 		const board = await this.boardUc.findBoard(currentUser.userId, urlParams.boardId);
 
@@ -49,7 +49,7 @@ export class BoardController {
 	@Get(':boardId/context')
 	async getBoardContext(
 		@Param() urlParams: BoardUrlParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<BoardContextResponse> {
 		const boardContext = await this.boardUc.findBoardContext(currentUser.userId, urlParams.boardId);
 
@@ -68,7 +68,7 @@ export class BoardController {
 	async updateBoardTitle(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: RenameBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<void> {
 		await this.boardUc.updateBoardTitle(currentUser.userId, urlParams.boardId, bodyParams.title);
 	}
@@ -80,7 +80,10 @@ export class BoardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Delete(':boardId')
-	async deleteBoard(@Param() urlParams: BoardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
+	async deleteBoard(
+		@Param() urlParams: BoardUrlParams,
+		@CurrentUser() currentUser: CurrentUserInterface
+	): Promise<void> {
 		await this.boardUc.deleteBoard(currentUser.userId, urlParams.boardId);
 	}
 
@@ -92,7 +95,7 @@ export class BoardController {
 	@Post(':boardId/columns')
 	async createColumn(
 		@Param() urlParams: BoardUrlParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<ColumnResponse> {
 		const column = await this.boardUc.createColumn(currentUser.userId, urlParams.boardId);
 

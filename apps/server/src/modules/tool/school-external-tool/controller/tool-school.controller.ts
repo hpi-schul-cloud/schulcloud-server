@@ -1,21 +1,24 @@
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 import {
+	ApiBadRequestResponse,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
-	ApiResponse,
 	ApiOkResponse,
-	ApiBadRequestResponse,
+	ApiOperation,
+	ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
-	ApiOperation,
 } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Post, Query, Put, HttpCode, HttpStatus } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { LegacyLogger } from '@src/core/logger';
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { SchoolExternalToolRequestMapper, SchoolExternalToolResponseMapper } from '../mapper';
 import { ExternalToolSearchListResponse } from '../../external-tool/controller/dto';
+import { SchoolExternalTool } from '../domain';
+import { SchoolExternalToolRequestMapper, SchoolExternalToolResponseMapper } from '../mapper';
+import { SchoolExternalToolUc } from '../uc';
+import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
 import {
 	SchoolExternalToolIdParams,
 	SchoolExternalToolPostParams,
@@ -23,9 +26,6 @@ import {
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
 } from './dto';
-import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
-import { SchoolExternalToolUc } from '../uc';
-import { SchoolExternalTool } from '../domain';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -44,7 +44,7 @@ export class ToolSchoolController {
 	@ApiUnauthorizedResponse()
 	@ApiOperation({ summary: 'Returns a list of SchoolExternalTools for a given school' })
 	async getSchoolExternalTools(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Query() schoolExternalToolParams: SchoolExternalToolSearchParams
 	): Promise<SchoolExternalToolSearchListResponse> {
 		const found: SchoolExternalTool[] = await this.schoolExternalToolUc.findSchoolExternalTools(currentUser.userId, {
@@ -59,7 +59,7 @@ export class ToolSchoolController {
 	@ApiUnauthorizedResponse()
 	@ApiOperation({ summary: 'Returns a SchoolExternalTool for the given id' })
 	async getSchoolExternalTool(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: SchoolExternalToolIdParams
 	): Promise<SchoolExternalToolResponse> {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolUc.getSchoolExternalTool(
@@ -77,7 +77,7 @@ export class ToolSchoolController {
 	@ApiBadRequestResponse({ type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiOperation({ summary: 'Updates a SchoolExternalTool' })
 	async updateSchoolExternalTool(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: SchoolExternalToolIdParams,
 		@Body() body: SchoolExternalToolPostParams
 	): Promise<SchoolExternalToolResponse> {
@@ -99,7 +99,7 @@ export class ToolSchoolController {
 	@ApiOperation({ summary: 'Deletes a SchoolExternalTool' })
 	@HttpCode(HttpStatus.NO_CONTENT)
 	async deleteSchoolExternalTool(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: SchoolExternalToolIdParams
 	): Promise<void> {
 		await this.schoolExternalToolUc.deleteSchoolExternalTool(currentUser.userId, params.schoolExternalToolId);
@@ -119,7 +119,7 @@ export class ToolSchoolController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiOperation({ summary: 'Creates a SchoolExternalTool' })
 	async createSchoolExternalTool(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Body() body: SchoolExternalToolPostParams
 	): Promise<SchoolExternalToolResponse> {
 		const schoolExternalToolDto: SchoolExternalToolDto = this.requestMapper.mapSchoolExternalToolRequest(body);

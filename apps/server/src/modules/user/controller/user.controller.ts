@@ -1,6 +1,6 @@
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
 import { Body, Controller, Get, Patch } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { ResolvedUserMapper } from '../mapper';
 import { UserUc } from '../uc';
 import { ChangeLanguageParams, ResolvedUserResponse, SuccessfulResponse } from './dto';
@@ -12,7 +12,7 @@ export class UserController {
 	constructor(private readonly userUc: UserUc) {}
 
 	@Get('me')
-	async me(@CurrentUser() currentUser: ICurrentUser): Promise<ResolvedUserResponse> {
+	async me(@CurrentUser() currentUser: CurrentUserInterface): Promise<ResolvedUserResponse> {
 		const [user, permissions] = await this.userUc.me(currentUser.userId);
 
 		// only the root roles of the user get published
@@ -24,7 +24,7 @@ export class UserController {
 	@Patch('/language')
 	async changeLanguage(
 		@Body() params: ChangeLanguageParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<SuccessfulResponse> {
 		const result = await this.userUc.patchLanguage(currentUser.userId, params);
 

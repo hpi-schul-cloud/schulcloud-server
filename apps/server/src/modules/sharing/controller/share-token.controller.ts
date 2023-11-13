@@ -1,3 +1,5 @@
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import {
 	Body,
 	Controller,
@@ -11,8 +13,6 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError, RequestTimeout } from '@shared/common';
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 // invalid import can produce dependency cycles
 import { serverConfig } from '@modules/server/server.config';
 import { ShareTokenInfoResponseMapper, ShareTokenResponseMapper } from '../mapper';
@@ -38,7 +38,7 @@ export class ShareTokenController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post()
 	async createShareToken(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Body() body: ShareTokenBodyParams
 	): Promise<ShareTokenResponse> {
 		const shareToken = await this.shareTokenUC.createShareToken(
@@ -65,7 +65,7 @@ export class ShareTokenController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Get(':token')
 	async lookupShareToken(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() urlParams: ShareTokenUrlParams
 	): Promise<ShareTokenInfoResponse> {
 		const shareTokenInfo = await this.shareTokenUC.lookupShareToken(currentUser.userId, urlParams.token);
@@ -84,7 +84,7 @@ export class ShareTokenController {
 	@Post(':token/import')
 	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async importShareToken(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() urlParams: ShareTokenUrlParams,
 		@Body() body: ShareTokenImportBodyParams
 	): Promise<CopyApiResponse> {

@@ -22,7 +22,7 @@ import {
 	NotFoundException,
 } from '@nestjs/common';
 import { EntityId, LanguageType } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
+import { CurrentUserInterface } from '@src/modules/authentication';
 import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
 import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { UserService } from '@src/modules/user';
@@ -92,7 +92,7 @@ export class H5PEditorUc {
 
 	public async getAjax(
 		query: AjaxGetQueryParams,
-		currentUser: ICurrentUser
+		currentUser: CurrentUserInterface
 	): Promise<IHubInfo | ILibraryDetailedDataForClient | IAjaxResponse | undefined> {
 		const user = this.changeUserType(currentUser);
 		const language = await this.getUserLanguage(currentUser);
@@ -116,7 +116,7 @@ export class H5PEditorUc {
 	}
 
 	public async postAjax(
-		currentUser: ICurrentUser,
+		currentUser: CurrentUserInterface,
 		query: AjaxPostQueryParams,
 		body: AjaxPostBodyParams,
 		contentFile?: Express.Multer.File,
@@ -167,7 +167,7 @@ export class H5PEditorUc {
 		}
 	}
 
-	public async getContentParameters(contentId: string, currentUser: ICurrentUser) {
+	public async getContentParameters(contentId: string, currentUser: CurrentUserInterface) {
 		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
 		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.read([]));
 
@@ -186,7 +186,7 @@ export class H5PEditorUc {
 		contentId: string,
 		file: string,
 		req: Request,
-		currentUser: ICurrentUser
+		currentUser: CurrentUserInterface
 	): Promise<GetLibraryFile> {
 		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
 		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.read([]));
@@ -227,7 +227,11 @@ export class H5PEditorUc {
 		}
 	}
 
-	public async getTemporaryFile(file: string, req: Request, currentUser: ICurrentUser): Promise<GetLibraryFile> {
+	public async getTemporaryFile(
+		file: string,
+		req: Request,
+		currentUser: CurrentUserInterface
+	): Promise<GetLibraryFile> {
 		const user = this.changeUserType(currentUser);
 
 		try {
@@ -262,7 +266,7 @@ export class H5PEditorUc {
 		}
 	}
 
-	public async getH5pPlayer(currentUser: ICurrentUser, contentId: string): Promise<IPlayerModel> {
+	public async getH5pPlayer(currentUser: CurrentUserInterface, contentId: string): Promise<IPlayerModel> {
 		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
 		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.read([]));
 
@@ -273,7 +277,7 @@ export class H5PEditorUc {
 		return playerModel;
 	}
 
-	public async getEmptyH5pEditor(currentUser: ICurrentUser, language: LanguageType) {
+	public async getEmptyH5pEditor(currentUser: CurrentUserInterface, language: LanguageType) {
 		const user = this.changeUserType(currentUser);
 		const fakeUndefinedString = this.fakeUndefinedAsString();
 
@@ -287,7 +291,7 @@ export class H5PEditorUc {
 		return createdH5PEditor;
 	}
 
-	public async getH5pEditor(currentUser: ICurrentUser, contentId: string, language: LanguageType) {
+	public async getH5pEditor(currentUser: CurrentUserInterface, contentId: string, language: LanguageType) {
 		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
 		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
 
@@ -304,7 +308,7 @@ export class H5PEditorUc {
 		};
 	}
 
-	public async deleteH5pContent(currentUser: ICurrentUser, contentId: string): Promise<boolean> {
+	public async deleteH5pContent(currentUser: CurrentUserInterface, contentId: string): Promise<boolean> {
 		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
 		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
 
@@ -324,7 +328,7 @@ export class H5PEditorUc {
 	}
 
 	public async createH5pContentGetMetadata(
-		currentUser: ICurrentUser,
+		currentUser: CurrentUserInterface,
 		params: unknown,
 		metadata: IContentMetadata,
 		mainLibraryUbername: string,
@@ -349,7 +353,7 @@ export class H5PEditorUc {
 
 	public async saveH5pContentGetMetadata(
 		contentId: string,
-		currentUser: ICurrentUser,
+		currentUser: CurrentUserInterface,
 		params: unknown,
 		metadata: IContentMetadata,
 		mainLibraryUbername: string,
@@ -371,7 +375,7 @@ export class H5PEditorUc {
 		return newContentId;
 	}
 
-	private changeUserType(currentUser: ICurrentUser): LumiIUser {
+	private changeUserType(currentUser: CurrentUserInterface): LumiIUser {
 		const user: LumiIUser = {
 			canCreateRestricted: false,
 			canInstallRecommended: true,
@@ -386,7 +390,7 @@ export class H5PEditorUc {
 	}
 
 	private createAugmentedLumiUser(
-		currentUser: ICurrentUser,
+		currentUser: CurrentUserInterface,
 		contentParentType: H5PContentParentType,
 		contentParentId: EntityId
 	) {
@@ -399,7 +403,7 @@ export class H5PEditorUc {
 		return user;
 	}
 
-	private async getUserLanguage(currentUser: ICurrentUser): Promise<string> {
+	private async getUserLanguage(currentUser: CurrentUserInterface): Promise<string> {
 		const languageUser = await this.userService.findById(currentUser.userId);
 		let userLanguage = LanguageType.DE;
 		if (languageUser?.language) {

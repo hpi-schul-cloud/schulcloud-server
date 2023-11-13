@@ -1,6 +1,6 @@
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { ToolReference } from '../domain';
 import { ContextExternalToolResponseMapper } from '../mapper';
 import { ToolReferenceUc } from '../uc';
@@ -26,7 +26,7 @@ export class ToolReferenceController {
 	@ApiForbiddenResponse({ description: 'User is not allowed to access this resource.' })
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
 	async getToolReference(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: ContextExternalToolIdParams
 	): Promise<ToolReferenceResponse> {
 		const toolReference: ToolReference = await this.toolReferenceUc.getToolReference(
@@ -49,7 +49,7 @@ export class ToolReferenceController {
 	@ApiForbiddenResponse({ description: 'User is not allowed to access this resource.' })
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
 	async getToolReferencesForContext(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: ContextExternalToolContextParams
 	): Promise<ToolReferenceListResponse> {
 		const toolReferences: ToolReference[] = await this.toolReferenceUc.getToolReferencesForContext(

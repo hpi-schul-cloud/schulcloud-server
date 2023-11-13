@@ -1,3 +1,4 @@
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
 import { Controller, Get, Param } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
@@ -7,7 +8,6 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { ExternalTool } from '../domain';
 import { ToolConfigurationMapper } from '../mapper/tool-configuration.mapper';
 import { ContextExternalToolTemplateInfo, ExternalToolConfigurationUc } from '../uc';
@@ -36,7 +36,7 @@ export class ToolConfigurationController {
 		type: SchoolExternalToolConfigurationTemplateListResponse,
 	})
 	public async getAvailableToolsForSchool(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: SchoolIdParams
 	): Promise<SchoolExternalToolConfigurationTemplateListResponse> {
 		const availableTools: ExternalTool[] = await this.externalToolConfigurationUc.getAvailableToolsForSchool(
@@ -58,7 +58,7 @@ export class ToolConfigurationController {
 		type: ContextExternalToolConfigurationTemplateListResponse,
 	})
 	public async getAvailableToolsForContext(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: ContextRefParams
 	): Promise<ContextExternalToolConfigurationTemplateListResponse> {
 		const availableTools: ContextExternalToolTemplateInfo[] =
@@ -84,7 +84,7 @@ export class ToolConfigurationController {
 		type: SchoolExternalToolConfigurationTemplateResponse,
 	})
 	public async getConfigurationTemplateForSchool(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: SchoolExternalToolIdParams
 	): Promise<SchoolExternalToolConfigurationTemplateResponse> {
 		const tool: ExternalTool = await this.externalToolConfigurationUc.getTemplateForSchoolExternalTool(
@@ -107,7 +107,7 @@ export class ToolConfigurationController {
 		type: ContextExternalToolConfigurationTemplateResponse,
 	})
 	public async getConfigurationTemplateForContext(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: ContextExternalToolIdParams
 	): Promise<ContextExternalToolConfigurationTemplateResponse> {
 		const tool: ContextExternalToolTemplateInfo =

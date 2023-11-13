@@ -1,6 +1,6 @@
 import { Body, Controller, InternalServerErrorException, Post, UnauthorizedException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
+import { CurrentUserInterface } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { MetaTagExtractorUc } from '../uc';
 import { MetaTagExtractorResponse } from './dto';
@@ -18,7 +18,7 @@ export class MetaTagExtractorController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post('')
 	async getData(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Body() bodyParams: GetMetaTagDataBody
 	): Promise<MetaTagExtractorResponse> {
 		const result = await this.metaTagExtractorUc.fetchMetaData(currentUser.userId, bodyParams.url);

@@ -1,3 +1,4 @@
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
 import {
 	Body,
 	Controller,
@@ -12,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
 import {
@@ -51,7 +51,7 @@ export class ElementController {
 	async moveElement(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: MoveContentElementBody,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<void> {
 		await this.cardUc.moveElement(
 			currentUser.userId,
@@ -89,7 +89,7 @@ export class ElementController {
 	async updateElement(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: UpdateElementContentBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<AnyContentElementResponse> {
 		const element = await this.elementUc.updateElementContent(
 			currentUser.userId,
@@ -109,7 +109,7 @@ export class ElementController {
 	@Delete(':contentElementId')
 	async deleteElement(
 		@Param() urlParams: ContentElementUrlParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<void> {
 		await this.elementUc.deleteElement(currentUser.userId, urlParams.contentElementId);
 	}
@@ -125,7 +125,7 @@ export class ElementController {
 	async createSubmissionItem(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: CreateSubmissionItemBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<SubmissionItemResponse> {
 		const submissionItem = await this.elementUc.createSubmissionItem(
 			currentUser.userId,

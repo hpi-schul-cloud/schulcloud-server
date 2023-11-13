@@ -1,6 +1,6 @@
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { SubmissionMapper } from '../mapper';
 import { SubmissionUc } from '../uc';
 import { SubmissionStatusListResponse, SubmissionUrlParams, TaskUrlParams } from './dto';
@@ -13,7 +13,7 @@ export class SubmissionController {
 
 	@Get('status/task/:taskId')
 	async findStatusesByTask(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: TaskUrlParams
 	): Promise<SubmissionStatusListResponse> {
 		const submissions = await this.submissionUc.findAllByTask(currentUser.userId, params.taskId);
@@ -26,7 +26,10 @@ export class SubmissionController {
 	}
 
 	@Delete(':submissionId')
-	async delete(@Param() urlParams: SubmissionUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
+	async delete(
+		@Param() urlParams: SubmissionUrlParams,
+		@CurrentUser() currentUser: CurrentUserInterface
+	): Promise<boolean> {
 		const result = await this.submissionUc.delete(currentUser.userId, urlParams.submissionId);
 
 		return result;

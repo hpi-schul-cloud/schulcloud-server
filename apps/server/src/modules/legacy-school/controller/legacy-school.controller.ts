@@ -1,3 +1,4 @@
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
 import { Body, Controller, Get, Param, Put } from '@nestjs/common';
 import {
 	ApiFoundResponse,
@@ -6,10 +7,9 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { MigrationMapper } from '../mapper/migration.mapper';
-import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
 import { LegacySchoolUc } from '../uc';
+import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
 import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
 
 /**
@@ -28,7 +28,7 @@ export class LegacySchoolController {
 	async setMigration(
 		@Param() schoolParams: SchoolParams,
 		@Body() migrationBody: MigrationBody,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<MigrationResponse> {
 		const migrationDto: OauthMigrationDto = await this.schoolUc.setMigration(
 			schoolParams.schoolId,
@@ -50,7 +50,7 @@ export class LegacySchoolController {
 	@ApiNotFoundResponse({ description: 'Migrationsflags could not be found for the given school' })
 	async getMigration(
 		@Param() schoolParams: SchoolParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<MigrationResponse> {
 		const migrationDto: OauthMigrationDto = await this.schoolUc.getMigration(schoolParams.schoolId, currentUser.userId);
 

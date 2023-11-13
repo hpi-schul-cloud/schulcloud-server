@@ -1,3 +1,4 @@
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, Res } from '@nestjs/common';
 import {
 	ApiCreatedResponse,
@@ -14,7 +15,6 @@ import { ValidationError } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { IFindOptions, Page } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Response } from 'express';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalTool } from '../domain';
@@ -51,7 +51,7 @@ export class ToolController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiOperation({ summary: 'Creates an ExternalTool' })
 	async createExternalTool(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Body() externalToolParams: ExternalToolCreateParams
 	): Promise<ExternalToolResponse> {
 		const externalTool: ExternalToolCreate = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
@@ -71,7 +71,7 @@ export class ToolController {
 	@ApiForbiddenResponse()
 	@ApiOperation({ summary: 'Returns a list of ExternalTools' })
 	async findExternalTool(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Query() filterQuery: ExternalToolSearchParams,
 		@Query() pagination: PaginationParams,
 		@Query() sortingQuery: SortExternalToolParams
@@ -99,7 +99,7 @@ export class ToolController {
 	@Get(':externalToolId')
 	@ApiOperation({ summary: 'Returns an ExternalTool for the given id' })
 	async getExternalTool(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: ExternalToolIdParams
 	): Promise<ExternalToolResponse> {
 		const externalTool: ExternalTool = await this.externalToolUc.getExternalTool(
@@ -118,7 +118,7 @@ export class ToolController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiOperation({ summary: 'Updates an ExternalTool' })
 	async updateExternalTool(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: ExternalToolIdParams,
 		@Body() externalToolParams: ExternalToolUpdateParams
 	): Promise<ExternalToolResponse> {
@@ -140,7 +140,7 @@ export class ToolController {
 	@ApiOperation({ summary: 'Deletes an ExternalTool' })
 	@HttpCode(HttpStatus.NO_CONTENT)
 	async deleteExternalTool(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: ExternalToolIdParams
 	): Promise<void> {
 		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(currentUser.userId, params.externalToolId);

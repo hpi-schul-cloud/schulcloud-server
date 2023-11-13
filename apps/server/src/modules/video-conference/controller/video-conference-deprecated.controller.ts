@@ -1,3 +1,4 @@
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
 import {
 	BadRequestException,
 	Body,
@@ -11,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { VideoConferenceScope } from '@shared/domain/interface';
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { BBBBaseResponse } from '../bbb';
 import { defaultVideoConferenceOptions } from '../interface';
 import { VideoConferenceResponseDeprecatedMapper } from '../mapper/vc-deprecated-response.mapper';
@@ -44,7 +44,7 @@ export class VideoConferenceDeprecatedController {
 	})
 	@ApiResponse({ status: 500, type: InternalServerErrorException, description: 'Unable to fetch required data.' })
 	async createAndJoin(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string,
 		@Body() params: VideoConferenceCreateParams
@@ -84,7 +84,7 @@ export class VideoConferenceDeprecatedController {
 	})
 	@ApiResponse({ status: 500, type: InternalServerErrorException, description: 'Unable to fetch required data.' })
 	async info(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string
 	): Promise<DeprecatedVideoConferenceInfoResponse> {
@@ -104,7 +104,7 @@ export class VideoConferenceDeprecatedController {
 	})
 	@ApiResponse({ status: 500, type: InternalServerErrorException, description: 'Unable to fetch required data.' })
 	async end(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string
 	): Promise<VideoConferenceBaseResponse> {

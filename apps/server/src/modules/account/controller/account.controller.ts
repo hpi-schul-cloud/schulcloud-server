@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
+import { CurrentUserInterface } from '@src/modules/authentication';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { AccountUc } from '../uc/account.uc';
 import {
 	AccountByIdBodyParams,
@@ -29,7 +29,7 @@ export class AccountController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero or administrator.' })
 	async searchAccounts(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Query() query: AccountSearchQueryParams
 	): Promise<AccountSearchListResponse> {
 		return this.accountUc.searchAccounts(currentUser, query);
@@ -42,7 +42,7 @@ export class AccountController {
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero.' })
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account not found.' })
 	async findAccountById(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: AccountByIdParams
 	): Promise<AccountResponse> {
 		return this.accountUc.findAccountById(currentUser, params);
@@ -57,7 +57,10 @@ export class AccountController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid password.' })
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account not found.' })
-	async updateMyAccount(@CurrentUser() currentUser: ICurrentUser, @Body() params: PatchMyAccountParams): Promise<void> {
+	async updateMyAccount(
+		@CurrentUser() currentUser: CurrentUserInterface,
+		@Body() params: PatchMyAccountParams
+	): Promise<void> {
 		return this.accountUc.updateMyAccount(currentUser.userId, params);
 	}
 
@@ -68,7 +71,7 @@ export class AccountController {
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero.' })
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account not found.' })
 	async updateAccountById(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: AccountByIdParams,
 		@Body() body: AccountByIdBodyParams
 	): Promise<AccountResponse> {
@@ -82,7 +85,7 @@ export class AccountController {
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero.' })
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account not found.' })
 	async deleteAccountById(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: AccountByIdParams
 	): Promise<AccountResponse> {
 		return this.accountUc.deleteAccountById(currentUser, params);
@@ -95,7 +98,7 @@ export class AccountController {
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid password.' })
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account or user not found.' })
 	async replaceMyPassword(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Body() params: PatchMyPasswordParams
 	): Promise<void> {
 		return this.accountUc.replaceMyTemporaryPassword(currentUser.userId, params.password, params.confirmPassword);

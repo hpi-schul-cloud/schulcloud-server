@@ -1,4 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Authenticate, CurrentUser, CurrentUserInterface, JWT } from '@modules/authentication';
+import { OAuthMigrationError } from '@modules/user-login-migration/error/oauth-migration.error';
+import { MigrationDto } from '@modules/user-login-migration/service/dto';
 import {
 	Controller,
 	Get,
@@ -14,21 +17,18 @@ import {
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ISession } from '@shared/domain/types/session';
 import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser, Authenticate, CurrentUser, JWT } from '@modules/authentication';
-import { OAuthMigrationError } from '@modules/user-login-migration/error/oauth-migration.error';
-import { MigrationDto } from '@modules/user-login-migration/service/dto';
 import { CookieOptions, Request, Response } from 'express';
-import { HydraOauthUc } from '../uc/hydra-oauth.uc';
-import { UserMigrationResponse } from './dto/user-migration.response';
-import { OAuthSSOError } from '../loggable/oauth-sso.error';
 import { OAuthTokenDto } from '../interface';
+import { OAuthSSOError } from '../loggable/oauth-sso.error';
 import { OauthLoginStateMapper } from '../mapper/oauth-login-state.mapper';
 import { UserMigrationMapper } from '../mapper/user-migration.mapper';
 import { OAuthProcessDto } from '../service/dto';
 import { OauthUc } from '../uc';
 import { OauthLoginStateDto } from '../uc/dto/oauth-login-state.dto';
+import { HydraOauthUc } from '../uc/hydra-oauth.uc';
 import { AuthorizationParams, SSOLoginQuery, SystemIdParams } from './dto';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
+import { UserMigrationResponse } from './dto/user-migration.response';
 
 @ApiTags('SSO')
 @Controller('sso')
@@ -160,7 +160,7 @@ export class OauthSSOController {
 	@Get('auth/:oauthClientId')
 	@Authenticate('jwt')
 	async requestAuthToken(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Req() req: Request,
 		@Param('oauthClientId') oauthClientId: string
 	): Promise<AuthorizationParams> {
@@ -183,7 +183,7 @@ export class OauthSSOController {
 	async migrateUser(
 		@JWT() jwt: string,
 		@Session() session: ISession,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Query() query: AuthorizationParams,
 		@Res() res: Response
 	): Promise<void> {

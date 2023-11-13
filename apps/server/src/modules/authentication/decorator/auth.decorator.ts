@@ -6,11 +6,11 @@ import {
 	UnauthorizedException,
 	UseGuards,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { Request } from 'express';
 import { ExtractJwt } from 'passport-jwt';
-import { ICurrentUser } from '../interface/user';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
+import { CurrentUserInterface } from '../interface/user';
 import { JwtExtractor } from '../strategy/jwt-extractor';
 
 const STRATEGIES = ['jwt'] as const;
@@ -40,14 +40,16 @@ export const Authenticate = (...strategies: Strategies) => {
  * @requires Authenticated
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const CurrentUser = createParamDecorator<any, any, ICurrentUser>((data: unknown, ctx: ExecutionContext) => {
-	const { user }: Request = ctx.switchToHttp().getRequest();
-	if (!user)
-		throw new UnauthorizedException(
-			'CurrentUser missing in request context. This route requires jwt authentication guard enabled.'
-		);
-	return user as ICurrentUser;
-});
+export const CurrentUser = createParamDecorator<any, any, CurrentUserInterface>(
+	(data: unknown, ctx: ExecutionContext) => {
+		const { user }: Request = ctx.switchToHttp().getRequest();
+		if (!user)
+			throw new UnauthorizedException(
+				'CurrentUser missing in request context. This route requires jwt authentication guard enabled.'
+			);
+		return user as CurrentUserInterface;
+	}
+);
 
 /**
  * Returns the current JWT.

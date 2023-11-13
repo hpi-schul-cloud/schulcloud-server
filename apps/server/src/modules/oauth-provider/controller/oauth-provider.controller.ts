@@ -1,22 +1,20 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
-import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 // import should be @infra/oauth-provider
 import {
 	ProviderConsentResponse,
+	ProviderConsentSessionResponse,
 	ProviderLoginResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
-	ProviderConsentSessionResponse,
 } from '@infra/oauth-provider/dto';
 import { ApiTags } from '@nestjs/swagger';
-import { OauthProviderLogoutFlowUc } from '../uc/oauth-provider.logout-flow.uc';
-import { OauthProviderLoginFlowUc } from '../uc/oauth-provider.login-flow.uc';
 import { OauthProviderResponseMapper } from '../mapper/oauth-provider-response.mapper';
-import { OauthProviderConsentFlowUc } from '../uc/oauth-provider.consent-flow.uc';
-import { ConsentResponse } from './dto/response/consent.response';
 import { OauthProviderClientCrudUc } from '../uc/oauth-provider.client-crud.uc';
-import { RedirectResponse } from './dto/response/redirect.response';
+import { OauthProviderConsentFlowUc } from '../uc/oauth-provider.consent-flow.uc';
+import { OauthProviderLoginFlowUc } from '../uc/oauth-provider.login-flow.uc';
+import { OauthProviderLogoutFlowUc } from '../uc/oauth-provider.logout-flow.uc';
 import { OauthProviderUc } from '../uc/oauth-provider.uc';
 import {
 	AcceptQuery,
@@ -31,6 +29,8 @@ import {
 	OauthClientResponse,
 	RevokeConsentParams,
 } from './dto';
+import { ConsentResponse } from './dto/response/consent.response';
+import { RedirectResponse } from './dto/response/redirect.response';
 
 @Controller('oauth2')
 @ApiTags('Oauth2')
@@ -47,7 +47,7 @@ export class OauthProviderController {
 	@Authenticate('jwt')
 	@Get('clients/:id')
 	async getOAuth2Client(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: IdParams
 	): Promise<OauthClientResponse> {
 		const client: ProviderOauthClient = await this.crudUc.getOAuth2Client(currentUser, params.id);
@@ -58,7 +58,7 @@ export class OauthProviderController {
 	@Authenticate('jwt')
 	@Get('clients')
 	async listOAuth2Clients(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: ListOauthClientsParams
 	): Promise<OauthClientResponse[]> {
 		const clients: ProviderOauthClient[] = await this.crudUc.listOAuth2Clients(
@@ -78,7 +78,7 @@ export class OauthProviderController {
 	@Authenticate('jwt')
 	@Post('clients')
 	async createOAuth2Client(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Body() body: OauthClientBody
 	): Promise<OauthClientResponse> {
 		const client: ProviderOauthClient = await this.crudUc.createOAuth2Client(currentUser, body);
@@ -89,7 +89,7 @@ export class OauthProviderController {
 	@Authenticate('jwt')
 	@Put('clients/:id')
 	async updateOAuth2Client(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: IdParams,
 		@Body() body: OauthClientBody
 	): Promise<OauthClientResponse> {
@@ -100,7 +100,7 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Delete('clients/:id')
-	deleteOAuth2Client(@CurrentUser() currentUser: ICurrentUser, @Param() params: IdParams): Promise<void> {
+	deleteOAuth2Client(@CurrentUser() currentUser: CurrentUserInterface, @Param() params: IdParams): Promise<void> {
 		const promise: Promise<void> = this.crudUc.deleteOAuth2Client(currentUser, params.id);
 		return promise;
 	}
@@ -118,7 +118,7 @@ export class OauthProviderController {
 		@Param() params: ChallengeParams,
 		@Query() query: AcceptQuery,
 		@Body() body: LoginRequestBody,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<RedirectResponse> {
 		const redirectResponse: ProviderRedirectResponse = await this.oauthProviderLoginFlowUc.patchLoginRequest(
 			currentUser.userId,
@@ -152,7 +152,7 @@ export class OauthProviderController {
 		@Param() params: ChallengeParams,
 		@Query() query: AcceptQuery,
 		@Body() body: ConsentRequestBody,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<RedirectResponse> {
 		const redirectResponse: ProviderRedirectResponse = await this.consentFlowUc.patchConsentRequest(
 			params.challenge,
@@ -166,7 +166,7 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Get('auth/sessions/consent')
-	async listConsentSessions(@CurrentUser() currentUser: ICurrentUser): Promise<ConsentSessionResponse[]> {
+	async listConsentSessions(@CurrentUser() currentUser: CurrentUserInterface): Promise<ConsentSessionResponse[]> {
 		const sessions: ProviderConsentSessionResponse[] = await this.oauthProviderUc.listConsentSessions(
 			currentUser.userId
 		);
@@ -179,7 +179,10 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Delete('auth/sessions/consent')
-	revokeConsentSession(@CurrentUser() currentUser: ICurrentUser, @Param() params: RevokeConsentParams): Promise<void> {
+	revokeConsentSession(
+		@CurrentUser() currentUser: CurrentUserInterface,
+		@Param() params: RevokeConsentParams
+	): Promise<void> {
 		const promise: Promise<void> = this.oauthProviderUc.revokeConsentSession(currentUser.userId, params.client);
 		return promise;
 	}

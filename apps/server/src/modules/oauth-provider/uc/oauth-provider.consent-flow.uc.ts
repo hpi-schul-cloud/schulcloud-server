@@ -1,15 +1,15 @@
+import { OauthProviderService } from '@infra/oauth-provider';
 import {
 	AcceptConsentRequestBody,
 	ProviderConsentResponse,
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '@infra/oauth-provider/dto';
+import { CurrentUserInterface } from '@modules/authentication';
 import { AcceptQuery, ConsentRequestBody } from '@modules/oauth-provider/controller/dto';
-import { ICurrentUser } from '@modules/authentication';
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { IdTokenService } from '@modules/oauth-provider/service/id-token.service';
-import { OauthProviderService } from '@infra/oauth-provider';
 import { IdToken } from '@modules/oauth-provider/interface/id-token';
+import { IdTokenService } from '@modules/oauth-provider/service/id-token.service';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class OauthProviderConsentFlowUc {
@@ -27,7 +27,7 @@ export class OauthProviderConsentFlowUc {
 		challenge: string,
 		query: AcceptQuery,
 		body: ConsentRequestBody,
-		currentUser: ICurrentUser
+		currentUser: CurrentUserInterface
 	): Promise<ProviderRedirectResponse> {
 		const consentResponse = await this.oauthProviderService.getConsentRequest(challenge);
 		this.validateSubject(currentUser, consentResponse);
@@ -77,7 +77,7 @@ export class OauthProviderConsentFlowUc {
 		return redirectResponse;
 	}
 
-	private validateSubject(currentUser: ICurrentUser, response: ProviderConsentResponse): void {
+	private validateSubject(currentUser: CurrentUserInterface, response: ProviderConsentResponse): void {
 		if (response.subject !== currentUser.userId) {
 			throw new ForbiddenException("You want to patch another user's consent");
 		}

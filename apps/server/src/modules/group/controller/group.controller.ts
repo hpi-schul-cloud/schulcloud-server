@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
 import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller';
@@ -6,7 +6,7 @@ import { Page } from '@shared/domain';
 import { ErrorResponse } from '@src/core/error/dto';
 import { GroupUc } from '../uc';
 import { ClassInfoDto, ResolvedGroupDto } from '../uc/dto';
-import { ClassInfoSearchListResponse, ClassSortParams, GroupIdParams, GroupResponse, ClassFilterParams } from './dto';
+import { ClassFilterParams, ClassInfoSearchListResponse, ClassSortParams, GroupIdParams, GroupResponse } from './dto';
 import { GroupResponseMapper } from './mapper';
 
 @ApiTags('Group')
@@ -24,7 +24,7 @@ export class GroupController {
 		@Query() pagination: PaginationParams,
 		@Query() sortingQuery: ClassSortParams,
 		@Query() filterParams: ClassFilterParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<ClassInfoSearchListResponse> {
 		const board: Page<ClassInfoDto> = await this.groupUc.findAllClasses(
 			currentUser.userId,
@@ -51,7 +51,7 @@ export class GroupController {
 	@ApiResponse({ status: '4XX', type: ErrorResponse })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	public async getGroup(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() params: GroupIdParams
 	): Promise<GroupResponse> {
 		const group: ResolvedGroupDto = await this.groupUc.getGroup(currentUser.userId, params.groupId);

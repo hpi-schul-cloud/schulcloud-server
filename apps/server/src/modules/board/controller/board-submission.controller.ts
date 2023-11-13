@@ -1,3 +1,4 @@
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
 import {
 	Body,
 	Controller,
@@ -11,8 +12,6 @@ import {
 } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
-import { SubmissionsResponse } from './dto/submission-item/submissions.response';
 import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
 import { SubmissionItemUc } from '../uc/submission-item.uc';
@@ -24,6 +23,7 @@ import {
 	SubmissionItemUrlParams,
 	UpdateSubmissionItemBodyParams,
 } from './dto';
+import { SubmissionsResponse } from './dto/submission-item/submissions.response';
 import { ContentElementResponseFactory, SubmissionItemResponseMapper } from './mapper';
 
 @ApiTags('Board Submission')
@@ -42,7 +42,7 @@ export class BoardSubmissionController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Get(':submissionContainerId')
 	async getSubmissionItems(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() urlParams: SubmissionContainerUrlParams
 	): Promise<SubmissionsResponse> {
 		const { submissionItems, users } = await this.submissionItemUc.findSubmissionItems(
@@ -63,7 +63,7 @@ export class BoardSubmissionController {
 	@HttpCode(204)
 	@Patch(':submissionItemId')
 	async updateSubmissionItem(
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Param() urlParams: SubmissionItemUrlParams,
 		@Body() bodyParams: UpdateSubmissionItemBodyParams
 	) {
@@ -89,7 +89,7 @@ export class BoardSubmissionController {
 	async createElement(
 		@Param() urlParams: SubmissionItemUrlParams,
 		@Body() bodyParams: CreateContentElementBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<FileElementResponse | RichTextElementResponse> {
 		const { type } = bodyParams;
 		const element = await this.submissionItemUc.createElement(currentUser.userId, urlParams.submissionItemId, type);

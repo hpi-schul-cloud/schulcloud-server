@@ -1,3 +1,4 @@
+import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
 import {
 	Body,
 	Controller,
@@ -12,11 +13,10 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { BoardUc, ColumnUc } from '../uc';
 import { CardResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams } from './dto';
-import { CardResponseMapper } from './mapper';
 import { CreateCardBodyParams } from './dto/card/create-card.body.params';
+import { CardResponseMapper } from './mapper';
 
 @ApiTags('Board Column')
 @Authenticate('jwt')
@@ -34,7 +34,7 @@ export class ColumnController {
 	async moveColumn(
 		@Param() urlParams: ColumnUrlParams,
 		@Body() bodyParams: MoveColumnBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<void> {
 		await this.boardUc.moveColumn(currentUser.userId, urlParams.columnId, bodyParams.toBoardId, bodyParams.toPosition);
 	}
@@ -49,7 +49,7 @@ export class ColumnController {
 	async updateColumnTitle(
 		@Param() urlParams: ColumnUrlParams,
 		@Body() bodyParams: RenameBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: CurrentUserInterface
 	): Promise<void> {
 		await this.columnUc.updateColumnTitle(currentUser.userId, urlParams.columnId, bodyParams.title);
 	}
@@ -61,7 +61,10 @@ export class ColumnController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Delete(':columnId')
-	async deleteColumn(@Param() urlParams: ColumnUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
+	async deleteColumn(
+		@Param() urlParams: ColumnUrlParams,
+		@CurrentUser() currentUser: CurrentUserInterface
+	): Promise<void> {
 		await this.columnUc.deleteColumn(currentUser.userId, urlParams.columnId);
 	}
 
@@ -74,7 +77,7 @@ export class ColumnController {
 	@Post(':columnId/cards')
 	async createCard(
 		@Param() urlParams: ColumnUrlParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: CurrentUserInterface,
 		@Body() createCardBodyParams?: CreateCardBodyParams
 	): Promise<CardResponse> {
 		const { requiredEmptyElements } = createCardBodyParams || {};
