@@ -4,16 +4,16 @@ import { ConverterUtil } from '@shared/common/utils';
 import { ErrorUtils } from '@src/core/error/utils';
 import { AxiosResponse } from 'axios';
 import crypto from 'crypto';
-import { Observable, firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { URL, URLSearchParams } from 'url';
-import { BbbSettings, IBbbSettings } from './bbb-settings.interface';
+import { BbbSettings, BbbSettingsInterface } from './bbb-settings.interface';
 import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig } from './request';
 import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
 
 @Injectable()
 export class BBBService {
 	constructor(
-		@Inject(BbbSettings) private readonly bbbSettings: IBbbSettings,
+		@Inject(BbbSettings) private readonly bbbSettings: BbbSettingsInterface,
 		private readonly httpService: HttpService,
 		private readonly converterUtil: ConverterUtil
 	) {}

@@ -1,6 +1,6 @@
 export const BbbSettings = Symbol('BbbSettings');
 
-export interface IBbbSettings {
+export interface BbbSettingsInterface {
 	host: string;
 	salt: string;
 	presentationUrl: string;

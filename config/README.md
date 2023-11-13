@@ -149,12 +149,12 @@ This code shows a minimal flow.
 
 ``` javascript
     // needed configuration for a module
-    export interface IUserConfig {
+    export interface UserConfig {
         AVAILABLE_LANGUAGES: string[];
     }
 
     // server.config.ts
-    export interface IServerConfig extends ICoreModuleConfig, IUserConfig, IFilesStorageClientConfig {
+    export interface IServerConfig extends ICoreModuleConfig, UserConfig, IFilesStorageClientConfig {
         NODE_ENV: string;
     }
 
@@ -176,9 +176,9 @@ This code shows a minimal flow.
 
     //use via injections
     import { ConfigService } from '@nestjs/config';
-    import { IUserConfig } from '../interfaces';
+    import { UserConfig } from '../interfaces';
 
-    constructor(private readonly configService: ConfigService<IUserConfig, true>){}
+    constructor(private readonly configService: ConfigService<UserConfig, true>){}
 
     this.configService.get<string[]>('AVAILABLE_LANGUAGES');
 
