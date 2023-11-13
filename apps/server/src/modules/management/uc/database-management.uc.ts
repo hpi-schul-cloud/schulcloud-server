@@ -11,7 +11,7 @@ import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';
 
-export interface ICollectionFilePath {
+export interface CollectionFilePath {
 	filePath: string;
 	collectionName: string;
 }
@@ -75,9 +75,9 @@ export class DatabaseManagementUc {
 
 	/**
 	 * Loads all collection names from database and adds related file paths.
-	 * @returns {ICollectionFilePath}
+	 * @returns {CollectionFilePath}
 	 */
-	private async loadAllCollectionsFromDatabase(targetFolder: string): Promise<ICollectionFilePath[]> {
+	private async loadAllCollectionsFromDatabase(targetFolder: string): Promise<CollectionFilePath[]> {
 		const collections = await this.databaseManagementService.getCollectionNames();
 		const collectionsWithFilePaths = collections.map((collectionName) => {
 			return {
@@ -90,9 +90,9 @@ export class DatabaseManagementUc {
 
 	/**
 	 * Loads all collection names and file paths from backup files.
-	 * @returns {ICollectionFilePath}
+	 * @returns {CollectionFilePath}
 	 */
-	private async loadAllCollectionsFromFilesystem(baseDir: string): Promise<ICollectionFilePath[]> {
+	private async loadAllCollectionsFromFilesystem(baseDir: string): Promise<CollectionFilePath[]> {
 		const filenames = await this.fileSystemAdapter.readDir(baseDir);
 		const collectionsWithFilePaths = filenames.map((fileName) => {
 			return {
@@ -107,14 +107,14 @@ export class DatabaseManagementUc {
 	 * Scans <source> for existing collections and optionally filters them based on <collectionNameFilter>
 	 * @param source
 	 * @param collectionNameFilter
-	 * @returns {ICollectionFilePath} the filtered collection names and related file paths
+	 * @returns {CollectionFilePath} the filtered collection names and related file paths
 	 */
 	private async loadCollectionsAvailableFromSourceAndFilterByCollectionNames(
 		source: 'files' | 'database',
 		folder: string,
 		collectionNameFilter?: string[]
 	) {
-		let allCollectionsWithFilePaths: ICollectionFilePath[] = [];
+		let allCollectionsWithFilePaths: CollectionFilePath[] = [];
 
 		// load all available collections from source
 		if (source === 'files') {

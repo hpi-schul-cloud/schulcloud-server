@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityId, IFindOptions, IPagination, Page, Pseudonym } from '@shared/domain';
 import { Scope } from '@shared/repo';
 import { PseudonymSearchQuery } from '../domain';
-import { ExternalToolPseudonymEntity, IExternalToolPseudonymEntityProps } from '../entity';
+import { ExternalToolPseudonymEntity, ExternalToolPseudonymEntityProps } from '../entity';
 import { PseudonymScope } from '../entity/pseudonym.scope';
 
 @Injectable()
@@ -50,7 +50,7 @@ export class ExternalToolPseudonymRepo {
 			.getUnitOfWork()
 			.getById<ExternalToolPseudonymEntity>(ExternalToolPseudonymEntity.name, domainObject.id);
 
-		const entityProps: IExternalToolPseudonymEntityProps = this.mapDomainObjectToEntityProperties(domainObject);
+		const entityProps: ExternalToolPseudonymEntityProps = this.mapDomainObjectToEntityProperties(domainObject);
 		let entity: ExternalToolPseudonymEntity = new ExternalToolPseudonymEntity(entityProps);
 
 		if (existing) {
@@ -101,7 +101,7 @@ export class ExternalToolPseudonymRepo {
 		return pseudonym;
 	}
 
-	protected mapDomainObjectToEntityProperties(entityDO: Pseudonym): IExternalToolPseudonymEntityProps {
+	protected mapDomainObjectToEntityProperties(entityDO: Pseudonym): ExternalToolPseudonymEntityProps {
 		return {
 			pseudonym: entityDO.pseudonym,
 			toolId: new ObjectId(entityDO.toolId),
