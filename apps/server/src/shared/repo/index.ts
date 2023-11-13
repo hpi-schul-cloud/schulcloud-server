@@ -15,7 +15,6 @@ export * from './lesson';
 export * from './ltitool';
 export * from './materials';
 export * from './mongo.patterns';
-export * from './school';
 export * from './schoolexternaltool';
 export * from './scope';
 export * from './system';

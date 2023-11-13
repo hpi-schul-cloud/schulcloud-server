@@ -3,7 +3,7 @@ import { UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, RoleName, SystemEntity, User } from '@shared/domain';
-import { LegacySchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { SystemRepo, UserRepo } from '@shared/repo';
 import {
 	accountDtoFactory,
 	defaultTestPassword,
@@ -16,6 +16,7 @@ import {
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AccountDto } from '@modules/account/services/dto';
+import { LegacySchoolRepo } from '@src/modules/legacy-school/repo';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { ICurrentUser } from '../interface';
 import { AuthenticationService } from '../services/authentication.service';

@@ -5,14 +5,14 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	ISchoolProperties,
-	LegacySchoolDo,
 	SchoolEntity,
 	SchoolRolePermission,
 	SchoolRoles,
 	SchoolYearEntity,
 	SystemEntity,
 	UserLoginMigrationEntity,
-} from '@shared/domain';
+} from '@shared/domain/entity';
+import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import {
 	legacySchoolDoFactory,
@@ -22,7 +22,7 @@ import {
 	userLoginMigrationFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { LegacySchoolRepo } from '..';
+import { LegacySchoolRepo } from './legacy-school.repo';
 
 describe('LegacySchoolRepo', () => {
 	let module: TestingModule;
