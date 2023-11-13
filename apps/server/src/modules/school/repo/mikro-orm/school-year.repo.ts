@@ -1,15 +1,15 @@
+import { EntityManager } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
 import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
-import { BaseRepo } from '@shared/repo/base.repo';
 import { SchoolYear, SchoolYearRepo } from '../../domain';
 import { SchoolYearEntityMapper } from './mapper';
 
-export class SchoolYearMikroOrmRepo extends BaseRepo<SchoolYearEntity> implements SchoolYearRepo {
-	get entityName() {
-		return SchoolYearEntity;
-	}
+@Injectable()
+export class SchoolYearMikroOrmRepo implements SchoolYearRepo {
+	constructor(private readonly em: EntityManager) {}
 
 	public async getAllSchoolYears(): Promise<SchoolYear[]> {
-		const entities = await this._em.find(SchoolYearEntity, {});
+		const entities = await this.em.find(SchoolYearEntity, {});
 
 		const dos = SchoolYearEntityMapper.mapToDos(entities);
 

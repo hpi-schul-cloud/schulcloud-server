@@ -1,16 +1,16 @@
-import { EntityName, FindOptions } from '@mikro-orm/core';
-import { EntityId } from '@shared/domain/types/entity-id';
+import { FindOptions } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
-import { BaseRepo } from '@shared/repo/base.repo';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { School, SchoolProps, SchoolQuery, SchoolRepo } from '../../domain';
 import { SchoolEntityMapper } from './mapper/school.entity.mapper';
 import { SchoolScope } from './scope/school.scope';
 
-export class SchoolMikroOrmRepo extends BaseRepo<SchoolEntity> implements SchoolRepo {
-	get entityName(): EntityName<SchoolEntity> {
-		return SchoolEntity;
-	}
+@Injectable()
+export class SchoolMikroOrmRepo implements SchoolRepo {
+	constructor(private readonly em: EntityManager) {}
 
 	public async getAllSchools(query: SchoolQuery, options?: IFindOptions<SchoolProps>): Promise<School[]> {
 		const scope = new SchoolScope();
@@ -19,7 +19,7 @@ export class SchoolMikroOrmRepo extends BaseRepo<SchoolEntity> implements School
 
 		const findOptions = this.mapToMikroOrmOptions(options, ['federalState', 'currentYear', 'systems']);
 
-		const entities = await this._em.find(SchoolEntity, scope.query, findOptions);
+		const entities = await this.em.find(SchoolEntity, scope.query, findOptions);
 
 		const schools = SchoolEntityMapper.mapToDos(entities);
 
@@ -27,7 +27,7 @@ export class SchoolMikroOrmRepo extends BaseRepo<SchoolEntity> implements School
 	}
 
 	public async getSchool(schoolId: EntityId): Promise<School> {
-		const entity = await this._em.findOneOrFail(
+		const entity = await this.em.findOneOrFail(
 			SchoolEntity,
 			{ id: schoolId },
 			{ populate: ['federalState', 'currentYear', 'systems'] }

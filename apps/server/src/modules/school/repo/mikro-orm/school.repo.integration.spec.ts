@@ -33,10 +33,6 @@ describe('SchoolMikroOrmRepo', () => {
 		await module.close();
 	});
 
-	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(SchoolEntity);
-	});
-
 	describe('getAllSchools', () => {
 		describe('when no query and options are given', () => {
 			const setup = async () => {
