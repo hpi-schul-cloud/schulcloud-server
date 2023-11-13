@@ -5,7 +5,7 @@ export class ReferencesService {
 		let fileContent = fs.readFileSync(filePath).toString();
 
 		// Replace all the CRLF occurrences with just a LF.
-		fileContent = fileContent.replace(/\r\n/g, '\n');
+		fileContent = fileContent.replace(/\r\n?/g, '\n');
 
 		// Split the whole file content by a line feed (LF) char (\n).
 		const fileLines = fileContent.split('\n');
