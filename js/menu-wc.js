@@ -3037,6 +3037,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/AuthorizationParams.html" data-type="entity-link" class="deprecated-name">AuthorizationParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/AxiosErrorFactory.html" data-type="entity-link" >AxiosErrorFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/AxiosErrorLoggable.html" data-type="entity-link" >AxiosErrorLoggable</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/AxiosResponseImp.html" data-type="entity-link" >AxiosResponseImp</a>
                             </li>
                             <li class="link">
@@ -3817,6 +3823,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/H5PTemporaryFileFactory.html" data-type="entity-link" >H5PTemporaryFileFactory</a>
                             </li>
                             <li class="link">
+                                <a href="classes/HydraOauthFailedLoggableException.html" data-type="entity-link" >HydraOauthFailedLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/HydraRedirectDto.html" data-type="entity-link" >HydraRedirectDto</a>
                             </li>
                             <li class="link">
@@ -4144,7 +4153,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/OAuthRejectableBody.html" data-type="entity-link" >OAuthRejectableBody</a>
                             </li>
                             <li class="link">
-                                <a href="classes/OAuthSSOError.html" data-type="entity-link" >OAuthSSOError</a>
+                                <a href="classes/OAuthSSOError.html" data-type="entity-link" class="deprecated-name">OAuthSSOError</a>
                             </li>
                             <li class="link">
                                 <a href="classes/OAuthTokenDto.html" data-type="entity-link" >OAuthTokenDto</a>
@@ -4700,6 +4709,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/TimestampsResponse.html" data-type="entity-link" >TimestampsResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/TokenRequestLoggableException.html" data-type="entity-link" >TokenRequestLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/TokenRequestMapper.html" data-type="entity-link" >TokenRequestMapper</a>

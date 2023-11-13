@@ -44,7 +44,9 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >OAuthSSOError</li>
+  <li class="breadcrumb-item" 
+        class="breadcrumb-item deprecated-name"
+    >OAuthSSOError</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -71,7 +73,21 @@
             <code>apps/server/src/modules/oauth/loggable/oauth-sso.error.ts</code>
         </p>
 
+            <p class="comment">
+                <h3 class="deprecated">Deprecated</h3>
+            </p>
+            <p class="comment">
+                Please create a loggable instead.
+This will be removed with: https://ticketsystem.dbildungscloud.de/browse/N21-1483
+            </p>
 
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>This will be removed with: <a href="https://ticketsystem.dbildungscloud.de/browse/N21-1483">https://ticketsystem.dbildungscloud.de/browse/N21-1483</a></p>
+
+            </p>
 
             <p class="comment">
                 <h3>Extends</h3>
@@ -134,7 +150,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/oauth/loggable/oauth-sso.error.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/oauth/loggable/oauth-sso.error.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -214,7 +230,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/oauth/loggable/oauth-sso.error.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/oauth/loggable/oauth-sso.error.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -246,7 +262,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/oauth/loggable/oauth-sso.error.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/oauth/loggable/oauth-sso.error.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -273,7 +289,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/oauth/loggable/oauth-sso.error.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/oauth/loggable/oauth-sso.error.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -300,7 +316,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/oauth/loggable/oauth-sso.error.ts:5</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/oauth/loggable/oauth-sso.error.ts:9</a></div>
                         </td>
                     </tr>
 
@@ -322,6 +338,10 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { SSOErrorCode } from &#x27;./sso-error-code.enum&#x27;;
 
+/**
+ * @deprecated Please create a loggable instead.
+ * This will be removed with: https://ticketsystem.dbildungscloud.de/browse/N21-1483
+ */
 export class OAuthSSOError extends InternalServerErrorException {
 	readonly message: string;
 

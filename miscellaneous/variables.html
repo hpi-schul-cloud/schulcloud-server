@@ -100,6 +100,9 @@
                             <a href="#availableParentTypes" title="apps/server/src/modules/files-storage/controller/api-test/mocks.ts" ><b>availableParentTypes</b>&nbsp;&nbsp;&nbsp;(apps/.../mocks.ts)</a>
                         </li>
                         <li>
+                            <a href="#axiosErrorFactory" title="apps/server/src/shared/testing/factory/axios-error.factory.ts" ><b>axiosErrorFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../axios-error.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#axiosResponseFactory" title="apps/server/src/shared/testing/factory/axios-response.factory.ts" ><b>axiosResponseFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../axios-response.factory.ts)</a>
                         </li>
                         <li>
@@ -2002,6 +2005,43 @@
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>&#x27;users, schools, courses, tasks, lessons, submissions, boardnodes&#x27;</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/axios-error.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="axiosErrorFactory"></a>
+                    <span class="name">
+                        <span ><b>axiosErrorFactory</b></span>
+                        <a href="#axiosErrorFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>AxiosErrorFactory.define(() &#x3D;&gt; {
+	return {
+		status: HttpStatus.BAD_REQUEST,
+		config: { headers: new AxiosHeaders() },
+		isAxiosError: true,
+		code: HttpStatus.BAD_REQUEST.toString(),
+		message: &#x27;Bad Request&#x27;,
+		name: &#x27;BadRequest&#x27;,
+		response: axiosResponseFactory.build({ status: HttpStatus.BAD_REQUEST }),
+		stack: &#x27;mockStack&#x27;,
+		toJSON: () &#x3D;&gt; {
+			return { someJson: &#x27;someJson&#x27; };
+		},
+	};
+})</code>
                     </td>
                 </tr>
 
