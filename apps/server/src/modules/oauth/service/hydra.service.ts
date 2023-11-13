@@ -1,26 +1,26 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { AuthorizationParams } from '@modules/oauth/controller/dto/authorization.params';
+import { CookiesDto } from '@modules/oauth/service/dto/cookies.dto';
+import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
 import { HttpService } from '@nestjs/axios';
 import { Inject, InternalServerErrorException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { OauthConfig } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { DefaultEncryptionService, IEncryptionService } from '@infra/encryption';
 import { LtiToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationParams } from '@modules/oauth/controller/dto/authorization.params';
-import { CookiesDto } from '@modules/oauth/service/dto/cookies.dto';
-import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { nanoid } from 'nanoid';
 import QueryString from 'qs';
-import { Observable, firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 @Injectable()
 export class HydraSsoService {
 	constructor(
 		private readonly ltiRepo: LtiToolRepo,
 		private readonly httpService: HttpService,
-		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
 		private readonly logger: LegacyLogger
 	) {}
 

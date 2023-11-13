@@ -1,19 +1,19 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Inject } from '@nestjs/common';
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { EntityId, LegacySchoolDo, OauthConfig, SchoolFeatures, UserDO } from '@shared/domain';
-import { DefaultEncryptionService, IEncryptionService } from '@infra/encryption';
-import { LegacyLogger } from '@src/core/logger';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { ProvisioningService } from '@modules/provisioning';
 import { OauthDataDto } from '@modules/provisioning/dto';
-import { LegacySchoolService } from '@modules/legacy-school';
 import { SystemService } from '@modules/system';
 import { SystemDto } from '@modules/system/service';
 import { UserService } from '@modules/user';
 import { MigrationCheckService, UserMigrationService } from '@modules/user-login-migration';
+import { Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { EntityId, LegacySchoolDo, OauthConfig, SchoolFeatures, UserDO } from '@shared/domain';
+import { LegacyLogger } from '@src/core/logger';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthSSOError, SSOErrorCode, UserNotFoundAfterProvisioningLoggableException } from '../loggable';
 import { OAuthTokenDto } from '../interface';
+import { OAuthSSOError, SSOErrorCode, UserNotFoundAfterProvisioningLoggableException } from '../loggable';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
@@ -23,7 +23,7 @@ export class OAuthService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly oauthAdapterService: OauthAdapterService,
-		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
 		private readonly logger: LegacyLogger,
 		private readonly provisioningService: ProvisioningService,
 		private readonly systemService: SystemService,

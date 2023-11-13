@@ -1,11 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { DatabaseManagementService } from '@infra/database';
+import { DefaultEncryptionService, EncryptionService, LdapEncryptionService } from '@infra/encryption';
+import { FileSystemAdapter } from '@infra/file-system';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { StorageProviderEntity, SystemEntity } from '@shared/domain';
-import { DatabaseManagementService } from '@infra/database';
-import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from '@infra/encryption';
-import { FileSystemAdapter } from '@infra/file-system';
 import { LegacyLogger } from '@src/core/logger';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
@@ -35,8 +35,8 @@ export class DatabaseManagementUc {
 		private readonly configService: ConfigService,
 		private readonly logger: LegacyLogger,
 		private em: EntityManager,
-		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService,
-		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: IEncryptionService
+		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService,
+		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: EncryptionService
 	) {
 		this.logger.setContext(DatabaseManagementUc.name);
 	}
