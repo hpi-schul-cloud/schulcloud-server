@@ -54,7 +54,7 @@ export class H5PLibraryManagementService {
 		this.libraryWishList = (parse(librariesYamlContent) as { h5p_libraries: string[] }).h5p_libraries;
 	}
 
-	async uninstallUnwantedLibraries(wantedLibraries: string[]) {
+	async uninstallUnwantedLibraries(wantedLibraries: string[]): Promise<void> {
 		const installedLibraries = await this.libraryAdministration.getLibraries();
 		for (const installedLibrary of installedLibraries) {
 			if (!wantedLibraries.includes(installedLibrary.machineName) && installedLibrary.dependentsCount === 0) {
@@ -66,7 +66,7 @@ export class H5PLibraryManagementService {
 		}
 	}
 
-	async installLibraries(libraries: string[]) {
+	async installLibraries(libraries: string[]): Promise<void> {
 		for (const libname of libraries) {
 			// avoid conflicts, install one-by-one:
 			// eslint-disable-next-line no-await-in-loop
@@ -80,7 +80,7 @@ export class H5PLibraryManagementService {
 		}
 	}
 
-	async run() {
+	async run(): Promise<void> {
 		await this.uninstallUnwantedLibraries(this.libraryWishList);
 		await this.installLibraries(this.libraryWishList);
 	}
