@@ -175,7 +175,7 @@ export class TldrawWsService {
 			void this.messageHandler(ws, doc, new Uint8Array(message));
 		});
 
-		const redisUpdates = await getDocUpdatesFromQueue(this.sub, doc);
+		const redisUpdates = await getDocUpdatesFromQueue(this.pub, doc);
 		const redisYDoc = new Doc();
 		redisYDoc.transact(() => {
 			for (const u of redisUpdates) {
