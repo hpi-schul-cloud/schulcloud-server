@@ -12,6 +12,10 @@ spec:
       targetPort: 3030
       protocol: TCP
       name: api
+    - port: 4030
+      targetPort: 4030
+      protocol: TCP
+      name: api-admin
     - port: {{ PORT_METRICS_SERVER }}
       targetPort: 9090
       protocol: TCP
