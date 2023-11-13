@@ -8,8 +8,9 @@ import { PreviewGeneratorService } from './preview-generator.service';
 
 const streamMock = jest.fn();
 const resizeMock = jest.fn();
+const selectFrameMock = jest.fn();
 const imageMagickMock = () => {
-	return { stream: streamMock, resize: resizeMock, data: Readable.from('text') };
+	return { stream: streamMock, resize: resizeMock, selectFrame: selectFrameMock, data: Readable.from('text') };
 };
 jest.mock('gm', () => {
 	return {
@@ -71,71 +72,107 @@ describe('PreviewGeneratorService', () => {
 	describe('generatePreview', () => {
 		describe('WHEN download of original and preview file is successful', () => {
 			describe('WHEN preview is possible', () => {
-				const setup = (width = 500) => {
-					const params = {
-						originFilePath: 'file/test.jpeg',
-						previewFilePath: 'preview/text.webp',
-						previewOptions: {
-							format: 'webp',
-							width,
-						},
+				describe('WHEN mime type is jpeg', () => {
+					const setup = (width = 500) => {
+						const params = {
+							originFilePath: 'file/test.jpeg',
+							previewFilePath: 'preview/text.webp',
+							previewOptions: {
+								format: 'webp',
+								width,
+							},
+						};
+						const originFile = createFile(undefined, 'image/jpeg');
+						s3ClientAdapter.get.mockResolvedValueOnce(originFile);
+
+						const data = Readable.from('text');
+						streamMock.mockReturnValueOnce(data);
+
+						const expectedFileData = {
+							data,
+							mimeType: params.previewOptions.format,
+						};
+
+						return { params, originFile, expectedFileData };
 					};
-					const originFile = createFile(undefined, 'image/jpeg');
-					s3ClientAdapter.get.mockResolvedValueOnce(originFile);
 
-					const data = Readable.from('text');
-					streamMock.mockReturnValueOnce(data);
+					it('should call storageClient get method with originFilePath', async () => {
+						const { params } = setup();
 
-					const expectedFileData = {
-						data,
-						mimeType: params.previewOptions.format,
+						await service.generatePreview(params);
+
+						expect(s3ClientAdapter.get).toBeCalledWith(params.originFilePath);
+					});
+
+					it('should call imagemagicks resize method', async () => {
+						const { params } = setup();
+
+						await service.generatePreview(params);
+
+						expect(resizeMock).toHaveBeenCalledWith(params.previewOptions.width, undefined, '>');
+						expect(resizeMock).toHaveBeenCalledTimes(1);
+					});
+
+					it('should call imagemagicks stream method', async () => {
+						const { params } = setup();
+
+						await service.generatePreview(params);
+
+						expect(streamMock).toHaveBeenCalledWith(params.previewOptions.format);
+						expect(streamMock).toHaveBeenCalledTimes(1);
+					});
+
+					it('should call S3ClientAdapters create method', async () => {
+						const { params, expectedFileData } = setup();
+
+						await service.generatePreview(params);
+
+						expect(s3ClientAdapter.create).toHaveBeenCalledWith(params.previewFilePath, expectedFileData);
+						expect(s3ClientAdapter.create).toHaveBeenCalledTimes(1);
+					});
+
+					it('should should return values', async () => {
+						const { params } = setup();
+						const expectedValue = { previewFilePath: params.previewFilePath, status: true };
+
+						const result = await service.generatePreview(params);
+
+						expect(result).toEqual(expectedValue);
+					});
+				});
+
+				describe('WHEN mime type is pdf', () => {
+					const setup = (width = 500) => {
+						const params = {
+							originFilePath: 'file/test.pdf',
+							previewFilePath: 'preview/text.webp',
+							previewOptions: {
+								format: 'webp',
+								width,
+							},
+						};
+						const originFile = createFile(undefined, 'application/pdf');
+						s3ClientAdapter.get.mockResolvedValueOnce(originFile);
+
+						const data = Readable.from('text');
+						streamMock.mockReturnValueOnce(data);
+
+						const expectedFileData = {
+							data,
+							mimeType: params.previewOptions.format,
+						};
+
+						return { params, originFile, expectedFileData };
 					};
 
-					return { params, originFile, expectedFileData };
-				};
+					it('should call imagemagicks resize method', async () => {
+						const { params } = setup();
 
-				it('should call storageClient get method with originFilePath', async () => {
-					const { params } = setup();
+						await service.generatePreview(params);
 
-					await service.generatePreview(params);
-
-					expect(s3ClientAdapter.get).toBeCalledWith(params.originFilePath);
-				});
-
-				it('should call imagemagicks resize method', async () => {
-					const { params } = setup();
-
-					await service.generatePreview(params);
-
-					expect(resizeMock).toHaveBeenCalledWith(params.previewOptions.width, undefined, '>');
-					expect(resizeMock).toHaveBeenCalledTimes(1);
-				});
-
-				it('should call imagemagicks stream method', async () => {
-					const { params } = setup();
-
-					await service.generatePreview(params);
-
-					expect(streamMock).toHaveBeenCalledWith(params.previewOptions.format);
-					expect(streamMock).toHaveBeenCalledTimes(1);
-				});
-
-				it('should call S3ClientAdapters create method', async () => {
-					const { params, expectedFileData } = setup();
-
-					await service.generatePreview(params);
-
-					expect(s3ClientAdapter.create).toHaveBeenCalledWith(params.previewFilePath, expectedFileData);
-					expect(s3ClientAdapter.create).toHaveBeenCalledTimes(1);
-				});
-
-				it('should should return values', async () => {
-					const { params } = setup();
-					const expectedValue = { previewFilePath: params.previewFilePath, status: true };
-
-					const result = await service.generatePreview(params);
-
-					expect(result).toEqual(expectedValue);
+						expect(selectFrameMock).toHaveBeenCalledWith(0);
+						expect(resizeMock).toHaveBeenCalledTimes(1);
+					});
 				});
 			});
 
