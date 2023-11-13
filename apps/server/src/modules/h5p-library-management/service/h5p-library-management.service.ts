@@ -10,7 +10,7 @@ import {
 import ContentManager from '@lumieducation/h5p-server/build/src/ContentManager';
 import ContentTypeInformationRepository from '@lumieducation/h5p-server/build/src/ContentTypeInformationRepository';
 import { Injectable } from '@nestjs/common';
-import { ContentStorage, LibraryStorage } from '@src/modules/h5p-editor/service';
+import { ContentStorage, LibraryStorage } from '@src/modules/h5p-editor';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { readFileSync } from 'fs';
 import { parse } from 'yaml';
