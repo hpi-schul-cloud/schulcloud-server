@@ -6,10 +6,10 @@ import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { Material } from './materials.entity';
-import { Task } from './task.entity';
 import type { ITaskParent } from './task.entity';
+import { Task } from './task.entity';
 
-export interface ILessonProperties {
+export interface LessonProperties {
 	name: string;
 	hidden: boolean;
 	course: Course;
@@ -109,7 +109,7 @@ export class LessonEntity extends BaseEntityWithTimestamps implements ILearnroom
 	@OneToMany('Task', 'lesson', { orphanRemoval: true })
 	tasks = new Collection<Task>(this);
 
-	constructor(props: ILessonProperties) {
+	constructor(props: LessonProperties) {
 		super();
 		this.name = props.name;
 		if (props.hidden !== undefined) this.hidden = props.hidden;
