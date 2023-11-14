@@ -12,7 +12,6 @@ import { Buffer } from 'node:buffer';
 import { getDocUpdatesFromQueue, pushDocUpdatesToQueue } from '@src/modules/tldraw/redis';
 import { applyUpdate, Doc } from 'yjs';
 import Redis from 'ioredis';
-import { LegacyLogger } from '@src/core/logger';
 
 @Injectable()
 export class TldrawWsService {
@@ -30,13 +29,11 @@ export class TldrawWsService {
 
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
-		private readonly tldrawBoardRepo: TldrawBoardRepo,
-		private readonly logger: LegacyLogger
+		private readonly tldrawBoardRepo: TldrawBoardRepo
 	) {
-		this.logger.setContext(TldrawWsService.name);
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
 		const redisUrl: string = this.configService.get<string>('REDIS_URI');
-		this.logger.log(`REDIS URL ${redisUrl}`);
+		console.log(`REDIS URL ${redisUrl}`);
 		this.mux = mutex.createMutex();
 		this.sub = new Redis(redisUrl);
 		this.pub = new Redis(redisUrl);
@@ -108,8 +105,7 @@ export class TldrawWsService {
 				this.pub.publishBuffer(doc.name, Buffer.from(update)),
 				pushDocUpdatesToQueue(this.pub, doc, update),
 			]).then((result) => {
-				this.logger.log('Update handler redis response: ');
-				this.logger.log(result[0]);
+				console.log(`Update handler redis response: ${result[0]}`);
 				return null;
 			});
 
@@ -157,8 +153,7 @@ export class TldrawWsService {
 				case WSMessageType.AWARENESS: {
 					const update = decoding.readVarUint8Array(decoder);
 					const pubResponse = await this.pub.publishBuffer(doc.awarenessChannel, Buffer.from(update));
-					this.logger.log('Message handler awareness response: ');
-					this.logger.log(pubResponse);
+					console.log(`Message handler awareness response: ${pubResponse}`);
 					applyAwarenessUpdate(doc.awareness, update, conn);
 					break;
 				}
@@ -186,8 +181,7 @@ export class TldrawWsService {
 		});
 
 		const redisUpdates = await getDocUpdatesFromQueue(this.pub, doc);
-		this.logger.log('Setup WS Connection redis updates: ');
-		this.logger.log(redisUpdates);
+		console.log(`Setup WS Connection redis updates: ${redisUpdates.toString()}`);
 		const redisYDoc = new Doc();
 		redisYDoc.transact(() => {
 			for (const u of redisUpdates) {
