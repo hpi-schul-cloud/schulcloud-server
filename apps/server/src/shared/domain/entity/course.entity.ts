@@ -2,7 +2,7 @@ import { Collection, Entity, Enum, Index, ManyToMany, ManyToOne, OneToMany, Prop
 import { ClassEntity } from '@modules/class/entity/class.entity';
 import { GroupEntity } from '@modules/group/entity/group.entity';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
-import { IEntityWithSchool, ILearnroom } from '@shared/domain/interface';
+import { IEntityWithSchool, Learnroom } from '@shared/domain/interface';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CourseGroup } from './coursegroup.entity';
@@ -49,10 +49,7 @@ export class UsersList {
 }
 
 @Entity({ tableName: 'courses' })
-export class Course
-	extends BaseEntityWithTimestamps
-	implements ILearnroom, IEntityWithSchool, TaskParent, LessonParent
-{
+export class Course extends BaseEntityWithTimestamps implements Learnroom, IEntityWithSchool, TaskParent, LessonParent {
 	@Property()
 	name: string = DEFAULT.name;
 

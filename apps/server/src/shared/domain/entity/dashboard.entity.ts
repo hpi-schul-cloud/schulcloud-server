@@ -1,5 +1,5 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { ILearnroom } from '@shared/domain/interface';
+import { Learnroom } from '@shared/domain/interface';
 import { EntityId, LearnroomMetadata } from '@shared/domain/types';
 
 const defaultColumns = 4;
@@ -15,11 +15,11 @@ export interface GridElementInterface {
 
 	removeReferenceByIndex(index: number): void;
 
-	removeReference(reference: ILearnroom): void;
+	removeReference(reference: Learnroom): void;
 
-	getReferences(): ILearnroom[];
+	getReferences(): Learnroom[];
 
-	addReferences(anotherReference: ILearnroom[]): void;
+	addReferences(anotherReference: Learnroom[]): void;
 
 	setGroupName(newGroupName: string): void;
 }
@@ -39,7 +39,7 @@ export class GridElement implements GridElementInterface {
 
 	title?: string;
 
-	private sortReferences = (a: ILearnroom, b: ILearnroom) => {
+	private sortReferences = (a: Learnroom, b: Learnroom) => {
 		const titleA = a.getMetadata().title;
 		const titleB = b.getMetadata().title;
 		if (titleA < titleB) {
@@ -51,29 +51,29 @@ export class GridElement implements GridElementInterface {
 		return 0;
 	};
 
-	private constructor(props: { id?: EntityId; title?: string; references: ILearnroom[] }) {
+	private constructor(props: { id?: EntityId; title?: string; references: Learnroom[] }) {
 		if (props.id) this.id = props.id;
 		if (props.title) this.title = props.title;
 		this.references = props.references.sort(this.sortReferences);
 	}
 
-	static FromPersistedReference(id: EntityId, reference: ILearnroom): GridElement {
+	static FromPersistedReference(id: EntityId, reference: Learnroom): GridElement {
 		return new GridElement({ id, references: [reference] });
 	}
 
-	static FromPersistedGroup(id: EntityId, title: string | undefined, group: ILearnroom[]): GridElement {
+	static FromPersistedGroup(id: EntityId, title: string | undefined, group: Learnroom[]): GridElement {
 		return new GridElement({ id, title, references: group });
 	}
 
-	static FromSingleReference(reference: ILearnroom): GridElement {
+	static FromSingleReference(reference: Learnroom): GridElement {
 		return new GridElement({ references: [reference] });
 	}
 
-	static FromGroup(title: string, references: ILearnroom[]): GridElement {
+	static FromGroup(title: string, references: Learnroom[]): GridElement {
 		return new GridElement({ title, references });
 	}
 
-	references: ILearnroom[];
+	references: Learnroom[];
 
 	hasId(): boolean {
 		return !!this.id;
@@ -83,7 +83,7 @@ export class GridElement implements GridElementInterface {
 		return this.id;
 	}
 
-	getReferences(): ILearnroom[] {
+	getReferences(): Learnroom[] {
 		return this.references;
 	}
 
@@ -97,7 +97,7 @@ export class GridElement implements GridElementInterface {
 		this.references.splice(index, 1);
 	}
 
-	removeReference(reference: ILearnroom): void {
+	removeReference(reference: Learnroom): void {
 		const index = this.references.indexOf(reference);
 		if (index === -1) {
 			throw new BadRequestException('reference not found.');
@@ -105,7 +105,7 @@ export class GridElement implements GridElementInterface {
 		this.references.splice(index, 1);
 	}
 
-	addReferences(anotherReference: ILearnroom[]): void {
+	addReferences(anotherReference: Learnroom[]): void {
 		if (!this.isGroup()) {
 			this.references = this.references.concat(anotherReference).sort(this.sortReferences);
 			this.setGroupName('');
@@ -228,7 +228,7 @@ export class DashboardEntity {
 		};
 	}
 
-	setLearnRooms(rooms: ILearnroom[]): void {
+	setLearnRooms(rooms: Learnroom[]): void {
 		this.removeRoomsNotInList(rooms);
 		const newRooms = this.determineNewRoomsIn(rooms);
 
@@ -237,7 +237,7 @@ export class DashboardEntity {
 		});
 	}
 
-	private removeRoomsNotInList(roomList: ILearnroom[]): void {
+	private removeRoomsNotInList(roomList: Learnroom[]): void {
 		[...this.grid.keys()].forEach((key) => {
 			const element = this.grid.get(key) as GridElementInterface;
 			const currentRooms = element.getReferences();
@@ -252,8 +252,8 @@ export class DashboardEntity {
 		});
 	}
 
-	private determineNewRoomsIn(rooms: ILearnroom[]): ILearnroom[] {
-		const result: ILearnroom[] = [];
+	private determineNewRoomsIn(rooms: Learnroom[]): Learnroom[] {
+		const result: Learnroom[] = [];
 		const existingRooms = this.allRooms();
 		rooms.forEach((room) => {
 			if (!existingRooms.includes(room)) {
@@ -263,13 +263,13 @@ export class DashboardEntity {
 		return result;
 	}
 
-	private allRooms(): ILearnroom[] {
+	private allRooms(): Learnroom[] {
 		const elements = [...this.grid.values()];
 		const references = elements.map((el) => el.getReferences()).flat();
 		return references;
 	}
 
-	private addRoom(room: ILearnroom): void {
+	private addRoom(room: Learnroom): void {
 		const index = this.getFirstOpenIndex();
 		const newElement = GridElement.FromSingleReference(room);
 		this.grid.set(index, newElement);

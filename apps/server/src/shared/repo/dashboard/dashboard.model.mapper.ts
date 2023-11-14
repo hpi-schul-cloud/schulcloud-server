@@ -1,14 +1,14 @@
-import { wrap, EntityManager } from '@mikro-orm/core';
+import { EntityManager, wrap } from '@mikro-orm/core';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
+	Course,
 	DashboardEntity,
-	GridElement,
-	GridElementWithPosition,
-	ILearnroom,
-	LearnroomTypes,
 	DashboardGridElementModel,
 	DashboardModelEntity,
-	Course,
+	GridElement,
+	GridElementWithPosition,
+	Learnroom,
+	LearnroomTypes,
 	User,
 } from '@shared/domain';
 
@@ -39,7 +39,7 @@ export class DashboardModelMapper {
 		return new DashboardEntity(modelEntity.id, { grid, userId: modelEntity.user.id });
 	}
 
-	mapReferenceToModel(reference: ILearnroom): Course {
+	mapReferenceToModel(reference: Learnroom): Course {
 		const metadata = reference.getMetadata();
 		if (metadata.type === LearnroomTypes.Course) {
 			const course = reference as Course;
