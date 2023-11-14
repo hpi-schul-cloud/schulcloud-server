@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ComponentProperties, ComponentType } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
 import { lessonFactory, setupEntities } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { ComponentType, IComponentProperties } from '@shared/domain';
 import { LessonService } from './lesson.service';
 
 describe('LessonService', () => {
@@ -81,7 +81,7 @@ describe('LessonService', () => {
 		describe('when finding by userId', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
-				const contentExample: IComponentProperties = {
+				const contentExample: ComponentProperties = {
 					title: 'title',
 					hidden: false,
 					user: userId,
@@ -122,7 +122,7 @@ describe('LessonService', () => {
 		describe('when deleting by userId', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
-				const contentExample: IComponentProperties = {
+				const contentExample: ComponentProperties = {
 					title: 'title',
 					hidden: false,
 					user: userId,

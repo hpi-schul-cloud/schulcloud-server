@@ -9,9 +9,9 @@ import {
 	ComponentGeogebraProperties,
 	ComponentLernstoreProperties,
 	ComponentNexboardProperties,
+	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
-	IComponentProperties,
 	LessonEntity,
 	Material,
 } from '@shared/domain';
@@ -109,7 +109,7 @@ export class LessonCopyService {
 			return lessonStatus;
 		}
 
-		copiedLesson.contents = copiedLesson.contents.map((value: IComponentProperties) =>
+		copiedLesson.contents = copiedLesson.contents.map((value: ComponentProperties) =>
 			this.updateCopiedEmbeddedTaskId(value, copyDict)
 		);
 
@@ -118,10 +118,7 @@ export class LessonCopyService {
 		return lessonStatus;
 	}
 
-	private updateCopiedEmbeddedTaskId = (
-		value: IComponentProperties,
-		copyDict: CopyDictionary
-	): IComponentProperties => {
+	private updateCopiedEmbeddedTaskId = (value: ComponentProperties, copyDict: CopyDictionary): ComponentProperties => {
 		if (value.component !== ComponentType.INTERNAL || value.content === undefined || value.content.url === undefined) {
 			return value;
 		}
@@ -145,10 +142,10 @@ export class LessonCopyService {
 	};
 
 	private replaceUrlsInContents(
-		contents: IComponentProperties[],
+		contents: ComponentProperties[],
 		fileUrlReplacements: FileUrlReplacement[]
-	): IComponentProperties[] {
-		contents = contents.map((item: IComponentProperties) => {
+	): ComponentProperties[] {
+		contents = contents.map((item: ComponentProperties) => {
 			if (item.component === 'text' && item.content && 'text' in item.content && item.content.text) {
 				let { text } = item.content;
 				fileUrlReplacements.forEach(({ regex, replacement }) => {
@@ -163,15 +160,15 @@ export class LessonCopyService {
 	}
 
 	private async copyLessonContent(
-		content: IComponentProperties[],
+		content: ComponentProperties[],
 		params: LessonCopyParams
 	): Promise<{
-		copiedContent: IComponentProperties[];
+		copiedContent: ComponentProperties[];
 		contentStatus: CopyStatus[];
 	}> {
 		const etherpadEnabled = Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean;
 		const nexboardEnabled = Configuration.get('FEATURE_NEXBOARD_ENABLED') as boolean;
-		const copiedContent: IComponentProperties[] = [];
+		const copiedContent: ComponentProperties[] = [];
 		const copiedContentStatus: CopyStatus[] = [];
 		for (let i = 0; i < content.length; i += 1) {
 			const element = content[i];
@@ -247,7 +244,7 @@ export class LessonCopyService {
 		return { copiedContent, contentStatus };
 	}
 
-	private copyTextContent(element: IComponentProperties): IComponentProperties {
+	private copyTextContent(element: ComponentProperties): ComponentProperties {
 		return {
 			title: element.title,
 			hidden: element.hidden,
@@ -259,8 +256,8 @@ export class LessonCopyService {
 		};
 	}
 
-	private copyLernStore(element: IComponentProperties): IComponentProperties {
-		const lernstore: IComponentProperties = {
+	private copyLernStore(element: ComponentProperties): ComponentProperties {
+		const lernstore: ComponentProperties = {
 			title: element.title,
 			hidden: element.hidden,
 			component: ComponentType.LERNSTORE,
@@ -288,18 +285,18 @@ export class LessonCopyService {
 		return lernstore;
 	}
 
-	private static copyGeogebra(originalElement: IComponentProperties): IComponentProperties {
-		const copy = { ...originalElement, hidden: true } as IComponentProperties;
+	private static copyGeogebra(originalElement: ComponentProperties): ComponentProperties {
+		const copy = { ...originalElement, hidden: true } as ComponentProperties;
 		copy.content = { ...copy.content, materialId: '' } as ComponentGeogebraProperties;
 		delete copy._id;
 		return copy;
 	}
 
 	private async copyEtherpad(
-		originalElement: IComponentProperties,
+		originalElement: ComponentProperties,
 		params: LessonCopyParams
-	): Promise<IComponentProperties | false> {
-		const copy = { ...originalElement } as IComponentProperties;
+	): Promise<ComponentProperties | false> {
+		const copy = { ...originalElement } as ComponentProperties;
 		delete copy._id;
 		const content = { ...copy.content, url: '' } as ComponentEtherpadProperties;
 		content.title = randomBytes(12).toString('hex');
@@ -319,10 +316,10 @@ export class LessonCopyService {
 	}
 
 	private async copyNexboard(
-		originalElement: IComponentProperties,
+		originalElement: ComponentProperties,
 		params: LessonCopyParams
-	): Promise<IComponentProperties | false> {
-		const copy = { ...originalElement } as IComponentProperties;
+	): Promise<ComponentProperties | false> {
+		const copy = { ...originalElement } as ComponentProperties;
 		delete copy._id;
 		const content = { ...copy.content, url: '', board: '' } as ComponentNexboardProperties;
 
@@ -389,8 +386,8 @@ export class LessonCopyService {
 		return { copiedMaterials, materialsStatus };
 	}
 
-	private copyEmbeddedTaskLink(originalElement: IComponentProperties) {
-		const copy = JSON.parse(JSON.stringify(originalElement)) as IComponentProperties;
+	private copyEmbeddedTaskLink(originalElement: ComponentProperties) {
+		const copy = JSON.parse(JSON.stringify(originalElement)) as ComponentProperties;
 		delete copy._id;
 		return copy;
 	}

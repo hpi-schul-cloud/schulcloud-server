@@ -5,10 +5,10 @@ import { LessonService } from '@modules/lesson/service';
 import { TaskService } from '@modules/task/service/task.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
 	Course,
-	IComponentProperties,
 	LessonEntity,
 	Task,
 } from '@shared/domain';
@@ -59,22 +59,22 @@ describe('CommonCartridgeExportService', () => {
 					content: {
 						text: 'text',
 					},
-				} as IComponentProperties,
+				} as ComponentProperties,
 				{
 					component: ComponentType.ETHERPAD,
 					title: 'Etherpad',
 					content: {
 						url: 'url',
 					},
-				} as IComponentProperties,
+				} as ComponentProperties,
 				{
 					component: ComponentType.GEOGEBRA,
 					title: 'Geogebra',
 					content: {
 						materialId: 'materialId',
 					},
-				} as IComponentProperties,
-				{} as IComponentProperties,
+				} as ComponentProperties,
+				{} as ComponentProperties,
 			],
 		});
 		tasks = taskFactory.buildListWithId(5);
@@ -88,7 +88,7 @@ describe('CommonCartridgeExportService', () => {
 		const setupExport = async (version: CommonCartridgeVersion) => {
 			const [lesson] = lessons;
 			const textContent = { text: 'Some random text' } as ComponentTextProperties;
-			const lessonContent: IComponentProperties = {
+			const lessonContent: ComponentProperties = {
 				_id: 'random_id',
 				title: 'A random title',
 				hidden: false,

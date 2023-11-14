@@ -15,7 +15,7 @@ export interface LessonProperties {
 	course: Course;
 	courseGroup?: CourseGroup;
 	position?: number;
-	contents: IComponentProperties[] | [];
+	contents: ComponentProperties[] | [];
 	materials?: Material[];
 }
 
@@ -63,7 +63,7 @@ export interface ComponentInternalProperties {
 	url: string;
 }
 
-export type IComponentProperties = {
+export type ComponentProperties = {
 	_id?: string;
 	title: string;
 	hidden: boolean;
@@ -101,7 +101,7 @@ export class LessonEntity extends BaseEntityWithTimestamps implements ILearnroom
 	position: number;
 
 	@Property()
-	contents: IComponentProperties[] | [];
+	contents: ComponentProperties[] | [];
 
 	@ManyToMany('Material', undefined, { fieldName: 'materialIds' })
 	materials = new Collection<Material>(this);
@@ -152,7 +152,7 @@ export class LessonEntity extends BaseEntityWithTimestamps implements ILearnroom
 		return filtered.length;
 	}
 
-	getLessonComponents(): IComponentProperties[] | [] {
+	getLessonComponents(): ComponentProperties[] | [] {
 		return this.contents;
 	}
 

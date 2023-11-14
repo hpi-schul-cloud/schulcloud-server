@@ -10,10 +10,10 @@ import {
 	ComponentGeogebraProperties,
 	ComponentInternalProperties,
 	ComponentNexboardProperties,
+	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
 	EntityId,
-	IComponentProperties,
 	LessonEntity,
 	Material,
 } from '@shared/domain';
@@ -304,7 +304,7 @@ describe('lesson copy service', () => {
 
 		describe('when lesson contains at least one content element', () => {
 			const setup = () => {
-				const contentOne: IComponentProperties = {
+				const contentOne: ComponentProperties = {
 					title: 'title component 1',
 					hidden: false,
 					component: ComponentType.TEXT,
@@ -312,7 +312,7 @@ describe('lesson copy service', () => {
 						text: 'this is a text content',
 					},
 				};
-				const contentTwo: IComponentProperties = {
+				const contentTwo: ComponentProperties = {
 					title: 'title component 2',
 					hidden: false,
 					component: ComponentType.LERNSTORE,
@@ -405,7 +405,7 @@ describe('lesson copy service', () => {
 
 	describe('when lesson contains text content element', () => {
 		const setup = (text = 'this is a text content') => {
-			const textContent: IComponentProperties = {
+			const textContent: ComponentProperties = {
 				title: 'text component 1',
 				hidden: false,
 				component: ComponentType.TEXT,
@@ -473,7 +473,7 @@ describe('lesson copy service', () => {
 
 	describe('when lesson contains LernStore content element', () => {
 		const setup = () => {
-			const lernStoreContent: IComponentProperties = {
+			const lernStoreContent: ComponentProperties = {
 				title: 'text component 1',
 				hidden: false,
 				component: ComponentType.LERNSTORE,
@@ -510,7 +510,7 @@ describe('lesson copy service', () => {
 				user,
 			});
 
-			const copiedLessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
+			const copiedLessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
 			expect(copiedLessonContents[0]).toEqual(lernStoreContent);
 		});
 
@@ -533,7 +533,7 @@ describe('lesson copy service', () => {
 
 	describe('when lesson contains LernStore content element without set resource', () => {
 		const setup = () => {
-			const lernStoreContent: IComponentProperties = {
+			const lernStoreContent: ComponentProperties = {
 				title: 'text component 1',
 				hidden: false,
 				component: ComponentType.LERNSTORE,
@@ -559,7 +559,7 @@ describe('lesson copy service', () => {
 				user,
 			});
 
-			const copiedLessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
+			const copiedLessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
 			expect(copiedLessonContents[0]).toEqual(lernStoreContent);
 		});
 
@@ -582,7 +582,7 @@ describe('lesson copy service', () => {
 
 	describe('when lesson contains geoGebra content element', () => {
 		const setup = () => {
-			const geoGebraContent: IComponentProperties = {
+			const geoGebraContent: ComponentProperties = {
 				title: 'text component 1',
 				hidden: false,
 				component: ComponentType.GEOGEBRA,
@@ -611,7 +611,7 @@ describe('lesson copy service', () => {
 				user,
 			});
 
-			const lessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
+			const lessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
 			const geoGebraContent = lessonContents[0].content as ComponentGeogebraProperties;
 
 			expect(geoGebraContent.materialId).toEqual('');
@@ -626,7 +626,7 @@ describe('lesson copy service', () => {
 				user,
 			});
 
-			const lessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
+			const lessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
 			expect(lessonContents[0].hidden).toEqual(true);
 		});
 
@@ -815,7 +815,7 @@ describe('lesson copy service', () => {
 
 	describe('when lesson contains Etherpad content element', () => {
 		const setup = () => {
-			const etherpadContent: IComponentProperties = {
+			const etherpadContent: ComponentProperties = {
 				title: 'text',
 				hidden: false,
 				component: ComponentType.ETHERPAD,
@@ -859,7 +859,7 @@ describe('lesson copy service', () => {
 				user,
 			});
 
-			const lessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
+			const lessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
 			expect(configurationSpy).toHaveBeenCalledWith('FEATURE_ETHERPAD_ENABLED');
 			expect(etherpadService.createEtherpad).not.toHaveBeenCalled();
 			expect(lessonContents).toEqual([]);
@@ -897,7 +897,7 @@ describe('lesson copy service', () => {
 			}
 			expect(contentStatus).toEqual(CopyStatusEnum.FAIL);
 
-			const lessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
+			const lessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
 			expect(lessonContents.length).toEqual(0);
 		});
 
@@ -911,7 +911,7 @@ describe('lesson copy service', () => {
 				destinationCourse,
 				user,
 			});
-			const copiedLessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
+			const copiedLessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
 			const copiedEtherpad = copiedLessonContents[0].content as ComponentEtherpadProperties;
 			expect(copiedEtherpad.url).toEqual('http://pad.uri/abc');
 		});
@@ -939,7 +939,7 @@ describe('lesson copy service', () => {
 			const user = userFactory.build();
 			const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
 			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
-			const embeddedTaskContent: IComponentProperties = {
+			const embeddedTaskContent: ComponentProperties = {
 				title: 'title',
 				hidden: false,
 				component: ComponentType.INTERNAL,
@@ -1008,7 +1008,7 @@ describe('lesson copy service', () => {
 
 	describe('when lesson contains neXboard content element', () => {
 		const setup = () => {
-			const nexboardContent: IComponentProperties = {
+			const nexboardContent: ComponentProperties = {
 				title: 'text',
 				hidden: false,
 				component: ComponentType.NEXBOARD,
@@ -1050,7 +1050,7 @@ describe('lesson copy service', () => {
 				user,
 			});
 
-			const lessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
+			const lessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
 			expect(configurationSpy).toHaveBeenCalledWith('FEATURE_NEXBOARD_ENABLED');
 			expect(nexboardService.createNexboard).not.toHaveBeenCalled();
 			expect(lessonContents).toEqual([]);
@@ -1088,7 +1088,7 @@ describe('lesson copy service', () => {
 			}
 			expect(contentStatus).toEqual(CopyStatusEnum.FAIL);
 
-			const lessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
+			const lessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
 			expect(lessonContents.length).toEqual(0);
 		});
 
@@ -1102,7 +1102,7 @@ describe('lesson copy service', () => {
 				destinationCourse,
 				user,
 			});
-			const copiedLessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
+			const copiedLessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
 			const copiedNexboard = copiedLessonContents[0].content as ComponentNexboardProperties;
 			expect(copiedNexboard.url).toEqual('abc');
 			expect(copiedNexboard.board).toEqual('123');
@@ -1324,7 +1324,7 @@ describe('lesson copy service', () => {
 				const copiedLesson = lessonFactory.buildWithId();
 				const originalTask = taskFactory.buildWithId({ lesson: originalLesson });
 				const copiedTask = taskFactory.buildWithId({ lesson: copiedLesson });
-				const embeddedTaskContent: IComponentProperties = {
+				const embeddedTaskContent: ComponentProperties = {
 					title: 'title',
 					hidden: false,
 					component: ComponentType.INTERNAL,
@@ -1332,7 +1332,7 @@ describe('lesson copy service', () => {
 						url: `http://somebasedomain.de/homeworks/${originalTask.id}`,
 					},
 				};
-				const textContent: IComponentProperties = {
+				const textContent: ComponentProperties = {
 					title: 'title component',
 					hidden: false,
 					component: ComponentType.TEXT,

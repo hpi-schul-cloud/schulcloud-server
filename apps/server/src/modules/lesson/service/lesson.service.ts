@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { Counted, EntityId, IComponentProperties, LessonEntity } from '@shared/domain';
-import { LessonRepo } from '@shared/repo';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { Injectable } from '@nestjs/common';
+import { ComponentProperties, Counted, EntityId, LessonEntity } from '@shared/domain';
+import { LessonRepo } from '@shared/repo';
 
 @Injectable()
 export class LessonService {
@@ -34,7 +34,7 @@ export class LessonService {
 		const lessons = await this.lessonRepo.findByUserId(userId);
 
 		const updatedLessons = lessons.map((lesson: LessonEntity) => {
-			lesson.contents.map((c: IComponentProperties) => {
+			lesson.contents.map((c: ComponentProperties) => {
 				if (c.user === userId) {
 					c.user = '';
 				}
