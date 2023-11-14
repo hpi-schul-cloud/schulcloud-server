@@ -7,7 +7,9 @@ export const getDocUpdatesFromQueue = async (redis: Redis.Redis, doc: WsSharedDo
 	redis.lrangeBuffer(getDocUpdatesKey(doc), 0, -1);
 
 export const pushDocUpdatesToQueue = async (redis: Redis.Redis, doc: WsSharedDocDo, update: Uint8Array) => {
+	console.log('Entered pushDocUpdatesToQueue');
 	const len = await redis.llen(getDocUpdatesKey(doc));
+	console.log('pushDocUpdatesToQueue len: ', len);
 	if (len > 100) {
 		void redis
 			.pipeline()
@@ -15,11 +17,13 @@ export const pushDocUpdatesToQueue = async (redis: Redis.Redis, doc: WsSharedDoc
 			.rpushBuffer(getDocUpdatesKey(doc), Buffer.from(update))
 			.expire(getDocUpdatesKey(doc), 300)
 			.exec();
+		console.log('pushDocUpdatesToQueue len > 100 after exec');
 	} else {
 		await redis
 			.pipeline()
 			.rpushBuffer(getDocUpdatesKey(doc), Buffer.from(update))
 			.expire(getDocUpdatesKey(doc), 300)
 			.exec();
+		console.log('pushDocUpdatesToQueue len <= 100 after exec');
 	}
 };
