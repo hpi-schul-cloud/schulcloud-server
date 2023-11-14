@@ -1,11 +1,12 @@
 import { createMock } from '@golevelup/ts-jest';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { UserQuery } from '@modules/user/service/user-query.type';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import {
 	IFindOptions,
-	IUserProperties,
 	LanguageType,
 	Role,
 	RoleName,
@@ -13,10 +14,10 @@ import {
 	SortOrder,
 	SystemEntity,
 	User,
+	UserProperties,
 } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import {
 	cleanupCollections,
@@ -27,7 +28,6 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { UserQuery } from '@modules/user/service/user-query.type';
 
 describe('UserRepo', () => {
 	let module: TestingModule;
@@ -67,7 +67,7 @@ describe('UserRepo', () => {
 	});
 
 	describe('entityFactory', () => {
-		const props: IUserProperties = {
+		const props: UserProperties = {
 			email: 'email@email.email',
 			firstName: 'firstName',
 			lastName: 'lastName',
@@ -303,9 +303,9 @@ describe('UserRepo', () => {
 					'testId'
 				);
 
-			const result: IUserProperties = repo.mapDOToEntityProperties(testDO);
+			const result: UserProperties = repo.mapDOToEntityProperties(testDO);
 
-			expect(result).toEqual<IUserProperties>({
+			expect(result).toEqual<UserProperties>({
 				email: testDO.email,
 				firstName: testDO.firstName,
 				lastName: testDO.lastName,

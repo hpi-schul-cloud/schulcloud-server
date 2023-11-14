@@ -1,32 +1,32 @@
 import { EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { UserQuery } from '@modules/user/service/user-query.type';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import {
 	EntityId,
 	IFindOptions,
 	IPagination,
-	IUserProperties,
 	Role,
 	SchoolEntity,
 	SortOrder,
 	SortOrderMap,
 	SystemEntity,
 	User,
+	UserProperties,
 } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { BaseDORepo, Scope } from '@shared/repo';
-import { UserQuery } from '@modules/user/service/user-query.type';
 import { UserScope } from './user.scope';
 
 @Injectable()
-export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
+export class UserDORepo extends BaseDORepo<UserDO, User, UserProperties> {
 	get entityName(): EntityName<User> {
 		return User;
 	}
 
-	entityFactory(props: IUserProperties): User {
+	entityFactory(props: UserProperties): User {
 		return new User(props);
 	}
 
@@ -120,7 +120,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		return user;
 	}
 
-	mapDOToEntityProperties(entityDO: UserDO): IUserProperties {
+	mapDOToEntityProperties(entityDO: UserDO): UserProperties {
 		return {
 			email: entityDO.email,
 			firstName: entityDO.firstName,

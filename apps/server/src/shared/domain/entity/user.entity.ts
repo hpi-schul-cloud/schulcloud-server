@@ -11,7 +11,7 @@ export enum LanguageType {
 	UK = 'uk',
 }
 
-export interface IUserProperties {
+export interface UserProperties {
 	email: string;
 	firstName: string;
 	lastName: string;
@@ -96,7 +96,7 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 	@Property({ nullable: true })
 	outdatedSince?: Date;
 
-	constructor(props: IUserProperties) {
+	constructor(props: UserProperties) {
 		super();
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
