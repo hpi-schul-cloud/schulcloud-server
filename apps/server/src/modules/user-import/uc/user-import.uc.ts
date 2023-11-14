@@ -10,8 +10,8 @@ import {
 	Counted,
 	EntityId,
 	FindOptions,
-	IImportUserScope,
 	ImportUser,
+	ImportUserScopeInterface,
 	INameMatch,
 	LegacySchoolDo,
 	MatchCreator,
@@ -75,7 +75,7 @@ export class UserImportUc {
 	 */
 	async findAllImportUsers(
 		currentUserId: EntityId,
-		query: IImportUserScope,
+		query: ImportUserScopeInterface,
 		options?: FindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
@@ -179,7 +179,7 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
-		const filters: IImportUserScope = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
+		const filters: ImportUserScopeInterface = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
 		// TODO batch/paginated import?
 		const options: FindOptions<ImportUser> = {};
 		// TODO Change ImportUserRepo to DO to fix this workaround

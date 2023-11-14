@@ -6,7 +6,7 @@ export enum MatchCreatorScope {
 	NONE = 'none',
 }
 
-export interface IImportUserScope {
+export interface ImportUserScopeInterface {
 	firstName?: string;
 	lastName?: string;
 	loginName?: string;

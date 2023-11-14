@@ -1,9 +1,9 @@
 import { BadRequestException } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
-import { ImportUser, IImportUserScope, SortOrderMap } from '@shared/domain';
+import { ImportUser, ImportUserScopeInterface, SortOrderMap } from '@shared/domain';
 import {
-	ImportUserResponse,
 	FilterImportUserParams,
+	ImportUserResponse,
 	ImportUserSortOrder,
 	SortImportUserParams,
 } from '../controller/dto';
@@ -46,8 +46,8 @@ export class ImportUserMapper {
 		return dto;
 	}
 
-	static mapImportUserFilterQueryToDomain(query: FilterImportUserParams): IImportUserScope {
-		const dto: IImportUserScope = {};
+	static mapImportUserFilterQueryToDomain(query: FilterImportUserParams): ImportUserScopeInterface {
+		const dto: ImportUserScopeInterface = {};
 		if (StringValidator.isNotEmptyString(query.firstName)) dto.firstName = query.firstName;
 		if (StringValidator.isNotEmptyString(query.lastName)) dto.lastName = query.lastName;
 		if (StringValidator.isNotEmptyString(query.loginName)) dto.loginName = query.loginName;
