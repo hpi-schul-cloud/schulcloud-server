@@ -1,12 +1,12 @@
 import { ObjectId } from 'bson';
-import { UserLoginMigrationStartLoggableException } from './user-login-migration-start-loggable-exception';
+import { UserLoginMigrationMandatoryLoggable } from './user-login-migration-mandatory.loggable';
 
-describe(UserLoginMigrationStartLoggableException.name, () => {
+describe(UserLoginMigrationMandatoryLoggable.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const userId = new ObjectId().toHexString();
 			const userLoginMigrationId = new ObjectId().toHexString();
-			const exception = new UserLoginMigrationStartLoggableException(userId, userLoginMigrationId);
+			const exception = new UserLoginMigrationMandatoryLoggable(userId, userLoginMigrationId, true);
 
 			return {
 				exception,
@@ -21,10 +21,11 @@ describe(UserLoginMigrationStartLoggableException.name, () => {
 			const message = exception.getLogMessage();
 
 			expect(message).toEqual({
-				message: 'The school administrator started the migration for his school.',
+				message: 'The school administrator changed the requirement status of the user login migration for his school.',
 				data: {
 					userId,
 					userLoginMigrationId,
+					mandatory: true,
 				},
 			});
 		});

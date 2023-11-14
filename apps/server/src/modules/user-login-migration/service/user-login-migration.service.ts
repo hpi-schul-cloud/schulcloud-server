@@ -47,14 +47,17 @@ export class UserLoginMigrationService {
 		return updatedUserLoginMigration;
 	}
 
-	public async setMigrationMandatory(userLoginMigration: UserLoginMigrationDO): Promise<UserLoginMigrationDO> {
+	public async setMigrationMandatory(
+		userLoginMigration: UserLoginMigrationDO,
+		mandatory: boolean
+	): Promise<UserLoginMigrationDO> {
 		this.checkGracePeriod(userLoginMigration);
 
 		if (userLoginMigration.closedAt) {
 			throw new UserLoginMigrationAlreadyClosedLoggableException(userLoginMigration.closedAt, userLoginMigration.id);
 		}
 
-		if (userLoginMigration.mandatorySince) {
+		if (mandatory) {
 			userLoginMigration.mandatorySince = userLoginMigration.mandatorySince ?? new Date();
 		} else {
 			userLoginMigration.mandatorySince = undefined;

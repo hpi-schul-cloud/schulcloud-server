@@ -538,7 +538,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should call save the user login migration', async () => {
 				const { userLoginMigration } = setup();
 
-				await service.setMigrationMandatory(userLoginMigration);
+				await service.setMigrationMandatory(userLoginMigration, true);
 
 				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith(userLoginMigration);
 			});
@@ -559,7 +559,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should call save the user login migration', async () => {
 				const { userLoginMigration } = setup();
 
-				await service.setMigrationMandatory(userLoginMigration);
+				await service.setMigrationMandatory(userLoginMigration, true);
 
 				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith(userLoginMigration);
 			});
@@ -582,7 +582,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should not save the user login migration again', async () => {
 				const { userLoginMigration } = setup();
 
-				await expect(service.setMigrationMandatory({ ...userLoginMigration })).rejects.toThrow();
+				await expect(service.setMigrationMandatory({ ...userLoginMigration }, true)).rejects.toThrow();
 
 				expect(userLoginMigrationRepo.save).not.toHaveBeenCalled();
 			});
@@ -590,7 +590,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should return throw an error', async () => {
 				const { userLoginMigration, dateInThePast } = setup();
 
-				await expect(service.setMigrationMandatory({ ...userLoginMigration })).rejects.toThrow(
+				await expect(service.setMigrationMandatory({ ...userLoginMigration }, true)).rejects.toThrow(
 					new UserLoginMigrationGracePeriodExpiredLoggableException(userLoginMigration.id as string, dateInThePast)
 				);
 			});
@@ -610,7 +610,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should throw a UserLoginMigrationAlreadyClosedLoggableException', async () => {
 				const { userLoginMigration } = setup();
 
-				const func = async () => service.setMigrationMandatory(userLoginMigration);
+				const func = async () => service.setMigrationMandatory(userLoginMigration, true);
 
 				await expect(func).rejects.toThrow(UserLoginMigrationAlreadyClosedLoggableException);
 			});

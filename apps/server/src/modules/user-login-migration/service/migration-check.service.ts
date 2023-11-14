@@ -18,20 +18,24 @@ export class MigrationCheckService {
 		officialSchoolNumber: string
 	): Promise<boolean> {
 		const school: LegacySchoolDo | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
-		const userLoginMigration: UserLoginMigrationDO | null =
-			school && school.id ? await this.userLoginMigrationRepo.findBySchoolId(school.id) : null;
 
-		if (!school || !userLoginMigration) {
+		if (!school?.id) {
+			return false;
+		}
+
+		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(school.id);
+
+		if (!userLoginMigration || !this.isMigrationActive(userLoginMigration)) {
 			return false;
 		}
 
 		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 
-		if (this.isMigrationDataValid(user, userLoginMigration)) {
-			return !this.isUserMigrated(user, userLoginMigration);
+		if (this.isUserMigrated(user, userLoginMigration)) {
+			return false;
 		}
 
-		return this.isMigrationActive(userLoginMigration);
+		return true;
 	}
 
 	private isMigrationDataValid(user: UserDO | null, userLoginMigration: UserLoginMigrationDO): boolean {

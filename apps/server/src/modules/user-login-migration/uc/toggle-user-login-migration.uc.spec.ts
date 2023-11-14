@@ -95,7 +95,7 @@ describe(ToggleUserLoginMigrationUc.name, () => {
 
 				await uc.setMigrationMandatory(new ObjectId().toHexString(), new ObjectId().toHexString(), true);
 
-				expect(userLoginMigrationService.setMigrationMandatory).toHaveBeenCalledWith(migrationBeforeMandatory);
+				expect(userLoginMigrationService.setMigrationMandatory).toHaveBeenCalledWith(migrationBeforeMandatory, true);
 			});
 
 			it('should return a UserLoginMigration', async () => {
@@ -147,7 +147,7 @@ describe(ToggleUserLoginMigrationUc.name, () => {
 
 				await uc.setMigrationMandatory(new ObjectId().toHexString(), new ObjectId().toHexString(), false);
 
-				expect(userLoginMigrationService.setMigrationMandatory).toHaveBeenCalledWith(migrationBeforeOptional);
+				expect(userLoginMigrationService.setMigrationMandatory).toHaveBeenCalledWith(migrationBeforeOptional, false);
 			});
 
 			it('should return a UserLoginMigration', async () => {
@@ -179,10 +179,9 @@ describe(ToggleUserLoginMigrationUc.name, () => {
 			it('should throw an exception', async () => {
 				setup();
 
-				const func = async () =>
-					uc.setMigrationMandatory(new ObjectId().toHexString(), new ObjectId().toHexString(), true);
-
-				await expect(func).rejects.toThrow(ForbiddenException);
+				await expect(
+					uc.setMigrationMandatory(new ObjectId().toHexString(), new ObjectId().toHexString(), true)
+				).rejects.toThrow(ForbiddenException);
 			});
 		});
 
@@ -200,10 +199,9 @@ describe(ToggleUserLoginMigrationUc.name, () => {
 			it('should throw a UserLoginMigrationNotFoundLoggableException', async () => {
 				setup();
 
-				const func = async () =>
-					uc.setMigrationMandatory(new ObjectId().toHexString(), new ObjectId().toHexString(), true);
-
-				await expect(func).rejects.toThrow(UserLoginMigrationNotFoundLoggableException);
+				await expect(
+					uc.setMigrationMandatory(new ObjectId().toHexString(), new ObjectId().toHexString(), true)
+				).rejects.toThrow(UserLoginMigrationNotFoundLoggableException);
 			});
 		});
 	});

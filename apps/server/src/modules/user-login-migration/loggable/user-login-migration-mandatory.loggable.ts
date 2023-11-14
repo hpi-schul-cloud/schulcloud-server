@@ -4,8 +4,8 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 export class UserLoginMigrationMandatoryLoggable implements Loggable {
 	constructor(
 		private readonly userId: EntityId,
-		private readonly mandatory: boolean,
-		private readonly userLoginMigrationId?: EntityId
+		private readonly userLoginMigrationId: EntityId | undefined,
+		private readonly mandatory: boolean
 	) {}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {

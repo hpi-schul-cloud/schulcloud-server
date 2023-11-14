@@ -1,4 +1,4 @@
-export * from './user-login-migration-start-loggable-exception';
+export * from './user-login-migration-start.loggable';
 export * from './user-login-migration-mandatory.loggable';
 export * from './school-number-missing.loggable-exception';
 export * from './user-login-migration-already-closed.loggable-exception';

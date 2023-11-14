@@ -1,8 +1,8 @@
 import { EntityId } from '@shared/domain';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
-export class UserLoginMigrationStartLoggableException implements Loggable {
-	constructor(private readonly userId: EntityId, private readonly userLoginMigrationId?: EntityId) {}
+export class UserLoginMigrationStartLoggable implements Loggable {
+	constructor(private readonly userId: EntityId, private readonly userLoginMigrationId: EntityId | undefined) {}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {

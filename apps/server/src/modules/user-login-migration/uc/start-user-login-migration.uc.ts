@@ -6,7 +6,7 @@ import { Logger } from '@src/core/logger';
 import {
 	SchoolNumberMissingLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
-	UserLoginMigrationStartLoggableException,
+	UserLoginMigrationStartLoggable,
 } from '../loggable';
 import { UserLoginMigrationService } from '../service';
 
@@ -31,7 +31,7 @@ export class StartUserLoginMigrationUc {
 		if (!userLoginMigration) {
 			userLoginMigration = await this.userLoginMigrationService.startMigration(schoolId);
 
-			this.logger.info(new UserLoginMigrationStartLoggableException(userId, userLoginMigration.id));
+			this.logger.info(new UserLoginMigrationStartLoggable(userId, userLoginMigration.id));
 		} else if (userLoginMigration.closedAt) {
 			throw new UserLoginMigrationAlreadyClosedLoggableException(userLoginMigration.closedAt, userLoginMigration.id);
 		}

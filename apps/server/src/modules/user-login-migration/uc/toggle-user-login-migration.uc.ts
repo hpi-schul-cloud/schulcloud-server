@@ -26,9 +26,9 @@ export class ToggleUserLoginMigrationUc {
 			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
 		}
 
-		userLoginMigration = await this.userLoginMigrationService.setMigrationMandatory(userLoginMigration);
+		userLoginMigration = await this.userLoginMigrationService.setMigrationMandatory(userLoginMigration, mandatory);
 
-		this.logger.debug(new UserLoginMigrationMandatoryLoggable(userId, mandatory, userLoginMigration.id));
+		this.logger.debug(new UserLoginMigrationMandatoryLoggable(userId, userLoginMigration.id, mandatory));
 
 		return userLoginMigration;
 	}
