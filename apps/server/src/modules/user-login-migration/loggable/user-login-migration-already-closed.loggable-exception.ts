@@ -3,7 +3,7 @@ import { EntityId } from '@shared/domain';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class UserLoginMigrationAlreadyClosedLoggableException extends UnprocessableEntityException implements Loggable {
-	constructor(private readonly userLoginMigrationId: EntityId, private readonly closedAt: Date) {
+	constructor(private readonly closedAt: Date, private readonly userLoginMigrationId?: EntityId) {
 		super();
 	}
 
