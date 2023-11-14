@@ -12,7 +12,7 @@ export interface RelatedResourceProperties {
 	relationType?: string;
 }
 
-export interface IMaterialProperties {
+export interface MaterialProperties {
 	client: string;
 	description?: string;
 	license: string[];
@@ -57,7 +57,7 @@ export class Material extends BaseEntityWithTimestamps {
 	@Property()
 	url: string;
 
-	constructor(props: IMaterialProperties) {
+	constructor(props: MaterialProperties) {
 		super();
 		this.client = props.client;
 		this.description = props.description || '';
