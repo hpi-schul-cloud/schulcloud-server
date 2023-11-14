@@ -1,13 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { OAuthTokenDto } from '@modules/oauth';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { userDoFactory } from '@shared/testing';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ConfigService } from '@nestjs/config';
 import { createMock } from '@golevelup/ts-jest';
-import { SchoolInMigrationLoggableException } from '../loggable';
 import { XApiKeyStrategy } from './x-api-key.strategy';
 import { IXApiKeyConfig } from '../config/x-api-key.config';
 
@@ -53,7 +48,7 @@ describe('XApiKeyStrategy', () => {
 		describe('when a valid api key is provided', () => {
 			it('should do nothing', () => {
 				const { CORRECT_API_KEY, done } = setup();
-				const result = strategy.validate(CORRECT_API_KEY, done);
+				strategy.validate(CORRECT_API_KEY, done);
 				expect(done).toBeCalledWith(null, true);
 			});
 		});
@@ -61,7 +56,7 @@ describe('XApiKeyStrategy', () => {
 		describe('when a invalid api key is provided', () => {
 			it('should throw error', () => {
 				const { INVALID_API_KEY, done } = setup();
-				const result = strategy.validate(INVALID_API_KEY, done);
+				strategy.validate(INVALID_API_KEY, done);
 				expect(done).toBeCalledWith(new UnauthorizedException(), null);
 			});
 		});
