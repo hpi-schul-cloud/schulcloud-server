@@ -7,7 +7,7 @@ export interface TargetGroupProperties {
 	grade?: string;
 }
 
-export interface IRelatedResourceProperties {
+export interface RelatedResourceProperties {
 	originId?: string;
 	relationType?: string;
 }
@@ -17,7 +17,7 @@ export interface IMaterialProperties {
 	description?: string;
 	license: string[];
 	merlinReference?: string;
-	relatedResources: IRelatedResourceProperties[];
+	relatedResources: RelatedResourceProperties[];
 	subjects: string[];
 	tags: string[];
 	targetGroups: TargetGroupProperties[];
@@ -40,7 +40,7 @@ export class Material extends BaseEntityWithTimestamps {
 	merlinReference?: string;
 
 	@Property()
-	relatedResources: IRelatedResourceProperties[] | [];
+	relatedResources: RelatedResourceProperties[] | [];
 
 	@Property()
 	subjects: string[] | [];
