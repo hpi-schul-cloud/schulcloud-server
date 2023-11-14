@@ -35,8 +35,9 @@ export class WsSharedDocDo extends Doc {
 		// eslint-disable-next-line promise/always-return
 		void this.tldrawService.sub.subscribe([this.name, this.awarenessChannel]).then(() => {
 			console.log('Entered tldrawService.sub.subscribe');
-			this.tldrawService.sub.on('messageBuffer', (channel: string, update: Uint8Array) => {
-				const channelId = channel;
+			this.tldrawService.sub.on('messageBuffer', (channel, update: Uint8Array) => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+				const channelId = channel.toString();
 				console.log('Sub on messageBuffer, channelId: ', channelId);
 
 				if (channelId === this.name) {
