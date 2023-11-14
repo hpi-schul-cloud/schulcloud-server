@@ -1,19 +1,18 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { Inject } from '@nestjs/common';
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { EntityId, LegacySchoolDo, OauthConfig, SchoolFeatures, UserDO } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@infra/encryption';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { ProvisioningService } from '@modules/provisioning';
 import { OauthDataDto } from '@modules/provisioning/dto';
-import { LegacySchoolService } from '@modules/legacy-school';
 import { SystemService } from '@modules/system';
 import { SystemDto } from '@modules/system/service';
 import { UserService } from '@modules/user';
-import { MigrationCheckService, UserMigrationService } from '@modules/user-login-migration';
+import { MigrationCheckService } from '@modules/user-login-migration';
+import { Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { EntityId, LegacySchoolDo, OauthConfig, SchoolFeatures, UserDO } from '@shared/domain';
+import { LegacyLogger } from '@src/core/logger';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthSSOError, SSOErrorCode, UserNotFoundAfterProvisioningLoggableException } from '../loggable';
 import { OAuthTokenDto } from '../interface';
+import { OAuthSSOError, SSOErrorCode, UserNotFoundAfterProvisioningLoggableException } from '../loggable';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
@@ -27,7 +26,6 @@ export class OAuthService {
 		private readonly logger: LegacyLogger,
 		private readonly provisioningService: ProvisioningService,
 		private readonly systemService: SystemService,
-		private readonly userMigrationService: UserMigrationService,
 		private readonly migrationCheckService: MigrationCheckService,
 		private readonly schoolService: LegacySchoolService
 	) {
@@ -60,22 +58,16 @@ export class OAuthService {
 		return oauthTokens;
 	}
 
-	async provisionUser(
-		systemId: string,
-		idToken: string,
-		accessToken: string,
-		postLoginRedirect?: string
-	): Promise<{ user?: UserDO; redirect: string }> {
+	async provisionUser(systemId: string, idToken: string, accessToken: string): Promise<UserDO | null> {
 		const data: OauthDataDto = await this.provisioningService.getData(systemId, idToken, accessToken);
 
 		const externalUserId: string = data.externalUser.externalId;
 		const officialSchoolNumber: string | undefined = data.externalSchool?.officialSchoolNumber;
 
-		let provisioning = true;
-		let migrationConsentRedirect: string | undefined;
+		let isProvisioningEnabled = true;
 
 		if (officialSchoolNumber) {
-			provisioning = await this.isOauthProvisioningEnabledForSchool(officialSchoolNumber);
+			isProvisioningEnabled = await this.isOauthProvisioningEnabledForSchool(officialSchoolNumber);
 
 			const shouldUserMigrate: boolean = await this.migrationCheckService.shouldUserMigrate(
 				externalUserId,
@@ -84,33 +76,21 @@ export class OAuthService {
 			);
 
 			if (shouldUserMigrate) {
-				// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
-				migrationConsentRedirect = await this.userMigrationService.getMigrationConsentPageRedirect(
-					officialSchoolNumber,
-					systemId
-				);
-
 				const existingUser: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+
 				if (!existingUser) {
-					return { user: undefined, redirect: migrationConsentRedirect };
+					return null;
 				}
 			}
 		}
 
-		if (provisioning) {
+		if (isProvisioningEnabled) {
 			await this.provisioningService.provisionData(data);
 		}
 
 		const user: UserDO = await this.findUserAfterProvisioningOrThrow(externalUserId, systemId, officialSchoolNumber);
 
-		// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
-		const redirect: string = await this.getPostLoginRedirectUrl(
-			idToken,
-			systemId,
-			postLoginRedirect || migrationConsentRedirect
-		);
-
-		return { user, redirect };
+		return user;
 	}
 
 	private async findUserAfterProvisioningOrThrow(
@@ -164,26 +144,6 @@ export class OAuthService {
 		}
 
 		return decodedJWT;
-	}
-
-	async getPostLoginRedirectUrl(idToken: string, systemId: string, postLoginRedirect?: string): Promise<string> {
-		const clientUrl: string = Configuration.get('HOST') as string;
-		const dashboardUrl: URL = new URL('/dashboard', clientUrl);
-		const system: SystemDto = await this.systemService.findById(systemId);
-
-		let redirect: string;
-		if (system.oauthConfig?.provider === 'iserv' && system.oauthConfig?.logoutEndpoint) {
-			const iservLogoutUrl: URL = new URL(system.oauthConfig.logoutEndpoint);
-			iservLogoutUrl.searchParams.append('id_token_hint', idToken);
-			iservLogoutUrl.searchParams.append('post_logout_redirect_uri', postLoginRedirect || dashboardUrl.toString());
-			redirect = iservLogoutUrl.toString();
-		} else if (postLoginRedirect) {
-			redirect = postLoginRedirect;
-		} else {
-			redirect = dashboardUrl.toString();
-		}
-
-		return redirect;
 	}
 
 	private buildTokenRequestPayload(
