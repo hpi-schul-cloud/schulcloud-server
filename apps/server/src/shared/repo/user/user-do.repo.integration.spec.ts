@@ -6,7 +6,6 @@ import { UserQuery } from '@modules/user/service/user-query.type';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import {
-	IFindOptions,
 	LanguageType,
 	Role,
 	RoleName,
@@ -336,7 +335,7 @@ describe('UserRepo', () => {
 				lastLoginSystemChangeBetweenStart: undefined,
 			};
 
-			const options: IFindOptions<UserDO> = {};
+			const options: FindOptions<UserDO> = {};
 
 			await em.nativeDelete(User, {});
 			await em.nativeDelete(SchoolEntity, {});
@@ -460,7 +459,7 @@ describe('UserRepo', () => {
 					lastLoginSystemChangeBetweenEnd: new Date(),
 				};
 
-				const options: IFindOptions<UserDO> = {};
+				const options: FindOptions<UserDO> = {};
 
 				await em.nativeDelete(User, {});
 				await em.nativeDelete(SchoolEntity, {});

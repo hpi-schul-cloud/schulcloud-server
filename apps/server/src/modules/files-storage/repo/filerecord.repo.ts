@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Counted, EntityId, IFindOptions, SortOrder } from '@shared/domain';
+import { Counted, EntityId, FindOptions, SortOrder } from '@shared/domain';
 import { BaseRepo } from '@shared/repo';
 import { FileRecord } from '../entity';
 import { FileRecordScope } from './filerecord-scope';
@@ -24,7 +24,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		return fileRecord;
 	}
 
-	async findByParentId(parentId: EntityId, options?: IFindOptions<FileRecord>): Promise<Counted<FileRecord[]>> {
+	async findByParentId(parentId: EntityId, options?: FindOptions<FileRecord>): Promise<Counted<FileRecord[]>> {
 		const scope = new FileRecordScope().byParentId(parentId).byMarkedForDelete(false);
 		const result = await this.findAndCount(scope, options);
 
@@ -34,7 +34,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 	async findBySchoolIdAndParentId(
 		schoolId: EntityId,
 		parentId: EntityId,
-		options?: IFindOptions<FileRecord>
+		options?: FindOptions<FileRecord>
 	): Promise<Counted<FileRecord[]>> {
 		const scope = new FileRecordScope().bySchoolId(schoolId).byParentId(parentId).byMarkedForDelete(false);
 		const result = await this.findAndCount(scope, options);
@@ -45,7 +45,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 	async findBySchoolIdAndParentIdAndMarkedForDelete(
 		schoolId: EntityId,
 		parentId: EntityId,
-		options?: IFindOptions<FileRecord>
+		options?: FindOptions<FileRecord>
 	): Promise<Counted<FileRecord[]>> {
 		const scope = new FileRecordScope().bySchoolId(schoolId).byParentId(parentId).byMarkedForDelete(true);
 		const result = await this.findAndCount(scope, options);
@@ -64,7 +64,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 
 	private async findAndCount(
 		scope: FileRecordScope,
-		options?: IFindOptions<FileRecord>
+		options?: FindOptions<FileRecord>
 	): Promise<Counted<FileRecord[]>> {
 		const { pagination } = options || {};
 		const order = { createdAt: SortOrder.desc, id: SortOrder.asc };

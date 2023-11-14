@@ -2,7 +2,7 @@ import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Counted, EntityId, IFindOptions, IImportUserScope, ImportUser, SchoolEntity, User } from '@shared/domain';
+import { Counted, EntityId, FindOptions, IImportUserScope, ImportUser, SchoolEntity, User } from '@shared/domain';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { ImportUserScope } from './importuser.scope';
 
@@ -34,7 +34,7 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 	async findImportUsers(
 		school: SchoolEntity,
 		filters: IImportUserScope = {},
-		options?: IFindOptions<ImportUser>
+		options?: FindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
 		const scope = new ImportUserScope();
 		scope.bySchool(school);
@@ -51,7 +51,7 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 
 	private async findImportUsersAndCount(
 		query: FilterQuery<ImportUser>,
-		options?: IFindOptions<ImportUser>
+		options?: FindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
 		const { pagination, order } = options || {};
 		const queryOptions = {

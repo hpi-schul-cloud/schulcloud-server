@@ -1,9 +1,10 @@
+import { FeathersAuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import {
 	Counted,
 	EntityId,
+	FindOptions,
 	ICreateNews,
-	IFindOptions,
 	INewsScope,
 	IUpdateNews,
 	News,
@@ -14,7 +15,6 @@ import {
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';
 import { CrudOperation } from '@shared/types';
 import { Logger } from '@src/core/logger';
-import { FeathersAuthorizationService } from '@modules/authorization';
 import { NewsCrudOperationLoggable } from '../loggable/news-crud-operation.loggable';
 
 type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;
@@ -67,7 +67,7 @@ export class NewsUc {
 	public async findAllForUser(
 		userId: EntityId,
 		scope?: INewsScope,
-		options?: IFindOptions<News>
+		options?: FindOptions<News>
 	): Promise<Counted<News[]>> {
 		const unpublished = !!scope?.unpublished; // default is only published news
 		const permissions: [NewsPermission] = NewsUc.getRequiredPermissions(unpublished);

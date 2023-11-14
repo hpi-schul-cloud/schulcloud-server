@@ -7,7 +7,7 @@ import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { RoleService } from '@modules/role/service/role.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId, IFindOptions, LanguageType, User } from '@shared/domain';
+import { EntityId, FindOptions, LanguageType, User } from '@shared/domain';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
@@ -70,7 +70,7 @@ export class UserService {
 		return savedUsers;
 	}
 
-	async findUsers(query: UserQuery, options?: IFindOptions<UserDO>): Promise<Page<UserDO>> {
+	async findUsers(query: UserQuery, options?: FindOptions<UserDO>): Promise<Page<UserDO>> {
 		const users: Page<UserDO> = await this.userDORepo.find(query, options);
 
 		return users;

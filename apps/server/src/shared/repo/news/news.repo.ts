@@ -1,6 +1,6 @@
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { Counted, CourseNews, EntityId, IFindOptions, News, SchoolNews, TeamNews } from '@shared/domain';
+import { Counted, CourseNews, EntityId, FindOptions, News, SchoolNews, TeamNews } from '@shared/domain';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { NewsScope } from './news-scope';
 import { NewsTargetFilter } from './news-target-filter';
@@ -18,7 +18,7 @@ export class NewsRepo extends BaseRepo<News> {
 	 * @param targets
 	 * @param options
 	 */
-	async findAllPublished(targets: NewsTargetFilter[], options?: IFindOptions<News>): Promise<Counted<News[]>> {
+	async findAllPublished(targets: NewsTargetFilter[], options?: FindOptions<News>): Promise<Counted<News[]>> {
 		const scope = new NewsScope();
 		scope.byTargets(targets);
 		scope.byPublished();
@@ -36,7 +36,7 @@ export class NewsRepo extends BaseRepo<News> {
 	async findAllUnpublishedByUser(
 		targets: NewsTargetFilter[],
 		creatorId: EntityId,
-		options?: IFindOptions<News>
+		options?: FindOptions<News>
 	): Promise<Counted<News[]>> {
 		const scope = new NewsScope();
 		scope.byTargets(targets);
@@ -55,7 +55,7 @@ export class NewsRepo extends BaseRepo<News> {
 	}
 
 	/** resolves a news documents list with some elements (school, target, and updator/creator) populated already */
-	private async findNewsAndCount(query: FilterQuery<News>, options?: IFindOptions<News>): Promise<Counted<News[]>> {
+	private async findNewsAndCount(query: FilterQuery<News>, options?: FindOptions<News>): Promise<Counted<News[]>> {
 		const { pagination, order } = options || {};
 		const [newsEntities, count] = await this._em.findAndCount(News, query, {
 			...pagination,

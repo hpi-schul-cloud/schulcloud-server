@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UnprocessableEntityException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, Page, SortOrder } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@infra/encryption';
 import { OauthProviderService } from '@infra/oauth-provider';
 import { ProviderOauthClient } from '@infra/oauth-provider/dto';
+import { UnprocessableEntityException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { FindOptions, Page, SortOrder } from '@shared/domain';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import {
 	externalToolFactory,
@@ -223,7 +223,7 @@ describe('ExternalToolService', () => {
 			const query: ExternalToolSearchQuery = {
 				name: 'toolName',
 			};
-			const options: IFindOptions<ExternalTool> = {
+			const options: FindOptions<ExternalTool> = {
 				order: {
 					id: SortOrder.asc,
 					name: SortOrder.asc,

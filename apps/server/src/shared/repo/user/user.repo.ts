@@ -5,7 +5,7 @@ import { StringValidator } from '@shared/common';
 import {
 	Counted,
 	EntityId,
-	IFindOptions,
+	FindOptions,
 	ImportUser,
 	INameMatch,
 	Role,
@@ -48,7 +48,7 @@ export class UserRepo extends BaseRepo<User> {
 	async findWithoutImportUser(
 		school: SchoolEntity,
 		filters?: INameMatch,
-		options?: IFindOptions<User>
+		options?: FindOptions<User>
 	): Promise<Counted<User[]>> {
 		const { _id: schoolId } = school;
 		if (!ObjectId.isValid(schoolId)) throw new Error('invalid school id');
