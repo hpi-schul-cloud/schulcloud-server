@@ -85,7 +85,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#determineToolConfigurationStatus" >determineToolConfigurationStatus</a>
+                                <a href="#determineToolConfigurationStatus" class="deprecated-name">determineToolConfigurationStatus</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -115,9 +115,14 @@
                 <td class="col-md-4">
                     <a name="determineToolConfigurationStatus"></a>
                     <span class="name">
-                        <span ><b>determineToolConfigurationStatus</b></span>
+                        <span class="deprecated-name"><b>determineToolConfigurationStatus</b></span>
                         <a href="#determineToolConfigurationStatus"><span class="icon ion-ios-link"></span></a>
                     </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4 deprecated">
+                    use ToolVersionService
                 </td>
             </tr>
             <tr>
@@ -129,8 +134,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:10</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -222,8 +227,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="30"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -294,8 +299,12 @@ import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x2
 import { ToolConfigurationStatus } from &#x27;../enum&#x27;;
 import { ToolVersion } from &#x27;../interface&#x27;;
 
+// TODO N21-1337 remove class when tool versioning is removed
 @Injectable()
 export class CommonToolService {
+	/**
+	 * @deprecated use ToolVersionService
+	 */
 	determineToolConfigurationStatus(
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,

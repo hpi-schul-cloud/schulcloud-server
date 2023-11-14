@@ -108,6 +108,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#isToolStatusLatestOrThrow" >isToolStatusLatestOrThrow</a>
                             </li>
                             <li>
@@ -133,7 +134,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, basicToolLaunchStrategy: <a href="../injectables/BasicToolLaunchStrategy.html" target="_self">BasicToolLaunchStrategy</a>, lti11ToolLaunchStrategy: <a href="../injectables/Lti11ToolLaunchStrategy.html" target="_self">Lti11ToolLaunchStrategy</a>, oauth2ToolLaunchStrategy: <a href="../injectables/OAuth2ToolLaunchStrategy.html" target="_self">OAuth2ToolLaunchStrategy</a>, commonToolService: <a href="../injectables/CommonToolService.html" target="_self">CommonToolService</a>)</code>
+<code>constructor(schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, basicToolLaunchStrategy: <a href="../injectables/BasicToolLaunchStrategy.html" target="_self">BasicToolLaunchStrategy</a>, lti11ToolLaunchStrategy: <a href="../injectables/Lti11ToolLaunchStrategy.html" target="_self">Lti11ToolLaunchStrategy</a>, oauth2ToolLaunchStrategy: <a href="../injectables/OAuth2ToolLaunchStrategy.html" target="_self">OAuth2ToolLaunchStrategy</a>, toolVersionService: <a href="../injectables/ToolVersionService.html" target="_self">ToolVersionService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -216,10 +217,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>commonToolService</td>
+                                                        <td>toolVersionService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/CommonToolService.html" target="_self" >CommonToolService</a></code>
+                                                                        <code><a href="../injectables/ToolVersionService.html" target="_self" >ToolVersionService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -396,6 +397,7 @@
                     <a name="isToolStatusLatestOrThrow"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
                         <span ><b>isToolStatusLatestOrThrow</b></span>
                         <a href="#isToolStatusLatestOrThrow"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -484,7 +486,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -606,7 +608,6 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain&#x27;;
 import { ToolConfigType, ToolConfigurationStatus } from &#x27;../../common/enum&#x27;;
-import { CommonToolService } from &#x27;../../common/service&#x27;;
 import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
 import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
 import { ExternalToolService } from &#x27;../../external-tool/service&#x27;;
@@ -621,6 +622,7 @@ import {
 	Lti11ToolLaunchStrategy,
 	OAuth2ToolLaunchStrategy,
 } from &#x27;./launch-strategy&#x27;;
+import { ToolVersionService } from &#x27;../../context-external-tool/service/tool-version-service&#x27;;
 
 @Injectable()
 export class ToolLaunchService {
@@ -632,7 +634,7 @@ export class ToolLaunchService {
 		private readonly basicToolLaunchStrategy: BasicToolLaunchStrategy,
 		private readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy,
 		private readonly oauth2ToolLaunchStrategy: OAuth2ToolLaunchStrategy,
-		private readonly commonToolService: CommonToolService
+		private readonly toolVersionService: ToolVersionService
 	) {
 		this.strategies &#x3D; new Map();
 		this.strategies.set(ToolConfigType.BASIC, basicToolLaunchStrategy);
@@ -658,7 +660,7 @@ export class ToolLaunchService {
 
 		const { externalTool, schoolExternalTool } &#x3D; await this.loadToolHierarchy(schoolExternalToolId);
 
-		this.isToolStatusLatestOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
+		await this.isToolStatusLatestOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
 
 		const strategy: IToolLaunchStrategy | undefined &#x3D; this.strategies.get(externalTool.config.type);
 
@@ -688,17 +690,18 @@ export class ToolLaunchService {
 		};
 	}
 
-	private isToolStatusLatestOrThrow(
+	private async isToolStatusLatestOrThrow(
 		userId: EntityId,
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
-	): void {
-		const status: ToolConfigurationStatus &#x3D; this.commonToolService.determineToolConfigurationStatus(
+	): Promise&lt;void&gt; {
+		const status &#x3D; await this.toolVersionService.determineToolConfigurationStatus(
 			externalTool,
 			schoolExternalTool,
 			contextExternalTool
 		);
+
 		if (status !&#x3D;&#x3D; ToolConfigurationStatus.LATEST) {
 			throw new ToolStatusOutdatedLoggableException(userId, contextExternalTool.id ?? &#x27;&#x27;);
 		}

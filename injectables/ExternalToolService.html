@@ -143,7 +143,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolRepo: <a href="../injectables/ExternalToolRepo.html" target="_self">ExternalToolRepo</a>, oauthProviderService: <a href="../classes/OauthProviderService.html" target="_self">OauthProviderService</a>, mapper: <a href="../injectables/ExternalToolServiceMapper.html" target="_self">ExternalToolServiceMapper</a>, schoolExternalToolRepo: <a href="../injectables/SchoolExternalToolRepo.html" target="_self">SchoolExternalToolRepo</a>, contextExternalToolRepo: <a href="../injectables/ContextExternalToolRepo.html" target="_self">ContextExternalToolRepo</a>, encryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>, legacyLogger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, externalToolVersionService: <a href="../injectables/ExternalToolVersionService.html" target="_self">ExternalToolVersionService</a>)</code>
+<code>constructor(externalToolRepo: <a href="../injectables/ExternalToolRepo.html" target="_self">ExternalToolRepo</a>, oauthProviderService: <a href="../classes/OauthProviderService.html" target="_self">OauthProviderService</a>, mapper: <a href="../injectables/ExternalToolServiceMapper.html" target="_self">ExternalToolServiceMapper</a>, schoolExternalToolRepo: <a href="../injectables/SchoolExternalToolRepo.html" target="_self">SchoolExternalToolRepo</a>, contextExternalToolRepo: <a href="../injectables/ContextExternalToolRepo.html" target="_self">ContextExternalToolRepo</a>, encryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>, legacyLogger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, externalToolVersionService: <a href="../injectables/ExternalToolVersionIncrementService.html" target="_self">ExternalToolVersionIncrementService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -253,7 +253,7 @@
                                                         <td>externalToolVersionService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/ExternalToolVersionService.html" target="_self" >ExternalToolVersionService</a></code>
+                                                                        <code><a href="../injectables/ExternalToolVersionIncrementService.html" target="_self" >ExternalToolVersionIncrementService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1030,7 +1030,7 @@ import { ExternalToolSearchQuery } from &#x27;../../common/interface&#x27;;
 import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
 import { ExternalTool, Oauth2ToolConfig } from &#x27;../domain&#x27;;
 import { ExternalToolServiceMapper } from &#x27;./external-tool-service.mapper&#x27;;
-import { ExternalToolVersionService } from &#x27;./external-tool-version.service&#x27;;
+import { ExternalToolVersionIncrementService } from &#x27;./external-tool-version-increment.service&#x27;;
 
 @Injectable()
 export class ExternalToolService {
@@ -1042,7 +1042,7 @@ export class ExternalToolService {
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService,
 		private readonly legacyLogger: LegacyLogger,
-		private readonly externalToolVersionService: ExternalToolVersionService
+		private readonly externalToolVersionService: ExternalToolVersionIncrementService
 	) {}
 
 	async createExternalTool(externalTool: ExternalTool): Promise&lt;ExternalTool&gt; {

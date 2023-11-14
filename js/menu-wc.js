@@ -698,13 +698,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ContextExternalToolModule.html" data-type="entity-link" >ContextExternalToolModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-ContextExternalToolModule-7c555e630a893f96fb7347ac1c64940b607fa26cc730c9b87fc9a2a21d86a1be0033a953df636cb8eac7d10a29c0471a932b9f8b49a0e0619bf85f54424881d7"' : 'data-bs-target="#xs-injectables-links-module-ContextExternalToolModule-7c555e630a893f96fb7347ac1c64940b607fa26cc730c9b87fc9a2a21d86a1be0033a953df636cb8eac7d10a29c0471a932b9f8b49a0e0619bf85f54424881d7"' }>
+                                        'data-bs-target="#injectables-links-module-ContextExternalToolModule-41126e48dc9093ee4ffb45063f00f4a19b64e12a5e88f889ae34b9eba0c569abb61c596f93368ab5456b96248d1dcaa2fe6c6a1c9840c3bfcfd34f50f011b4dd"' : 'data-bs-target="#xs-injectables-links-module-ContextExternalToolModule-41126e48dc9093ee4ffb45063f00f4a19b64e12a5e88f889ae34b9eba0c569abb61c596f93368ab5456b96248d1dcaa2fe6c6a1c9840c3bfcfd34f50f011b4dd"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ContextExternalToolModule-7c555e630a893f96fb7347ac1c64940b607fa26cc730c9b87fc9a2a21d86a1be0033a953df636cb8eac7d10a29c0471a932b9f8b49a0e0619bf85f54424881d7"' :
-                                        'id="xs-injectables-links-module-ContextExternalToolModule-7c555e630a893f96fb7347ac1c64940b607fa26cc730c9b87fc9a2a21d86a1be0033a953df636cb8eac7d10a29c0471a932b9f8b49a0e0619bf85f54424881d7"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ContextExternalToolModule-41126e48dc9093ee4ffb45063f00f4a19b64e12a5e88f889ae34b9eba0c569abb61c596f93368ab5456b96248d1dcaa2fe6c6a1c9840c3bfcfd34f50f011b4dd"' :
+                                        'id="xs-injectables-links-module-ContextExternalToolModule-41126e48dc9093ee4ffb45063f00f4a19b64e12a5e88f889ae34b9eba0c569abb61c596f93368ab5456b96248d1dcaa2fe6c6a1c9840c3bfcfd34f50f011b4dd"' }>
                                         <li class="link">
                                             <a href="injectables/ContextExternalToolAuthorizableService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ContextExternalToolAuthorizableService</a>
                                         </li>
@@ -716,6 +716,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/ToolReferenceService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ToolReferenceService</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/ToolVersionService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ToolVersionService</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -787,13 +790,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ExternalToolModule.html" data-type="entity-link" >ExternalToolModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-ExternalToolModule-0299eb9e814e0168de4ff5e220e6097b311c4b1bd1663d08c772d2ae68b678679e70d7ad7b7b5efb0e7539ed00d1db3637f38f47436a05579ff61e8e976c2cd5"' : 'data-bs-target="#xs-injectables-links-module-ExternalToolModule-0299eb9e814e0168de4ff5e220e6097b311c4b1bd1663d08c772d2ae68b678679e70d7ad7b7b5efb0e7539ed00d1db3637f38f47436a05579ff61e8e976c2cd5"' }>
+                                        'data-bs-target="#injectables-links-module-ExternalToolModule-72f39476aa665f6c8ef6cef76a895aef75180ac293ad73d0754f96fac3aac20523eec25af7e10041dc7adbed4baceaf0c1472936337bd42305d72246d8062628"' : 'data-bs-target="#xs-injectables-links-module-ExternalToolModule-72f39476aa665f6c8ef6cef76a895aef75180ac293ad73d0754f96fac3aac20523eec25af7e10041dc7adbed4baceaf0c1472936337bd42305d72246d8062628"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ExternalToolModule-0299eb9e814e0168de4ff5e220e6097b311c4b1bd1663d08c772d2ae68b678679e70d7ad7b7b5efb0e7539ed00d1db3637f38f47436a05579ff61e8e976c2cd5"' :
-                                        'id="xs-injectables-links-module-ExternalToolModule-0299eb9e814e0168de4ff5e220e6097b311c4b1bd1663d08c772d2ae68b678679e70d7ad7b7b5efb0e7539ed00d1db3637f38f47436a05579ff61e8e976c2cd5"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ExternalToolModule-72f39476aa665f6c8ef6cef76a895aef75180ac293ad73d0754f96fac3aac20523eec25af7e10041dc7adbed4baceaf0c1472936337bd42305d72246d8062628"' :
+                                        'id="xs-injectables-links-module-ExternalToolModule-72f39476aa665f6c8ef6cef76a895aef75180ac293ad73d0754f96fac3aac20523eec25af7e10041dc7adbed4baceaf0c1472936337bd42305d72246d8062628"' }>
                                         <li class="link">
                                             <a href="injectables/ExternalToolConfigurationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ExternalToolConfigurationService</a>
                                         </li>
@@ -813,7 +816,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                             <a href="injectables/ExternalToolValidationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ExternalToolValidationService</a>
                                         </li>
                                         <li class="link">
-                                            <a href="injectables/ExternalToolVersionService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ExternalToolVersionService</a>
+                                            <a href="injectables/ExternalToolVersionIncrementService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ExternalToolVersionIncrementService</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -2025,13 +2028,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/SchoolExternalToolModule.html" data-type="entity-link" >SchoolExternalToolModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-SchoolExternalToolModule-06bc8c4b05546ea0756270626a18d410a605e48b98dec2cb5f578665f80142aa2714dcb930e91cc321a61effcff419e7c66feaa11fa7024f7c6e3fc7e0da8daa"' : 'data-bs-target="#xs-injectables-links-module-SchoolExternalToolModule-06bc8c4b05546ea0756270626a18d410a605e48b98dec2cb5f578665f80142aa2714dcb930e91cc321a61effcff419e7c66feaa11fa7024f7c6e3fc7e0da8daa"' }>
+                                        'data-bs-target="#injectables-links-module-SchoolExternalToolModule-055ccc90e5e81abdddf0baa130db9d1c809498284beac3dab3e614156287c0d3fed22886066c6b5af6112f3f054f0e0ecb1f1a640ae8b1f5c9a20b0d325f4bc7"' : 'data-bs-target="#xs-injectables-links-module-SchoolExternalToolModule-055ccc90e5e81abdddf0baa130db9d1c809498284beac3dab3e614156287c0d3fed22886066c6b5af6112f3f054f0e0ecb1f1a640ae8b1f5c9a20b0d325f4bc7"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SchoolExternalToolModule-06bc8c4b05546ea0756270626a18d410a605e48b98dec2cb5f578665f80142aa2714dcb930e91cc321a61effcff419e7c66feaa11fa7024f7c6e3fc7e0da8daa"' :
-                                        'id="xs-injectables-links-module-SchoolExternalToolModule-06bc8c4b05546ea0756270626a18d410a605e48b98dec2cb5f578665f80142aa2714dcb930e91cc321a61effcff419e7c66feaa11fa7024f7c6e3fc7e0da8daa"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SchoolExternalToolModule-055ccc90e5e81abdddf0baa130db9d1c809498284beac3dab3e614156287c0d3fed22886066c6b5af6112f3f054f0e0ecb1f1a640ae8b1f5c9a20b0d325f4bc7"' :
+                                        'id="xs-injectables-links-module-SchoolExternalToolModule-055ccc90e5e81abdddf0baa130db9d1c809498284beac3dab3e614156287c0d3fed22886066c6b5af6112f3f054f0e0ecb1f1a640ae8b1f5c9a20b0d325f4bc7"' }>
                                         <li class="link">
                                             <a href="injectables/SchoolExternalToolService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchoolExternalToolService</a>
                                         </li>
@@ -5029,9 +5032,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/ContextExternalToolUc.html" data-type="entity-link" >ContextExternalToolUc</a>
                                 </li>
                                 <li class="link">
-                                    <a href="injectables/ContextExternalToolValidationService.html" data-type="entity-link" >ContextExternalToolValidationService</a>
-                                </li>
-                                <li class="link">
                                     <a href="injectables/ConverterUtil.html" data-type="entity-link" >ConverterUtil</a>
                                 </li>
                                 <li class="link">
@@ -5125,7 +5125,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/ExternalToolValidationService.html" data-type="entity-link" >ExternalToolValidationService</a>
                                 </li>
                                 <li class="link">
-                                    <a href="injectables/ExternalToolVersionService.html" data-type="entity-link" >ExternalToolVersionService</a>
+                                    <a href="injectables/ExternalToolVersionIncrementService.html" data-type="entity-link" >ExternalToolVersionIncrementService</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/FeathersAuthorizationService.html" data-type="entity-link" >FeathersAuthorizationService</a>

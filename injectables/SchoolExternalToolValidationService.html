@@ -110,12 +110,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, commonToolValidationService: <a href="../injectables/CommonToolValidationService.html" target="_self">CommonToolValidationService</a>)</code>
+<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, commonToolValidationService: <a href="../injectables/CommonToolValidationService.html" target="_self">CommonToolValidationService</a>, toolFeatures: <a href="../interfaces/IToolFeatures.html" target="_self">IToolFeatures</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -149,6 +149,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/CommonToolValidationService.html" target="_self" >CommonToolValidationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>toolFeatures</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/IToolFeatures.html" target="_self" >IToolFeatures</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -192,8 +204,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -273,8 +285,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:15</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -326,18 +338,20 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import { CommonToolValidationService } from &#x27;../../common/service&#x27;;
 import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
 import { ExternalToolService } from &#x27;../../external-tool/service&#x27;;
 import { SchoolExternalTool } from &#x27;../domain&#x27;;
+import { IToolFeatures, ToolFeatures } from &#x27;../../tool-config&#x27;;
 
 @Injectable()
 export class SchoolExternalToolValidationService {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
-		private readonly commonToolValidationService: CommonToolValidationService
+		private readonly commonToolValidationService: CommonToolValidationService,
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {}
 
 	async validate(schoolExternalTool: SchoolExternalTool): Promise&lt;void&gt; {
@@ -345,8 +359,9 @@ export class SchoolExternalToolValidationService {
 
 		const loadedExternalTool: ExternalTool &#x3D; await this.externalToolService.findById(schoolExternalTool.toolId);
 
-		this.checkVersionMatch(schoolExternalTool.toolVersion, loadedExternalTool.version);
-
+		if (!this.toolFeatures.toolStatusWithoutVersions) {
+			this.checkVersionMatch(schoolExternalTool.toolVersion, loadedExternalTool.version);
+		}
 		this.commonToolValidationService.checkCustomParameterEntries(loadedExternalTool, schoolExternalTool);
 	}
 

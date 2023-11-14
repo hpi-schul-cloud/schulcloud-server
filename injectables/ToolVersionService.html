@@ -40,7 +40,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >ToolReferenceService</li>
+  <li class="breadcrumb-item" >ToolVersionService</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/context-external-tool/service/tool-reference.service.ts</code>
+            <code>apps/server/src/modules/tool/context-external-tool/service/tool-version-service.ts</code>
         </p>
 
 
@@ -86,7 +86,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#getToolReference" >getToolReference</a>
+                                <a href="#determineToolConfigurationStatus" >determineToolConfigurationStatus</a>
                             </li>
                         </ul>
                     </td>
@@ -106,12 +106,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, externalToolLogoService: <a href="../classes/ExternalToolLogoService.html" target="_self">ExternalToolLogoService</a>, toolVersionService: <a href="../injectables/ToolVersionService.html" target="_self">ToolVersionService</a>)</code>
+<code>constructor(contextExternalToolValidationService: <a href="../injectables/ContextExternalToolValidationService.html" target="_self">ContextExternalToolValidationService</a>, schoolExternalToolValidationService: <a href="../injectables/SchoolExternalToolValidationService.html" target="_self">SchoolExternalToolValidationService</a>, commonToolService: <a href="../injectables/CommonToolService.html" target="_self">CommonToolService</a>, toolFeatures: <a href="../interfaces/IToolFeatures.html" target="_self">IToolFeatures</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-reference.service.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-version-service.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -129,10 +129,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>externalToolService</td>
+                                                        <td>contextExternalToolValidationService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/ExternalToolService.html" target="_self" >ExternalToolService</a></code>
+                                                                        <code><a href="../injectables/ContextExternalToolValidationService.html" target="_self" >ContextExternalToolValidationService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -141,10 +141,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>schoolExternalToolService</td>
+                                                        <td>schoolExternalToolValidationService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/SchoolExternalToolService.html" target="_self" >SchoolExternalToolService</a></code>
+                                                                        <code><a href="../injectables/SchoolExternalToolValidationService.html" target="_self" >SchoolExternalToolValidationService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -153,10 +153,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>contextExternalToolService</td>
+                                                        <td>commonToolService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/ContextExternalToolService.html" target="_self" >ContextExternalToolService</a></code>
+                                                                        <code><a href="../injectables/CommonToolService.html" target="_self" >CommonToolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -165,22 +165,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>externalToolLogoService</td>
+                                                        <td>toolFeatures</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../classes/ExternalToolLogoService.html" target="_self" >ExternalToolLogoService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>toolVersionService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/ToolVersionService.html" target="_self" >ToolVersionService</a></code>
+                                                                        <code><a href="../interfaces/IToolFeatures.html" target="_self" >IToolFeatures</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -206,26 +194,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getToolReference"></a>
+                    <a name="determineToolConfigurationStatus"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
-                        <span ><b>getToolReference</b></span>
-                        <a href="#getToolReference"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>determineToolConfigurationStatus</b></span>
+                        <a href="#determineToolConfigurationStatus"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getToolReference(contextExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>determineToolConfigurationStatus(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-reference.service.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="21"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-version-service.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -246,9 +234,33 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>contextExternalToolId</td>
+                                                <td>externalTool</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                            <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>schoolExternalTool</td>
+                                            <td>
+                                                            <code><a href="../classes/SchoolExternalTool.html" target="_self" >SchoolExternalTool</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>contextExternalTool</td>
+                                            <td>
+                                                            <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
                                             </td>
 
                                             <td>
@@ -261,7 +273,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/ToolReference.html" target="_self" >Promise&lt;ToolReference&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/ToolConfiguration.html" target="_self" >Promise&lt;ToolConfigurationStatus&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -277,53 +289,48 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
+import { Inject } from &#x27;@nestjs/common&#x27;;
+import { ContextExternalToolValidationService } from &#x27;./context-external-tool-validation.service&#x27;;
+import { SchoolExternalToolValidationService } from &#x27;../../school-external-tool/service&#x27;;
+import { IToolFeatures, ToolFeatures } from &#x27;../../tool-config&#x27;;
 import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
-import { ExternalToolLogoService, ExternalToolService } from &#x27;../../external-tool/service&#x27;;
 import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
-import { SchoolExternalToolService } from &#x27;../../school-external-tool/service&#x27;;
-import { ContextExternalTool, ToolReference } from &#x27;../domain&#x27;;
-import { ToolReferenceMapper } from &#x27;../mapper&#x27;;
-import { ContextExternalToolService } from &#x27;./context-external-tool.service&#x27;;
-import { ToolVersionService } from &#x27;./tool-version-service&#x27;;
+import { ContextExternalTool } from &#x27;../domain&#x27;;
+import { ToolConfigurationStatus } from &#x27;../../common/enum&#x27;;
+import { CommonToolService } from &#x27;../../common/service&#x27;;
 
 @Injectable()
-export class ToolReferenceService {
+export class ToolVersionService {
 	constructor(
-		private readonly externalToolService: ExternalToolService,
-		private readonly schoolExternalToolService: SchoolExternalToolService,
-		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly toolVersionService: ToolVersionService
+		private readonly contextExternalToolValidationService: ContextExternalToolValidationService,
+		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
+		private readonly commonToolService: CommonToolService,
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {}
 
-	async getToolReference(contextExternalToolId: EntityId): Promise&lt;ToolReference&gt; {
-		const contextExternalTool: ContextExternalTool &#x3D; await this.contextExternalToolService.findById(
-			contextExternalToolId
-		);
-		const schoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolService.findById(
-			contextExternalTool.schoolToolRef.schoolToolId
-		);
-		const externalTool: ExternalTool &#x3D; await this.externalToolService.findById(schoolExternalTool.toolId);
-
-		const status &#x3D; await this.toolVersionService.determineToolConfigurationStatus(
+	async determineToolConfigurationStatus(
+		externalTool: ExternalTool,
+		schoolExternalTool: SchoolExternalTool,
+		contextExternalTool: ContextExternalTool
+	): Promise&lt;ToolConfigurationStatus&gt; {
+		// TODO N21-1337 remove if statement, when feature flag is removed
+		if (this.toolFeatures.toolStatusWithoutVersions) {
+			try {
+				await this.schoolExternalToolValidationService.validate(schoolExternalTool);
+				await this.contextExternalToolValidationService.validate(contextExternalTool);
+				return ToolConfigurationStatus.LATEST;
+			} catch (err) {
+				return ToolConfigurationStatus.OUTDATED;
+			}
+		}
+		const status: ToolConfigurationStatus &#x3D; this.commonToolService.determineToolConfigurationStatus(
 			externalTool,
 			schoolExternalTool,
 			contextExternalTool
 		);
 
-		const toolReference: ToolReference &#x3D; ToolReferenceMapper.mapToToolReference(
-			externalTool,
-			contextExternalTool,
-			status
-		);
-		toolReference.logoUrl &#x3D; this.externalToolLogoService.buildLogoUrl(
-			&#x27;/v3/tools/external-tools/{id}/logo&#x27;,
-			externalTool
-		);
-
-		return toolReference;
+		return status;
 	}
 }
 </code></pre>
@@ -369,7 +376,7 @@ export class ToolReferenceService {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'ToolReferenceService.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'ToolVersionService.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
