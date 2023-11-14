@@ -36,7 +36,7 @@ export interface ComponentGeogebraProperties {
 	materialId: string;
 }
 
-export interface IComponentLernstoreProperties {
+export interface ComponentLernstoreProperties {
 	resources: {
 		client: string;
 		description: string;
@@ -73,7 +73,7 @@ export type IComponentProperties = {
 	| { component: ComponentType.ETHERPAD; content: IComponentEtherpadProperties }
 	| { component: ComponentType.GEOGEBRA; content: ComponentGeogebraProperties }
 	| { component: ComponentType.INTERNAL; content: IComponentInternalProperties }
-	| { component: ComponentType.LERNSTORE; content?: IComponentLernstoreProperties }
+	| { component: ComponentType.LERNSTORE; content?: ComponentLernstoreProperties }
 	| { component: ComponentType.NEXBOARD; content: IComponentNexboardProperties }
 );
 

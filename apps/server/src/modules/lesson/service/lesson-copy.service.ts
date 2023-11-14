@@ -6,10 +6,10 @@ import { TaskCopyService } from '@modules/task/service/task-copy.service';
 import { Injectable } from '@nestjs/common';
 import {
 	ComponentGeogebraProperties,
+	ComponentLernstoreProperties,
 	ComponentTextProperties,
 	ComponentType,
 	IComponentEtherpadProperties,
-	IComponentLernstoreProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,
 	LessonEntity,
@@ -268,7 +268,7 @@ export class LessonCopyService {
 		};
 
 		if (element.content) {
-			const resources = ((element.content as IComponentLernstoreProperties).resources ?? []).map(
+			const resources = ((element.content as ComponentLernstoreProperties).resources ?? []).map(
 				({ client, description, merlinReference, title, url }) => {
 					const result = {
 						client,
@@ -281,7 +281,7 @@ export class LessonCopyService {
 				}
 			);
 
-			const lernstoreContent: IComponentLernstoreProperties = { resources };
+			const lernstoreContent: ComponentLernstoreProperties = { resources };
 			lernstore.content = lernstoreContent;
 		}
 
