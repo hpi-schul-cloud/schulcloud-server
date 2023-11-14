@@ -12,10 +12,10 @@ import {
 	FindOptions,
 	ImportUser,
 	ImportUserScopeInterface,
-	INameMatch,
 	LegacySchoolDo,
 	MatchCreator,
 	MatchCreatorScope,
+	NameMatch,
 	Permission,
 	SchoolFeatures,
 	SystemEntity,
@@ -164,7 +164,7 @@ export class UserImportUc {
 	 */
 	async findAllUnmatchedUsers(
 		currentUserId: EntityId,
-		query: INameMatch,
+		query: NameMatch,
 		options?: FindOptions<User>
 	): Promise<Counted<User[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
