@@ -98,7 +98,7 @@ export class TldrawWsService {
 	 * @param {WsSharedDocDo} doc
 	 */
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
-		const isOriginWSConn = origin instanceof WebSocket && doc.conns.has(origin);
+		const isOriginWSConn = origin instanceof WebSocket;
 		console.log('Origin: ', origin);
 		console.log('doc.conns: ', doc.conns);
 		console.log('Update Handler, isOriginWSConn: ', isOriginWSConn);
