@@ -154,7 +154,7 @@ This code shows a minimal flow.
     }
 
     // server.config.ts
-    export interface IServerConfig extends ICoreModuleConfig, UserConfig, IFilesStorageClientConfig {
+    export interface ServerConfig extends ICoreModuleConfig, UserConfig, IFilesStorageClientConfig {
         NODE_ENV: string;
     }
 
