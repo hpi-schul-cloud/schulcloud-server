@@ -18,7 +18,7 @@ export interface TaskCreate extends TaskInterface {
 	lessonId?: string;
 }
 
-export interface ITaskProperties extends TaskInterface {
+export interface TaskProperties extends TaskInterface {
 	course?: Course;
 	lesson?: LessonEntity;
 	creator: User;

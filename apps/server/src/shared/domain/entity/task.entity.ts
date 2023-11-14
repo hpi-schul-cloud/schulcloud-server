@@ -5,7 +5,7 @@ import { InputFormat } from '@shared/domain/types/input-format.types';
 import type { IEntityWithSchool } from '../interface';
 import type { LearnroomElement } from '../interface/learnroom';
 import type { EntityId } from '../types/entity-id';
-import type { ITaskProperties, ITaskStatus } from '../types/task.types';
+import type { ITaskStatus, TaskProperties } from '../types/task.types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { LessonEntity } from './lesson.entity';
@@ -89,7 +89,7 @@ export class Task extends BaseEntityWithTimestamps implements LearnroomElement, 
 	@ManyToMany('User', undefined, { fieldName: 'archived' })
 	finished = new Collection<User>(this);
 
-	constructor(props: ITaskProperties) {
+	constructor(props: TaskProperties) {
 		super();
 		this.name = props.name;
 		this.description = props.description || '';
