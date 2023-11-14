@@ -16,6 +16,7 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
+import { DrawingElementAdapterService } from '../service/drawing-element-adapter.service';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
 
 describe(RecursiveDeleteVisitor.name, () => {
@@ -33,6 +34,7 @@ describe(RecursiveDeleteVisitor.name, () => {
 				{ provide: EntityManager, useValue: createMock<EntityManager>() },
 				{ provide: FilesStorageClientAdapterService, useValue: createMock<FilesStorageClientAdapterService>() },
 				{ provide: ContextExternalToolService, useValue: createMock<ContextExternalToolService>() },
+				{ provide: DrawingElementAdapterService, useValue: createMock<DrawingElementAdapterService>() },
 			],
 		}).compile();
 
