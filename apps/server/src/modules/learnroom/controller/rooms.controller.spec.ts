@@ -1,8 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
+import { CurrentUserInterface } from '@modules/authentication';
+import { CopyApiResponse, CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain';
-import { ICurrentUser } from '@modules/authentication';
-import { CopyApiResponse, CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { RoomBoardDTO } from '../types';
 import { CourseCopyUC } from '../uc/course-copy.uc';
@@ -73,7 +73,7 @@ describe('rooms controller', () => {
 	describe('getRoomBoard', () => {
 		describe('when simple room is fetched', () => {
 			const setup = () => {
-				const currentUser = { userId: 'userId' } as ICurrentUser;
+				const currentUser = { userId: 'userId' } as CurrentUserInterface;
 
 				const ucResult = {
 					roomId: 'id',
@@ -123,7 +123,7 @@ describe('rooms controller', () => {
 
 	describe('patchVisibility', () => {
 		it('should call uc', async () => {
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = { userId: 'userId' } as CurrentUserInterface;
 			const ucSpy = jest.spyOn(uc, 'updateVisibilityOfBoardElement').mockImplementation(() => Promise.resolve());
 			await controller.patchElementVisibility(
 				{ roomId: 'roomid', elementId: 'elementId' },
@@ -136,7 +136,7 @@ describe('rooms controller', () => {
 
 	describe('patchOrder', () => {
 		it('should call uc', async () => {
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = { userId: 'userId' } as CurrentUserInterface;
 			const ucSpy = jest.spyOn(uc, 'reorderBoardElements').mockImplementation(() => Promise.resolve());
 			await controller.patchOrderingOfElements({ roomId: 'roomid' }, { elements: ['id', 'id', 'id'] }, currentUser);
 			expect(ucSpy).toHaveBeenCalledWith('roomid', 'userId', ['id', 'id', 'id']);
@@ -146,7 +146,7 @@ describe('rooms controller', () => {
 	describe('copyCourse', () => {
 		describe('when course should be copied via API call', () => {
 			const setup = () => {
-				const currentUser = { userId: 'userId' } as ICurrentUser;
+				const currentUser = { userId: 'userId' } as CurrentUserInterface;
 				const ucResult = {
 					title: 'example title',
 					type: 'COURSE' as CopyElementType,
@@ -175,7 +175,7 @@ describe('rooms controller', () => {
 	describe('copyLesson', () => {
 		describe('when lesson should be copied via API call', () => {
 			const setup = () => {
-				const currentUser = { userId: 'userId' } as ICurrentUser;
+				const currentUser = { userId: 'userId' } as CurrentUserInterface;
 				const ucResult = {
 					title: 'example title',
 					type: 'LESSON' as CopyElementType,

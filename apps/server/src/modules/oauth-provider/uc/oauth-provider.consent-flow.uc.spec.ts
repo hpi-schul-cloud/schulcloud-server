@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { OauthProviderService } from '@infra/oauth-provider';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AcceptQuery, ConsentRequestBody } from '@modules/oauth-provider/controller/dto';
+import { OauthProviderService } from '@infra/oauth-provider';
 import { AcceptConsentRequestBody, ProviderConsentResponse, ProviderRedirectResponse } from '@infra/oauth-provider/dto';
-import { OauthProviderConsentFlowUc } from '@modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
-import { ICurrentUser } from '@modules/authentication';
-import { ForbiddenException } from '@nestjs/common';
-import { IdTokenService } from '@modules/oauth-provider/service/id-token.service';
+import { CurrentUserInterface } from '@modules/authentication';
+import { AcceptQuery, ConsentRequestBody } from '@modules/oauth-provider/controller/dto';
 import { IdToken } from '@modules/oauth-provider/interface/id-token';
+import { IdTokenService } from '@modules/oauth-provider/service/id-token.service';
+import { OauthProviderConsentFlowUc } from '@modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
+import { ForbiddenException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 
 describe('OauthProviderConsentFlowUc', () => {
 	let module: TestingModule;
@@ -45,12 +45,12 @@ describe('OauthProviderConsentFlowUc', () => {
 
 	describe('consent', () => {
 		let challenge: string;
-		let currentUser: ICurrentUser;
+		let currentUser: CurrentUserInterface;
 		let consentResponse: ProviderConsentResponse;
 
 		beforeEach(() => {
 			challenge = 'challengexyz';
-			currentUser = { userId: 'userId' } as ICurrentUser;
+			currentUser = { userId: 'userId' } as CurrentUserInterface;
 			consentResponse = {
 				challenge,
 				subject: currentUser.userId,

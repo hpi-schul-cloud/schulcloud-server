@@ -1,5 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { CalendarService } from '@infra/calendar';
+import { CalendarEventDto } from '@infra/calendar/dto/calendar-event.dto';
+import { CurrentUserInterface } from '@modules/authentication';
+import { AuthorizationReferenceService } from '@modules/authorization/domain';
+import { CourseService } from '@modules/learnroom/service';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -14,18 +21,9 @@ import {
 	VideoConferenceDO,
 } from '@shared/domain';
 import { VideoConferenceScope } from '@shared/domain/interface';
-import { CalendarService } from '@infra/calendar';
-import { CalendarEventDto } from '@infra/calendar/dto/calendar-event.dto';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
-import { AuthorizationReferenceService } from '@modules/authorization/domain';
-import { ICurrentUser } from '@modules/authentication';
-import { CourseService } from '@modules/learnroom/service';
-import { LegacySchoolService } from '@modules/legacy-school';
-import { UserService } from '@modules/user';
-import { IScopeInfo, VideoConference, VideoConferenceJoin, VideoConferenceState } from './dto';
-import { VideoConferenceDeprecatedUc } from './video-conference-deprecated.uc';
 import {
 	BBBBaseMeetingConfig,
 	BBBBaseResponse,
@@ -39,8 +37,10 @@ import {
 	BBBStatus,
 	GuestPolicy,
 } from '../bbb';
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
 import { ErrorStatus } from '../error/error-status.enum';
+import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { IScopeInfo, VideoConference, VideoConferenceJoin, VideoConferenceState } from './dto';
+import { VideoConferenceDeprecatedUc } from './video-conference-deprecated.uc';
 
 class VideoConferenceDeprecatedUcSpec extends VideoConferenceDeprecatedUc {
 	async getScopeInfoSpec(userId: EntityId, conferenceScope: VideoConferenceScope, refId: string): Promise<IScopeInfo> {
@@ -81,7 +81,7 @@ describe('VideoConferenceUc', () => {
 		teamId: 'teamId',
 	});
 	let featureEnabled = false;
-	let defaultCurrentUser: ICurrentUser;
+	let defaultCurrentUser: CurrentUserInterface;
 	let defaultOptions: VideoConferenceOptions;
 	const userPermissions: Map<Permission, Promise<boolean>> = new Map<Permission, Promise<boolean>>();
 

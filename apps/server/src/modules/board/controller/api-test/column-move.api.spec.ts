@@ -1,4 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { CurrentUserInterface } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
@@ -12,9 +15,6 @@ import {
 	mapUserToCurrentUser,
 	userFactory,
 } from '@shared/testing';
-import { ICurrentUser } from '@modules/authentication';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 
@@ -43,7 +43,7 @@ class API {
 describe(`column move (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
+	let currentUser: CurrentUserInterface;
 	let api: API;
 
 	beforeAll(async () => {

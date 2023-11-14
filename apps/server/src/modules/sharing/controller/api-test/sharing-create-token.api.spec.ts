@@ -1,12 +1,12 @@
-import { Request } from 'express';
-import request from 'supertest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { CurrentUserInterface } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@modules/authentication';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -15,10 +15,10 @@ import {
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@modules/server/server.module';
-import { ShareTokenBodyParams, ShareTokenResponse } from '../dto';
+import { Request } from 'express';
+import request from 'supertest';
 import { ShareTokenParentType } from '../../domainobject/share-token.do';
+import { ShareTokenBodyParams, ShareTokenResponse } from '../dto';
 
 const baseRouteName = '/sharetoken';
 
@@ -46,7 +46,7 @@ class API {
 describe(`share token creation (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
+	let currentUser: CurrentUserInterface;
 	let api: API;
 
 	beforeAll(async () => {

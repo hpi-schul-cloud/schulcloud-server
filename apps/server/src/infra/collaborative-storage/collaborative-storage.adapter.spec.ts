@@ -38,7 +38,7 @@ class TestStrategy implements CollaborativeStorageStrategy {
 describe('CollaborativeStorage Adapter', () => {
 	let module: TestingModule;
 	let adapter: CollaborativeStorageAdapter;
-	let strategy: ICollaborativeStorageStrategy;
+	let strategy: CollaborativeStorageStrategy;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -50,8 +50,8 @@ describe('CollaborativeStorage Adapter', () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
-					provide: 'ICollaborativeStorageStrategy',
-					useValue: createMock<ICollaborativeStorageStrategy>(),
+					provide: 'CollaborativeStorageStrategy',
+					useValue: createMock<CollaborativeStorageStrategy>(),
 				},
 			],
 		}).compile();

@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AccountDto } from '@modules/account/services/dto';
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -15,9 +16,8 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AccountDto } from '@modules/account/services/dto';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
-import { ICurrentUser } from '../interface';
+import { CurrentUserInterface } from '../interface';
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapService } from '../services/ldap.service';
 import { LdapStrategy } from './ldap.strategy';
@@ -428,7 +428,7 @@ describe('LdapStrategy', () => {
 			it('should authentication with LDAP successfully and return the user', async () => {
 				const { request, user, school, account, system } = setup();
 
-				const result: ICurrentUser = await strategy.validate(request);
+				const result: CurrentUserInterface = await strategy.validate(request);
 
 				expect(result).toEqual({
 					userId: user.id,
@@ -492,7 +492,7 @@ describe('LdapStrategy', () => {
 			it('should authentication with LDAP successfully and return the user', async () => {
 				const { request, user, school, account, system } = setup();
 
-				const result: ICurrentUser = await strategy.validate(request);
+				const result: CurrentUserInterface = await strategy.validate(request);
 
 				expect(authenticationServiceMock.loadAccount).toHaveBeenCalledTimes(2);
 				expect(result).toEqual({

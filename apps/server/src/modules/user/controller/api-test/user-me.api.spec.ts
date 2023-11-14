@@ -5,13 +5,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import request from 'supertest';
 
-import { ApiValidationError } from '@shared/common';
-import { LanguageType } from '@shared/domain';
-import { ICurrentUser } from '@modules/authentication';
-import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
+import { CurrentUserInterface } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server/server.module';
 import { ResolvedUserResponse } from '@modules/user/controller/dto';
+import { ApiValidationError } from '@shared/common';
+import { LanguageType } from '@shared/domain';
+import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
 
 const baseRouteName = '/user/me';
 
@@ -87,7 +87,7 @@ describe(baseRouteName, () => {
 		let app: INestApplication;
 		let orm: MikroORM;
 		let em: EntityManager;
-		let currentUser: ICurrentUser;
+		let currentUser: CurrentUserInterface;
 		let api: API;
 
 		beforeAll(async () => {

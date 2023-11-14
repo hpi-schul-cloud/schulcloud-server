@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { CurrentUserInterface } from '@modules/authentication';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser } from '@modules/authentication';
 import { MigrationMapper } from '../mapper/migration.mapper';
-import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
 import { LegacySchoolUc } from '../uc';
+import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
 import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
 import { LegacySchoolController } from './legacy-school.controller';
 
@@ -44,7 +44,7 @@ describe('Legacy School Controller', () => {
 
 	const setupBasicData = () => {
 		const schoolParams: SchoolParams = { schoolId: new ObjectId().toHexString() };
-		const testUser: ICurrentUser = { userId: 'testUser' } as ICurrentUser;
+		const testUser: CurrentUserInterface = { userId: 'testUser' } as CurrentUserInterface;
 
 		const migrationResp: MigrationResponse = {
 			oauthMigrationMandatory: new Date(),

@@ -1,3 +1,4 @@
+import { CurrentUserInterface } from '@modules/authentication';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	DashboardEntity,
@@ -7,7 +8,6 @@ import {
 	LearnroomMetadata,
 	LearnroomTypes,
 } from '@shared/domain';
-import { ICurrentUser } from '@modules/authentication';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardController } from './dashboard.controller';
 import { DashboardResponse } from './dto';
@@ -65,7 +65,7 @@ describe('dashboard uc', () => {
 				const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
 				return Promise.resolve(dashboard);
 			});
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = { userId: 'userId' } as CurrentUserInterface;
 			const response = await controller.findForUser(currentUser);
 
 			expect(response instanceof DashboardResponse).toEqual(true);
@@ -76,7 +76,7 @@ describe('dashboard uc', () => {
 				const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
 				return Promise.resolve(dashboard);
 			});
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = { userId: 'userId' } as CurrentUserInterface;
 			const response = await controller.findForUser(currentUser);
 
 			expect(response instanceof DashboardResponse).toEqual(true);
@@ -98,7 +98,7 @@ describe('dashboard uc', () => {
 				});
 				return Promise.resolve(dashboard);
 			});
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = { userId: 'userId' } as CurrentUserInterface;
 
 			const response = await controller.findForUser(currentUser);
 			expect(response instanceof DashboardResponse).toEqual(true);
@@ -110,7 +110,7 @@ describe('dashboard uc', () => {
 				const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
 				return Promise.resolve(dashboard);
 			});
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = { userId: 'userId' } as CurrentUserInterface;
 			await controller.findForUser(currentUser);
 
 			expect(spy).toHaveBeenCalledWith('userId');
@@ -133,7 +133,7 @@ describe('dashboard uc', () => {
 					});
 					return Promise.resolve(dashboard);
 				});
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = { userId: 'userId' } as CurrentUserInterface;
 			await controller.moveElement(
 				{ dashboardId: 'dashboardId' },
 				{ from: { x: 1, y: 2 }, to: { x: 2, y: 1 } },
@@ -157,7 +157,7 @@ describe('dashboard uc', () => {
 					});
 					return Promise.resolve(dashboard);
 				});
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = { userId: 'userId' } as CurrentUserInterface;
 			const response = await controller.moveElement(
 				{ dashboardId: 'dashboardId' },
 				{
@@ -189,7 +189,7 @@ describe('dashboard uc', () => {
 					});
 					return Promise.resolve(dashboard);
 				});
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = { userId: 'userId' } as CurrentUserInterface;
 			await controller.patchGroup({ dashboardId: 'dashboardId' }, 3, 4, { title: 'groupTitle' }, currentUser);
 			expect(spy).toHaveBeenCalledWith('dashboardId', { x: 3, y: 4 }, 'groupTitle', currentUser.userId);
 		});
@@ -212,7 +212,7 @@ describe('dashboard uc', () => {
 					});
 					return Promise.resolve(dashboard);
 				});
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = { userId: 'userId' } as CurrentUserInterface;
 			const response = await controller.patchGroup(
 				{ dashboardId: 'dashboardId' },
 				3,

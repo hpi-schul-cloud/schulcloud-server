@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { LtiToolService } from '@modules/lti-tool';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { ExternalToolService } from '@modules/tool/external-tool/service';
+import { ToolFeatures, ToolFeaturesInterface } from '@modules/tool/tool-config';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO } from '@shared/domain';
 import { externalToolFactory, ltiToolDOFactory, setupEntities } from '@shared/testing';
-import { LtiToolService } from '@modules/lti-tool';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { ExternalToolService } from '@modules/tool/external-tool/service';
-import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 
 describe('OauthProviderLoginFlowService', () => {
@@ -15,7 +15,7 @@ describe('OauthProviderLoginFlowService', () => {
 
 	let ltiToolService: DeepMocked<LtiToolService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
-	let toolFeatures: IToolFeatures;
+	let toolFeatures: ToolFeaturesInterface;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({

@@ -1,11 +1,15 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { CurrentUserInterface } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { SanisResponse, SanisRole } from '@modules/provisioning/strategy/sanis/response';
+import { ServerTestModule } from '@modules/server';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, EntityId, SchoolEntity, SystemEntity, User } from '@shared/domain';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import {
 	accountFactory,
 	cleanupCollections,
@@ -16,10 +20,6 @@ import {
 } from '@shared/testing';
 import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
 import { userLoginMigrationFactory } from '@shared/testing/factory/user-login-migration.factory';
-import { ICurrentUser } from '@modules/authentication';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
-import { SanisResponse, SanisRole } from '@modules/provisioning/strategy/sanis/response';
-import { ServerTestModule } from '@modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { UUID } from 'bson';
@@ -45,7 +45,7 @@ jest.mock('jwks-rsa', () => () => {
 describe('OAuth SSO Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
+	let currentUser: CurrentUserInterface;
 	let axiosMock: MockAdapter;
 
 	const sessionCookieName: string = Configuration.get('SESSION__NAME') as string;

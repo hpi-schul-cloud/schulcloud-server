@@ -1,8 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { CurrentUserInterface } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@modules/server/server.module';
+import { TaskListResponse } from '@modules/task/controller/dto';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@modules/authentication';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -12,9 +15,6 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@modules/server/server.module';
-import { TaskListResponse } from '@modules/task/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
 
@@ -44,7 +44,7 @@ class API {
 describe('Task controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
+	let currentUser: CurrentUserInterface;
 	let api: API;
 
 	beforeAll(async () => {

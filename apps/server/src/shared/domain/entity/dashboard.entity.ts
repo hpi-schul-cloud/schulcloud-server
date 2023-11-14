@@ -1,10 +1,10 @@
-import { NotFoundException, BadRequestException } from '@nestjs/common';
-import { EntityId, LearnroomMetadata } from '@shared/domain/types';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ILearnroom } from '@shared/domain/interface';
+import { EntityId, LearnroomMetadata } from '@shared/domain/types';
 
 const defaultColumns = 4;
 
-export interface IGridElement {
+export interface GridElementInterface {
 	hasId(): boolean;
 
 	getId: () => EntityId | undefined;
@@ -34,7 +34,7 @@ export type GridElementContent = {
 	copyingSince?: Date;
 };
 
-export class GridElement implements IGridElement {
+export class GridElement implements GridElementInterface {
 	id?: EntityId;
 
 	title?: string;
@@ -151,7 +151,7 @@ export type GridPosition = { x: number; y: number };
 export type GridPositionWithGroupIndex = { x: number; y: number; groupIndex?: number };
 
 export type GridElementWithPosition = {
-	gridElement: IGridElement;
+	gridElement: GridElementInterface;
 	pos: GridPosition;
 };
 
@@ -162,7 +162,7 @@ export class DashboardEntity {
 
 	columns: number;
 
-	grid: Map<number, IGridElement>;
+	grid: Map<number, GridElementInterface>;
 
 	userId: EntityId;
 
@@ -181,7 +181,7 @@ export class DashboardEntity {
 
 	constructor(id: string, props: DashboardProps) {
 		this.columns = props.colums || defaultColumns;
-		this.grid = new Map<number, IGridElement>();
+		this.grid = new Map<number, GridElementInterface>();
 		props.grid.forEach((element) => {
 			this.grid.set(this.gridIndexFromPosition(element.pos), element.gridElement);
 		});
@@ -201,7 +201,7 @@ export class DashboardEntity {
 	getGrid(): GridElementWithPosition[] {
 		const result = [...this.grid.keys()].map((key) => {
 			const position = this.positionFromGridIndex(key);
-			const value = this.grid.get(key) as IGridElement;
+			const value = this.grid.get(key) as GridElementInterface;
 			return {
 				pos: position,
 				gridElement: value,
@@ -210,7 +210,7 @@ export class DashboardEntity {
 		return result;
 	}
 
-	getElement(position: GridPosition): IGridElement {
+	getElement(position: GridPosition): GridElementInterface {
 		const element = this.grid.get(this.gridIndexFromPosition(position));
 		if (!element) {
 			throw new NotFoundException('no element at grid position');
@@ -239,7 +239,7 @@ export class DashboardEntity {
 
 	private removeRoomsNotInList(roomList: ILearnroom[]): void {
 		[...this.grid.keys()].forEach((key) => {
-			const element = this.grid.get(key) as IGridElement;
+			const element = this.grid.get(key) as GridElementInterface;
 			const currentRooms = element.getReferences();
 			currentRooms.forEach((room) => {
 				if (!roomList.includes(room)) {
@@ -283,7 +283,7 @@ export class DashboardEntity {
 		return i;
 	}
 
-	private getReferencesFromPosition(position: GridPositionWithGroupIndex): IGridElement {
+	private getReferencesFromPosition(position: GridPositionWithGroupIndex): GridElementInterface {
 		const elementToMove = this.getElement(position);
 
 		if (typeof position.groupIndex === 'number' && elementToMove.isGroup()) {
@@ -304,7 +304,7 @@ export class DashboardEntity {
 		}
 	}
 
-	private mergeElementIntoPosition(element: IGridElement, position: GridPosition): IGridElement {
+	private mergeElementIntoPosition(element: GridElementInterface, position: GridPosition): GridElementInterface {
 		const targetElement = this.grid.get(this.gridIndexFromPosition(position));
 		if (targetElement) {
 			targetElement.addReferences(element.getReferences());

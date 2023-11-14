@@ -1,12 +1,12 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
+import { createMock, DeepMocked } from '@golevelup/ts-jest/lib/mocks';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { IPlayerModel } from '@lumieducation/h5p-server';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
-import { S3ClientAdapter } from '@infra/s3-client';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
+import { CurrentUserInterface } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { Request } from 'express';
 import request from 'supertest';
@@ -45,7 +45,7 @@ describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;
 	let api: API;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
+	let currentUser: CurrentUserInterface;
 	let h5PEditorUc: DeepMocked<H5PEditorUc>;
 
 	beforeAll(async () => {

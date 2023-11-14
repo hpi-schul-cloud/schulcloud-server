@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { OauthProviderService } from '@infra/oauth-provider';
+import { ProviderOauthClient } from '@infra/oauth-provider/dto';
+import { CurrentUserInterface } from '@modules/authentication';
+import { AuthorizationService } from '@modules/authorization';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, User } from '@shared/domain';
-import { OauthProviderService } from '@infra/oauth-provider';
-import { ProviderOauthClient } from '@infra/oauth-provider/dto';
 import { setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationService } from '@modules/authorization';
-import { ICurrentUser } from '@modules/authentication';
 import { OauthProviderClientCrudUc } from './oauth-provider.client-crud.uc';
 import resetAllMocks = jest.resetAllMocks;
 
@@ -19,7 +19,7 @@ describe('OauthProviderUc', () => {
 
 	let user: User;
 
-	const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+	const currentUser: CurrentUserInterface = { userId: 'userId' } as CurrentUserInterface;
 	const defaultOauthClientBody: ProviderOauthClient = {
 		scope: 'openid offline',
 		grant_types: ['authorization_code', 'refresh_token'],

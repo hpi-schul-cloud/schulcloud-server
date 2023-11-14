@@ -1,15 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountDto } from '@modules/account/services/dto';
+import { OAuthTokenDto } from '@modules/oauth';
+import { OAuthService } from '@modules/oauth/service/oauth.service';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { userDoFactory } from '@shared/testing';
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountDto } from '@modules/account/services/dto';
-import { OAuthTokenDto } from '@modules/oauth';
-import { OAuthService } from '@modules/oauth/service/oauth.service';
 import { SchoolInMigrationError } from '../errors/school-in-migration.error';
-import { ICurrentUser, OauthCurrentUser } from '../interface';
+import { CurrentUserInterface, OauthCurrentUser } from '../interface';
 import { Oauth2Strategy } from './oauth2.strategy';
 
 describe('Oauth2Strategy', () => {
@@ -74,10 +74,10 @@ describe('Oauth2Strategy', () => {
 				return { systemId, user, account, idToken };
 			};
 
-			it('should return the ICurrentUser', async () => {
+			it('should return the CurrentUserInterface', async () => {
 				const { systemId, user, account, idToken } = setup();
 
-				const result: ICurrentUser = await strategy.validate({
+				const result: CurrentUserInterface = await strategy.validate({
 					body: { code: 'code', redirectUri: 'redirectUri', systemId },
 				});
 

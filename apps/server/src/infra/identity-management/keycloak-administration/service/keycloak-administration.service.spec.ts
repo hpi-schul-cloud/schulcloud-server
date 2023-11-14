@@ -2,18 +2,18 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { Clients } from '@keycloak/keycloak-admin-client/lib/resources/clients';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
+import { KeycloakSettings, KeycloakSettingsInterface } from '../interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 
 describe('KeycloakAdministrationService', () => {
 	let module: TestingModule;
 	let kcAdminClient: DeepMocked<KeycloakAdminClient>;
-	let settings: IKeycloakSettings;
+	let settings: KeycloakSettingsInterface;
 	let service: KeycloakAdministrationService;
 
 	const kcApiClientMock = createMock<Clients>();
 
-	const getSettings = (): IKeycloakSettings => {
+	const getSettings = (): KeycloakSettingsInterface => {
 		return {
 			baseUrl: 'http://localhost:8080',
 			realmName: 'master',

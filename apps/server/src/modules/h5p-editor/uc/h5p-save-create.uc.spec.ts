@@ -1,18 +1,18 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
-import { Test, TestingModule } from '@nestjs/testing';
-import { h5pContentFactory, setupEntities } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { h5pContentFactory, setupEntities } from '@shared/testing';
+import { CurrentUserInterface } from '@src/modules/authentication';
 import { AuthorizationContextBuilder, AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { UserService } from '@src/modules/user';
-import { LibraryStorage } from '../service';
-import { H5PAjaxEndpointProvider } from '../provider';
-import { H5PEditorUc } from './h5p.uc';
 import { H5PContentParentType } from '../entity';
+import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
+import { LibraryStorage } from '../service';
 import { LumiUserWithContentData } from '../types/lumi-types';
+import { H5PEditorUc } from './h5p.uc';
 
 const createParams = () => {
 	const { content: parameters, metadata } = h5pContentFactory.build();
@@ -22,7 +22,7 @@ const createParams = () => {
 	const contentId = new ObjectId().toHexString();
 	const parentId = new ObjectId().toHexString();
 
-	const mockCurrentUser: ICurrentUser = {
+	const mockCurrentUser: CurrentUserInterface = {
 		accountId: 'mockAccountId',
 		roles: ['student'],
 		schoolId: 'mockSchoolId',

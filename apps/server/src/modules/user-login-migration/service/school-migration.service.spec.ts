@@ -1,5 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { CurrentUserInterface } from '@modules/authentication';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
+import { OAuthMigrationError } from '@modules/user-login-migration/error/oauth-migration.error';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
@@ -7,10 +11,6 @@ import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/doma
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
 import { legacySchoolDoFactory, setupEntities, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser } from '@modules/authentication';
-import { LegacySchoolService } from '@modules/legacy-school';
-import { UserService } from '@modules/user';
-import { OAuthMigrationError } from '@modules/user-login-migration/error/oauth-migration.error';
 import { SchoolMigrationService } from './school-migration.service';
 
 describe('SchoolMigrationService', () => {
@@ -127,11 +127,11 @@ describe('SchoolMigrationService', () => {
 
 				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
 
-				const currentUser: ICurrentUser = {
+				const currentUser: CurrentUserInterface = {
 					userId: userDO.id,
 					schoolId: userDO.schoolId,
 					systemId: 'systemId',
-				} as ICurrentUser;
+				} as CurrentUserInterface;
 
 				return {
 					externalId: schoolDO.externalId as string,

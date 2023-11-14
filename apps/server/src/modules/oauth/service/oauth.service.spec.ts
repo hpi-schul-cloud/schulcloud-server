@@ -1,23 +1,23 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, OauthConfig, SchoolFeatures, SystemEntity } from '@shared/domain';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
-import { legacySchoolDoFactory, setupEntities, systemFactory, userDoFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { DefaultEncryptionService, EncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { ProvisioningDto, ProvisioningService } from '@modules/provisioning';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@modules/provisioning/dto';
-import { LegacySchoolService } from '@modules/legacy-school';
 import { OauthConfigDto } from '@modules/system/service';
 import { SystemDto } from '@modules/system/service/dto/system.dto';
 import { SystemService } from '@modules/system/service/system.service';
 import { UserService } from '@modules/user';
 import { MigrationCheckService, UserMigrationService } from '@modules/user-login-migration';
+import { Test, TestingModule } from '@nestjs/testing';
+import { LegacySchoolDo, OauthConfig, SchoolFeatures, SystemEntity } from '@shared/domain';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { legacySchoolDoFactory, setupEntities, systemFactory, userDoFactory } from '@shared/testing';
+import { LegacyLogger } from '@src/core/logger';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthSSOError, UserNotFoundAfterProvisioningLoggableException } from '../loggable';
 import { OAuthTokenDto } from '../interface';
+import { OAuthSSOError, UserNotFoundAfterProvisioningLoggableException } from '../loggable';
 import { OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
 import { OAuthService } from './oauth.service';
@@ -71,7 +71,7 @@ describe('OAuthService', () => {
 				},
 				{
 					provide: DefaultEncryptionService,
-					useValue: createMock<IEncryptionService>(),
+					useValue: createMock<EncryptionService>(),
 				},
 				{
 					provide: LegacyLogger,

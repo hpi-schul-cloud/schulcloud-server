@@ -7,7 +7,7 @@ import type { User } from './user.entity';
 
 export type IImportUserRoleName = RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.STUDENT;
 
-export interface IImportUserProperties {
+export interface ImportUserProperties {
 	// references
 	school: SchoolEntity;
 	system: SystemEntity;
@@ -35,7 +35,7 @@ export enum MatchCreator {
 @Unique({ properties: ['school', 'ldapDn'] })
 @Unique({ properties: ['school', 'email'] })
 export class ImportUser extends BaseEntityWithTimestamps implements IEntityWithSchool {
-	constructor(props: IImportUserProperties) {
+	constructor(props: ImportUserProperties) {
 		super();
 		this.school = wrap(props.school).toReference();
 		this.system = wrap(props.system).toReference();
