@@ -9,7 +9,7 @@ import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infr
 import { DeletionModule } from '../deletion';
 import { defaultMikroOrmOptions, setupSessions } from './server.module';
 import { serverConfig } from './server.config';
-import { ServerController } from './controller/server.controller';
+import { AdminApiServerController } from './controller/admin-api-server.controller';
 
 const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConfig)), DeletionModule];
 
@@ -30,6 +30,7 @@ const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConf
 		}),
 		LoggerModule,
 	],
+	controllers: [AdminApiServerController],
 })
 export class AdminApiServerModule implements NestModule {
 	constructor(private readonly logger: LegacyLogger) {
@@ -48,7 +49,7 @@ export class AdminApiServerModule implements NestModule {
 		RabbitMQWrapperTestModule,
 		LoggerModule,
 	],
-	controllers: [ServerController],
+	controllers: [AdminApiServerController],
 })
 export class AdminApiServerTestModule implements NestModule {
 	constructor(private readonly logger: LegacyLogger) {
@@ -67,7 +68,7 @@ export class AdminApiServerTestModule implements NestModule {
 				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options }),
 				RabbitMQWrapperTestModule,
 			],
-			controllers: [ServerController],
+			controllers: [AdminApiServerController],
 		};
 	}
 }
