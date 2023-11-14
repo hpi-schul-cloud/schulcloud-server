@@ -9,7 +9,7 @@ export interface TeamProperties {
 	teamUsers?: TeamUserEntity[];
 }
 
-export interface ITeamUserProperties {
+export interface TeamUserProperties {
 	user: User;
 	role: Role;
 	school: SchoolEntity;
@@ -17,7 +17,7 @@ export interface ITeamUserProperties {
 
 @Embeddable()
 export class TeamUserEntity {
-	constructor(props: ITeamUserProperties) {
+	constructor(props: TeamUserProperties) {
 		this.userId = props.user;
 		this.role = props.role;
 		this.schoolId = props.school;
