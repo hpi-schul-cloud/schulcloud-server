@@ -116,7 +116,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userLoginMigrationId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, mandatory: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+<code>constructor(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userLoginMigrationId: <a href="../undefineds/EntityId.html" target="_self">EntityId | undefined</a>, mandatory: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -154,7 +154,7 @@
                                                         <td>userLoginMigrationId</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId | undefined</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -242,7 +242,7 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 export class UserLoginMigrationMandatoryLoggable implements Loggable {
 	constructor(
 		private readonly userId: EntityId,
-		private readonly userLoginMigrationId: EntityId,
+		private readonly userLoginMigrationId: EntityId | undefined,
 		private readonly mandatory: boolean
 	) {}
 

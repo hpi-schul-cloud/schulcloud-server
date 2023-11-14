@@ -119,7 +119,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:20</a></div>
                             </td>
                         </tr>
 
@@ -268,8 +268,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="54"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:54</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -349,8 +349,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -430,8 +430,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -531,12 +531,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthenticationService } from &#x27;@modules/authentication/services/authentication.service&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthenticationService } from &#x27;@modules/authentication&#x27;;
 import { Action, AuthorizationService } from &#x27;@modules/authorization&#x27;;
-import { OAuthTokenDto } from &#x27;@modules/oauth&#x27;;
-import { OAuthService } from &#x27;@modules/oauth/service/oauth.service&#x27;;
-import { ProvisioningService } from &#x27;@modules/provisioning&#x27;;
-import { OauthDataDto } from &#x27;@modules/provisioning/dto&#x27;;
+import { OAuthTokenDto, OAuthService } from &#x27;@modules/oauth&#x27;;
+import { ProvisioningService, OauthDataDto } from &#x27;@modules/provisioning&#x27;;
 import { ForbiddenException, Injectable } from &#x27;@nestjs/common&#x27;;
 import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
 import { EntityId, LegacySchoolDo, Page, Permission, User, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;

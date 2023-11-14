@@ -122,7 +122,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userLoginMigrationId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, closedAt: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>)</code>
+<code>constructor(closedAt: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>, userLoginMigrationId?: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -145,18 +145,6 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>userLoginMigrationId</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
                                                         <td>closedAt</td>
                                                   
                                                         <td>
@@ -165,6 +153,18 @@
                                                   
                                                     <td>
                                                             No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>userLoginMigrationId</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            Yes
                                                     </td>
                                                     
                                                 </tr>
@@ -235,7 +235,7 @@ import { EntityId } from &#x27;@shared/domain&#x27;;
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
 
 export class UserLoginMigrationAlreadyClosedLoggableException extends UnprocessableEntityException implements Loggable {
-	constructor(private readonly userLoginMigrationId: EntityId, private readonly closedAt: Date) {
+	constructor(private readonly closedAt: Date, private readonly userLoginMigrationId?: EntityId) {
 		super();
 	}
 

@@ -6287,9 +6287,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/SchoolExternalToolProps.html" data-type="entity-link" >SchoolExternalToolProps</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/SchoolMigrationFlags.html" data-type="entity-link" >SchoolMigrationFlags</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/SchoolSpecificFileCopyService.html" data-type="entity-link" >SchoolSpecificFileCopyService</a>
                             </li>
                             <li class="link">

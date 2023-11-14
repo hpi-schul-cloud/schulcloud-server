@@ -85,6 +85,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#checkPreconditions" >checkPreconditions</a>
                             </li>
@@ -200,6 +201,7 @@
                 <td class="col-md-4">
                     <a name="checkPreconditions"></a>
                     <span class="name">
+                            <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
                         <span ><b>checkPreconditions</b></span>
                         <a href="#checkPreconditions"><span class="icon ion-ios-link"></span></a>
@@ -216,8 +218,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/start-user-login-migration.uc.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/start-user-login-migration.uc.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -290,7 +292,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>startMigration(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, schoolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>startMigration(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -321,7 +323,7 @@
                                         <tr>
                                                 <td>userId</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
 
                                             <td>
@@ -333,7 +335,7 @@
                                         <tr>
                                                 <td>schoolId</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
 
                                             <td>
@@ -365,7 +367,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
 import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
-import { LegacySchoolDo, Permission, User, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
+import { EntityId, LegacySchoolDo, Permission, User, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import {
 	SchoolNumberMissingLoggableException,
@@ -385,7 +387,7 @@ export class StartUserLoginMigrationUc {
 		this.logger.setContext(StartUserLoginMigrationUc.name);
 	}
 
-	async startMigration(userId: string, schoolId: string): Promise&lt;UserLoginMigrationDO&gt; {
+	async startMigration(userId: EntityId, schoolId: EntityId): Promise&lt;UserLoginMigrationDO&gt; {
 		await this.checkPreconditions(userId, schoolId);
 
 		let userLoginMigration: UserLoginMigrationDO | null &#x3D; await this.userLoginMigrationService.findMigrationBySchool(
@@ -395,18 +397,15 @@ export class StartUserLoginMigrationUc {
 		if (!userLoginMigration) {
 			userLoginMigration &#x3D; await this.userLoginMigrationService.startMigration(schoolId);
 
-			this.logger.info(new UserLoginMigrationStartLoggable(userId, userLoginMigration.id as string));
+			this.logger.info(new UserLoginMigrationStartLoggable(userId, userLoginMigration.id));
 		} else if (userLoginMigration.closedAt) {
-			throw new UserLoginMigrationAlreadyClosedLoggableException(
-				userLoginMigration.id as string,
-				userLoginMigration.closedAt
-			);
+			throw new UserLoginMigrationAlreadyClosedLoggableException(userLoginMigration.closedAt, userLoginMigration.id);
 		}
 
 		return userLoginMigration;
 	}
 
-	async checkPreconditions(userId: string, schoolId: string): Promise&lt;void&gt; {
+	private async checkPreconditions(userId: string, schoolId: string): Promise&lt;void&gt; {
 		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
 		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(schoolId);
 

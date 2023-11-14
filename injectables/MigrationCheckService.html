@@ -85,6 +85,15 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isMigrationActive" >isMigrationActive</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isUserMigrated" >isUserMigrated</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#shouldUserMigrate" >shouldUserMigrate</a>
                             </li>
@@ -182,8 +191,159 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="isMigrationActive"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>isMigrationActive</b></span>
+                        <a href="#isMigrationActive"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isMigrationActive(userLoginMigration: <a href="../classes/UserLoginMigrationDO.html" target="_self">UserLoginMigrationDO</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/migration-check.service.ts:47</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userLoginMigration</td>
+                                            <td>
+                                                            <code><a href="../classes/UserLoginMigrationDO.html" target="_self" >UserLoginMigrationDO</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isUserMigrated"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>isUserMigrated</b></span>
+                        <a href="#isUserMigrated"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isUserMigrated(user: <a href="../interfaces/User.html" target="_self">UserDO | null</a>, userLoginMigration: <a href="../classes/UserLoginMigrationDO.html" target="_self">UserLoginMigrationDO</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/migration-check.service.ts:41</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>user</td>
+                                            <td>
+                                                            <code><a href="../interfaces/User.html" target="_self" >UserDO | null</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>userLoginMigration</td>
+                                            <td>
+                                                            <code><a href="../classes/UserLoginMigrationDO.html" target="_self" >UserLoginMigrationDO</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="shouldUserMigrate"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>shouldUserMigrate</b></span>
                         <a href="#shouldUserMigrate"><span class="icon ion-ios-link"></span></a>
@@ -277,11 +437,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
+import { UserService } from &#x27;@modules/user&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId, LegacySchoolDo, UserDO, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
 import { UserLoginMigrationRepo } from &#x27;@shared/repo&#x27;;
-import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
-import { UserService } from &#x27;@modules/user&#x27;;
 
 @Injectable()
 export class MigrationCheckService {
@@ -291,23 +451,40 @@ export class MigrationCheckService {
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
 	) {}
 
-	async shouldUserMigrate(externalUserId: string, systemId: EntityId, officialSchoolNumber: string): Promise&lt;boolean&gt; {
+	public async shouldUserMigrate(
+		externalUserId: string,
+		systemId: EntityId,
+		officialSchoolNumber: string
+	): Promise&lt;boolean&gt; {
 		const school: LegacySchoolDo | null &#x3D; await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 
-		if (school &amp;&amp; school.id) {
-			const userLoginMigration: UserLoginMigrationDO | null &#x3D; await this.userLoginMigrationRepo.findBySchoolId(
-				school.id
-			);
-
-			const user: UserDO | null &#x3D; await this.userService.findByExternalId(externalUserId, systemId);
-
-			if (user?.lastLoginSystemChange &amp;&amp; userLoginMigration &amp;&amp; !userLoginMigration.closedAt) {
-				const hasMigrated: boolean &#x3D; user.lastLoginSystemChange &gt; userLoginMigration.startedAt;
-				return !hasMigrated;
-			}
-			return !!userLoginMigration &amp;&amp; !userLoginMigration.closedAt;
+		if (!school?.id) {
+			return false;
 		}
-		return false;
+
+		const userLoginMigration: UserLoginMigrationDO | null &#x3D; await this.userLoginMigrationRepo.findBySchoolId(school.id);
+
+		if (!userLoginMigration || !this.isMigrationActive(userLoginMigration)) {
+			return false;
+		}
+
+		const user: UserDO | null &#x3D; await this.userService.findByExternalId(externalUserId, systemId);
+
+		if (this.isUserMigrated(user, userLoginMigration)) {
+			return false;
+		}
+
+		return true;
+	}
+
+	private isUserMigrated(user: UserDO | null, userLoginMigration: UserLoginMigrationDO): boolean {
+		return (
+			!!user &amp;&amp; user.lastLoginSystemChange !&#x3D;&#x3D; undefined &amp;&amp; user.lastLoginSystemChange &gt; userLoginMigration.startedAt
+		);
+	}
+
+	private isMigrationActive(userLoginMigration: UserLoginMigrationDO): boolean {
+		return !userLoginMigration.closedAt;
 	}
 }
 </code></pre>
