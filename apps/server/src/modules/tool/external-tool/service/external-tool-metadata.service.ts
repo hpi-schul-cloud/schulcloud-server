@@ -5,7 +5,7 @@ import { Logger } from '@src/core/logger';
 import { ToolContextType } from '../../common/enum';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalToolMetadata } from '../domain';
-import { ExternalToolMetadataLoggable } from '../loggable/external-tool-metadata-loggable';
+import { ExternalToolMetadataLoggable } from '../loggable';
 
 @Injectable()
 export class ExternalToolMetadataService {

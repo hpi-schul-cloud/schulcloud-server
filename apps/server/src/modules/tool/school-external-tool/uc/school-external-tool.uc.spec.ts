@@ -67,7 +67,6 @@ describe('SchoolExternalToolUc', () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
-		jest.clearAllMocks();
 	});
 
 	describe('findSchoolExternalTools', () => {
@@ -374,10 +373,12 @@ describe('SchoolExternalToolUc', () => {
 	describe('getMetadataForSchoolExternalTool', () => {
 		describe('Authorization', () => {
 			const setupMetadata = () => {
-				const toolId: string = new ObjectId().toHexString();
-				const tool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ toolId });
+				const toolId = new ObjectId().toHexString();
+				const tool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ id: toolId }, toolId);
 				const userId: string = new ObjectId().toHexString();
 				const user: User = userFactory.buildWithId({}, userId);
+
+				schoolExternalToolService.findById.mockResolvedValue(tool);
 
 				return {
 					user,
