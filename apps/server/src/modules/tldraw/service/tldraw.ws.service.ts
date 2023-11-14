@@ -99,15 +99,20 @@ export class TldrawWsService {
 	 */
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
 		const isOriginWSConn = origin instanceof WebSocket && doc.conns.has(origin);
-
+		console.log('Update Handler, isOriginWSConn: ', isOriginWSConn);
 		if (isOriginWSConn) {
+			console.log('Update Handler, before promise');
 			void Promise.all([
 				this.pub.publishBuffer(doc.name, Buffer.from(update)),
 				pushDocUpdatesToQueue(this.pub, doc, update),
-			]).then((result) => {
-				console.log(`Update handler redis response: ${result[0]}`);
-				return null;
-			});
+			])
+				.then((result) => {
+					console.log('Update handler redis response:', result[0]);
+					return null;
+				})
+				.catch((err) => {
+					console.log('Update Handler Promise Error: ', err);
+				});
 
 			this.propagateUpdate(update, doc);
 		} else {
@@ -153,7 +158,7 @@ export class TldrawWsService {
 				case WSMessageType.AWARENESS: {
 					const update = decoding.readVarUint8Array(decoder);
 					const pubResponse = await this.pub.publishBuffer(doc.awarenessChannel, Buffer.from(update));
-					console.log(`Message handler awareness response: ${pubResponse}`);
+					console.log('Message handler awareness response:', pubResponse);
 					applyAwarenessUpdate(doc.awareness, update, conn);
 					break;
 				}
@@ -181,7 +186,7 @@ export class TldrawWsService {
 		});
 
 		const redisUpdates = await getDocUpdatesFromQueue(this.pub, doc);
-		console.log(`Setup WS Connection redis updates: ${redisUpdates.toString()}`);
+		console.log('Setup WS Connection redis updates: ', redisUpdates);
 		const redisYDoc = new Doc();
 		redisYDoc.transact(() => {
 			for (const u of redisUpdates) {
