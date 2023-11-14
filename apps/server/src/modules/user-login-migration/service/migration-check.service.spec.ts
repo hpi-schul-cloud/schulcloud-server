@@ -44,7 +44,7 @@ describe('MigrationCheckService', () => {
 		await module.close();
 	});
 
-	describe('shouldUserMigrate is called', () => {
+	describe('shouldUserMigrate', () => {
 		describe('when no school with the official school number was found', () => {
 			const setup = () => {
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(null);
@@ -87,6 +87,7 @@ describe('MigrationCheckService', () => {
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date('2023-03-03'),
 				});
+
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
 				userService.findByExternalId.mockResolvedValue(null);
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
