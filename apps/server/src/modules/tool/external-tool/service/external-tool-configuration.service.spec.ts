@@ -11,7 +11,7 @@ import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
+import { ToolFeatures, ToolFeaturesInterface } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ContextExternalToolTemplateInfo } from '../uc';
 import { ExternalToolConfigurationService } from './external-tool-configuration.service';
@@ -20,7 +20,7 @@ describe('ExternalToolConfigurationService', () => {
 	let module: TestingModule;
 	let service: ExternalToolConfigurationService;
 
-	let toolFeatures: IToolFeatures;
+	let toolFeatures: ToolFeaturesInterface;
 
 	beforeAll(async () => {
 		await setupEntities();
