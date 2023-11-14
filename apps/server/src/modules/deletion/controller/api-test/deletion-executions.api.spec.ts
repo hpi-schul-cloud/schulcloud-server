@@ -5,10 +5,9 @@ import { Request } from 'express';
 import request from 'supertest';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.module';
-import { DeletionRequestBodyProps, DeletionRequestResponse } from '../dto';
-import { DeletionDomainModel } from '../../domain/types/deletion-domain-model.enum';
+import { DeletionExecutionParams } from '../dto';
 
-const baseRouteName = '/deletionRequests';
+const baseRouteName = '/deletionExecutions';
 
 class API {
 	app: INestApplication;
@@ -17,21 +16,20 @@ class API {
 		this.app = app;
 	}
 
-	async post(requestBody: object) {
+	async post(query?: DeletionExecutionParams) {
 		const response = await request(this.app.getHttpServer())
 			.post(`${baseRouteName}`)
 			.set('Accept', 'application/json')
-			.send(requestBody);
+			.query(query || {});
 
 		return {
-			result: response.body as DeletionRequestResponse,
 			error: response.body as ApiValidationError,
 			status: response.status,
 		};
 	}
 }
 
-describe(`deletionRequest create (api)`, () => {
+describe(`deletionExecution (api)`, () => {
 	let app: INestApplication;
 	let api: API;
 	const API_KEY = '1ab2c3d4e5f61ab2c3d4e5f6';
@@ -59,33 +57,11 @@ describe(`deletionRequest create (api)`, () => {
 		await app.close();
 	});
 
-	const setup = () => {
-		const deletionRequestToCreate: DeletionRequestBodyProps = {
-			targetRef: {
-				domain: DeletionDomainModel.USER,
-				id: '653e4833cc39e5907a1e18d2',
-			},
-			deleteInMinutes: 1440,
-		};
+	describe('when execute deletionRequests', () => {
+		it('should return status 204', async () => {
+			const response = await api.post();
 
-		return { deletionRequestToCreate };
-	};
-
-	describe('when create deletionRequest', () => {
-		it('should return status 202', async () => {
-			const { deletionRequestToCreate } = setup();
-
-			const response = await api.post(deletionRequestToCreate);
-
-			expect(response.status).toEqual(202);
-		});
-
-		it('should return the created deletionRequest', async () => {
-			const { deletionRequestToCreate } = setup();
-
-			const { result } = await api.post(deletionRequestToCreate);
-
-			expect(result.requestId).toBeDefined();
+			expect(response.status).toEqual(204);
 		});
 	});
 });

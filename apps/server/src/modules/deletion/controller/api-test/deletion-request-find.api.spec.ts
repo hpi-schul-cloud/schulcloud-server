@@ -5,8 +5,10 @@ import { Request } from 'express';
 import request from 'supertest';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.module';
-import { DeletionRequestBodyProps, DeletionRequestResponse } from '../dto';
-import { DeletionDomainModel } from '../../domain/types/deletion-domain-model.enum';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { cleanupCollections } from '@shared/testing';
+import { DeletionRequestLogResponse } from '../dto';
+import { deletionRequestEntityFactory } from '../../entity/testing/factory/deletion-request.entity.factory';
 
 const baseRouteName = '/deletionRequests';
 
@@ -17,22 +19,22 @@ class API {
 		this.app = app;
 	}
 
-	async post(requestBody: object) {
+	async get(deletionRequestId: string) {
 		const response = await request(this.app.getHttpServer())
-			.post(`${baseRouteName}`)
-			.set('Accept', 'application/json')
-			.send(requestBody);
+			.get(`${baseRouteName}/${deletionRequestId}`)
+			.set('Accept', 'application/json');
 
 		return {
-			result: response.body as DeletionRequestResponse,
+			result: response.body as DeletionRequestLogResponse,
 			error: response.body as ApiValidationError,
 			status: response.status,
 		};
 	}
 }
 
-describe(`deletionRequest create (api)`, () => {
+describe(`deletionRequest find (api)`, () => {
 	let app: INestApplication;
+	let em: EntityManager;
 	let api: API;
 	const API_KEY = '1ab2c3d4e5f61ab2c3d4e5f6';
 
@@ -52,6 +54,7 @@ describe(`deletionRequest create (api)`, () => {
 
 		app = module.createNestApplication();
 		await app.init();
+		em = module.get(EntityManager);
 		api = new API(app);
 	});
 
@@ -59,33 +62,31 @@ describe(`deletionRequest create (api)`, () => {
 		await app.close();
 	});
 
-	const setup = () => {
-		const deletionRequestToCreate: DeletionRequestBodyProps = {
-			targetRef: {
-				domain: DeletionDomainModel.USER,
-				id: '653e4833cc39e5907a1e18d2',
-			},
-			deleteInMinutes: 1440,
-		};
+	const setup = async () => {
+		await cleanupCollections(em);
+		const deletionRequest = deletionRequestEntityFactory.build();
 
-		return { deletionRequestToCreate };
+		await em.persistAndFlush(deletionRequest);
+		em.clear();
+
+		return { deletionRequest };
 	};
 
-	describe('when create deletionRequest', () => {
+	describe('when searching for deletionRequest', () => {
 		it('should return status 202', async () => {
-			const { deletionRequestToCreate } = setup();
+			const { deletionRequest } = await setup();
 
-			const response = await api.post(deletionRequestToCreate);
+			const response = await api.get(deletionRequest.id);
 
-			expect(response.status).toEqual(202);
+			expect(response.status).toEqual(200);
 		});
 
-		it('should return the created deletionRequest', async () => {
-			const { deletionRequestToCreate } = setup();
+		it('should return the found deletionRequest', async () => {
+			const { deletionRequest } = await setup();
 
-			const { result } = await api.post(deletionRequestToCreate);
+			const { result } = await api.get(deletionRequest.id);
 
-			expect(result.requestId).toBeDefined();
+			expect(result.targetRef.id).toEqual(deletionRequest.targetRefId);
 		});
 	});
 });

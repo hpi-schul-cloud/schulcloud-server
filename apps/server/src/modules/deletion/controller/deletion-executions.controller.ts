@@ -1,6 +1,5 @@
 import { Controller, HttpCode, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ForbiddenOperationError, ValidationError } from '@shared/common';
 import { AuthGuard } from '@nestjs/passport';
 import { DeletionRequestUc } from '../uc';
 import { DeletionExecutionParams } from './dto';
@@ -19,8 +18,6 @@ export class DeletionExecutionsController {
 	@ApiResponse({
 		status: 204,
 	})
-	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
-	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Wrong authentication' })
 	async executeDeletions(@Query() deletionExecutionQuery: DeletionExecutionParams) {
 		return this.deletionRequestUc.executeDeletionRequests(deletionExecutionQuery.limit);
 	}
