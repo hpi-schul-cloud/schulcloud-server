@@ -77,7 +77,7 @@ export type ComponentProperties = {
 	| { component: ComponentType.NEXBOARD; content: ComponentNexboardProperties }
 );
 
-export interface ILessonParent {
+export interface LessonParent {
 	getStudentIds(): EntityId[];
 }
 
@@ -120,7 +120,7 @@ export class LessonEntity extends BaseEntityWithTimestamps implements ILearnroom
 		if (props.materials) this.materials.set(props.materials);
 	}
 
-	private getParent(): ILessonParent {
+	private getParent(): LessonParent {
 		const parent = this.courseGroup || this.course;
 
 		return parent;

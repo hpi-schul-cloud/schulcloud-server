@@ -6,7 +6,7 @@ import { IEntityWithSchool, ILearnroom } from '@shared/domain/interface';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CourseGroup } from './coursegroup.entity';
-import type { ILessonParent } from './lesson.entity';
+import type { LessonParent } from './lesson.entity';
 import { SchoolEntity } from './school.entity';
 import type { ITaskParent } from './task.entity';
 import type { User } from './user.entity';
@@ -51,7 +51,7 @@ export class UsersList {
 @Entity({ tableName: 'courses' })
 export class Course
 	extends BaseEntityWithTimestamps
-	implements ILearnroom, IEntityWithSchool, ITaskParent, ILessonParent
+	implements ILearnroom, IEntityWithSchool, ITaskParent, LessonParent
 {
 	@Property()
 	name: string = DEFAULT.name;
