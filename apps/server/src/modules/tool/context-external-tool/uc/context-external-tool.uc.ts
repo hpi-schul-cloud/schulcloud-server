@@ -12,7 +12,8 @@ import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ContextExternalTool, ContextRef } from '../domain';
-import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
+import { ContextExternalToolService } from '../service';
+import { ContextExternalToolValidationService } from '../service/context-external-tool-validation.service';
 import { ContextExternalToolDto } from './dto/context-external-tool.types';
 
 @Injectable()
