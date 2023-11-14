@@ -8,11 +8,11 @@ import {
 	BaseEntity,
 	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,
+	ComponentInternalProperties,
+	ComponentNexboardProperties,
 	ComponentTextProperties,
 	ComponentType,
 	EntityId,
-	IComponentInternalProperties,
-	IComponentNexboardProperties,
 	IComponentProperties,
 	LessonEntity,
 	Material,
@@ -1103,7 +1103,7 @@ describe('lesson copy service', () => {
 				user,
 			});
 			const copiedLessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
-			const copiedNexboard = copiedLessonContents[0].content as IComponentNexboardProperties;
+			const copiedNexboard = copiedLessonContents[0].content as ComponentNexboardProperties;
 			expect(copiedNexboard.url).toEqual('abc');
 			expect(copiedNexboard.board).toEqual('123');
 		});
@@ -1388,8 +1388,8 @@ describe('lesson copy service', () => {
 					throw new Error('lesson should be part of the copy');
 				}
 				const content = lesson.contents.find((el) => el.component === ComponentType.INTERNAL);
-				expect((content?.content as IComponentInternalProperties).url).not.toContain(originalTask.id);
-				expect((content?.content as IComponentInternalProperties).url).toContain(copiedTask.id);
+				expect((content?.content as ComponentInternalProperties).url).not.toContain(originalTask.id);
+				expect((content?.content as ComponentInternalProperties).url).toContain(copiedTask.id);
 			});
 
 			it('should maintain order of content elements', () => {
@@ -1413,7 +1413,7 @@ describe('lesson copy service', () => {
 					throw new Error('lesson should be part of the copy');
 				}
 				const content = lesson.contents.find((el) => el.component === ComponentType.INTERNAL);
-				expect((content?.content as IComponentInternalProperties).url).toEqual(
+				expect((content?.content as ComponentInternalProperties).url).toEqual(
 					`http://somebasedomain.de/homeworks/${originalTask.id}`
 				);
 			});

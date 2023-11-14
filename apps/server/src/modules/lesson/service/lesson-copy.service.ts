@@ -8,9 +8,9 @@ import {
 	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,
 	ComponentLernstoreProperties,
+	ComponentNexboardProperties,
 	ComponentTextProperties,
 	ComponentType,
-	IComponentNexboardProperties,
 	IComponentProperties,
 	LessonEntity,
 	Material,
@@ -324,7 +324,7 @@ export class LessonCopyService {
 	): Promise<IComponentProperties | false> {
 		const copy = { ...originalElement } as IComponentProperties;
 		delete copy._id;
-		const content = { ...copy.content, url: '', board: '' } as IComponentNexboardProperties;
+		const content = { ...copy.content, url: '', board: '' } as ComponentNexboardProperties;
 
 		const nexboard = await this.nexboardService.createNexboard(params.user.id, content.title, content.description);
 		if (nexboard) {

@@ -52,14 +52,14 @@ export interface ComponentEtherpadProperties {
 	url: string;
 }
 
-export interface IComponentNexboardProperties {
+export interface ComponentNexboardProperties {
 	board: string;
 	description: string;
 	title: string;
 	url: string;
 }
 
-export interface IComponentInternalProperties {
+export interface ComponentInternalProperties {
 	url: string;
 }
 
@@ -72,9 +72,9 @@ export type IComponentProperties = {
 	| { component: ComponentType.TEXT; content: ComponentTextProperties }
 	| { component: ComponentType.ETHERPAD; content: ComponentEtherpadProperties }
 	| { component: ComponentType.GEOGEBRA; content: ComponentGeogebraProperties }
-	| { component: ComponentType.INTERNAL; content: IComponentInternalProperties }
+	| { component: ComponentType.INTERNAL; content: ComponentInternalProperties }
 	| { component: ComponentType.LERNSTORE; content?: ComponentLernstoreProperties }
-	| { component: ComponentType.NEXBOARD; content: IComponentNexboardProperties }
+	| { component: ComponentType.NEXBOARD; content: ComponentNexboardProperties }
 );
 
 export interface ILessonParent {
