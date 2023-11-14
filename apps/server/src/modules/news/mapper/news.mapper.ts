@@ -1,4 +1,4 @@
-import { CreateNews, INewsScope, IUpdateNews, News, NewsTargetModel } from '@shared/domain';
+import { CreateNews, IUpdateNews, News, NewsScopeInterface, NewsTargetModel } from '@shared/domain';
 import { LogMessageData } from '@src/core/logger';
 import { CreateNewsParams, FilterNewsParams, NewsResponse, UpdateNewsParams } from '../controller/dto';
 import { SchoolInfoMapper } from './school-info.mapper';
@@ -35,8 +35,8 @@ export class NewsMapper {
 		return dto;
 	}
 
-	static mapNewsScopeToDomain(query: FilterNewsParams): INewsScope {
-		const dto: INewsScope = {};
+	static mapNewsScopeToDomain(query: FilterNewsParams): NewsScopeInterface {
+		const dto: NewsScopeInterface = {};
 		if (query.targetModel) {
 			dto.target = {
 				targetModel: query.targetModel as NewsTargetModel,

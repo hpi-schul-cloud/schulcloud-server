@@ -2,10 +2,10 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	CourseNews,
 	CreateNews,
-	INewsScope,
 	IUpdateNews,
 	News,
 	NewsProperties,
+	NewsScopeInterface,
 	NewsTarget,
 	NewsTargetModel,
 	SchoolEntity,
@@ -164,7 +164,7 @@ describe('NewsMapper', () => {
 				targetId,
 			});
 			const result = NewsMapper.mapNewsScopeToDomain(filterNewsParams);
-			const expected: INewsScope = {};
+			const expected: NewsScopeInterface = {};
 			Object.assign(expected, {
 				target: {
 					targetModel: filterNewsParams.targetModel,
@@ -182,7 +182,7 @@ describe('NewsMapper', () => {
 				unpublished: true,
 			});
 			const result = NewsMapper.mapNewsScopeToDomain(filterNewsParams);
-			const expected: INewsScope = {};
+			const expected: NewsScopeInterface = {};
 			Object.assign(expected, {
 				target: {
 					targetModel: filterNewsParams.targetModel,

@@ -5,9 +5,9 @@ import {
 	CreateNews,
 	EntityId,
 	FindOptions,
-	INewsScope,
 	IUpdateNews,
 	News,
+	NewsScopeInterface,
 	NewsTargetModel,
 	Permission,
 	SortOrder,
@@ -66,7 +66,7 @@ export class NewsUc {
 	 */
 	public async findAllForUser(
 		userId: EntityId,
-		scope?: INewsScope,
+		scope?: NewsScopeInterface,
 		options?: FindOptions<News>
 	): Promise<Counted<News[]>> {
 		const unpublished = !!scope?.unpublished; // default is only published news
@@ -156,7 +156,11 @@ export class NewsUc {
 		return id;
 	}
 
-	private async getPermittedTargets(userId: EntityId, scope: INewsScope | undefined, permissions: NewsPermission[]) {
+	private async getPermittedTargets(
+		userId: EntityId,
+		scope: NewsScopeInterface | undefined,
+		permissions: NewsPermission[]
+	) {
 		let targets: NewsTargetFilter[];
 
 		if (scope?.target == null) {
