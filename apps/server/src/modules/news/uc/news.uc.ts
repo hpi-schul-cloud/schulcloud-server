@@ -2,9 +2,9 @@ import { FeathersAuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import {
 	Counted,
+	CreateNews,
 	EntityId,
 	FindOptions,
-	ICreateNews,
 	INewsScope,
 	IUpdateNews,
 	News,
@@ -36,7 +36,7 @@ export class NewsUc {
 	 * @param params
 	 * @returns
 	 */
-	public async create(userId: EntityId, schoolId: EntityId, params: ICreateNews): Promise<News> {
+	public async create(userId: EntityId, schoolId: EntityId, params: CreateNews): Promise<News> {
 		const { targetModel, targetId } = params.target;
 		await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, [Permission.NEWS_CREATE]);
 

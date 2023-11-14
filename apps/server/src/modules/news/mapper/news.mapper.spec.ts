@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	CourseNews,
-	ICreateNews,
+	CreateNews,
 	INewsScope,
 	IUpdateNews,
 	News,
@@ -204,8 +204,8 @@ describe('NewsMapper', () => {
 				targetModel,
 				targetId,
 			};
-			const result: ICreateNews = NewsMapper.mapCreateNewsToDomain(params);
-			const expected: ICreateNews = {
+			const result: CreateNews = NewsMapper.mapCreateNewsToDomain(params);
+			const expected: CreateNews = {
 				title: params.title,
 				content: params.content,
 				displayAt: date,
