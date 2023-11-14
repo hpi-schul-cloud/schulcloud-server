@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { Permission, LegacySchoolDo, User, UserLoginMigrationDO } from '@shared/domain';
-import { Logger } from '@src/core/logger';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { Injectable } from '@nestjs/common';
+import { LegacySchoolDo, Permission, User, UserLoginMigrationDO } from '@shared/domain';
+import { Logger } from '@src/core/logger';
 import {
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
+	UserLoginMigrationMandatoryLoggable,
 	UserLoginMigrationNotFoundLoggableException,
-} from '../error';
-import { UserLoginMigrationMandatoryLoggable } from '../loggable';
+} from '../loggable';
 import { UserLoginMigrationService } from '../service';
 
 @Injectable()

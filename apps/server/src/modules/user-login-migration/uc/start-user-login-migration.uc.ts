@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { Permission, LegacySchoolDo, User, UserLoginMigrationDO } from '@shared/domain';
-import { Logger } from '@src/core/logger';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { SchoolNumberMissingLoggableException, UserLoginMigrationAlreadyClosedLoggableException } from '../error';
-import { UserLoginMigrationStartLoggable } from '../loggable';
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { LegacySchoolDo, Permission, User, UserLoginMigrationDO } from '@shared/domain';
+import { Logger } from '@src/core/logger';
+import {
+	SchoolNumberMissingLoggableException,
+	UserLoginMigrationAlreadyClosedLoggableException,
+	UserLoginMigrationStartLoggable,
+} from '../loggable';
 import { UserLoginMigrationService } from '../service';
 
 @Injectable()

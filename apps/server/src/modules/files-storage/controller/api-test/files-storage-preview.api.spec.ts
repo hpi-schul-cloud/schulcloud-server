@@ -1,4 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AntivirusService } from '@infra/antivirus';
+import { PreviewProducer } from '@infra/preview-generator';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
@@ -6,9 +9,6 @@ import { ExecutionContext, INestApplication, NotFoundException, StreamableFile }
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { EntityId, Permission } from '@shared/domain';
-import { AntivirusService } from '@infra/antivirus';
-import { PreviewProducer } from '@infra/preview-generator';
-import { S3ClientAdapter } from '@infra/s3-client';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import NodeClam from 'clamscan';
 import { Request } from 'express';
@@ -55,6 +55,19 @@ class API {
 		const response = await request(this.app.getHttpServer())
 			.get(routeName)
 			.query(query || {});
+
+		return {
+			result: response.body as StreamableFile,
+			error: response.body as ApiValidationError,
+			status: response.status,
+		};
+	}
+
+	async getPreviewWithEtag(routeName: string, etag: string, query?: string | Record<string, unknown>) {
+		const response = await request(this.app.getHttpServer())
+			.get(routeName)
+			.query(query || {})
+			.set('If-None-Match', etag);
 
 		return {
 			result: response.body as StreamableFile,
@@ -299,34 +312,75 @@ describe('File Controller (API) - preview', () => {
 						return { uploadedFile };
 					};
 
-					it('should return status 200 for successful download', async () => {
-						const { uploadedFile } = await setup();
-						const query = {
-							...defaultQueryParameters,
-							forceUpdate: false,
-						};
+					describe('WHEN header contains no etag', () => {
+						it('should return status 200 for successful download', async () => {
+							const { uploadedFile } = await setup();
+							const query = {
+								...defaultQueryParameters,
+								forceUpdate: false,
+							};
 
-						const response = await api.getPreview(`/file/preview/${uploadedFile.id}/${uploadedFile.name}`, query);
+							const response = await api.getPreview(`/file/preview/${uploadedFile.id}/${uploadedFile.name}`, query);
 
-						expect(response.status).toEqual(200);
+							expect(response.status).toEqual(200);
+						});
+
+						it('should return status 206 and required headers for the successful partial file stream download', async () => {
+							const { uploadedFile } = await setup();
+							const query = {
+								...defaultQueryParameters,
+								forceUpdate: false,
+							};
+
+							const response = await api.getPreviewBytesRange(
+								`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
+								'bytes=0-',
+								query
+							);
+
+							expect(response.status).toEqual(206);
+							expect(response.headers['accept-ranges']).toMatch('bytes');
+							expect(response.headers['content-range']).toMatch('bytes 0-3/4');
+							expect(response.headers.etag).toMatch('testTag');
+						});
 					});
 
-					it('should return status 206 and required headers for the successful partial file stream download', async () => {
-						const { uploadedFile } = await setup();
-						const query = {
-							...defaultQueryParameters,
-							forceUpdate: false,
-						};
+					describe('WHEN header contains not matching etag', () => {
+						it('should return status 200 for successful download', async () => {
+							const { uploadedFile } = await setup();
+							const query = {
+								...defaultQueryParameters,
+								forceUpdate: false,
+							};
+							const etag = 'otherTag';
 
-						const response = await api.getPreviewBytesRange(
-							`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
-							'bytes=0-',
-							query
-						);
+							const response = await api.getPreviewWithEtag(
+								`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
+								etag,
+								query
+							);
 
-						expect(response.status).toEqual(206);
-						expect(response.headers['accept-ranges']).toMatch('bytes');
-						expect(response.headers['content-range']).toMatch('bytes 0-3/4');
+							expect(response.status).toEqual(200);
+						});
+					});
+
+					describe('WHEN header contains matching etag', () => {
+						it('should return status 304', async () => {
+							const { uploadedFile } = await setup();
+							const query = {
+								...defaultQueryParameters,
+								forceUpdate: false,
+							};
+							const etag = 'testTag';
+
+							const response = await api.getPreviewWithEtag(
+								`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
+								etag,
+								query
+							);
+
+							expect(response.status).toEqual(304);
+						});
 					});
 				});
 
@@ -369,6 +423,7 @@ describe('File Controller (API) - preview', () => {
 						expect(response.status).toEqual(206);
 						expect(response.headers['accept-ranges']).toMatch('bytes');
 						expect(response.headers['content-range']).toMatch('bytes 0-3/4');
+						expect(response.headers.etag).toMatch('testTag');
 					});
 				});
 			});

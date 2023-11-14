@@ -177,6 +177,7 @@
 		},
 		"ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS": {
 			"type": "string",
+			"default":"",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
 		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
@@ -1270,11 +1271,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Makes the new school administration page the default page"
-		},
-		"FEATURE_CLIENT_USER_LOGIN_MIGRATION_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Changes the schulcloud client to use new login endpoints"
 		},
 		"FEATURE_CTL_TOOLS_TAB_ENABLED": {
 			"type": "boolean",
