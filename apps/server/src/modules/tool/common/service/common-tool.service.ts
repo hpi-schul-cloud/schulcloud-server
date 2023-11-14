@@ -5,8 +5,12 @@ import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ToolConfigurationStatus } from '../enum';
 import { ToolVersion } from '../interface';
 
+// TODO N21-1337 remove class when tool versioning is removed
 @Injectable()
 export class CommonToolService {
+	/**
+	 * @deprecated use ToolVersionService
+	 */
 	determineToolConfigurationStatus(
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,

@@ -53,6 +53,7 @@ describe('SchoolExternalToolService', () => {
 		toolFearures = module.get(ToolFeatures);
 	});
 
+	// TODO N21-1337 refactor setup into the describe blocks
 	const legacySetup = () => {
 		const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 		const externalTool: ExternalTool = externalToolFactory.buildWithId();

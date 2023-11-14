@@ -122,9 +122,23 @@ describe('ToolVersionService', () => {
 					contextExternalTool
 				);
 
-				expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
-				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(contextExternalTool);
 				expect(status).toEqual(ToolConfigurationStatus.LATEST);
+			});
+
+			it('should call schoolExternalToolValidationService', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				await service.determineToolConfigurationStatus(externalTool, schoolExternalTool, contextExternalTool);
+
+				expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
+			});
+
+			it('should call contextExternalToolValidationService', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				await service.determineToolConfigurationStatus(externalTool, schoolExternalTool, contextExternalTool);
+
+				expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
 			});
 		});
 
@@ -159,9 +173,23 @@ describe('ToolVersionService', () => {
 					contextExternalTool
 				);
 
-				expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
-				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(contextExternalTool);
 				expect(status).toEqual(ToolConfigurationStatus.OUTDATED);
+			});
+
+			it('should call schoolExternalToolValidationService', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				await service.determineToolConfigurationStatus(externalTool, schoolExternalTool, contextExternalTool);
+
+				expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
+			});
+
+			it('should call contextExternalToolValidationService', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				await service.determineToolConfigurationStatus(externalTool, schoolExternalTool, contextExternalTool);
+
+				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(contextExternalTool);
 			});
 		});
 	});
