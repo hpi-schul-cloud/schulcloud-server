@@ -525,7 +525,7 @@ describe(UserLoginMigrationService.name, () => {
 			const setup = () => {
 				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					startedAt: mockedDate,
-					mandatorySince: mockedDate,
+					mandatorySince: undefined,
 				});
 
 				userLoginMigrationRepo.save.mockResolvedValue(userLoginMigration);
@@ -540,7 +540,10 @@ describe(UserLoginMigrationService.name, () => {
 
 				await service.setMigrationMandatory(userLoginMigration, true);
 
-				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith(userLoginMigration);
+				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith({
+					...userLoginMigration,
+					mandatorySince: mockedDate,
+				});
 			});
 		});
 
@@ -548,7 +551,7 @@ describe(UserLoginMigrationService.name, () => {
 			const setup = () => {
 				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					startedAt: mockedDate,
-					mandatorySince: undefined,
+					mandatorySince: mockedDate,
 				});
 
 				return {
@@ -559,9 +562,12 @@ describe(UserLoginMigrationService.name, () => {
 			it('should call save the user login migration', async () => {
 				const { userLoginMigration } = setup();
 
-				await service.setMigrationMandatory(userLoginMigration, true);
+				await service.setMigrationMandatory(userLoginMigration, false);
 
-				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith(userLoginMigration);
+				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith({
+					...userLoginMigration,
+					mandatorySince: undefined,
+				});
 			});
 		});
 
