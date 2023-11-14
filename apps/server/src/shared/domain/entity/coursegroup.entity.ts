@@ -8,7 +8,7 @@ import { SchoolEntity } from './school.entity';
 import type { ITaskParent } from './task.entity';
 import type { User } from './user.entity';
 
-export interface ICourseGroupProperties {
+export interface CourseGroupProperties {
 	name: string;
 	course: Course;
 	students?: User[];
@@ -32,7 +32,7 @@ export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWith
 	@Index()
 	school: SchoolEntity;
 
-	constructor(props: ICourseGroupProperties) {
+	constructor(props: CourseGroupProperties) {
 		super();
 		this.name = props.name;
 		this.course = props.course;
