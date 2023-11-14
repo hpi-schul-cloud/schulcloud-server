@@ -37,16 +37,18 @@ const mockLDAPConfig = {
 	},
 };
 
-const createLDAPUserResult = (props) => ({
-	dn: 'uid=max.mustermann.1,ou=users,o=school0,dc=de,dc=example,dc=org',
-	givenName: 'Max',
-	sn: 'Mustermann',
-	uid: 'max.mustermann.1',
-	uuid: 'ZDg0Y2ZlMjMtZGYwNi00MWNjLTg3YmUtZjI3NjA1NDJhY2Y0',
-	mail: 'max.mustermann.1@example.org',
-	memberOf: 'cn=ROLE_STUDENT,ou=roles,o=school0,dc=de,dc=example,dc=org',
-	...props,
-});
+const createLDAPUserResult = (props) => {
+	return {
+		dn: 'uid=max.mustermann.1,ou=users,o=school0,dc=de,dc=example,dc=org',
+		givenName: 'Max',
+		sn: 'Mustermann',
+		uid: 'max.mustermann.1',
+		uuid: 'ZDg0Y2ZlMjMtZGYwNi00MWNjLTg3YmUtZjI3NjA1NDJhY2Y0',
+		mail: 'max.mustermann.1@example.org',
+		memberOf: 'cn=ROLE_STUDENT,ou=roles,o=school0,dc=de,dc=example,dc=org',
+		...props,
+	};
+};
 
 describe('GeneralLDAPStrategy', () => {
 	it('implements AbstractLDAPStrategy', () => {
@@ -65,10 +67,6 @@ describe('GeneralLDAPStrategy', () => {
 
 	after(() => {
 		app.use('/ldap', originalLdapService);
-	});
-
-	afterEach(() => {
-		app.unuse('/ldap');
 	});
 
 	describe('#getSchools', () => {
@@ -144,6 +142,7 @@ describe('GeneralLDAPStrategy', () => {
 
 		beforeEach(() => {
 			ldapServiceMock = new MockLdapService();
+			app.unuse('/ldap');
 			app.use('/ldap', ldapServiceMock);
 		});
 
@@ -270,8 +269,8 @@ describe('GeneralLDAPStrategy', () => {
 		}
 
 		beforeEach(() => {
-			//app.unuse('/ldap');
 			ldapServiceMock = new MockLdapService();
+			app.unuse('/ldap');
 			app.use('/ldap', ldapServiceMock);
 		});
 
