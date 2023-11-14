@@ -3,7 +3,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { InputFormat } from '@shared/domain/types/input-format.types';
 import type { IEntityWithSchool } from '../interface';
-import type { ILearnroomElement } from '../interface/learnroom';
+import type { LearnroomElement } from '../interface/learnroom';
 import type { EntityId } from '../types/entity-id';
 import type { ITaskProperties, ITaskStatus } from '../types/task.types';
 import { BaseEntityWithTimestamps } from './base.entity';
@@ -40,7 +40,7 @@ export interface ITaskParent {
 @Index({ properties: ['id', 'private'] })
 @Index({ properties: ['finished', 'course'] })
 @Index({ properties: ['finished', 'course'] })
-export class Task extends BaseEntityWithTimestamps implements ILearnroomElement, IEntityWithSchool {
+export class Task extends BaseEntityWithTimestamps implements LearnroomElement, IEntityWithSchool {
 	@Property()
 	name: string;
 

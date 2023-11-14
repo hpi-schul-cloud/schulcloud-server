@@ -4,7 +4,7 @@ export interface ILearnroom {
 	getMetadata: () => LearnroomMetadata;
 }
 
-export interface ILearnroomElement {
+export interface LearnroomElement {
 	publish: () => void;
 	unpublish: () => void;
 }
