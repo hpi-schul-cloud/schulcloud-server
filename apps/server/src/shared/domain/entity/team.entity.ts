@@ -4,7 +4,7 @@ import { Role } from './role.entity';
 import { SchoolEntity } from './school.entity';
 import { User } from './user.entity';
 
-export interface ITeamProperties {
+export interface TeamProperties {
 	name: string;
 	teamUsers?: TeamUserEntity[];
 }
@@ -66,7 +66,7 @@ export class TeamEntity extends BaseEntityWithTimestamps {
 		this.userIds = value;
 	}
 
-	constructor(props: ITeamProperties) {
+	constructor(props: TeamProperties) {
 		super();
 		this.name = props.name;
 		this.userIds = props.teamUsers ? props.teamUsers.map((teamUser) => new TeamUserEntity(teamUser)) : [];
