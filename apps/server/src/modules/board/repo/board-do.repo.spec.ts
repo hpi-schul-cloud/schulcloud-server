@@ -28,6 +28,7 @@ import {
 	richTextElementFactory,
 	richTextElementNodeFactory,
 } from '@shared/testing';
+import { DrawingElementAdapterService } from '../service/drawing-element-adapter.service';
 import { BoardDoRepo } from './board-do.repo';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
@@ -48,6 +49,7 @@ describe(BoardDoRepo.name, () => {
 				RecursiveDeleteVisitor,
 				{ provide: FilesStorageClientAdapterService, useValue: createMock<FilesStorageClientAdapterService>() },
 				{ provide: ContextExternalToolService, useValue: createMock<ContextExternalToolService>() },
+				{ provide: DrawingElementAdapterService, useValue: createMock<DrawingElementAdapterService>() },
 			],
 		}).compile();
 		repo = module.get(BoardDoRepo);
