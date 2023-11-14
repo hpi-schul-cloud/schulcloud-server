@@ -44,7 +44,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >SchoolInMigrationError</li>
+  <li class="breadcrumb-item" >SchoolInMigrationLoggableException</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -68,7 +68,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/authentication/errors/school-in-migration.error.ts</code>
+            <code>apps/server/src/modules/authentication/loggable/school-in-migration.loggable-exception.ts</code>
         </p>
 
 
@@ -80,6 +80,12 @@
                             <code><a href="../classes/BusinessError.html" target="_self" >BusinessError</a></code>
             </p>
 
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
@@ -133,6 +139,9 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                <a href="#getLogMessage" >getLogMessage</a>
+                            </li>
+                            <li>
                                     <span class="modifier"></span>
                                 <a href="#getResponse" >getResponse</a>
                             </li>
@@ -154,45 +163,15 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(details?: Record<string | >)</code>
+<code>constructor()</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/authentication/errors/school-in-migration.error.ts:4</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/authentication/loggable/school-in-migration.loggable-exception.ts:5</a></div>
                             </td>
                         </tr>
 
-                <tr>
-                    <td class="col-md-4">
-                            <div>
-                                    <b>Parameters :</b>
-                                    <table class="params">
-                                        <thead>
-                                            <tr>
-                                                <td>Name</td>
-                                                    <td>Type</td>
-                                                <td>Optional</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                <tr>
-                                                        <td>details</td>
-                                                  
-                                                        <td>
-                                                                    <code>Record&lt;string | &gt;</code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            Yes
-                                                    </td>
-                                                    
-                                                </tr>
-                                        </tbody>
-                                    </table>
-                            </div>
-                    </td>
-                </tr>
             </tbody>
         </table>
 </section>
@@ -434,6 +413,43 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getLogMessage"></a>
+                    <span class="name">
+                        <span ><b>getLogMessage</b></span>
+                        <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getLogMessage()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/modules/authentication/loggable/school-in-migration.loggable-exception.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#ErrorLogMessage" target="_self" >ErrorLogMessage</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getResponse"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -487,18 +503,25 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpStatus } from &#x27;@nestjs/common&#x27;;
 import { BusinessError } from &#x27;@shared/common&#x27;;
+import { ErrorLogMessage, Loggable } from &#x27;@src/core/logger&#x27;;
 
-export class SchoolInMigrationError extends BusinessError {
-	constructor(details?: Record&lt;string, unknown&gt;) {
+export class SchoolInMigrationLoggableException extends BusinessError implements Loggable {
+	constructor() {
 		super(
 			{
 				type: &#x27;SCHOOL_IN_MIGRATION&#x27;,
 				title: &#x27;Login failed because school is in migration&#x27;,
 				defaultMessage: &#x27;Login failed because creation of user is not possible during migration&#x27;,
 			},
-			HttpStatus.UNAUTHORIZED,
-			details
+			HttpStatus.UNAUTHORIZED
 		);
+	}
+
+	getLogMessage(): ErrorLogMessage {
+		return {
+			type: this.type,
+			stack: this.stack,
+		};
 	}
 }
 </code></pre>
@@ -539,7 +562,7 @@ export class SchoolInMigrationError extends BusinessError {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'SchoolInMigrationError.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SchoolInMigrationLoggableException.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -44,7 +44,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >PageContentQueryParams</li>
+  <li class="breadcrumb-item" >InvalidUserLoginMigrationLoggableException</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -68,40 +68,41 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/user-login-migration/controller/dto/request/page-type.query.param.ts</code>
+            <code>apps/server/src/modules/user-login-migration/loggable/invalid-user-login-migration.loggable-exception.ts</code>
         </p>
 
 
 
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                        <code>UnprocessableEntityException</code>
+            </p>
 
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+
                 <tr>
                     <td class="col-md-4">
-                        <h6><b>Properties</b></h6>
+                        <h6><b>Methods</b></h6>
                     </td>
                 </tr>
                 <tr>
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                <a href="#pageType" >pageType</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                <a href="#sourceSystem" >sourceSystem</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                <a href="#targetSystem" >targetSystem</a>
+                                <a href="#getLogMessage" >getLogMessage</a>
                             </li>
                         </ul>
                     </td>
@@ -111,131 +112,115 @@
 
 
 
-
         </tbody>
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, targetSystemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/user-login-migration/loggable/invalid-user-login-migration.loggable-exception.ts:5</a></div>
+                            </td>
+                        </tr>
 
-            <section data-compodoc="block-properties">
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>userId</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>targetSystemId</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+            <section data-compodoc="block-methods">
     
-    <h3 id="inputs">
-        Properties
+    <h3 id="methods">
+        Methods
     </h3>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="pageType"></a>
+                    <a name="getLogMessage"></a>
                     <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                        <span ><b>pageType</b></span>
-                        <a href="#pageType"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getLogMessage</b></span>
+                        <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#PageTypes" target="_self" >PageTypes</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty({description: &#x27;The Type of Page that is displayed&#x27;, type: PageTypes})<br />@IsEnum(PageTypes)<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/user-login-migration/controller/dto/request/page-type.query.param.ts:8</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="sourceSystem"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                        <span ><b>sourceSystem</b></span>
-                        <a href="#sourceSystem"><span class="icon ion-ios-link"></span></a>
-                    </span>
+<code>getLogMessage()</code>
                 </td>
             </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty({description: &#x27;The Source System&#x27;})<br />@IsMongoId()<br />
-                        </code>
-                    </td>
-                </tr>
+
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/user-login-migration/controller/dto/request/page-type.query.param.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="10"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/loggable/invalid-user-login-migration.loggable-exception.ts:10</a></div>
                         </td>
                     </tr>
 
 
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="targetSystem"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                        <span ><b>targetSystem</b></span>
-                        <a href="#targetSystem"><span class="icon ion-ios-link"></span></a>
-                    </span>
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/ValidationError.html" target="_self" >LogMessage | ErrorLogMessage | ValidationErrorLogMessage</a></code>
+
+                        </div>
                 </td>
             </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty({description: &#x27;The Target System&#x27;})<br />@IsMongoId()<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/user-login-migration/controller/dto/request/page-type.query.param.ts:16</a></div>
-                        </td>
-                    </tr>
-
-
         </tbody>
     </table>
 </section>
-
-
 
 
 
@@ -245,22 +230,26 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IsEnum, IsMongoId } from &#x27;class-validator&#x27;;
-import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
-import { PageTypes } from &#x27;../../../interface/page-types.enum&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
+import { EntityId } from &#x27;@shared/domain&#x27;;
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
 
-export class PageContentQueryParams {
-	@ApiProperty({ description: &#x27;The Type of Page that is displayed&#x27;, type: PageTypes })
-	@IsEnum(PageTypes)
-	pageType!: PageTypes;
+export class InvalidUserLoginMigrationLoggableException extends UnprocessableEntityException implements Loggable {
+	constructor(private readonly userId: EntityId, private readonly targetSystemId: EntityId) {
+		super();
+	}
 
-	@ApiProperty({ description: &#x27;The Source System&#x27; })
-	@IsMongoId()
-	sourceSystem!: string;
-
-	@ApiProperty({ description: &#x27;The Target System&#x27; })
-	@IsMongoId()
-	targetSystem!: string;
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+		return {
+			type: &#x27;INVALID_USER_LOGIN_MIGRATION&#x27;,
+			message: &#x27;The migration cannot be started, because there is no migration to the selected target system.&#x27;,
+			stack: this.stack,
+			data: {
+				userId: this.userId,
+				targetSystemId: this.targetSystemId,
+			},
+		};
+	}
 }
 </code></pre>
     </div>
@@ -300,7 +289,7 @@ export class PageContentQueryParams {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'PageContentQueryParams.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'InvalidUserLoginMigrationLoggableException.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

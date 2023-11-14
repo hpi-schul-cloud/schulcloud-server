@@ -28,16 +28,23 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content controller">
+               <div class="content class">
                    <div class="content-data">
 
 
 
 
 
+
+
+
+
+
+
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Controllers</li>
-  <li class="breadcrumb-item" >UserMigrationController</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >UserMigrationSuccessfulLoggable</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -61,19 +68,18 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/user-login-migration/controller/user-migration.controller.ts</code>
+            <code>apps/server/src/modules/user-login-migration/loggable/debug/user-migration-successful.loggable.ts</code>
         </p>
 
+
+
+
             <p class="comment">
-                <h3>Prefix</h3>
+                <h3>Implements</h3>
             </p>
             <p class="comment">
-                <code>user-migration</code>
+                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
             </p>
-
-
-
-
 
 
             <section data-compodoc="block-index">
@@ -90,9 +96,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Async</span>
-                                <a href="#getMigrationPageDetails" >getMigrationPageDetails</a>
+                                <a href="#getLogMessage" >getLogMessage</a>
                             </li>
                         </ul>
                     </td>
@@ -106,6 +110,68 @@
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userLoginMigration: <a href="../classes/UserLoginMigrationDO.html" target="_self">UserLoginMigrationDO</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/user-login-migration/loggable/debug/user-migration-successful.loggable.ts:4</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>userId</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>userLoginMigration</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/UserLoginMigrationDO.html" target="_self" >UserLoginMigrationDO</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
             <section data-compodoc="block-methods">
     
     <h3 id="methods">
@@ -115,34 +181,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getMigrationPageDetails"></a>
+                    <a name="getLogMessage"></a>
                     <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier">Async</span>
-                        <span ><b>getMigrationPageDetails</b></span>
-                        <a href="#getMigrationPageDetails"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getLogMessage</b></span>
+                        <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getMigrationPageDetails(pageTypeQuery: <a href="../classes/PageContentQueryParams.html" target="_self">PageContentQueryParams</a>)</code>
+<code>getLogMessage()</code>
                 </td>
             </tr>
 
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Get(&#x27;page-content&#x27;)<br /></code>
-                </td>
-            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-migration.controller.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="7"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/loggable/debug/user-migration-successful.loggable.ts:7</a></div>
                         </td>
                     </tr>
 
@@ -150,85 +206,43 @@
             <tr>
                 <td class="col-md-4">
 
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>pageTypeQuery</td>
-                                            <td>
-                                                            <code><a href="../classes/PageContentQueryParams.html" target="_self" >PageContentQueryParams</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;PageContentResponse&gt;</code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#LogMessage" target="_self" >LogMessage</a></code>
 
                         </div>
-                            <div class="io-description">
-                                
-                            </div>
                 </td>
             </tr>
         </tbody>
     </table>
-</section>    </div>
+</section>
+
+
+
+
+
+    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, Query } from &#x27;@nestjs/common&#x27;;
-import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { PageContentMapper } from &#x27;../mapper&#x27;;
-import { PageContentDto } from &#x27;../service/dto&#x27;;
-import { UserLoginMigrationUc } from &#x27;../uc/user-login-migration.uc&#x27;;
-import { PageContentQueryParams, PageContentResponse } from &#x27;./dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
+import { Loggable, LogMessage } from &#x27;@src/core/logger&#x27;;
 
-@ApiTags(&#x27;UserMigration&#x27;)
-@Controller(&#x27;user-migration&#x27;)
-/**
- * @Deprecated
- */
-export class UserMigrationController {
-	constructor(private readonly uc: UserLoginMigrationUc, private readonly pageContentMapper: PageContentMapper) {}
+export class UserMigrationSuccessfulLoggable implements Loggable {
+	constructor(private readonly userId: EntityId, private readonly userLoginMigration: UserLoginMigrationDO) {}
 
-	@Get(&#x27;page-content&#x27;)
-	async getMigrationPageDetails(@Query() pageTypeQuery: PageContentQueryParams): Promise&lt;PageContentResponse&gt; {
-		const content: PageContentDto &#x3D; await this.uc.getPageContent(
-			pageTypeQuery.pageType,
-			pageTypeQuery.sourceSystem,
-			pageTypeQuery.targetSystem
-		);
-
-		const response: PageContentResponse &#x3D; this.pageContentMapper.mapDtoToResponse(content);
-		return response;
+	getLogMessage(): LogMessage {
+		return {
+			message: &#x27;A user has successfully migrated.&#x27;,
+			data: {
+				userId: this.userId,
+				userLoginMigrationId: this.userLoginMigration.id,
+			},
+		};
 	}
 }
 </code></pre>
     </div>
 </div>
-
-
-
-
-
-
-
 
 
 
@@ -263,8 +277,8 @@ export class UserMigrationController {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'controller';
-            var COMPODOC_CURRENT_PAGE_URL = 'UserMigrationController.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'UserMigrationSuccessfulLoggable.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

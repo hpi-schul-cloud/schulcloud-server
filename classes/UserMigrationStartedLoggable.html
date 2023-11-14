@@ -28,7 +28,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content injectable">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -38,9 +38,13 @@
 
 
 
+
+
+
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >MigrationMapper</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >UserMigrationStartedLoggable</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -64,11 +68,18 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/legacy-school/mapper/migration.mapper.ts</code>
+            <code>apps/server/src/modules/user-login-migration/loggable/debug/user-migration-started.loggable.ts</code>
         </p>
 
 
 
+
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
@@ -85,8 +96,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Public</span>
-                                <a href="#mapDtoToResponse" >mapDtoToResponse</a>
+                                <a href="#getLogMessage" >getLogMessage</a>
                             </li>
                         </ul>
                     </td>
@@ -100,6 +110,67 @@
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userLoginMigration: <a href="../classes/UserLoginMigrationDO.html" target="_self">UserLoginMigrationDO</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/user-login-migration/loggable/debug/user-migration-started.loggable.ts:4</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>userId</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>userLoginMigration</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/UserLoginMigrationDO.html" target="_self" >UserLoginMigrationDO</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
 
             <section data-compodoc="block-methods">
     
@@ -110,18 +181,16 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapDtoToResponse"></a>
+                    <a name="getLogMessage"></a>
                     <span class="name">
-                            <span class="modifier">Public</span>
-                        <span ><b>mapDtoToResponse</b></span>
-                        <a href="#mapDtoToResponse"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getLogMessage</b></span>
+                        <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapDtoToResponse(dto: <a href="../classes/OauthMigrationDto.html" target="_self">OauthMigrationDto</a>)</code>
+<code>getLogMessage()</code>
                 </td>
             </tr>
 
@@ -129,7 +198,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="7"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/mapper/migration.mapper.ts:7</a></div>
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/loggable/debug/user-migration-started.loggable.ts:7</a></div>
                         </td>
                     </tr>
 
@@ -137,76 +206,43 @@
             <tr>
                 <td class="col-md-4">
 
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>dto</td>
-                                            <td>
-                                                            <code><a href="../classes/OauthMigrationDto.html" target="_self" >OauthMigrationDto</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/MigrationResponse.html" target="_self" >MigrationResponse</a></code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#LogMessage" target="_self" >LogMessage</a></code>
 
                         </div>
-                            <div class="io-description">
-                                
-                            </div>
                 </td>
             </tr>
         </tbody>
     </table>
 </section>
 
+
+
+
+
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { MigrationResponse } from &#x27;../controller/dto&#x27;;
-import { OauthMigrationDto } from &#x27;../uc/dto/oauth-migration.dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
+import { Loggable, LogMessage } from &#x27;@src/core/logger&#x27;;
 
-@Injectable()
-export class MigrationMapper {
-	public mapDtoToResponse(dto: OauthMigrationDto): MigrationResponse {
-		const response: MigrationResponse &#x3D; new MigrationResponse({
-			oauthMigrationPossible: dto.oauthMigrationPossible,
-			oauthMigrationMandatory: dto.oauthMigrationMandatory,
-			oauthMigrationFinished: dto.oauthMigrationFinished,
-			oauthMigrationFinalFinish: dto.oauthMigrationFinalFinish,
-			enableMigrationStart: dto.enableMigrationStart,
-		});
+export class UserMigrationStartedLoggable implements Loggable {
+	constructor(private readonly userId: EntityId, private readonly userLoginMigration: UserLoginMigrationDO) {}
 
-		return response;
+	getLogMessage(): LogMessage {
+		return {
+			message: &#x27;A user started the user login migration.&#x27;,
+			data: {
+				userId: this.userId,
+				userLoginMigrationId: this.userLoginMigration.id,
+			},
+		};
 	}
 }
 </code></pre>
     </div>
-
 </div>
-
-
-
-
 
 
 
@@ -241,8 +277,8 @@ export class MigrationMapper {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'MigrationMapper.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'UserMigrationStartedLoggable.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

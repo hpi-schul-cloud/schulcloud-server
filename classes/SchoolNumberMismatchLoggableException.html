@@ -44,7 +44,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >SchoolMigrationError</li>
+  <li class="breadcrumb-item" >SchoolNumberMismatchLoggableException</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -68,7 +68,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/user-login-migration/error/school-migration.error.ts</code>
+            <code>apps/server/src/modules/user-login-migration/loggable/school-number-mismatch.loggable-exception.ts</code>
         </p>
 
 
@@ -80,6 +80,12 @@
                             <code><a href="../classes/BusinessError.html" target="_self" >BusinessError</a></code>
             </p>
 
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
@@ -133,6 +139,9 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                <a href="#getLogMessage" >getLogMessage</a>
+                            </li>
+                            <li>
                                     <span class="modifier"></span>
                                 <a href="#getResponse" >getResponse</a>
                             </li>
@@ -154,12 +163,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(details?: Record<string | >, cause?)</code>
+<code>constructor(sourceSchoolNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, targetSchoolNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/user-login-migration/error/school-migration.error.ts:4</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/user-login-migration/loggable/school-number-mismatch.loggable-exception.ts:5</a></div>
                             </td>
                         </tr>
 
@@ -177,25 +186,26 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>details</td>
+                                                        <td>sourceSchoolNumber</td>
                                                   
                                                         <td>
-                                                                    <code>Record&lt;string | &gt;</code>
+                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                                         </td>
                                                   
                                                     <td>
-                                                            Yes
+                                                            No
                                                     </td>
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>cause</td>
+                                                        <td>targetSchoolNumber</td>
                                                   
                                                         <td>
+                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                                         </td>
                                                   
                                                     <td>
-                                                            Yes
+                                                            No
                                                     </td>
                                                     
                                                 </tr>
@@ -445,6 +455,43 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getLogMessage"></a>
+                    <span class="name">
+                        <span ><b>getLogMessage</b></span>
+                        <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getLogMessage()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="21"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/loggable/school-number-mismatch.loggable-exception.ts:21</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/ValidationError.html" target="_self" >LogMessage | ErrorLogMessage | ValidationErrorLogMessage</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getResponse"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -498,9 +545,10 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpStatus } from &#x27;@nestjs/common&#x27;;
 import { BusinessError } from &#x27;@shared/common&#x27;;
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
 
-export class SchoolMigrationError extends BusinessError {
-	constructor(details?: Record&lt;string, unknown&gt;, cause?: unknown) {
+export class SchoolNumberMismatchLoggableException extends BusinessError implements Loggable {
+	constructor(private readonly sourceSchoolNumber: string, private readonly targetSchoolNumber: string) {
 		super(
 			{
 				type: &#x27;SCHOOL_MIGRATION_FAILED&#x27;,
@@ -508,9 +556,23 @@ export class SchoolMigrationError extends BusinessError {
 				defaultMessage: &#x27;School could not migrate during user migration process.&#x27;,
 			},
 			HttpStatus.INTERNAL_SERVER_ERROR,
-			details,
-			cause
+			{
+				sourceSchoolNumber,
+				targetSchoolNumber,
+			}
 		);
+	}
+
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+		return {
+			type: this.type,
+			message: this.message,
+			stack: this.stack,
+			data: {
+				sourceSchoolNumber: this.sourceSchoolNumber,
+				targetSchoolNumber: this.targetSchoolNumber,
+			},
+		};
 	}
 }
 </code></pre>
@@ -551,7 +613,7 @@ export class SchoolMigrationError extends BusinessError {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'SchoolMigrationError.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SchoolNumberMismatchLoggableException.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

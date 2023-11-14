@@ -44,7 +44,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >UserMigrationMapper</li>
+  <li class="breadcrumb-item" >SchoolMigrationSuccessfulLoggable</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -68,12 +68,18 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/oauth/mapper/user-migration.mapper.ts</code>
+            <code>apps/server/src/modules/user-login-migration/loggable/debug/school-migration-successful.loggable.ts</code>
         </p>
 
 
 
 
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
@@ -90,8 +96,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Static</span>
-                                <a href="#mapDtoToResponse" >mapDtoToResponse</a>
+                                <a href="#getLogMessage" >getLogMessage</a>
                             </li>
                         </ul>
                     </td>
@@ -105,6 +110,66 @@
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(school: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>, userLoginMigration: <a href="../classes/UserLoginMigrationDO.html" target="_self">UserLoginMigrationDO</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/user-login-migration/loggable/debug/school-migration-successful.loggable.ts:4</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>school</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>userLoginMigration</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/UserLoginMigrationDO.html" target="_self" >UserLoginMigrationDO</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
 
             <section data-compodoc="block-methods">
@@ -116,26 +181,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapDtoToResponse"></a>
+                    <a name="getLogMessage"></a>
                     <span class="name">
-                            <span class="modifier">Static</span>
-                        <span ><b>mapDtoToResponse</b></span>
-                        <a href="#mapDtoToResponse"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getLogMessage</b></span>
+                        <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapDtoToResponse(dto: <a href="../classes/MigrationDto.html" target="_self">MigrationDto</a>)</code>
+<code>getLogMessage()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="5"
-                                    class="link-to-prism">apps/server/src/modules/oauth/mapper/user-migration.mapper.ts:5</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="7"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/loggable/debug/school-migration-successful.loggable.ts:7</a></div>
                         </td>
                     </tr>
 
@@ -143,40 +206,10 @@
             <tr>
                 <td class="col-md-4">
 
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>dto</td>
-                                            <td>
-                                                            <code><a href="../classes/MigrationDto.html" target="_self" >MigrationDto</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/UserMigrationResponse.html" target="_self" >UserMigrationResponse</a></code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#LogMessage" target="_self" >LogMessage</a></code>
 
                         </div>
-                            <div class="io-description">
-                                
-                            </div>
                 </td>
             </tr>
         </tbody>
@@ -191,16 +224,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MigrationDto } from &#x27;@modules/user-login-migration/service/dto&#x27;;
-import { UserMigrationResponse } from &#x27;../controller/dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LegacySchoolDo, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
+import { Loggable, LogMessage } from &#x27;@src/core/logger&#x27;;
 
-export class UserMigrationMapper {
-	static mapDtoToResponse(dto: MigrationDto): UserMigrationResponse {
-		const response: UserMigrationResponse &#x3D; new UserMigrationResponse({
-			redirect: dto.redirect,
-		});
+export class SchoolMigrationSuccessfulLoggable implements Loggable {
+	constructor(private readonly school: LegacySchoolDo, private readonly userLoginMigration: UserLoginMigrationDO) {}
 
-		return response;
+	getLogMessage(): LogMessage {
+		return {
+			message: &#x27;A school has successfully migrated.&#x27;,
+			data: {
+				schoolId: this.school.id,
+				externalId: this.school.externalId,
+				previousExternalId: this.school.previousExternalId,
+				userLoginMigrationId: this.userLoginMigration.id,
+			},
+		};
 	}
 }
 </code></pre>
@@ -241,7 +280,7 @@ export class UserMigrationMapper {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'UserMigrationMapper.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SchoolMigrationSuccessfulLoggable.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

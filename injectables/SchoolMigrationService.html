@@ -94,6 +94,10 @@
                                 <a href="#doMigration" >doMigration</a>
                             </li>
                             <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getSchoolForMigration" >getSchoolForMigration</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                 <a href="#hasSchoolMigrated" >hasSchoolMigrated</a>
                             </li>
@@ -112,18 +116,11 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#rollbackMigration" >rollbackMigration</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#schoolToMigrate" >schoolToMigrate</a>
+                                <a href="#tryRollbackMigration" >tryRollbackMigration</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#unmarkOutdatedUsers" >unmarkOutdatedUsers</a>
-                            </li>
-                            <li>
-                                <a href="#validateGracePeriod" >validateGracePeriod</a>
                             </li>
                         </ul>
                     </td>
@@ -143,12 +140,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, userLoginMigrationRepo: <a href="../injectables/UserLoginMigrationRepo.html" target="_self">UserLoginMigrationRepo</a>)</code>
+<code>constructor(schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, legacyLogger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, userLoginMigrationRepo: <a href="../injectables/UserLoginMigrationRepo.html" target="_self">UserLoginMigrationRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -178,10 +175,22 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>logger</td>
+                                                        <td>legacyLogger</td>
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -249,8 +258,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="147"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:147</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="77"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:77</a></div>
                         </td>
                     </tr>
 
@@ -324,15 +333,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>doMigration(externalId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, schoolDO: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>, targetSystemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>doMigration(externalId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, school: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>, targetSystemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="130"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:130</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -365,7 +374,7 @@
 
                                         </tr>
                                         <tr>
-                                                <td>schoolDO</td>
+                                                <td>school</td>
                                             <td>
                                                             <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
                                             </td>
@@ -406,6 +415,99 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getSchoolForMigration"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getSchoolForMigration</b></span>
+                        <a href="#getSchoolForMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getSchoolForMigration(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, officialSchoolNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:58</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>externalId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>officialSchoolNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/LegacySchoolDo.html" target="_self" >Promise&lt;LegacySchoolDo | null&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="hasSchoolMigrated"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -417,15 +519,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasSchoolMigrated(sourceExternalId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, targetExternalId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>hasSchoolMigrated(sourceExternalId: string | undefined, targetExternalId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="158"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:158</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:86</a></div>
                         </td>
                     </tr>
 
@@ -448,7 +550,7 @@
                                         <tr>
                                                 <td>sourceExternalId</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                        <code>string | undefined</code>
                                             </td>
 
                                             <td>
@@ -464,7 +566,7 @@
                                             </td>
 
                                             <td>
-                                                    Yes
+                                                    No
                                             </td>
 
 
@@ -505,8 +607,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="165"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:165</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="135"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:135</a></div>
                         </td>
                     </tr>
 
@@ -567,15 +669,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>markUnmigratedUsersAsOutdated(schoolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>markUnmigratedUsersAsOutdated(userLoginMigration: <a href="../classes/UserLoginMigrationDO.html" target="_self">UserLoginMigrationDO</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="81"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:81</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -596,9 +698,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>schoolId</td>
+                                                <td>userLoginMigration</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                            <code><a href="../classes/UserLoginMigrationDO.html" target="_self" >UserLoginMigrationDO</a></code>
                                             </td>
 
                                             <td>
@@ -636,15 +738,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>migrateSchool(externalId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, existingSchool: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>, targetSystemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>migrateSchool(existingSchool: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>, externalId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, targetSystemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -665,9 +767,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>externalId</td>
+                                                <td>existingSchool</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                            <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
                                             </td>
 
                                             <td>
@@ -677,9 +779,9 @@
 
                                         </tr>
                                         <tr>
-                                                <td>existingSchool</td>
+                                                <td>externalId</td>
                                             <td>
-                                                            <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
 
                                             <td>
@@ -718,27 +820,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="rollbackMigration"></a>
+                    <a name="tryRollbackMigration"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
-                        <span ><b>rollbackMigration</b></span>
-                        <a href="#rollbackMigration"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>tryRollbackMigration</b></span>
+                        <a href="#tryRollbackMigration"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>rollbackMigration(originalSchoolDO: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>)</code>
+                    <code>tryRollbackMigration(originalSchoolDO: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="141"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:141</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -788,99 +890,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="schoolToMigrate"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>schoolToMigrate</b></span>
-                        <a href="#schoolToMigrate"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>schoolToMigrate(currentUserId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, officialSchoolNumber: string | undefined)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="43"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:43</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>currentUserId</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>externalId</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>officialSchoolNumber</td>
-                                            <td>
-                                                        <code>string | undefined</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/LegacySchoolDo.html" target="_self" >Promise&lt;LegacySchoolDo | null&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="unmarkOutdatedUsers"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -892,82 +901,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>unmarkOutdatedUsers(schoolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>unmarkOutdatedUsers(userLoginMigration: <a href="../classes/UserLoginMigrationDO.html" target="_self">UserLoginMigrationDO</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="106"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:106</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>schoolId</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="validateGracePeriod"></a>
-                    <span class="name">
-                        <span ><b>validateGracePeriod</b></span>
-                        <a href="#validateGracePeriod"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>validateGracePeriod(userLoginMigration: <a href="../classes/UserLoginMigrationDO.html" target="_self">UserLoginMigrationDO</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="115"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:115</a></div>
                         </td>
                     </tr>
 
@@ -1003,7 +945,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -1019,97 +961,102 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
-import { ValidationError } from &#x27;@shared/common&#x27;;
-import { Page, LegacySchoolDo, UserDO, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
-import { UserLoginMigrationRepo } from &#x27;@shared/repo&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
+import { UserLoginMigrationRepo } from &#x27;@shared/repo&#x27;;
+import { LegacyLogger, Logger } from &#x27;@src/core/logger&#x27;;
 import { performance } from &#x27;perf_hooks&#x27;;
-import { OAuthMigrationError } from &#x27;../error&#x27;;
+import {
+	SchoolMigrationDatabaseOperationFailedLoggableException,
+	SchoolNumberMismatchLoggableException,
+} from &#x27;../loggable&#x27;;
 
 @Injectable()
 export class SchoolMigrationService {
 	constructor(
 		private readonly schoolService: LegacySchoolService,
-		private readonly logger: LegacyLogger,
+		private readonly legacyLogger: LegacyLogger,
+		private readonly logger: Logger,
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
 	) {}
 
-	validateGracePeriod(userLoginMigration: UserLoginMigrationDO) {
-		if (userLoginMigration.finishedAt &amp;&amp; Date.now() &gt;&#x3D; userLoginMigration.finishedAt.getTime()) {
-			throw new ValidationError(&#x27;grace_period_expired: The grace period after finishing migration has expired&#x27;, {
-				finishedAt: userLoginMigration.finishedAt,
-			});
-		}
-	}
-
-	async migrateSchool(externalId: string, existingSchool: LegacySchoolDo, targetSystemId: string): Promise&lt;void&gt; {
+	async migrateSchool(existingSchool: LegacySchoolDo, externalId: string, targetSystemId: string): Promise&lt;void&gt; {
 		const schoolDOCopy: LegacySchoolDo &#x3D; new LegacySchoolDo({ ...existingSchool });
 
 		try {
 			await this.doMigration(externalId, existingSchool, targetSystemId);
-		} catch (e: unknown) {
-			await this.rollbackMigration(schoolDOCopy);
-			this.logger.log({
-				message: &#x60;This error occurred during migration of School with official school number&#x60;,
-				officialSchoolNumber: existingSchool.officialSchoolNumber,
-				error: e,
-			});
+		} catch (error: unknown) {
+			await this.tryRollbackMigration(schoolDOCopy);
+
+			throw new SchoolMigrationDatabaseOperationFailedLoggableException(existingSchool, &#x27;migration&#x27;, error);
 		}
 	}
 
-	async schoolToMigrate(
-		currentUserId: string,
+	private async doMigration(externalId: string, school: LegacySchoolDo, targetSystemId: string): Promise&lt;void&gt; {
+		school.previousExternalId &#x3D; school.externalId;
+		school.externalId &#x3D; externalId;
+		if (!school.systems) {
+			school.systems &#x3D; [];
+		}
+		if (!school.systems.includes(targetSystemId)) {
+			school.systems.push(targetSystemId);
+		}
+
+		await this.schoolService.save(school);
+	}
+
+	private async tryRollbackMigration(originalSchoolDO: LegacySchoolDo) {
+		try {
+			await this.schoolService.save(originalSchoolDO);
+		} catch (error: unknown) {
+			this.logger.warning(
+				new SchoolMigrationDatabaseOperationFailedLoggableException(originalSchoolDO, &#x27;rollback&#x27;, error)
+			);
+		}
+	}
+
+	async getSchoolForMigration(
+		userId: string,
 		externalId: string,
-		officialSchoolNumber: string | undefined
+		officialSchoolNumber: string
 	): Promise&lt;LegacySchoolDo | null&gt; {
-		if (!officialSchoolNumber) {
-			throw new OAuthMigrationError(
-				&#x27;Official school number from target migration system is missing&#x27;,
-				&#x27;ext_official_school_number_missing&#x27;
-			);
-		}
+		const user: UserDO &#x3D; await this.userService.findById(userId);
+		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(user.schoolId);
 
-		const userDO: UserDO | null &#x3D; await this.userService.findById(currentUserId);
-		if (userDO) {
-			const schoolDO: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(userDO.schoolId);
-			this.checkOfficialSchoolNumbersMatch(schoolDO, officialSchoolNumber);
-		}
+		this.checkOfficialSchoolNumbersMatch(school, officialSchoolNumber);
 
-		const existingSchool: LegacySchoolDo | null &#x3D; await this.schoolService.getSchoolBySchoolNumber(
-			officialSchoolNumber
-		);
-
-		if (!existingSchool) {
-			throw new OAuthMigrationError(
-				&#x27;Could not find school by official school number from target migration system&#x27;,
-				&#x27;ext_official_school_missing&#x27;
-			);
-		}
-
-		const schoolMigrated: boolean &#x3D; this.hasSchoolMigrated(externalId, existingSchool.externalId);
+		const schoolMigrated: boolean &#x3D; this.hasSchoolMigrated(school.externalId, externalId);
 
 		if (schoolMigrated) {
 			return null;
 		}
 
-		return existingSchool;
+		return school;
 	}
 
-	async markUnmigratedUsersAsOutdated(schoolId: string): Promise&lt;void&gt; {
+	private checkOfficialSchoolNumbersMatch(schoolDO: LegacySchoolDo, officialExternalSchoolNumber: string): void {
+		if (schoolDO.officialSchoolNumber !&#x3D;&#x3D; officialExternalSchoolNumber) {
+			throw new SchoolNumberMismatchLoggableException(
+				schoolDO.officialSchoolNumber ?? &#x27;&#x27;,
+				officialExternalSchoolNumber
+			);
+		}
+	}
+
+	private hasSchoolMigrated(sourceExternalId: string | undefined, targetExternalId: string): boolean {
+		const isExternalIdEquivalent: boolean &#x3D; sourceExternalId &#x3D;&#x3D;&#x3D; targetExternalId;
+
+		return isExternalIdEquivalent;
+	}
+
+	async markUnmigratedUsersAsOutdated(userLoginMigration: UserLoginMigrationDO): Promise&lt;void&gt; {
 		const startTime: number &#x3D; performance.now();
 
-		const userLoginMigration: UserLoginMigrationDO | null &#x3D; await this.userLoginMigrationRepo.findBySchoolId(schoolId);
-
-		if (!userLoginMigration) {
-			throw new UnprocessableEntityException(&#x60;School ${schoolId} has no UserLoginMigration&#x60;);
-		}
-
 		const notMigratedUsers: Page&lt;UserDO&gt; &#x3D; await this.userService.findUsers({
-			schoolId,
+			schoolId: userLoginMigration.schoolId,
 			isOutdated: false,
 			lastLoginSystemChangeSmallerThan: userLoginMigration.startedAt,
 		});
@@ -1121,20 +1068,18 @@ export class SchoolMigrationService {
 		await this.userService.saveAll(notMigratedUsers.data);
 
 		const endTime: number &#x3D; performance.now();
-		this.logger.warn(&#x60;completeMigration for schoolId ${schoolId} took ${endTime - startTime} milliseconds&#x60;);
+		this.legacyLogger.warn(
+			&#x60;markUnmigratedUsersAsOutdated for schoolId ${userLoginMigration.schoolId} took ${
+				endTime - startTime
+			} milliseconds&#x60;
+		);
 	}
 
-	async unmarkOutdatedUsers(schoolId: string): Promise&lt;void&gt; {
+	async unmarkOutdatedUsers(userLoginMigration: UserLoginMigrationDO): Promise&lt;void&gt; {
 		const startTime: number &#x3D; performance.now();
 
-		const userLoginMigration: UserLoginMigrationDO | null &#x3D; await this.userLoginMigrationRepo.findBySchoolId(schoolId);
-
-		if (!userLoginMigration) {
-			throw new UnprocessableEntityException(&#x60;School ${schoolId} has no UserLoginMigration&#x60;);
-		}
-
 		const migratedUsers: Page&lt;UserDO&gt; &#x3D; await this.userService.findUsers({
-			schoolId,
+			schoolId: userLoginMigration.schoolId,
 			outdatedSince: userLoginMigration.finishedAt,
 		});
 
@@ -1145,42 +1090,9 @@ export class SchoolMigrationService {
 		await this.userService.saveAll(migratedUsers.data);
 
 		const endTime: number &#x3D; performance.now();
-		this.logger.warn(&#x60;restartMigration for schoolId ${schoolId} took ${endTime - startTime} milliseconds&#x60;);
-	}
-
-	private async doMigration(externalId: string, schoolDO: LegacySchoolDo, targetSystemId: string): Promise&lt;void&gt; {
-		if (schoolDO.systems) {
-			schoolDO.systems.push(targetSystemId);
-		} else {
-			schoolDO.systems &#x3D; [targetSystemId];
-		}
-		schoolDO.previousExternalId &#x3D; schoolDO.externalId;
-		schoolDO.externalId &#x3D; externalId;
-		await this.schoolService.save(schoolDO);
-	}
-
-	private async rollbackMigration(originalSchoolDO: LegacySchoolDo) {
-		if (originalSchoolDO) {
-			await this.schoolService.save(originalSchoolDO);
-		}
-	}
-
-	private checkOfficialSchoolNumbersMatch(schoolDO: LegacySchoolDo, officialExternalSchoolNumber: string): void {
-		if (schoolDO.officialSchoolNumber !&#x3D;&#x3D; officialExternalSchoolNumber) {
-			throw new OAuthMigrationError(
-				&#x27;Current users school is not the same as school found by official school number from target migration system&#x27;,
-				&#x27;ext_official_school_number_mismatch&#x27;,
-				schoolDO.officialSchoolNumber,
-				officialExternalSchoolNumber
-			);
-		}
-	}
-
-	private hasSchoolMigrated(sourceExternalId: string, targetExternalId?: string): boolean {
-		if (sourceExternalId &#x3D;&#x3D;&#x3D; targetExternalId) {
-			return true;
-		}
-		return false;
+		this.legacyLogger.warn(
+			&#x60;unmarkOutdatedUsers for schoolId ${userLoginMigration.schoolId} took ${endTime - startTime} milliseconds&#x60;
+		);
 	}
 
 	async hasSchoolMigratedUser(schoolId: string): Promise&lt;boolean&gt; {
