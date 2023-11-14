@@ -1,12 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AuthenticationService } from '@modules/authentication/services/authentication.service';
+import { AuthenticationService } from '@modules/authentication';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { OAuthTokenDto } from '@modules/oauth';
-import { OAuthService } from '@modules/oauth/service/oauth.service';
-import { ProvisioningService } from '@modules/provisioning';
-import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@modules/provisioning/dto';
+import { OAuthTokenDto, OAuthService } from '@modules/oauth';
+import {
+	ProvisioningService,
+	ExternalSchoolDto,
+	ExternalUserDto,
+	OauthDataDto,
+	ProvisioningSystemDto,
+} from '@modules/provisioning';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -20,8 +24,7 @@ import {
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { ExternalSchoolNumberMissingLoggableException } from '../loggable';
-import { InvalidUserLoginMigrationLoggableException } from '../loggable/invalid-user-login-migration.loggable-exception';
+import { ExternalSchoolNumberMissingLoggableException, InvalidUserLoginMigrationLoggableException } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { UserLoginMigrationUc } from './user-login-migration.uc';
 
@@ -104,7 +107,7 @@ describe(UserLoginMigrationUc.name, () => {
 	describe('getMigrations', () => {
 		describe('when searching for a users migration', () => {
 			const setup = () => {
-				const userId = 'userId';
+				const userId = new ObjectId().toHexString();
 
 				const migrations: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
@@ -117,7 +120,7 @@ describe(UserLoginMigrationUc.name, () => {
 				return { userId, migrations };
 			};
 
-			it('should return a response', async () => {
+			it('should return a page response with data', async () => {
 				const { userId, migrations } = setup();
 
 				const result: Page<UserLoginMigrationDO> = await uc.getMigrations(userId, { userId });
@@ -131,14 +134,14 @@ describe(UserLoginMigrationUc.name, () => {
 
 		describe('when a user has no migration available', () => {
 			const setup = () => {
-				const userId = 'userId';
+				const userId = new ObjectId().toHexString();
 
 				userLoginMigrationService.findMigrationByUser.mockResolvedValueOnce(null);
 
 				return { userId };
 			};
 
-			it('should return a response', async () => {
+			it('should return a page response without data', async () => {
 				const { userId } = setup();
 
 				const result: Page<UserLoginMigrationDO> = await uc.getMigrations(userId, { userId });
@@ -152,12 +155,12 @@ describe(UserLoginMigrationUc.name, () => {
 
 		describe('when searching for other users migrations', () => {
 			const setup = () => {
-				const userId = 'userId';
+				const userId = new ObjectId().toHexString();
 
 				return { userId };
 			};
 
-			it('should return a response', async () => {
+			it('should throw a forbidden exception', async () => {
 				const { userId } = setup();
 
 				const func = async () => uc.getMigrations(userId, { userId: 'otherUserId' });
@@ -172,7 +175,7 @@ describe(UserLoginMigrationUc.name, () => {
 	describe('findUserLoginMigrationBySchool', () => {
 		describe('when searching for an existing user login migration', () => {
 			const setup = () => {
-				const schoolId = 'schoolId';
+				const schoolId = new ObjectId().toHexString();
 
 				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId,
@@ -209,7 +212,7 @@ describe(UserLoginMigrationUc.name, () => {
 
 		describe('when a user login migration does not exist', () => {
 			const setup = () => {
-				const schoolId = 'schoolId';
+				const schoolId = new ObjectId().toHexString();
 
 				const user: User = userFactory.buildWithId();
 
@@ -230,7 +233,7 @@ describe(UserLoginMigrationUc.name, () => {
 
 		describe('when the authorization fails', () => {
 			const setup = () => {
-				const schoolId = 'schoolId';
+				const schoolId = new ObjectId().toHexString();
 
 				const user: User = userFactory.buildWithId();
 
