@@ -149,8 +149,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			position: parentData?.position,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(drawingElement, boardNode);
+		this.saveRecursive(boardNode, drawingElement);
 	}
 
 	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {

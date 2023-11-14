@@ -9,14 +9,11 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 	userFactory,
-	axiosResponseFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService, Action } from '@modules/authorization';
 import { ObjectId } from 'bson';
 import { ForbiddenException } from '@nestjs/common';
-import { AxiosResponse } from 'axios';
-import { of } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { ElementUc } from './element.uc';
@@ -27,7 +24,6 @@ describe(ElementUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let elementService: DeepMocked<ContentElementService>;
-	let httpService: DeepMocked<HttpService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -68,7 +64,6 @@ describe(ElementUc.name, () => {
 			new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
 		);
 		elementService = module.get(ContentElementService);
-		httpService = module.get(HttpService);
 		await setupEntities();
 	});
 
@@ -219,20 +214,6 @@ describe(ElementUc.name, () => {
 				await uc.deleteElement(user.id, element.id);
 
 				expect(elementService.delete).toHaveBeenCalledWith(element);
-			});
-
-			it('should call external controller via delete method to clear drawing bin data', async () => {
-				const { user, drawingElement } = setup();
-				elementService.findById.mockResolvedValueOnce(drawingElement);
-				const axiosResponse: AxiosResponse<string> = axiosResponseFactory.build({
-					data: '',
-				});
-
-				httpService.delete.mockReturnValueOnce(of(axiosResponse));
-
-				await uc.deleteElement(user.id, drawingElement.id, 'auth');
-
-				expect(httpService.delete).toHaveBeenCalled();
 			});
 		});
 	});
