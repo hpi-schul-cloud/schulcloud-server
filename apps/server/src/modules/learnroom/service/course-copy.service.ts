@@ -48,11 +48,12 @@ export class CourseCopyService {
 		const boardStatus = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
 		const filteredBoardStatus = this.filterOutNeXboardFromCopyStatus(boardStatus);
 		const finishedCourseCopy = await this.finishCourseCopying(courseCopy);
-		const courseStatus = this.deriveCourseStatus(originalCourse, finishedCourseCopy, boardStatus);
+		const courseStatus = this.deriveCourseStatus(originalCourse, finishedCourseCopy, filteredBoardStatus);
 
 		return courseStatus;
 	}
 
+		// Exclude LESSON_CONTENT_NEXBOARD from boardStatus
 	private filterOutNeXboardFromCopyStatus(boardStatus: CopyStatus): CopyStatus {
 		if (boardStatus.elements) {
 			boardStatus.elements = boardStatus.elements.filter(elementStatus =>
