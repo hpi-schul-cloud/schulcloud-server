@@ -6,11 +6,11 @@ import { TaskCopyService } from '@modules/task/service';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	BaseEntity,
+	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,
 	ComponentTextProperties,
 	ComponentType,
 	EntityId,
-	IComponentEtherpadProperties,
 	IComponentInternalProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,
@@ -912,7 +912,7 @@ describe('lesson copy service', () => {
 				user,
 			});
 			const copiedLessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
-			const copiedEtherpad = copiedLessonContents[0].content as IComponentEtherpadProperties;
+			const copiedEtherpad = copiedLessonContents[0].content as ComponentEtherpadProperties;
 			expect(copiedEtherpad.url).toEqual('http://pad.uri/abc');
 		});
 

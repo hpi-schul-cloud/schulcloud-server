@@ -5,11 +5,11 @@ import { FileUrlReplacement } from '@modules/files-storage-client/service/copy-f
 import { TaskCopyService } from '@modules/task/service/task-copy.service';
 import { Injectable } from '@nestjs/common';
 import {
+	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,
 	ComponentLernstoreProperties,
 	ComponentTextProperties,
 	ComponentType,
-	IComponentEtherpadProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,
 	LessonEntity,
@@ -301,7 +301,7 @@ export class LessonCopyService {
 	): Promise<IComponentProperties | false> {
 		const copy = { ...originalElement } as IComponentProperties;
 		delete copy._id;
-		const content = { ...copy.content, url: '' } as IComponentEtherpadProperties;
+		const content = { ...copy.content, url: '' } as ComponentEtherpadProperties;
 		content.title = randomBytes(12).toString('hex');
 
 		const etherpadPadId = await this.etherpadService.createEtherpad(

@@ -46,7 +46,7 @@ export interface ComponentLernstoreProperties {
 	}[];
 }
 
-export interface IComponentEtherpadProperties {
+export interface ComponentEtherpadProperties {
 	description: string;
 	title: string;
 	url: string;
@@ -70,7 +70,7 @@ export type IComponentProperties = {
 	user?: EntityId;
 } & (
 	| { component: ComponentType.TEXT; content: ComponentTextProperties }
-	| { component: ComponentType.ETHERPAD; content: IComponentEtherpadProperties }
+	| { component: ComponentType.ETHERPAD; content: ComponentEtherpadProperties }
 	| { component: ComponentType.GEOGEBRA; content: ComponentGeogebraProperties }
 	| { component: ComponentType.INTERNAL; content: IComponentInternalProperties }
 	| { component: ComponentType.LERNSTORE; content?: ComponentLernstoreProperties }
