@@ -1,6 +1,6 @@
 import type { Course, InputFormat, LessonEntity, SchoolEntity, Submission, User } from '@shared/domain/';
 
-interface ITask {
+interface TaskInterface {
 	name: string;
 	description?: string;
 	descriptionInputFormat?: InputFormat;
@@ -8,17 +8,17 @@ interface ITask {
 	dueDate?: Date;
 }
 
-export interface TaskUpdate extends ITask {
+export interface TaskUpdate extends TaskInterface {
 	courseId?: string;
 	lessonId?: string;
 }
 
-export interface ITaskCreate extends ITask {
+export interface TaskCreate extends TaskInterface {
 	courseId?: string;
 	lessonId?: string;
 }
 
-export interface ITaskProperties extends ITask {
+export interface ITaskProperties extends TaskInterface {
 	course?: Course;
 	lesson?: LessonEntity;
 	creator: User;
