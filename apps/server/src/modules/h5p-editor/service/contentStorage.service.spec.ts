@@ -8,7 +8,7 @@ import { EntityInterface } from '@shared/domain';
 import { ObjectID } from 'bson';
 import { Readable } from 'stream';
 import { GetH5PFileResponse } from '../controller/dto';
-import { H5PContent, H5PContentParentType, IH5PContentProperties } from '../entity';
+import { H5PContent, H5PContentParentType, H5PContentProperties } from '../entity';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { H5PContentRepo } from '../repo';
 import { H5PContentParentParams, LumiUserWithContentData } from '../types/lumi-types';
@@ -40,7 +40,7 @@ const helpers = {
 		const content = {
 			data: `Data #${n}`,
 		};
-		const h5pContentProperties: IH5PContentProperties = {
+		const h5pContentProperties: H5PContentProperties = {
 			creatorId: new ObjectID().toString(),
 			parentId: new ObjectID().toString(),
 			schoolId: new ObjectID().toString(),

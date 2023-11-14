@@ -39,11 +39,11 @@ import {
 } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';
 import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
-import { IScopeInfo, VideoConference, VideoConferenceJoin, VideoConferenceState } from './dto';
+import { ScopeInfo, VideoConference, VideoConferenceJoin, VideoConferenceState } from './dto';
 import { VideoConferenceDeprecatedUc } from './video-conference-deprecated.uc';
 
 class VideoConferenceDeprecatedUcSpec extends VideoConferenceDeprecatedUc {
-	async getScopeInfoSpec(userId: EntityId, conferenceScope: VideoConferenceScope, refId: string): Promise<IScopeInfo> {
+	async getScopeInfoSpec(userId: EntityId, conferenceScope: VideoConferenceScope, refId: string): Promise<ScopeInfo> {
 		return this.getScopeInfo(userId, conferenceScope, refId);
 	}
 
@@ -198,7 +198,7 @@ describe('VideoConferenceUc', () => {
 	describe('getScopeInfo', () => {
 		it('should return scope info for courses', async () => {
 			// Act
-			const scopeInfo: IScopeInfo = await useCase.getScopeInfoSpec('userId', VideoConferenceScope.COURSE, course.id);
+			const scopeInfo: ScopeInfo = await useCase.getScopeInfoSpec('userId', VideoConferenceScope.COURSE, course.id);
 
 			// Assert
 			expect(scopeInfo.scopeId).toEqual(course.id);
@@ -209,7 +209,7 @@ describe('VideoConferenceUc', () => {
 
 		it('should return scope info for teams', async () => {
 			// Act
-			const scopeInfo: IScopeInfo = await useCase.getScopeInfoSpec('userId', VideoConferenceScope.EVENT, eventId);
+			const scopeInfo: ScopeInfo = await useCase.getScopeInfoSpec('userId', VideoConferenceScope.EVENT, eventId);
 
 			// Assert
 			expect(scopeInfo.scopeId).toEqual(event.teamId);

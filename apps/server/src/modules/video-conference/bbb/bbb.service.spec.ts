@@ -9,7 +9,7 @@ import { AxiosResponse } from 'axios';
 import crypto, { Hash } from 'crypto';
 import { of } from 'rxjs';
 import { URLSearchParams } from 'url';
-import { BbbSettings, IBbbSettings } from './bbb-settings.interface';
+import { BbbSettings, BbbSettingsInterface } from './bbb-settings.interface';
 import { BBBService } from './bbb.service';
 import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig, BBBRole, GuestPolicy } from './request';
 import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
@@ -118,7 +118,7 @@ describe('BBB Service', () => {
 				BBBServiceTest,
 				{
 					provide: BbbSettings,
-					useValue: createMock<IBbbSettings>({
+					useValue: createMock<BbbSettingsInterface>({
 						host: 'https://bbb.de',
 						salt: 'salt12345',
 						presentationUrl: '',
