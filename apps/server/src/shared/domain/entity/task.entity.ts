@@ -31,7 +31,7 @@ export type TaskParentDescriptions = {
 	color: string;
 };
 
-export interface ITaskParent {
+export interface TaskParent {
 	getStudentIds(): EntityId[];
 }
 
@@ -128,7 +128,7 @@ export class Task extends BaseEntityWithTimestamps implements LearnroomElement, 
 		return finishedIds;
 	}
 
-	private getParent(): ITaskParent | User {
+	private getParent(): TaskParent | User {
 		const parent = this.lesson || this.course || this.creator;
 
 		return parent;

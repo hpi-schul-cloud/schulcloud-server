@@ -6,7 +6,7 @@ import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { Material } from './materials.entity';
-import type { ITaskParent } from './task.entity';
+import type { TaskParent } from './task.entity';
 import { Task } from './task.entity';
 
 export interface LessonProperties {
@@ -82,7 +82,7 @@ export interface LessonParent {
 }
 
 @Entity({ tableName: 'lessons' })
-export class LessonEntity extends BaseEntityWithTimestamps implements LearnroomElement, ITaskParent {
+export class LessonEntity extends BaseEntityWithTimestamps implements LearnroomElement, TaskParent {
 	@Property()
 	name: string;
 
