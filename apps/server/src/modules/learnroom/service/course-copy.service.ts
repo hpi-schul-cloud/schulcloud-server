@@ -43,14 +43,23 @@ export class CourseCopyService {
 		const existingNames = existingCourses.map((course: Course) => course.name);
 		const copyName = this.copyHelperService.deriveCopyName(newName || originalCourse.name, existingNames);
 
-		// copy course and board
+			// copy course and board
 		const courseCopy = await this.copyCourseEntity({ user, originalCourse, copyName });
 		const boardStatus = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
+		const filteredBoardStatus = this.filterOutNeXboardFromCopyStatus(boardStatus);
 		const finishedCourseCopy = await this.finishCourseCopying(courseCopy);
-
 		const courseStatus = this.deriveCourseStatus(originalCourse, finishedCourseCopy, boardStatus);
 
 		return courseStatus;
+	}
+
+	private filterOutNeXboardFromCopyStatus(boardStatus: CopyStatus): CopyStatus {
+		if (boardStatus.elements) {
+			boardStatus.elements = boardStatus.elements.filter(elementStatus =>
+				elementStatus.type !== CopyElementType.LESSON_CONTENT_NEXBOARD
+			);
+		}
+		return boardStatus;
 	}
 
 	private async copyCourseEntity(params: CourseCopyParams): Promise<Course> {
@@ -110,4 +119,6 @@ export class CourseCopyService {
 		};
 		return status;
 	}
+
+
 }
