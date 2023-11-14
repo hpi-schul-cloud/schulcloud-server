@@ -5,7 +5,7 @@ import { EntityNotFoundError } from '@shared/common';
 import {
 	EntityId,
 	IFindOptions,
-	IPagination,
+	Pagination,
 	Role,
 	SchoolEntity,
 	SortOrder,
@@ -31,7 +31,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, UserProperties> {
 	}
 
 	async find(query: UserQuery, options?: IFindOptions<UserDO>) {
-		const pagination: IPagination = options?.pagination || {};
+		const pagination: Pagination = options?.pagination || {};
 		const order: QueryOrderMap<User> = this.createQueryOrderMap(options?.order || {});
 		const scope: Scope<User> = new UserScope()
 			.bySchoolId(query.schoolId)

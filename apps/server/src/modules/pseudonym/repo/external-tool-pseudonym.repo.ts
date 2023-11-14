@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions, IPagination, Page, Pseudonym } from '@shared/domain';
+import { EntityId, IFindOptions, Page, Pagination, Pseudonym } from '@shared/domain';
 import { Scope } from '@shared/repo';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymEntity, ExternalToolPseudonymEntityProps } from '../entity';
@@ -110,7 +110,7 @@ export class ExternalToolPseudonymRepo {
 	}
 
 	async findPseudonym(query: PseudonymSearchQuery, options?: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
-		const pagination: IPagination = options?.pagination ?? {};
+		const pagination: Pagination = options?.pagination ?? {};
 		const scope: Scope<ExternalToolPseudonymEntity> = new PseudonymScope()
 			.byPseudonym(query.pseudonym)
 			.byToolId(query.toolId)
