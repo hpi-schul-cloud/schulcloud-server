@@ -1,12 +1,12 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
-import { DashboardEntity, EntityId, GridPositionWithGroupIndex, GridPosition, SortOrder } from '@shared/domain';
-import { IDashboardRepo, CourseRepo } from '@shared/repo';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { DashboardEntity, EntityId, GridPosition, GridPositionWithGroupIndex, SortOrder } from '@shared/domain';
+import { CourseRepo, DashboardRepoInterface } from '@shared/repo';
 // import { NotFound } from '@feathersjs/errors'; // wrong import? see NotFoundException
 
 @Injectable()
 export class DashboardUc {
 	constructor(
-		@Inject('DASHBOARD_REPO') private readonly dashboardRepo: IDashboardRepo,
+		@Inject('DASHBOARD_REPO') private readonly dashboardRepo: DashboardRepoInterface,
 		private readonly courseRepo: CourseRepo
 	) {}
 

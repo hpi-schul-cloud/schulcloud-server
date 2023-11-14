@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId, DashboardEntity, GridElementWithPosition, DashboardModelEntity } from '@shared/domain';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
+import { DashboardEntity, DashboardModelEntity, EntityId, GridElementWithPosition } from '@shared/domain';
 import { DashboardModelMapper } from './dashboard.model.mapper';
 
 const generateEmptyDashboard = (userId: EntityId) => {
@@ -10,14 +10,14 @@ const generateEmptyDashboard = (userId: EntityId) => {
 	return dashboard;
 };
 
-export interface IDashboardRepo {
+export interface DashboardRepoInterface {
 	getUsersDashboard(userId: EntityId): Promise<DashboardEntity>;
 	getDashboardById(id: EntityId): Promise<DashboardEntity>;
 	persistAndFlush(entity: DashboardEntity): Promise<DashboardEntity>;
 }
 
 @Injectable()
-export class DashboardRepo implements IDashboardRepo {
+export class DashboardRepo implements DashboardRepoInterface {
 	constructor(protected readonly em: EntityManager, protected readonly mapper: DashboardModelMapper) {}
 
 	// ToDo: refactor this to be in an abstract class (see baseRepo)

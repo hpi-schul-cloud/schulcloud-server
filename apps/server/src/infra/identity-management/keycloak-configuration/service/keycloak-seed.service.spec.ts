@@ -1,28 +1,28 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { LegacyLogger } from '@src/core/logger';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/resources/authenticationManagement';
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { Test, TestingModule } from '@nestjs/testing';
+import { LegacyLogger } from '@src/core/logger';
 import { v1 } from 'uuid';
 import {
-	IKeycloakSettings,
 	KeycloakSettings,
+	KeycloakSettingsInterface,
 } from '../../keycloak-administration/interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
-import { IJsonAccount } from '../interface/json-account.interface';
-import { IJsonUser } from '../interface/json-user.interface';
+import { JsonAccount } from '../interface/json-account.interface';
+import { JsonUser } from '../interface/json-user.interface';
 import {
-	IKeycloakConfigurationInputFiles,
 	KeycloakConfigurationInputFiles,
+	KeycloakConfigurationInputFilesInterface,
 } from '../interface/keycloak-configuration-input-files.interface';
 import { KeycloakSeedService } from './keycloak-seed.service';
 
 const accountsFile = 'accounts.json';
 const usersFile = 'users.json';
-let jsonAccounts: IJsonAccount[];
-let jsonUsers: IJsonUser[];
+let jsonAccounts: JsonAccount[];
+let jsonUsers: JsonUser[];
 
 jest.mock('node:fs/promises', () => {
 	return {
@@ -42,7 +42,7 @@ describe('KeycloakSeedService', () => {
 	let module: TestingModule;
 	let serviceUnderTest: KeycloakSeedService;
 	let logger: DeepMocked<LegacyLogger>;
-	let settings: IKeycloakSettings;
+	let settings: KeycloakSettingsInterface;
 
 	let infoLogSpy: jest.SpyInstance;
 	let errorLogSpy: jest.SpyInstance;
@@ -52,8 +52,8 @@ describe('KeycloakSeedService', () => {
 	const kcApiAuthenticationManagementMock = createMock<AuthenticationManagement>();
 	const adminUsername = 'admin';
 
-	let validAccountsNoDuplicates: IJsonAccount[];
-	let validAccounts: IJsonAccount[];
+	let validAccountsNoDuplicates: JsonAccount[];
+	let validAccounts: JsonAccount[];
 
 	const adminUser: UserRepresentation = {
 		id: v1(),
@@ -98,7 +98,7 @@ describe('KeycloakSeedService', () => {
 			username: 'notUnique',
 		},
 	];
-	const inputFiles: IKeycloakConfigurationInputFiles = {
+	const inputFiles: KeycloakConfigurationInputFilesInterface = {
 		accountsFile: 'accounts.json',
 		usersFile: 'users.json',
 	};
