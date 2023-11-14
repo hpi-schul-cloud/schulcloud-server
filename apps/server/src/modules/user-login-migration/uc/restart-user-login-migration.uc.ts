@@ -2,7 +2,7 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { Permission, User, UserLoginMigrationDO } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { UserLoginMigrationNotFoundLoggableException, UserLoginMigrationStartLoggable } from '../loggable';
+import { UserLoginMigrationNotFoundLoggableException, UserLoginMigrationStartLoggableException } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationService } from '../service';
 
 @Injectable()
@@ -38,7 +38,7 @@ export class RestartUserLoginMigrationUc {
 
 		await this.schoolMigrationService.unmarkOutdatedUsers(updatedUserLoginMigration);
 
-		this.logger.info(new UserLoginMigrationStartLoggable(userId, updatedUserLoginMigration.id as string));
+		this.logger.info(new UserLoginMigrationStartLoggableException(userId, updatedUserLoginMigration.id as string));
 
 		return updatedUserLoginMigration;
 	}

@@ -87,6 +87,7 @@ describe('MigrationCheckService', () => {
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date('2023-03-03'),
 				});
+
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
 				userService.findByExternalId.mockResolvedValue(null);
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);

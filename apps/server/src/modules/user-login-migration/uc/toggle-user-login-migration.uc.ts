@@ -1,14 +1,9 @@
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo, Permission, User, UserLoginMigrationDO } from '@shared/domain';
+import { EntityId, LegacySchoolDo, Permission, User, UserLoginMigrationDO } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import {
-	UserLoginMigrationAlreadyClosedLoggableException,
-	UserLoginMigrationGracePeriodExpiredLoggableException,
-	UserLoginMigrationMandatoryLoggable,
-	UserLoginMigrationNotFoundLoggableException,
-} from '../loggable';
+import { UserLoginMigrationMandatoryLoggable, UserLoginMigrationNotFoundLoggableException } from '../loggable';
 import { UserLoginMigrationService } from '../service';
 
 @Injectable()
@@ -20,7 +15,7 @@ export class ToggleUserLoginMigrationUc {
 		private readonly logger: Logger
 	) {}
 
-	async setMigrationMandatory(userId: string, schoolId: string, mandatory: boolean): Promise<UserLoginMigrationDO> {
+	async setMigrationMandatory(userId: EntityId, schoolId: EntityId, mandatory: boolean): Promise<UserLoginMigrationDO> {
 		await this.checkPermission(userId, schoolId);
 
 		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
@@ -29,26 +24,16 @@ export class ToggleUserLoginMigrationUc {
 
 		if (!userLoginMigration) {
 			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
-		} else if (userLoginMigration.finishedAt && Date.now() >= userLoginMigration.finishedAt.getTime()) {
-			throw new UserLoginMigrationGracePeriodExpiredLoggableException(
-				userLoginMigration.id as string,
-				userLoginMigration.finishedAt
-			);
-		} else if (userLoginMigration.closedAt) {
-			throw new UserLoginMigrationAlreadyClosedLoggableException(
-				userLoginMigration.id as string,
-				userLoginMigration.closedAt
-			);
-		} else {
-			userLoginMigration = await this.userLoginMigrationService.setMigrationMandatory(schoolId, mandatory);
-
-			this.logger.debug(new UserLoginMigrationMandatoryLoggable(userId, userLoginMigration.id as string, mandatory));
 		}
+
+		userLoginMigration = await this.userLoginMigrationService.setMigrationMandatory(userLoginMigration);
+
+		this.logger.debug(new UserLoginMigrationMandatoryLoggable(userId, mandatory, userLoginMigration.id));
 
 		return userLoginMigration;
 	}
 
-	async checkPermission(userId: string, schoolId: string): Promise<void> {
+	private async checkPermission(userId: string, schoolId: string): Promise<void> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
 
