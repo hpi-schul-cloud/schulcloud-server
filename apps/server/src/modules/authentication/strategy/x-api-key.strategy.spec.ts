@@ -14,6 +14,7 @@ import { IXApiKeyConfig } from '../config/x-api-key.config';
 describe('XApiKeyStrategy', () => {
 	let module: TestingModule;
 	let strategy: XApiKeyStrategy;
+	let configService: ConfigService<IXApiKeyConfig, true>;
 	Configuration.set('ADMIN_API__ALLOWED_API_KEYS', '1ab2c3d4e5f61ab2c3d4e5f6');
 
 	beforeAll(async () => {
@@ -29,6 +30,7 @@ describe('XApiKeyStrategy', () => {
 		}).compile();
 
 		strategy = module.get(XApiKeyStrategy);
+		configService = module.get(ConfigService<IXApiKeyConfig, true>);
 	});
 
 	afterAll(async () => {
@@ -62,6 +64,14 @@ describe('XApiKeyStrategy', () => {
 				const result = strategy.validate(INVALID_API_KEY, done);
 				expect(done).toBeCalledWith(new UnauthorizedException(), null);
 			});
+		});
+	});
+
+	describe('constructor', () => {
+		it('should create strategy', () => {
+			const ApiKeyStrategy = new XApiKeyStrategy(configService);
+			expect(ApiKeyStrategy).toBeDefined();
+			expect(ApiKeyStrategy).toBeInstanceOf(XApiKeyStrategy);
 		});
 	});
 });
