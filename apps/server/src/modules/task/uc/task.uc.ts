@@ -4,11 +4,11 @@ import {
 	Counted,
 	Course,
 	EntityId,
-	ITaskStatus,
 	LessonEntity,
 	Pagination,
 	Permission,
 	SortOrder,
+	TaskStatus,
 	TaskWithStatusVo,
 	User,
 } from '@shared/domain';
@@ -53,7 +53,7 @@ export class TaskUC {
 		);
 
 		const taskWithStatusVos = tasks.map((task) => {
-			let status: ITaskStatus;
+			let status: TaskStatus;
 			if (this.authorizationService.hasPermission(user, task, AuthorizationContextBuilder.write([]))) {
 				status = task.createTeacherStatusForUser(user);
 			} else {

@@ -30,7 +30,7 @@ export interface TaskProperties extends TaskInterface {
 	teamSubmissions?: boolean;
 }
 
-export interface ITaskStatus {
+export interface TaskStatus {
 	submitted: number;
 	maxSubmissions: number;
 	graded: number;

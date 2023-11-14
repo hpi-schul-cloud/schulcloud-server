@@ -5,7 +5,7 @@ import { InputFormat } from '@shared/domain/types/input-format.types';
 import type { IEntityWithSchool } from '../interface';
 import type { LearnroomElement } from '../interface/learnroom';
 import type { EntityId } from '../types/entity-id';
-import type { ITaskStatus, TaskProperties } from '../types/task.types';
+import type { TaskProperties, TaskStatus } from '../types/task.types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { LessonEntity } from './lesson.entity';
@@ -15,9 +15,9 @@ import { User } from './user.entity';
 export class TaskWithStatusVo {
 	task!: Task;
 
-	status!: ITaskStatus;
+	status!: TaskStatus;
 
-	constructor(task: Task, status: ITaskStatus) {
+	constructor(task: Task, status: TaskStatus) {
 		this.task = task;
 		this.status = status;
 	}
@@ -234,7 +234,7 @@ export class Task extends BaseEntityWithTimestamps implements LearnroomElement, 
 		return isSubstitutionTeacher;
 	}
 
-	public createTeacherStatusForUser(user: User): ITaskStatus {
+	public createTeacherStatusForUser(user: User): TaskStatus {
 		const submittedSubmissions = this.getSubmittedSubmissions();
 		const gradedSubmissions = this.getGradedSubmissions();
 
@@ -257,7 +257,7 @@ export class Task extends BaseEntityWithTimestamps implements LearnroomElement, 
 		return status;
 	}
 
-	public createStudentStatusForUser(user: User): ITaskStatus {
+	public createStudentStatusForUser(user: User): TaskStatus {
 		const isSubmitted = this.isSubmittedForUser(user);
 		const isGraded = this.isGradedForUser(user);
 		const maxSubmissions = 1;
