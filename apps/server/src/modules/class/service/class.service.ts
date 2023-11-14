@@ -13,6 +13,13 @@ export class ClassService {
 		return classes;
 	}
 
+	public async findAllByUserId(userId: EntityId): Promise<Class[]> {
+		const classes: Class[] = await this.classesRepo.findAllByUserId(userId);
+
+		return classes;
+	}
+
+	// FIXME There is no usage of this method
 	public async deleteUserDataFromClasses(userId: EntityId): Promise<number> {
 		if (!userId) {
 			throw new InternalServerErrorException('User id is missing');

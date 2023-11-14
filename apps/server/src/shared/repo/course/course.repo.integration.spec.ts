@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, EntityId, SortOrder } from '@shared/domain';
 
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections, courseFactory, courseGroupFactory, userFactory } from '@shared/testing';
 import { CourseRepo } from './course.repo';
 

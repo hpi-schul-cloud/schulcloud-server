@@ -5,7 +5,7 @@ import {
 	ProviderLoginResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
-} from '@shared/infra/oauth-provider/dto';
+} from '@infra/oauth-provider/dto';
 import {
 	ConsentResponse,
 	ConsentSessionResponse,

@@ -20,7 +20,7 @@ import {
 	ProviderConsentSessionResponse,
 	ProviderLoginResponse,
 	ProviderRedirectResponse,
-} from '@shared/infra/oauth-provider/dto';
+} from '@infra/oauth-provider/dto';
 import { OauthProviderConsentFlowUc } from '@modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
 import { ICurrentUser } from '@modules/authentication';
 import { OauthProviderUc } from '@modules/oauth-provider/uc/oauth-provider.uc';
