@@ -17,7 +17,7 @@ import {
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
 	UserLoginMigrationNotFoundLoggableException,
-} from '../error';
+} from '../loggable';
 import { UserLoginMigrationMapper } from '../mapper';
 import {
 	CloseUserLoginMigrationUc,
