@@ -12,6 +12,7 @@ import { Buffer } from 'node:buffer';
 import { getDocUpdatesFromQueue, pushDocUpdatesToQueue } from '@src/modules/tldraw/redis';
 import { applyUpdate, Doc } from 'yjs';
 import Redis from 'ioredis';
+import { LegacyLogger } from '@src/core/logger';
 
 @Injectable()
 export class TldrawWsService {
@@ -29,10 +30,13 @@ export class TldrawWsService {
 
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
-		private readonly tldrawBoardRepo: TldrawBoardRepo
+		private readonly tldrawBoardRepo: TldrawBoardRepo,
+		private readonly logger: LegacyLogger
 	) {
+		this.logger.setContext(TldrawWsService.name);
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
 		const redisUrl: string = this.configService.get<string>('REDIS_URI');
+		this.logger.debug(`REDIS URL ${redisUrl}`);
 		this.mux = mutex.createMutex();
 		this.sub = new Redis(redisUrl);
 		this.pub = new Redis(redisUrl);
@@ -103,7 +107,11 @@ export class TldrawWsService {
 			void Promise.all([
 				this.pub.publishBuffer(doc.name, Buffer.from(update)),
 				pushDocUpdatesToQueue(this.pub, doc, update),
-			]);
+			]).then((result) => {
+				this.logger.debug('Update handler redis response: ');
+				this.logger.debug(result[0]);
+				return null;
+			});
 
 			this.propagateUpdate(update, doc);
 		} else {
@@ -148,7 +156,9 @@ export class TldrawWsService {
 					break;
 				case WSMessageType.AWARENESS: {
 					const update = decoding.readVarUint8Array(decoder);
-					await this.pub.publishBuffer(doc.awarenessChannel, Buffer.from(update));
+					const pubResponse = await this.pub.publishBuffer(doc.awarenessChannel, Buffer.from(update));
+					this.logger.debug('Message handler awareness response: ');
+					this.logger.debug(pubResponse);
 					applyAwarenessUpdate(doc.awareness, update, conn);
 					break;
 				}
@@ -176,6 +186,8 @@ export class TldrawWsService {
 		});
 
 		const redisUpdates = await getDocUpdatesFromQueue(this.pub, doc);
+		this.logger.debug('Setup WS Connection redis updates: ');
+		this.logger.debug(redisUpdates);
 		const redisYDoc = new Doc();
 		redisYDoc.transact(() => {
 			for (const u of redisUpdates) {
