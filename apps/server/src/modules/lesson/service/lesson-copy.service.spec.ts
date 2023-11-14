@@ -6,11 +6,11 @@ import { TaskCopyService } from '@modules/task/service';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	BaseEntity,
+	ComponentGeogebraProperties,
 	ComponentTextProperties,
 	ComponentType,
 	EntityId,
 	IComponentEtherpadProperties,
-	IComponentGeogebraProperties,
 	IComponentInternalProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,
@@ -612,7 +612,7 @@ describe('lesson copy service', () => {
 			});
 
 			const lessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
-			const geoGebraContent = lessonContents[0].content as IComponentGeogebraProperties;
+			const geoGebraContent = lessonContents[0].content as ComponentGeogebraProperties;
 
 			expect(geoGebraContent.materialId).toEqual('');
 		});

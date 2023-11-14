@@ -5,10 +5,10 @@ import { FileUrlReplacement } from '@modules/files-storage-client/service/copy-f
 import { TaskCopyService } from '@modules/task/service/task-copy.service';
 import { Injectable } from '@nestjs/common';
 import {
+	ComponentGeogebraProperties,
 	ComponentTextProperties,
 	ComponentType,
 	IComponentEtherpadProperties,
-	IComponentGeogebraProperties,
 	IComponentLernstoreProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,
@@ -290,7 +290,7 @@ export class LessonCopyService {
 
 	private static copyGeogebra(originalElement: IComponentProperties): IComponentProperties {
 		const copy = { ...originalElement, hidden: true } as IComponentProperties;
-		copy.content = { ...copy.content, materialId: '' } as IComponentGeogebraProperties;
+		copy.content = { ...copy.content, materialId: '' } as ComponentGeogebraProperties;
 		delete copy._id;
 		return copy;
 	}
