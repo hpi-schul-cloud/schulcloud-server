@@ -35,14 +35,14 @@ spec:
       - path: /tldraw-server
         backend:
           service:
-            name: tldraw-svc
+            name: tldraw-server-svc
             port:
               number: {{ PORT_TLDRAW }}
         pathType: Prefix
       - path: /tldraw-management
         backend:
           service:
-            name: tldraw-svc
+            name: tldraw-server-svc
             port:
               number: {{ PORT_TLDRAW_MANAGEMENT }}
         pathType: Prefix

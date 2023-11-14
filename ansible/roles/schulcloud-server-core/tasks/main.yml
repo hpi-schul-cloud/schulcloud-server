@@ -153,7 +153,7 @@
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
-      template: tldraw-svc.yml.j2
+      template: tldraw-server-svc.yml.j2
 
   - name: Tldraw Ingress
     kubernetes.core.k8s:
