@@ -1,9 +1,11 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, Permission, SchoolEntity, User } from '@shared/domain';
 import {
 	accountFactory,
+	contextExternalToolEntityFactory,
 	externalToolEntityFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
@@ -12,7 +14,12 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@modules/server';
+import { Response } from 'supertest';
+import { ToolContextType } from '../../../common/enum';
 import { ToolConfigurationStatusResponse } from '../../../context-external-tool/controller/dto/tool-configuration-status.response';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { ExternalToolMetadataResponse } from '../../../external-tool/controller/dto/response/external-tool-metadata.response';
+import { ExternalToolMetadata } from '../../../external-tool/domain';
 import { ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../entity';
 import {
@@ -22,6 +29,7 @@ import {
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
 } from '../dto';
+import { SchoolExternalToolMetadataResponse } from '../dto/school-external-tool-metadata.response';
 
 describe('ToolSchoolController (API)', () => {
 	let app: INestApplication;
@@ -485,6 +493,121 @@ describe('ToolSchoolController (API)', () => {
 			});
 
 			expect(updatedSchoolExternalTool).toBeDefined();
+		});
+	});
+
+	describe('[GET] tools/school-external-tools/:schoolExternalToolId/metadata', () => {
+		describe('when user is not authenticated', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
+
+				const contextExternalToolCount = new Map<ToolContextType, number>();
+				contextExternalToolCount.set(ToolContextType.COURSE, 3);
+				contextExternalToolCount.set(ToolContextType.BOARD_ELEMENT, 2);
+				const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
+					schoolExternalToolCount: 2,
+					contextExternalToolCountPerContext: contextExternalToolCount,
+				});
+
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
+				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
+				return { loggedInClient, toolId, externalToolEntity, externalToolMetadata };
+			};
+
+			it('should return unauthorized', async () => {
+				const { externalToolEntity } = await setup();
+
+				const response: Response = await testApiClient.get(`${externalToolEntity.id}/metadata`);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when schoolExternalToolId is given ', () => {
+			const setup = async () => {
+				const school = schoolFactory.buildWithId();
+				const schoolToolId: string = new ObjectId().toHexString();
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId(
+					{ school },
+					schoolToolId
+				);
+
+				const courseExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+					schoolTool: schoolExternalToolEntity,
+					contextType: ContextExternalToolType.COURSE,
+					contextId: new ObjectId().toHexString(),
+				});
+
+				const courseExternalToolEntity1: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+					schoolTool: schoolExternalToolEntity,
+					contextType: ContextExternalToolType.COURSE,
+					contextId: new ObjectId().toHexString(),
+				});
+
+				const courseExternalToolEntity2: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+					schoolTool: schoolExternalToolEntity,
+					contextType: ContextExternalToolType.COURSE,
+					contextId: new ObjectId().toHexString(),
+				});
+
+				const boardExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+					schoolTool: schoolExternalToolEntity,
+					contextType: ContextExternalToolType.BOARD_ELEMENT,
+					contextId: new ObjectId().toHexString(),
+				});
+
+				const boardExternalToolEntity1: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+					schoolTool: schoolExternalToolEntity,
+					contextType: ContextExternalToolType.BOARD_ELEMENT,
+					contextId: new ObjectId().toHexString(),
+				});
+
+				const contextExternalToolCount = new Map<ToolContextType, number>();
+				contextExternalToolCount.set(ToolContextType.COURSE, 3);
+				contextExternalToolCount.set(ToolContextType.BOARD_ELEMENT, 2);
+				const schoolExternalToolMetadata: SchoolExternalToolMetadataResponse = new SchoolExternalToolMetadataResponse({
+					contextExternalToolCountPerContext: contextExternalToolCount,
+				});
+
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.SCHOOL_TOOL_ADMIN,
+				]);
+
+				await em.persistAndFlush([
+					adminAccount,
+					adminUser,
+					schoolExternalToolEntity,
+					courseExternalToolEntity,
+					courseExternalToolEntity1,
+					courseExternalToolEntity2,
+					boardExternalToolEntity,
+					boardExternalToolEntity1,
+				]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
+				return { loggedInClient, schoolExternalToolEntity, schoolExternalToolMetadata };
+			};
+
+			it('should return the metadata of schoolExternalTool', async () => {
+				const { loggedInClient, schoolExternalToolEntity, schoolExternalToolMetadata } = await setup();
+
+				const response: Response = await loggedInClient.get(`${schoolExternalToolEntity.id}/metadata`);
+
+				const body: SchoolExternalToolMetadataResponse = response.body as SchoolExternalToolMetadataResponse;
+
+				expect(body).toBeDefined();
+				expect(response.statusCode).toEqual(HttpStatus.OK);
+				expect(body).toMatchObject<SchoolExternalToolMetadataResponse>(schoolExternalToolMetadata);
+				expect(body.contextExternalToolCountPerContext).toHaveProperty('course', 3);
+				expect(body.contextExternalToolCountPerContext).toHaveProperty('boardElement', 2);
+			});
 		});
 	});
 });

@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, Permission, SortOrder, User } from '@shared/domain';
@@ -10,9 +11,15 @@ import {
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { ICurrentUser } from '@modules/authentication';
 import { AuthorizationService } from '@modules/authorization';
+import { ToolContextType } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { ExternalTool, Oauth2ToolConfig } from '../domain';
-import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
+import { ExternalTool, ExternalToolMetadata, Oauth2ToolConfig } from '../domain';
+import {
+	ExternalToolLogoService,
+	ExternalToolMetadataService,
+	ExternalToolService,
+	ExternalToolValidationService,
+} from '../service';
 
 import { ExternalToolUpdate } from './dto';
 import { ExternalToolUc } from './external-tool.uc';
@@ -25,6 +32,7 @@ describe('ExternalToolUc', () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let toolValidationService: DeepMocked<ExternalToolValidationService>;
 	let logoService: DeepMocked<ExternalToolLogoService>;
+	let externalToolMetadataService: DeepMocked<ExternalToolMetadataService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -48,6 +56,10 @@ describe('ExternalToolUc', () => {
 					provide: ExternalToolLogoService,
 					useValue: createMock<ExternalToolLogoService>(),
 				},
+				{
+					provide: ExternalToolMetadataService,
+					useValue: createMock<ExternalToolMetadataService>(),
+				},
 			],
 		}).compile();
 
@@ -56,6 +68,7 @@ describe('ExternalToolUc', () => {
 		authorizationService = module.get(AuthorizationService);
 		toolValidationService = module.get(ExternalToolValidationService);
 		logoService = module.get(ExternalToolLogoService);
+		externalToolMetadataService = module.get(ExternalToolMetadataService);
 	});
 
 	afterAll(async () => {
@@ -466,6 +479,79 @@ describe('ExternalToolUc', () => {
 			await uc.deleteExternalTool(currentUser.userId, toolId);
 
 			expect(externalToolService.deleteExternalTool).toHaveBeenCalledWith(toolId);
+		});
+	});
+
+	describe('getMetadataForExternalTool', () => {
+		describe('Authorization', () => {
+			const setupMetadata = () => {
+				const toolId: string = new ObjectId().toHexString();
+				return {
+					toolId,
+				};
+			};
+
+			it('should call getUserWithPermissions', async () => {
+				const { currentUser } = setupAuthorization();
+				const { toolId } = setupMetadata();
+
+				await uc.getMetadataForExternalTool(currentUser.userId, toolId);
+
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
+			});
+
+			it('should successfully check the user permission with the authorization service', async () => {
+				const { currentUser, user } = setupAuthorization();
+				const { toolId } = setupMetadata();
+
+				await uc.getMetadataForExternalTool(currentUser.userId, toolId);
+
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
+			});
+
+			it('should throw if the user has insufficient permission to get an external tool', async () => {
+				const { currentUser } = setupAuthorization();
+				const { toolId } = setupMetadata();
+				authorizationService.checkAllPermissions.mockImplementation(() => {
+					throw new UnauthorizedException();
+				});
+
+				const result: Promise<ExternalToolMetadata> = uc.getMetadataForExternalTool(currentUser.userId, toolId);
+
+				await expect(result).rejects.toThrow(UnauthorizedException);
+			});
+		});
+
+		describe('when externalToolId is given', () => {
+			const setupMetadata = () => {
+				const toolId: string = new ObjectId().toHexString();
+
+				const contextExternalToolCount = new Map<ToolContextType, number>();
+				contextExternalToolCount.set(ToolContextType.COURSE, 3);
+				contextExternalToolCount.set(ToolContextType.BOARD_ELEMENT, 3);
+
+				const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
+					schoolExternalToolCount: 2,
+					contextExternalToolCountPerContext: contextExternalToolCount,
+				});
+
+				externalToolMetadataService.getMetaData.mockResolvedValue(externalToolMetadata);
+
+				return {
+					toolId,
+					externalToolMetadata,
+				};
+			};
+
+			it('should call the service to get metadata', async () => {
+				const { currentUser } = setupAuthorization();
+
+				const { toolId } = setupMetadata();
+
+				await uc.getMetadataForExternalTool(currentUser.userId, toolId);
+
+				expect(externalToolMetadataService.getMetaData).toHaveBeenCalledWith(toolId);
+			});
 		});
 	});
 });

@@ -15,10 +15,11 @@ export class SchoolExternalToolMetadataService {
 		const contextTools = await Promise.all(
 			Object.values(ToolContextType).map(async (contextType: ToolContextType) => {
 				const countPerContext: number =
-					await this.contextToolRepo.countContextExternalToolsBySchoolToolIdsAndContextType(contextType,
-						[schoolExternalToolId.toString()]);
+					await this.contextToolRepo.countContextExternalToolsBySchoolToolIdsAndContextType(contextType, [
+						schoolExternalToolId.toString(),
+					]);
 
-				return { contextType, number: countPerContext };
+				return { contextType, count: countPerContext };
 			})
 		);
 
@@ -28,12 +29,12 @@ export class SchoolExternalToolMetadataService {
 	}
 
 	private createContextExternalToolMetaData(
-		toolCountPerContext: { contextType: ToolContextType; number: number }[]
+		toolCountPerContext: { contextType: ToolContextType; count: number }[]
 	): Map<ToolContextType, number> {
 		const contextExternalToolMetadata: Map<ToolContextType, number> = new Map(
-			toolCountPerContext.map((contextExternalToolCountPerSchool: { contextType: ToolContextType; number: number }) => [
+			toolCountPerContext.map((contextExternalToolCountPerSchool: { contextType: ToolContextType; count: number }) => [
 				contextExternalToolCountPerSchool.contextType,
-				contextExternalToolCountPerSchool.number,
+				contextExternalToolCountPerSchool.count,
 			])
 		);
 
@@ -41,7 +42,7 @@ export class SchoolExternalToolMetadataService {
 	}
 
 	private createSchoolExternalToolMetadata(
-		contextExternalToolCountPerContext: { contextType; number }[]
+		contextExternalToolCountPerContext: { contextType: ToolContextType; count: number }[]
 	): SchoolExternalToolMetadata {
 		const schoolExternaltoolMetadata: SchoolExternalToolMetadata = new SchoolExternalToolMetadata({
 			contextExternalToolCountPerContext: this.createContextExternalToolMetaData(contextExternalToolCountPerContext),

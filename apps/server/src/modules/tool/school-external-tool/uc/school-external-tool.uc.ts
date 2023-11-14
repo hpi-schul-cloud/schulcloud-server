@@ -17,7 +17,7 @@ export class SchoolExternalToolUc {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
-		private readonly schoolexternaltoolMetadataService: SchoolExternalToolMetadataService,
+		private readonly schoolExternalToolMetadataService: SchoolExternalToolMetadataService,
 		private readonly toolPermissionHelper: ToolPermissionHelper
 	) {}
 
@@ -110,7 +110,7 @@ export class SchoolExternalToolUc {
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
 
-		const metadata: SchoolExternalToolMetadata = await this.schoolexternaltoolMetadataService.getMetadata(
+		const metadata: SchoolExternalToolMetadata = await this.schoolExternalToolMetadataService.getMetadata(
 			schoolExternalToolId
 		);
 
