@@ -16,9 +16,8 @@ import {
 import { ServerTestModule } from '@modules/server';
 import { Response } from 'supertest';
 import { ToolContextType } from '../../../common/enum';
-import { ToolConfigurationStatusResponse } from '../../../context-external-tool/controller/dto/tool-configuration-status.response';
+import { ToolConfigurationStatusResponse } from '../../../context-external-tool/controller/dto';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
-import { ExternalToolMetadataResponse } from '../../../external-tool/controller/dto/response/external-tool-metadata.response';
 import { ExternalToolMetadata } from '../../../external-tool/domain';
 import { ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../entity';
