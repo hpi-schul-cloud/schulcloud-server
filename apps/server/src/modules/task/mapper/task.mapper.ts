@@ -1,4 +1,4 @@
-import { InputFormat, ITaskCreate, ITaskUpdate, RichText, TaskWithStatusVo } from '@shared/domain';
+import { InputFormat, ITaskCreate, RichText, TaskUpdate, TaskWithStatusVo } from '@shared/domain';
 import { TaskCreateParams, TaskResponse, TaskUpdateParams } from '../controller/dto';
 import { TaskStatusMapper } from './task-status.mapper';
 
@@ -36,8 +36,8 @@ export class TaskMapper {
 		return dto;
 	}
 
-	static mapTaskUpdateToDomain(params: TaskUpdateParams): ITaskUpdate {
-		const dto: ITaskUpdate = {
+	static mapTaskUpdateToDomain(params: TaskUpdateParams): TaskUpdate {
+		const dto: TaskUpdate = {
 			name: params.name,
 			courseId: params.courseId,
 			lessonId: params.lessonId,

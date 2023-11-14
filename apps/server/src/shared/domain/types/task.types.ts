@@ -8,7 +8,7 @@ interface ITask {
 	dueDate?: Date;
 }
 
-export interface ITaskUpdate extends ITask {
+export interface TaskUpdate extends ITask {
 	courseId?: string;
 	lessonId?: string;
 }
