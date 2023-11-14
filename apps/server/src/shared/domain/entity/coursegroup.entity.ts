@@ -1,5 +1,5 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
-import { IEntityWithSchool } from '../interface';
+import { EntityWithSchool } from '../interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
@@ -16,7 +16,7 @@ export interface CourseGroupProperties {
 
 @Entity({ tableName: 'coursegroups' })
 @Index({ properties: ['school', 'course'] })
-export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWithSchool, TaskParent, LessonParent {
+export class CourseGroup extends BaseEntityWithTimestamps implements EntityWithSchool, TaskParent, LessonParent {
 	@Property()
 	name: string;
 

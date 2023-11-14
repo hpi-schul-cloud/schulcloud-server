@@ -87,7 +87,7 @@ interface ParentInfo {
 	parentType: FileRecordParentType;
 }
 
-// TODO: IEntityWithSchool
+// TODO: EntityWithSchool
 
 /**
  * Note: The file record entity will not manage any entity relations by itself.

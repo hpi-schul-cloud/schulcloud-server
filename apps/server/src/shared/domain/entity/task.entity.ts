@@ -2,7 +2,7 @@ import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property }
 import { InternalServerErrorException } from '@nestjs/common';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { InputFormat } from '@shared/domain/types/input-format.types';
-import type { IEntityWithSchool } from '../interface';
+import type { EntityWithSchool } from '../interface';
 import type { LearnroomElement } from '../interface/learnroom';
 import type { EntityId } from '../types/entity-id';
 import type { TaskProperties, TaskStatus } from '../types/task.types';
@@ -40,7 +40,7 @@ export interface TaskParent {
 @Index({ properties: ['id', 'private'] })
 @Index({ properties: ['finished', 'course'] })
 @Index({ properties: ['finished', 'course'] })
-export class Task extends BaseEntityWithTimestamps implements LearnroomElement, IEntityWithSchool {
+export class Task extends BaseEntityWithTimestamps implements LearnroomElement, EntityWithSchool {
 	@Property()
 	name: string;
 
