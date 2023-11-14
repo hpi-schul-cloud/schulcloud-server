@@ -1,21 +1,21 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { CopyDictionary, CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyFilesService } from '@modules/files-storage-client';
+import { FileUrlReplacement } from '@modules/files-storage-client/service/copy-files.service';
+import { TaskCopyService } from '@modules/task/service/task-copy.service';
 import { Injectable } from '@nestjs/common';
 import {
+	ComponentTextProperties,
 	ComponentType,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
 	IComponentLernstoreProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,
-	IComponentTextProperties,
 	LessonEntity,
 	Material,
 } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
-import { CopyDictionary, CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { CopyFilesService } from '@modules/files-storage-client';
-import { FileUrlReplacement } from '@modules/files-storage-client/service/copy-files.service';
-import { TaskCopyService } from '@modules/task/service/task-copy.service';
 import { randomBytes } from 'crypto';
 import { LessonCopyParams } from '../types';
 import { EtherpadService } from './etherpad.service';
@@ -254,7 +254,7 @@ export class LessonCopyService {
 			component: ComponentType.TEXT,
 			user: element.user, // TODO should be params.user - but that made the server crash, but property is normally undefined
 			content: {
-				text: (element.content as IComponentTextProperties).text,
+				text: (element.content as ComponentTextProperties).text,
 			},
 		};
 	}

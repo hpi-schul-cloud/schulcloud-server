@@ -1,8 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyFilesService } from '@modules/files-storage-client';
+import { TaskCopyService } from '@modules/task/service';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	BaseEntity,
+	ComponentTextProperties,
 	ComponentType,
 	EntityId,
 	IComponentEtherpadProperties,
@@ -10,7 +14,6 @@ import {
 	IComponentInternalProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,
-	IComponentTextProperties,
 	LessonEntity,
 	Material,
 } from '@shared/domain';
@@ -24,9 +27,6 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { CopyFilesService } from '@modules/files-storage-client';
-import { TaskCopyService } from '@modules/task/service';
 import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
 import { NexboardService } from './nexboard.service';
@@ -467,7 +467,7 @@ describe('lesson copy service', () => {
 			const lessonCopy = status.copyEntity as LessonEntity;
 			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
 			expect(contentsStatus).toBeDefined();
-			expect((lessonCopy.contents[0].content as IComponentTextProperties).text).not.toContain(FILE_ID_TO_BE_REPLACED);
+			expect((lessonCopy.contents[0].content as ComponentTextProperties).text).not.toContain(FILE_ID_TO_BE_REPLACED);
 		});
 	});
 

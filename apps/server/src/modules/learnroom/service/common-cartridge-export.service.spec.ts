@@ -1,18 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { CourseService } from '@modules/learnroom/service';
+import { CommonCartridgeExportService } from '@modules/learnroom/service/common-cartridge-export.service';
+import { LessonService } from '@modules/lesson/service';
+import { TaskService } from '@modules/task/service/task.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+	ComponentTextProperties,
 	ComponentType,
 	Course,
 	IComponentProperties,
-	IComponentTextProperties,
 	LessonEntity,
 	Task,
 } from '@shared/domain';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
-import { CommonCartridgeExportService } from '@modules/learnroom/service/common-cartridge-export.service';
-import { CourseService } from '@modules/learnroom/service';
-import { LessonService } from '@modules/lesson/service';
-import { TaskService } from '@modules/task/service/task.service';
 import AdmZip from 'adm-zip';
 import { CommonCartridgeVersion } from '../common-cartridge';
 
@@ -87,7 +87,7 @@ describe('CommonCartridgeExportService', () => {
 	describe('exportCourse', () => {
 		const setupExport = async (version: CommonCartridgeVersion) => {
 			const [lesson] = lessons;
-			const textContent = { text: 'Some random text' } as IComponentTextProperties;
+			const textContent = { text: 'Some random text' } as ComponentTextProperties;
 			const lessonContent: IComponentProperties = {
 				_id: 'random_id',
 				title: 'A random title',

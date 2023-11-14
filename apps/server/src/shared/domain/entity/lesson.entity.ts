@@ -28,7 +28,7 @@ export enum ComponentType {
 	NEXBOARD = 'neXboard',
 }
 
-export interface IComponentTextProperties {
+export interface ComponentTextProperties {
 	text: string;
 }
 
@@ -69,7 +69,7 @@ export type IComponentProperties = {
 	hidden: boolean;
 	user?: EntityId;
 } & (
-	| { component: ComponentType.TEXT; content: IComponentTextProperties }
+	| { component: ComponentType.TEXT; content: ComponentTextProperties }
 	| { component: ComponentType.ETHERPAD; content: IComponentEtherpadProperties }
 	| { component: ComponentType.GEOGEBRA; content: IComponentGeogebraProperties }
 	| { component: ComponentType.INTERNAL; content: IComponentInternalProperties }
