@@ -1,7 +1,7 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 
-export interface ITargetGroupProperties {
+export interface TargetGroupProperties {
 	state?: string;
 	schoolType?: string;
 	grade?: string;
@@ -20,7 +20,7 @@ export interface IMaterialProperties {
 	relatedResources: IRelatedResourceProperties[];
 	subjects: string[];
 	tags: string[];
-	targetGroups: ITargetGroupProperties[];
+	targetGroups: TargetGroupProperties[];
 	title: string;
 	url: string;
 }
@@ -49,7 +49,7 @@ export class Material extends BaseEntityWithTimestamps {
 	tags: string[] | [];
 
 	@Property()
-	targetGroups: ITargetGroupProperties[] | [];
+	targetGroups: TargetGroupProperties[] | [];
 
 	@Property()
 	title: string;
