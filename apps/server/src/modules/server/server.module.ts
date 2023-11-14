@@ -1,4 +1,8 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
+import { MailModule } from '@infra/mail';
+import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
+import { REDIS_CLIENT, RedisModule } from '@infra/redis';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
@@ -8,7 +12,6 @@ import { CollaborativeStorageModule } from '@modules/collaborative-storage';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
-import { LegacySchoolApiModule } from '@modules/legacy-school/legacy-school-api.module';
 import { LessonApiModule } from '@modules/lesson/lesson-api.module';
 import { MetaTagExtractorApiModule, MetaTagExtractorModule } from '@modules/meta-tag-extractor';
 import { NewsModule } from '@modules/news';
@@ -28,10 +31,6 @@ import { VideoConferenceApiModule } from '@modules/video-conference/video-confer
 import { DynamicModule, Inject, MiddlewareConsumer, Module, NestModule, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
-import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
-import { MailModule } from '@infra/mail';
-import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
-import { RedisModule, REDIS_CLIENT } from '@infra/redis';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';
@@ -68,7 +67,6 @@ const serverModules = [
 		adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	}),
-	LegacySchoolApiModule,
 	VideoConferenceApiModule,
 	OauthProviderApiModule,
 	SharingApiModule,
