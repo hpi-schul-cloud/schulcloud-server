@@ -37,7 +37,6 @@ export class TldrawWsService {
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
 		const redisUrl: string = this.configService.get<string>('REDIS_URI');
 		this.logger.log(`REDIS URL ${redisUrl}`);
-		console.log(`REDIS URL ${redisUrl}`);
 		this.mux = mutex.createMutex();
 		this.sub = new Redis(redisUrl);
 		this.pub = new Redis(redisUrl);
@@ -111,8 +110,6 @@ export class TldrawWsService {
 			]).then((result) => {
 				this.logger.log('Update handler redis response: ');
 				this.logger.log(result[0]);
-				console.log('Update handler redis response: ');
-				console.log(result[0]);
 				return null;
 			});
 
@@ -162,8 +159,6 @@ export class TldrawWsService {
 					const pubResponse = await this.pub.publishBuffer(doc.awarenessChannel, Buffer.from(update));
 					this.logger.log('Message handler awareness response: ');
 					this.logger.log(pubResponse);
-					console.log('Message handler awareness response: ');
-					console.log(pubResponse);
 					applyAwarenessUpdate(doc.awareness, update, conn);
 					break;
 				}
@@ -193,8 +188,6 @@ export class TldrawWsService {
 		const redisUpdates = await getDocUpdatesFromQueue(this.pub, doc);
 		this.logger.log('Setup WS Connection redis updates: ');
 		this.logger.log(redisUpdates);
-		console.log('Setup WS Connection redis updates: ');
-		console.log(redisUpdates);
 		const redisYDoc = new Doc();
 		redisYDoc.transact(() => {
 			for (const u of redisUpdates) {
