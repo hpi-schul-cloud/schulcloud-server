@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-
-import { Counted, EntityId, CourseGroup } from '@shared/domain';
+import { CourseGroup } from '@shared/domain/entity';
+import { Counted, EntityId } from '@shared/domain/types';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseRepo } from '../base.repo';
+import { BaseRepo } from '@shared/repo';
 
 @Injectable()
 export class CourseGroupRepo extends BaseRepo<CourseGroup> {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Counted, CourseGroup, EntityId } from '@shared/domain';
-import { CourseGroupRepo } from '@shared/repo';
+import { CourseGroupRepo } from '../repo';
 
 @Injectable()
 export class CourseGroupService {

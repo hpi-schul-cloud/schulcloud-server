@@ -3,12 +3,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain';
-import { CourseGroupRepo, CourseRepo, LessonRepo, SchoolExternalToolRepo, TeamsRepo, UserRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo, SchoolExternalToolRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { BoardDoAuthorizableService } from '@modules/board';
+import { ContextExternalToolAuthorizableService } from '@modules/tool';
 import { SubmissionRepo, TaskRepo } from '@modules/task/repo';
-import { ContextExternalToolAuthorizableService } from '@modules/tool/context-external-tool/service';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
+import { CourseGroupRepo } from '@modules/learnroom/repo';
 import { ReferenceLoader } from './reference.loader';
 import { AuthorizableReferenceType } from '../type';
 

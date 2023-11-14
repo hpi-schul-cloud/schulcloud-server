@@ -1,10 +1,11 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { CourseGroupRepo, CourseRepo, LessonRepo, SchoolExternalToolRepo, TeamsRepo, UserRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo, SchoolExternalToolRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { ToolModule } from '@modules/tool';
 import { LoggerModule } from '@src/core/logger';
 import { BoardModule } from '@modules/board';
 import { SubmissionRepo, TaskRepo } from '@modules/task/repo';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
+import { CourseGroupRepo } from '@modules/learnroom/repo';
 import { ReferenceLoader, AuthorizationReferenceService, AuthorizationHelper } from './domain';
 import { AuthorizationModule } from './authorization.module';
 

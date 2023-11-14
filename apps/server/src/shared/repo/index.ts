@@ -8,7 +8,6 @@ export * from './base.do.repo';
 export * from './base.repo';
 export * from './board';
 export * from './course';
-export * from './coursegroup';
 export * from './dashboard';
 export * from './importuser';
 export * from './lesson';

@@ -1,11 +1,12 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { BaseDO, EntityId } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { CourseGroupRepo, CourseRepo, LessonRepo, SchoolExternalToolRepo, TeamsRepo, UserRepo } from '@shared/repo';
-import { SubmissionRepo, TaskRepo } from '@modules/task/repo';
+import { CourseRepo, LessonRepo, SchoolExternalToolRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { BoardDoAuthorizableService } from '@modules/board';
-import { ContextExternalToolAuthorizableService } from '@modules/tool/context-external-tool/service';
+import { ContextExternalToolAuthorizableService } from '@modules/tool';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
+import { CourseGroupRepo } from '@modules/learnroom/repo';
+import { SubmissionRepo, TaskRepo } from '@modules/task/repo';
 import { AuthorizableReferenceType } from '../type';
 
 type RepoType =
