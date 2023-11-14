@@ -5,8 +5,10 @@ import { Request } from 'express';
 import request from 'supertest';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.module';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { DeletionRequestBodyProps, DeletionRequestResponse } from '../dto';
 import { DeletionDomainModel } from '../../domain/types/deletion-domain-model.enum';
+import { DeletionRequestEntity } from '../../entity';
 
 const baseRouteName = '/deletionRequests';
 
@@ -33,6 +35,7 @@ class API {
 
 describe(`deletionRequest create (api)`, () => {
 	let app: INestApplication;
+	let em: EntityManager;
 	let api: API;
 	const API_KEY = '1ab2c3d4e5f61ab2c3d4e5f6';
 
@@ -52,6 +55,7 @@ describe(`deletionRequest create (api)`, () => {
 
 		app = module.createNestApplication();
 		await app.init();
+		em = module.get(EntityManager);
 		api = new API(app);
 	});
 
@@ -65,10 +69,17 @@ describe(`deletionRequest create (api)`, () => {
 				domain: DeletionDomainModel.USER,
 				id: '653e4833cc39e5907a1e18d2',
 			},
-			deleteInMinutes: 1440,
 		};
 
-		return { deletionRequestToCreate };
+		const deletionRequestToImmediateRemoval: DeletionRequestBodyProps = {
+			targetRef: {
+				domain: DeletionDomainModel.USER,
+				id: '653e4833cc39e5907a1e18d2',
+			},
+			deleteInMinutes: 0,
+		};
+
+		return { deletionRequestToCreate, deletionRequestToImmediateRemoval };
 	};
 
 	describe('when create deletionRequest', () => {
@@ -86,6 +97,33 @@ describe(`deletionRequest create (api)`, () => {
 			const { result } = await api.post(deletionRequestToCreate);
 
 			expect(result.requestId).toBeDefined();
+		});
+
+		it('should create deletionRequest with default deletion time (add 43200 minutes to current time) ', async () => {
+			const { deletionRequestToCreate } = setup();
+
+			const { result } = await api.post(deletionRequestToCreate);
+
+			const createdDeletionRequestId = result.requestId;
+
+			const createdItem = await em.findOneOrFail(DeletionRequestEntity, createdDeletionRequestId);
+
+			const deletionPlannedAt = createdItem.createdAt;
+			deletionPlannedAt.setMinutes(deletionPlannedAt.getMinutes() + 43200);
+
+			expect(createdItem.deleteAfter).toEqual(deletionPlannedAt);
+		});
+
+		it('should create deletionRequest with deletion time (0 minutes to current time) ', async () => {
+			const { deletionRequestToImmediateRemoval } = setup();
+
+			const { result } = await api.post(deletionRequestToImmediateRemoval);
+
+			const createdDeletionRequestId = result.requestId;
+
+			const createdItem = await em.findOneOrFail(DeletionRequestEntity, createdDeletionRequestId);
+
+			expect(createdItem.createdAt).toEqual(createdItem.deleteAfter);
 		});
 	});
 });

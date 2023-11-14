@@ -57,7 +57,7 @@ describe(`deletionExecution (api)`, () => {
 		await app.close();
 	});
 
-	describe('when execute deletionRequests', () => {
+	describe('when execute deletionRequests with default limit', () => {
 		it('should return status 204', async () => {
 			const response = await api.post();
 
