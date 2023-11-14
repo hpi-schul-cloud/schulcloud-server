@@ -3,7 +3,7 @@ import { ExternalTool } from '../domain';
 import { CustomParameter } from '../../common/domain';
 
 @Injectable()
-export class ExternalToolVersionService {
+export class ExternalToolVersionIncrementService {
 	increaseVersionOfNewToolIfNecessary(oldTool: ExternalTool, newTool: ExternalTool): void {
 		if (!oldTool.parameters || !newTool.parameters) {
 			return;

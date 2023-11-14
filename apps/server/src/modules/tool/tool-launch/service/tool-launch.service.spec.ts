@@ -8,7 +8,6 @@ import {
 	schoolExternalToolFactory,
 } from '@shared/testing';
 import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
-import { CommonToolService } from '../../common/service';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { BasicToolConfig, ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
@@ -23,6 +22,7 @@ import {
 	OAuth2ToolLaunchStrategy,
 } from './launch-strategy';
 import { ToolLaunchService } from './tool-launch.service';
+import { ToolVersionService } from '../../context-external-tool/service/tool-version-service';
 
 describe('ToolLaunchService', () => {
 	let module: TestingModule;
@@ -31,7 +31,7 @@ describe('ToolLaunchService', () => {
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let basicToolLaunchStrategy: DeepMocked<BasicToolLaunchStrategy>;
-	let commonToolService: DeepMocked<CommonToolService>;
+	let toolVersionService: DeepMocked<ToolVersionService>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -58,8 +58,8 @@ describe('ToolLaunchService', () => {
 					useValue: createMock<OAuth2ToolLaunchStrategy>(),
 				},
 				{
-					provide: CommonToolService,
-					useValue: createMock<CommonToolService>(),
+					provide: ToolVersionService,
+					useValue: createMock<ToolVersionService>(),
 				},
 			],
 		}).compile();
@@ -68,7 +68,7 @@ describe('ToolLaunchService', () => {
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		externalToolService = module.get(ExternalToolService);
 		basicToolLaunchStrategy = module.get(BasicToolLaunchStrategy);
-		commonToolService = module.get(CommonToolService);
+		toolVersionService = module.get(ToolVersionService);
 	});
 
 	afterAll(async () => {
@@ -107,7 +107,7 @@ describe('ToolLaunchService', () => {
 				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
 				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
-				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.LATEST);
+				toolVersionService.determineToolConfigurationStatus.mockResolvedValueOnce(ToolConfigurationStatus.LATEST);
 
 				return {
 					launchDataDO,
@@ -146,6 +146,14 @@ describe('ToolLaunchService', () => {
 
 				expect(externalToolService.findById).toHaveBeenCalledWith(launchParams.schoolExternalTool.toolId);
 			});
+
+			it('should call toolVersionService', async () => {
+				const { launchParams } = setup();
+
+				await service.getLaunchData('userId', launchParams.contextExternalTool);
+
+				expect(toolVersionService.determineToolConfigurationStatus).toHaveBeenCalled();
+			});
 		});
 
 		describe('when the tool config type is unknown', () => {
@@ -165,7 +173,7 @@ describe('ToolLaunchService', () => {
 
 				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
-				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.LATEST);
+				toolVersionService.determineToolConfigurationStatus.mockResolvedValueOnce(ToolConfigurationStatus.LATEST);
 
 				return {
 					launchParams,
@@ -210,10 +218,9 @@ describe('ToolLaunchService', () => {
 				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
 				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
-				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.OUTDATED);
+				toolVersionService.determineToolConfigurationStatus.mockResolvedValueOnce(ToolConfigurationStatus.OUTDATED);
 
 				return {
-					launchDataDO,
 					launchParams,
 					userId,
 					contextExternalToolId: contextExternalTool.id as string,
