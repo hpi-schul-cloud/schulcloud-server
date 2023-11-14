@@ -38,10 +38,6 @@ export class MigrationCheckService {
 		return true;
 	}
 
-	private isMigrationDataValid(user: UserDO | null, userLoginMigration: UserLoginMigrationDO): boolean {
-		return !!user?.lastLoginSystemChange && !userLoginMigration.closedAt;
-	}
-
 	private isUserMigrated(user: UserDO | null, userLoginMigration: UserLoginMigrationDO): boolean {
 		return (
 			!!user && user.lastLoginSystemChange !== undefined && user.lastLoginSystemChange > userLoginMigration.startedAt

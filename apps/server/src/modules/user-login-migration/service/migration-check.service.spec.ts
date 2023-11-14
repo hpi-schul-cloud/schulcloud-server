@@ -44,7 +44,7 @@ describe('MigrationCheckService', () => {
 		await module.close();
 	});
 
-	describe('shouldUserMigrate is called', () => {
+	describe('shouldUserMigrate', () => {
 		describe('when no school with the official school number was found', () => {
 			const setup = () => {
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(null);
