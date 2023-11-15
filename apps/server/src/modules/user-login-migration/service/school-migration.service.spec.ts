@@ -9,7 +9,7 @@ import { legacySchoolDoFactory, setupEntities, userDoFactory, userLoginMigration
 import { LegacyLogger, Logger } from '@src/core/logger';
 import {
 	SchoolMigrationDatabaseOperationFailedLoggableException,
-	SchoolNumberMismatchLoggableException
+	SchoolNumberMismatchLoggableException,
 } from '../loggable';
 import { SchoolMigrationService } from './school-migration.service';
 
@@ -75,19 +75,8 @@ describe(SchoolMigrationService.name, () => {
 					externalId: 'firstExternalId',
 					systems: undefined,
 				});
-<<<<<<< HEAD
-
-				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
-
-				const currentUser: CurrentUserInterface = {
-					userId: userDO.id,
-					schoolId: userDO.schoolId,
-					systemId: 'systemId',
-				} as CurrentUserInterface;
-=======
 				const targetSystemId = 'targetSystemId';
 				const targetExternalId = 'targetExternalId';
->>>>>>> main
 
 				return {
 					school,
