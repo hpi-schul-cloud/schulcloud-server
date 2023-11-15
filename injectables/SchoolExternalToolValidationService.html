@@ -204,8 +204,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -343,8 +343,8 @@ import { ValidationError } from &#x27;@shared/common&#x27;;
 import { CommonToolValidationService } from &#x27;../../common/service&#x27;;
 import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
 import { ExternalToolService } from &#x27;../../external-tool/service&#x27;;
-import { SchoolExternalTool } from &#x27;../domain&#x27;;
 import { IToolFeatures, ToolFeatures } from &#x27;../../tool-config&#x27;;
+import { SchoolExternalTool } from &#x27;../domain&#x27;;
 
 @Injectable()
 export class SchoolExternalToolValidationService {
@@ -355,13 +355,12 @@ export class SchoolExternalToolValidationService {
 	) {}
 
 	async validate(schoolExternalTool: SchoolExternalTool): Promise&lt;void&gt; {
-		this.commonToolValidationService.checkForDuplicateParameters(schoolExternalTool);
-
 		const loadedExternalTool: ExternalTool &#x3D; await this.externalToolService.findById(schoolExternalTool.toolId);
 
 		if (!this.toolFeatures.toolStatusWithoutVersions) {
 			this.checkVersionMatch(schoolExternalTool.toolVersion, loadedExternalTool.version);
 		}
+
 		this.commonToolValidationService.checkCustomParameterEntries(loadedExternalTool, schoolExternalTool);
 	}
 

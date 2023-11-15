@@ -87,7 +87,7 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#checkDuplicateInContext" >checkDuplicateInContext</a>
+                                <a href="#checkDuplicateUsesInContext" >checkDuplicateUsesInContext</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -199,19 +199,19 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="checkDuplicateInContext"></a>
+                    <a name="checkDuplicateUsesInContext"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
-                        <span ><b>checkDuplicateInContext</b></span>
-                        <a href="#checkDuplicateInContext"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>checkDuplicateUsesInContext</b></span>
+                        <a href="#checkDuplicateUsesInContext"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkDuplicateInContext(contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
+                    <code>checkDuplicateUsesInContext(contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -360,7 +360,7 @@ export class ContextExternalToolValidationService {
 	) {}
 
 	async validate(contextExternalTool: ContextExternalTool): Promise&lt;void&gt; {
-		await this.checkDuplicateInContext(contextExternalTool);
+		await this.checkDuplicateUsesInContext(contextExternalTool);
 
 		const loadedSchoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolService.findById(
 			contextExternalTool.schoolToolRef.schoolToolId
@@ -371,7 +371,7 @@ export class ContextExternalToolValidationService {
 		this.commonToolValidationService.checkCustomParameterEntries(loadedExternalTool, contextExternalTool);
 	}
 
-	private async checkDuplicateInContext(contextExternalTool: ContextExternalTool) {
+	private async checkDuplicateUsesInContext(contextExternalTool: ContextExternalTool) {
 		let duplicate: ContextExternalTool[] &#x3D; await this.contextExternalToolService.findContextExternalTools({
 			schoolToolRef: contextExternalTool.schoolToolRef,
 			context: contextExternalTool.contextRef,
