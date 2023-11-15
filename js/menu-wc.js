@@ -761,6 +761,29 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                             </li>
                             <li class="link">
+                                <a href="modules/DeletionConsoleModule.html" data-type="entity-link" >DeletionConsoleModule</a>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                        'data-bs-target="#injectables-links-module-DeletionConsoleModule-05c88f88c8569d90c91b9e80e6ce1984646f406f46a02fff968aea357b52885c2d9bca00bf9728c001b126d24dbe1a475b64f92a8749f3a6e417510aad4966ac"' : 'data-bs-target="#xs-injectables-links-module-DeletionConsoleModule-05c88f88c8569d90c91b9e80e6ce1984646f406f46a02fff968aea357b52885c2d9bca00bf9728c001b126d24dbe1a475b64f92a8749f3a6e417510aad4966ac"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-DeletionConsoleModule-05c88f88c8569d90c91b9e80e6ce1984646f406f46a02fff968aea357b52885c2d9bca00bf9728c001b126d24dbe1a475b64f92a8749f3a6e417510aad4966ac"' :
+                                        'id="xs-injectables-links-module-DeletionConsoleModule-05c88f88c8569d90c91b9e80e6ce1984646f406f46a02fff968aea357b52885c2d9bca00bf9728c001b126d24dbe1a475b64f92a8749f3a6e417510aad4966ac"' }>
+                                        <li class="link">
+                                            <a href="injectables/BatchDeletionService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BatchDeletionService</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/BatchDeletionUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BatchDeletionUc</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/DeletionClient.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >DeletionClient</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </li>
+                            <li class="link">
                                 <a href="modules/DeletionModule.html" data-type="entity-link" >DeletionModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
@@ -3036,6 +3059,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/BasicToolConfigResponse.html" data-type="entity-link" >BasicToolConfigResponse</a>
                             </li>
                             <li class="link">
+                                <a href="classes/BatchDeletionSummaryBuilder.html" data-type="entity-link" >BatchDeletionSummaryBuilder</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/BatchDeletionSummaryDetailBuilder.html" data-type="entity-link" >BatchDeletionSummaryDetailBuilder</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/BBBBaseMeetingConfig.html" data-type="entity-link" >BBBBaseMeetingConfig</a>
                             </li>
                             <li class="link">
@@ -3429,6 +3458,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/DeletionLogStatisticBuilder.html" data-type="entity-link" >DeletionLogStatisticBuilder</a>
                             </li>
                             <li class="link">
+                                <a href="classes/DeletionQueueConsole.html" data-type="entity-link" >DeletionQueueConsole</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/DeletionRequest.html" data-type="entity-link" >DeletionRequest</a>
                             </li>
                             <li class="link">
@@ -3438,13 +3470,22 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/DeletionRequestFactory.html" data-type="entity-link" >DeletionRequestFactory</a>
                             </li>
                             <li class="link">
+                                <a href="classes/DeletionRequestInputBuilder.html" data-type="entity-link" >DeletionRequestInputBuilder</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/DeletionRequestLogBuilder.html" data-type="entity-link" >DeletionRequestLogBuilder</a>
                             </li>
                             <li class="link">
                                 <a href="classes/DeletionRequestMapper.html" data-type="entity-link" >DeletionRequestMapper</a>
                             </li>
                             <li class="link">
+                                <a href="classes/DeletionRequestOutputBuilder.html" data-type="entity-link" >DeletionRequestOutputBuilder</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/DeletionRequestScope.html" data-type="entity-link" >DeletionRequestScope</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/DeletionRequestTargetRefInputBuilder.html" data-type="entity-link" >DeletionRequestTargetRefInputBuilder</a>
                             </li>
                             <li class="link">
                                 <a href="classes/DeletionTargetRefBuilder.html" data-type="entity-link" >DeletionTargetRefBuilder</a>
@@ -4215,6 +4256,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/PublicSystemResponse.html" data-type="entity-link" >PublicSystemResponse</a>
                             </li>
                             <li class="link">
+                                <a href="classes/PushDeleteRequestsOptionsBuilder.html" data-type="entity-link" >PushDeleteRequestsOptionsBuilder</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/QueueDeletionRequestInputBuilder.html" data-type="entity-link" >QueueDeletionRequestInputBuilder</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/QueueDeletionRequestOutputBuilder.html" data-type="entity-link" >QueueDeletionRequestOutputBuilder</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ReadableStreamWithFileTypeImp.html" data-type="entity-link" >ReadableStreamWithFileTypeImp</a>
                             </li>
                             <li class="link">
@@ -4225,6 +4275,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/RedirectResponse.html" data-type="entity-link" >RedirectResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ReferencesService.html" data-type="entity-link" >ReferencesService</a>
                             </li>
                             <li class="link">
                                 <a href="classes/RenameBodyParams.html" data-type="entity-link" >RenameBodyParams</a>
@@ -4930,6 +4983,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/BasicToolLaunchStrategy.html" data-type="entity-link" >BasicToolLaunchStrategy</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/BatchDeletionService.html" data-type="entity-link" >BatchDeletionService</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/BatchDeletionUc.html" data-type="entity-link" >BatchDeletionUc</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/BBBService.html" data-type="entity-link" >BBBService</a>
                                 </li>
                                 <li class="link">
@@ -5075,6 +5134,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/DeleteFilesUc.html" data-type="entity-link" >DeleteFilesUc</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/DeletionClient.html" data-type="entity-link" >DeletionClient</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/DeletionLogRepo.html" data-type="entity-link" >DeletionLogRepo</a>
@@ -5597,6 +5659,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/BaseResponseMapper.html" data-type="entity-link" >BaseResponseMapper</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/BatchDeletionSummary.html" data-type="entity-link" >BatchDeletionSummary</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/BatchDeletionSummaryDetail.html" data-type="entity-link" >BatchDeletionSummaryDetail</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/BBBBaseResponse.html" data-type="entity-link" >BBBBaseResponse</a>
                             </li>
                             <li class="link">
@@ -5675,6 +5743,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/DashboardGridElementModelProperties.html" data-type="entity-link" >DashboardGridElementModelProperties</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/DeletionClientConfig.html" data-type="entity-link" >DeletionClientConfig</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/DeletionLogEntityProps.html" data-type="entity-link" >DeletionLogEntityProps</a>
                             </li>
                             <li class="link">
@@ -5690,13 +5761,22 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/DeletionRequestEntityProps.html" data-type="entity-link" >DeletionRequestEntityProps</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/DeletionRequestInput.html" data-type="entity-link" >DeletionRequestInput</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/DeletionRequestLog.html" data-type="entity-link" >DeletionRequestLog</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/DeletionRequestOutput.html" data-type="entity-link" >DeletionRequestOutput</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/DeletionRequestProps.html" data-type="entity-link" >DeletionRequestProps</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/DeletionRequestProps-1.html" data-type="entity-link" >DeletionRequestProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/DeletionRequestTargetRefInput.html" data-type="entity-link" >DeletionRequestTargetRefInput</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/DeletionTargetRef.html" data-type="entity-link" >DeletionTargetRef</a>
@@ -6213,6 +6293,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/PseudonymSearchQuery.html" data-type="entity-link" >PseudonymSearchQuery</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/PushDeletionRequestsOptions.html" data-type="entity-link" >PushDeletionRequestsOptions</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/QueueDeletionRequestInput.html" data-type="entity-link" >QueueDeletionRequestInput</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/QueueDeletionRequestOutput.html" data-type="entity-link" >QueueDeletionRequestOutput</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/RejectRequestBody.html" data-type="entity-link" >RejectRequestBody</a>

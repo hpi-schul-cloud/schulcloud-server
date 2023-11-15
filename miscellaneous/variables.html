@@ -385,6 +385,9 @@
                             <a href="#getAPIResponseTimeMetricLabels" title="apps/server/src/infra/metrics/prometheus/middleware.ts" ><b>getAPIResponseTimeMetricLabels</b>&nbsp;&nbsp;&nbsp;(apps/.../middleware.ts)</a>
                         </li>
                         <li>
+                            <a href="#getDeletionClientConfig" title="apps/server/src/modules/deletion/client/deletion-client.config.ts" ><b>getDeletionClientConfig</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-client.config.ts)</a>
+                        </li>
+                        <li>
                             <a href="#getSanitizeHtmlOptions" title="apps/server/src/shared/controller/transformer/sanitize-html.transformer.ts" ><b>getSanitizeHtmlOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../sanitize-html.transformer.ts)</a>
                         </li>
                         <li>
@@ -6075,6 +6078,34 @@ it should ensure an empty result</p>
 
 	const dashboard &#x3D; new DashboardEntity(new ObjectId().toString(), { grid: gridArray, userId });
 	return dashboard;
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/deletion/client/deletion-client.config.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getDeletionClientConfig"></a>
+                    <span class="name">
+                        <span ><b>getDeletionClientConfig</b></span>
+                        <a href="#getDeletionClientConfig"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>(): DeletionClientConfig &#x3D;&gt; {
+	return {
+		ADMIN_API_CLIENT_BASE_URL: Configuration.get(&#x27;ADMIN_API_CLIENT__BASE_URL&#x27;) as string,
+		ADMIN_API_CLIENT_API_KEY: Configuration.get(&#x27;ADMIN_API_CLIENT__API_KEY&#x27;) as string,
+	};
 }</code>
                     </td>
                 </tr>
