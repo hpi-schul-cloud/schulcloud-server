@@ -20,13 +20,10 @@ const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConf
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
-			// TODO add mongoose options as mongo options (see database.js)
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
 			entities: ALL_ENTITIES,
-
-			// debug: true, // use it for locally debugging of queries
 		}),
 		LoggerModule,
 	],
