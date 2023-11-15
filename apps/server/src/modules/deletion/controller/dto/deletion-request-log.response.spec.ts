@@ -1,4 +1,4 @@
-import { DeletionDomainModel } from '../../domain/types';
+import { DeletionDomainModel } from '../../domain/types/deletion-domain-model.enum';
 import { DeletionLogStatisticBuilder } from '../../uc/builder/deletion-log-statistic.builder';
 import { DeletionTargetRefBuilder } from '../../uc/builder/deletion-target-ref.builder';
 import { DeletionRequestLogResponse } from './deletion-request-log.response';

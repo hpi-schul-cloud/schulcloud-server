@@ -1,7 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
-import { DeletionStatusModel, DeletionDomainModel } from '../../../domain/types';
+import { DeletionStatusModel } from '../../../domain/types/deletion-status-model.enum';
 import { DeletionRequestEntity, DeletionRequestEntityProps } from '../../deletion-request.entity';
+import { DeletionDomainModel } from '../../../domain/types/deletion-domain-model.enum';
 
 export const deletionRequestEntityFactory = BaseFactory.define<DeletionRequestEntity, DeletionRequestEntityProps>(
 	DeletionRequestEntity,

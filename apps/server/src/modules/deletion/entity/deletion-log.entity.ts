@@ -2,7 +2,8 @@ import { Entity, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
-import { DeletionDomainModel, DeletionOperationModel } from '../domain/types';
+import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
+import { DeletionOperationModel } from '../domain/types/deletion-operation-model.enum';
 
 export interface DeletionLogEntityProps {
 	id?: EntityId;

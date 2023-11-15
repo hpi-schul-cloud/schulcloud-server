@@ -11,11 +11,12 @@ import { TeamService } from '@modules/teams';
 import { UserService } from '@modules/user';
 import { RocketChatService } from '@modules/rocketchat';
 import { RocketChatUser, RocketChatUserService, rocketChatUserFactory } from '@modules/rocketchat-user';
-import { DeletionDomainModel, DeletionStatusModel } from '../domain/types';
+import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
 import { DeletionRequestUc } from './deletion-request.uc';
 import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
+import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
 import { deletionLogFactory } from '../domain/testing/factory/deletion-log.factory';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse } from '../controller/dto';
 

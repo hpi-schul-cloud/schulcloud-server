@@ -3,7 +3,8 @@ import { EntityId } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionLogRepo } from '../repo';
 import { DeletionLog } from '../domain/deletion-log.do';
-import { DeletionDomainModel, DeletionOperationModel } from '../domain/types';
+import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
+import { DeletionOperationModel } from '../domain/types/deletion-operation-model.enum';
 
 @Injectable()
 export class DeletionLogService {

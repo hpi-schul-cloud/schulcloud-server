@@ -3,7 +3,8 @@ import { EntityId } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionRequestRepo } from '../repo/deletion-request.repo';
 import { DeletionRequest } from '../domain/deletion-request.do';
-import { DeletionDomainModel, DeletionStatusModel } from '../domain/types';
+import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
+import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
 
 @Injectable()
 export class DeletionRequestService {

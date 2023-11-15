@@ -1,5 +1,5 @@
 import { EntityId } from '@shared/domain';
-import { DeletionDomainModel } from '../../domain/types';
+import { DeletionDomainModel } from '../../domain/types/deletion-domain-model.enum';
 
 export interface DeletionTargetRef {
 	domain: DeletionDomainModel;

@@ -1,6 +1,6 @@
 import { Scope } from '@shared/repo';
 import { DeletionRequestEntity } from '../entity';
-import { DeletionStatusModel } from '../domain/types';
+import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
 
 export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 	byDeleteAfter(currentDate: Date): DeletionRequestScope {

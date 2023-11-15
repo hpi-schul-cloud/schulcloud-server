@@ -7,7 +7,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.module';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { DeletionRequestBodyProps, DeletionRequestResponse } from '../dto';
-import { DeletionDomainModel } from '../../domain/types';
+import { DeletionDomainModel } from '../../domain/types/deletion-domain-model.enum';
 import { DeletionRequestEntity } from '../../entity';
 
 const baseRouteName = '/deletionRequests';
