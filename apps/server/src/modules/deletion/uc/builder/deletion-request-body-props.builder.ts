@@ -3,7 +3,7 @@ import { DeletionDomainModel } from '../../domain/types/deletion-domain-model.en
 import { DeletionRequestBodyProps } from '../../controller/dto';
 
 export class DeletionRequestBodyPropsBuilder {
-	static build(domain: DeletionDomainModel, id: EntityId, deleteInMinutes: number): DeletionRequestBodyProps {
+	static build(domain: DeletionDomainModel, id: EntityId, deleteInMinutes?: number): DeletionRequestBodyProps {
 		const deletionRequest = {
 			targetRef: { domain, id },
 			deleteInMinutes,
