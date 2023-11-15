@@ -7,6 +7,7 @@ export class UserLoginMigrationMapper {
 		const query: UserLoginMigrationQuery = {
 			userId: searchParams.userId,
 		};
+
 		return query;
 	}
 
@@ -20,6 +21,7 @@ export class UserLoginMigrationMapper {
 			finishedAt: domainObject.finishedAt,
 			mandatorySince: domainObject.mandatorySince,
 		});
+
 		return response;
 	}
 }

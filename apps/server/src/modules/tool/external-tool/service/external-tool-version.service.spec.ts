@@ -1,14 +1,14 @@
 import { customParameterFactory, externalToolFactory } from '@shared/testing/factory/domainobject/tool';
-import { ExternalToolVersionService } from './external-tool-version.service';
+import { ExternalToolVersionIncrementService } from './external-tool-version-increment.service';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../common/enum';
 import { CustomParameter } from '../../common/domain';
 import { ExternalTool } from '../domain';
 
 describe('ExternalToolVersionService', () => {
-	let service: ExternalToolVersionService;
+	let service: ExternalToolVersionIncrementService;
 
 	beforeEach(() => {
-		service = new ExternalToolVersionService();
+		service = new ExternalToolVersionIncrementService();
 	});
 
 	const setup = () => {
