@@ -21,13 +21,6 @@ export class CommonToolValidationService {
 		[CustomParameterType.AUTO_SCHOOLNUMBER]: () => false,
 	};
 
-	private getValidationScope(validatableTool: ValidatableTool): CustomParameterScope {
-		if (validatableTool instanceof SchoolExternalTool) {
-			return CustomParameterScope.SCHOOL;
-		}
-		return CustomParameterScope.CONTEXT;
-	}
-
 	public isValueValidForType(type: CustomParameterType, val: string): boolean {
 		const rule = CommonToolValidationService.typeCheckers[type];
 
