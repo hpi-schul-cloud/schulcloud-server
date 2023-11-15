@@ -10,7 +10,7 @@ export enum SortOrder {
 
 export type SortOrderMap<T> = Partial<Record<keyof T, SortOrder>>;
 
-export interface FindOptions<T> {
+export interface IFindOptions<T> {
 	pagination?: Pagination;
 	order?: SortOrderMap<T>;
 }

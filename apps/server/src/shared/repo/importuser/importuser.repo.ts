@@ -5,7 +5,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	Counted,
 	EntityId,
-	FindOptions,
+	IFindOptions,
 	ImportUser,
 	ImportUserScopeInterface,
 	SchoolEntity,
@@ -42,7 +42,7 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 	async findImportUsers(
 		school: SchoolEntity,
 		filters: ImportUserScopeInterface = {},
-		options?: FindOptions<ImportUser>
+		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
 		const scope = new ImportUserScope();
 		scope.bySchool(school);
@@ -59,7 +59,7 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 
 	private async findImportUsersAndCount(
 		query: FilterQuery<ImportUser>,
-		options?: FindOptions<ImportUser>
+		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
 		const { pagination, order } = options || {};
 		const queryOptions = {

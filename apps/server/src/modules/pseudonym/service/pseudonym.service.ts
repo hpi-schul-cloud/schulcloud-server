@@ -1,8 +1,8 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { FindOptions, LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain';
+import { IFindOptions, LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { v4 as uuidv4 } from 'uuid';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
@@ -123,7 +123,7 @@ export class PseudonymService {
 		return result;
 	}
 
-	async findPseudonym(query: PseudonymSearchQuery, options: FindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
+	async findPseudonym(query: PseudonymSearchQuery, options: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
 		const result: Page<Pseudonym> = await this.externalToolPseudonymRepo.findPseudonym(query, options);
 
 		return result;

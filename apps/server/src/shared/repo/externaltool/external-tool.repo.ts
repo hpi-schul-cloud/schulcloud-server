@@ -5,7 +5,7 @@ import { ExternalToolSearchQuery } from '@modules/tool/common/interface';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolEntity, IExternalToolProperties } from '@modules/tool/external-tool/entity';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { FindOptions, Page, Pagination, SortOrder } from '@shared/domain';
+import { IFindOptions, Page, Pagination, SortOrder } from '@shared/domain';
 import { BaseDORepo, ExternalToolRepoMapper, ExternalToolSortingMapper, Scope } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolScope } from './external-tool.scope';
@@ -51,7 +51,7 @@ export class ExternalToolRepo extends BaseDORepo<ExternalTool, ExternalToolEntit
 		return null;
 	}
 
-	async find(query: ExternalToolSearchQuery, options?: FindOptions<ExternalTool>): Promise<Page<ExternalTool>> {
+	async find(query: ExternalToolSearchQuery, options?: IFindOptions<ExternalTool>): Promise<Page<ExternalTool>> {
 		const pagination: Pagination = options?.pagination || {};
 		const order: QueryOrderMap<ExternalToolEntity> = ExternalToolSortingMapper.mapDOSortOrderToQueryOrder(
 			options?.order || {}

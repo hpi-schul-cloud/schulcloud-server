@@ -1,7 +1,7 @@
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
-import { Counted, Course, EntityId, FindOptions } from '@shared/domain';
+import { Counted, Course, EntityId, IFindOptions } from '@shared/domain';
 import { BaseRepo } from '../base.repo';
 import { Scope } from '../scope';
 
@@ -71,7 +71,7 @@ export class CourseRepo extends BaseRepo<Course> {
 	async findAllByUserId(
 		userId: EntityId,
 		filters?: { onlyActiveCourses?: boolean },
-		options?: FindOptions<Course>
+		options?: IFindOptions<Course>
 	): Promise<Counted<Course[]>> {
 		const scope = new CourseScope();
 		scope.forAllGroupTypes(userId);
@@ -95,7 +95,7 @@ export class CourseRepo extends BaseRepo<Course> {
 	async findAllForTeacher(
 		userId: EntityId,
 		filters?: { onlyActiveCourses?: boolean },
-		options?: FindOptions<Course>
+		options?: IFindOptions<Course>
 	): Promise<Counted<Course[]>> {
 		const scope = new CourseScope();
 		scope.forTeacher(userId);

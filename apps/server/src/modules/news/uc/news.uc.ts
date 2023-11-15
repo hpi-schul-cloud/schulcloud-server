@@ -4,7 +4,7 @@ import {
 	Counted,
 	CreateNews,
 	EntityId,
-	FindOptions,
+	IFindOptions,
 	IUpdateNews,
 	News,
 	NewsScopeInterface,
@@ -67,7 +67,7 @@ export class NewsUc {
 	public async findAllForUser(
 		userId: EntityId,
 		scope?: NewsScopeInterface,
-		options?: FindOptions<News>
+		options?: IFindOptions<News>
 	): Promise<Counted<News[]>> {
 		const unpublished = !!scope?.unpublished; // default is only published news
 		const permissions: [NewsPermission] = NewsUc.getRequiredPermissions(unpublished);

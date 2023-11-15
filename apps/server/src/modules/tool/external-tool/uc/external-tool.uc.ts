@@ -1,6 +1,6 @@
-import { AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
-import { EntityId, FindOptions, Page, Permission, User } from '@shared/domain';
+import { EntityId, IFindOptions, Page, Permission, User } from '@shared/domain';
+import { AuthorizationService } from '@modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalTool, ExternalToolConfig } from '../domain';
 import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
@@ -52,7 +52,7 @@ export class ExternalToolUc {
 	async findExternalTool(
 		userId: EntityId,
 		query: ExternalToolSearchQuery,
-		options: FindOptions<ExternalTool>
+		options: IFindOptions<ExternalTool>
 	): Promise<Page<ExternalTool>> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 

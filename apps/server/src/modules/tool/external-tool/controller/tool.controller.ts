@@ -13,7 +13,7 @@ import {
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
-import { FindOptions, Page } from '@shared/domain';
+import { IFindOptions, Page } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { Response } from 'express';
 import { ExternalToolSearchQuery } from '../../common/interface';
@@ -76,7 +76,7 @@ export class ToolController {
 		@Query() pagination: PaginationParams,
 		@Query() sortingQuery: SortExternalToolParams
 	): Promise<ExternalToolSearchListResponse> {
-		const options: FindOptions<ExternalTool> = { pagination };
+		const options: IFindOptions<ExternalTool> = { pagination };
 		options.order = this.externalToolDOMapper.mapSortingQueryToDomain(sortingQuery);
 		const query: ExternalToolSearchQuery =
 			this.externalToolDOMapper.mapExternalToolFilterQueryToExternalToolSearchQuery(filterQuery);

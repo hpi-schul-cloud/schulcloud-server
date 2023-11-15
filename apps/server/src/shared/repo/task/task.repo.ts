@@ -1,7 +1,7 @@
 import { FilterQuery } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { Task } from '@shared/domain/entity';
-import { FindOptions, SortOrder } from '@shared/domain/interface';
+import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '../base.repo';
 import { TaskScope } from './task-scope';
@@ -43,7 +43,7 @@ export class TaskRepo extends BaseRepo<Task> {
 			finishedCourseIds: EntityId[];
 			lessonIdsOfFinishedCourses: EntityId[];
 		},
-		options?: FindOptions<Task>
+		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		const scope = new TaskScope('$or');
 
@@ -114,7 +114,7 @@ export class TaskRepo extends BaseRepo<Task> {
 			finished?: { userId: EntityId; value: boolean };
 			availableOn?: Date;
 		},
-		options?: FindOptions<Task>
+		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		const scope = new TaskScope();
 
@@ -165,7 +165,7 @@ export class TaskRepo extends BaseRepo<Task> {
 		creatorId: EntityId,
 		courseId: EntityId,
 		filters?: { draft?: boolean; noFutureAvailableDate?: boolean },
-		options?: FindOptions<Task>
+		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		const scope = new TaskScope();
 		scope.byCourseIds([courseId]);
@@ -187,7 +187,7 @@ export class TaskRepo extends BaseRepo<Task> {
 		return countedTaskList;
 	}
 
-	private async findTasksAndCount(query: FilterQuery<Task>, options?: FindOptions<Task>): Promise<Counted<Task[]>> {
+	private async findTasksAndCount(query: FilterQuery<Task>, options?: IFindOptions<Task>): Promise<Counted<Task[]>> {
 		const pagination = options?.pagination || {};
 		const order = options?.order || {};
 

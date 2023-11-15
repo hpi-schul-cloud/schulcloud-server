@@ -9,7 +9,7 @@ import {
 	Account,
 	Counted,
 	EntityId,
-	FindOptions,
+	IFindOptions,
 	ImportUser,
 	ImportUserScopeInterface,
 	LegacySchoolDo,
@@ -19,7 +19,7 @@ import {
 	Permission,
 	SchoolFeatures,
 	SystemEntity,
-	User,
+	User
 } from '@shared/domain';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
@@ -30,12 +30,12 @@ import {
 	SchoolIdDoesNotMatchWithUserSchoolId,
 	SchoolInUserMigrationEndLoggable,
 	SchoolInUserMigrationStartLoggable,
-	UserMigrationIsNotEnabled,
+	UserMigrationIsNotEnabled
 } from '../loggable';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
-	MissingSchoolNumberException,
+	MissingSchoolNumberException
 } from './ldap-user-migration.error';
 
 export type UserImportPermissions =
@@ -75,8 +75,13 @@ export class UserImportUc {
 	 */
 	async findAllImportUsers(
 		currentUserId: EntityId,
+<<<<<<< HEAD
 		query: ImportUserScopeInterface,
 		options?: FindOptions<ImportUser>
+=======
+		query: IImportUserScope,
+		options?: IFindOptions<ImportUser>
+>>>>>>> parent of 3ad7af309 (IFindOptions -> FindOptions)
 	): Promise<Counted<ImportUser[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
@@ -164,8 +169,13 @@ export class UserImportUc {
 	 */
 	async findAllUnmatchedUsers(
 		currentUserId: EntityId,
+<<<<<<< HEAD
 		query: NameMatch,
 		options?: FindOptions<User>
+=======
+		query: INameMatch,
+		options?: IFindOptions<User>
+>>>>>>> parent of 3ad7af309 (IFindOptions -> FindOptions)
 	): Promise<Counted<User[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
@@ -181,7 +191,7 @@ export class UserImportUc {
 		this.checkFeatureEnabled(school);
 		const filters: ImportUserScopeInterface = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
 		// TODO batch/paginated import?
-		const options: FindOptions<ImportUser> = {};
+		const options: IFindOptions<ImportUser> = {};
 		// TODO Change ImportUserRepo to DO to fix this workaround
 		const [importUsers, total] = await this.importUserRepo.findImportUsers(currentUser.school, filters, options);
 		let migratedUser = 0;

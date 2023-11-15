@@ -1,7 +1,7 @@
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
-import { Counted, EntityId, FindOptions, Task } from '@shared/domain';
+import { Counted, EntityId, IFindOptions, Task } from '@shared/domain';
 import { TaskRepo } from '@shared/repo';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { SubmissionService } from './submission.service';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class TaskService {
 		creatorId: EntityId,
 		courseId: EntityId,
 		filters?: { draft?: boolean; noFutureAvailableDate?: boolean },
-		options?: FindOptions<Task>
+		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		return this.taskRepo.findBySingleParent(creatorId, courseId, filters, options);
 	}

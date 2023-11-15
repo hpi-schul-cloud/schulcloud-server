@@ -1,6 +1,11 @@
 import { createMock } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
+import { IFindOptions, Page, SortOrder } from '@shared/domain';
+import { MongoMemoryDatabaseModule } from '@infra/database';
+import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
+import { cleanupCollections, externalToolEntityFactory } from '@shared/testing';
+import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchQuery } from '@modules/tool';
 import { CustomParameter } from '@modules/tool/common/domain';
 import {
@@ -13,11 +18,6 @@ import {
 } from '@modules/tool/common/enum';
 import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
-import { Test, TestingModule } from '@nestjs/testing';
-import { FindOptions, Page, SortOrder } from '@shared/domain';
-import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
-import { cleanupCollections, externalToolEntityFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
 
 describe('ExternalToolRepo', () => {
 	let module: TestingModule;
@@ -218,7 +218,7 @@ describe('ExternalToolRepo', () => {
 			const { queryExternalToolDO } = await setup();
 			queryExternalToolDO.name = '.';
 
-			const options: FindOptions<ExternalTool> = {};
+			const options: IFindOptions<ExternalTool> = {};
 
 			await em.nativeDelete(ExternalToolEntity, {});
 			const ltiToolA: ExternalToolEntity = externalToolEntityFactory.withName('A').buildWithId();

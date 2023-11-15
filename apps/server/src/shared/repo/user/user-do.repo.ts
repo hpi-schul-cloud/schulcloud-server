@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import {
 	EntityId,
-	FindOptions,
+	IFindOptions,
 	Pagination,
 	Role,
 	SchoolEntity,
@@ -30,7 +30,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, UserProperties> {
 		return new User(props);
 	}
 
-	async find(query: UserQuery, options?: FindOptions<UserDO>) {
+	async find(query: UserQuery, options?: IFindOptions<UserDO>) {
 		const pagination: Pagination = options?.pagination || {};
 		const order: QueryOrderMap<User> = this.createQueryOrderMap(options?.order || {});
 		const scope: Scope<User> = new UserScope()

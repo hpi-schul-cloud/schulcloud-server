@@ -2,7 +2,7 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { OauthProviderService } from '@infra/oauth-provider';
 import { ProviderOauthClient } from '@infra/oauth-provider/dto';
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, FindOptions, Page } from '@shared/domain';
+import { EntityId, IFindOptions, Page } from '@shared/domain';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { TokenEndpointAuthMethod } from '../../common/enum';
@@ -50,7 +50,7 @@ export class ExternalToolService {
 
 	async findExternalTools(
 		query: ExternalToolSearchQuery,
-		options?: FindOptions<ExternalTool>
+		options?: IFindOptions<ExternalTool>
 	): Promise<Page<ExternalTool>> {
 		const tools: Page<ExternalTool> = await this.externalToolRepo.find(query, options);
 

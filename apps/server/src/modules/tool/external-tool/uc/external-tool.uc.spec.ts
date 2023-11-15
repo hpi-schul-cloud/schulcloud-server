@@ -3,7 +3,7 @@ import { CurrentUserInterface } from '@modules/authentication';
 import { AuthorizationService } from '@modules/authorization';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FindOptions, Permission, SortOrder, User } from '@shared/domain';
+import { IFindOptions, Permission, SortOrder, User } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { setupEntities, userFactory } from '@shared/testing';
 import {
@@ -87,7 +87,7 @@ describe('ExternalToolUc', () => {
 		const query: ExternalToolSearchQuery = {
 			name: externalTool.name,
 		};
-		const options: FindOptions<ExternalTool> = {
+		const options: IFindOptions<ExternalTool> = {
 			order: {
 				id: SortOrder.asc,
 				name: SortOrder.asc,

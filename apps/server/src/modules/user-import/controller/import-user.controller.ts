@@ -2,7 +2,7 @@ import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authen
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller';
-import { FindOptions, ImportUser, User } from '@shared/domain';
+import { IFindOptions, ImportUser, User } from '@shared/domain';
 import { ImportUserMapper } from '../mapper/import-user.mapper';
 import { UserMatchMapper } from '../mapper/user-match.mapper';
 import { UserImportUc } from '../uc/user-import.uc';
@@ -32,7 +32,7 @@ export class ImportUserController {
 		@Query() sortingQuery: SortImportUserParams,
 		@Query() pagination: PaginationParams
 	): Promise<ImportUserListResponse> {
-		const options: FindOptions<ImportUser> = { pagination };
+		const options: IFindOptions<ImportUser> = { pagination };
 		options.order = ImportUserMapper.mapSortingQueryToDomain(sortingQuery);
 		const query = ImportUserMapper.mapImportUserFilterQueryToDomain(scope);
 		const [importUserList, count] = await this.userImportUc.findAllImportUsers(currentUser.userId, query, options);
@@ -84,7 +84,7 @@ export class ImportUserController {
 		@Query() scope: FilterUserParams,
 		@Query() pagination: PaginationParams
 	): Promise<UserMatchListResponse> {
-		const options: FindOptions<User> = { pagination };
+		const options: IFindOptions<User> = { pagination };
 
 		const query = UserMatchMapper.mapToDomain(scope);
 		const [userList, total] = await this.userUc.findAllUnmatchedUsers(currentUser.userId, query, options);
