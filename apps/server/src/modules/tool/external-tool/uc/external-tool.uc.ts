@@ -18,7 +18,7 @@ export class ExternalToolUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly toolValidationService: ExternalToolValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly externaltoolMetadataService: ExternalToolMetadataService
+		private readonly externalToolMetadataService: ExternalToolMetadataService
 	) {}
 
 	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
@@ -81,9 +81,11 @@ export class ExternalToolUc {
 	}
 
 	async getMetadataForExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolMetadata> {
+		// TODO ticket: https://ticketsystem.dbildungscloud.de/browse/N21-1496
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		const metadata: ExternalToolMetadata = await this.externaltoolMetadataService.getMetaData(toolId);
+		const metadata: ExternalToolMetadata = await this.externalToolMetadataService.getMetadata(toolId);
+
 		return metadata;
 	}
 

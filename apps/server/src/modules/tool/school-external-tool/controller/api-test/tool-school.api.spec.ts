@@ -15,10 +15,9 @@ import {
 } from '@shared/testing';
 import { ServerTestModule } from '@modules/server';
 import { Response } from 'supertest';
-import { ToolContextType } from '../../../common/enum';
 import { ToolConfigurationStatusResponse } from '../../../context-external-tool/controller/dto';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
-import { ExternalToolMetadata } from '../../../external-tool/domain';
+import { ExternalToolMetadataResponse } from '../../../external-tool/controller/dto';
 import { ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../entity';
 import {
@@ -27,8 +26,8 @@ import {
 	SchoolExternalToolResponse,
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
+	SchoolExternalToolMetadataResponse,
 } from '../dto';
-import { SchoolExternalToolMetadataResponse } from '../dto/school-external-tool-metadata.response';
 
 describe('ToolSchoolController (API)', () => {
 	let app: INestApplication;
@@ -497,29 +496,15 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[GET] tools/school-external-tools/:schoolExternalToolId/metadata', () => {
 		describe('when user is not authenticated', () => {
-			const setup = async () => {
+			const setup = () => {
 				const toolId: string = new ObjectId().toHexString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
 
-				const contextExternalToolCount = new Map<ToolContextType, number>();
-				contextExternalToolCount.set(ToolContextType.COURSE, 3);
-				contextExternalToolCount.set(ToolContextType.BOARD_ELEMENT, 2);
-				const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
-					schoolExternalToolCount: 2,
-					contextExternalToolCountPerContext: contextExternalToolCount,
-				});
-
-				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
-				em.clear();
-
-				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
-
-				return { loggedInClient, toolId, externalToolEntity, externalToolMetadata };
+				return { toolId, externalToolEntity };
 			};
 
 			it('should return unauthorized', async () => {
-				const { externalToolEntity } = await setup();
+				const { externalToolEntity } = setup();
 
 				const response: Response = await testApiClient.get(`${externalToolEntity.id}/metadata`);
 
@@ -536,41 +521,20 @@ describe('ToolSchoolController (API)', () => {
 					schoolToolId
 				);
 
-				const courseExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+				const courseExternalToolEntitys: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(3, {
 					schoolTool: schoolExternalToolEntity,
 					contextType: ContextExternalToolType.COURSE,
 					contextId: new ObjectId().toHexString(),
 				});
 
-				const courseExternalToolEntity1: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
-					schoolTool: schoolExternalToolEntity,
-					contextType: ContextExternalToolType.COURSE,
-					contextId: new ObjectId().toHexString(),
-				});
-
-				const courseExternalToolEntity2: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
-					schoolTool: schoolExternalToolEntity,
-					contextType: ContextExternalToolType.COURSE,
-					contextId: new ObjectId().toHexString(),
-				});
-
-				const boardExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+				const boardExternalToolEntitys: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(2, {
 					schoolTool: schoolExternalToolEntity,
 					contextType: ContextExternalToolType.BOARD_ELEMENT,
 					contextId: new ObjectId().toHexString(),
 				});
 
-				const boardExternalToolEntity1: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
-					schoolTool: schoolExternalToolEntity,
-					contextType: ContextExternalToolType.BOARD_ELEMENT,
-					contextId: new ObjectId().toHexString(),
-				});
-
-				const contextExternalToolCount = new Map<ToolContextType, number>();
-				contextExternalToolCount.set(ToolContextType.COURSE, 3);
-				contextExternalToolCount.set(ToolContextType.BOARD_ELEMENT, 2);
 				const schoolExternalToolMetadata: SchoolExternalToolMetadataResponse = new SchoolExternalToolMetadataResponse({
-					contextExternalToolCountPerContext: contextExternalToolCount,
+					contextExternalToolCountPerContext: { course: 3, boardElement: 2 },
 				});
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
@@ -581,11 +545,8 @@ describe('ToolSchoolController (API)', () => {
 					adminAccount,
 					adminUser,
 					schoolExternalToolEntity,
-					courseExternalToolEntity,
-					courseExternalToolEntity1,
-					courseExternalToolEntity2,
-					boardExternalToolEntity,
-					boardExternalToolEntity1,
+					...courseExternalToolEntitys,
+					...boardExternalToolEntitys,
 				]);
 				em.clear();
 
@@ -595,17 +556,19 @@ describe('ToolSchoolController (API)', () => {
 			};
 
 			it('should return the metadata of schoolExternalTool', async () => {
-				const { loggedInClient, schoolExternalToolEntity, schoolExternalToolMetadata } = await setup();
+				const { loggedInClient, schoolExternalToolEntity } = await setup();
 
 				const response: Response = await loggedInClient.get(`${schoolExternalToolEntity.id}/metadata`);
 
 				const body: SchoolExternalToolMetadataResponse = response.body as SchoolExternalToolMetadataResponse;
 
-				expect(body).toBeDefined();
 				expect(response.statusCode).toEqual(HttpStatus.OK);
-				expect(body).toMatchObject<SchoolExternalToolMetadataResponse>(schoolExternalToolMetadata);
-				expect(body.contextExternalToolCountPerContext).toHaveProperty('course', 3);
-				expect(body.contextExternalToolCountPerContext).toHaveProperty('boardElement', 2);
+				expect(body).toEqual<SchoolExternalToolMetadataResponse>({
+					contextExternalToolCountPerContext: {
+						course: 3,
+						boardElement: 2,
+					},
+				});
 			});
 		});
 	});

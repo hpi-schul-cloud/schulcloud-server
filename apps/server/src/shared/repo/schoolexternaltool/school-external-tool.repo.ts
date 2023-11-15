@@ -38,17 +38,13 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 		return domainObjects;
 	}
 
-	async countSchoolExternalToolsByExternalToolId(toolId: string): Promise<number> {
-		const schoolExternalToolCount: number = await this._em.count(this.entityName, { tool: toolId });
-		return schoolExternalToolCount;
-	}
-
 	async findBySchoolId(schoolId: string): Promise<SchoolExternalTool[]> {
 		const entities: SchoolExternalToolEntity[] = await this._em.find(this.entityName, { school: schoolId });
 		const domainObjects: SchoolExternalTool[] = entities.map((entity: SchoolExternalToolEntity): SchoolExternalTool => {
 			const domainObject: SchoolExternalTool = this.mapEntityToDO(entity);
 			return domainObject;
 		});
+
 		return domainObjects;
 	}
 

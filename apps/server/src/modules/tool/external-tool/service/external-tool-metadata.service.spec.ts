@@ -3,11 +3,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { externalToolFactory, legacySchoolDoFactory, schoolExternalToolFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import { ToolContextType } from '../../common/enum';
+import { ContextExternalToolType } from '../../context-external-tool/entity';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, ExternalToolMetadata } from '../domain';
-import { ExternalToolMetadataLoggable } from '../loggable/external-tool-metadata-loggable';
 import { ExternalToolMetadataService } from './external-tool-metadata.service';
 
 describe('ExternalToolMetadataService', () => {
@@ -17,7 +15,6 @@ describe('ExternalToolMetadataService', () => {
 	let externalToolRepo: DeepMocked<ExternalToolRepo>;
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
 	let contextExternalToolRepo: DeepMocked<ContextExternalToolRepo>;
-	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -35,10 +32,6 @@ describe('ExternalToolMetadataService', () => {
 					provide: ContextExternalToolRepo,
 					useValue: createMock<ContextExternalToolRepo>(),
 				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
-				},
 			],
 		}).compile();
 
@@ -46,7 +39,6 @@ describe('ExternalToolMetadataService', () => {
 		externalToolRepo = module.get(ExternalToolRepo);
 		schoolExternalToolRepo = module.get(SchoolExternalToolRepo);
 		contextExternalToolRepo = module.get(ContextExternalToolRepo);
-		logger = module.get(Logger);
 	});
 
 	afterAll(async () => {
@@ -79,18 +71,14 @@ describe('ExternalToolMetadataService', () => {
 					schoolToolId1
 				);
 
-				const contextExternalToolCount = new Map<ToolContextType, number>();
-				contextExternalToolCount.set(ToolContextType.COURSE, 3);
-				contextExternalToolCount.set(ToolContextType.BOARD_ELEMENT, 3);
-
 				const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
 					schoolExternalToolCount: 2,
-					contextExternalToolCountPerContext: contextExternalToolCount,
+					contextExternalToolCountPerContext: { course: 3, boardElement: 3 },
 				});
 
 				externalToolRepo.findById.mockResolvedValue(externalTool);
 				schoolExternalToolRepo.findByExternalToolId.mockResolvedValue([schoolExternalTool, schoolExternalTool1]);
-				contextExternalToolRepo.countContextExternalToolsBySchoolToolIdsAndContextType.mockResolvedValue(3);
+				contextExternalToolRepo.countBySchoolToolIdsAndContextType.mockResolvedValue(3);
 
 				return {
 					toolId,
@@ -103,7 +91,7 @@ describe('ExternalToolMetadataService', () => {
 			it('should call the repo to get schoolExternalTools by externalToolId', async () => {
 				const { toolId } = setup();
 
-				await service.getMetaData(toolId);
+				await service.getMetadata(toolId);
 
 				expect(schoolExternalToolRepo.findByExternalToolId).toHaveBeenCalledWith(toolId);
 			});
@@ -111,23 +99,23 @@ describe('ExternalToolMetadataService', () => {
 			it('should call the repo to count contextExternalTools by schoolExternalToolId and context', async () => {
 				const { toolId, schoolExternalTool, schoolExternalTool1 } = setup();
 
-				await service.getMetaData(toolId);
+				await service.getMetadata(toolId);
 
-				expect(contextExternalToolRepo.countContextExternalToolsBySchoolToolIdsAndContextType).toHaveBeenCalledWith(
-					ToolContextType.COURSE,
+				expect(contextExternalToolRepo.countBySchoolToolIdsAndContextType).toHaveBeenCalledWith(
+					ContextExternalToolType.COURSE,
 					[schoolExternalTool.id, schoolExternalTool1.id]
 				);
-				expect(contextExternalToolRepo.countContextExternalToolsBySchoolToolIdsAndContextType).toHaveBeenCalledWith(
-					ToolContextType.BOARD_ELEMENT,
+				expect(contextExternalToolRepo.countBySchoolToolIdsAndContextType).toHaveBeenCalledWith(
+					ContextExternalToolType.BOARD_ELEMENT,
 					[schoolExternalTool.id, schoolExternalTool1.id]
 				);
-				expect(contextExternalToolRepo.countContextExternalToolsBySchoolToolIdsAndContextType).toHaveBeenCalledTimes(2);
+				expect(contextExternalToolRepo.countBySchoolToolIdsAndContextType).toHaveBeenCalledTimes(2);
 			});
 
 			it('should return externalToolMetadata', async () => {
 				const { toolId, externalToolMetadata } = setup();
 
-				const result: ExternalToolMetadata = await service.getMetaData(toolId);
+				const result: ExternalToolMetadata = await service.getMetadata(toolId);
 
 				expect(result).toEqual(externalToolMetadata);
 			});
@@ -138,18 +126,14 @@ describe('ExternalToolMetadataService', () => {
 				const toolId: string = new ObjectId().toHexString();
 				const externalToolEntity: ExternalTool = externalToolFactory.buildWithId(undefined, toolId);
 
-				const contextExternalToolCount = new Map<ToolContextType, number>();
-				contextExternalToolCount.set(ToolContextType.COURSE, 0);
-				contextExternalToolCount.set(ToolContextType.BOARD_ELEMENT, 0);
-
 				const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
 					schoolExternalToolCount: 0,
-					contextExternalToolCountPerContext: contextExternalToolCount,
+					contextExternalToolCountPerContext: { course: 0, boardElement: 0 },
 				});
 
 				externalToolRepo.findById.mockResolvedValue(externalToolEntity);
 				schoolExternalToolRepo.findByExternalToolId.mockResolvedValue([]);
-				contextExternalToolRepo.countContextExternalToolsBySchoolToolIdsAndContextType.mockResolvedValue(0);
+				contextExternalToolRepo.countBySchoolToolIdsAndContextType.mockResolvedValue(0);
 
 				return {
 					toolId,
@@ -161,14 +145,9 @@ describe('ExternalToolMetadataService', () => {
 			it('should return empty externalToolMetadata', async () => {
 				const { toolId, externalToolMetadata } = setup();
 
-				const result: ExternalToolMetadata = await service.getMetaData(toolId);
+				const result: ExternalToolMetadata = await service.getMetadata(toolId);
 
 				expect(result).toEqual(externalToolMetadata);
-				expect(logger.info).toHaveBeenCalledWith(
-					new ExternalToolMetadataLoggable(
-						`There are no such schoolExternalTools for toolId: ${toolId}, returning empty metadata.`
-					)
-				);
 			});
 		});
 	});

@@ -1,7 +1,5 @@
-import { ToolContextType } from '../../common/enum';
-
 export class SchoolExternalToolMetadata {
-	contextExternalToolCountPerContext: Map<ToolContextType, number>;
+	contextExternalToolCountPerContext: Record<string, number>;
 
 	constructor(schoolExternalToolMetadata: SchoolExternalToolMetadata) {
 		this.contextExternalToolCountPerContext = schoolExternalToolMetadata.contextExternalToolCountPerContext;

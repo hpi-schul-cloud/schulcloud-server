@@ -5,6 +5,8 @@ import { OauthProviderServiceModule } from '@infra/oauth-provider';
 import { EncryptionModule } from '@infra/encryption';
 import { ExternalToolRepo } from '@shared/repo';
 import { ToolConfigModule } from '../tool-config.module';
+import { ExternalToolMetadataMapper } from './mapper';
+import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
 import {
 	ExternalToolConfigurationService,
 	ExternalToolLogoService,
@@ -29,6 +31,8 @@ import { CommonToolModule } from '../common';
 		ExternalToolLogoService,
 		ExternalToolRepo,
 		ExternalToolMetadataService,
+		ExternalToolMetadataMapper,
+		ToolContextMapper,
 	],
 	exports: [
 		ExternalToolService,

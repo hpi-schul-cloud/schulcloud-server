@@ -65,16 +65,12 @@ describe('SchoolExternalToolMetadataService', () => {
 					schoolToolId1
 				);
 
-				const contextExternalToolCount = new Map<ToolContextType, number>();
-				contextExternalToolCount.set(ToolContextType.COURSE, 3);
-				contextExternalToolCount.set(ToolContextType.BOARD_ELEMENT, 3);
-
 				const schoolExternalToolMetadata: SchoolExternalToolMetadata = new SchoolExternalToolMetadata({
-					contextExternalToolCountPerContext: contextExternalToolCount,
+					contextExternalToolCountPerContext: { course: 3, 'board-element': 3 },
 				});
 
 				schoolExternalToolRepo.findByExternalToolId.mockResolvedValue([schoolExternalTool, schoolExternalTool1]);
-				contextExternalToolRepo.countContextExternalToolsBySchoolToolIdsAndContextType.mockResolvedValue(3);
+				contextExternalToolRepo.countBySchoolToolIdsAndContextType.mockResolvedValue(3);
 
 				return {
 					schoolToolId,
@@ -108,16 +104,12 @@ describe('SchoolExternalToolMetadataService', () => {
 					schoolToolId1
 				);
 
-				const contextExternalToolCount = new Map<ToolContextType, number>();
-				contextExternalToolCount.set(ToolContextType.COURSE, 0);
-				contextExternalToolCount.set(ToolContextType.BOARD_ELEMENT, 0);
-
 				const schoolExternalToolMetadata: SchoolExternalToolMetadata = new SchoolExternalToolMetadata({
-					contextExternalToolCountPerContext: contextExternalToolCount,
+					contextExternalToolCountPerContext: { course: 0, 'board-element': 0 },
 				});
 
 				schoolExternalToolRepo.findByExternalToolId.mockResolvedValue([schoolExternalTool, schoolExternalTool1]);
-				contextExternalToolRepo.countContextExternalToolsBySchoolToolIdsAndContextType.mockResolvedValue(0);
+				contextExternalToolRepo.countBySchoolToolIdsAndContextType.mockResolvedValue(0);
 
 				return {
 					schoolToolId,

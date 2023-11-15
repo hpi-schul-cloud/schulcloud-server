@@ -443,7 +443,7 @@ describe('ContextExternalToolRepo', () => {
 			it('should return correct results', async () => {
 				const { schoolExternalTool, schoolExternalTool1 } = await setup();
 
-				const result = await repo.countContextExternalToolsBySchoolToolIdsAndContextType(ToolContextType.COURSE, [
+				const result = await repo.countBySchoolToolIdsAndContextType(ContextExternalToolType.COURSE, [
 					schoolExternalTool.id,
 					schoolExternalTool1.id,
 				]);
@@ -457,14 +457,11 @@ describe('ContextExternalToolRepo', () => {
 				const schoolExternalTool = schoolExternalToolEntityFactory.buildWithId();
 				const schoolExternalTool1 = schoolExternalToolEntityFactory.buildWithId();
 
-				const contextExternalTool = contextExternalToolEntityFactory.buildWithId({
+				const contextExternalTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(2, {
 					contextType: ContextExternalToolType.COURSE,
 					schoolTool: schoolExternalTool,
 				});
-				const contextExternalTool1 = contextExternalToolEntityFactory.buildWithId({
-					contextType: ContextExternalToolType.COURSE,
-					schoolTool: schoolExternalTool,
-				});
+
 				const contextExternalTool2 = contextExternalToolEntityFactory.buildWithId({
 					contextType: ContextExternalToolType.BOARD_ELEMENT,
 					schoolTool: schoolExternalTool,
@@ -481,8 +478,7 @@ describe('ContextExternalToolRepo', () => {
 				await em.persistAndFlush([
 					schoolExternalTool,
 					schoolExternalTool1,
-					contextExternalTool,
-					contextExternalTool1,
+					...contextExternalTools,
 					contextExternalTool2,
 					contextExternalTool3,
 					contextExternalTool4,
@@ -497,10 +493,10 @@ describe('ContextExternalToolRepo', () => {
 			it('should return correct results', async () => {
 				const { schoolExternalTool, schoolExternalTool1 } = await setup();
 
-				const result = await repo.countContextExternalToolsBySchoolToolIdsAndContextType(
-					ToolContextType.BOARD_ELEMENT,
-					[schoolExternalTool.id, schoolExternalTool1.id]
-				);
+				const result = await repo.countBySchoolToolIdsAndContextType(ContextExternalToolType.BOARD_ELEMENT, [
+					schoolExternalTool.id,
+					schoolExternalTool1.id,
+				]);
 
 				expect(result).toEqual<number>(2);
 			});

@@ -31,8 +31,8 @@ import {
 	ExternalToolSearchParams,
 	ExternalToolUpdateParams,
 	SortExternalToolParams,
+	ExternalToolMetadataResponse,
 } from './dto';
-import { ExternalToolMetadataResponse } from './dto/response/external-tool-metadata.response';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -172,6 +172,7 @@ export class ToolController {
 	@ApiOperation({ summary: 'Gets the metadata of an external tool.' })
 	@ApiOkResponse({
 		description: 'Metadata of external tool fetched successfully.',
+		type: ExternalToolMetadataResponse,
 	})
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
 	async getMetaDataForExternalTool(

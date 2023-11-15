@@ -1,5 +1,7 @@
-import { ExternalToolMetadataResponse } from '../controller/dto/response/external-tool-metadata.response';
-import { ExternalToolMetadata } from '../domain/external-tool-metadata';
+import { ToolContextType } from '../../common/enum';
+import { ContextExternalToolType } from '../../context-external-tool/entity';
+import { ExternalToolMetadataResponse } from '../controller/dto';
+import { ExternalToolMetadata } from '../domain';
 
 export class ExternalToolMetadataMapper {
 	static mapToExternalToolMetadataResponse(externalToolMetadata: ExternalToolMetadata): ExternalToolMetadataResponse {

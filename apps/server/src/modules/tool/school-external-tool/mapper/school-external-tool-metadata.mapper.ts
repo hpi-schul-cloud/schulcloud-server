@@ -1,5 +1,5 @@
-import { SchoolExternalToolMetadataResponse } from '../controller/dto/school-external-tool-metadata.response';
-import { SchoolExternalToolMetadata } from '../domain/school-external-tool-metadata';
+import { SchoolExternalToolMetadataResponse } from '../controller/dto';
+import { SchoolExternalToolMetadata } from '../domain';
 
 export class SchoolExternalToolMetadataMapper {
 	static mapToSchoolExternalToolMetadataResponse(

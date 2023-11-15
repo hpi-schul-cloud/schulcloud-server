@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ToolContextType } from '../../../common/enum';
+import { ContextExternalToolType } from '../../../context-external-tool/entity';
 
 export class SchoolExternalToolMetadataResponse {
 	@ApiProperty()
-	contextExternalToolCountPerContext: Map<ToolContextType, number>;
+	contextExternalToolCountPerContext: Record<ContextExternalToolType, number>;
 
 	constructor(schoolExternalToolMetadataResponse: SchoolExternalToolMetadataResponse) {
 		this.contextExternalToolCountPerContext = schoolExternalToolMetadataResponse.contextExternalToolCountPerContext;

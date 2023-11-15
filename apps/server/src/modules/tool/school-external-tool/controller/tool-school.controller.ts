@@ -26,11 +26,11 @@ import {
 	SchoolExternalToolResponse,
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
+	SchoolExternalToolMetadataResponse,
 } from './dto';
 import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolUc } from '../uc';
 import { SchoolExternalTool, SchoolExternalToolMetadata } from '../domain';
-import { SchoolExternalToolMetadataResponse } from './dto/school-external-tool-metadata.response';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -146,6 +146,7 @@ export class ToolSchoolController {
 	@ApiOperation({ summary: 'Gets the metadata of an school external tool.' })
 	@ApiOkResponse({
 		description: 'Metadata of school external tool fetched successfully.',
+		type: SchoolExternalToolMetadataResponse,
 	})
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
 	async getMetaDataForExternalTool(

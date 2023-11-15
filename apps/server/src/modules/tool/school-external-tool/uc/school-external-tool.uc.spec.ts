@@ -371,7 +371,7 @@ describe('SchoolExternalToolUc', () => {
 	});
 
 	describe('getMetadataForSchoolExternalTool', () => {
-		describe('Authorization', () => {
+		describe('when authorize user', () => {
 			const setupMetadata = () => {
 				const toolId = new ObjectId().toHexString();
 				const tool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ id: toolId }, toolId);

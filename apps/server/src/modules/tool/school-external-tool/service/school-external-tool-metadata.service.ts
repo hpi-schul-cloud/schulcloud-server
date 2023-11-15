@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { ToolContextType } from '../../common/enum';
+import { ToolContextMapper } from '../../common/mapper/tool-context.mapper';
+import { ContextExternalToolType } from '../../context-external-tool/entity';
 import { SchoolExternalToolMetadata } from '../domain';
 
 @Injectable()
@@ -12,40 +14,31 @@ export class SchoolExternalToolMetadataService {
 	) {}
 
 	async getMetadata(schoolExternalToolId: EntityId) {
-		const contextTools = await Promise.all(
-			Object.values(ToolContextType).map(async (contextType: ToolContextType) => {
-				const countPerContext: number =
-					await this.contextToolRepo.countContextExternalToolsBySchoolToolIdsAndContextType(contextType, [
-						schoolExternalToolId.toString(),
-					]);
+		const contextTools: { contextType: ContextExternalToolType; countPerContext: number }[] = await Promise.all(
+			Object.values(ToolContextType).map(
+				async (
+					contextType: ToolContextType
+				): Promise<{ contextType: ContextExternalToolType; countPerContext: number }> => {
+					const countPerContext: number = await this.contextToolRepo.countBySchoolToolIdsAndContextType(
+						ToolContextMapper.contextMapping[contextType],
+						[schoolExternalToolId.toString()]
+					);
 
-				return { contextType, count: countPerContext };
-			})
+					const type: ContextExternalToolType = ToolContextMapper.contextMapping[contextType];
+
+					return { contextType: type, countPerContext };
+				}
+			)
 		);
-
-		const schoolExternaltoolMetadata = this.createSchoolExternalToolMetadata(contextTools);
-
-		return schoolExternaltoolMetadata;
-	}
-
-	private createContextExternalToolMetaData(
-		toolCountPerContext: { contextType: ToolContextType; count: number }[]
-	): Map<ToolContextType, number> {
-		const contextExternalToolMetadata: Map<ToolContextType, number> = new Map(
-			toolCountPerContext.map((contextExternalToolCountPerSchool: { contextType: ToolContextType; count: number }) => [
-				contextExternalToolCountPerSchool.contextType,
-				contextExternalToolCountPerSchool.count,
+		const tools = Object.fromEntries(
+			contextTools.map((contextTool): [ContextExternalToolType, number] => [
+				contextTool.contextType,
+				contextTool.countPerContext,
 			])
 		);
 
-		return contextExternalToolMetadata;
-	}
-
-	private createSchoolExternalToolMetadata(
-		contextExternalToolCountPerContext: { contextType: ToolContextType; count: number }[]
-	): SchoolExternalToolMetadata {
 		const schoolExternaltoolMetadata: SchoolExternalToolMetadata = new SchoolExternalToolMetadata({
-			contextExternalToolCountPerContext: this.createContextExternalToolMetaData(contextExternalToolCountPerContext),
+			contextExternalToolCountPerContext: tools,
 		});
 
 		return schoolExternaltoolMetadata;
