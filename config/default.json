@@ -41,6 +41,5 @@
 	},
 	"CTL_TOOLS": {
 		"EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES": 300000
-	},
-	"ADMIN_API": {}
+	}
 }
