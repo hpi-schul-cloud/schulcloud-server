@@ -3,15 +3,15 @@ import { ValidationError } from '@shared/common';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
+import { ToolFeatures, ToolFeaturesInterface } from '../../tool-config';
 import { SchoolExternalTool } from '../domain';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
 
 @Injectable()
 export class SchoolExternalToolValidationService {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
 		private readonly commonToolValidationService: CommonToolValidationService,
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
+		@Inject(ToolFeatures) private readonly toolFeatures: ToolFeaturesInterface
 	) {}
 
 	async validate(schoolExternalTool: SchoolExternalTool): Promise<void> {
