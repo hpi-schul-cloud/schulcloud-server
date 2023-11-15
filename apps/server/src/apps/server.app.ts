@@ -22,6 +22,7 @@ import { join } from 'path';
 import { install as sourceMapInstall } from 'source-map-support';
 import { FeathersRosterService } from '@modules/pseudonym';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { AdminApiServerModule } from '@src/modules/server/admin-api.server.module';
 import legacyAppPromise = require('../../../../src/app');
 
 import { AppStartLoggable } from './helpers/app-start-loggable';
@@ -29,7 +30,28 @@ import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
 } from './helpers/prometheus-metrics';
-import { createAndStartAdminApiServer } from './helpers/admin-api-setup-helper';
+
+const createAndStartAdminApiServer = async (logger: Logger) => {
+	const nestAdminServerExpress = express();
+	nestAdminServerExpress.disable('x-powered-by');
+	const nestAdminServerExpressAdapter = new ExpressAdapter(nestAdminServerExpress);
+	const nestAdminServerApp = await NestFactory.create(AdminApiServerModule, nestAdminServerExpressAdapter);
+
+	nestAdminServerApp.setGlobalPrefix('/admin/api/v1');
+	await nestAdminServerApp.init();
+
+	const adminApiServerPort = Configuration.get('ADMIN_API__PORT') as number;
+
+	nestAdminServerExpress.listen(adminApiServerPort, () => {
+		logger.info(
+			new AppStartLoggable({
+				appName: 'Admin API server app',
+				port: adminApiServerPort,
+				mountsDescription: `/admin/api/v1 --> Admin API Server`,
+			})
+		);
+	});
+};
 
 async function bootstrap() {
 	sourceMapInstall();
