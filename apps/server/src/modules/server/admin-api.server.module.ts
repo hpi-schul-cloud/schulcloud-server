@@ -9,7 +9,7 @@ import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infr
 import { DeletionModule } from '../deletion';
 import { defaultMikroOrmOptions, setupSessions } from './server.module';
 import { serverConfig } from './server.config';
-import { AdminApiServerController } from './controller/admin-api-server.controller';
+import { AdminApiServerController } from './controller';
 
 const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConfig)), DeletionModule];
 
