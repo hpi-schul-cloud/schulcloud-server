@@ -28,6 +28,20 @@ describe(ReferencesService.name, () => {
 		});
 
 		describe('when passed a file with 3 references on a few separate lines', () => {
+			describe('split with CRs', () => {
+				it('should return an array with all the references present in a file', () => {
+					setup('653fd3b784ca851b17e98579\r653fd3b784ca851b17e9857a\r653fd3b784ca851b17e9857b\n\n\n');
+
+					const references = ReferencesService.loadFromTxtFile('references.txt');
+
+					expect(references).toEqual([
+						'653fd3b784ca851b17e98579',
+						'653fd3b784ca851b17e9857a',
+						'653fd3b784ca851b17e9857b',
+					]);
+				});
+			});
+
 			describe('split with LFs', () => {
 				it('should return an array with all the references present in a file', () => {
 					setup('653fd3b784ca851b17e98579\n653fd3b784ca851b17e9857a\n653fd3b784ca851b17e9857b\n\n\n');

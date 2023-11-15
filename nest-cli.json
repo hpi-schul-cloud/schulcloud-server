@@ -48,7 +48,7 @@
 		"deletion-console": {
 			"type": "application",
 			"root": "apps/server",
-			"entryFile": "modules/deletion/console/deletion-console.app",
+			"entryFile": "apps/deletion-console.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
