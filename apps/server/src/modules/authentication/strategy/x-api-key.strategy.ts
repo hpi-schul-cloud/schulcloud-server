@@ -9,12 +9,7 @@ export class XApiKeyStrategy extends PassportStrategy(Strategy, 'api-key') {
 	private readonly allowedApiKeys: string[];
 
 	constructor(private readonly configService: ConfigService<IXApiKeyConfig, true>) {
-		super(
-			{ header: 'X-API-KEY', prefix: '' },
-			true,
-			// eslint-disable-next-line @typescript-eslint/require-await
-			async (apiKey: string, done: (error: Error | null, data: boolean | null) => void) => this.validate(apiKey, done)
-		);
+		super({ header: 'X-API-KEY', prefix: '' }, true);
 		this.allowedApiKeys = this.configService.get<string[]>('ADMIN_API__ALLOWED_API_KEYS');
 	}
 
