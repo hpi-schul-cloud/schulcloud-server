@@ -1,8 +1,7 @@
 import { Entity, Index, Property, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain';
-import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
-import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
+import { DeletionDomainModel, DeletionStatusModel } from '../domain/types';
 
 export interface DeletionRequestEntityProps {
 	id?: EntityId;

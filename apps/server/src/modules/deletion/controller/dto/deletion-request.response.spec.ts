@@ -1,4 +1,4 @@
-import { deletionRequestFactory } from '../../domain/testing/factory/deletion-request.factory';
+import { deletionRequestFactory } from '../../domain/testing';
 import { DeletionRequestResponse } from './deletion-request.response';
 
 describe(DeletionRequestResponse.name, () => {
