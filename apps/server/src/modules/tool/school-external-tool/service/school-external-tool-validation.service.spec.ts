@@ -4,9 +4,9 @@ import { externalToolFactory, schoolExternalToolFactory } from '@shared/testing/
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
+import { ToolFeatures, ToolFeaturesInterface } from '../../tool-config';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
 
 describe('SchoolExternalToolValidationService', () => {
 	let module: TestingModule;
@@ -14,7 +14,7 @@ describe('SchoolExternalToolValidationService', () => {
 
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let commonToolValidationService: DeepMocked<CommonToolValidationService>;
-	let toolFeatures: DeepMocked<IToolFeatures>;
+	let toolFeatures: DeepMocked<ToolFeaturesInterface>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
