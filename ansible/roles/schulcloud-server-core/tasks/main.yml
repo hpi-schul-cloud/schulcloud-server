@@ -37,6 +37,13 @@
       template: onepassword.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
 
+  - name: Admin API client secret (from 1Password)
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: onepassword-admin-api-client.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+
   - name: remove old migration Job
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
