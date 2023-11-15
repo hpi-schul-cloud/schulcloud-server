@@ -1,15 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AccountService } from '@modules/account/services/account.service';
 import { AccountDto } from '@modules/account/services/dto';
-import { OAuthTokenDto } from '@modules/oauth';
-import { OAuthService } from '@modules/oauth/service/oauth.service';
+import { OAuthService, OAuthTokenDto } from '@modules/oauth';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { userDoFactory } from '@shared/testing';
-import { SchoolInMigrationError } from '../errors/school-in-migration.error';
+
 import { CurrentUserInterface, OauthCurrentUser } from '../interface';
+
+import { SchoolInMigrationLoggableException } from '../loggable';
+
 import { Oauth2Strategy } from './oauth2.strategy';
 
 describe('Oauth2Strategy', () => {
@@ -68,7 +70,7 @@ describe('Oauth2Strategy', () => {
 						refreshToken: 'refreshToken',
 					})
 				);
-				oauthService.provisionUser.mockResolvedValue({ user, redirect: '' });
+				oauthService.provisionUser.mockResolvedValue(user);
 				accountService.findByUserId.mockResolvedValue(account);
 
 				return { systemId, user, account, idToken };
@@ -102,7 +104,7 @@ describe('Oauth2Strategy', () => {
 						refreshToken: 'refreshToken',
 					})
 				);
-				oauthService.provisionUser.mockResolvedValue({ user: undefined, redirect: '' });
+				oauthService.provisionUser.mockResolvedValue(null);
 			};
 
 			it('should throw a SchoolInMigrationError', async () => {
@@ -111,7 +113,7 @@ describe('Oauth2Strategy', () => {
 				const func = async () =>
 					strategy.validate({ body: { code: 'code', redirectUri: 'redirectUri', systemId: 'systemId' } });
 
-				await expect(func).rejects.toThrow(new SchoolInMigrationError());
+				await expect(func).rejects.toThrow(new SchoolInMigrationLoggableException());
 			});
 		});
 
@@ -126,7 +128,7 @@ describe('Oauth2Strategy', () => {
 						refreshToken: 'refreshToken',
 					})
 				);
-				oauthService.provisionUser.mockResolvedValue({ user, redirect: '' });
+				oauthService.provisionUser.mockResolvedValue(user);
 				accountService.findByUserId.mockResolvedValue(null);
 			};
 

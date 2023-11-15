@@ -10,7 +10,7 @@ import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
-import { ExternalToolVersionService } from './external-tool-version.service';
+import { ExternalToolVersionIncrementService } from './external-tool-version-increment.service';
 
 @Injectable()
 export class ExternalToolService {
@@ -22,7 +22,7 @@ export class ExternalToolService {
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
 		private readonly legacyLogger: LegacyLogger,
-		private readonly externalToolVersionService: ExternalToolVersionService
+		private readonly externalToolVersionService: ExternalToolVersionIncrementService
 	) {}
 
 	async createExternalTool(externalTool: ExternalTool): Promise<ExternalTool> {

@@ -6,7 +6,6 @@ import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { Request } from 'express';
-import { OauthUc } from '../uc';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
 import { OauthSSOController } from './oauth-sso.controller';
 
@@ -51,10 +50,6 @@ describe('OAuthController', () => {
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
-				},
-				{
-					provide: OauthUc,
-					useValue: createMock<OauthUc>(),
 				},
 				{
 					provide: HydraOauthUc,
