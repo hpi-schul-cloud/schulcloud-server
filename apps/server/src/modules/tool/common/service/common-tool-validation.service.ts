@@ -21,6 +21,13 @@ export class CommonToolValidationService {
 		[CustomParameterType.AUTO_SCHOOLNUMBER]: () => false,
 	};
 
+	private getValidationScope(validatableTool: ValidatableTool): CustomParameterScope {
+		if (validatableTool instanceof SchoolExternalTool) {
+			return CustomParameterScope.SCHOOL;
+		}
+		return CustomParameterScope.CONTEXT;
+	}
+
 	public isValueValidForType(type: CustomParameterType, val: string): boolean {
 		const rule = CommonToolValidationService.typeCheckers[type];
 
@@ -29,12 +36,25 @@ export class CommonToolValidationService {
 		return isValid;
 	}
 
-	public checkForDuplicateParameters(validatableTool: ValidatableTool): void {
-		const caseInsensitiveNames: string[] = validatableTool.parameters.map(({ name }: CustomParameterEntry) =>
-			name.toLowerCase()
+	public checkCustomParameterEntries(loadedExternalTool: ExternalTool, validatableTool: ValidatableTool): void {
+		this.checkForDuplicateParameters(validatableTool);
+
+		const parametersForScope: CustomParameter[] = (loadedExternalTool.parameters ?? []).filter(
+			(param: CustomParameter) =>
+				(validatableTool instanceof SchoolExternalTool && param.scope === CustomParameterScope.SCHOOL) ||
+				(validatableTool instanceof ContextExternalTool && param.scope === CustomParameterScope.CONTEXT)
 		);
 
+		this.checkForUnknownParameters(validatableTool, parametersForScope);
+
+		this.checkValidityOfParameters(validatableTool, parametersForScope);
+	}
+
+	private checkForDuplicateParameters(validatableTool: ValidatableTool): void {
+		const caseInsensitiveNames: string[] = validatableTool.parameters.map(({ name }: CustomParameterEntry) => name);
+
 		const uniqueNames: Set<string> = new Set(caseInsensitiveNames);
+
 		if (uniqueNames.size !== validatableTool.parameters.length) {
 			throw new ValidationError(
 				`tool_param_duplicate: The tool ${validatableTool.id ?? ''} contains multiple of the same custom parameters.`
@@ -42,28 +62,33 @@ export class CommonToolValidationService {
 		}
 	}
 
-	public checkCustomParameterEntries(loadedExternalTool: ExternalTool, validatableTool: ValidatableTool): void {
-		if (loadedExternalTool.parameters) {
-			for (const param of loadedExternalTool.parameters) {
-				this.checkScopeAndValidateParameter(validatableTool, param);
+	private checkForUnknownParameters(validatableTool: ValidatableTool, parametersForScope: CustomParameter[]): void {
+		for (const entry of validatableTool.parameters) {
+			const foundParameter: CustomParameter | undefined = parametersForScope.find(
+				({ name }: CustomParameter): boolean => name === entry.name
+			);
+
+			if (!foundParameter) {
+				throw new ValidationError(
+					`tool_param_unknown: The parameter with name ${entry.name} is not part of this tool.`
+				);
 			}
 		}
 	}
 
-	private checkScopeAndValidateParameter(validatableTool: ValidatableTool, param: CustomParameter): void {
-		const foundEntry: CustomParameterEntry | undefined = validatableTool.parameters.find(
-			({ name }: CustomParameterEntry): boolean => name.toLowerCase() === param.name.toLowerCase()
-		);
+	private checkValidityOfParameters(validatableTool: ValidatableTool, parametersForScope: CustomParameter[]): void {
+		for (const param of parametersForScope) {
+			const foundEntry: CustomParameterEntry | undefined = validatableTool.parameters.find(
+				({ name }: CustomParameterEntry): boolean => name === param.name
+			);
 
-		if (param.scope === CustomParameterScope.SCHOOL && validatableTool instanceof SchoolExternalTool) {
-			this.validateParameter(param, foundEntry);
-		} else if (param.scope === CustomParameterScope.CONTEXT && validatableTool instanceof ContextExternalTool) {
 			this.validateParameter(param, foundEntry);
 		}
 	}
 
 	private validateParameter(param: CustomParameter, foundEntry: CustomParameterEntry | undefined): void {
 		this.checkOptionalParameter(param, foundEntry);
+
 		if (foundEntry) {
 			this.checkParameterType(foundEntry, param);
 			this.checkParameterRegex(foundEntry, param);
