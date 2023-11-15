@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { SymetricKeyEncryptionService } from '@infra/encryption';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
@@ -6,20 +7,19 @@ import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/re
 import { Clients } from '@keycloak/keycloak-admin-client/lib/resources/clients';
 import { IdentityProviders } from '@keycloak/keycloak-admin-client/lib/resources/identityProviders';
 import { Realms } from '@keycloak/keycloak-admin-client/lib/resources/realms';
+import { SystemOidcMapper } from '@modules/system/mapper/system-oidc.mapper';
+import { SystemOidcService } from '@modules/system/service/system-oidc.service';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemEntity, SystemTypeEnum } from '@shared/domain';
-import { SymetricKeyEncryptionService } from '@infra/encryption';
 import { systemFactory } from '@shared/testing';
-import { SystemOidcMapper } from '@modules/system/mapper/system-oidc.mapper';
-import { SystemOidcService } from '@modules/system/service/system-oidc.service';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { v1 } from 'uuid';
 import {
-	IKeycloakSettings,
 	KeycloakSettings,
+	KeycloakSettingsInterface,
 } from '../../keycloak-administration/interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
@@ -32,7 +32,7 @@ describe('KeycloakConfigurationService Unit', () => {
 	let configService: DeepMocked<ConfigService>;
 	let systemOidcService: DeepMocked<SystemOidcService>;
 	let httpServiceMock: DeepMocked<HttpService>;
-	let settings: IKeycloakSettings;
+	let settings: KeycloakSettingsInterface;
 
 	const kcApiClientIdentityProvidersMock = createMock<IdentityProviders>();
 	const kcApiClientMock = createMock<Clients>();
@@ -49,7 +49,7 @@ describe('KeycloakConfigurationService Unit', () => {
 		username: adminUsername,
 	};
 
-	const getSettings = (): IKeycloakSettings => {
+	const getSettings = (): KeycloakSettingsInterface => {
 		return {
 			baseUrl: 'http://localhost:8080',
 			realmName: 'master',
