@@ -177,7 +177,7 @@
 		},
 		"ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS": {
 			"type": "string",
-			"default":"",
+			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
 		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
@@ -1268,24 +1268,26 @@
 			"description": "Enables feature that allows the insecure LDAP URL (with ldap:// protocol)."
 		},
 		"ADMIN_API": {
-			"type": "object", 
+			"type": "object",
 			"description": "Configuration of the schulcloud-server's admin API.",
 			"properties": {
 				"ENABLED": {
 					"type": "boolean",
-					"default": true,
 					"description": "Flag to turn on/off the Admin API."
 				},
 				"PORT": {
 					"type": "number",
-					"default": 4030,
 					"description": "Port of the exposed Admin API server."
 				},
 				"ALLOWED_API_KEYS": {
 					"type": "string",
-					"default": "",
 					"description": "Allowed Admin API keys (for accessing the Admin API)."
 				}
+			},
+			"default": {
+				"ENABLED": true,
+				"PORT": 4030,
+				"ALLOWED_API_KEYS": ""
 			}
 		},
 		"FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED": {

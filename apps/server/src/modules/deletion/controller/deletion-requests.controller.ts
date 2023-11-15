@@ -27,6 +27,7 @@ export class DeletionRequestsController {
 	}
 
 	@Get(':requestId')
+	@HttpCode(200)
 	@ApiOperation({
 		summary: 'Retrieving details of performed or planned deletion',
 	})
