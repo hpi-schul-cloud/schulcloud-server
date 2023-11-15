@@ -25,7 +25,7 @@ export class ContextExternalToolRequestMapper {
 		return customParameterParams.map((customParameterParam: CustomParameterEntryParam) => {
 			return {
 				name: customParameterParam.name,
-				value: customParameterParam.value,
+				value: customParameterParam.value || undefined,
 			};
 		});
 	}
