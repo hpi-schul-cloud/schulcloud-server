@@ -10,7 +10,7 @@ export abstract class AbstractUrlHandler {
 			.filter((result) => result !== null)
 			.find((result) => (result?.length ?? 0) >= 2) as RegExpMatchArray;
 
-		if (results[1]) {
+		if (results && results[1]) {
 			return results[1];
 		}
 		return undefined;

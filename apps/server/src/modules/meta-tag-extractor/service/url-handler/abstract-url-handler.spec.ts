@@ -2,6 +2,10 @@ import { AbstractUrlHandler } from './abstract-url-handler';
 
 class DummyHandler extends AbstractUrlHandler {
 	patterns: RegExp[] = [/\/dummy\/([0-9a-z]+)$/i];
+
+	extractId(url: string): string | undefined {
+		return super.extractId(url);
+	}
 }
 
 describe(AbstractUrlHandler.name, () => {
@@ -12,6 +16,18 @@ describe(AbstractUrlHandler.name, () => {
 		const handler = new DummyHandler();
 		return { id, url, invalidUrl, handler };
 	};
+
+	describe('extractId', () => {
+		describe('when no id was extracted', () => {
+			it('should return undefined', () => {
+				const { invalidUrl, handler } = setup();
+
+				const result = handler.extractId(invalidUrl);
+
+				expect(result).toBeUndefined();
+			});
+		});
+	});
 
 	describe('doesUrlMatch', () => {
 		it('should be true for valid urls', () => {
