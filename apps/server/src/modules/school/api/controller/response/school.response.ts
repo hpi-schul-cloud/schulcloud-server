@@ -36,7 +36,7 @@ export class SchoolResponse {
 	@ApiPropertyOptional()
 	officialSchoolNumber?: string;
 
-	@ApiProperty({ type: () => SchoolYearResponse })
+	@ApiPropertyOptional({ type: () => SchoolYearResponse })
 	currentYear?: SchoolYearResponse;
 
 	@ApiProperty({ type: () => FederalStateResponse })
