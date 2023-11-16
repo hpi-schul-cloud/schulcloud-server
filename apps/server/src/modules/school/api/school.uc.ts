@@ -44,8 +44,6 @@ export class SchoolUc {
 
 		const schools = await this.schoolService.getAllSchoolsExceptOwnSchool(query, ownSchoolId, findOptions);
 
-		// TODO: Do we want authorization here? At the moment there is no fitting permission.
-
 		const dtos = SchoolResponseMapper.mapToListForExternalInviteResponses(schools);
 
 		return dtos;
