@@ -18,7 +18,7 @@ export class ContextExternalToolValidationService {
 	) {}
 
 	async validate(contextExternalTool: ContextExternalTool): Promise<void> {
-		await this.checkDuplicateInContext(contextExternalTool);
+		await this.checkDuplicateUsesInContext(contextExternalTool);
 
 		const loadedSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
 			contextExternalTool.schoolToolRef.schoolToolId
@@ -29,7 +29,7 @@ export class ContextExternalToolValidationService {
 		this.commonToolValidationService.checkCustomParameterEntries(loadedExternalTool, contextExternalTool);
 	}
 
-	private async checkDuplicateInContext(contextExternalTool: ContextExternalTool) {
+	private async checkDuplicateUsesInContext(contextExternalTool: ContextExternalTool) {
 		let duplicate: ContextExternalTool[] = await this.contextExternalToolService.findContextExternalTools({
 			schoolToolRef: contextExternalTool.schoolToolRef,
 			context: contextExternalTool.contextRef,

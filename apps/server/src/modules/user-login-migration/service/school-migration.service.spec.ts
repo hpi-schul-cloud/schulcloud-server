@@ -303,8 +303,8 @@ describe(SchoolMigrationService.name, () => {
 				const closedAt: Date = new Date('2023-05-01');
 
 				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					schoolId: 'schoolId',
-					targetSystemId: 'targetSystemId',
+					schoolId: new ObjectId().toHexString(),
+					targetSystemId: new ObjectId().toHexString(),
 					startedAt: new Date('2023-05-01'),
 					closedAt,
 					finishedAt: new Date('2023-05-01'),
@@ -379,7 +379,7 @@ describe(SchoolMigrationService.name, () => {
 				};
 			};
 
-			it('should call userLoginMigrationRepo.findBySchoolId', async () => {
+			it('should find user login migration by school id', async () => {
 				setup();
 
 				await service.hasSchoolMigratedUser('schoolId');
@@ -399,7 +399,7 @@ describe(SchoolMigrationService.name, () => {
 				};
 			};
 
-			it('should call userService.findUsers', async () => {
+			it('should call user service to find users', async () => {
 				const { userLoginMigration } = setup();
 
 				await service.hasSchoolMigratedUser('schoolId');

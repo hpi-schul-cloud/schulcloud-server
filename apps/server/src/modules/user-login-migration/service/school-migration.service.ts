@@ -20,7 +20,11 @@ export class SchoolMigrationService {
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
 	) {}
 
-	async migrateSchool(existingSchool: LegacySchoolDo, externalId: string, targetSystemId: string): Promise<void> {
+	public async migrateSchool(
+		existingSchool: LegacySchoolDo,
+		externalId: string,
+		targetSystemId: string
+	): Promise<void> {
 		const schoolDOCopy: LegacySchoolDo = new LegacySchoolDo({ ...existingSchool });
 
 		try {
@@ -45,7 +49,7 @@ export class SchoolMigrationService {
 		await this.schoolService.save(school);
 	}
 
-	private async tryRollbackMigration(originalSchoolDO: LegacySchoolDo) {
+	private async tryRollbackMigration(originalSchoolDO: LegacySchoolDo): Promise<void> {
 		try {
 			await this.schoolService.save(originalSchoolDO);
 		} catch (error: unknown) {
@@ -55,7 +59,7 @@ export class SchoolMigrationService {
 		}
 	}
 
-	async getSchoolForMigration(
+	public async getSchoolForMigration(
 		userId: string,
 		externalId: string,
 		officialSchoolNumber: string
@@ -89,7 +93,7 @@ export class SchoolMigrationService {
 		return isExternalIdEquivalent;
 	}
 
-	async markUnmigratedUsersAsOutdated(userLoginMigration: UserLoginMigrationDO): Promise<void> {
+	public async markUnmigratedUsersAsOutdated(userLoginMigration: UserLoginMigrationDO): Promise<void> {
 		const startTime: number = performance.now();
 
 		const notMigratedUsers: Page<UserDO> = await this.userService.findUsers({
@@ -112,7 +116,7 @@ export class SchoolMigrationService {
 		);
 	}
 
-	async unmarkOutdatedUsers(userLoginMigration: UserLoginMigrationDO): Promise<void> {
+	public async unmarkOutdatedUsers(userLoginMigration: UserLoginMigrationDO): Promise<void> {
 		const startTime: number = performance.now();
 
 		const migratedUsers: Page<UserDO> = await this.userService.findUsers({
@@ -132,7 +136,7 @@ export class SchoolMigrationService {
 		);
 	}
 
-	async hasSchoolMigratedUser(schoolId: string): Promise<boolean> {
+	public async hasSchoolMigratedUser(schoolId: string): Promise<boolean> {
 		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
 
 		if (!userLoginMigration) {

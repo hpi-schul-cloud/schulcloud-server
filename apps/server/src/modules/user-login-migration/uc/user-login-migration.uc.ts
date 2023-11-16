@@ -1,9 +1,7 @@
-import { AuthenticationService } from '@modules/authentication/services/authentication.service';
+import { AuthenticationService } from '@modules/authentication';
 import { Action, AuthorizationService } from '@modules/authorization';
-import { OAuthTokenDto } from '@modules/oauth';
-import { OAuthService } from '@modules/oauth/service/oauth.service';
-import { ProvisioningService } from '@modules/provisioning';
-import { OauthDataDto } from '@modules/provisioning/dto';
+import { OAuthTokenDto, OAuthService } from '@modules/oauth';
+import { ProvisioningService, OauthDataDto } from '@modules/provisioning';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { EntityId, LegacySchoolDo, Page, Permission, User, UserLoginMigrationDO } from '@shared/domain';

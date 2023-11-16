@@ -38,7 +38,7 @@ export class RestartUserLoginMigrationUc {
 
 		await this.schoolMigrationService.unmarkOutdatedUsers(updatedUserLoginMigration);
 
-		this.logger.info(new UserLoginMigrationStartLoggable(userId, updatedUserLoginMigration.id as string));
+		this.logger.info(new UserLoginMigrationStartLoggable(userId, updatedUserLoginMigration.id));
 
 		return updatedUserLoginMigration;
 	}
