@@ -17,16 +17,6 @@ spec:
   concurrencyPolicy: Forbid
   schedule: "{{ SERVER_FILE_DELETION_CRONJOB_SCHEDULE|default("@hourly", true) }}"
   jobTemplate:
-    labels:
-      app: api
-      cronjob: delete-s3-files
-      app.kubernetes.io/part-of: schulcloud-verbund
-      app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-      app.kubernetes.io/name: delete-s3-files
-      app.kubernetes.io/component: files
-      app.kubernetes.io/managed-by: ansible
-      git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
-      git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
     spec:
       template:
         spec:
@@ -48,3 +38,14 @@ spec:
                 cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
                 memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
           restartPolicy: OnFailure
+        metadata:
+          labels:
+            app: api
+            cronjob: delete-s3-files
+            app.kubernetes.io/part-of: schulcloud-verbund
+            app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            app.kubernetes.io/name: delete-s3-files
+            app.kubernetes.io/component: files
+            app.kubernetes.io/managed-by: ansible
+            git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+            git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}

@@ -17,16 +17,6 @@ spec:
   jobTemplate:
     spec:
       template:
-        metadata:
-          labels:
-            app: api-tsp-sync-cronjob
-            app.kubernetes.io/part-of: schulcloud-verbund
-            app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-            app.kubernetes.io/name: api-tsp-sync-cronjob
-            app.kubernetes.io/component: sync
-            app.kubernetes.io/managed-by: ansible
-            git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
-            git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
         spec:
           containers:
           - name: api-tsp-sync-school-cronjob
@@ -37,3 +27,13 @@ spec:
             command: ['/bin/sh','-c']
             args: ['curl -H "X-API-Key: $SYNC_API_KEY" "http://{{ API_TSP_SYNC_SVC|default("api-tsp-sync-svc", true) }}:3030/api/v1/sync?target=tsp-school" | python3 -m json.tool']
           restartPolicy: OnFailure
+        metadata:
+          labels:
+            app: api-tsp-sync-cronjob
+            app.kubernetes.io/part-of: schulcloud-verbund
+            app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            app.kubernetes.io/name: api-tsp-sync-cronjob
+            app.kubernetes.io/component: sync
+            app.kubernetes.io/managed-by: ansible
+            git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+            git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
