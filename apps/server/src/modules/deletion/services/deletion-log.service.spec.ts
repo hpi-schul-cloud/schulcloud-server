@@ -3,9 +3,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionLogRepo } from '../repo';
-import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
+import { DeletionDomainModel, DeletionOperationModel } from '../domain/types';
 import { DeletionLogService } from './deletion-log.service';
-import { DeletionOperationModel } from '../domain/types/deletion-operation-model.enum';
 import { deletionLogFactory } from '../domain/testing/factory/deletion-log.factory';
 
 describe(DeletionLogService.name, () => {

@@ -11,14 +11,14 @@ import { TeamService } from '@modules/teams';
 import { UserService } from '@modules/user';
 import { RocketChatService } from '@modules/rocketchat';
 import { RocketChatUser, RocketChatUserService, rocketChatUserFactory } from '@modules/rocketchat-user';
-import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
+import { DeletionDomainModel, DeletionStatusModel } from '../domain/types';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
 import { DeletionRequestUc } from './deletion-request.uc';
 import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
-import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
-import { deletionLogFactory } from '../domain/testing/factory/deletion-log.factory';
-import { DeletionRequestBodyProps, DeletionRequestLogResponse } from '../controller/dto';
+import { deletionLogFactory } from '../domain/testing';
+import { DeletionRequestBodyProps } from '../controller/dto';
+import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder, DeletionLogStatisticBuilder } from './builder';
 
 describe(DeletionRequestUc.name, () => {
 	let module: TestingModule;
@@ -386,39 +386,28 @@ describe(DeletionRequestUc.name, () => {
 		describe('when searching for logs for deletionRequest which was executed', () => {
 			const setup = () => {
 				const deletionRequestExecuted = deletionRequestFactory.build({ status: DeletionStatusModel.SUCCESS });
-				const deletionLogExecuted1 = deletionLogFactory.build({ deletionRequestId: deletionRequestExecuted.id });
-				const deletionLogExecuted2 = deletionLogFactory.build({
-					deletionRequestId: deletionRequestExecuted.id,
-					domain: DeletionDomainModel.ACCOUNT,
-					modifiedCount: 0,
-					deletedCount: 1,
-				});
+				const deletionLogExecuted = deletionLogFactory.build({ deletionRequestId: deletionRequestExecuted.id });
 
-				const executedDeletionRequestSummary: DeletionRequestLogResponse = {
-					targetRef: {
-						domain: deletionRequestExecuted.targetRefDomain,
-						id: deletionRequestExecuted.targetRefId,
-					},
-					deletionPlannedAt: deletionRequestExecuted.deleteAfter,
-					statistics: [
-						{
-							domain: deletionLogExecuted1.domain,
-							modifiedCount: deletionLogExecuted1.modifiedCount,
-							deletedCount: deletionLogExecuted1.deletedCount,
-						},
-						{
-							domain: deletionLogExecuted2.domain,
-							modifiedCount: deletionLogExecuted2.modifiedCount,
-							deletedCount: deletionLogExecuted2.deletedCount,
-						},
-					],
-				};
+				const targetRef = DeletionTargetRefBuilder.build(
+					deletionRequestExecuted.targetRefDomain,
+					deletionRequestExecuted.targetRefId
+				);
+				const statistics = DeletionLogStatisticBuilder.build(
+					deletionLogExecuted.domain,
+					deletionLogExecuted.modifiedCount,
+					deletionLogExecuted.deletedCount
+				);
+
+				const executedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
+					targetRef,
+					deletionRequestExecuted.deleteAfter,
+					[statistics]
+				);
 
 				return {
 					deletionRequestExecuted,
 					executedDeletionRequestSummary,
-					deletionLogExecuted1,
-					deletionLogExecuted2,
+					deletionLogExecuted,
 				};
 			};
 
@@ -434,11 +423,10 @@ describe(DeletionRequestUc.name, () => {
 			});
 
 			it('should return object with summary of deletionRequest', async () => {
-				const { deletionRequestExecuted, deletionLogExecuted1, deletionLogExecuted2, executedDeletionRequestSummary } =
-					setup();
+				const { deletionRequestExecuted, deletionLogExecuted, executedDeletionRequestSummary } = setup();
 
 				deletionRequestService.findById.mockResolvedValueOnce(deletionRequestExecuted);
-				deletionLogService.findByDeletionRequestId.mockResolvedValueOnce([deletionLogExecuted1, deletionLogExecuted2]);
+				deletionLogService.findByDeletionRequestId.mockResolvedValueOnce([deletionLogExecuted]);
 
 				const result = await uc.findById(deletionRequestExecuted.id);
 
@@ -449,13 +437,11 @@ describe(DeletionRequestUc.name, () => {
 		describe('when searching for logs for deletionRequest which was not executed', () => {
 			const setup = () => {
 				const deletionRequest = deletionRequestFactory.build();
-				const notExecutedDeletionRequestSummary: DeletionRequestLogResponse = {
-					targetRef: {
-						domain: deletionRequest.targetRefDomain,
-						id: deletionRequest.targetRefId,
-					},
-					deletionPlannedAt: deletionRequest.deleteAfter,
-				};
+				const targetRef = DeletionTargetRefBuilder.build(deletionRequest.targetRefDomain, deletionRequest.targetRefId);
+				const notExecutedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
+					targetRef,
+					deletionRequest.deleteAfter
+				);
 
 				return {
 					deletionRequest,

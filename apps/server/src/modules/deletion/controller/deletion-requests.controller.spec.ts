@@ -2,11 +2,13 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeletionRequestUc } from '../uc';
 import { DeletionRequestsController } from './deletion-requests.controller';
-import { DeletionRequestBodyPropsBuilder } from '../uc/builder/deletion-request-body-props.builder';
-import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
-import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
-import { DeletionRequestLogResponseBuilder } from '../uc/builder/deletion-request-log-response.builder';
-import { DeletionTargetRefBuilder } from '../uc/builder/deletion-target-ref.builder';
+import {
+	DeletionRequestBodyPropsBuilder,
+	DeletionRequestLogResponseBuilder,
+	DeletionTargetRefBuilder,
+} from '../uc/builder';
+import { DeletionDomainModel } from '../domain/types';
+import { deletionRequestFactory } from '../domain/testing';
 
 describe(DeletionRequestsController.name, () => {
 	let module: TestingModule;

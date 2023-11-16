@@ -1,8 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { deletionLogFactory } from './testing/factory/deletion-log.factory';
 import { DeletionLog } from './deletion-log.do';
-import { DeletionOperationModel } from './types/deletion-operation-model.enum';
-import { DeletionDomainModel } from './types/deletion-domain-model.enum';
+import { DeletionOperationModel, DeletionDomainModel } from './types';
 
 describe(DeletionLog.name, () => {
 	describe('constructor', () => {

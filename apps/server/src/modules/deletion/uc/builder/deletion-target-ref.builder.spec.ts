@@ -1,5 +1,5 @@
-import { DeletionDomainModel } from '../../domain/types/deletion-domain-model.enum';
-import { DeletionTargetRefBuilder } from './deletion-target-ref.builder';
+import { DeletionDomainModel } from '../../domain/types';
+import { DeletionTargetRefBuilder } from './index';
 
 describe(DeletionTargetRefBuilder.name, () => {
 	afterAll(() => {

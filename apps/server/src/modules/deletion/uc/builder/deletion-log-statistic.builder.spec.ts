@@ -1,5 +1,5 @@
-import { DeletionDomainModel } from '../../domain/types/deletion-domain-model.enum';
-import { DeletionLogStatisticBuilder } from './deletion-log-statistic.builder';
+import { DeletionDomainModel } from '../../domain/types';
+import { DeletionLogStatisticBuilder } from './index';
 
 describe(DeletionLogStatisticBuilder.name, () => {
 	afterAll(() => {

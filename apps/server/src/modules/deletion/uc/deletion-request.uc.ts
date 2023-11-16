@@ -11,16 +11,12 @@ import { AccountService } from '@modules/account/services';
 import { RocketChatUserService } from '@modules/rocketchat-user';
 import { RocketChatService } from '@modules/rocketchat';
 import { DeletionRequestService } from '../services/deletion-request.service';
-import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
+import { DeletionDomainModel, DeletionOperationModel, DeletionStatusModel } from '../domain/types';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequest } from '../domain/deletion-request.do';
-import { DeletionOperationModel } from '../domain/types/deletion-operation-model.enum';
-import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
 import { DeletionLog } from '../domain/deletion-log.do';
 import { DeletionLogStatistic } from './interface/interfaces';
-import { DeletionLogStatisticBuilder } from './builder/deletion-log-statistic.builder';
-import { DeletionRequestLogResponseBuilder } from './builder/deletion-request-log-response.builder';
-import { DeletionTargetRefBuilder } from './builder/deletion-target-ref.builder';
+import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from './builder';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 
 @Injectable()

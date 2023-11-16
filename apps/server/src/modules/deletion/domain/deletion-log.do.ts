@@ -1,7 +1,6 @@
 import { EntityId } from '@shared/domain/types';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { DeletionDomainModel } from './types/deletion-domain-model.enum';
-import { DeletionOperationModel } from './types/deletion-operation-model.enum';
+import { DeletionDomainModel, DeletionOperationModel } from './types';
 
 export interface DeletionLogProps extends AuthorizableObject {
 	createdAt?: Date;
