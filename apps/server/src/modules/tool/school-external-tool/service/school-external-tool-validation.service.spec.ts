@@ -82,14 +82,6 @@ describe('SchoolExternalToolValidationService', () => {
 				expect(externalToolService.findById).toHaveBeenCalledWith(schoolExternalTool.toolId);
 			});
 
-			it('should call commonToolValidationService.checkForDuplicateParameters', async () => {
-				const { schoolExternalTool } = setup();
-
-				await service.validate(schoolExternalTool);
-
-				expect(commonToolValidationService.checkForDuplicateParameters).toHaveBeenCalledWith(schoolExternalTool);
-			});
-
 			it('should call commonToolValidationService.checkCustomParameterEntries', async () => {
 				const { schoolExternalTool } = setup();
 

@@ -15,13 +15,12 @@ export class SchoolExternalToolValidationService {
 	) {}
 
 	async validate(schoolExternalTool: SchoolExternalTool): Promise<void> {
-		this.commonToolValidationService.checkForDuplicateParameters(schoolExternalTool);
-
 		const loadedExternalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
 		if (!this.toolFeatures.toolStatusWithoutVersions) {
 			this.checkVersionMatch(schoolExternalTool.toolVersion, loadedExternalTool.version);
 		}
+
 		this.commonToolValidationService.checkCustomParameterEntries(loadedExternalTool, schoolExternalTool);
 	}
 
