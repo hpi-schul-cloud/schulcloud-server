@@ -10,14 +10,14 @@ const generateEmptyDashboard = (userId: EntityId) => {
 	return dashboard;
 };
 
-export interface DashboardRepoInterface {
+export interface IDashboardRepo {
 	getUsersDashboard(userId: EntityId): Promise<DashboardEntity>;
 	getDashboardById(id: EntityId): Promise<DashboardEntity>;
 	persistAndFlush(entity: DashboardEntity): Promise<DashboardEntity>;
 }
 
 @Injectable()
-export class DashboardRepo implements DashboardRepoInterface {
+export class DashboardRepo implements IDashboardRepo {
 	constructor(protected readonly em: EntityManager, protected readonly mapper: DashboardModelMapper) {}
 
 	// ToDo: refactor this to be in an abstract class (see baseRepo)

@@ -10,7 +10,7 @@ import {
 	LearnroomTypes,
 	SortOrder,
 } from '@shared/domain';
-import { CourseRepo, DashboardRepoInterface } from '@shared/repo';
+import { CourseRepo, IDashboardRepo } from '@shared/repo';
 import { setupEntities } from '@shared/testing';
 import { DashboardUc } from './dashboard.uc';
 
@@ -31,7 +31,7 @@ const learnroomMock = (id: string, name: string) => {
 describe('dashboard uc', () => {
 	let module: TestingModule;
 	let service: DashboardUc;
-	let repo: DashboardRepoInterface;
+	let repo: IDashboardRepo;
 	let courseRepo: CourseRepo;
 
 	afterAll(async () => {
