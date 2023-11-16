@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import {
 	AnyBoardDo,
 	AnyContentElementDo,
 	Card,
 	ContentElementFactory,
 	ContentElementType,
+	DrawingElement,
 	EntityId,
 	isAnyContentElement,
 	SubmissionItem,
@@ -41,6 +42,12 @@ export class ContentElementService {
 	}
 
 	async create(parent: Card | SubmissionItem, type: ContentElementType): Promise<AnyContentElementDo> {
+		if (type === 'drawing') {
+			const drawing = parent.children.find((child) => child instanceof DrawingElement);
+			if (drawing) {
+				throw new BadRequestException('Cannot create multiple drawings in one Card');
+			}
+		}
 		const element = this.contentElementFactory.build(type, parent.id);
 		parent.addChild(element);
 		await this.boardDoRepo.save(parent.children, parent);
