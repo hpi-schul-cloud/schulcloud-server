@@ -1,5 +1,5 @@
 import { DeletionDomainModel } from '../../domain/types';
-import { DeletionLogStatisticBuilder } from './index';
+import { DeletionLogStatisticBuilder } from '.';
 
 describe(DeletionLogStatisticBuilder.name, () => {
 	afterAll(() => {
