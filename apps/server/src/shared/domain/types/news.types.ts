@@ -21,7 +21,7 @@ export interface CreateNews {
 export type IUpdateNews = Partial<CreateNews>;
 
 /** interface for finding news with optional targetId */
-export interface NewsScopeInterface {
+export interface INewsScope {
 	target?: { targetModel: NewsTargetModel; targetId?: EntityId };
 	unpublished?: boolean;
 }
