@@ -1051,24 +1051,6 @@ describe('lesson copy service', () => {
 			expect(hasNexboard).toBe(false);
 	});
 
-		// it('should not call neXboard service, if feature flag is false', async () => {
-		// 	const { user, destinationCourse, originalLesson } = setup();
-		// 	configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue(false);
-
-		// 	const status = await copyService.copyLesson({
-		// 		originalLessonId: originalLesson.id,
-		// 		destinationCourse,
-		// 		user,
-		// 	});
-
-		// 	const lessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
-		// 	expect(configurationSpy).toHaveBeenCalledWith('FEATURE_NEXBOARD_ENABLED');
-		// 	expect(nexboardService.createNexboard).not.toHaveBeenCalled();
-		// 	expect(lessonContents).toEqual([]);
-
-		// 	configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue(true);
-		// });
-
 		it('should call neXboard service to create new neXboard', async () => {
 			const { user, destinationCourse, originalLesson } = setup();
 
@@ -1094,23 +1076,6 @@ describe('lesson copy service', () => {
 			expect(hasNexboard).toBe(false);
 	});
 
-
-		// it('should set content type to LESSON_CONTENT_NEXBOARD', async () => {
-		// 	const { user, destinationCourse, originalLesson } = setup();
-
-		// 	nexboardService.createNexboard.mockResolvedValue({ board: '123', url: 'abc' });
-
-		// 	const status = await copyService.copyLesson({
-		// 		originalLessonId: originalLesson.id,
-		// 		destinationCourse,
-		// 		user,
-		// 	});
-		// 	const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
-		// 	expect(contentsStatus).toBeDefined();
-		// 	if (contentsStatus?.elements) {
-		// 		expect(contentsStatus.elements[0].type).toEqual(CopyElementType.LESSON_CONTENT_NEXBOARD);
-		// 	}
-		// });
 	});
 
 	describe('when lesson contains linked materials', () => {
@@ -1179,20 +1144,6 @@ describe('lesson copy service', () => {
 					mockedMaterialGroupStatus,
 				};
 			};
-
-			// it('should copy the material correctly', async () => {
-			// 	const { originalLesson, destinationCourse, user, originalMaterial } = setup();
-			// 	const copyStatus = await copyService.copyLesson({
-			// 		originalLessonId: originalLesson.id,
-			// 		destinationCourse,
-			// 		user,
-			// 	});
-			// 	const copiedLesson = copyStatus.copyEntity as LessonEntity;
-			// 	const copiedMaterial = copiedLesson.materials[0];
-			// 	expect(copiedLesson.materials.length).toEqual(1);
-			// 	expect(copiedMaterial.title).toEqual(originalMaterial.title);
-			// 	expect(copiedMaterial.url).toEqual(originalMaterial.url);
-			// });
 
 			it('should put copy status materials leaf', async () => {
 				const { originalLesson, destinationCourse, user, mockedMaterialGroupStatus } = setup();
