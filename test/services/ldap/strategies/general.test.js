@@ -66,6 +66,7 @@ describe('GeneralLDAPStrategy', () => {
 	});
 
 	after(() => {
+		app.unuse('/ldap');
 		app.use('/ldap', originalLdapService);
 	});
 
