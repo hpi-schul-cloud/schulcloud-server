@@ -695,10 +695,8 @@ describe('ToolController (API)', () => {
 
 				const response: Response = await loggedInClient.get(`${externalToolEntity.id}/metadata`);
 
-				const body: ExternalToolMetadataResponse = response.body as ExternalToolMetadataResponse;
-
 				expect(response.statusCode).toEqual(HttpStatus.OK);
-				expect(body).toEqual<ExternalToolMetadataResponse>({
+				expect(response.body).toEqual<ExternalToolMetadataResponse>({
 					schoolExternalToolCount: 2,
 					contextExternalToolCountPerContext: {
 						course: 3,

@@ -81,7 +81,7 @@ export class ExternalToolUc {
 	}
 
 	async getMetadataForExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolMetadata> {
-		// TODO ticket: https://ticketsystem.dbildungscloud.de/browse/N21-1496
+		// TODO N21-1496: Change External Tools to use authorizationService.checkPermission
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
 		const metadata: ExternalToolMetadata = await this.externalToolMetadataService.getMetadata(toolId);
