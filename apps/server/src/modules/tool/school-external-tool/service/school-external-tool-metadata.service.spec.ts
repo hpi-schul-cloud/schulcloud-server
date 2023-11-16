@@ -104,7 +104,7 @@ describe('SchoolExternalToolMetadataService', () => {
 				);
 
 				const schoolExternalToolMetadata: SchoolExternalToolMetadata = new SchoolExternalToolMetadata({
-					contextExternalToolCountPerContext: { course: 0, 'board-element': 0 },
+					contextExternalToolCountPerContext: { course: 0, boardElement: 0 },
 				});
 
 				schoolExternalToolRepo.findByExternalToolId.mockResolvedValue([schoolExternalTool, schoolExternalTool1]);
