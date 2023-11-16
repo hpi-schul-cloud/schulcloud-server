@@ -4,13 +4,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { StorageProviderEntity, SystemEntity } from '@shared/domain';
-import { DatabaseManagementService } from '@shared/infra/database';
-import {
-	DefaultEncryptionService,
-	LdapEncryptionService,
-	SymetricKeyEncryptionService,
-} from '@shared/infra/encryption';
-import { FileSystemAdapter } from '@shared/infra/file-system';
+import { DatabaseManagementService } from '@infra/database';
+import { DefaultEncryptionService, LdapEncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
+import { FileSystemAdapter } from '@infra/file-system';
 import { setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from 'mongodb';

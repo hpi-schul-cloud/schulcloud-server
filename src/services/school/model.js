@@ -177,7 +177,7 @@ const gradeLevelSchema = new Schema({
 });
 
 const schoolModel = mongoose.model('school', schoolSchema);
-const userLoginMigrationModel = mongoose.model('userLoginMigration', userLoginMigrationSchema, 'user_login_migrations');
+const userLoginMigrationModel = mongoose.model('userLoginMigration', userLoginMigrationSchema, 'user-login-migrations');
 const schoolGroupModel = mongoose.model('schoolGroup', schoolGroupSchema);
 const yearModel = mongoose.model('year', yearSchema);
 const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
