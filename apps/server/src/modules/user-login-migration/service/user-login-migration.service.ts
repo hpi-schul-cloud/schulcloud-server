@@ -1,12 +1,14 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, SchoolFeatures, SystemTypeEnum, UserDO, UserLoginMigrationDO } from '@shared/domain';
-import { UserLoginMigrationRepo } from '@shared/repo';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { SystemDto, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
-import { UserLoginMigrationNotFoundLoggableException } from '../error';
-import { SchoolMigrationService } from './school-migration.service';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { EntityId, LegacySchoolDo, SchoolFeatures, SystemTypeEnum, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { UserLoginMigrationRepo } from '@shared/repo';
+import {
+	UserLoginMigrationAlreadyClosedLoggableException,
+	UserLoginMigrationGracePeriodExpiredLoggableException,
+} from '../loggable';
 
 @Injectable()
 export class UserLoginMigrationService {
@@ -14,72 +16,10 @@ export class UserLoginMigrationService {
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo,
 		private readonly schoolService: LegacySchoolService,
-		private readonly systemService: SystemService,
-		private readonly schoolMigrationService: SchoolMigrationService
+		private readonly systemService: SystemService
 	) {}
 
-	/**
-	 * @deprecated Use the other functions in this class instead.
-	 *
-	 * @param schoolId
-	 * @param oauthMigrationPossible
-	 * @param oauthMigrationMandatory
-	 * @param oauthMigrationFinished
-	 */
-	async setMigration(
-		schoolId: EntityId,
-		oauthMigrationPossible?: boolean,
-		oauthMigrationMandatory?: boolean,
-		oauthMigrationFinished?: boolean
-	): Promise<UserLoginMigrationDO> {
-		const schoolDo: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
-
-		const existingUserLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(
-			schoolId
-		);
-
-		let userLoginMigration: UserLoginMigrationDO;
-
-		if (existingUserLoginMigration) {
-			userLoginMigration = existingUserLoginMigration;
-		} else {
-			if (!oauthMigrationPossible) {
-				throw new UnprocessableEntityException(`School ${schoolId} has no UserLoginMigration`);
-			}
-
-			userLoginMigration = await this.createNewMigration(schoolDo);
-
-			this.enableOauthMigrationFeature(schoolDo);
-			await this.schoolService.save(schoolDo);
-		}
-
-		if (oauthMigrationPossible === true) {
-			userLoginMigration.closedAt = undefined;
-			userLoginMigration.finishedAt = undefined;
-		}
-
-		if (oauthMigrationMandatory !== undefined) {
-			userLoginMigration.mandatorySince = oauthMigrationMandatory ? new Date() : undefined;
-		}
-
-		if (oauthMigrationFinished !== undefined) {
-			userLoginMigration.closedAt = oauthMigrationFinished ? new Date() : undefined;
-			userLoginMigration.finishedAt = oauthMigrationFinished
-				? new Date(Date.now() + (Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number))
-				: undefined;
-		}
-
-		const savedMigration: UserLoginMigrationDO = await this.userLoginMigrationRepo.save(userLoginMigration);
-
-		if (oauthMigrationFinished !== undefined) {
-			// this would throw an error when executed before the userLoginMigrationRepo.save method.
-			await this.schoolService.removeFeature(schoolId, SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION);
-		}
-
-		return savedMigration;
-	}
-
-	async startMigration(schoolId: string): Promise<UserLoginMigrationDO> {
+	public async startMigration(schoolId: string): Promise<UserLoginMigrationDO> {
 		const schoolDo: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
 
 		const userLoginMigrationDO: UserLoginMigrationDO = await this.createNewMigration(schoolDo);
@@ -92,27 +32,29 @@ export class UserLoginMigrationService {
 		return userLoginMigration;
 	}
 
-	async restartMigration(schoolId: string): Promise<UserLoginMigrationDO> {
-		const existingUserLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(
-			schoolId
-		);
+	public async restartMigration(userLoginMigration: UserLoginMigrationDO): Promise<UserLoginMigrationDO> {
+		this.checkGracePeriod(userLoginMigration);
 
-		if (!existingUserLoginMigration) {
-			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
+		if (!userLoginMigration.closedAt || !userLoginMigration.finishedAt) {
+			return userLoginMigration;
 		}
 
-		const updatedUserLoginMigration = await this.updateExistingMigration(existingUserLoginMigration);
+		userLoginMigration.closedAt = undefined;
+		userLoginMigration.finishedAt = undefined;
 
-		await this.schoolMigrationService.unmarkOutdatedUsers(schoolId);
+		const updatedUserLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationRepo.save(userLoginMigration);
 
 		return updatedUserLoginMigration;
 	}
 
-	async setMigrationMandatory(schoolId: string, mandatory: boolean): Promise<UserLoginMigrationDO> {
-		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+	public async setMigrationMandatory(
+		userLoginMigration: UserLoginMigrationDO,
+		mandatory: boolean
+	): Promise<UserLoginMigrationDO> {
+		this.checkGracePeriod(userLoginMigration);
 
-		if (!userLoginMigration) {
-			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
+		if (userLoginMigration.closedAt) {
+			throw new UserLoginMigrationAlreadyClosedLoggableException(userLoginMigration.closedAt, userLoginMigration.id);
 		}
 
 		if (mandatory) {
@@ -126,14 +68,17 @@ export class UserLoginMigrationService {
 		return userLoginMigration;
 	}
 
-	async closeMigration(schoolId: string): Promise<UserLoginMigrationDO> {
-		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+	public async closeMigration(userLoginMigration: UserLoginMigrationDO): Promise<UserLoginMigrationDO> {
+		this.checkGracePeriod(userLoginMigration);
 
-		if (!userLoginMigration) {
-			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
+		if (userLoginMigration.closedAt) {
+			return userLoginMigration;
 		}
 
-		await this.schoolService.removeFeature(schoolId, SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION);
+		await this.schoolService.removeFeature(
+			userLoginMigration.schoolId,
+			SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION
+		);
 
 		const now: Date = new Date();
 		const gracePeriodDuration: number = Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number;
@@ -144,6 +89,22 @@ export class UserLoginMigrationService {
 		userLoginMigration = await this.userLoginMigrationRepo.save(userLoginMigration);
 
 		return userLoginMigration;
+	}
+
+	private checkGracePeriod(userLoginMigration: UserLoginMigrationDO) {
+		if (userLoginMigration.finishedAt && this.isGracePeriodExpired(userLoginMigration)) {
+			throw new UserLoginMigrationGracePeriodExpiredLoggableException(
+				userLoginMigration.id as string,
+				userLoginMigration.finishedAt
+			);
+		}
+	}
+
+	private isGracePeriodExpired(userLoginMigration: UserLoginMigrationDO): boolean {
+		const isGracePeriodExpired: boolean =
+			!!userLoginMigration.finishedAt && Date.now() >= userLoginMigration.finishedAt.getTime();
+
+		return isGracePeriodExpired;
 	}
 
 	private async createNewMigration(school: LegacySchoolDo): Promise<UserLoginMigrationDO> {
@@ -168,15 +129,6 @@ export class UserLoginMigrationService {
 		return userLoginMigrationDO;
 	}
 
-	private async updateExistingMigration(userLoginMigrationDO: UserLoginMigrationDO) {
-		userLoginMigrationDO.closedAt = undefined;
-		userLoginMigrationDO.finishedAt = undefined;
-
-		const userLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationRepo.save(userLoginMigrationDO);
-
-		return userLoginMigration;
-	}
-
 	private enableOauthMigrationFeature(schoolDo: LegacySchoolDo) {
 		if (schoolDo.features && !schoolDo.features.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED)) {
 			schoolDo.features.push(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
@@ -185,13 +137,13 @@ export class UserLoginMigrationService {
 		}
 	}
 
-	async findMigrationBySchool(schoolId: string): Promise<UserLoginMigrationDO | null> {
+	public async findMigrationBySchool(schoolId: string): Promise<UserLoginMigrationDO | null> {
 		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
 
 		return userLoginMigration;
 	}
 
-	async findMigrationByUser(userId: EntityId): Promise<UserLoginMigrationDO | null> {
+	public async findMigrationByUser(userId: EntityId): Promise<UserLoginMigrationDO | null> {
 		const userDO: UserDO = await this.userService.findById(userId);
 		const { schoolId } = userDO;
 
@@ -211,7 +163,7 @@ export class UserLoginMigrationService {
 		return userLoginMigration;
 	}
 
-	async deleteUserLoginMigration(userLoginMigration: UserLoginMigrationDO): Promise<void> {
+	public async deleteUserLoginMigration(userLoginMigration: UserLoginMigrationDO): Promise<void> {
 		await this.userLoginMigrationRepo.delete(userLoginMigration);
 	}
 }
