@@ -43,7 +43,7 @@ export class CourseCopyService {
 		const existingNames = existingCourses.map((course: Course) => course.name);
 		const copyName = this.copyHelperService.deriveCopyName(newName || originalCourse.name, existingNames);
 
-			// copy course and board
+		// copy course and board
 		const courseCopy = await this.copyCourseEntity({ user, originalCourse, copyName });
 		const boardStatus = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
 		const filteredBoardStatus = this.filterOutNeXboardFromCopyStatus(boardStatus);

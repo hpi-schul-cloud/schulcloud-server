@@ -43,28 +43,28 @@ export class BoardCopyService {
 		private readonly copyHelperService: CopyHelperService
 	) {}
 
-	async copyBoard(params: BoardCopyParams): Promise<CopyStatus> {
-		const { originalBoard, user, destinationCourse } = params;
+async copyBoard(params: BoardCopyParams): Promise<CopyStatus> {
+	const { originalBoard, user, destinationCourse } = params;
 
-		const boardElements: BoardElement[] = originalBoard.getElements();
-		const elements: CopyStatus[] = await this.copyBoardElements(boardElements, user, destinationCourse);
-		const references: BoardElement[] = this.extractReferences(elements);
+	const boardElements: BoardElement[] = originalBoard.getElements();
+	const elements: CopyStatus[] = await this.copyBoardElements(boardElements, user, destinationCourse);
+	const references: BoardElement[] = this.extractReferences(elements);
 
-		let boardCopy: Board = new Board({ references, course: destinationCourse });
+	let boardCopy: Board = new Board({ references, course: destinationCourse });
 
-		let status: CopyStatus = {
-			title: 'board',
-			type: CopyElementType.BOARD,
-			status: this.copyHelperService.deriveStatusFromElements(elements),
-			copyEntity: boardCopy,
-			originalEntity: params.originalBoard,
-			elements,
-		};
+	let status: CopyStatus = {
+		title: 'board',
+		type: CopyElementType.BOARD,
+		status: this.copyHelperService.deriveStatusFromElements(elements),
+		copyEntity: boardCopy,
+		originalEntity: params.originalBoard,
+		elements,
+	};
 
-		status = this.updateCopiedEmbeddedTasksOfLessons(status);
-		if (status.copyEntity) {
-			boardCopy = status.copyEntity as Board;
-		}
+	status = this.updateCopiedEmbeddedTasksOfLessons(status);
+	if (status.copyEntity) {
+		boardCopy = status.copyEntity as Board;
+	}
 
 		try {
 			await this.boardRepo.save(boardCopy);
