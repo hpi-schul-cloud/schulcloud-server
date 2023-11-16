@@ -4,7 +4,7 @@ import { SchoolExternalToolRepo } from '@shared/repo';
 import { ToolConfigurationStatus } from '../../common/enum';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
-import { ToolFeatures, ToolFeaturesInterface } from '../../tool-config';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
@@ -15,7 +15,7 @@ export class SchoolExternalToolService {
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
-		@Inject(ToolFeatures) private readonly toolFeatures: ToolFeaturesInterface
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {}
 
 	async findById(schoolExternalToolId: EntityId): Promise<SchoolExternalTool> {

@@ -7,7 +7,7 @@ import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/
 import { ToolConfigurationStatus } from '../../common/enum';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
-import { ToolFeatures, ToolFeaturesInterface } from '../../tool-config';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 import { SchoolExternalToolService } from './school-external-tool.service';
@@ -19,7 +19,7 @@ describe('SchoolExternalToolService', () => {
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let schoolExternalToolValidationService: DeepMocked<SchoolExternalToolValidationService>;
-	let toolFearures: DeepMocked<ToolFeaturesInterface>;
+	let toolFearures: DeepMocked<IToolFeatures>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({

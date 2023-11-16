@@ -4,7 +4,7 @@ import { EntityId } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
-import { ToolFeatures, ToolFeaturesInterface } from '../../tool-config';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
 import {
@@ -25,7 +25,7 @@ const contentTypeDetector: Record<string, string> = {
 
 export class ExternalToolLogoService {
 	constructor(
-		@Inject(ToolFeatures) private readonly toolFeatures: ToolFeaturesInterface,
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
 		private readonly logger: Logger,
 		private readonly httpService: HttpService,
 		private readonly externalToolService: ExternalToolService

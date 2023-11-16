@@ -5,7 +5,7 @@ import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFact
 import { ToolConfigurationStatus } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
 import { SchoolExternalToolValidationService } from '../../school-external-tool/service';
-import { ToolFeatures, ToolFeaturesInterface } from '../../tool-config';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ContextExternalToolValidationService } from './context-external-tool-validation.service';
 import { ToolVersionService } from './tool-version-service';
 
@@ -16,7 +16,7 @@ describe('ToolVersionService', () => {
 	let contextExternalToolValidationService: DeepMocked<ContextExternalToolValidationService>;
 	let schoolExternalToolValidationService: DeepMocked<SchoolExternalToolValidationService>;
 	let commonToolService: DeepMocked<CommonToolService>;
-	let toolFeatures: DeepMocked<ToolFeaturesInterface>;
+	let toolFeatures: DeepMocked<IToolFeatures>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
