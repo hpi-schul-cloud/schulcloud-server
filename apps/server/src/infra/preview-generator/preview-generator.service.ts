@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
 import { GetFile, S3ClientAdapter } from '@infra/s3-client';
+import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { subClass } from 'gm';
 import { PassThrough } from 'stream';
@@ -44,6 +44,7 @@ export class PreviewGeneratorService {
 		const { format, width } = previewParams;
 
 		const preview = this.imageMagick(original.data);
+		preview.coalesce();
 
 		if (width) {
 			preview.resize(width, undefined, '>');
