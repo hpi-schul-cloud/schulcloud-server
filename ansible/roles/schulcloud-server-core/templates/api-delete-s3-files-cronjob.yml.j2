@@ -7,7 +7,7 @@ metadata:
     cronjob: delete-s3-files
     app.kubernetes.io/part-of: schulcloud-verbund
     app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-    app.kubernetes.io/name: api
+    app.kubernetes.io/name: delete-s3-files
     app.kubernetes.io/component: files
     app.kubernetes.io/managed-by: ansible
     git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
@@ -22,7 +22,7 @@ spec:
       cronjob: delete-s3-files
       app.kubernetes.io/part-of: schulcloud-verbund
       app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-      app.kubernetes.io/name: api
+      app.kubernetes.io/name: delete-s3-files
       app.kubernetes.io/component: files
       app.kubernetes.io/managed-by: ansible
       git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
