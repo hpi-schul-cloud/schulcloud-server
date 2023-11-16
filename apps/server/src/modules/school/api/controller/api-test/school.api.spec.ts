@@ -9,7 +9,7 @@ import {
 	federalStateFactory,
 } from '@shared/testing/factory';
 import { ServerTestModule } from '@src/modules/server';
-import { SchoolResponse } from '../response';
+import { SchoolForExternalInviteResponse, SchoolResponse } from '../response';
 
 describe('School Controller (API)', () => {
 	let app: INestApplication;
@@ -64,6 +64,28 @@ describe('School Controller (API)', () => {
 				const response = await loggedInClient.get(`id/123`);
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+			});
+		});
+
+		describe('when requested school is not found', () => {
+			const setup = async () => {
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				await em.persistAndFlush([studentAccount, studentUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				return { loggedInClient };
+			};
+
+			it('should return 404', async () => {
+				const { loggedInClient } = await setup();
+				const someId = new ObjectId().toHexString();
+
+				const response = await loggedInClient.get(`id/${someId}`);
+
+				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
 			});
 		});
 
@@ -136,6 +158,45 @@ describe('School Controller (API)', () => {
 				const { schoolId, loggedInClient, expectedResponse } = await setup();
 
 				const response = await loggedInClient.get(`id/${schoolId}`);
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual(expectedResponse);
+			});
+		});
+	});
+
+	describe('getSchoolListForExternalInvite', () => {
+		describe('when no user is logged in', () => {
+			it('should return 401', async () => {
+				const response = await testApiClient.get('list-for-external-invite');
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when a user is logged in', () => {
+			const setup = async () => {
+				const schools = schoolFactory.buildList(3);
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				await em.persistAndFlush([...schools, studentAccount, studentUser]);
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				const expectedResponse: SchoolForExternalInviteResponse[] = schools.map((school) => {
+					return {
+						id: school.id,
+						name: school.name,
+						purpose: school.purpose,
+					};
+				});
+
+				return { loggedInClient, expectedResponse };
+			};
+
+			it('should return school list for external invite', async () => {
+				const { loggedInClient, expectedResponse } = await setup();
+
+				const response = await loggedInClient.get('list-for-external-invite');
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual(expectedResponse);
