@@ -6,7 +6,7 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
-import { CurrentUserInterface } from '@src/modules/authentication';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { Request } from 'express';
 import request from 'supertest';
@@ -45,7 +45,7 @@ describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;
 	let api: API;
 	let em: EntityManager;
-	let currentUser: CurrentUserInterface;
+	let currentUser: ICurrentUser;
 	let h5PEditorUc: DeepMocked<H5PEditorUc>;
 
 	beforeAll(async () => {

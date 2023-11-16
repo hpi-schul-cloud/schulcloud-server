@@ -4,7 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { h5pContentFactory, setupEntities } from '@shared/testing';
-import { CurrentUserInterface } from '@src/modules/authentication';
+import { ICurrentUser } from '@src/modules/authentication';
 import { AuthorizationContextBuilder, AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { UserService } from '@src/modules/user';
 import { H5PContentParentType } from '../entity';
@@ -22,7 +22,7 @@ const createParams = () => {
 	const contentId = new ObjectId().toHexString();
 	const parentId = new ObjectId().toHexString();
 
-	const mockCurrentUser: CurrentUserInterface = {
+	const mockCurrentUser: ICurrentUser = {
 		accountId: 'mockAccountId',
 		roles: ['student'],
 		schoolId: 'mockSchoolId',

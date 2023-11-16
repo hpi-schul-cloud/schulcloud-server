@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller';
@@ -23,10 +23,7 @@ export class NewsController {
 	 * Create a news by a user in a given scope (school or team).
 	 */
 	@Post()
-	async create(
-		@CurrentUser() currentUser: CurrentUserInterface,
-		@Body() params: CreateNewsParams
-	): Promise<NewsResponse> {
+	async create(@CurrentUser() currentUser: ICurrentUser, @Body() params: CreateNewsParams): Promise<NewsResponse> {
 		const news = await this.newsUc.create(
 			currentUser.userId,
 			currentUser.schoolId,
@@ -41,7 +38,7 @@ export class NewsController {
 	 */
 	@Get()
 	async findAll(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: FilterNewsParams,
 		@Query() pagination: PaginationParams
 	): Promise<NewsListResponse> {
@@ -61,10 +58,7 @@ export class NewsController {
 	 * The news entity has school and user names populated.
 	 */
 	@Get(':newsId')
-	async findOne(
-		@Param() urlParams: NewsUrlParams,
-		@CurrentUser() currentUser: CurrentUserInterface
-	): Promise<NewsResponse> {
+	async findOne(@Param() urlParams: NewsUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<NewsResponse> {
 		const news = await this.newsUc.findOneByIdForUser(urlParams.newsId, currentUser.userId);
 		const dto = NewsMapper.mapToResponse(news);
 		return dto;
@@ -76,7 +70,7 @@ export class NewsController {
 	@Patch(':newsId')
 	async update(
 		@Param() urlParams: NewsUrlParams,
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Body() params: UpdateNewsParams
 	): Promise<NewsResponse> {
 		const news = await this.newsUc.update(
@@ -92,7 +86,7 @@ export class NewsController {
 	 * Delete a news.
 	 */
 	@Delete(':newsId')
-	async delete(@Param() urlParams: NewsUrlParams, @CurrentUser() currentUser: CurrentUserInterface): Promise<string> {
+	async delete(@Param() urlParams: NewsUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<string> {
 		const deletedId = await this.newsUc.delete(urlParams.newsId, currentUser.userId);
 		return deletedId;
 	}

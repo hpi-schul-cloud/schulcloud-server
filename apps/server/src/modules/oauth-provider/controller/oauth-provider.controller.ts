@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
 // import should be @infra/oauth-provider
 import {
@@ -47,7 +47,7 @@ export class OauthProviderController {
 	@Authenticate('jwt')
 	@Get('clients/:id')
 	async getOAuth2Client(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: IdParams
 	): Promise<OauthClientResponse> {
 		const client: ProviderOauthClient = await this.crudUc.getOAuth2Client(currentUser, params.id);
@@ -58,7 +58,7 @@ export class OauthProviderController {
 	@Authenticate('jwt')
 	@Get('clients')
 	async listOAuth2Clients(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ListOauthClientsParams
 	): Promise<OauthClientResponse[]> {
 		const clients: ProviderOauthClient[] = await this.crudUc.listOAuth2Clients(
@@ -78,7 +78,7 @@ export class OauthProviderController {
 	@Authenticate('jwt')
 	@Post('clients')
 	async createOAuth2Client(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: OauthClientBody
 	): Promise<OauthClientResponse> {
 		const client: ProviderOauthClient = await this.crudUc.createOAuth2Client(currentUser, body);
@@ -89,7 +89,7 @@ export class OauthProviderController {
 	@Authenticate('jwt')
 	@Put('clients/:id')
 	async updateOAuth2Client(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: IdParams,
 		@Body() body: OauthClientBody
 	): Promise<OauthClientResponse> {
@@ -100,7 +100,7 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Delete('clients/:id')
-	deleteOAuth2Client(@CurrentUser() currentUser: CurrentUserInterface, @Param() params: IdParams): Promise<void> {
+	deleteOAuth2Client(@CurrentUser() currentUser: ICurrentUser, @Param() params: IdParams): Promise<void> {
 		const promise: Promise<void> = this.crudUc.deleteOAuth2Client(currentUser, params.id);
 		return promise;
 	}
@@ -118,7 +118,7 @@ export class OauthProviderController {
 		@Param() params: ChallengeParams,
 		@Query() query: AcceptQuery,
 		@Body() body: LoginRequestBody,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<RedirectResponse> {
 		const redirectResponse: ProviderRedirectResponse = await this.oauthProviderLoginFlowUc.patchLoginRequest(
 			currentUser.userId,
@@ -152,7 +152,7 @@ export class OauthProviderController {
 		@Param() params: ChallengeParams,
 		@Query() query: AcceptQuery,
 		@Body() body: ConsentRequestBody,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<RedirectResponse> {
 		const redirectResponse: ProviderRedirectResponse = await this.consentFlowUc.patchConsentRequest(
 			params.challenge,
@@ -166,7 +166,7 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Get('auth/sessions/consent')
-	async listConsentSessions(@CurrentUser() currentUser: CurrentUserInterface): Promise<ConsentSessionResponse[]> {
+	async listConsentSessions(@CurrentUser() currentUser: ICurrentUser): Promise<ConsentSessionResponse[]> {
 		const sessions: ProviderConsentSessionResponse[] = await this.oauthProviderUc.listConsentSessions(
 			currentUser.userId
 		);
@@ -179,10 +179,7 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Delete('auth/sessions/consent')
-	revokeConsentSession(
-		@CurrentUser() currentUser: CurrentUserInterface,
-		@Param() params: RevokeConsentParams
-	): Promise<void> {
+	revokeConsentSession(@CurrentUser() currentUser: ICurrentUser, @Param() params: RevokeConsentParams): Promise<void> {
 		const promise: Promise<void> = this.oauthProviderUc.revokeConsentSession(currentUser.userId, params.client);
 		return promise;
 	}

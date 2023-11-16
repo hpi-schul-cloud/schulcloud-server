@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { ServerTestModule } from '@modules/server/server.module';
 import { Controller, ExecutionContext, ForbiddenException, Get, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -11,7 +11,7 @@ import { Authenticate, CurrentUser, JWT } from './auth.decorator';
 @Controller('test_decorator_currentUser')
 export class TestDecoratorCurrentUserController {
 	@Get('test')
-	async test(@CurrentUser() currentUser: CurrentUserInterface): Promise<void> {
+	async test(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		return Promise.resolve();
 	}
 }
@@ -27,7 +27,7 @@ export class TestDecoratorJWTController {
 
 describe('auth.decorator', () => {
 	let app: INestApplication;
-	let currentUser: CurrentUserInterface;
+	let currentUser: ICurrentUser;
 	let module: TestingModule;
 
 	beforeAll(async () => {

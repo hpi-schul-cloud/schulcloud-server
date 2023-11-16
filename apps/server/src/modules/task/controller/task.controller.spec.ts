@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CopyApiResponse } from '@modules/copy-helper/dto/copy.response';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -42,7 +42,7 @@ describe('TaskController', () => {
 		describe('when task should be copied via API call', () => {
 			const setup = () => {
 				// todo: why not use builder instead of as
-				const currentUser = { userId: 'userId' } as CurrentUserInterface;
+				const currentUser = { userId: 'userId' } as ICurrentUser;
 				const ucResult = {
 					title: 'example title',
 					type: 'TASK' as CopyElementType,

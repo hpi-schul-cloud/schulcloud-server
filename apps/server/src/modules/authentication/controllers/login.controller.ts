@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ForbiddenOperationError, ValidationError } from '@shared/common';
 import { CurrentUser } from '../decorator';
-import type { CurrentUserInterface, OauthCurrentUser } from '../interface';
+import type { ICurrentUser, OauthCurrentUser } from '../interface';
 import { LoginDto } from '../uc/dto';
 import { LoginUc } from '../uc/login.uc';
 import {
@@ -28,10 +28,7 @@ export class LoginController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid user credentials.' })
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	async loginLdap(
-		@CurrentUser() user: CurrentUserInterface,
-		@Body() _: LdapAuthorizationBodyParams
-	): Promise<LoginResponse> {
+	async loginLdap(@CurrentUser() user: ICurrentUser, @Body() _: LdapAuthorizationBodyParams): Promise<LoginResponse> {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
 
 		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto);
@@ -47,10 +44,7 @@ export class LoginController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid user credentials.' })
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	async loginLocal(
-		@CurrentUser() user: CurrentUserInterface,
-		@Body() _: LocalAuthorizationBodyParams
-	): Promise<LoginResponse> {
+	async loginLocal(@CurrentUser() user: ICurrentUser, @Body() _: LocalAuthorizationBodyParams): Promise<LoginResponse> {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
 
 		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto);

@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Controller, Get, Param } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
@@ -36,7 +36,7 @@ export class ToolConfigurationController {
 		type: SchoolExternalToolConfigurationTemplateListResponse,
 	})
 	public async getAvailableToolsForSchool(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolIdParams
 	): Promise<SchoolExternalToolConfigurationTemplateListResponse> {
 		const availableTools: ExternalTool[] = await this.externalToolConfigurationUc.getAvailableToolsForSchool(
@@ -58,7 +58,7 @@ export class ToolConfigurationController {
 		type: ContextExternalToolConfigurationTemplateListResponse,
 	})
 	public async getAvailableToolsForContext(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextRefParams
 	): Promise<ContextExternalToolConfigurationTemplateListResponse> {
 		const availableTools: ContextExternalToolTemplateInfo[] =
@@ -84,7 +84,7 @@ export class ToolConfigurationController {
 		type: SchoolExternalToolConfigurationTemplateResponse,
 	})
 	public async getConfigurationTemplateForSchool(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
 	): Promise<SchoolExternalToolConfigurationTemplateResponse> {
 		const tool: ExternalTool = await this.externalToolConfigurationUc.getTemplateForSchoolExternalTool(
@@ -107,7 +107,7 @@ export class ToolConfigurationController {
 		type: ContextExternalToolConfigurationTemplateResponse,
 	})
 	public async getConfigurationTemplateForContext(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolIdParams
 	): Promise<ContextExternalToolConfigurationTemplateResponse> {
 		const tool: ContextExternalToolTemplateInfo =

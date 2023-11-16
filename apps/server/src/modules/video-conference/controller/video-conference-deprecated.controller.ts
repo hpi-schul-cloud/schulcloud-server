@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import {
 	BadRequestException,
 	Body,
@@ -44,7 +44,7 @@ export class VideoConferenceDeprecatedController {
 	})
 	@ApiResponse({ status: 500, type: InternalServerErrorException, description: 'Unable to fetch required data.' })
 	async createAndJoin(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string,
 		@Body() params: VideoConferenceCreateParams
@@ -84,7 +84,7 @@ export class VideoConferenceDeprecatedController {
 	})
 	@ApiResponse({ status: 500, type: InternalServerErrorException, description: 'Unable to fetch required data.' })
 	async info(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string
 	): Promise<DeprecatedVideoConferenceInfoResponse> {
@@ -104,7 +104,7 @@ export class VideoConferenceDeprecatedController {
 	})
 	@ApiResponse({ status: 500, type: InternalServerErrorException, description: 'Unable to fetch required data.' })
 	async end(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string
 	): Promise<VideoConferenceBaseResponse> {

@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Controller, Get, Param } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
@@ -26,7 +26,7 @@ export class ToolLaunchController {
 	@ApiForbiddenResponse({ description: 'Forbidden' })
 	@ApiBadRequestResponse({ description: 'Outdated tools cannot be launched' })
 	async getToolLaunchRequest(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolLaunchParams
 	): Promise<ToolLaunchRequestResponse> {
 		const toolLaunchRequest: ToolLaunchRequest = await this.toolLaunchUc.getToolLaunchRequest(

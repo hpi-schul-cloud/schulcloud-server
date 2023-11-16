@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, setupEntities, shareTokenFactory } from '@shared/testing';
@@ -39,7 +39,7 @@ describe('ShareTokenController', () => {
 
 	describe('creating a token', () => {
 		const setup = () => {
-			const currentUser = { userId: 'userId' } as CurrentUserInterface;
+			const currentUser = { userId: 'userId' } as ICurrentUser;
 			const shareToken = shareTokenFactory.build({ token: 'ctuW1FG0RsTo' });
 			uc.createShareToken.mockResolvedValue(shareToken);
 			const body = {
@@ -84,7 +84,7 @@ describe('ShareTokenController', () => {
 
 	describe('looking up a token', () => {
 		it('should call the use case', async () => {
-			const currentUser = { userId: 'userId' } as CurrentUserInterface;
+			const currentUser = { userId: 'userId' } as ICurrentUser;
 			const token = 'ctuW1FG0RsTo';
 
 			await controller.lookupShareToken(currentUser, { token });
@@ -93,7 +93,7 @@ describe('ShareTokenController', () => {
 		});
 
 		it('should return the token data', async () => {
-			const currentUser = { userId: 'userId' } as CurrentUserInterface;
+			const currentUser = { userId: 'userId' } as ICurrentUser;
 			const shareTokenInfo: ShareTokenInfoDto = {
 				token: 'ctuW1FG0RsTo',
 				parentType: ShareTokenParentType.Course,
@@ -110,7 +110,7 @@ describe('ShareTokenController', () => {
 
 	describe('importing a share token', () => {
 		const setup = () => {
-			const currentUser = { userId: 'userId' } as CurrentUserInterface;
+			const currentUser = { userId: 'userId' } as ICurrentUser;
 			const token = 'ctuW1FG0RsTo';
 			const course = courseFactory.buildWithId();
 			const status: CopyStatus = {

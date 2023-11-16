@@ -2,7 +2,7 @@ import { ValidationError } from '@shared/common';
 import { Permission, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { roleFactory, schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { CurrentUserInterface, OauthCurrentUser } from '../interface';
+import { ICurrentUser, OauthCurrentUser } from '../interface';
 import { CreateJwtPayload, JwtPayload } from '../interface/jwt-payload';
 import { CurrentUserMapper } from './current-user.mapper';
 
@@ -13,7 +13,7 @@ describe('CurrentUserMapper', () => {
 		await setupEntities();
 	});
 
-	describe('userToCurrentUserInterface', () => {
+	describe('userToICurrentUser', () => {
 		describe('when mapping from a user entity to the current user object', () => {
 			describe('when user has roles', () => {
 				const setup = () => {
@@ -34,11 +34,7 @@ describe('CurrentUserMapper', () => {
 				it('should map with roles', () => {
 					const { teacherRole, user } = setup();
 
-					const currentUser: CurrentUserInterface = CurrentUserMapper.userToCurrentUserInterface(
-						accountId,
-						user,
-						false
-					);
+					const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user, false);
 
 					expect(currentUser).toMatchObject({
 						accountId,
@@ -54,7 +50,7 @@ describe('CurrentUserMapper', () => {
 				it('should map without roles', () => {
 					const user = userFactory.buildWithId();
 
-					const currentUser: CurrentUserInterface = CurrentUserMapper.userToCurrentUserInterface(accountId, user, true);
+					const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user, true);
 
 					expect(currentUser).toMatchObject({
 						accountId,
@@ -82,12 +78,7 @@ describe('CurrentUserMapper', () => {
 				it('should map system and school', () => {
 					const { user, systemId } = setup();
 
-					const currentUser: CurrentUserInterface = CurrentUserMapper.userToCurrentUserInterface(
-						accountId,
-						user,
-						false,
-						systemId
-					);
+					const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user, false, systemId);
 
 					expect(currentUser).toMatchObject({
 						accountId,
@@ -169,7 +160,7 @@ describe('CurrentUserMapper', () => {
 				};
 			};
 
-			it('should return valid CurrentUserInterface instance with systemId', () => {
+			it('should return valid ICurrentUser instance with systemId', () => {
 				const { user, userId, systemId, idToken } = setup();
 
 				const currentUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
@@ -211,7 +202,7 @@ describe('CurrentUserMapper', () => {
 				};
 			};
 
-			it('should return valid CurrentUserInterface instance without systemId', () => {
+			it('should return valid ICurrentUser instance without systemId', () => {
 				const { user } = setup();
 
 				const currentUser = CurrentUserMapper.mapToOauthCurrentUser(accountId, user, undefined, 'idToken');
@@ -227,7 +218,7 @@ describe('CurrentUserMapper', () => {
 		});
 	});
 
-	describe('jwtToCurrentUserInterface', () => {
+	describe('jwtToICurrentUser', () => {
 		describe('when JWT is provided with all claims', () => {
 			const setup = () => {
 				const jwtPayload: JwtPayload = {
@@ -254,7 +245,7 @@ describe('CurrentUserMapper', () => {
 			it('should return current user', () => {
 				const { jwtPayload } = setup();
 
-				const currentUser = CurrentUserMapper.jwtToCurrentUserInterface(jwtPayload);
+				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
 
 				expect(currentUser).toMatchObject({
 					accountId: jwtPayload.accountId,
@@ -269,7 +260,7 @@ describe('CurrentUserMapper', () => {
 			it('should return current user with default for isExternalUser', () => {
 				const { jwtPayload } = setup();
 
-				const currentUser = CurrentUserMapper.jwtToCurrentUserInterface(jwtPayload);
+				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
 
 				expect(currentUser).toMatchObject({
 					isExternalUser: jwtPayload.isExternalUser,
@@ -301,7 +292,7 @@ describe('CurrentUserMapper', () => {
 			it('should return current user', () => {
 				const { jwtPayload } = setup();
 
-				const currentUser = CurrentUserMapper.jwtToCurrentUserInterface(jwtPayload);
+				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
 
 				expect(currentUser).toMatchObject({
 					accountId: jwtPayload.accountId,
@@ -315,7 +306,7 @@ describe('CurrentUserMapper', () => {
 			it('should return current user with default for isExternalUser', () => {
 				const { jwtPayload } = setup();
 
-				const currentUser = CurrentUserMapper.jwtToCurrentUserInterface(jwtPayload);
+				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
 
 				expect(currentUser).toMatchObject({
 					isExternalUser: false,
@@ -326,7 +317,7 @@ describe('CurrentUserMapper', () => {
 
 	describe('mapCurrentUserToCreateJwtPayload', () => {
 		it('should map current user to create jwt payload', () => {
-			const currentUser: CurrentUserInterface = {
+			const currentUser: ICurrentUser = {
 				accountId: 'dummyAccountId',
 				systemId: 'dummySystemId',
 				roles: ['mockRoleId'],

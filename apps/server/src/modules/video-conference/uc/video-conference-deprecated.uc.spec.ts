@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CalendarService } from '@infra/calendar';
 import { CalendarEventDto } from '@infra/calendar/dto/calendar-event.dto';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { CourseService } from '@modules/learnroom/service';
 import { LegacySchoolService } from '@modules/legacy-school';
@@ -81,7 +81,7 @@ describe('VideoConferenceUc', () => {
 		teamId: 'teamId',
 	});
 	let featureEnabled = false;
-	let defaultCurrentUser: CurrentUserInterface;
+	let defaultCurrentUser: ICurrentUser;
 	let defaultOptions: VideoConferenceOptions;
 	const userPermissions: Map<Permission, Promise<boolean>> = new Map<Permission, Promise<boolean>>();
 

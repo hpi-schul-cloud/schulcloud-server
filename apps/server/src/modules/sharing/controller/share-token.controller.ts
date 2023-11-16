@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import {
 	Body,
@@ -38,7 +38,7 @@ export class ShareTokenController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post()
 	async createShareToken(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: ShareTokenBodyParams
 	): Promise<ShareTokenResponse> {
 		const shareToken = await this.shareTokenUC.createShareToken(
@@ -65,7 +65,7 @@ export class ShareTokenController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Get(':token')
 	async lookupShareToken(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: ShareTokenUrlParams
 	): Promise<ShareTokenInfoResponse> {
 		const shareTokenInfo = await this.shareTokenUC.lookupShareToken(currentUser.userId, urlParams.token);
@@ -84,7 +84,7 @@ export class ShareTokenController {
 	@Post(':token/import')
 	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async importShareToken(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: ShareTokenUrlParams,
 		@Body() body: ShareTokenImportBodyParams
 	): Promise<CopyApiResponse> {

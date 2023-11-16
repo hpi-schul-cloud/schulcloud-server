@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import {
 	Body,
 	Controller,
@@ -34,7 +34,7 @@ export class ColumnController {
 	async moveColumn(
 		@Param() urlParams: ColumnUrlParams,
 		@Body() bodyParams: MoveColumnBodyParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.boardUc.moveColumn(currentUser.userId, urlParams.columnId, bodyParams.toBoardId, bodyParams.toPosition);
 	}
@@ -49,7 +49,7 @@ export class ColumnController {
 	async updateColumnTitle(
 		@Param() urlParams: ColumnUrlParams,
 		@Body() bodyParams: RenameBodyParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.columnUc.updateColumnTitle(currentUser.userId, urlParams.columnId, bodyParams.title);
 	}
@@ -61,10 +61,7 @@ export class ColumnController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Delete(':columnId')
-	async deleteColumn(
-		@Param() urlParams: ColumnUrlParams,
-		@CurrentUser() currentUser: CurrentUserInterface
-	): Promise<void> {
+	async deleteColumn(@Param() urlParams: ColumnUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.columnUc.deleteColumn(currentUser.userId, urlParams.columnId);
 	}
 
@@ -77,7 +74,7 @@ export class ColumnController {
 	@Post(':columnId/cards')
 	async createCard(
 		@Param() urlParams: ColumnUrlParams,
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Body() createCardBodyParams?: CreateCardBodyParams
 	): Promise<CardResponse> {
 		const { requiredEmptyElements } = createCardBodyParams || {};

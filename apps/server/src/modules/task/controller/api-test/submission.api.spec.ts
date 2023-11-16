@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ServerTestModule } from '@modules/server/server.module';
@@ -58,7 +58,7 @@ class API {
 describe('Submission Controller (API)', () => {
 	describe('find statuses by task', () => {
 		let app: INestApplication;
-		let currentUser: CurrentUserInterface;
+		let currentUser: ICurrentUser;
 		let api: API;
 		let em: EntityManager;
 
@@ -182,7 +182,7 @@ describe('Submission Controller (API)', () => {
 
 	describe('delete submission', () => {
 		let app: INestApplication;
-		let currentUser: CurrentUserInterface;
+		let currentUser: ICurrentUser;
 		let api: API;
 		let em: EntityManager;
 		let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;

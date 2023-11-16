@@ -1,6 +1,6 @@
 import { ProviderOauthClient } from '@infra/oauth-provider/dto';
 import { OauthProviderService } from '@infra/oauth-provider/index';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { Permission, User } from '@shared/domain/index';
@@ -20,7 +20,7 @@ export class OauthProviderClientCrudUc {
 	};
 
 	async listOAuth2Clients(
-		currentUser: CurrentUserInterface,
+		currentUser: ICurrentUser,
 		limit?: number,
 		offset?: number,
 		client_name?: string,
@@ -38,7 +38,7 @@ export class OauthProviderClientCrudUc {
 		return client;
 	}
 
-	async getOAuth2Client(currentUser: CurrentUserInterface, id: string): Promise<ProviderOauthClient> {
+	async getOAuth2Client(currentUser: ICurrentUser, id: string): Promise<ProviderOauthClient> {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.OAUTH_CLIENT_VIEW]);
 
@@ -47,7 +47,7 @@ export class OauthProviderClientCrudUc {
 		return client;
 	}
 
-	async createOAuth2Client(currentUser: CurrentUserInterface, data: ProviderOauthClient): Promise<ProviderOauthClient> {
+	async createOAuth2Client(currentUser: ICurrentUser, data: ProviderOauthClient): Promise<ProviderOauthClient> {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.OAUTH_CLIENT_EDIT]);
 
@@ -57,7 +57,7 @@ export class OauthProviderClientCrudUc {
 	}
 
 	async updateOAuth2Client(
-		currentUser: CurrentUserInterface,
+		currentUser: ICurrentUser,
 		id: string,
 		data: ProviderOauthClient
 	): Promise<ProviderOauthClient> {
@@ -69,7 +69,7 @@ export class OauthProviderClientCrudUc {
 		return client;
 	}
 
-	async deleteOAuth2Client(currentUser: CurrentUserInterface, id: string): Promise<void> {
+	async deleteOAuth2Client(currentUser: ICurrentUser, id: string): Promise<void> {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.OAUTH_CLIENT_EDIT]);
 

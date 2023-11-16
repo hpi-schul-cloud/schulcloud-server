@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server/server.module';
 import { TaskListResponse } from '@modules/task/controller/dto';
@@ -44,7 +44,7 @@ class API {
 describe('Task controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: CurrentUserInterface;
+	let currentUser: ICurrentUser;
 	let api: API;
 
 	beforeAll(async () => {

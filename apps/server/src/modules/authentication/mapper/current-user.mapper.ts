@@ -2,16 +2,11 @@ import { ValidationError } from '@shared/common';
 import { Role, User } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { CurrentUserInterface, OauthCurrentUser } from '../interface';
+import { ICurrentUser, OauthCurrentUser } from '../interface';
 import { CreateJwtPayload, JwtPayload } from '../interface/jwt-payload';
 
 export class CurrentUserMapper {
-	static userToCurrentUserInterface(
-		accountId: string,
-		user: User,
-		isExternalUser: boolean,
-		systemId?: string
-	): CurrentUserInterface {
+	static userToICurrentUser(accountId: string, user: User, isExternalUser: boolean, systemId?: string): ICurrentUser {
 		return {
 			accountId,
 			systemId,
@@ -43,7 +38,7 @@ export class CurrentUserMapper {
 		};
 	}
 
-	static mapCurrentUserToCreateJwtPayload(currentUser: CurrentUserInterface): CreateJwtPayload {
+	static mapCurrentUserToCreateJwtPayload(currentUser: ICurrentUser): CreateJwtPayload {
 		return {
 			accountId: currentUser.accountId,
 			userId: currentUser.userId,
@@ -55,7 +50,7 @@ export class CurrentUserMapper {
 		};
 	}
 
-	static jwtToCurrentUserInterface(jwtPayload: JwtPayload): CurrentUserInterface {
+	static jwtToICurrentUser(jwtPayload: JwtPayload): ICurrentUser {
 		return {
 			accountId: jwtPayload.accountId,
 			systemId: jwtPayload.systemId,

@@ -1,5 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { DashboardResponse } from '@modules/learnroom/controller/dto';
 import { ServerTestModule } from '@modules/server/server.module';
@@ -15,7 +15,7 @@ describe('Dashboard Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let dashboardRepo: DashboardRepoInterface;
-	let currentUser: CurrentUserInterface;
+	let currentUser: ICurrentUser;
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({

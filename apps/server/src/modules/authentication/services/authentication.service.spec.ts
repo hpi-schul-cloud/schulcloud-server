@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AccountService } from '@modules/account/services/account.service';
 import { AccountDto } from '@modules/account/services/dto';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -94,7 +94,7 @@ describe('AuthenticationService', () => {
 	describe('generateJwt', () => {
 		describe('when generating new jwt', () => {
 			it('should pass the correct parameters', async () => {
-				const mockCurrentUser: CurrentUserInterface = {
+				const mockCurrentUser: ICurrentUser = {
 					accountId: 'mockAccountId',
 					roles: ['student'],
 					schoolId: 'mockSchoolId',

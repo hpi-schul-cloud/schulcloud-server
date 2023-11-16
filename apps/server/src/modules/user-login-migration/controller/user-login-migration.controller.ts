@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface, JWT } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser, JWT } from '@modules/authentication';
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
@@ -57,7 +57,7 @@ export class UserLoginMigrationController {
 	@ApiOkResponse({ description: 'UserLoginMigrations has been found.', type: UserLoginMigrationSearchListResponse })
 	@ApiInternalServerErrorResponse({ description: 'Cannot find target system information.' })
 	async getMigrations(
-		@CurrentUser() user: CurrentUserInterface,
+		@CurrentUser() user: ICurrentUser,
 		@Query() params: UserLoginMigrationSearchParams
 	): Promise<UserLoginMigrationSearchListResponse> {
 		const userLoginMigrationQuery: UserLoginMigrationQuery = UserLoginMigrationMapper.mapSearchParamsToQuery(params);
@@ -87,7 +87,7 @@ export class UserLoginMigrationController {
 	@ApiOkResponse({ description: 'UserLoginMigrations has been found', type: UserLoginMigrationResponse })
 	@ApiNotFoundResponse({ description: 'Cannot find UserLoginMigration' })
 	async findUserLoginMigrationBySchool(
-		@CurrentUser() user: CurrentUserInterface,
+		@CurrentUser() user: ICurrentUser,
 		@Param() params: SchoolIdParams
 	): Promise<UserLoginMigrationResponse> {
 		const userLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationUc.findUserLoginMigrationBySchool(
@@ -112,7 +112,7 @@ export class UserLoginMigrationController {
 	})
 	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
 	@ApiForbiddenResponse()
-	async startMigration(@CurrentUser() currentUser: CurrentUserInterface): Promise<UserLoginMigrationResponse> {
+	async startMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
 		const migrationDto: UserLoginMigrationDO = await this.startUserLoginMigrationUc.startMigration(
 			currentUser.userId,
 			currentUser.schoolId
@@ -136,7 +136,7 @@ export class UserLoginMigrationController {
 	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
-	async restartMigration(@CurrentUser() currentUser: CurrentUserInterface): Promise<UserLoginMigrationResponse> {
+	async restartMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
 		const migrationDto: UserLoginMigrationDO = await this.restartUserLoginMigrationUc.restartMigration(
 			currentUser.userId,
 			currentUser.schoolId
@@ -165,7 +165,7 @@ export class UserLoginMigrationController {
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
 	async setMigrationMandatory(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: UserLoginMigrationMandatoryParams
 	): Promise<UserLoginMigrationResponse> {
 		const migrationDto: UserLoginMigrationDO = await this.toggleUserLoginMigrationUc.setMigrationMandatory(
@@ -198,9 +198,7 @@ export class UserLoginMigrationController {
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
 	@ApiNoContentResponse({ description: 'User login migration was reverted' })
-	async closeMigration(
-		@CurrentUser() currentUser: CurrentUserInterface
-	): Promise<UserLoginMigrationResponse | undefined> {
+	async closeMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse | undefined> {
 		const userLoginMigration: UserLoginMigrationDO | undefined = await this.closeUserLoginMigrationUc.closeMigration(
 			currentUser.userId,
 			currentUser.schoolId
@@ -219,7 +217,7 @@ export class UserLoginMigrationController {
 	@ApiInternalServerErrorResponse({ description: 'The migration of the User was not possible.' })
 	async migrateUserLogin(
 		@JWT() jwt: string,
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: Oauth2MigrationParams
 	): Promise<void> {
 		await this.userLoginMigrationUc.migrate(jwt, currentUser.userId, body.systemId, body.code, body.redirectUri);

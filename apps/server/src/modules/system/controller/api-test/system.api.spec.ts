@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
@@ -14,7 +14,7 @@ import { PublicSystemResponse } from '../dto/public-system-response';
 describe('System (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: CurrentUserInterface;
+	let currentUser: ICurrentUser;
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({

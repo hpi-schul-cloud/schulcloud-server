@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import { serverConfig } from '@modules/server/server.config';
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
@@ -32,7 +32,7 @@ export class RoomsController {
 	@Get(':roomId/board')
 	async getRoomBoard(
 		@Param() urlParams: RoomUrlParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<SingleColumnBoardResponse> {
 		const board = await this.roomsUc.getBoard(urlParams.roomId, currentUser.userId);
 		const mapped = this.mapper.mapToResponse(board);
@@ -43,7 +43,7 @@ export class RoomsController {
 	async patchElementVisibility(
 		@Param() urlParams: RoomElementUrlParams,
 		@Body() params: PatchVisibilityParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.roomsUc.updateVisibilityOfBoardElement(
 			urlParams.roomId,
@@ -57,7 +57,7 @@ export class RoomsController {
 	async patchOrderingOfElements(
 		@Param() urlParams: RoomUrlParams,
 		@Body() params: PatchOrderParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.roomsUc.reorderBoardElements(urlParams.roomId, currentUser.userId, params.elements);
 	}
@@ -65,7 +65,7 @@ export class RoomsController {
 	@Post(':roomId/copy')
 	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyCourse(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, urlParams.roomId);
@@ -76,7 +76,7 @@ export class RoomsController {
 	@Post('lessons/:lessonId/copy')
 	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyLesson(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: LessonUrlParams,
 		@Body() params: LessonCopyApiParams
 	): Promise<CopyApiResponse> {

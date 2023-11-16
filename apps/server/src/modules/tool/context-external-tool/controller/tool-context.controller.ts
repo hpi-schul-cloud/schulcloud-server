@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import {
 	ApiCreatedResponse,
@@ -42,7 +42,7 @@ export class ToolContextController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiOperation({ summary: 'Creates a ContextExternalTool' })
 	async createContextExternalTool(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: ContextExternalToolPostParams
 	): Promise<ContextExternalToolResponse> {
 		const contextExternalTool: ContextExternalToolDto =
@@ -68,7 +68,7 @@ export class ToolContextController {
 	@ApiOperation({ summary: 'Deletes a ContextExternalTool' })
 	@HttpCode(HttpStatus.NO_CONTENT)
 	async deleteContextExternalTool(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolIdParams
 	): Promise<void> {
 		await this.contextExternalToolUc.deleteContextExternalTool(currentUser.userId, params.contextExternalToolId);
@@ -87,7 +87,7 @@ export class ToolContextController {
 	})
 	@ApiOperation({ summary: 'Returns a list of ContextExternalTools for the given context' })
 	async getContextExternalToolsForContext(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolContextParams
 	): Promise<ContextExternalToolSearchListResponse> {
 		const contextExternalTools: ContextExternalTool[] =
@@ -120,7 +120,7 @@ export class ToolContextController {
 	})
 	@ApiOperation({ summary: 'Searches a ContextExternalTool for the given id' })
 	async getContextExternalTool(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolIdParams
 	): Promise<ContextExternalToolResponse> {
 		const contextExternalTool: ContextExternalTool = await this.contextExternalToolUc.getContextExternalTool(
@@ -144,7 +144,7 @@ export class ToolContextController {
 	@ApiUnprocessableEntityResponse()
 	@ApiOperation({ summary: 'Updates a ContextExternalTool' })
 	async updateContextExternalTool(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolIdParams,
 		@Body() body: ContextExternalToolPostParams
 	): Promise<ContextExternalToolResponse> {

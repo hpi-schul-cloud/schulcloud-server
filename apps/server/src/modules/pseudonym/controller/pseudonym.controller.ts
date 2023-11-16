@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Controller, Get, Param } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
@@ -26,7 +26,7 @@ export class PseudonymController {
 	@ApiOperation({ summary: 'Returns the related user and tool information to a pseudonym' })
 	async getPseudonym(
 		@Param() params: PseudonymParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<PseudonymResponse> {
 		const pseudonym: Pseudonym = await this.pseudonymUc.findPseudonymByPseudonym(currentUser.userId, params.pseudonym);
 

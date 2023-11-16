@@ -5,7 +5,7 @@ import {
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '@infra/oauth-provider/dto';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { AcceptQuery, ConsentRequestBody } from '@modules/oauth-provider/controller/dto';
 import { IdToken } from '@modules/oauth-provider/interface/id-token';
 import { IdTokenService } from '@modules/oauth-provider/service/id-token.service';
@@ -27,7 +27,7 @@ export class OauthProviderConsentFlowUc {
 		challenge: string,
 		query: AcceptQuery,
 		body: ConsentRequestBody,
-		currentUser: CurrentUserInterface
+		currentUser: ICurrentUser
 	): Promise<ProviderRedirectResponse> {
 		const consentResponse = await this.oauthProviderService.getConsentRequest(challenge);
 		this.validateSubject(currentUser, consentResponse);
@@ -77,7 +77,7 @@ export class OauthProviderConsentFlowUc {
 		return redirectResponse;
 	}
 
-	private validateSubject(currentUser: CurrentUserInterface, response: ProviderConsentResponse): void {
+	private validateSubject(currentUser: ICurrentUser, response: ProviderConsentResponse): void {
 		if (response.subject !== currentUser.userId) {
 			throw new ForbiddenException("You want to patch another user's consent");
 		}

@@ -11,7 +11,7 @@ import {
 import { Account, EntityId, Permission, PermissionService, Role, RoleName, SchoolEntity, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ObjectId } from 'bson';
 import { AccountConfig } from '../account-config';
@@ -50,10 +50,7 @@ export class AccountUc {
 	 * @throws {ValidationError}
 	 * @throws {ForbiddenOperationError}
 	 */
-	async searchAccounts(
-		currentUser: CurrentUserInterface,
-		query: AccountSearchQueryParams
-	): Promise<AccountSearchListResponse> {
+	async searchAccounts(currentUser: ICurrentUser, query: AccountSearchQueryParams): Promise<AccountSearchListResponse> {
 		const skip = query.skip ?? 0;
 		const limit = query.limit ?? 10;
 		const executingUser = await this.userRepo.findById(currentUser.userId, true);
@@ -91,7 +88,7 @@ export class AccountUc {
 	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
-	async findAccountById(currentUser: CurrentUserInterface, params: AccountByIdParams): Promise<AccountResponse> {
+	async findAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountResponse> {
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
 		}
@@ -113,7 +110,7 @@ export class AccountUc {
 	 * @throws {EntityNotFoundError}
 	 */
 	async updateAccountById(
-		currentUser: CurrentUserInterface,
+		currentUser: ICurrentUser,
 		params: AccountByIdParams,
 		body: AccountByIdBodyParams
 	): Promise<AccountResponse> {
@@ -176,7 +173,7 @@ export class AccountUc {
 	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
-	async deleteAccountById(currentUser: CurrentUserInterface, params: AccountByIdParams): Promise<AccountResponse> {
+	async deleteAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountResponse> {
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new ForbiddenOperationError('Current user is not authorized to delete an account.');
 		}
@@ -333,7 +330,7 @@ export class AccountUc {
 		return user.roles.getItems().some((role) => role.name === roleName);
 	}
 
-	private async isSuperhero(currentUser: CurrentUserInterface): Promise<boolean> {
+	private async isSuperhero(currentUser: ICurrentUser): Promise<boolean> {
 		const user = await this.userRepo.findById(currentUser.userId, true);
 		return user.roles.getItems().some((role) => role.name === RoleName.SUPERHERO);
 	}

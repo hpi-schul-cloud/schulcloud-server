@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server/server.module';
 import { ApiValidationError } from '@shared/common';
@@ -85,7 +85,7 @@ describe(baseRouteName, () => {
 	describe('with bad request data', () => {
 		let app: INestApplication;
 		let em: EntityManager;
-		let currentUser: CurrentUserInterface;
+		let currentUser: ICurrentUser;
 		let api: API;
 
 		beforeAll(async () => {
@@ -139,7 +139,7 @@ describe(baseRouteName, () => {
 	describe('without valid request data', () => {
 		let app: INestApplication;
 		let em: EntityManager;
-		let currentUser: CurrentUserInterface;
+		let currentUser: ICurrentUser;
 		let api: API;
 
 		beforeAll(async () => {

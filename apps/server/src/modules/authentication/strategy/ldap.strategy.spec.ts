@@ -17,7 +17,7 @@ import {
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
-import { CurrentUserInterface } from '../interface';
+import { ICurrentUser } from '../interface';
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapService } from '../services/ldap.service';
 import { LdapStrategy } from './ldap.strategy';
@@ -428,7 +428,7 @@ describe('LdapStrategy', () => {
 			it('should authentication with LDAP successfully and return the user', async () => {
 				const { request, user, school, account, system } = setup();
 
-				const result: CurrentUserInterface = await strategy.validate(request);
+				const result: ICurrentUser = await strategy.validate(request);
 
 				expect(result).toEqual({
 					userId: user.id,
@@ -492,7 +492,7 @@ describe('LdapStrategy', () => {
 			it('should authentication with LDAP successfully and return the user', async () => {
 				const { request, user, school, account, system } = setup();
 
-				const result: CurrentUserInterface = await strategy.validate(request);
+				const result: ICurrentUser = await strategy.validate(request);
 
 				expect(authenticationServiceMock.loadAccount).toHaveBeenCalledTimes(2);
 				expect(result).toEqual({

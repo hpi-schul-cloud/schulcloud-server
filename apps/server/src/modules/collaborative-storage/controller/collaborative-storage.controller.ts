@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Body, Controller, Param, Patch } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LegacyLogger } from '@src/core/logger';
@@ -30,7 +30,7 @@ export class CollaborativeStorageController {
 	@ApiResponse({ status: 403, description: 'User does not have the correct permission' })
 	@ApiResponse({ status: 404, description: 'Team or Role not found!' })
 	updateTeamPermissionsForRole(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() teamRole: TeamRoleDto,
 		@Body() permissionsBody: TeamPermissionsBody
 	): Promise<void> {

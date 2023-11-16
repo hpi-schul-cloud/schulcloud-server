@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Controller, Get, Param, Query, Req, UnauthorizedException } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { LegacyLogger } from '@src/core/logger';
@@ -28,7 +28,7 @@ export class OauthSSOController {
 	@Get('auth/:oauthClientId')
 	@Authenticate('jwt')
 	async requestAuthToken(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request,
 		@Param('oauthClientId') oauthClientId: string
 	): Promise<AuthorizationParams> {

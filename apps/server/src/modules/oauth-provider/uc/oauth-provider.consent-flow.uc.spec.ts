@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { OauthProviderService } from '@infra/oauth-provider';
 import { AcceptConsentRequestBody, ProviderConsentResponse, ProviderRedirectResponse } from '@infra/oauth-provider/dto';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { AcceptQuery, ConsentRequestBody } from '@modules/oauth-provider/controller/dto';
 import { IdToken } from '@modules/oauth-provider/interface/id-token';
 import { IdTokenService } from '@modules/oauth-provider/service/id-token.service';
@@ -45,12 +45,12 @@ describe('OauthProviderConsentFlowUc', () => {
 
 	describe('consent', () => {
 		let challenge: string;
-		let currentUser: CurrentUserInterface;
+		let currentUser: ICurrentUser;
 		let consentResponse: ProviderConsentResponse;
 
 		beforeEach(() => {
 			challenge = 'challengexyz';
-			currentUser = { userId: 'userId' } as CurrentUserInterface;
+			currentUser = { userId: 'userId' } as ICurrentUser;
 			consentResponse = {
 				challenge,
 				subject: currentUser.userId,

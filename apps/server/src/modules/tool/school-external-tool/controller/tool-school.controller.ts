@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
@@ -44,7 +44,7 @@ export class ToolSchoolController {
 	@ApiUnauthorizedResponse()
 	@ApiOperation({ summary: 'Returns a list of SchoolExternalTools for a given school' })
 	async getSchoolExternalTools(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Query() schoolExternalToolParams: SchoolExternalToolSearchParams
 	): Promise<SchoolExternalToolSearchListResponse> {
 		const found: SchoolExternalTool[] = await this.schoolExternalToolUc.findSchoolExternalTools(currentUser.userId, {
@@ -59,7 +59,7 @@ export class ToolSchoolController {
 	@ApiUnauthorizedResponse()
 	@ApiOperation({ summary: 'Returns a SchoolExternalTool for the given id' })
 	async getSchoolExternalTool(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
 	): Promise<SchoolExternalToolResponse> {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolUc.getSchoolExternalTool(
@@ -77,7 +77,7 @@ export class ToolSchoolController {
 	@ApiBadRequestResponse({ type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiOperation({ summary: 'Updates a SchoolExternalTool' })
 	async updateSchoolExternalTool(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams,
 		@Body() body: SchoolExternalToolPostParams
 	): Promise<SchoolExternalToolResponse> {
@@ -99,7 +99,7 @@ export class ToolSchoolController {
 	@ApiOperation({ summary: 'Deletes a SchoolExternalTool' })
 	@HttpCode(HttpStatus.NO_CONTENT)
 	async deleteSchoolExternalTool(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
 	): Promise<void> {
 		await this.schoolExternalToolUc.deleteSchoolExternalTool(currentUser.userId, params.schoolExternalToolId);
@@ -119,7 +119,7 @@ export class ToolSchoolController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiOperation({ summary: 'Creates a SchoolExternalTool' })
 	async createSchoolExternalTool(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: SchoolExternalToolPostParams
 	): Promise<SchoolExternalToolResponse> {
 		const schoolExternalToolDto: SchoolExternalToolDto = this.requestMapper.mapSchoolExternalToolRequest(body);

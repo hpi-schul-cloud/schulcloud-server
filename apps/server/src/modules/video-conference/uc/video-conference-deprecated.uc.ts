@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CalendarService } from '@infra/calendar';
 import { CalendarEventDto } from '@infra/calendar/dto/calendar-event.dto';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { Action, AuthorizationContextBuilder } from '@modules/authorization';
 import { AuthorizableReferenceType, AuthorizationReferenceService } from '@modules/authorization/domain';
 import { CourseService } from '@modules/learnroom';
@@ -71,14 +71,14 @@ export class VideoConferenceDeprecatedUc {
 
 	/**
 	 * Creates a new video conference.
-	 * @param {CurrentUserInterface} currentUser
+	 * @param {ICurrentUser} currentUser
 	 * @param {VideoConferenceScope} conferenceScope
 	 * @param {EntityId} refId eventId or courseId, depending on scope.
 	 * @param {VideoConferenceOptions} options
 	 * @returns {Promise<VideoConference<BBBCreateResponse>>}
 	 */
 	async create(
-		currentUser: CurrentUserInterface,
+		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId,
 		options: VideoConferenceOptions
@@ -136,13 +136,13 @@ export class VideoConferenceDeprecatedUc {
 
 	/**
 	 * Generates a join link for a video conference.
-	 * @param {CurrentUserInterface} currentUser
+	 * @param {ICurrentUser} currentUser
 	 * @param {VideoConferenceScope} conferenceScope
 	 * @param {EntityId} refId eventId or courseId, depending on scope.
 	 * @returns {Promise<VideoConferenceJoinDTO>}
 	 */
 	async join(
-		currentUser: CurrentUserInterface,
+		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId
 	): Promise<VideoConferenceJoin> {
@@ -191,13 +191,13 @@ export class VideoConferenceDeprecatedUc {
 
 	/**
 	 * Retrieves information about a video conference.
-	 * @param {CurrentUserInterface} currentUser
+	 * @param {ICurrentUser} currentUser
 	 * @param {VideoConferenceScope} conferenceScope
 	 * @param {EntityId} refId eventId or courseId, depending on scope.
 	 * @returns {BBBResponse<BBBBaseMeetingConfig>}
 	 */
 	async getMeetingInfo(
-		currentUser: CurrentUserInterface,
+		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId
 	): Promise<VideoConferenceInfo> {
@@ -268,13 +268,13 @@ export class VideoConferenceDeprecatedUc {
 
 	/**
 	 * Ends a video conference.
-	 * @param {CurrentUserInterface} currentUser
+	 * @param {ICurrentUser} currentUser
 	 * @param {VideoConferenceScope} conferenceScope
 	 * @param {EntityId} refId eventId or courseId, depending on scope.
 	 * @returns {Promise<VideoConference<BBBBaseResponse>>}
 	 */
 	async end(
-		currentUser: CurrentUserInterface,
+		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId
 	): Promise<VideoConference<BBBBaseResponse>> {
@@ -304,7 +304,7 @@ export class VideoConferenceDeprecatedUc {
 	}
 
 	protected async isExpert(
-		currentUser: CurrentUserInterface,
+		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		scopeId: string
 	): Promise<boolean> {

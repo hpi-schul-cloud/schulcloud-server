@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import {
 	Body,
 	Controller,
@@ -42,7 +42,7 @@ export class BoardSubmissionController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Get(':submissionContainerId')
 	async getSubmissionItems(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: SubmissionContainerUrlParams
 	): Promise<SubmissionsResponse> {
 		const { submissionItems, users } = await this.submissionItemUc.findSubmissionItems(
@@ -63,7 +63,7 @@ export class BoardSubmissionController {
 	@HttpCode(204)
 	@Patch(':submissionItemId')
 	async updateSubmissionItem(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: SubmissionItemUrlParams,
 		@Body() bodyParams: UpdateSubmissionItemBodyParams
 	) {
@@ -89,7 +89,7 @@ export class BoardSubmissionController {
 	async createElement(
 		@Param() urlParams: SubmissionItemUrlParams,
 		@Body() bodyParams: CreateContentElementBodyParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileElementResponse | RichTextElementResponse> {
 		const { type } = bodyParams;
 		const element = await this.submissionItemUc.createElement(currentUser.userId, urlParams.submissionItemId, type);

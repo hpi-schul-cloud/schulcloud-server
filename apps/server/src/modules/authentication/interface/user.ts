@@ -1,6 +1,6 @@
 import { EntityId } from '@shared/domain';
 
-export interface CurrentUserInterface {
+export interface ICurrentUser {
 	/** authenticated users id */
 	userId: EntityId;
 	/** users role ids as EntityId[] */

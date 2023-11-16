@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
@@ -30,7 +30,7 @@ import { ServerTestModule } from '@modules/server/server.module';
 describe('Task copy (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: CurrentUserInterface;
+	let currentUser: ICurrentUser;
 	let configBefore: IConfig;
 
 	beforeAll(async () => {

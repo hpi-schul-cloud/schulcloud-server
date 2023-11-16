@@ -11,7 +11,7 @@ import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
-import { CurrentUserInterface } from '../../interface';
+import { ICurrentUser } from '../../interface';
 import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, OauthLoginResponse } from '../dto';
 
 const ldapAccountUserName = 'ldapAccountUserName';
@@ -282,7 +282,7 @@ describe('Login Controller (api)', () => {
 				expect(response.body.accessToken).toBeDefined();
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
 				const decodedToken = jwt.decode(response.body.accessToken);
-				expect(decodedToken).toMatchObject<CurrentUserInterface>({
+				expect(decodedToken).toMatchObject<ICurrentUser>({
 					userId: user.id,
 					systemId: system.id,
 					roles: [studentRole.id],

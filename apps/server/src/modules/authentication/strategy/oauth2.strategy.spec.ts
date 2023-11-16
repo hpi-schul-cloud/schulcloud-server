@@ -8,7 +8,7 @@ import { EntityId, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { userDoFactory } from '@shared/testing';
 
-import { CurrentUserInterface, OauthCurrentUser } from '../interface';
+import { ICurrentUser, OauthCurrentUser } from '../interface';
 
 import { SchoolInMigrationLoggableException } from '../loggable';
 
@@ -76,10 +76,10 @@ describe('Oauth2Strategy', () => {
 				return { systemId, user, account, idToken };
 			};
 
-			it('should return the CurrentUserInterface', async () => {
+			it('should return the ICurrentUser', async () => {
 				const { systemId, user, account, idToken } = setup();
 
-				const result: CurrentUserInterface = await strategy.validate({
+				const result: ICurrentUser = await strategy.validate({
 					body: { code: 'code', redirectUri: 'redirectUri', systemId },
 				});
 

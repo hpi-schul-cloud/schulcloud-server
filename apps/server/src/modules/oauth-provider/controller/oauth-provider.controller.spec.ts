@@ -6,7 +6,7 @@ import {
 	ProviderLoginResponse,
 	ProviderRedirectResponse,
 } from '@infra/oauth-provider/dto';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import {
 	AcceptQuery,
 	ChallengeParams,
@@ -40,7 +40,7 @@ describe('OauthProviderController', () => {
 	let responseMapper: DeepMocked<OauthProviderResponseMapper>;
 
 	const hydraUri = 'http://hydra.uri';
-	const currentUser: CurrentUserInterface = { userId: 'userId' } as CurrentUserInterface;
+	const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 
 	beforeAll(async () => {
 		jest.spyOn(Configuration, 'get').mockReturnValue(hydraUri);

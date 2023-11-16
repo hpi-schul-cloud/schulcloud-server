@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -47,7 +47,7 @@ class API {
 describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: CurrentUserInterface;
+	let currentUser: ICurrentUser;
 	let api: API;
 	let fileRecord: FileRecord;
 	let fileRecords: FileRecord[];

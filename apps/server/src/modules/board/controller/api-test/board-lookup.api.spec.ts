@@ -1,5 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
@@ -44,7 +44,7 @@ class API {
 describe(`board lookup (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: CurrentUserInterface;
+	let currentUser: ICurrentUser;
 	let api: API;
 
 	beforeAll(async () => {

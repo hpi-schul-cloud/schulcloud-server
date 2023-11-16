@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { AuthorizationService } from '@modules/authorization';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -68,7 +68,7 @@ describe('ExternalToolUc', () => {
 
 	const setupAuthorization = () => {
 		const user: User = userFactory.buildWithId();
-		const currentUser: CurrentUserInterface = { userId: user.id } as CurrentUserInterface;
+		const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
 
 		authorizationService.getUserWithPermissions.mockResolvedValue(user);
 
@@ -190,7 +190,7 @@ describe('ExternalToolUc', () => {
 		describe('when fetching logo', () => {
 			const setupLogo = () => {
 				const user: User = userFactory.buildWithId();
-				const currentUser: CurrentUserInterface = { userId: user.id } as CurrentUserInterface;
+				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
 
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
@@ -414,7 +414,7 @@ describe('ExternalToolUc', () => {
 		describe('when fetching logo', () => {
 			const setupLogo = () => {
 				const user: User = userFactory.buildWithId();
-				const currentUser: CurrentUserInterface = { userId: user.id } as CurrentUserInterface;
+				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
 
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
@@ -439,7 +439,7 @@ describe('ExternalToolUc', () => {
 	describe('deleteExternalTool', () => {
 		const setupDelete = () => {
 			const toolId = 'toolId';
-			const currentUser: CurrentUserInterface = { userId: 'userId' } as CurrentUserInterface;
+			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 			const user: User = userFactory.buildWithId();
 
 			authorizationService.getUserWithPermissions.mockResolvedValue(user);

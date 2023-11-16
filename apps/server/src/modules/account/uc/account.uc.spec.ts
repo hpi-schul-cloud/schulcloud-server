@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AccountService } from '@modules/account/services/account.service';
 import { AccountSaveDto } from '@modules/account/services/dto';
 import { AccountDto } from '@modules/account/services/dto/account.dto';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
@@ -795,7 +795,7 @@ describe('AccountUc', () => {
 	describe('searchAccounts', () => {
 		it('should return one account, if search type is userId', async () => {
 			const accounts = await accountUc.searchAccounts(
-				{ userId: mockSuperheroUser.id } as CurrentUserInterface,
+				{ userId: mockSuperheroUser.id } as ICurrentUser,
 				{ type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams
 			);
 			const expected = new AccountSearchListResponse(
@@ -808,7 +808,7 @@ describe('AccountUc', () => {
 		});
 		it('should return empty list, if account is not found', async () => {
 			const accounts = await accountUc.searchAccounts(
-				{ userId: mockSuperheroUser.id } as CurrentUserInterface,
+				{ userId: mockSuperheroUser.id } as ICurrentUser,
 				{ type: AccountSearchType.USER_ID, value: mockUserWithoutAccount.id } as AccountSearchQueryParams
 			);
 			const expected = new AccountSearchListResponse([], 0, 0, 0);
@@ -816,7 +816,7 @@ describe('AccountUc', () => {
 		});
 		it('should return one or more accounts, if search type is username', async () => {
 			const accounts = await accountUc.searchAccounts(
-				{ userId: mockSuperheroUser.id } as CurrentUserInterface,
+				{ userId: mockSuperheroUser.id } as ICurrentUser,
 				{ type: AccountSearchType.USERNAME, value: '' } as AccountSearchQueryParams
 			);
 			expect(accounts.skip).toEqual(0);
@@ -827,21 +827,21 @@ describe('AccountUc', () => {
 		it('should throw, if user has not the right permissions', async () => {
 			await expect(
 				accountUc.searchAccounts(
-					{ userId: mockTeacherUser.id } as CurrentUserInterface,
+					{ userId: mockTeacherUser.id } as ICurrentUser,
 					{ type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchQueryParams
 				)
 			).rejects.toThrow(ForbiddenOperationError);
 
 			await expect(
 				accountUc.searchAccounts(
-					{ userId: mockStudentUser.id } as CurrentUserInterface,
+					{ userId: mockStudentUser.id } as ICurrentUser,
 					{ type: AccountSearchType.USER_ID, value: mockOtherStudentUser.id } as AccountSearchQueryParams
 				)
 			).rejects.toThrow(ForbiddenOperationError);
 
 			await expect(
 				accountUc.searchAccounts(
-					{ userId: mockStudentUser.id } as CurrentUserInterface,
+					{ userId: mockStudentUser.id } as ICurrentUser,
 					{ type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchQueryParams
 				)
 			).rejects.toThrow(ForbiddenOperationError);
@@ -849,7 +849,7 @@ describe('AccountUc', () => {
 		it('should throw, if search type is unknown', async () => {
 			await expect(
 				accountUc.searchAccounts(
-					{ userId: mockSuperheroUser.id } as CurrentUserInterface,
+					{ userId: mockSuperheroUser.id } as ICurrentUser,
 					{ type: '' as AccountSearchType } as AccountSearchQueryParams
 				)
 			).rejects.toThrow('Invalid search type.');
@@ -857,7 +857,7 @@ describe('AccountUc', () => {
 		it('should throw, if user is no superhero', async () => {
 			await expect(
 				accountUc.searchAccounts(
-					{ userId: mockTeacherUser.id } as CurrentUserInterface,
+					{ userId: mockTeacherUser.id } as ICurrentUser,
 					{ type: AccountSearchType.USERNAME, value: mockStudentUser.id } as AccountSearchQueryParams
 				)
 			).rejects.toThrow(ForbiddenOperationError);
@@ -868,22 +868,22 @@ describe('AccountUc', () => {
 				configService.get.mockReturnValue(false);
 			});
 			it('admin can access teacher of the same school via user id', async () => {
-				const currentUser = { userId: mockAdminUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 				const params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 			});
 			it('admin can access student of the same school via user id', async () => {
-				const currentUser = { userId: mockAdminUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 				const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 			});
 			it('admin can not access admin of the same school via user id', async () => {
-				const currentUser = { userId: mockAdminUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 				const params = { type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 			});
 			it('admin can not access any account of a foreign school via user id', async () => {
-				const currentUser = { userId: mockDifferentSchoolAdminUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockDifferentSchoolAdminUser.id } as ICurrentUser;
 
 				let params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
@@ -892,22 +892,22 @@ describe('AccountUc', () => {
 				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 			});
 			it('teacher can access teacher of the same school via user id', async () => {
-				const currentUser = { userId: mockTeacherUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
 				const params = { type: AccountSearchType.USER_ID, value: mockOtherTeacherUser.id } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 			});
 			it('teacher can access student of the same school via user id', async () => {
-				const currentUser = { userId: mockTeacherUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
 				const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 			});
 			it('teacher can not access admin of the same school via user id', async () => {
-				const currentUser = { userId: mockTeacherUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
 				const params = { type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 			});
 			it('teacher can not access any account of a foreign school via user id', async () => {
-				const currentUser = { userId: mockDifferentSchoolTeacherUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockDifferentSchoolTeacherUser.id } as ICurrentUser;
 
 				let params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
@@ -917,7 +917,7 @@ describe('AccountUc', () => {
 			});
 			it('teacher can access student of the same school via user id if school has global permission', async () => {
 				configService.get.mockReturnValue(true);
-				const currentUser = { userId: mockTeacherNoUserPermissionUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockTeacherNoUserPermissionUser.id } as ICurrentUser;
 				const params = {
 					type: AccountSearchType.USER_ID,
 					value: mockStudentSchoolPermissionUser.id,
@@ -926,14 +926,14 @@ describe('AccountUc', () => {
 			});
 			it('teacher can not access student of the same school if school has no global permission', async () => {
 				configService.get.mockReturnValue(true);
-				const currentUser = { userId: mockTeacherNoUserNoSchoolPermissionUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockTeacherNoUserNoSchoolPermissionUser.id } as ICurrentUser;
 				const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow(ForbiddenOperationError);
 			});
 
 			it('student can not access student of the same school if school has global permission', async () => {
 				configService.get.mockReturnValue(true);
-				const currentUser = { userId: mockStudentSchoolPermissionUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockStudentSchoolPermissionUser.id } as ICurrentUser;
 				const params = {
 					type: AccountSearchType.USER_ID,
 					value: mockOtherStudentSchoolPermissionUser.id,
@@ -941,7 +941,7 @@ describe('AccountUc', () => {
 				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow(ForbiddenOperationError);
 			});
 			it('student can not access any other account via user id', async () => {
-				const currentUser = { userId: mockStudentUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockStudentUser.id } as ICurrentUser;
 
 				let params = { type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
@@ -953,7 +953,7 @@ describe('AccountUc', () => {
 				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 			});
 			it('superhero can access any account via username', async () => {
-				const currentUser = { userId: mockSuperheroUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
 
 				let params = { type: AccountSearchType.USERNAME, value: mockAdminAccount.username } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
@@ -988,7 +988,7 @@ describe('AccountUc', () => {
 	describe('findAccountById', () => {
 		it('should return an account, if the current user is a superhero', async () => {
 			const account = await accountUc.findAccountById(
-				{ userId: mockSuperheroUser.id } as CurrentUserInterface,
+				{ userId: mockSuperheroUser.id } as ICurrentUser,
 				{ id: mockStudentAccount.id } as AccountByIdParams
 			);
 			expect(account).toStrictEqual(
@@ -1003,25 +1003,19 @@ describe('AccountUc', () => {
 		it('should throw, if the current user is no superhero', async () => {
 			await expect(
 				accountUc.findAccountById(
-					{ userId: mockTeacherUser.id } as CurrentUserInterface,
+					{ userId: mockTeacherUser.id } as ICurrentUser,
 					{ id: mockStudentAccount.id } as AccountByIdParams
 				)
 			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw, if no account matches the search term', async () => {
 			await expect(
-				accountUc.findAccountById(
-					{ userId: mockSuperheroUser.id } as CurrentUserInterface,
-					{ id: 'xxx' } as AccountByIdParams
-				)
+				accountUc.findAccountById({ userId: mockSuperheroUser.id } as ICurrentUser, { id: 'xxx' } as AccountByIdParams)
 			).rejects.toThrow(EntityNotFoundError);
 		});
 		it('should throw, if target account has no user', async () => {
 			await expect(
-				accountUc.findAccountById(
-					{ userId: mockSuperheroUser.id } as CurrentUserInterface,
-					{ id: 'xxx' } as AccountByIdParams
-				)
+				accountUc.findAccountById({ userId: mockSuperheroUser.id } as ICurrentUser, { id: 'xxx' } as AccountByIdParams)
 			).rejects.toThrow(EntityNotFoundError);
 		});
 	});
@@ -1048,20 +1042,20 @@ describe('AccountUc', () => {
 
 	describe('updateAccountById', () => {
 		it('should throw if executing user does not exist', async () => {
-			const currentUser = { userId: '000000000000000' } as CurrentUserInterface;
+			const currentUser = { userId: '000000000000000' } as ICurrentUser;
 			const params = { id: mockStudentAccount.id } as AccountByIdParams;
 			const body = {} as AccountByIdBodyParams;
 			await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(EntityNotFoundError);
 		});
 		it('should throw if target account does not exist', async () => {
-			const currentUser = { userId: mockAdminUser.id } as CurrentUserInterface;
+			const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 			const params = { id: '000000000000000' } as AccountByIdParams;
 			const body = {} as AccountByIdBodyParams;
 			await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(EntityNotFoundError);
 		});
 		it('should update target account password', async () => {
 			const previousPasswordHash = mockStudentAccount.password;
-			const currentUser = { userId: mockSuperheroUser.id } as CurrentUserInterface;
+			const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
 			const params = { id: mockStudentAccount.id } as AccountByIdParams;
 			const body = { password: defaultPassword } as AccountByIdBodyParams;
 			expect(mockStudentUser.forcePasswordChange).toBeFalsy();
@@ -1071,7 +1065,7 @@ describe('AccountUc', () => {
 		});
 		it('should update target account username', async () => {
 			const newUsername = 'newUsername';
-			const currentUser = { userId: mockSuperheroUser.id } as CurrentUserInterface;
+			const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
 			const params = { id: mockStudentAccount.id } as AccountByIdParams;
 			const body = { username: newUsername } as AccountByIdBodyParams;
 			expect(mockStudentAccount.username).not.toBe(newUsername);
@@ -1079,20 +1073,20 @@ describe('AccountUc', () => {
 			expect(mockStudentAccount.username).toBe(newUsername.toLowerCase());
 		});
 		it('should update target account activation state', async () => {
-			const currentUser = { userId: mockSuperheroUser.id } as CurrentUserInterface;
+			const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
 			const params = { id: mockStudentAccount.id } as AccountByIdParams;
 			const body = { activated: false } as AccountByIdBodyParams;
 			await accountUc.updateAccountById(currentUser, params, body);
 			expect(mockStudentAccount.activated).toBeFalsy();
 		});
 		it('should throw if account can not be updated', async () => {
-			const currentUser = { userId: mockAdminUser.id } as CurrentUserInterface;
+			const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 			const params = { id: mockStudentAccount.id } as AccountByIdParams;
 			const body = { username: 'fail@to.update' } as AccountByIdBodyParams;
 			await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(EntityNotFoundError);
 		});
 		it('should throw if user can not be updated', async () => {
-			const currentUser = { userId: mockAdminUser.id } as CurrentUserInterface;
+			const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 			const params = { id: mockStudentAccount.id } as AccountByIdParams;
 			const body = { username: 'user-fail@to.update' } as AccountByIdBodyParams;
 			await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(EntityNotFoundError);
@@ -1100,7 +1094,7 @@ describe('AccountUc', () => {
 		it('should throw if target account has no user', async () => {
 			await expect(
 				accountUc.updateAccountById(
-					{ userId: mockSuperheroUser.id } as CurrentUserInterface,
+					{ userId: mockSuperheroUser.id } as ICurrentUser,
 					{ id: mockAccountWithoutUser.id } as AccountByIdParams,
 					{ username: 'user-fail@to.update' } as AccountByIdBodyParams
 				)
@@ -1109,7 +1103,7 @@ describe('AccountUc', () => {
 		it('should throw if new username already in use', async () => {
 			const accountIsUniqueEmailSpy = jest.spyOn(accountValidationService, 'isUniqueEmail');
 			accountIsUniqueEmailSpy.mockResolvedValueOnce(false);
-			const currentUser = { userId: mockAdminUser.id } as CurrentUserInterface;
+			const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 			const params = { id: mockStudentAccount.id } as AccountByIdParams;
 			const body = { username: mockOtherTeacherAccount.username } as AccountByIdBodyParams;
 			await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ValidationError);
@@ -1117,49 +1111,49 @@ describe('AccountUc', () => {
 
 		describe('hasPermissionsToUpdateAccount', () => {
 			it('admin can edit teacher', async () => {
-				const currentUser = { userId: mockAdminUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 				const params = { id: mockTeacherAccount.id } as AccountByIdParams;
 				const body = {} as AccountByIdBodyParams;
 				await expect(accountUc.updateAccountById(currentUser, params, body)).resolves.not.toThrow();
 			});
 			it('teacher can edit student', async () => {
-				const currentUser = { userId: mockTeacherUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
 				const params = { id: mockStudentAccount.id } as AccountByIdParams;
 				const body = {} as AccountByIdBodyParams;
 				await expect(accountUc.updateAccountById(currentUser, params, body)).resolves.not.toThrow();
 			});
 			it('admin can edit student', async () => {
-				const currentUser = { userId: mockAdminUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 				const params = { id: mockStudentAccount.id } as AccountByIdParams;
 				const body = {} as AccountByIdBodyParams;
 				await expect(accountUc.updateAccountById(currentUser, params, body)).resolves.not.toThrow();
 			});
 			it('teacher cannot edit other teacher', async () => {
-				const currentUser = { userId: mockTeacherUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
 				const params = { id: mockOtherTeacherAccount.id } as AccountByIdParams;
 				const body = {} as AccountByIdBodyParams;
 				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
 			});
 			it("other school's admin cannot edit teacher", async () => {
-				const currentUser = { userId: mockDifferentSchoolAdminUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockDifferentSchoolAdminUser.id } as ICurrentUser;
 				const params = { id: mockTeacherAccount.id } as AccountByIdParams;
 				const body = {} as AccountByIdBodyParams;
 				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
 			});
 			it('superhero can edit admin', async () => {
-				const currentUser = { userId: mockSuperheroUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
 				const params = { id: mockAdminAccount.id } as AccountByIdParams;
 				const body = {} as AccountByIdBodyParams;
 				await expect(accountUc.updateAccountById(currentUser, params, body)).resolves.not.toThrow();
 			});
 			it('undefined user role fails by default', async () => {
-				const currentUser = { userId: mockUnknownRoleUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockUnknownRoleUser.id } as ICurrentUser;
 				const params = { id: mockAccountWithoutRole.id } as AccountByIdParams;
 				const body = {} as AccountByIdBodyParams;
 				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
 			});
 			it('user without role cannot be edited', async () => {
-				const currentUser = { userId: mockAdminUser.id } as CurrentUserInterface;
+				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 				const params = { id: mockUnknownRoleUserAccount.id } as AccountByIdParams;
 				const body = {} as AccountByIdBodyParams;
 				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
@@ -1171,7 +1165,7 @@ describe('AccountUc', () => {
 		it('should delete an account, if current user is authorized', async () => {
 			await expect(
 				accountUc.deleteAccountById(
-					{ userId: mockSuperheroUser.id } as CurrentUserInterface,
+					{ userId: mockSuperheroUser.id } as ICurrentUser,
 					{ id: mockStudentAccount.id } as AccountByIdParams
 				)
 			).resolves.not.toThrow();
@@ -1179,7 +1173,7 @@ describe('AccountUc', () => {
 		it('should throw, if the current user is no superhero', async () => {
 			await expect(
 				accountUc.deleteAccountById(
-					{ userId: mockAdminUser.id } as CurrentUserInterface,
+					{ userId: mockAdminUser.id } as ICurrentUser,
 					{ id: mockStudentAccount.id } as AccountByIdParams
 				)
 			).rejects.toThrow(ForbiddenOperationError);
@@ -1187,7 +1181,7 @@ describe('AccountUc', () => {
 		it('should throw, if no account matches the search term', async () => {
 			await expect(
 				accountUc.deleteAccountById(
-					{ userId: mockSuperheroUser.id } as CurrentUserInterface,
+					{ userId: mockSuperheroUser.id } as ICurrentUser,
 					{ id: 'xxx' } as AccountByIdParams
 				)
 			).rejects.toThrow(EntityNotFoundError);

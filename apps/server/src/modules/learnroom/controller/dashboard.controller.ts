@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { DashboardMapper } from '../mapper/dashboard.mapper';
@@ -12,7 +12,7 @@ export class DashboardController {
 	constructor(private readonly dashboardUc: DashboardUc) {}
 
 	@Get()
-	async findForUser(@CurrentUser() currentUser: CurrentUserInterface): Promise<DashboardResponse> {
+	async findForUser(@CurrentUser() currentUser: ICurrentUser): Promise<DashboardResponse> {
 		const dashboard = await this.dashboardUc.getUsersDashboard(currentUser.userId);
 		const dto = DashboardMapper.mapToResponse(dashboard);
 		return dto;
@@ -22,7 +22,7 @@ export class DashboardController {
 	async moveElement(
 		@Param() { dashboardId }: DashboardUrlParams,
 		@Body() params: MoveElementParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<DashboardResponse> {
 		const dashboard = await this.dashboardUc.moveElementOnDashboard(
 			dashboardId,
@@ -40,7 +40,7 @@ export class DashboardController {
 		@Query('x') x: number,
 		@Query('y') y: number,
 		@Body() params: PatchGroupParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<DashboardResponse> {
 		const dashboard = await this.dashboardUc.renameGroupOnDashboard(
 			urlParams.dashboardId,

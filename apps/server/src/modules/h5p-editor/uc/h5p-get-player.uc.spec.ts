@@ -3,7 +3,7 @@ import { H5PEditor, H5PPlayer, IPlayerModel } from '@lumieducation/h5p-server';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { h5pContentFactory, setupEntities } from '@shared/testing';
-import { CurrentUserInterface } from '@src/modules/authentication';
+import { ICurrentUser } from '@src/modules/authentication';
 import { AuthorizationContextBuilder, AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { UserService } from '@src/modules/user';
 import { H5PAjaxEndpointProvider } from '../provider';
@@ -14,7 +14,7 @@ import { H5PEditorUc } from './h5p.uc';
 const createParams = () => {
 	const content = h5pContentFactory.build();
 
-	const mockCurrentUser: CurrentUserInterface = {
+	const mockCurrentUser: ICurrentUser = {
 		accountId: 'mockAccountId',
 		roles: ['student'],
 		schoolId: 'mockSchoolId',

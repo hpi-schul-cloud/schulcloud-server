@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Controller, Get, NotFoundException, Param, Query, Res, StreamableFile } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';
@@ -21,7 +21,7 @@ export class CourseController {
 
 	@Get()
 	async findForUser(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams
 	): Promise<CourseMetadataListResponse> {
 		const [courses, total] = await this.courseUc.findAllByUser(currentUser.userId, pagination);
@@ -34,7 +34,7 @@ export class CourseController {
 
 	@Get(':courseId/export')
 	async exportCourse(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: CourseUrlParams,
 		@Query() queryParams: CourseQueryParams,
 		@Res({ passthrough: true }) response: Response

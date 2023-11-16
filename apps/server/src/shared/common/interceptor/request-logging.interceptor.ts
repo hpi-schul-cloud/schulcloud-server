@@ -1,4 +1,4 @@
-import { CurrentUserInterface } from '@modules/authentication/interface/user';
+import { ICurrentUser } from '@modules/authentication/interface/user';
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { LegacyLogger, RequestLoggingBody } from '@src/core/logger';
 import { Request } from 'express';
@@ -13,7 +13,7 @@ export class RequestLoggingInterceptor implements NestInterceptor {
 		this.logger.setContext(`${context.getClass().name}::${context.getHandler().name}()`);
 
 		const req: Request = context.switchToHttp().getRequest();
-		const currentUser = req.user as CurrentUserInterface;
+		const currentUser = req.user as ICurrentUser;
 		const logging: RequestLoggingBody = {
 			userId: currentUser.userId,
 			request: {

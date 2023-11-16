@@ -6,7 +6,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Strategy } from 'passport-custom';
 import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
-import { CurrentUserInterface, OauthCurrentUser } from '../interface';
+import { ICurrentUser, OauthCurrentUser } from '../interface';
 import { SchoolInMigrationLoggableException } from '../loggable';
 import { CurrentUserMapper } from '../mapper';
 
@@ -16,7 +16,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 		super();
 	}
 
-	async validate(request: { body: Oauth2AuthorizationBodyParams }): Promise<CurrentUserInterface> {
+	async validate(request: { body: Oauth2AuthorizationBodyParams }): Promise<ICurrentUser> {
 		const { systemId, redirectUri, code } = request.body;
 
 		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code);

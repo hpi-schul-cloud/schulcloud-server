@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import {
 	Body,
 	Controller,
@@ -32,7 +32,7 @@ export class BoardController {
 	@Get(':boardId')
 	async getBoardSkeleton(
 		@Param() urlParams: BoardUrlParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardResponse> {
 		const board = await this.boardUc.findBoard(currentUser.userId, urlParams.boardId);
 
@@ -49,7 +49,7 @@ export class BoardController {
 	@Get(':boardId/context')
 	async getBoardContext(
 		@Param() urlParams: BoardUrlParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardContextResponse> {
 		const boardContext = await this.boardUc.findBoardContext(currentUser.userId, urlParams.boardId);
 
@@ -68,7 +68,7 @@ export class BoardController {
 	async updateBoardTitle(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: RenameBodyParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.boardUc.updateBoardTitle(currentUser.userId, urlParams.boardId, bodyParams.title);
 	}
@@ -80,10 +80,7 @@ export class BoardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Delete(':boardId')
-	async deleteBoard(
-		@Param() urlParams: BoardUrlParams,
-		@CurrentUser() currentUser: CurrentUserInterface
-	): Promise<void> {
+	async deleteBoard(@Param() urlParams: BoardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.boardUc.deleteBoard(currentUser.userId, urlParams.boardId);
 	}
 
@@ -95,7 +92,7 @@ export class BoardController {
 	@Post(':boardId/columns')
 	async createColumn(
 		@Param() urlParams: BoardUrlParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ColumnResponse> {
 		const column = await this.boardUc.createColumn(currentUser.userId, urlParams.boardId);
 

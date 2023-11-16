@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server/server.module';
 import {
@@ -48,7 +48,7 @@ import request from 'supertest';
 describe('ImportUser Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: CurrentUserInterface;
+	let currentUser: ICurrentUser;
 
 	const authenticatedUser = async (permissions: Permission[] = [], features: SchoolFeatures[] = []) => {
 		const system = systemFactory.buildWithId(); // TODO no id?

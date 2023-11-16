@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { CopyApiResponse } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
@@ -26,7 +26,7 @@ import request from 'supertest';
 describe('Rooms Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: CurrentUserInterface;
+	let currentUser: ICurrentUser;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 
 	const setConfig = () => {

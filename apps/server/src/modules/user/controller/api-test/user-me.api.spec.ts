@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import request from 'supertest';
 
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server/server.module';
 import { ResolvedUserResponse } from '@modules/user/controller/dto';
@@ -87,7 +87,7 @@ describe(baseRouteName, () => {
 		let app: INestApplication;
 		let orm: MikroORM;
 		let em: EntityManager;
-		let currentUser: CurrentUserInterface;
+		let currentUser: ICurrentUser;
 		let api: API;
 
 		beforeAll(async () => {

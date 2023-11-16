@@ -7,7 +7,7 @@ import { GuardAgainst } from '@shared/common/utils/guard-against';
 import { UserRepo } from '@shared/repo';
 import bcrypt from 'bcryptjs';
 import { Strategy } from 'passport-local';
-import { CurrentUserInterface } from '../interface';
+import { ICurrentUser } from '../interface';
 import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from '../services/authentication.service';
 
@@ -22,7 +22,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		super();
 	}
 
-	async validate(username?: string, password?: string): Promise<CurrentUserInterface> {
+	async validate(username?: string, password?: string): Promise<ICurrentUser> {
 		({ username, password } = this.cleanupInput(username, password));
 		const account = await this.authenticationService.loadAccount(username);
 
@@ -39,7 +39,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 			new Error(`login failing, because account ${account.id} has no userId`)
 		);
 		const user = await this.userRepo.findById(accountUserId, true);
-		const currentUser = CurrentUserMapper.userToCurrentUserInterface(account.id, user, false);
+		const currentUser = CurrentUserMapper.userToICurrentUser(account.id, user, false);
 		return currentUser;
 	}
 

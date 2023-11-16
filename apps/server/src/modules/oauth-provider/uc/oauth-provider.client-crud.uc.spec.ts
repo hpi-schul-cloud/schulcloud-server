@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { OauthProviderService } from '@infra/oauth-provider';
 import { ProviderOauthClient } from '@infra/oauth-provider/dto';
-import { CurrentUserInterface } from '@modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import { AuthorizationService } from '@modules/authorization';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -19,7 +19,7 @@ describe('OauthProviderUc', () => {
 
 	let user: User;
 
-	const currentUser: CurrentUserInterface = { userId: 'userId' } as CurrentUserInterface;
+	const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 	const defaultOauthClientBody: ProviderOauthClient = {
 		scope: 'openid offline',
 		grant_types: ['authorization_code', 'refresh_token'],

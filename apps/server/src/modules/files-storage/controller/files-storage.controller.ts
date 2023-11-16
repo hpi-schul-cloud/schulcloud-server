@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import {
 	BadRequestException,
 	Body,
@@ -63,7 +63,7 @@ export class FilesStorageController {
 	async uploadFromUrl(
 		@Body() body: FileUrlParams,
 		@Param() params: FileRecordParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.uploadFromUrl(currentUser.userId, { ...body, ...params });
 
@@ -83,7 +83,7 @@ export class FilesStorageController {
 	async upload(
 		@Body() _: FileParams,
 		@Param() params: FileRecordParams,
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.upload(currentUser.userId, params, req);
@@ -105,7 +105,7 @@ export class FilesStorageController {
 	@Get('/download/:fileRecordId/:fileName')
 	async download(
 		@Param() params: DownloadFileParams,
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response,
 		@Headers('Range') bytesRange?: string
@@ -131,7 +131,7 @@ export class FilesStorageController {
 	@RequestTimeout(config().INCOMING_REQUEST_TIMEOUT)
 	async downloadPreview(
 		@Param() params: DownloadFileParams,
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Query() previewParams: PreviewParams,
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response,
@@ -192,7 +192,7 @@ export class FilesStorageController {
 	@Get('/list/:schoolId/:parentType/:parentId')
 	async list(
 		@Param() params: FileRecordParams,
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams
 	): Promise<FileRecordListResponse> {
 		const [fileRecords, total] = await this.filesStorageUC.getFileRecordsOfParent(currentUser.userId, params);
@@ -217,7 +217,7 @@ export class FilesStorageController {
 	async patchFilename(
 		@Param() params: SingleFileParams,
 		@Body() renameFileParam: RenameFileParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.patchFilename(currentUser.userId, params, renameFileParam);
 
@@ -238,7 +238,7 @@ export class FilesStorageController {
 	@UseInterceptors(RequestLoggingInterceptor)
 	async deleteByParent(
 		@Param() params: FileRecordParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordListResponse> {
 		const [fileRecords, total] = await this.filesStorageUC.deleteFilesOfParent(currentUser.userId, params);
 		const response = FileRecordMapper.mapToFileRecordListResponse(fileRecords, total);
@@ -255,7 +255,7 @@ export class FilesStorageController {
 	@UseInterceptors(RequestLoggingInterceptor)
 	async deleteFile(
 		@Param() params: SingleFileParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.deleteOneFile(currentUser.userId, params);
 
@@ -271,7 +271,7 @@ export class FilesStorageController {
 	@Post('/restore/:schoolId/:parentType/:parentId')
 	async restore(
 		@Param() params: FileRecordParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordListResponse> {
 		const [fileRecords, total] = await this.filesStorageUC.restoreFilesOfParent(currentUser.userId, params);
 
@@ -287,7 +287,7 @@ export class FilesStorageController {
 	@Post('/restore/:fileRecordId')
 	async restoreFile(
 		@Param() params: SingleFileParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.restoreOneFile(currentUser.userId, params);
 
@@ -305,7 +305,7 @@ export class FilesStorageController {
 	async copy(
 		@Param() params: FileRecordParams,
 		@Body() copyFilesParam: CopyFilesOfParentParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<CopyFileListResponse> {
 		const [response, count] = await this.filesStorageUC.copyFilesOfParent(currentUser.userId, params, copyFilesParam);
 
@@ -322,7 +322,7 @@ export class FilesStorageController {
 	async copyFile(
 		@Param() params: SingleFileParams,
 		@Body() copyFileParam: CopyFileParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<CopyFileResponse> {
 		const response = await this.filesStorageUC.copyOneFile(currentUser.userId, params, copyFileParam);
 

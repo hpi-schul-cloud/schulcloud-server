@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, CurrentUserInterface } from '@modules/authentication';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -20,7 +20,7 @@ export class TaskController {
 
 	@Get()
 	async findAll(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams
 	): Promise<TaskListResponse> {
 		return this.findAllTasks(currentUser, pagination);
@@ -28,14 +28,14 @@ export class TaskController {
 
 	@Get('finished')
 	async findAllFinished(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams
 	): Promise<TaskListResponse> {
 		return this.findAllTasks(currentUser, pagination, true);
 	}
 
 	private async findAllTasks(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams,
 		finished = false
 	): Promise<TaskListResponse> {
@@ -51,10 +51,7 @@ export class TaskController {
 	}
 
 	@Patch(':taskId/finish')
-	async finish(
-		@Param() urlParams: TaskUrlParams,
-		@CurrentUser() currentUser: CurrentUserInterface
-	): Promise<TaskResponse> {
+	async finish(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
 		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, urlParams.taskId, true);
 
 		const response = TaskMapper.mapToResponse(task);
@@ -63,10 +60,7 @@ export class TaskController {
 	}
 
 	@Patch(':taskId/restore')
-	async restore(
-		@Param() urlParams: TaskUrlParams,
-		@CurrentUser() currentUser: CurrentUserInterface
-	): Promise<TaskResponse> {
+	async restore(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
 		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, urlParams.taskId, false);
 
 		const response = TaskMapper.mapToResponse(task);
@@ -77,7 +71,7 @@ export class TaskController {
 	@Patch(':taskId/revertPublished')
 	async revertPublished(
 		@Param() urlParams: TaskUrlParams,
-		@CurrentUser() currentUser: CurrentUserInterface
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<TaskResponse> {
 		const task = await this.taskUc.revertPublished(currentUser.userId, urlParams.taskId);
 
@@ -89,7 +83,7 @@ export class TaskController {
 	@Post(':taskId/copy')
 	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyTask(
-		@CurrentUser() currentUser: CurrentUserInterface,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: TaskUrlParams,
 		@Body() params: TaskCopyApiParams
 	): Promise<CopyApiResponse> {
@@ -103,7 +97,7 @@ export class TaskController {
 	}
 
 	@Delete(':taskId')
-	async delete(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: CurrentUserInterface): Promise<boolean> {
+	async delete(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
 		const result = await this.taskUc.delete(currentUser.userId, urlParams.taskId);
 
 		return result;
