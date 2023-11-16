@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	ContentElementFactory,
@@ -189,6 +189,25 @@ describe(ContentElementService.name, () => {
 				await service.create(card, ContentElementType.RICH_TEXT);
 
 				expect(boardDoRepo.save).toHaveBeenCalledWith([richTextElement], card);
+			});
+		});
+
+		describe('when creating a drawing element multiple times', () => {
+			const setup = () => {
+				const card = cardFactory.build();
+				const drawingElement = drawingElementFactory.build();
+
+				contentElementFactory.build.mockReturnValue(drawingElement);
+
+				return { card, drawingElement };
+			};
+
+			it('should return error for second creation', async () => {
+				const { card } = setup();
+
+				await service.create(card, ContentElementType.DRAWING);
+
+				await expect(service.create(card, ContentElementType.DRAWING)).rejects.toThrow(BadRequestException);
 			});
 		});
 	});
