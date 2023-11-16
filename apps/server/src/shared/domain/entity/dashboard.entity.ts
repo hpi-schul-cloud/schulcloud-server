@@ -4,7 +4,7 @@ import { EntityId, LearnroomMetadata } from '@shared/domain/types';
 
 const defaultColumns = 4;
 
-export interface GridElementInterface {
+export interface IGridElement {
 	hasId(): boolean;
 
 	getId: () => EntityId | undefined;
@@ -34,7 +34,7 @@ export type GridElementContent = {
 	copyingSince?: Date;
 };
 
-export class GridElement implements GridElementInterface {
+export class GridElement implements IGridElement {
 	id?: EntityId;
 
 	title?: string;
@@ -151,7 +151,7 @@ export type GridPosition = { x: number; y: number };
 export type GridPositionWithGroupIndex = { x: number; y: number; groupIndex?: number };
 
 export type GridElementWithPosition = {
-	gridElement: GridElementInterface;
+	gridElement: IGridElement;
 	pos: GridPosition;
 };
 
@@ -162,7 +162,7 @@ export class DashboardEntity {
 
 	columns: number;
 
-	grid: Map<number, GridElementInterface>;
+	grid: Map<number, IGridElement>;
 
 	userId: EntityId;
 
@@ -181,7 +181,7 @@ export class DashboardEntity {
 
 	constructor(id: string, props: DashboardProps) {
 		this.columns = props.colums || defaultColumns;
-		this.grid = new Map<number, GridElementInterface>();
+		this.grid = new Map<number, IGridElement>();
 		props.grid.forEach((element) => {
 			this.grid.set(this.gridIndexFromPosition(element.pos), element.gridElement);
 		});
@@ -201,7 +201,7 @@ export class DashboardEntity {
 	getGrid(): GridElementWithPosition[] {
 		const result = [...this.grid.keys()].map((key) => {
 			const position = this.positionFromGridIndex(key);
-			const value = this.grid.get(key) as GridElementInterface;
+			const value = this.grid.get(key) as IGridElement;
 			return {
 				pos: position,
 				gridElement: value,
@@ -210,7 +210,7 @@ export class DashboardEntity {
 		return result;
 	}
 
-	getElement(position: GridPosition): GridElementInterface {
+	getElement(position: GridPosition): IGridElement {
 		const element = this.grid.get(this.gridIndexFromPosition(position));
 		if (!element) {
 			throw new NotFoundException('no element at grid position');
@@ -239,7 +239,7 @@ export class DashboardEntity {
 
 	private removeRoomsNotInList(roomList: Learnroom[]): void {
 		[...this.grid.keys()].forEach((key) => {
-			const element = this.grid.get(key) as GridElementInterface;
+			const element = this.grid.get(key) as IGridElement;
 			const currentRooms = element.getReferences();
 			currentRooms.forEach((room) => {
 				if (!roomList.includes(room)) {
@@ -283,7 +283,7 @@ export class DashboardEntity {
 		return i;
 	}
 
-	private getReferencesFromPosition(position: GridPositionWithGroupIndex): GridElementInterface {
+	private getReferencesFromPosition(position: GridPositionWithGroupIndex): IGridElement {
 		const elementToMove = this.getElement(position);
 
 		if (typeof position.groupIndex === 'number' && elementToMove.isGroup()) {
@@ -304,7 +304,7 @@ export class DashboardEntity {
 		}
 	}
 
-	private mergeElementIntoPosition(element: GridElementInterface, position: GridPosition): GridElementInterface {
+	private mergeElementIntoPosition(element: IGridElement, position: GridPosition): IGridElement {
 		const targetElement = this.grid.get(this.gridIndexFromPosition(position));
 		if (targetElement) {
 			targetElement.addReferences(element.getReferences());
