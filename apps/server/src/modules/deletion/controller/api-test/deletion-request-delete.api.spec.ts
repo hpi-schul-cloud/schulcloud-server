@@ -4,10 +4,10 @@ import { ApiValidationError } from '@shared/common';
 import { Request } from 'express';
 import request from 'supertest';
 import { AuthGuard } from '@nestjs/passport';
-import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.module';
 import { cleanupCollections } from '@shared/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { deletionRequestEntityFactory } from '../../entity/testing/factory/deletion-request.entity.factory';
+import { AdminApiServerTestModule } from '../../../server/admin-api.server.module';
+import { deletionRequestEntityFactory } from '../../entity/testing';
 import { DeletionRequestEntity } from '../../entity';
 
 const baseRouteName = '/deletionRequests';
