@@ -11,9 +11,10 @@ import ContentManager from '@lumieducation/h5p-server/build/src/ContentManager';
 import ContentTypeInformationRepository from '@lumieducation/h5p-server/build/src/ContentTypeInformationRepository';
 import { Injectable } from '@nestjs/common';
 import { ContentStorage, LibraryStorage } from '@src/modules/h5p-editor';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { readFileSync } from 'fs';
 import { parse } from 'yaml';
+import { ConfigService } from '@nestjs/config';
+import { H5pLibraryManagementConfig } from '../h5p-library-management.config';
 
 const h5pConfig = new H5PConfig(undefined, {
 	baseUrl: '/api/v3/h5p-editor',
@@ -33,7 +34,13 @@ export class H5PLibraryManagementService {
 
 	libraryWishList: string[];
 
-	constructor(private readonly libraryStorage: LibraryStorage, private readonly contentStorage: ContentStorage) {
+	libraryListPath: string;
+
+	constructor(
+		private readonly libraryStorage: LibraryStorage,
+		private readonly contentStorage: ContentStorage,
+		private configService: ConfigService
+	) {
 		const kvCache = new cacheImplementations.CachedKeyValueStorage('kvcache');
 		this.contentTypeCache = new ContentTypeCache(h5pConfig, kvCache);
 		this.libraryManager = new LibraryManager(
@@ -48,7 +55,12 @@ export class H5PLibraryManagementService {
 		this.contentTypeRepo = new ContentTypeInformationRepository(this.contentTypeCache, this.libraryManager, h5pConfig);
 		const contentManager = new ContentManager(this.contentStorage);
 		this.libraryAdministration = new LibraryAdministration(this.libraryManager, contentManager);
-		const librariesYamlContent = readFileSync(Configuration.get('H5P_EDITOR__LIBRARY_LIST_PATH') as string, {
+		const config = this.configService.get<H5pLibraryManagementConfig>(
+			'H5P_EDITOR__LIBRARY_LIST_PATH'
+		) as H5pLibraryManagementConfig;
+		this.libraryListPath = config.libraryListPath;
+
+		const librariesYamlContent = readFileSync(this.libraryListPath, {
 			encoding: 'utf-8',
 		});
 		this.libraryWishList = (parse(librariesYamlContent) as { h5p_libraries: string[] }).h5p_libraries;
