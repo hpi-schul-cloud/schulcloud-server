@@ -24,10 +24,10 @@ export interface ICommonCartridgeOrganizationBuilder {
 	addResourceToOrganization(props: ICommonCartridgeResourceProps): ICommonCartridgeOrganizationBuilder;
 }
 
-export interface CommonCartridgeFileBuilderInterface {
+export interface ICommonCartridgeFileBuilder {
 	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder;
 
-	addResourceToFile(props: ICommonCartridgeResourceProps): CommonCartridgeFileBuilderInterface;
+	addResourceToFile(props: ICommonCartridgeResourceProps): ICommonCartridgeFileBuilder;
 
 	build(): Promise<Buffer>;
 }
@@ -59,7 +59,7 @@ class CommonCartridgeOrganizationBuilder implements ICommonCartridgeOrganization
 	}
 }
 
-export class CommonCartridgeFileBuilder implements CommonCartridgeFileBuilderInterface {
+export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
 	private readonly xmlBuilder = new Builder();
 
 	private readonly zipBuilder = new AdmZip();
@@ -76,7 +76,7 @@ export class CommonCartridgeFileBuilder implements CommonCartridgeFileBuilderInt
 		return organizationBuilder;
 	}
 
-	addResourceToFile(props: ICommonCartridgeResourceProps): CommonCartridgeFileBuilderInterface {
+	addResourceToFile(props: ICommonCartridgeResourceProps): ICommonCartridgeFileBuilder {
 		const resource = new CommonCartridgeResourceItemElement(props, this.xmlBuilder);
 		if (!resource.canInline()) {
 			this.zipBuilder.addFile(props.href, Buffer.from(resource.content()));
