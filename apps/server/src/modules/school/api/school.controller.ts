@@ -2,10 +2,10 @@ import { Authenticate, CurrentUser } from '@modules/authentication/decorator/aut
 import { ICurrentUser } from '@modules/authentication/interface/user';
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { SchoolUc } from '../domain';
 import { SchoolQueryParams, SchoolUrlParams } from './dto/param';
 import { SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
 import { SchoolResponseMapper } from './mapper';
+import { SchoolUc } from './school.uc';
 
 @ApiTags('School')
 @Authenticate('jwt')
@@ -21,9 +21,7 @@ export class SchoolController {
 		@Param() urlParams: SchoolUrlParams,
 		@CurrentUser() user: ICurrentUser
 	): Promise<SchoolResponse> {
-		const school = await this.schoolUc.getSchool(urlParams.schoolId, user.userId);
-
-		const res = SchoolResponseMapper.mapToResponse(school);
+		const res = await this.schoolUc.getSchool(urlParams.schoolId, user.userId);
 
 		return res;
 	}
@@ -34,9 +32,7 @@ export class SchoolController {
 		@Query() query: SchoolQueryParams,
 		@CurrentUser() user: ICurrentUser
 	): Promise<SchoolForExternalInviteResponse[]> {
-		const schools = await this.schoolUc.getSchoolListForExternalInvite(query, user.schoolId);
-
-		const res = SchoolResponseMapper.mapToListForExternalInviteResponse(schools);
+		const res = await this.schoolUc.getSchoolListForExternalInvite(query, user.schoolId);
 
 		return res;
 	}

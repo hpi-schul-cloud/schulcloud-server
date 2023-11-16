@@ -1,12 +1,16 @@
-import { County, FederalStateDto } from '../../domain';
+import { County, FederalState } from '../../domain';
 import { CountyResponse, FederalStateResponse } from '../dto/response';
 
 export class FederalStateResponseMapper {
-	public static mapToResponse(federalState: FederalStateDto): FederalStateResponse {
-		const counties = federalState.counties && this.mapToCountyResponses(federalState.counties);
+	public static mapToResponse(federalState: FederalState): FederalStateResponse {
+		const federalStateProps = federalState.getProps();
+		const counties = federalStateProps.counties && this.mapToCountyResponses(federalStateProps.counties);
 
 		const res = new FederalStateResponse({
-			...federalState,
+			id: federalState.id,
+			name: federalStateProps.name,
+			abbreviation: federalStateProps.abbreviation,
+			logoUrl: federalStateProps.logoUrl,
 			counties,
 		});
 

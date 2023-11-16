@@ -3,11 +3,11 @@ import { AuthorizationService } from '@modules/authorization/domain/service/auth
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain';
 import { EntityId } from '@shared/domain/types/entity-id';
-import { SchoolDto, SchoolForExternalInviteDto } from '../dto';
-import { SchoolDtoMapper } from '../mapper';
-import { YearsDtoMapper } from '../mapper/years.dto.mapper';
-import { SchoolQuery } from '../query';
-import { SchoolService, SchoolYearService } from '../service';
+import { SchoolQuery } from '../domain/query';
+import { SchoolService, SchoolYearService } from '../domain/service';
+import { SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
+import { SchoolResponseMapper } from './mapper';
+import { YearsResponseMapper } from './mapper/years.response.mapper';
 
 @Injectable()
 export class SchoolUc {
@@ -17,7 +17,7 @@ export class SchoolUc {
 		private readonly schoolYearService: SchoolYearService
 	) {}
 
-	public async getSchool(schoolId: EntityId, userId: EntityId): Promise<SchoolDto> {
+	public async getSchool(schoolId: EntityId, userId: EntityId): Promise<SchoolResponse> {
 		const school = await this.schoolService.getSchool(schoolId);
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -25,9 +25,9 @@ export class SchoolUc {
 		this.authorizationService.checkPermission(user, school, authContext);
 
 		const schoolYears = await this.schoolYearService.getAllSchoolYears();
-		const yearsDto = YearsDtoMapper.mapToDto(school, schoolYears);
+		const yearsResponse = YearsResponseMapper.mapToResponse(school, schoolYears);
 
-		const dto = SchoolDtoMapper.mapToDto(school, yearsDto);
+		const dto = SchoolResponseMapper.mapToResponse(school, yearsResponse);
 
 		return dto;
 	}
@@ -35,7 +35,7 @@ export class SchoolUc {
 	public async getSchoolListForExternalInvite(
 		query: SchoolQuery,
 		ownSchoolId: EntityId
-	): Promise<SchoolForExternalInviteDto[]> {
+	): Promise<SchoolForExternalInviteResponse[]> {
 		const findOptions = {
 			order: {
 				name: SortOrder.asc,
@@ -46,7 +46,7 @@ export class SchoolUc {
 
 		// TODO: Do we want authorization here? At the moment there is no fitting permission.
 
-		const dtos = SchoolDtoMapper.mapToListForExternalInviteDtos(schools);
+		const dtos = SchoolResponseMapper.mapToListForExternalInviteResponses(schools);
 
 		return dtos;
 	}
