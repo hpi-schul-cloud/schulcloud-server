@@ -1381,7 +1381,8 @@
 				}
 			},
 			"default": {
-				"BASE_URL": "http://localhost:4030"
+				"BASE_URL": "http://localhost:4030",
+				"API_KEY": ""
 			}
 		}
 	},
