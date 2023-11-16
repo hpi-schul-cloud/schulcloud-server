@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { ContextExternalToolRepo } from '@shared/repo';
 import { ToolContextType } from '../../common/enum';
 import { ToolContextMapper } from '../../common/mapper/tool-context.mapper';
 import { ContextExternalToolType } from '../../context-external-tool/entity';
@@ -8,10 +8,7 @@ import { SchoolExternalToolMetadata } from '../domain';
 
 @Injectable()
 export class SchoolExternalToolMetadataService {
-	constructor(
-		private readonly schoolToolRepo: SchoolExternalToolRepo,
-		private readonly contextToolRepo: ContextExternalToolRepo
-	) {}
+	constructor(private readonly contextToolRepo: ContextExternalToolRepo) {}
 
 	async getMetadata(schoolExternalToolId: EntityId) {
 		const contextTools: { contextType: ContextExternalToolType; countPerContext: number }[] = await Promise.all(
@@ -21,7 +18,7 @@ export class SchoolExternalToolMetadataService {
 				): Promise<{ contextType: ContextExternalToolType; countPerContext: number }> => {
 					const countPerContext: number = await this.contextToolRepo.countBySchoolToolIdsAndContextType(
 						ToolContextMapper.contextMapping[contextType],
-						[schoolExternalToolId.toString()]
+						[schoolExternalToolId]
 					);
 
 					const type: ContextExternalToolType = ToolContextMapper.contextMapping[contextType];
