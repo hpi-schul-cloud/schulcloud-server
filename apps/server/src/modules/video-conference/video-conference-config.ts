@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IBbbSettings } from './bbb';
-import { VideoConferenceSettingsInterface } from './interface';
+import { IVideoConferenceSettings } from './interface';
 
 export default class VideoConferenceConfiguration {
 	static bbb: IBbbSettings = {
@@ -9,7 +9,7 @@ export default class VideoConferenceConfiguration {
 		presentationUrl: Configuration.get('VIDEOCONFERENCE_DEFAULT_PRESENTATION') as string,
 	};
 
-	static videoConference: VideoConferenceSettingsInterface = {
+	static videoConference: IVideoConferenceSettings = {
 		enabled: Configuration.get('FEATURE_VIDEOCONFERENCE_ENABLED') as boolean,
 		hostUrl: Configuration.get('HOST') as string,
 		bbb: VideoConferenceConfiguration.bbb,

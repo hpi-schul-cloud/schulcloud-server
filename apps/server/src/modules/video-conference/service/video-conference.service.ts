@@ -22,13 +22,13 @@ import {
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
-import { VideoConferenceOptions, VideoConferenceSettings, VideoConferenceSettingsInterface } from '../interface';
+import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
 import { ScopeInfo, VideoConferenceState } from '../uc/dto';
 
 @Injectable()
 export class VideoConferenceService {
 	constructor(
-		@Inject(VideoConferenceSettings) private readonly vcSettings: VideoConferenceSettingsInterface,
+		@Inject(VideoConferenceSettings) private readonly vcSettings: IVideoConferenceSettings,
 		private readonly courseService: CourseService,
 		private readonly calendarService: CalendarService,
 		private readonly authorizationService: AuthorizationService,

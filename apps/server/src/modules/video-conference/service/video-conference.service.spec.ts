@@ -26,7 +26,7 @@ import { videoConferenceDOFactory } from '@shared/testing/factory/video-conferen
 import { ObjectId } from 'bson';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
-import { VideoConferenceOptions, VideoConferenceSettings, VideoConferenceSettingsInterface } from '../interface';
+import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
 import { ScopeInfo, ScopeRef, VideoConferenceState } from '../uc/dto';
 import { VideoConferenceService } from './video-conference.service';
 
@@ -39,7 +39,7 @@ describe('VideoConferenceService', () => {
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
-	let videoConferenceSettings: DeepMocked<VideoConferenceSettingsInterface>;
+	let videoConferenceSettings: DeepMocked<IVideoConferenceSettings>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -47,7 +47,7 @@ describe('VideoConferenceService', () => {
 				VideoConferenceService,
 				{
 					provide: VideoConferenceSettings,
-					useValue: createMock<VideoConferenceSettingsInterface>({
+					useValue: createMock<IVideoConferenceSettings>({
 						hostUrl: 'https://api.example.com',
 					}),
 				},
