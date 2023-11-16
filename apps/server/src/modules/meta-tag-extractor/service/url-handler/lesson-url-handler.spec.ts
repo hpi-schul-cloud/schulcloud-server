@@ -27,24 +27,36 @@ describe(LessonUrlHandler.name, () => {
 	});
 
 	describe('getMetaData', () => {
-		it('should call lessonService with the correct id', async () => {
-			const id = 'af322312feae';
-			const url = `https://localhost/topics/${id}`;
+		describe('when url fits', () => {
+			it('should call lessonService with the correct id', async () => {
+				const id = 'af322312feae';
+				const url = `https://localhost/topics/${id}`;
 
-			await lessonUrlHandler.getMetaData(url);
+				await lessonUrlHandler.getMetaData(url);
 
-			expect(lessonService.findById).toHaveBeenCalledWith(id);
+				expect(lessonService.findById).toHaveBeenCalledWith(id);
+			});
+
+			it('should take the title from the lessons name', async () => {
+				const id = 'af322312feae';
+				const url = `https://localhost/topics/${id}`;
+				const lessonName = 'My lesson';
+				lessonService.findById.mockResolvedValue({ name: lessonName } as LessonEntity);
+
+				const result = await lessonUrlHandler.getMetaData(url);
+
+				expect(result).toEqual(expect.objectContaining({ title: lessonName, type: 'lesson' }));
+			});
 		});
 
-		it('should take the title from the lessons name', async () => {
-			const id = 'af322312feae';
-			const url = `https://localhost/topics/${id}`;
-			const lessonName = 'My lesson';
-			lessonService.findById.mockResolvedValue({ name: lessonName } as LessonEntity);
+		describe('when url does not fit', () => {
+			it('should return undefined', async () => {
+				const url = `https://localhost/invalid/ef2345abe4e3b`;
 
-			const result = await lessonUrlHandler.getMetaData(url);
+				const result = await lessonUrlHandler.getMetaData(url);
 
-			expect(result).toEqual(expect.objectContaining({ title: lessonName, type: 'lesson' }));
+				expect(result).toBeUndefined();
+			});
 		});
 	});
 });

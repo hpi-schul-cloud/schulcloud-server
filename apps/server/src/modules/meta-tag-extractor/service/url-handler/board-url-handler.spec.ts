@@ -32,27 +32,39 @@ describe(BoardUrlHandler.name, () => {
 	});
 
 	describe('getMetaData', () => {
-		it('should call courseService with the correct id', async () => {
-			const id = 'af322312feae';
-			const url = `https://localhost/rooms/${id}/board`;
+		describe('when url fits', () => {
+			it('should call courseService with the correct id', async () => {
+				const id = 'af322312feae';
+				const url = `https://localhost/rooms/${id}/board`;
 
-			await boardUrlHandler.getMetaData(url);
+				await boardUrlHandler.getMetaData(url);
 
-			expect(columnBoardService.findById).toHaveBeenCalledWith(id);
+				expect(columnBoardService.findById).toHaveBeenCalledWith(id);
+			});
+
+			it('should take the title from the board name', async () => {
+				const id = 'af322312feae';
+				const url = `https://localhost/rooms/${id}/board`;
+				const boardName = 'My Board';
+				columnBoardService.findById.mockResolvedValue({
+					title: boardName,
+					context: { type: 'course', id: 'a-board-id' },
+				} as ColumnBoard);
+
+				const result = await boardUrlHandler.getMetaData(url);
+
+				expect(result).toEqual(expect.objectContaining({ title: boardName, type: 'board' }));
+			});
 		});
 
-		it('should take the title from the board name', async () => {
-			const id = 'af322312feae';
-			const url = `https://localhost/rooms/${id}/board`;
-			const boardName = 'My Board';
-			columnBoardService.findById.mockResolvedValue({
-				title: boardName,
-				context: { type: 'course', id: 'a-board-id' },
-			} as ColumnBoard);
+		describe('when url does not fit', () => {
+			it('should return undefined', async () => {
+				const url = `https://localhost/invalid/ef2345abe4e3b`;
 
-			const result = await boardUrlHandler.getMetaData(url);
+				const result = await boardUrlHandler.getMetaData(url);
 
-			expect(result).toEqual(expect.objectContaining({ title: boardName, type: 'board' }));
+				expect(result).toBeUndefined();
+			});
 		});
 	});
 });

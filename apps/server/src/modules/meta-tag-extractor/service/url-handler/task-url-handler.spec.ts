@@ -27,24 +27,36 @@ describe(TaskUrlHandler.name, () => {
 	});
 
 	describe('getMetaData', () => {
-		it('should call taskService with the correct id', async () => {
-			const id = 'af322312feae';
-			const url = `https://localhost/homework/${id}`;
+		describe('when url fits', () => {
+			it('should call taskService with the correct id', async () => {
+				const id = 'af322312feae';
+				const url = `https://localhost/homework/${id}`;
 
-			await taskUrlHandler.getMetaData(url);
+				await taskUrlHandler.getMetaData(url);
 
-			expect(taskService.findById).toHaveBeenCalledWith(id);
+				expect(taskService.findById).toHaveBeenCalledWith(id);
+			});
+
+			it('should take the title from the tasks name', async () => {
+				const id = 'af322312feae';
+				const url = `https://localhost/homework/${id}`;
+				const taskName = 'My Task';
+				taskService.findById.mockResolvedValue({ name: taskName } as Task);
+
+				const result = await taskUrlHandler.getMetaData(url);
+
+				expect(result).toEqual(expect.objectContaining({ title: taskName, type: 'task' }));
+			});
 		});
 
-		it('should take the title from the tasks name', async () => {
-			const id = 'af322312feae';
-			const url = `https://localhost/homework/${id}`;
-			const taskName = 'My Task';
-			taskService.findById.mockResolvedValue({ name: taskName } as Task);
+		describe('when url does not fit', () => {
+			it('should return undefined', async () => {
+				const url = `https://localhost/invalid/ef2345abe4e3b`;
 
-			const result = await taskUrlHandler.getMetaData(url);
+				const result = await taskUrlHandler.getMetaData(url);
 
-			expect(result).toEqual(expect.objectContaining({ title: taskName, type: 'task' }));
+				expect(result).toBeUndefined();
+			});
 		});
 	});
 });

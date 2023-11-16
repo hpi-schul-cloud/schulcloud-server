@@ -27,24 +27,36 @@ describe(CourseUrlHandler.name, () => {
 	});
 
 	describe('getMetaData', () => {
-		it('should call courseService with the correct id', async () => {
-			const id = 'af322312feae';
-			const url = `https://localhost/rooms/${id}`;
+		describe('when url fits', () => {
+			it('should call courseService with the correct id', async () => {
+				const id = 'af322312feae';
+				const url = `https://localhost/rooms/${id}`;
 
-			await courseUrlHandler.getMetaData(url);
+				await courseUrlHandler.getMetaData(url);
 
-			expect(courseService.findById).toHaveBeenCalledWith(id);
+				expect(courseService.findById).toHaveBeenCalledWith(id);
+			});
+
+			it('should take the title from the course name', async () => {
+				const id = 'af322312feae';
+				const url = `https://localhost/rooms/${id}`;
+				const courseName = 'My Course';
+				courseService.findById.mockResolvedValue({ name: courseName } as Course);
+
+				const result = await courseUrlHandler.getMetaData(url);
+
+				expect(result).toEqual(expect.objectContaining({ title: courseName, type: 'course' }));
+			});
 		});
 
-		it('should take the title from the course name', async () => {
-			const id = 'af322312feae';
-			const url = `https://localhost/rooms/${id}`;
-			const courseName = 'My Course';
-			courseService.findById.mockResolvedValue({ name: courseName } as Course);
+		describe('when url does not fit', () => {
+			it('should return undefined', async () => {
+				const url = `https://localhost/invalid/ef2345abe4e3b`;
 
-			const result = await courseUrlHandler.getMetaData(url);
+				const result = await courseUrlHandler.getMetaData(url);
 
-			expect(result).toEqual(expect.objectContaining({ title: courseName, type: 'course' }));
+				expect(result).toBeUndefined();
+			});
 		});
 	});
 });
