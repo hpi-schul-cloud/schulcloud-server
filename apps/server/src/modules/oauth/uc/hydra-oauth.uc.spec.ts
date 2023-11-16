@@ -7,13 +7,12 @@ import { OauthConfig } from '@shared/domain';
 import { axiosResponseFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
-import { HydraSsoService } from '@modules/oauth/service/hydra.service';
-import { OAuthService } from '@modules/oauth/service/oauth.service';
+import { OAuthService, HydraSsoService } from '@modules/oauth';
 import { AxiosResponse } from 'axios';
 import { HydraOauthUc } from '.';
 import { AuthorizationParams } from '../controller/dto';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
-import { OAuthSSOError } from '../loggable/oauth-sso.error';
+import { OAuthSSOError } from '../loggable';
 import { OAuthTokenDto } from '../interface';
 
 class HydraOauthUcSpec extends HydraOauthUc {

@@ -688,7 +688,11 @@ describe('UserLoginMigrationController (API)', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
+					school: teacherUser.school,
+				});
+
+				await em.persistAndFlush([teacherAccount, teacherUser, userLoginMigration]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -1156,9 +1160,22 @@ describe('UserLoginMigrationController (API)', () => {
 					closedAt: new Date(2023, 1, 5),
 				});
 
+				const migratedUser = userFactory.buildWithId({
+					school,
+					lastLoginSystemChange: new Date(2023, 1, 4),
+				});
+
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				await em.persistAndFlush([
+					sourceSystem,
+					targetSystem,
+					school,
+					adminAccount,
+					adminUser,
+					userLoginMigration,
+					migratedUser,
+				]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);

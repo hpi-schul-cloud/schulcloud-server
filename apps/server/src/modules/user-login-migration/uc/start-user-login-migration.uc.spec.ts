@@ -1,16 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ForbiddenException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, LegacySchoolDo, User, UserLoginMigrationDO } from '@shared/domain';
-import { legacySchoolDoFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { SchoolNumberMissingLoggableException, UserLoginMigrationAlreadyClosedLoggableException } from '../error';
+import { ForbiddenException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { LegacySchoolDo, Permission, User, UserLoginMigrationDO } from '@shared/domain';
+import { legacySchoolDoFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
+import { SchoolNumberMissingLoggableException, UserLoginMigrationAlreadyClosedLoggableException } from '../loggable';
 import { UserLoginMigrationService } from '../service';
 import { StartUserLoginMigrationUc } from './start-user-login-migration.uc';
 
-describe('StartUserLoginMigrationUc', () => {
+describe(StartUserLoginMigrationUc.name, () => {
 	let module: TestingModule;
 	let uc: StartUserLoginMigrationUc;
 
