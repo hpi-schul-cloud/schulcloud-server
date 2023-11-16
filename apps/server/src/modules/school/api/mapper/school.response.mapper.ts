@@ -1,5 +1,5 @@
-import { SchoolDto, SchoolForExternalInviteDto } from '../../../domain';
-import { SchoolForExternalInviteResponse, SchoolResponse } from '../response';
+import { SchoolDto, SchoolForExternalInviteDto } from '../../domain';
+import { SchoolForExternalInviteResponse, SchoolResponse } from '../dto/response';
 import { FederalStateResponseMapper } from './federal-state.response.mapper';
 import { SchoolYearResponseMapper } from './school-year.response.mapper';
 import { SystemResponseMapper } from './system.response.mapper';

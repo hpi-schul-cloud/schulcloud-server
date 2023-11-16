@@ -1,5 +1,5 @@
-import { SchoolYearDto } from '../../../domain';
-import { SchoolYearResponse } from '../response';
+import { SchoolYearDto } from '../../domain';
+import { SchoolYearResponse } from '../dto/response';
 
 export class SchoolYearResponseMapper {
 	public static mapToResponse(schoolYear: SchoolYearDto): SchoolYearResponse {

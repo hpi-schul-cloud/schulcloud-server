@@ -1,5 +1,5 @@
-import { SystemDto } from '../../../domain';
-import { SystemResponse } from '../response';
+import { SystemDto } from '../../domain';
+import { SystemResponse } from '../dto/response';
 
 export class SystemResponseMapper {
 	public static mapToResponse(system: SystemDto): SystemResponse {

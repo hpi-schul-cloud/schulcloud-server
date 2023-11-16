@@ -2,10 +2,10 @@ import { Authenticate, CurrentUser } from '@modules/authentication/decorator/aut
 import { ICurrentUser } from '@modules/authentication/interface/user';
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { SchoolUc } from '../../domain';
+import { SchoolUc } from '../domain';
+import { SchoolQueryParams, SchoolUrlParams } from './dto/param';
+import { SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
 import { SchoolResponseMapper } from './mapper';
-import { SchoolQueryParams, SchoolUrlParams } from './param';
-import { SchoolForExternalInviteResponse, SchoolResponse } from './response';
 
 @ApiTags('School')
 @Authenticate('jwt')

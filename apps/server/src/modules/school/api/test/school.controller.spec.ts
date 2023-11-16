@@ -3,13 +3,12 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections, TestApiClient } from '@shared/testing';
 import {
+	federalStateFactory,
 	schoolFactory,
 	schoolYearFactory,
 	UserAndAccountTestFactory,
-	federalStateFactory,
 } from '@shared/testing/factory';
 import { ServerTestModule } from '@src/modules/server';
-import { SchoolForExternalInviteResponse, SchoolResponse } from '../response';
 
 describe('School Controller (API)', () => {
 	let app: INestApplication;
@@ -182,7 +181,7 @@ describe('School Controller (API)', () => {
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
-				const expectedResponse: SchoolForExternalInviteResponse[] = schools.map((school) => {
+				const expectedResponse = schools.map((school) => {
 					return {
 						id: school.id,
 						name: school.name,
