@@ -24,6 +24,7 @@ const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConf
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
 			entities: ALL_ENTITIES,
+			debug: true,
 		}),
 		LoggerModule,
 	],
