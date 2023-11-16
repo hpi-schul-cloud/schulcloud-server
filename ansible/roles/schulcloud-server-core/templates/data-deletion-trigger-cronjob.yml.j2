@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: data-deletion-trigger
+    cronjob: data-deletion-trigger
+  name: data-deletion-trigger-cronjob
+spec:
+  concurrencyPolicy: Forbid
+  schedule: "{{ SERVER_DATA_DELETION_TRIGGER_CRONJOB_SCHEDULE|default("@hourly", true) }}"
+  jobTemplate:
+    labels:
+      app: data-deletion-trigger
+      cronjob: data-deletion-trigger
+    spec:
+      template:
+        spec:
+          containers:
+          - name: data-deletion-trigger-cronjob
+            image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            envFrom:
+            - secretRef:
+                name: admin-api-client-secret
+            command: ['/bin/sh', '-c']
+            args: ['npm run nest:start:deletion-console -- execution trigger']
+            resources:
+              limits:
+                cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
+                memory: {{ API_MEMORY_LIMITS|default("2Gi", true) }}
+              requests:
+                cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
+                memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
+          restartPolicy: OnFailure
