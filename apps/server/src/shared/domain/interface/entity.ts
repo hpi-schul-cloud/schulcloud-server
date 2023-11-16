@@ -1,16 +1,16 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 
-export interface EntityInterface {
+export interface IEntity {
 	_id: ObjectId;
 	id: string;
 }
 
-export interface EntityInterfaceWithTimestamps extends EntityInterface {
+export interface IEntityWithTimestamps extends IEntity {
 	createdAt: Date;
 	updatedAt: Date;
 }
 
-export interface EntityWithSchool extends EntityInterface {
+export interface EntityWithSchool extends IEntity {
 	school: SchoolEntity;
 }
