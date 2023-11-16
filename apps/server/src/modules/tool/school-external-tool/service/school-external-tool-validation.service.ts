@@ -3,8 +3,8 @@ import { ValidationError } from '@shared/common';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
-import { SchoolExternalTool } from '../domain';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
+import { SchoolExternalTool } from '../domain';
 
 @Injectable()
 export class SchoolExternalToolValidationService {
@@ -15,13 +15,12 @@ export class SchoolExternalToolValidationService {
 	) {}
 
 	async validate(schoolExternalTool: SchoolExternalTool): Promise<void> {
-		this.commonToolValidationService.checkForDuplicateParameters(schoolExternalTool);
-
 		const loadedExternalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
 		if (!this.toolFeatures.toolStatusWithoutVersions) {
 			this.checkVersionMatch(schoolExternalTool.toolVersion, loadedExternalTool.version);
 		}
+
 		this.commonToolValidationService.checkCustomParameterEntries(loadedExternalTool, schoolExternalTool);
 	}
 

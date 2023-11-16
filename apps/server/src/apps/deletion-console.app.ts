@@ -2,29 +2,30 @@
 import { BootstrapConsole } from 'nestjs-console';
 import { DeletionConsoleModule } from '@modules/deletion';
 
-const bootstrap = new BootstrapConsole({
-	module: DeletionConsoleModule,
-	useDecorators: true,
-});
+async function run() {
+	const bootstrap = new BootstrapConsole({
+		module: DeletionConsoleModule,
+		useDecorators: true,
+	});
 
-const logErrorAndSetExitCode = (err: unknown) => {
-	// eslint-disable-next-line no-console
-	console.error(err);
-	process.exitCode = 1;
-};
+	const app = await bootstrap.init();
 
-bootstrap
-	.init()
-	.then(async (app) => {
-		// eslint-disable-next-line promise/always-return
-		try {
-			await app.init();
-			await bootstrap.boot();
-			await app.close();
-		} catch (err) {
-			await app.close();
+	try {
+		await app.init();
 
-			logErrorAndSetExitCode(err);
-		}
-	})
-	.catch((err) => logErrorAndSetExitCode(err));
+		// Execute console application with provided arguments.
+		await bootstrap.boot();
+	} catch (err) {
+		// eslint-disable-next-line no-console, @typescript-eslint/no-unsafe-call
+		console.error(err);
+
+		// Set the exit code to 1 to indicate a console app failure.
+		process.exitCode = 1;
+	}
+
+	// Always close the app, even if some exception
+	// has been thrown from the console app.
+	await app.close();
+}
+
+void run();
