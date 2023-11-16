@@ -1,10 +1,12 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, Permission, SchoolEntity, User } from '@shared/domain';
 import {
 	accountFactory,
+	contextExternalToolEntityFactory,
 	customParameterEntityFactory,
 	externalToolEntityFactory,
 	schoolExternalToolEntityFactory,
@@ -13,7 +15,8 @@ import {
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { ToolConfigurationStatusResponse } from '../../../context-external-tool/controller/dto/tool-configuration-status.response';
+import { ToolConfigurationStatusResponse } from '../../../context-external-tool/controller/dto';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../entity';
 import {
@@ -520,7 +523,7 @@ describe('ToolSchoolController (API)', () => {
 			it('should return unauthorized', async () => {
 				const { externalToolEntity } = setup();
 
-				const response: Response = await testApiClient.get(`${externalToolEntity.id}/metadata`);
+				const response = await testApiClient.get(`${externalToolEntity.id}/metadata`);
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -572,7 +575,7 @@ describe('ToolSchoolController (API)', () => {
 			it('should return the metadata of schoolExternalTool', async () => {
 				const { loggedInClient, schoolExternalToolEntity } = await setup();
 
-				const response: Response = await loggedInClient.get(`${schoolExternalToolEntity.id}/metadata`);
+				const response = await loggedInClient.get(`${schoolExternalToolEntity.id}/metadata`);
 
 				const body: SchoolExternalToolMetadataResponse = response.body as SchoolExternalToolMetadataResponse;
 

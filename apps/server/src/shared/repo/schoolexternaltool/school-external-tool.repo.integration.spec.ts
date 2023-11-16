@@ -112,25 +112,6 @@ describe('SchoolExternalToolRepo', () => {
 		});
 	});
 
-	describe('countSchoolExternalToolsByExternalToolId', () => {
-		const setup = async () => {
-			const { externalToolEntity, school, schoolExternalTool1, schoolExternalTool3 } = createTools();
-
-			await em.persistAndFlush([school, externalToolEntity, schoolExternalTool1, schoolExternalTool3]);
-			em.clear();
-
-			return { externalToolEntity, school, schoolExternalTool1, schoolExternalTool3 };
-		};
-
-		it('should find all SchoolExternalTools with reference to a given ExternalTool', async () => {
-			const { externalToolEntity } = await setup();
-
-			const result: number = await repo.countSchoolExternalToolsByExternalToolId(externalToolEntity.id);
-
-			expect(result).toEqual(2);
-		});
-	});
-
 	describe('findBySchoolId', () => {
 		describe('when searching for SchoolExternalTools by school id', () => {
 			const setup = async () => {
