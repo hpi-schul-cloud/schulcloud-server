@@ -14,8 +14,8 @@ import { KeycloakAdministrationService } from '../../keycloak-administration/ser
 import { JsonAccount } from '../interface/json-account.interface';
 import { JsonUser } from '../interface/json-user.interface';
 import {
+	IKeycloakConfigurationInputFiles,
 	KeycloakConfigurationInputFiles,
-	KeycloakConfigurationInputFilesInterface,
 } from '../interface/keycloak-configuration-input-files.interface';
 import { KeycloakSeedService } from './keycloak-seed.service';
 
@@ -98,7 +98,7 @@ describe('KeycloakSeedService', () => {
 			username: 'notUnique',
 		},
 	];
-	const inputFiles: KeycloakConfigurationInputFilesInterface = {
+	const inputFiles: IKeycloakConfigurationInputFiles = {
 		accountsFile: 'accounts.json',
 		usersFile: 'users.json',
 	};
