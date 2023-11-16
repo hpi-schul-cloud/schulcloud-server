@@ -395,31 +395,18 @@ describe('ContextExternalToolRepo', () => {
 		});
 	});
 
-	describe('countContextExternalToolsBySchoolToolIdsAndContextType', () => {
+	describe('countBySchoolToolIdsAndContextType', () => {
 		describe('when a ContextExternalTool is found for course context', () => {
 			const setup = async () => {
 				const schoolExternalTool = schoolExternalToolEntityFactory.buildWithId();
 				const schoolExternalTool1 = schoolExternalToolEntityFactory.buildWithId();
 
-				const contextExternalTool = contextExternalToolEntityFactory.buildWithId({
+				const contextExternalTool = contextExternalToolEntityFactory.buildList(4, {
 					contextType: ContextExternalToolType.COURSE,
 					schoolTool: schoolExternalTool,
 				});
-				const contextExternalTool1 = contextExternalToolEntityFactory.buildWithId({
-					contextType: ContextExternalToolType.COURSE,
-					schoolTool: schoolExternalTool,
-				});
-				const contextExternalTool2 = contextExternalToolEntityFactory.buildWithId({
-					contextType: ContextExternalToolType.BOARD_ELEMENT,
-					schoolTool: schoolExternalTool,
-				});
 
-				const contextExternalTool3 = contextExternalToolEntityFactory.buildWithId({
-					contextType: ContextExternalToolType.BOARD_ELEMENT,
-					schoolTool: schoolExternalTool1,
-				});
-
-				const contextExternalTool4 = contextExternalToolEntityFactory.buildWithId({
+				const contextExternalTool3 = contextExternalToolEntityFactory.buildList(2, {
 					contextType: ContextExternalToolType.COURSE,
 					schoolTool: schoolExternalTool1,
 				});
@@ -427,11 +414,8 @@ describe('ContextExternalToolRepo', () => {
 				await em.persistAndFlush([
 					schoolExternalTool,
 					schoolExternalTool1,
-					contextExternalTool,
-					contextExternalTool1,
-					contextExternalTool2,
-					contextExternalTool3,
-					contextExternalTool4,
+					...contextExternalTool,
+					...contextExternalTool3,
 				]);
 
 				return {
@@ -448,7 +432,7 @@ describe('ContextExternalToolRepo', () => {
 					schoolExternalTool1.id,
 				]);
 
-				expect(result).toEqual<number>(3);
+				expect(result).toEqual<number>(6);
 			});
 		});
 
@@ -457,31 +441,21 @@ describe('ContextExternalToolRepo', () => {
 				const schoolExternalTool = schoolExternalToolEntityFactory.buildWithId();
 				const schoolExternalTool1 = schoolExternalToolEntityFactory.buildWithId();
 
-				const contextExternalTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(2, {
-					contextType: ContextExternalToolType.COURSE,
+				const contextExternalTool1 = contextExternalToolEntityFactory.buildList(3, {
+					contextType: ContextExternalToolType.BOARD_ELEMENT,
 					schoolTool: schoolExternalTool,
 				});
 
-				const contextExternalTool2 = contextExternalToolEntityFactory.buildWithId({
+				const contextExternalTool2 = contextExternalToolEntityFactory.buildList(2, {
 					contextType: ContextExternalToolType.BOARD_ELEMENT,
-					schoolTool: schoolExternalTool,
-				});
-				const contextExternalTool3 = contextExternalToolEntityFactory.buildWithId({
-					contextType: ContextExternalToolType.BOARD_ELEMENT,
-					schoolTool: schoolExternalTool1,
-				});
-				const contextExternalTool4 = contextExternalToolEntityFactory.buildWithId({
-					contextType: ContextExternalToolType.COURSE,
 					schoolTool: schoolExternalTool1,
 				});
 
 				await em.persistAndFlush([
 					schoolExternalTool,
 					schoolExternalTool1,
-					...contextExternalTools,
-					contextExternalTool2,
-					contextExternalTool3,
-					contextExternalTool4,
+					...contextExternalTool1,
+					...contextExternalTool2,
 				]);
 
 				return {
@@ -498,7 +472,7 @@ describe('ContextExternalToolRepo', () => {
 					schoolExternalTool1.id,
 				]);
 
-				expect(result).toEqual<number>(2);
+				expect(result).toEqual<number>(5);
 			});
 		});
 	});
