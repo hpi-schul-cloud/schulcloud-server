@@ -5,6 +5,13 @@ metadata:
   labels:
     app: data-deletion-trigger
     cronjob: data-deletion-trigger
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    app.kubernetes.io/name: data-deletion-trigger
+    app.kubernetes.io/component: data-deletion
+    app.kubernetes.io/managed-by: ansible
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
   name: data-deletion-trigger-cronjob
 spec:
   concurrencyPolicy: Forbid
@@ -32,3 +39,14 @@ spec:
                 cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
                 memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
           restartPolicy: OnFailure
+        metadata:
+          labels:
+            app: data-deletion-trigger
+            cronjob: data-deletion-trigger
+            app.kubernetes.io/part-of: schulcloud-verbund
+            app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            app.kubernetes.io/name: data-deletion-trigger
+            app.kubernetes.io/component: data-deletion
+            app.kubernetes.io/managed-by: ansible
+            git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+            git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
