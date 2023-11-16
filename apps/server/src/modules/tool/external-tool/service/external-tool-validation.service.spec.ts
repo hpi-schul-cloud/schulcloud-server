@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
 import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
+import { ToolFeatures, ToolFeaturesInterface } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
@@ -15,7 +15,7 @@ describe('ExternalToolValidationService', () => {
 
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let commonToolValidationService: DeepMocked<ExternalToolParameterValidationService>;
-	let toolFeatures: IToolFeatures;
+	let toolFeatures: ToolFeaturesInterface;
 	let logoService: DeepMocked<ExternalToolLogoService>;
 
 	beforeAll(async () => {
