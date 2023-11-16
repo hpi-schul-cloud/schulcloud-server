@@ -20,19 +20,19 @@ export type CommonCartridgeFileBuilderOptions = {
 	version: CommonCartridgeVersion;
 };
 
-export interface CommonCartridgeOrganizationBuilderInterface {
-	addResourceToOrganization(props: ICommonCartridgeResourceProps): CommonCartridgeOrganizationBuilderInterface;
+export interface ICommonCartridgeOrganizationBuilder {
+	addResourceToOrganization(props: ICommonCartridgeResourceProps): ICommonCartridgeOrganizationBuilder;
 }
 
 export interface CommonCartridgeFileBuilderInterface {
-	addOrganization(props: ICommonCartridgeOrganizationProps): CommonCartridgeOrganizationBuilderInterface;
+	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder;
 
 	addResourceToFile(props: ICommonCartridgeResourceProps): CommonCartridgeFileBuilderInterface;
 
 	build(): Promise<Buffer>;
 }
 
-class CommonCartridgeOrganizationBuilder implements CommonCartridgeOrganizationBuilderInterface {
+class CommonCartridgeOrganizationBuilder implements ICommonCartridgeOrganizationBuilder {
 	constructor(
 		private readonly props: ICommonCartridgeOrganizationProps,
 		private readonly xmlBuilder: Builder,
@@ -49,7 +49,7 @@ class CommonCartridgeOrganizationBuilder implements CommonCartridgeOrganizationB
 		);
 	}
 
-	addResourceToOrganization(props: ICommonCartridgeResourceProps): CommonCartridgeOrganizationBuilderInterface {
+	addResourceToOrganization(props: ICommonCartridgeResourceProps): ICommonCartridgeOrganizationBuilder {
 		const newResource = new CommonCartridgeResourceItemElement(props, this.xmlBuilder);
 		this.props.resources.push(props);
 		if (!newResource.canInline()) {
@@ -70,7 +70,7 @@ export class CommonCartridgeFileBuilder implements CommonCartridgeFileBuilderInt
 
 	constructor(private readonly options: CommonCartridgeFileBuilderOptions) {}
 
-	addOrganization(props: ICommonCartridgeOrganizationProps): CommonCartridgeOrganizationBuilderInterface {
+	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder {
 		const organizationBuilder = new CommonCartridgeOrganizationBuilder(props, this.xmlBuilder, this.zipBuilder);
 		this.organizations.push(organizationBuilder);
 		return organizationBuilder;
