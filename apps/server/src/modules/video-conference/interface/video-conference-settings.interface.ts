@@ -1,9 +1,9 @@
-import { BbbSettingsInterface } from '../bbb';
+import { IBbbSettings } from '../bbb';
 
 export const VideoConferenceSettings = Symbol('VideoConferenceSettings');
 
 export interface VideoConferenceSettingsInterface {
 	enabled: boolean;
 	hostUrl: string;
-	bbb: BbbSettingsInterface;
+	bbb: IBbbSettings;
 }

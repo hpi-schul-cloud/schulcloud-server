@@ -1,9 +1,9 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { BbbSettingsInterface } from './bbb';
+import { IBbbSettings } from './bbb';
 import { VideoConferenceSettingsInterface } from './interface';
 
 export default class VideoConferenceConfiguration {
-	static bbb: BbbSettingsInterface = {
+	static bbb: IBbbSettings = {
 		host: Configuration.get('VIDEOCONFERENCE_HOST') as string,
 		salt: Configuration.get('VIDEOCONFERENCE_SALT') as string,
 		presentationUrl: Configuration.get('VIDEOCONFERENCE_DEFAULT_PRESENTATION') as string,

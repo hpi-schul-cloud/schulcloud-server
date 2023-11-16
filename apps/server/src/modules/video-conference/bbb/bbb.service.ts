@@ -6,14 +6,14 @@ import { AxiosResponse } from 'axios';
 import crypto from 'crypto';
 import { firstValueFrom, Observable } from 'rxjs';
 import { URL, URLSearchParams } from 'url';
-import { BbbSettings, BbbSettingsInterface } from './bbb-settings.interface';
+import { BbbSettings, IBbbSettings } from './bbb-settings.interface';
 import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig } from './request';
 import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
 
 @Injectable()
 export class BBBService {
 	constructor(
-		@Inject(BbbSettings) private readonly bbbSettings: BbbSettingsInterface,
+		@Inject(BbbSettings) private readonly bbbSettings: IBbbSettings,
 		private readonly httpService: HttpService,
 		private readonly converterUtil: ConverterUtil
 	) {}
