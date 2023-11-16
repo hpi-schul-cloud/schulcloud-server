@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { KeycloakSettingsInterface } from './interface/keycloak-settings.interface';
+import { IKeycloakSettings } from './interface/keycloak-settings.interface';
 
 export default class KeycloakAdministration {
 	static keycloakSettings = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
@@ -13,6 +13,6 @@ export default class KeycloakAdministration {
 					password: Configuration.get('IDENTITY_MANAGEMENT__ADMIN_PASSWORD') as string,
 					clientId: Configuration.get('IDENTITY_MANAGEMENT__ADMIN_CLIENTID') as string,
 				},
-		  } as KeycloakSettingsInterface)
-		: ({} as KeycloakSettingsInterface);
+		  } as IKeycloakSettings)
+		: ({} as IKeycloakSettings);
 }

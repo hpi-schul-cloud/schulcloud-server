@@ -18,8 +18,8 @@ import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { v1 } from 'uuid';
 import {
+	IKeycloakSettings,
 	KeycloakSettings,
-	KeycloakSettingsInterface,
 } from '../../keycloak-administration/interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
@@ -32,7 +32,7 @@ describe('KeycloakConfigurationService Unit', () => {
 	let configService: DeepMocked<ConfigService>;
 	let systemOidcService: DeepMocked<SystemOidcService>;
 	let httpServiceMock: DeepMocked<HttpService>;
-	let settings: KeycloakSettingsInterface;
+	let settings: IKeycloakSettings;
 
 	const kcApiClientIdentityProvidersMock = createMock<IdentityProviders>();
 	const kcApiClientMock = createMock<Clients>();
@@ -49,7 +49,7 @@ describe('KeycloakConfigurationService Unit', () => {
 		username: adminUsername,
 	};
 
-	const getSettings = (): KeycloakSettingsInterface => {
+	const getSettings = (): IKeycloakSettings => {
 		return {
 			baseUrl: 'http://localhost:8080',
 			realmName: 'master',

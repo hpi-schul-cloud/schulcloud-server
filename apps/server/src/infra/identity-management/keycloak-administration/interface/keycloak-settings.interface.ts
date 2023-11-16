@@ -1,6 +1,6 @@
 export const KeycloakSettings = Symbol('KeycloakSettings');
 
-export interface KeycloakSettingsInterface {
+export interface IKeycloakSettings {
 	baseUrl: string;
 	realmName: string;
 	clientId: string;

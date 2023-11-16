@@ -7,8 +7,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { v1 } from 'uuid';
 import {
+	IKeycloakSettings,
 	KeycloakSettings,
-	KeycloakSettingsInterface,
 } from '../../keycloak-administration/interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { JsonAccount } from '../interface/json-account.interface';
@@ -42,7 +42,7 @@ describe('KeycloakSeedService', () => {
 	let module: TestingModule;
 	let serviceUnderTest: KeycloakSeedService;
 	let logger: DeepMocked<LegacyLogger>;
-	let settings: KeycloakSettingsInterface;
+	let settings: IKeycloakSettings;
 
 	let infoLogSpy: jest.SpyInstance;
 	let errorLogSpy: jest.SpyInstance;
