@@ -4,7 +4,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { legacySchoolDoFactory, schoolExternalToolFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { ToolContextType } from '../../common/enum';
 import { SchoolExternalTool, SchoolExternalToolMetadata } from '../domain';
 import { SchoolExternalToolMetadataService } from './school-external-tool-metadata.service';
 
@@ -66,7 +65,7 @@ describe('SchoolExternalToolMetadataService', () => {
 				);
 
 				const schoolExternalToolMetadata: SchoolExternalToolMetadata = new SchoolExternalToolMetadata({
-					contextExternalToolCountPerContext: { course: 3, 'board-element': 3 },
+					contextExternalToolCountPerContext: { course: 3, boardElement: 3 },
 				});
 
 				schoolExternalToolRepo.findByExternalToolId.mockResolvedValue([schoolExternalTool, schoolExternalTool1]);

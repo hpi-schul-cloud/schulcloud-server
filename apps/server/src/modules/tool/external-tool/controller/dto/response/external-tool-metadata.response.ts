@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ToolContextType } from '../../../../common/enum';
 import { ContextExternalToolType } from '../../../../context-external-tool/entity';
 
 export class ExternalToolMetadataResponse {

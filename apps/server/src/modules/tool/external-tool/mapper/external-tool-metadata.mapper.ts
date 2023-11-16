@@ -1,5 +1,3 @@
-import { ToolContextType } from '../../common/enum';
-import { ContextExternalToolType } from '../../context-external-tool/entity';
 import { ExternalToolMetadataResponse } from '../controller/dto';
 import { ExternalToolMetadata } from '../domain';
 
