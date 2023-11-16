@@ -1,4 +1,4 @@
-import { ErrorInterface, RpcMessage } from '@infra/rabbitmq/rpc-message';
+import { IError, RpcMessage } from '@infra/rabbitmq/rpc-message';
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { ApiValidationError, BusinessError } from '@shared/common';
 import { ErrorLogger, Loggable } from '@src/core/logger';
@@ -12,7 +12,7 @@ import { ErrorLoggable } from '../loggable/error.loggable';
 import { ErrorUtils } from '../utils';
 
 @Catch()
-export class GlobalErrorFilter<T extends ErrorInterface | undefined> implements ExceptionFilter<T> {
+export class GlobalErrorFilter<T extends IError | undefined> implements ExceptionFilter<T> {
 	constructor(private readonly logger: ErrorLogger) {}
 
 	// eslint-disable-next-line consistent-return

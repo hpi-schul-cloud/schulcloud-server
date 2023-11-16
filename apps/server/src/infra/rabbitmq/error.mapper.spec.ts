@@ -1,4 +1,4 @@
-import { ErrorInterface } from '@infra/rabbitmq';
+import { IError } from '@infra/rabbitmq';
 import {
 	BadRequestException,
 	ConflictException,
@@ -13,7 +13,7 @@ describe('ErrorMapper', () => {
 		it('Should map any 400 error to BadRequestException.', () => {
 			const errorText = 'BadRequestException ABC';
 			const e = new BadRequestException(errorText);
-			const json = _.toPlainObject(e) as ErrorInterface;
+			const json = _.toPlainObject(e) as IError;
 
 			const result = ErrorMapper.mapRpcErrorResponseToDomainError(json);
 
@@ -22,7 +22,7 @@ describe('ErrorMapper', () => {
 
 		it('Should map 403 error response to ForbiddenException.', () => {
 			const errorText = 'ForbiddenException ABC';
-			const rpcResponseError = _.toPlainObject(new ForbiddenException(errorText)) as ErrorInterface;
+			const rpcResponseError = _.toPlainObject(new ForbiddenException(errorText)) as IError;
 
 			const result = ErrorMapper.mapRpcErrorResponseToDomainError(rpcResponseError);
 
@@ -31,7 +31,7 @@ describe('ErrorMapper', () => {
 
 		it('Should map 500 error response to InternalServerErrorException.', () => {
 			const errorText = 'InternalServerErrorException ABC';
-			const json = _.toPlainObject(new InternalServerErrorException(errorText)) as ErrorInterface;
+			const json = _.toPlainObject(new InternalServerErrorException(errorText)) as IError;
 
 			const result = ErrorMapper.mapRpcErrorResponseToDomainError(json);
 
@@ -40,7 +40,7 @@ describe('ErrorMapper', () => {
 
 		it('Should map unknown error code to InternalServerErrorException.', () => {
 			const errorText = 'Any error text';
-			const json = _.toPlainObject(new ConflictException(errorText)) as ErrorInterface;
+			const json = _.toPlainObject(new ConflictException(errorText)) as IError;
 
 			const result = ErrorMapper.mapRpcErrorResponseToDomainError(json);
 

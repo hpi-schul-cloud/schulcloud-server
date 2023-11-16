@@ -1,10 +1,10 @@
-import { ErrorInterface } from '@infra/rabbitmq';
+import { IError } from '@infra/rabbitmq';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { ErrorUtils } from '@src/core/error/utils';
 
 export class ErrorMapper {
 	static mapRpcErrorResponseToDomainError(
-		errorObj: ErrorInterface
+		errorObj: IError
 	): BadRequestException | ForbiddenException | InternalServerErrorException {
 		let error: BadRequestException | ForbiddenException | InternalServerErrorException;
 		if (errorObj.status === 400) {
