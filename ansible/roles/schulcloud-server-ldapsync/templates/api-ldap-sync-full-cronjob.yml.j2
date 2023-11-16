@@ -16,15 +16,6 @@ spec:
   schedule: "{{ SERVER_LDAP_SYNC_FULL_CRONJOB|default("0 3 * * 3,6", true) }}"
   concurrencyPolicy: Forbid
   jobTemplate:
-    labels:
-      app: api-ldapsync-cronjob
-      app.kubernetes.io/part-of: schulcloud-verbund
-      app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-      app.kubernetes.io/name: api-ldapsync-cronjob
-      app.kubernetes.io/component: sync
-      app.kubernetes.io/managed-by: ansible
-      git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
-      git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
     spec:
       activeDeadlineSeconds: {{ SERVER_LDAP_SYNC_FULL_CRONJOB_TIMEOUT|default("39600", true) }}
       template:
@@ -46,3 +37,13 @@ spec:
                 cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
                 memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
           restartPolicy: OnFailure
+        metadata:
+          labels:
+            app: api-ldapsync-cronjob
+            app.kubernetes.io/part-of: schulcloud-verbund
+            app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            app.kubernetes.io/name: api-ldapsync-cronjob
+            app.kubernetes.io/component: sync
+            app.kubernetes.io/managed-by: ansible
+            git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+            git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
