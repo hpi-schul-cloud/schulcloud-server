@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { ToolContextType } from '../../common/enum';
 import { ContextExternalToolType } from '../../context-external-tool/entity';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -10,7 +10,6 @@ import { ToolContextMapper } from '../../common/mapper/tool-context.mapper';
 @Injectable()
 export class ExternalToolMetadataService {
 	constructor(
-		private readonly externalToolRepo: ExternalToolRepo,
 		private readonly schoolToolRepo: SchoolExternalToolRepo,
 		private readonly contextToolRepo: ContextExternalToolRepo
 	) {}

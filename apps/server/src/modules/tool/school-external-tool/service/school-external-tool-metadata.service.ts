@@ -16,18 +16,17 @@ export class SchoolExternalToolMetadataService {
 			[ContextExternalToolType.COURSE]: 0,
 		};
 
-		if (schoolExternalToolId) {
-			await Promise.all(
-				Object.values(ToolContextType).map(async (contextType: ToolContextType): Promise<void> => {
-					const type: ContextExternalToolType = ToolContextMapper.contextMapping[contextType];
+		await Promise.all(
+			Object.values(ToolContextType).map(async (contextType: ToolContextType): Promise<void> => {
+				const type: ContextExternalToolType = ToolContextMapper.contextMapping[contextType];
 
-					const countPerContext: number = await this.contextToolRepo.countBySchoolToolIdsAndContextType(type, [
-						schoolExternalToolId,
-					]);
-					contextExternalToolCount[type] = countPerContext;
-				})
-			);
-		}
+				const countPerContext: number = await this.contextToolRepo.countBySchoolToolIdsAndContextType(type, [
+					schoolExternalToolId,
+				]);
+
+				contextExternalToolCount[type] = countPerContext;
+			})
+		);
 
 		const schoolExternaltoolMetadata: SchoolExternalToolMetadata = new SchoolExternalToolMetadata({
 			contextExternalToolCountPerContext: contextExternalToolCount,

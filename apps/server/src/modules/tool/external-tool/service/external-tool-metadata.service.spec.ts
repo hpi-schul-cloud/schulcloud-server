@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { externalToolFactory, legacySchoolDoFactory, schoolExternalToolFactory } from '@shared/testing';
 import { ContextExternalToolType } from '../../context-external-tool/entity';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -12,7 +12,6 @@ describe('ExternalToolMetadataService', () => {
 	let module: TestingModule;
 	let service: ExternalToolMetadataService;
 
-	let externalToolRepo: DeepMocked<ExternalToolRepo>;
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
 	let contextExternalToolRepo: DeepMocked<ContextExternalToolRepo>;
 
@@ -20,10 +19,6 @@ describe('ExternalToolMetadataService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				ExternalToolMetadataService,
-				{
-					provide: ExternalToolRepo,
-					useValue: createMock<ExternalToolRepo>(),
-				},
 				{
 					provide: SchoolExternalToolRepo,
 					useValue: createMock<SchoolExternalToolRepo>(),
@@ -36,7 +31,6 @@ describe('ExternalToolMetadataService', () => {
 		}).compile();
 
 		service = module.get(ExternalToolMetadataService);
-		externalToolRepo = module.get(ExternalToolRepo);
 		schoolExternalToolRepo = module.get(SchoolExternalToolRepo);
 		contextExternalToolRepo = module.get(ContextExternalToolRepo);
 	});
@@ -53,7 +47,6 @@ describe('ExternalToolMetadataService', () => {
 		describe('when externalToolId is given', () => {
 			const setup = () => {
 				const toolId: string = new ObjectId().toHexString();
-				const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, toolId);
 
 				const school = legacySchoolDoFactory.buildWithId();
 				const school1 = legacySchoolDoFactory.buildWithId();
@@ -76,7 +69,6 @@ describe('ExternalToolMetadataService', () => {
 					contextExternalToolCountPerContext: { course: 3, boardElement: 3 },
 				});
 
-				externalToolRepo.findById.mockResolvedValue(externalTool);
 				schoolExternalToolRepo.findByExternalToolId.mockResolvedValue([schoolExternalTool, schoolExternalTool1]);
 				contextExternalToolRepo.countBySchoolToolIdsAndContextType.mockResolvedValue(3);
 
@@ -131,7 +123,6 @@ describe('ExternalToolMetadataService', () => {
 					contextExternalToolCountPerContext: { course: 0, boardElement: 0 },
 				});
 
-				externalToolRepo.findById.mockResolvedValue(externalToolEntity);
 				schoolExternalToolRepo.findByExternalToolId.mockResolvedValue([]);
 				contextExternalToolRepo.countBySchoolToolIdsAndContextType.mockResolvedValue(0);
 
