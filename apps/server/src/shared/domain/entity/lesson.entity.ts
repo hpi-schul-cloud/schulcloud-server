@@ -1,6 +1,7 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ILearnroomElement } from '@shared/domain/interface';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
@@ -67,7 +68,7 @@ export type IComponentProperties = {
 	_id?: string;
 	title: string;
 	hidden: boolean;
-	user?: EntityId;
+	user?: ObjectId;
 } & (
 	| { component: ComponentType.TEXT; content: IComponentTextProperties }
 	| { component: ComponentType.ETHERPAD; content: IComponentEtherpadProperties }

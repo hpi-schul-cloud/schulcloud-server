@@ -80,7 +80,7 @@ describe('LessonService', () => {
 	describe('findAllLessonsByUserId', () => {
 		describe('when finding by userId', () => {
 			const setup = () => {
-				const userId = new ObjectId().toHexString();
+				const userId = new ObjectId();
 				const contentExample: IComponentProperties = {
 					title: 'title',
 					hidden: false,
@@ -103,14 +103,14 @@ describe('LessonService', () => {
 			it('should call findByCourseIds from lesson repo', async () => {
 				const { userId } = setup();
 
-				await expect(lessonService.findAllLessonsByUserId(userId)).resolves.not.toThrow();
-				expect(lessonRepo.findByUserId).toBeCalledWith(userId);
+				await expect(lessonService.findAllLessonsByUserId(userId.toHexString())).resolves.not.toThrow();
+				expect(lessonRepo.findByUserId).toBeCalledWith(userId.toHexString());
 			});
 
 			it('should return array of lessons with userId', async () => {
 				const { userId, lessons } = setup();
 
-				const result = await lessonService.findAllLessonsByUserId(userId);
+				const result = await lessonService.findAllLessonsByUserId(userId.toHexString());
 
 				expect(result).toHaveLength(2);
 				expect(result).toEqual(lessons);
@@ -121,7 +121,7 @@ describe('LessonService', () => {
 	describe('deleteUserDataFromTeams', () => {
 		describe('when deleting by userId', () => {
 			const setup = () => {
-				const userId = new ObjectId().toHexString();
+				const userId = new ObjectId();
 				const contentExample: IComponentProperties = {
 					title: 'title',
 					hidden: false,
@@ -142,15 +142,15 @@ describe('LessonService', () => {
 			it('should call lessonRepo.findByUserId', async () => {
 				const { userId } = setup();
 
-				await lessonService.deleteUserDataFromLessons(userId);
+				await lessonService.deleteUserDataFromLessons(userId.toHexString());
 
-				expect(lessonRepo.findByUserId).toBeCalledWith(userId);
+				expect(lessonRepo.findByUserId).toBeCalledWith(userId.toHexString());
 			});
 
 			it('should update lessons without deleted user', async () => {
 				const { userId } = setup();
 
-				const result = await lessonService.deleteUserDataFromLessons(userId);
+				const result = await lessonService.deleteUserDataFromLessons(userId.toHexString());
 
 				expect(result).toEqual(2);
 			});

@@ -164,7 +164,7 @@ describe('LessonRepo', () => {
 	describe('findByUserId', () => {
 		it('should return lessons which contains a specific userId', async () => {
 			// Arrange
-			const userId = new ObjectId().toHexString();
+			const userId = new ObjectId();
 			const contentExample: IComponentProperties = {
 				title: 'title',
 				hidden: false,
@@ -179,7 +179,7 @@ describe('LessonRepo', () => {
 			em.clear();
 
 			// Act
-			const result = await repo.findByUserId(userId);
+			const result = await repo.findByUserId(userId.toHexString());
 
 			// Assert
 			expect(result).toHaveLength(2);
@@ -194,7 +194,7 @@ describe('LessonRepo', () => {
 	describe('updateLessons', () => {
 		it('should update Lessons without deleted user', async () => {
 			// Arrange
-			const userId = new ObjectId().toHexString();
+			const userId = new ObjectId();
 			const contentExample: IComponentProperties = {
 				title: 'title',
 				hidden: false,
@@ -207,18 +207,18 @@ describe('LessonRepo', () => {
 			em.clear();
 
 			// Arrange expected Array after User deletion
-			lesson1.contents[0].user = '';
+			lesson1.contents[0].user = undefined;
 
 			// Act
 			await repo.save([lesson1]);
 
-			const result1 = await repo.findByUserId(userId);
+			const result1 = await repo.findByUserId(userId.toHexString());
 			expect(result1).toHaveLength(0);
 
 			const result2 = await repo.findById(lesson1.id);
 			const receivedContents = result2.contents;
 			receivedContents.forEach((content) => {
-				expect(content.user).toEqual('');
+				expect(content.user).toBe(null);
 			});
 		});
 	});
