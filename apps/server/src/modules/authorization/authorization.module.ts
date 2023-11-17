@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { FeathersModule } from '@shared/infra/feathers';
+import { FeathersModule } from '@infra/feathers';
 import {
 	BoardDoRule,
 	ContextExternalToolRule,

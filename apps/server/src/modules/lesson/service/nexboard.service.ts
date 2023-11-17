@@ -1,4 +1,4 @@
-import { FeathersServiceProvider } from '@shared/infra/feathers/feathers-service.provider';
+import { FeathersServiceProvider } from '@infra/feathers/feathers-service.provider';
 import { LegacyLogger } from '@src/core/logger';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';

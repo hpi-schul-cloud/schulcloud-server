@@ -1,8 +1,8 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
-import { EncryptionModule } from '@shared/infra/encryption';
+import { OauthProviderServiceModule } from '@infra/oauth-provider';
+import { EncryptionModule } from '@infra/encryption';
 import { ExternalToolRepo } from '@shared/repo';
 import { ToolConfigModule } from '../tool-config.module';
 import {
@@ -12,7 +12,7 @@ import {
 	ExternalToolService,
 	ExternalToolServiceMapper,
 	ExternalToolValidationService,
-	ExternalToolVersionService,
+	ExternalToolVersionIncrementService,
 } from './service';
 import { CommonToolModule } from '../common';
 
@@ -23,7 +23,7 @@ import { CommonToolModule } from '../common';
 		ExternalToolServiceMapper,
 		ExternalToolParameterValidationService,
 		ExternalToolValidationService,
-		ExternalToolVersionService,
+		ExternalToolVersionIncrementService,
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
 		ExternalToolRepo,
@@ -31,7 +31,7 @@ import { CommonToolModule } from '../common';
 	exports: [
 		ExternalToolService,
 		ExternalToolValidationService,
-		ExternalToolVersionService,
+		ExternalToolVersionIncrementService,
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
 	],

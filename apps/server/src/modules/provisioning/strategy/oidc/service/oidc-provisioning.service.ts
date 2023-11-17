@@ -38,7 +38,7 @@ export class OidcProvisioningService {
 		let school: LegacySchoolDo;
 		if (existingSchool) {
 			school = existingSchool;
-			school.name = externalSchool.name;
+			school.name = this.getSchoolName(externalSchool);
 			school.officialSchoolNumber = externalSchool.officialSchoolNumber ?? existingSchool.officialSchoolNumber;
 			if (!school.systems) {
 				school.systems = [systemId];
@@ -53,7 +53,7 @@ export class OidcProvisioningService {
 
 			school = new LegacySchoolDo({
 				externalId: externalSchool.externalId,
-				name: externalSchool.name,
+				name: this.getSchoolName(externalSchool),
 				officialSchoolNumber: externalSchool.officialSchoolNumber,
 				systems: [systemId],
 				features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
@@ -64,7 +64,16 @@ export class OidcProvisioningService {
 		}
 
 		const savedSchool: LegacySchoolDo = await this.schoolService.save(school, true);
+
 		return savedSchool;
+	}
+
+	private getSchoolName(externalSchool: ExternalSchoolDto): string {
+		const schoolName: string = externalSchool.location
+			? `${externalSchool.name} (${externalSchool.location})`
+			: externalSchool.name;
+
+		return schoolName;
 	}
 
 	async provisionExternalUser(externalUser: ExternalUserDto, systemId: EntityId, schoolId?: string): Promise<UserDO> {

@@ -2,9 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, Page, SortOrder } from '@shared/domain';
-import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { OauthProviderService } from '@shared/infra/oauth-provider';
-import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
+import { DefaultEncryptionService, IEncryptionService } from '@infra/encryption';
+import { OauthProviderService } from '@infra/oauth-provider';
+import { ProviderOauthClient } from '@infra/oauth-provider/dto';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import {
 	externalToolFactory,
@@ -16,7 +16,7 @@ import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
-import { ExternalToolVersionService } from './external-tool-version.service';
+import { ExternalToolVersionIncrementService } from './external-tool-version-increment.service';
 import { ExternalToolService } from './external-tool.service';
 
 describe('ExternalToolService', () => {
@@ -29,7 +29,7 @@ describe('ExternalToolService', () => {
 	let oauthProviderService: DeepMocked<OauthProviderService>;
 	let mapper: DeepMocked<ExternalToolServiceMapper>;
 	let encryptionService: DeepMocked<IEncryptionService>;
-	let versionService: DeepMocked<ExternalToolVersionService>;
+	let versionService: DeepMocked<ExternalToolVersionIncrementService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -64,8 +64,8 @@ describe('ExternalToolService', () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
-					provide: ExternalToolVersionService,
-					useValue: createMock<ExternalToolVersionService>(),
+					provide: ExternalToolVersionIncrementService,
+					useValue: createMock<ExternalToolVersionIncrementService>(),
 				},
 			],
 		}).compile();
@@ -77,7 +77,7 @@ describe('ExternalToolService', () => {
 		oauthProviderService = module.get(OauthProviderService);
 		mapper = module.get(ExternalToolServiceMapper);
 		encryptionService = module.get(DefaultEncryptionService);
-		versionService = module.get(ExternalToolVersionService);
+		versionService = module.get(ExternalToolVersionIncrementService);
 	});
 
 	afterAll(async () => {
