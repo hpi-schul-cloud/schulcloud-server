@@ -28,7 +28,6 @@ let defaultTldrawDbUrl = null;
 switch (NODE_ENV) {
 	case ENVIRONMENTS.TEST:
 		defaultDbUrl = 'mongodb://127.0.0.1:27017/schulcloud-test';
-		defaultTldrawDbUrl = 'mongodb://127.0.0.1:27017/tldraw-test';
 		break;
 	default:
 		defaultDbUrl = 'mongodb://127.0.0.1:27017/schulcloud';
