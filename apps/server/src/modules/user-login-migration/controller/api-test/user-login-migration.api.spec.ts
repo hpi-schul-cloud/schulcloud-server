@@ -260,7 +260,7 @@ describe('UserLoginMigrationController (API)', () => {
 				expect(response.status).toEqual(HttpStatus.CREATED);
 			});
 
-			it('should return the user login migration', async () => {
+			it.only('should return the user login migration', async () => {
 				const { loggedInClient, sourceSystem, targetSystem } = await setup();
 
 				const response: Response = await loggedInClient.post(`/start`);

@@ -35,4 +35,4 @@ export abstract class BaseEntityWithTimestamps implements AuthorizableObject {
 }
 
 // These fields are explicitly ignored when updating an entity. See base.do.repo.ts.
-export const baseEntityProperties = ['id', '_id', 'updatedAt', 'createdAt'];
+export const baseEntityProperties = ['updatedAt', 'createdAt'];
