@@ -108,6 +108,7 @@ export class DeletionRequestUc {
 			]);
 			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
 		} catch (error) {
+			this.logger.error(`execution of deletionRequest ${deletionRequest.id} was failed`, error);
 			await this.deletionRequestService.markDeletionRequestAsFailed(deletionRequest.id);
 		}
 	}
