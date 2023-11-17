@@ -1172,7 +1172,7 @@ export class S3ClientAdapter {
 	// is public but only used internally
 	public async createBucket() {
 		try {
-			this.logger.log({ action: &#x27;create bucket&#x27;, params: { bucket: this.config.bucket } });
+			this.logger.debug({ action: &#x27;create bucket&#x27;, params: { bucket: this.config.bucket } });
 
 			const req &#x3D; new CreateBucketCommand({ Bucket: this.config.bucket });
 			await this.client.send(req);
@@ -1189,7 +1189,7 @@ export class S3ClientAdapter {
 
 	public async get(path: string, bytesRange?: string): Promise&lt;GetFile&gt; {
 		try {
-			this.logger.log({ action: &#x27;get&#x27;, params: { path, bucket: this.config.bucket } });
+			this.logger.debug({ action: &#x27;get&#x27;, params: { path, bucket: this.config.bucket } });
 
 			const req &#x3D; new GetObjectCommand({
 				Bucket: this.config.bucket,
@@ -1212,8 +1212,8 @@ export class S3ClientAdapter {
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			if (err?.Code &#x3D;&#x3D;&#x3D; &#x27;NoSuchKey&#x27;) {
-				this.logger.log(&#x60;could not find one of the files for deletion with id ${path}&#x60;);
-				throw new NotFoundException(&#x27;NoSuchKey&#x27;);
+				this.logger.warn(&#x60;could not find one of the files for deletion with id ${path}&#x60;);
+				throw new NotFoundException(&#x27;NoSuchKey&#x27;, ErrorUtils.createHttpExceptionOptions(err));
 			} else {
 				throw new InternalServerErrorException(&#x27;S3ClientAdapter:get&#x27;, ErrorUtils.createHttpExceptionOptions(err));
 			}
@@ -1222,7 +1222,7 @@ export class S3ClientAdapter {
 
 	public async create(path: string, file: File): Promise&lt;ServiceOutputTypes&gt; {
 		try {
-			this.logger.log({ action: &#x27;create&#x27;, params: { path, bucket: this.config.bucket } });
+			this.logger.debug({ action: &#x27;create&#x27;, params: { path, bucket: this.config.bucket } });
 
 			const req &#x3D; {
 				Body: file.data,
@@ -1265,7 +1265,7 @@ export class S3ClientAdapter {
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			if (err?.cause?.name &#x3D;&#x3D;&#x3D; &#x27;NoSuchKey&#x27;) {
-				this.logger.log(&#x60;could not find one of the files for deletion with ids ${paths.join(&#x27;,&#x27;)}&#x60;);
+				this.logger.warn(&#x60;could not find one of the files for deletion with ids ${paths.join(&#x27;,&#x27;)}&#x60;);
 				return [];
 			}
 			throw new InternalServerErrorException(&#x27;S3ClientAdapter:delete&#x27;, ErrorUtils.createHttpExceptionOptions(err));
@@ -1274,7 +1274,7 @@ export class S3ClientAdapter {
 
 	public async restore(paths: string[]): Promise&lt;CopyObjectCommandOutput[]&gt; {
 		try {
-			this.logger.log({ action: &#x27;restore&#x27;, params: { paths, bucket: this.config.bucket } });
+			this.logger.debug({ action: &#x27;restore&#x27;, params: { paths, bucket: this.config.bucket } });
 
 			const copyPaths &#x3D; paths.map((path) &#x3D;&gt; {
 				return { sourcePath: &#x60;${this.deletedFolderName}/${path}&#x60;, targetPath: path };
@@ -1295,7 +1295,7 @@ export class S3ClientAdapter {
 
 	public async copy(paths: CopyFiles[]) {
 		try {
-			this.logger.log({ action: &#x27;copy&#x27;, params: { paths, bucket: this.config.bucket } });
+			this.logger.debug({ action: &#x27;copy&#x27;, params: { paths, bucket: this.config.bucket } });
 
 			const copyRequests &#x3D; paths.map(async (path) &#x3D;&gt; {
 				const req &#x3D; new CopyObjectCommand({
@@ -1319,7 +1319,7 @@ export class S3ClientAdapter {
 
 	public async delete(paths: string[]) {
 		try {
-			this.logger.log({ action: &#x27;delete&#x27;, params: { paths, bucket: this.config.bucket } });
+			this.logger.debug({ action: &#x27;delete&#x27;, params: { paths, bucket: this.config.bucket } });
 
 			const pathObjects &#x3D; paths.map((p) &#x3D;&gt; {
 				return { Key: p };
@@ -1339,7 +1339,7 @@ export class S3ClientAdapter {
 
 	public async list(params: ListFiles): Promise&lt;ObjectKeysRecursive&gt; {
 		try {
-			this.logger.log({ action: &#x27;list&#x27;, params });
+			this.logger.debug({ action: &#x27;list&#x27;, params });
 
 			const result &#x3D; await this.listObjectKeysRecursive(params);
 
@@ -1381,7 +1381,7 @@ export class S3ClientAdapter {
 
 	public async head(path: string): Promise&lt;HeadObjectCommandOutput&gt; {
 		try {
-			this.logger.log({ action: &#x27;head&#x27;, params: { path, bucket: this.config.bucket } });
+			this.logger.debug({ action: &#x27;head&#x27;, params: { path, bucket: this.config.bucket } });
 
 			const req &#x3D; new HeadObjectCommand({
 				Bucket: this.config.bucket,
@@ -1394,7 +1394,7 @@ export class S3ClientAdapter {
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			if (err.message &amp;&amp; err.message &#x3D;&#x3D;&#x3D; &#x27;NoSuchKey&#x27;) {
-				this.logger.log(&#x60;could not find the file for head with id ${path}&#x60;);
+				this.logger.warn(&#x60;could not find the file for head with id ${path}&#x60;);
 				throw new NotFoundException(null, ErrorUtils.createHttpExceptionOptions(err, &#x27;NoSuchKey&#x27;));
 			}
 			throw new InternalServerErrorException(null, ErrorUtils.createHttpExceptionOptions(err, &#x27;S3ClientAdapter:head&#x27;));
@@ -1403,7 +1403,7 @@ export class S3ClientAdapter {
 
 	public async deleteDirectory(path: string) {
 		try {
-			this.logger.log({ action: &#x27;deleteDirectory&#x27;, params: { path, bucket: this.config.bucket } });
+			this.logger.debug({ action: &#x27;deleteDirectory&#x27;, params: { path, bucket: this.config.bucket } });
 
 			const req &#x3D; new ListObjectsV2Command({
 				Bucket: this.config.bucket,

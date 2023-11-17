@@ -450,8 +450,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { GetFile, S3ClientAdapter } from &#x27;@infra/s3-client&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { GetFile, S3ClientAdapter } from &#x27;@infra/s3-client&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { subClass } from &#x27;gm&#x27;;
 import { PassThrough } from &#x27;stream&#x27;;
@@ -468,7 +468,7 @@ export class PreviewGeneratorService {
 	}
 
 	public async generatePreview(params: PreviewFileOptions): Promise&lt;PreviewResponseMessage&gt; {
-		this.logger.debug(new PreviewActionsLoggable(&#x27;PreviewGeneratorService.generatePreview:start&#x27;, params));
+		this.logger.info(new PreviewActionsLoggable(&#x27;PreviewGeneratorService.generatePreview:start&#x27;, params));
 		const { originFilePath, previewFilePath, previewOptions } &#x3D; params;
 
 		const original &#x3D; await this.downloadOriginFile(originFilePath);
@@ -478,7 +478,7 @@ export class PreviewGeneratorService {
 
 		await this.storageClient.create(previewFilePath, file);
 
-		this.logger.debug(new PreviewActionsLoggable(&#x27;PreviewGeneratorService.generatePreview:end&#x27;, params));
+		this.logger.info(new PreviewActionsLoggable(&#x27;PreviewGeneratorService.generatePreview:end&#x27;, params));
 
 		return {
 			previewFilePath,
