@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
 import { GetFile, S3ClientAdapter } from '@infra/s3-client';
+import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { subClass } from 'gm';
 import { PassThrough } from 'stream';
@@ -16,7 +16,7 @@ export class PreviewGeneratorService {
 	}
 
 	public async generatePreview(params: PreviewFileOptions): Promise<PreviewResponseMessage> {
-		this.logger.debug(new PreviewActionsLoggable('PreviewGeneratorService.generatePreview:start', params));
+		this.logger.info(new PreviewActionsLoggable('PreviewGeneratorService.generatePreview:start', params));
 		const { originFilePath, previewFilePath, previewOptions } = params;
 
 		const original = await this.downloadOriginFile(originFilePath);
@@ -26,7 +26,7 @@ export class PreviewGeneratorService {
 
 		await this.storageClient.create(previewFilePath, file);
 
-		this.logger.debug(new PreviewActionsLoggable('PreviewGeneratorService.generatePreview:end', params));
+		this.logger.info(new PreviewActionsLoggable('PreviewGeneratorService.generatePreview:end', params));
 
 		return {
 			previewFilePath,
