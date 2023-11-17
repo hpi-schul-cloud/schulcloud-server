@@ -43,7 +43,7 @@ if (!process.env.RUN_WITHOUT_JEST_COVERAGE) {
 			},
 			// add custom paths: './apps/server/path...': { branches: X, functions: ... }
 		},
-		testTimeout: 3600000
+		testTimeout: 5000
 	};
 }
 
