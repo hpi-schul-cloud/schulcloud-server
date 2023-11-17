@@ -4,10 +4,10 @@ import { AuthorizationService } from '@modules/authorization';
 import { ForbiddenException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConsoleWriterService } from '@shared/infra/console';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { ConsoleWriterService } from '@src/infra/console';
+import { MongoMemoryDatabaseModule } from '@src/infra/database';
 import { DemoSchoolService } from '../service/demo-school.service';
 import { DemoSchoolUc } from './demo-school.uc';
 
