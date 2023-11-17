@@ -1395,7 +1395,7 @@
 				"SOCKET_PORT": 3345,
 				"PING_TIMEOUT": 10000,
 				"GC_ENABLED": true,
-				"DB_COLLECTION_NAME": "drawing",
+				"DB_COLLECTION_NAME": "drawings",
 				"DB_FLUSH_SIZE": 400,
 				"DB_MULTIPLE_COLLECTIONS": false
 			}

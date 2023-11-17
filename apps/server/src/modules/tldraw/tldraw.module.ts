@@ -1,6 +1,6 @@
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME, DB_URL } from '@src/config';
+import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME, TLDRAW_DB_URL } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
@@ -30,7 +30,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
-			clientUrl: DB_URL,
+			clientUrl: TLDRAW_DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
 			entities: [TldrawDrawing],
