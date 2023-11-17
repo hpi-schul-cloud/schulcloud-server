@@ -1343,6 +1343,23 @@
 					"description": "Number of simultaneously synchronized students, teachers and classes"
 				}
 			}
+		},
+		"ADMIN_API_CLIENT": {
+			"type": "object",
+			"description": "Configuration of the schulcloud-server's admin API client.",
+			"properties": {
+				"BASE_URL": {
+					"type": "string",
+					"description": "Base URL of the Admin API."
+				},
+				"API_KEY": {
+					"type": "string",
+					"description": "API key for accessing the Admin API."
+				}
+			},
+			"default": {
+				"BASE_URL": "http://localhost:4030"
+			}
 		}
 	},
 	"required": [],
