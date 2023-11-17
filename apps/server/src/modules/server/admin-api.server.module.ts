@@ -1,5 +1,5 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { DynamicModule, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { DynamicModule, Inject, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';
@@ -8,6 +8,8 @@ import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rab
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infra/database';
 import { FileEntity } from '@modules/files/entity';
 import { FileRecord } from '@modules/files-storage/entity';
+import { RedisClient } from 'redis';
+import { REDIS_CLIENT, RedisModule } from '@src/infra/redis';
 import { DeletionModule } from '../deletion';
 import { defaultMikroOrmOptions, setupSessions } from './server.module';
 import { serverConfig } from './server.config';
@@ -29,16 +31,20 @@ const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConf
 			debug: true,
 		}),
 		LoggerModule,
+		RedisModule,
 	],
 	controllers: [AdminApiServerController],
 })
 export class AdminApiServerModule implements NestModule {
-	constructor(private readonly logger: LegacyLogger) {
+	constructor(
+		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient | undefined,
+		private readonly logger: LegacyLogger
+	) {
 		logger.setContext(AdminApiServerModule.name);
 	}
 
 	configure(consumer: MiddlewareConsumer) {
-		setupSessions(consumer, undefined, this.logger);
+		setupSessions(consumer, this.redisClient, this.logger);
 	}
 }
 
@@ -48,11 +54,15 @@ export class AdminApiServerModule implements NestModule {
 		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
 		RabbitMQWrapperTestModule,
 		LoggerModule,
+		RedisModule,
 	],
 	controllers: [AdminApiServerController],
 })
 export class AdminApiServerTestModule implements NestModule {
-	constructor(private readonly logger: LegacyLogger) {
+	constructor(
+		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient | undefined,
+		private readonly logger: LegacyLogger
+	) {
 		logger.setContext(AdminApiServerTestModule.name);
 	}
 
