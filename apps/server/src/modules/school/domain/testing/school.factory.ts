@@ -8,6 +8,8 @@ import { schoolYearFactory } from './school-year.factory';
 export const schoolFactory = BaseFactory.define<School, SchoolProps>(School, ({ sequence }) => {
 	return {
 		id: new ObjectId().toHexString(),
+		createdAt: new Date(),
+		updatedAt: new Date(),
 		name: `school #${sequence}`,
 		currentYear: schoolYearFactory.build(),
 		federalState: federalStateFactory.build(),

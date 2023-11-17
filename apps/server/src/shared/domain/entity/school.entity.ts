@@ -12,7 +12,7 @@ import {
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SchoolFeature, SchoolPurpose } from '@src/modules/school/domain/type';
 import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
-import { BaseEntity } from './base.entity';
+import { BaseEntityWithTimestamps } from './base.entity';
 import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { SchoolYearEntity } from './schoolyear.entity';
 import { SystemEntity } from './system.entity';
@@ -59,7 +59,7 @@ export class SchoolRoles {
 
 @Entity({ tableName: 'schools' })
 @Index({ properties: ['externalId', 'systems'] })
-export class SchoolEntity extends BaseEntity {
+export class SchoolEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	features?: SchoolFeature[];
 

@@ -129,6 +129,8 @@ describe('School Controller (API)', () => {
 
 				const expectedResponse = {
 					id: school.id,
+					createdAt: school.createdAt.toISOString(),
+					updatedAt: school.updatedAt.toISOString(),
 					name: school.name,
 					federalState: {
 						id: federalState.id,

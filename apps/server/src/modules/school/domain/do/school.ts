@@ -27,6 +27,8 @@ export class School extends DomainObject<SchoolProps> {
 }
 
 export interface SchoolProps extends AuthorizableObject {
+	createdAt: Date;
+	updatedAt: Date;
 	name: string;
 	officialSchoolNumber?: string;
 	externalId?: string;

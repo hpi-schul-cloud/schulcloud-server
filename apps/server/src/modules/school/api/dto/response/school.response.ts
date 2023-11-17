@@ -9,6 +9,8 @@ import { YearsResponse } from './years.response';
 export class SchoolResponse {
 	constructor(props: SchoolResponse) {
 		this.id = props.id;
+		this.createdAt = props.createdAt;
+		this.updatedAt = props.updatedAt;
 		this.name = props.name;
 		this.officialSchoolNumber = props.officialSchoolNumber;
 		this.federalState = props.federalState;
@@ -29,6 +31,12 @@ export class SchoolResponse {
 
 	@ApiProperty()
 	id: string;
+
+	@ApiProperty()
+	createdAt: Date;
+
+	@ApiProperty()
+	updatedAt: Date;
 
 	@ApiProperty()
 	name: string;

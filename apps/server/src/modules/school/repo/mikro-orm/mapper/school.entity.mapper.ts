@@ -13,6 +13,8 @@ export class SchoolEntityMapper {
 
 		const school = new School({
 			id: entity.id,
+			createdAt: entity.createdAt,
+			updatedAt: entity.updatedAt,
 			name: entity.name,
 			officialSchoolNumber: entity.officialSchoolNumber,
 			externalId: entity.externalId,
