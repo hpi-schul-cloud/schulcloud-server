@@ -68,7 +68,7 @@ describe(MetaTagExtractorService.name, () => {
 			it('should thrown an error if url is an empty string', async () => {
 				const url = '';
 
-				await expect(service.fetchMetaData(url)).rejects.toThrow();
+				await expect(service.getMetaData(url)).rejects.toThrow();
 			});
 
 			it('should return also the original url', async () => {
@@ -76,7 +76,7 @@ describe(MetaTagExtractorService.name, () => {
 				const url = 'https://de.wikipedia.org';
 				mockOgsResolve({ url, ogTitle });
 
-				const result = await service.fetchMetaData(url);
+				const result = await service.getMetaData(url);
 
 				expect(result).toEqual(expect.objectContaining({ url }));
 			});
@@ -86,7 +86,7 @@ describe(MetaTagExtractorService.name, () => {
 				const url = 'https://de.wikipedia.org';
 				mockOgsResolve({ ogTitle });
 
-				const result = await service.fetchMetaData(url);
+				const result = await service.getMetaData(url);
 
 				expect(result).toEqual(expect.objectContaining({ title: ogTitle }));
 			});
@@ -112,7 +112,7 @@ describe(MetaTagExtractorService.name, () => {
 				const url = 'https://de.wikipedia.org';
 				mockOgsResolve({ url, ogImage });
 
-				const result = await service.fetchMetaData(url);
+				const result = await service.getMetaData(url);
 
 				expect(result).toEqual(expect.objectContaining({ image: ogImage[1] }));
 			});
@@ -124,7 +124,7 @@ describe(MetaTagExtractorService.name, () => {
 
 				mockOgsReject(new Error('no open graph data included... probably not a webpage'));
 
-				const result = await service.fetchMetaData(url);
+				const result = await service.getMetaData(url);
 				expect(result).toEqual(expect.objectContaining({ title: 'abc.jpg' }));
 			});
 		});
@@ -135,7 +135,7 @@ describe(MetaTagExtractorService.name, () => {
 
 				mockOgsReject(new Error('no open graph data included... probably not a webpage'));
 
-				const result = await service.fetchMetaData(url);
+				const result = await service.getMetaData(url);
 				expect(result).toEqual(expect.objectContaining({ url, title: '', description: '' }));
 			});
 		});

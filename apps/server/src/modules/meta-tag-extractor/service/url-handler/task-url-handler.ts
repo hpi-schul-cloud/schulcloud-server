@@ -1,5 +1,5 @@
+import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
-import { TaskService } from '@src/modules/task/service';
 import type { UrlHandler } from '../../interface/url-handler';
 import { MetaData } from '../../types';
 import { AbstractUrlHandler } from './abstract-url-handler';

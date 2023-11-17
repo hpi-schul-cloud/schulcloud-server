@@ -9,19 +9,22 @@ import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
 export class MetaTagExtractorService {
 	constructor(private readonly internalLinkMataTagService: MetaTagInternalUrlService) {}
 
-	// WIP: fetch => get
-	async fetchMetaData(url: string): Promise<MetaData> {
+	async getMetaData(url: string): Promise<MetaData> {
 		if (url.length === 0) {
 			throw new Error(`MetaTagExtractorService requires a valid URL. Given URL: ${url}`);
 		}
 
-		// WIP: make that nicer
 		const metaData =
-			(await this.internalLinkMataTagService.tryInternalLinkMetaTags(url)) ??
+			(await this.tryInternalLinkMetaTags(url)) ??
 			(await this.tryExtractMetaTags(url)) ??
-			this.tryFilenameAsFallback(url);
+			this.tryFilenameAsFallback(url) ??
+			this.getDefaultMetaData(url);
 
-		return metaData ?? { url, title: '', description: '', type: 'unknown' };
+		return metaData;
+	}
+
+	private async tryInternalLinkMetaTags(url: string): Promise<MetaData | undefined> {
+		return this.internalLinkMataTagService.tryInternalLinkMetaTags(url);
 	}
 
 	private async tryExtractMetaTags(url: string): Promise<MetaData | undefined> {
@@ -57,6 +60,10 @@ export class MetaTagExtractorService {
 		} catch (error) {
 			return undefined;
 		}
+	}
+
+	private getDefaultMetaData(url: string): MetaData {
+		return { url, title: '', description: '', type: 'unknown' };
 	}
 
 	private pickImage(images: ImageObject[], minWidth = 400): ImageObject | undefined {

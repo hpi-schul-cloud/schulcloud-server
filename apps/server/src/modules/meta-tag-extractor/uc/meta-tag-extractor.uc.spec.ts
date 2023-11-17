@@ -68,7 +68,7 @@ describe(MetaTagExtractorUc.name, () => {
 				const url = 'https://www.example.com/great-example';
 				await uc.fetchMetaData(user.id, url);
 
-				expect(metaTagExtractorService.fetchMetaData).toHaveBeenCalledWith(url);
+				expect(metaTagExtractorService.getMetaData).toHaveBeenCalledWith(url);
 			});
 		});
 

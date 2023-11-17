@@ -18,7 +18,7 @@ export class MetaTagExtractorUc {
 			throw new UnauthorizedException();
 		}
 
-		const result = await this.metaTagExtractorService.fetchMetaData(url);
+		const result = await this.metaTagExtractorService.getMetaData(url);
 		return result;
 	}
 }
