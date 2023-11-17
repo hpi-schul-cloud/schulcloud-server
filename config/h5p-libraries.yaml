@@ -1,1 +1,1 @@
-h5p_libraries: ['H5P.MultiChoice']
+h5p_libraries: ['H5P.Accordion','H5P.TrueFalse']
