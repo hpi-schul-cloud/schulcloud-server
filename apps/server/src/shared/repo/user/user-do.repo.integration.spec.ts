@@ -148,7 +148,7 @@ describe('UserRepo', () => {
 		beforeEach(async () => {
 			system = systemFactory.buildWithId();
 			school = schoolFactory.buildWithId();
-			school.systems.add(system);
+			school.systems = [system.id];
 			user = userFactory.buildWithId({ externalId, school });
 
 			await em.persistAndFlush([user, system, school]);
@@ -175,7 +175,7 @@ describe('UserRepo', () => {
 		});
 
 		it('should return null if school has no corresponding system', async () => {
-			school.systems.removeAll();
+			school.systems = [];
 
 			const result: UserDO | null = await repo.findByExternalId(user.externalId as string, system.id);
 
@@ -192,7 +192,7 @@ describe('UserRepo', () => {
 		beforeEach(async () => {
 			system = systemFactory.buildWithId();
 			school = schoolFactory.buildWithId();
-			school.systems.add(system);
+			school.systems = [system.id];
 			user = userFactory.buildWithId({ externalId, school });
 
 			await em.persistAndFlush([user, system, school]);

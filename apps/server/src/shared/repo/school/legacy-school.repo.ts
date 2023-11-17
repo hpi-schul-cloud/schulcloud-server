@@ -1,5 +1,5 @@
 import { EntityName } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
 	EntityId,
@@ -26,7 +26,10 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity, I
 	}
 
 	async findByExternalId(externalId: string, systemId: string): Promise<LegacySchoolDo | null> {
-		const school: SchoolEntity | null = await this._em.findOne(SchoolEntity, { externalId, systems: systemId });
+		const school: SchoolEntity | null = await this._em.findOne(SchoolEntity, {
+			externalId,
+			_systems: { $in: [new ObjectId(systemId)] },
+		});
 
 		const schoolDo: LegacySchoolDo | null = school ? this.mapEntityToDO(school) : null;
 		return schoolDo;
@@ -57,7 +60,7 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity, I
 			previousExternalId: entity.previousExternalId,
 			officialSchoolNumber: entity.officialSchoolNumber,
 			schoolYear: entity.schoolYear,
-			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: SystemEntity) => system.id) : [],
+			systems: entity.systems,
 			userLoginMigrationId: entity.userLoginMigration?.id,
 			federalState: entity.federalState,
 		});

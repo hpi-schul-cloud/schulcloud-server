@@ -1,4 +1,5 @@
 import { EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { UserQuery } from '@modules/user/service/user-query.type';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import {
@@ -10,14 +11,12 @@ import {
 	SchoolEntity,
 	SortOrder,
 	SortOrderMap,
-	SystemEntity,
 	User,
 } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { BaseDORepo, Scope } from '@shared/repo';
-import { UserQuery } from '@modules/user/service/user-query.type';
 import { UserScope } from './user.scope';
 
 @Injectable()
@@ -61,7 +60,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		const userEntity: User = await this._em.findOneOrFail(this.entityName, id as FilterQuery<User>);
 
 		if (populate) {
-			await this._em.populate(userEntity, ['roles', 'school.systems', 'school.schoolYear']);
+			await this._em.populate(userEntity, ['roles', 'school._systems', 'school.schoolYear']);
 			await this.populateRoles(userEntity.roles.getItems());
 		}
 
@@ -77,10 +76,10 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 	}
 
 	async findByExternalId(externalId: string, systemId: string): Promise<UserDO | null> {
-		const userEntitys: User[] = await this._em.find(User, { externalId }, { populate: ['school.systems'] });
+		const userEntitys: User[] = await this._em.find(User, { externalId }, { populate: ['school._systems'] });
 		const userEntity: User | undefined = userEntitys.find((user: User): boolean => {
 			const { systems } = user.school;
-			return systems && !!systems.getItems().find((system: SystemEntity): boolean => system.id === systemId);
+			return systems && !!systems.find((system) => system === systemId);
 		});
 
 		const userDo: UserDO | null = userEntity ? this.mapEntityToDO(userEntity) : null;

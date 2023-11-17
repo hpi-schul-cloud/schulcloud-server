@@ -122,10 +122,7 @@ describe('[ImportUserModule]', () => {
 			const officialSchoolNumber = school ? school.officialSchoolNumber : undefined;
 			const inMaintenanceSince = school ? school.inMaintenanceSince : undefined;
 			const inUserMigration = school ? school.inUserMigration : undefined;
-			const systems =
-				school && school.systems.isInitialized()
-					? school.systems.getItems().map((system: SystemEntity) => system.id)
-					: [];
+			const systems = school ? school.systems : [];
 			const federalState = school ? school.federalState : federalStateFactory.build();
 
 			return new LegacySchoolDo({

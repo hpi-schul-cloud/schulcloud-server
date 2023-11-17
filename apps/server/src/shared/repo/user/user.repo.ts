@@ -26,7 +26,7 @@ export class UserRepo extends BaseRepo<User> {
 		const user = await super.findById(id);
 
 		if (populate) {
-			await this._em.populate(user, ['roles', 'school.systems', 'school.schoolYear']);
+			await this._em.populate(user, ['roles', 'school._systems', 'school.schoolYear']);
 			await this.populateRoles(user.roles.getItems());
 		}
 
@@ -34,10 +34,10 @@ export class UserRepo extends BaseRepo<User> {
 	}
 
 	async findByExternalIdOrFail(externalId: string, systemId: string): Promise<User> {
-		const [users] = await this._em.findAndCount(User, { externalId }, { populate: ['school.systems'] });
+		const [users] = await this._em.findAndCount(User, { externalId }, { populate: ['school._systems'] });
 		const resultUser = users.find((user) => {
 			const { systems } = user.school;
-			return systems && systems.getItems().find((system) => system.id === systemId);
+			return systems && systems.find((system) => system === systemId);
 		});
 		return resultUser ?? Promise.reject();
 	}
