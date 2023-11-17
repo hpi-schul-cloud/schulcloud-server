@@ -6,6 +6,8 @@ import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import { ConfigModule } from '@nestjs/config';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infra/database';
+import { FileEntity } from '@modules/files/entity';
+import { FileRecord } from '@modules/files-storage/entity';
 import { DeletionModule } from '../deletion';
 import { defaultMikroOrmOptions, setupSessions } from './server.module';
 import { serverConfig } from './server.config';
@@ -23,7 +25,7 @@ const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConf
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: ALL_ENTITIES,
+			entities: [...ALL_ENTITIES, FileEntity, FileRecord],
 			debug: true,
 		}),
 		LoggerModule,

@@ -64,7 +64,6 @@ export const ALL_ENTITIES = [
 	DeletionRequestEntity,
 	DeletionLogEntity,
 	FileElementNode,
-	FileEntity,
 	LinkElementNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
