@@ -6,7 +6,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LtiPrivacyPermission, LtiRoleType, OauthConfig } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
 import { LtiToolRepo } from '@shared/repo';
 import { axiosResponseFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';

@@ -1,4 +1,8 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
+import { MailModule } from '@infra/mail';
+import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
+import { RedisModule, REDIS_CLIENT } from '@infra/redis';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
@@ -9,8 +13,8 @@ import { DemoApiModule } from '@modules/demo/demo-api.module';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
-import { LegacySchoolApiModule } from '@modules/legacy-school/legacy-school-api.module';
 import { LessonApiModule } from '@modules/lesson/lesson-api.module';
+import { MetaTagExtractorApiModule, MetaTagExtractorModule } from '@modules/meta-tag-extractor';
 import { NewsModule } from '@modules/news';
 import { OauthProviderApiModule } from '@modules/oauth-provider';
 import { OauthApiModule } from '@modules/oauth/oauth-api.module';
@@ -28,10 +32,6 @@ import { VideoConferenceApiModule } from '@modules/video-conference/video-confer
 import { DynamicModule, Inject, MiddlewareConsumer, Module, NestModule, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
-import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { MailModule } from '@shared/infra/mail';
-import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
-import { RedisModule, REDIS_CLIENT } from '@shared/infra/redis';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';
@@ -48,6 +48,7 @@ const serverModules = [
 	AccountApiModule,
 	CollaborativeStorageModule,
 	OauthApiModule,
+	MetaTagExtractorModule,
 	TaskApiModule,
 	LessonApiModule,
 	NewsModule,
@@ -67,7 +68,6 @@ const serverModules = [
 		adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	}),
-	LegacySchoolApiModule,
 	VideoConferenceApiModule,
 	OauthProviderApiModule,
 	SharingApiModule,
@@ -77,6 +77,7 @@ const serverModules = [
 	DemoApiModule,
 	GroupApiModule,
 	TeamsApiModule,
+	MetaTagExtractorApiModule,
 	PseudonymApiModule,
 ];
 

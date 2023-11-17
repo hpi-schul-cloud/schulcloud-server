@@ -1,4 +1,4 @@
-import { PreviewFileOptions } from '@shared/infra/preview-generator';
+import { PreviewFileOptions } from '@infra/preview-generator';
 import { PreviewParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { createPath, createPreviewFilePath, createPreviewNameHash, getFormat } from '../helper';

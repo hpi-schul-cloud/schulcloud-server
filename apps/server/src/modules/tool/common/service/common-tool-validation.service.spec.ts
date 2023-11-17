@@ -109,77 +109,6 @@ describe('CommonToolValidationService', () => {
 		});
 	});
 
-	describe('checkForDuplicateParameters', () => {
-		describe('when given parameters has a case sensitive duplicate', () => {
-			const setup = () => {
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
-					parameters: [
-						{ name: 'nameDuplicate', value: 'value' },
-						{ name: 'nameDuplicate', value: 'value' },
-					],
-				});
-
-				return {
-					schoolExternalTool,
-				};
-			};
-
-			it('should throw error', () => {
-				const { schoolExternalTool } = setup();
-
-				const func = () => service.checkForDuplicateParameters(schoolExternalTool);
-
-				expect(func).toThrow('tool_param_duplicate');
-			});
-		});
-
-		describe('when given parameters has case insensitive duplicate', () => {
-			const setup = () => {
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
-					parameters: [
-						{ name: 'nameDuplicate', value: 'value' },
-						{ name: 'nameduplicate', value: 'value' },
-					],
-				});
-
-				return {
-					schoolExternalTool,
-				};
-			};
-
-			it('should throw error when given parameters has case insensitive duplicate', () => {
-				const { schoolExternalTool } = setup();
-
-				const func = () => service.checkForDuplicateParameters(schoolExternalTool);
-
-				expect(func).toThrowError('tool_param_duplicate');
-			});
-		});
-
-		describe('when given parameters has no duplicates', () => {
-			const setup = () => {
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
-					parameters: [
-						{ name: 'nameNoDuplicate1', value: 'value' },
-						{ name: 'nameNoDuplicate2', value: 'value' },
-					],
-				});
-
-				return {
-					schoolExternalTool,
-				};
-			};
-
-			it('when given parameters has no duplicates should return without error', () => {
-				const { schoolExternalTool } = setup();
-
-				const func = () => service.checkForDuplicateParameters(schoolExternalTool);
-
-				expect(func).not.toThrowError('tool_param_duplicate');
-			});
-		});
-	});
-
 	describe('checkCustomParameterEntries', () => {
 		const createTools = (
 			externalToolMock?: Partial<ExternalTool>,
@@ -207,6 +136,66 @@ describe('CommonToolValidationService', () => {
 				contextExternalTool,
 			};
 		};
+
+		describe('when a parameter is a duplicate', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({
+					parameters: [
+						customParameterFactory.build({
+							name: 'duplicate',
+							scope: CustomParameterScope.SCHOOL,
+							type: CustomParameterType.STRING,
+							isOptional: true,
+						}),
+					],
+				});
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id,
+					parameters: [
+						{ name: 'duplicate', value: undefined },
+						{ name: 'duplicate', value: undefined },
+					],
+				});
+
+				return {
+					externalTool,
+					schoolExternalTool,
+				};
+			};
+
+			it('should throw error', () => {
+				const { externalTool, schoolExternalTool } = setup();
+
+				const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+
+				expect(func).toThrowError('tool_param_duplicate');
+			});
+		});
+
+		describe('when a parameter is unknown', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({
+					parameters: [],
+				});
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id,
+					parameters: [{ name: 'unknownParameter', value: undefined }],
+				});
+
+				return {
+					externalTool,
+					schoolExternalTool,
+				};
+			};
+
+			it('should throw error', () => {
+				const { externalTool, schoolExternalTool } = setup();
+
+				const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+
+				expect(func).toThrowError('tool_param_unknown');
+			});
+		});
 
 		describe('when checking parameter is required', () => {
 			describe('and given parameter is not optional and parameter value is empty', () => {
@@ -280,16 +269,23 @@ describe('CommonToolValidationService', () => {
 
 		describe('when parameter is not school or context', () => {
 			const setup = () => {
-				const notSchoolParam: CustomParameter = customParameterFactory.build({
-					name: 'notSchoolParam',
-					scope: CustomParameterScope.GLOBAL,
-					type: CustomParameterType.BOOLEAN,
-				});
-
 				const { externalTool, schoolExternalTool } = createTools(
-					{ parameters: [notSchoolParam] },
 					{
-						parameters: [{ name: 'name', value: 'true' }],
+						parameters: [
+							customParameterFactory.build({
+								name: 'notSchoolParam',
+								scope: CustomParameterScope.GLOBAL,
+								type: CustomParameterType.BOOLEAN,
+							}),
+							customParameterFactory.build({
+								name: 'schoolParam',
+								scope: CustomParameterScope.SCHOOL,
+								type: CustomParameterType.BOOLEAN,
+							}),
+						],
+					},
+					{
+						parameters: [{ name: 'schoolParam', value: 'true' }],
 					}
 				);
 
@@ -320,7 +316,7 @@ describe('CommonToolValidationService', () => {
 					const { externalTool, schoolExternalTool } = createTools(
 						{ parameters: [missingParam] },
 						{
-							parameters: [{ name: 'anotherParam', value: 'value' }],
+							parameters: [],
 						}
 					);
 
@@ -339,18 +335,26 @@ describe('CommonToolValidationService', () => {
 				});
 			});
 
-			describe('when parameter is optional but is missing on params', () => {
+			describe('when parameter is optional and was not defined', () => {
 				const setup = () => {
-					const param: CustomParameter = customParameterFactory.build({
-						name: 'notChecked',
-						scope: CustomParameterScope.SCHOOL,
-						isOptional: true,
-					});
-
 					const { externalTool, schoolExternalTool } = createTools(
-						{ parameters: [param] },
 						{
-							parameters: [{ name: 'anotherParam', value: 'value' }],
+							parameters: [
+								customParameterFactory.build({
+									name: 'optionalParameter',
+									scope: CustomParameterScope.SCHOOL,
+									isOptional: true,
+								}),
+								customParameterFactory.build({
+									name: 'requiredParameter',
+									scope: CustomParameterScope.SCHOOL,
+									type: CustomParameterType.STRING,
+									isOptional: false,
+								}),
+							],
+						},
+						{
+							parameters: [{ name: 'requiredParameter', value: 'value' }],
 						}
 					);
 
@@ -360,7 +364,7 @@ describe('CommonToolValidationService', () => {
 					};
 				};
 
-				it('should return without error ', () => {
+				it('should return without error', () => {
 					const { externalTool, schoolExternalTool } = setup();
 
 					const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
@@ -385,7 +389,7 @@ describe('CommonToolValidationService', () => {
 						},
 						undefined,
 						{
-							parameters: [{ name: 'anotherParam', value: 'value' }],
+							parameters: [],
 						}
 					);
 
@@ -597,6 +601,7 @@ describe('CommonToolValidationService', () => {
 				const setup = () => {
 					const undefinedRegex: CustomParameter = customParameterFactory.build({
 						name: 'undefinedRegex',
+						isOptional: false,
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.STRING,
 						regex: undefined,
@@ -629,6 +634,7 @@ describe('CommonToolValidationService', () => {
 				const setup = () => {
 					const validRegex: CustomParameter = customParameterFactory.build({
 						name: 'validRegex',
+						isOptional: false,
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.STRING,
 						regex: '[x]',
@@ -661,6 +667,7 @@ describe('CommonToolValidationService', () => {
 				const setup = () => {
 					const validRegex: CustomParameter = customParameterFactory.build({
 						name: 'validRegex',
+						isOptional: false,
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.STRING,
 						regex: '[x]',
@@ -686,6 +693,39 @@ describe('CommonToolValidationService', () => {
 					const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
 
 					expect(func).toThrowError('tool_param_value_regex');
+				});
+			});
+
+			describe('when parameter is optional and a regex is given, but the param value is undefined', () => {
+				const setup = () => {
+					const optionalRegex: CustomParameter = customParameterFactory.build({
+						name: 'optionalRegex',
+						isOptional: true,
+						scope: CustomParameterScope.SCHOOL,
+						type: CustomParameterType.STRING,
+						regex: '[x]',
+					});
+					const { externalTool, schoolExternalTool } = createTools(
+						{
+							parameters: [optionalRegex],
+						},
+						{
+							parameters: [{ name: 'optionalRegex', value: undefined }],
+						}
+					);
+
+					return {
+						externalTool,
+						schoolExternalTool,
+					};
+				};
+
+				it('should return without error', () => {
+					const { externalTool, schoolExternalTool } = setup();
+
+					const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+
+					expect(func).not.toThrowError('tool_param_value_regex');
 				});
 			});
 		});

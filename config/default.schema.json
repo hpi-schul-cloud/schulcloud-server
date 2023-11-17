@@ -177,6 +177,7 @@
 		},
 		"ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS": {
 			"type": "string",
+			"default":"",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
 		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
@@ -1271,11 +1272,6 @@
 			"default": false,
 			"description": "Makes the new school administration page the default page"
 		},
-		"FEATURE_CLIENT_USER_LOGIN_MIGRATION_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Changes the schulcloud client to use new login endpoints"
-		},
 		"FEATURE_CTL_TOOLS_TAB_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1327,6 +1323,11 @@
 			"default": false,
 			"description": "Enables groups of type class in courses"
 		},
+		"FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the calculation of the outdated status of an external tool without the usage of the db attribute version"
+		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
 			"description": "TSP School Syncer properties",
@@ -1347,6 +1348,23 @@
 			"type": "boolean",
 			"default": false,
 			"description": "allows the creation of demo schools, that are automatically deleted. As of 2023, deletion is not implemented yet, and the feature should not be activated on production"
+		},
+		"ADMIN_API_CLIENT": {
+			"type": "object",
+			"description": "Configuration of the schulcloud-server's admin API client.",
+			"properties": {
+				"BASE_URL": {
+					"type": "string",
+					"description": "Base URL of the Admin API."
+				},
+				"API_KEY": {
+					"type": "string",
+					"description": "API key for accessing the Admin API."
+				}
+			},
+			"default": {
+				"BASE_URL": "http://localhost:4030"
+			}
 		}
 	},
 	"required": [],

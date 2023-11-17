@@ -1,16 +1,16 @@
-import { ConfigService } from '@nestjs/config';
-import { EntityId, IFindOptions, LanguageType, User } from '@shared/domain';
-import { RoleReference, Page, UserDO } from '@shared/domain/domainobject';
-import { UserRepo } from '@shared/repo';
-import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { AccountService } from '@modules/account';
 import { AccountDto } from '@modules/account/services/dto';
-import { ICurrentUser } from '@modules/authentication';
 // invalid import
 import { CurrentUserMapper } from '@modules/authentication/mapper';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { RoleService } from '@modules/role/service/role.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { EntityId, IFindOptions, LanguageType, User } from '@shared/domain';
+import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { UserRepo } from '@shared/repo';
+import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { OauthCurrentUser } from '@modules/authentication/interface';
 import { IUserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
@@ -34,7 +34,7 @@ export class UserService {
 	}
 
 	/**
-	 * @deprecated
+	 * @deprecated use {@link UserService.findById} instead
 	 */
 	async getUser(id: string): Promise<UserDto> {
 		const userEntity = await this.userRepo.findById(id, true);
@@ -43,11 +43,11 @@ export class UserService {
 		return userDto;
 	}
 
-	async getResolvedUser(userId: EntityId): Promise<ICurrentUser> {
-		const user: User = await this.userRepo.findById(userId, true);
+	async getResolvedUser(userId: EntityId): Promise<OauthCurrentUser> {
+		const user: UserDO = await this.findById(userId);
 		const account: AccountDto = await this.accountService.findByUserIdOrFail(userId);
 
-		const resolvedUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(account.id, user, account.systemId);
+		const resolvedUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(account.id, user, account.systemId);
 
 		return resolvedUser;
 	}

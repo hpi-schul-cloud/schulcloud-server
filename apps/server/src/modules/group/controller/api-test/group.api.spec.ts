@@ -1,4 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ClassEntity } from '@modules/class/entity';
+import { classEntityFactory } from '@modules/class/entity/testing';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role, RoleName, SchoolEntity, SchoolYearEntity, SortOrder, SystemEntity, User } from '@shared/domain';
@@ -12,13 +15,11 @@ import {
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { ClassEntity } from '@modules/class/entity';
-import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
-import { ServerTestModule } from '@modules/server';
 import { ObjectId } from 'bson';
 import { GroupEntity, GroupEntityTypes } from '../../entity';
 import { ClassRootType } from '../../uc/dto/class-root-type';
-import { ClassInfoSearchListResponse, ClassSortBy } from '../dto';
+import { ClassInfoSearchListResponse } from '../dto';
+import { ClassSortBy } from '../dto/interface';
 
 const baseRouteName = '/groups';
 
@@ -120,6 +121,7 @@ describe('Group (API)', () => {
 							name: group.name,
 							externalSourceName: system.displayName,
 							teachers: [adminUser.lastName],
+							studentCount: 0,
 						},
 						{
 							id: clazz.id,
@@ -128,34 +130,12 @@ describe('Group (API)', () => {
 							teachers: [teacherUser.lastName],
 							schoolYear: schoolYear.name,
 							isUpgradable: false,
+							studentCount: 0,
 						},
 					],
 					skip: 0,
 					limit: 2,
 				});
-			});
-		});
-
-		describe('when an invalid user requests a list of classes', () => {
-			const setup = async () => {
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-
-				await em.persistAndFlush([studentAccount, studentUser]);
-				em.clear();
-
-				const studentClient = await testApiClient.login(studentAccount);
-
-				return {
-					studentClient,
-				};
-			};
-
-			it('should return forbidden', async () => {
-				const { studentClient } = await setup();
-
-				const response = await studentClient.get(`/class`);
-
-				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 	});

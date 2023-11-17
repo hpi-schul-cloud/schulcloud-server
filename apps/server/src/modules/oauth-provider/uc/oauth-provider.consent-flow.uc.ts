@@ -3,12 +3,12 @@ import {
 	ProviderConsentResponse,
 	ProviderRedirectResponse,
 	RejectRequestBody,
-} from '@shared/infra/oauth-provider/dto';
+} from '@infra/oauth-provider/dto';
 import { AcceptQuery, ConsentRequestBody } from '@modules/oauth-provider/controller/dto';
 import { ICurrentUser } from '@modules/authentication';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { IdTokenService } from '@modules/oauth-provider/service/id-token.service';
-import { OauthProviderService } from '@shared/infra/oauth-provider';
+import { OauthProviderService } from '@infra/oauth-provider';
 import { IdToken } from '@modules/oauth-provider/interface/id-token';
 
 @Injectable()
