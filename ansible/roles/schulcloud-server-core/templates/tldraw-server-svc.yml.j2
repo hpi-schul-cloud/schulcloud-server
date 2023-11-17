@@ -8,15 +8,13 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    # Port used for WebSocket data transfers, and http calls for drawing b64 data saved in separate db
     - port: 3345
       targetPort: 3345
       protocol: TCP
-      name: tldraw-server
-    # Port used for managing drawing tool representation in course board
+      name: tldraw-ws-server
     - port: 3349
       targetPort: 3349
       protocol: TCP
-      name: tldraw-management
+      name: tldraw-http-management
   selector:
     app: tldraw

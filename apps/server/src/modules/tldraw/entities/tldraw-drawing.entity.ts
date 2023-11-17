@@ -2,7 +2,7 @@ import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 import { BadRequestException } from '@nestjs/common';
 import { ObjectId } from '@mikro-orm/mongodb';
 
-@Entity({ tableName: 'drawing' })
+@Entity({ tableName: 'drawings' })
 export class TldrawDrawing {
 	constructor(props: TldrawDrawingProps) {
 		if (!props.docName) throw new BadRequestException('Tldraw element should have name.');

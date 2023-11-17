@@ -42,7 +42,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	private getDocNameFromRequest(request: Request): string {
-		const urlStripped = request.url.replace('/', '');
+		const urlStripped = request.url.replace(/(\/)|(tldraw-server)/g, '');
 		return urlStripped;
 	}
 }
