@@ -11,6 +11,7 @@ import { TeamService } from '@modules/teams';
 import { UserService } from '@modules/user';
 import { RocketChatService } from '@modules/rocketchat';
 import { RocketChatUser, RocketChatUserService, rocketChatUserFactory } from '@modules/rocketchat-user';
+import { LegacyLogger } from '@src/core/logger';
 import { DeletionDomainModel, DeletionStatusModel } from '../domain/types';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
@@ -92,6 +93,10 @@ describe(DeletionRequestUc.name, () => {
 				{
 					provide: RocketChatService,
 					useValue: createMock<RocketChatService>(),
+				},
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
