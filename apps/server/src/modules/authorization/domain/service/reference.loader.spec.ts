@@ -16,7 +16,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { LessonService } from '@src/modules/lesson';
+import { LessonService } from '@modules/lesson';
 import { AuthorizableReferenceType } from '../type';
 import { ReferenceLoader } from './reference.loader';
 

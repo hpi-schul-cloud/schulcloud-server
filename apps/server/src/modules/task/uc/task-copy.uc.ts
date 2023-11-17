@@ -4,7 +4,7 @@ import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Course, EntityId, LessonEntity, Task, User } from '@shared/domain';
 import { CourseRepo, TaskRepo } from '@shared/repo';
-import { LessonService } from '@src/modules/lesson';
+import { LessonService } from '@modules/lesson';
 import { TaskCopyService } from '../service';
 import { TaskCopyParentParams } from '../types';
 

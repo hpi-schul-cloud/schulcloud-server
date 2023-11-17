@@ -13,7 +13,7 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
-import { LessonService } from '@src/modules/lesson';
+import { LessonService } from '@modules/lesson';
 import { AuthorizableReferenceType } from '../type';
 
 type RepoType =

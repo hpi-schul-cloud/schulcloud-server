@@ -13,7 +13,7 @@ import {
 	User,
 } from '@shared/domain';
 import { CourseRepo, TaskRepo } from '@shared/repo';
-import { LessonService } from '@src/modules/lesson';
+import { LessonService } from '@modules/lesson';
 import { TaskService } from '../service';
 
 @Injectable()

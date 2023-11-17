@@ -14,7 +14,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { LessonService } from '@src/modules/lesson';
+import { LessonService } from '@modules/lesson';
 import { TaskService } from '../service';
 import { TaskUC } from './task.uc';
 
