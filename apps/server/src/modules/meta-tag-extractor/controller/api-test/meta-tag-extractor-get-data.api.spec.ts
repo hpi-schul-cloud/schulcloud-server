@@ -24,7 +24,7 @@ describe(`get meta tags (api)`, () => {
 		})
 			.overrideProvider(MetaTagExtractorService)
 			.useValue({
-				fetchMetaData: () => mockedResponse,
+				getMetaData: () => mockedResponse,
 			})
 			.compile();
 

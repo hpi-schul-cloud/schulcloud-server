@@ -1,5 +1,5 @@
+import { LessonService } from '@modules/lesson';
 import { Injectable } from '@nestjs/common';
-import { LessonService } from '@src/modules/lesson/service';
 import type { UrlHandler } from '../../interface/url-handler';
 import { MetaData } from '../../types';
 import { AbstractUrlHandler } from './abstract-url-handler';

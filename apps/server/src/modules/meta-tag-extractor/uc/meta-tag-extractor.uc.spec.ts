@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizationService } from '@modules/authorization';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization';
 import { MetaTagExtractorService } from '../service';
 import { MetaTagExtractorUc } from './meta-tag-extractor.uc';
 
@@ -42,7 +42,7 @@ describe(MetaTagExtractorUc.name, () => {
 		jest.resetAllMocks();
 	});
 
-	describe('fetchMetaData', () => {
+	describe('getMetaData', () => {
 		describe('when user exists', () => {
 			const setup = () => {
 				const user = userFactory.build();
@@ -57,7 +57,7 @@ describe(MetaTagExtractorUc.name, () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				const url = 'https://www.example.com/great-example';
-				await uc.fetchMetaData(user.id, url);
+				await uc.getMetaData(user.id, url);
 
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
 			});
@@ -66,7 +66,7 @@ describe(MetaTagExtractorUc.name, () => {
 				const { user } = setup();
 
 				const url = 'https://www.example.com/great-example';
-				await uc.fetchMetaData(user.id, url);
+				await uc.getMetaData(user.id, url);
 
 				expect(metaTagExtractorService.getMetaData).toHaveBeenCalledWith(url);
 			});
@@ -84,7 +84,7 @@ describe(MetaTagExtractorUc.name, () => {
 				const { user } = setup();
 
 				const url = 'https://www.example.com/great-example';
-				await expect(uc.fetchMetaData(user.id, url)).rejects.toThrow(UnauthorizedException);
+				await expect(uc.getMetaData(user.id, url)).rejects.toThrow(UnauthorizedException);
 			});
 		});
 	});
