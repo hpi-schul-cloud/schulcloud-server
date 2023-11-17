@@ -6,6 +6,7 @@ import {
 	ContentTypeCache,
 	IUser,
 	LibraryAdministration,
+	ILibraryAdministrationOverviewItem,
 } from '@lumieducation/h5p-server';
 import ContentManager from '@lumieducation/h5p-server/build/src/ContentManager';
 import ContentTypeInformationRepository from '@lumieducation/h5p-server/build/src/ContentTypeInformationRepository';
@@ -66,34 +67,46 @@ export class H5PLibraryManagementService {
 		this.libraryWishList = (parse(librariesYamlContent) as { h5p_libraries: string[] }).h5p_libraries;
 	}
 
-	async uninstallUnwantedLibraries(wantedLibraries: string[]): Promise<void> {
-		const installedLibraries = await this.libraryAdministration.getLibraries();
-		for (const installedLibrary of installedLibraries) {
-			if (!wantedLibraries.includes(installedLibrary.machineName) && installedLibrary.dependentsCount === 0) {
-				// force removal, don't let content prevent it, therefore use libraryStorage directly
-				// also to avoid conflicts, remove one-by-one, not using for-await:
-				// eslint-disable-next-line no-await-in-loop
-				await this.libraryStorage.deleteLibrary(installedLibrary);
-			}
+	async uninstallUnwantedLibraries(
+		wantedLibraries: string[],
+		librariesToCheck: ILibraryAdministrationOverviewItem[]
+	): Promise<void> {
+		if (librariesToCheck.length === 0) {
+			return;
 		}
+		const lastPositionLibrariesToCheckArray = librariesToCheck.length - 1;
+		if (
+			!wantedLibraries.includes(librariesToCheck[lastPositionLibrariesToCheckArray].machineName) &&
+			librariesToCheck[lastPositionLibrariesToCheckArray].dependentsCount === 0
+		) {
+			// force removal, don't let content prevent it, therefore use libraryStorage directly
+			// also to avoid conflicts, remove one-by-one, not using for-await:
+			await this.libraryStorage.deleteLibrary(librariesToCheck[lastPositionLibrariesToCheckArray]);
+		}
+		await this.uninstallUnwantedLibraries(
+			this.libraryWishList,
+			librariesToCheck.slice(0, lastPositionLibrariesToCheckArray)
+		);
 	}
 
-	async installLibraries(libraries: string[]): Promise<void> {
-		for (const libname of libraries) {
-			// avoid conflicts, install one-by-one:
-			// eslint-disable-next-line no-await-in-loop
-			const contentType = await this.contentTypeCache.get(libname);
-			if (contentType === undefined) {
-				throw new Error('this library does not exist');
-			}
-			const user: IUser = { canUpdateAndInstallLibraries: true } as IUser;
-			// eslint-disable-next-line no-await-in-loop
-			await this.contentTypeRepo.installContentType(libname, user);
+	async installLibraries(librariesToInstall: string[]): Promise<void> {
+		if (librariesToInstall.length === 0) {
+			return;
 		}
+		const lastPositionLibrariesToInstallArray = librariesToInstall.length - 1;
+		// avoid conflicts, install one-by-one:
+		const contentType = await this.contentTypeCache.get(librariesToInstall[lastPositionLibrariesToInstallArray]);
+		if (contentType === undefined) {
+			throw new Error('this library does not exist');
+		}
+		const user: IUser = { canUpdateAndInstallLibraries: true } as IUser;
+		await this.contentTypeRepo.installContentType(librariesToInstall[lastPositionLibrariesToInstallArray], user);
+		await this.installLibraries(librariesToInstall.slice(0, lastPositionLibrariesToInstallArray));
 	}
 
 	async run(): Promise<void> {
-		await this.uninstallUnwantedLibraries(this.libraryWishList);
+		const installedLibraries = await this.libraryAdministration.getLibraries();
+		await this.uninstallUnwantedLibraries(this.libraryWishList, installedLibraries);
 		await this.installLibraries(this.libraryWishList);
 	}
 }
