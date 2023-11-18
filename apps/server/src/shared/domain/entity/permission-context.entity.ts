@@ -6,11 +6,11 @@ import { User } from './user.entity';
 
 @Embeddable()
 export class UserDelta {
-	constructor(data: { userId: string; included_permissions: Permission[]; excluded_permissions: Permission[] }[]) {
+	constructor(data: { userId: string; includedPermissions: Permission[]; excludedPermissions: Permission[] }[]) {
 		data.forEach((userDelta) => {
 			this[userDelta.userId] = {
-				includedPermissions: userDelta.included_permissions,
-				excludedPermissions: userDelta.excluded_permissions,
+				includedPermissions: userDelta.includedPermissions,
+				excludedPermissions: userDelta.excludedPermissions,
 			};
 		});
 	}

@@ -4,6 +4,7 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import {
 	AnyBoardDo,
 	BoardExternalReference,
+	BoardExternalReferenceType,
 	Card,
 	Column,
 	ColumnBoard,
@@ -11,7 +12,11 @@ import {
 	ContentElementType,
 	EntityId,
 	RichTextElement,
+	Permission,
+	PermissionContextEntity,
+	UserDelta,
 } from '@shared/domain';
+import { PermissionContextRepo, CourseRepo } from '@shared/repo';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
@@ -21,7 +26,9 @@ export class ColumnBoardService {
 	constructor(
 		private readonly boardDoRepo: BoardDoRepo,
 		private readonly boardDoService: BoardDoService,
-		private readonly contentElementFactory: ContentElementFactory
+		private readonly contentElementFactory: ContentElementFactory,
+		private readonly permissionCtxRepo: PermissionContextRepo,
+		private readonly courseRepo: CourseRepo
 	) {}
 
 	async findById(boardId: EntityId): Promise<ColumnBoard> {
@@ -31,7 +38,9 @@ export class ColumnBoardService {
 	}
 
 	async findIdsByExternalReference(reference: BoardExternalReference): Promise<EntityId[]> {
-		const ids = this.boardDoRepo.findIdsByExternalReference(reference);
+		const ids = await this.boardDoRepo.findIdsByExternalReference(reference);
+		// run migrateColumnBoardToPermissionContext for each id await
+		await Promise.all(ids.map((id) => this.migrateColumnBoardToPermissionContext(id)));
 
 		return ids;
 	}
@@ -147,5 +156,69 @@ export class ColumnBoardService {
 		element.text = text;
 
 		return element;
+	}
+
+	// NOTE: this is a idempotent in-place migration for POC purposes
+	private async migrateColumnBoardToPermissionContext(id: EntityId) {
+		const hasPermissionContext = await this.permissionCtxRepo
+			.findByContextReference(id)
+			.then(() => true)
+			.catch((e) => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				if (e.status === 404) return false;
+				throw e;
+			});
+		const board = await this.boardDoRepo.findById(id, 1);
+
+		if (
+			!hasPermissionContext &&
+			board instanceof ColumnBoard &&
+			board.context.type === BoardExternalReferenceType.Course
+		) {
+			// NOTE: apply migration, defaulting to course context
+			const course = await this.courseRepo.findById(board.context.id);
+
+			// NOTE: hardcoded permissions for POC purposes
+			const STUDENT_PERMISSIONS = [Permission.BOARD_READ];
+			const TEACHER_PERMISSIONS = [
+				Permission.BOARD_READ,
+				Permission.BOARD_CREATE_COLUMN,
+				Permission.BOARD_CREATE_COLUMN,
+				Permission.BOARD_DELETE,
+				Permission.BOARD_UPDATE_TITLE,
+			];
+			const SUBSTITUTE_TEACHER_PERMISSIONS = [...TEACHER_PERMISSIONS];
+
+			const studentIds = course.getStudentIds().map((userId) => {
+				return {
+					userId,
+					includedPermissions: STUDENT_PERMISSIONS,
+					excludedPermissions: [],
+				};
+			});
+			const teacherIds = course.getTeacherIds().map((userId) => {
+				return {
+					userId,
+					includedPermissions: TEACHER_PERMISSIONS,
+					excludedPermissions: [],
+				};
+			});
+			const substituteTeacherIds = course.getSubstitutionTeacherIds().map((userId) => {
+				return {
+					userId,
+					includedPermissions: SUBSTITUTE_TEACHER_PERMISSIONS,
+					excludedPermissions: [],
+				};
+			});
+
+			const permissionCtxEntity = new PermissionContextEntity({
+				name: 'ColumnBoard with course context',
+				parentContext: null,
+				contextReference: new ObjectId(id),
+				userDelta: new UserDelta([...studentIds, ...teacherIds, ...substituteTeacherIds]),
+			});
+
+			await this.permissionCtxRepo.save(permissionCtxEntity);
+		}
 	}
 }
