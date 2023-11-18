@@ -20,6 +20,7 @@ import {
 	isCard,
 } from '@shared/domain';
 import { PermissionContextRepo, CourseRepo } from '@shared/repo';
+import { Forbidden } from '@feathersjs/errors';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
@@ -67,6 +68,8 @@ export class ColumnBoardService {
 	}
 
 	async create(context: BoardExternalReference, title = ''): Promise<ColumnBoard> {
+		if (context.type !== 'course') throw new Forbidden('Only course boards are allowed');
+
 		const columnBoard = new ColumnBoard({
 			id: new ObjectId().toHexString(),
 			title,
@@ -75,6 +78,9 @@ export class ColumnBoardService {
 			updatedAt: new Date(),
 			context,
 		});
+
+		const course = await this.courseRepo.findById(context.id);
+		await this.pocCreateColumnBoardToPermissionContext(columnBoard, course);
 
 		await this.boardDoRepo.save(columnBoard);
 
@@ -181,11 +187,11 @@ export class ColumnBoardService {
 			// const contextStore: Map<string, PermissionContextEntity> = new Map();
 
 			const course = await this.courseRepo.findById(board.context.id);
-			await this.pocMigrateColumnBoardToPermissionContext(board, course);
+			await this.pocCreateColumnBoardToPermissionContext(board, course);
 		}
 	}
 
-	private async pocMigrateColumnBoardToPermissionContext(
+	private async pocCreateColumnBoardToPermissionContext(
 		columnBoard: ColumnBoard,
 		course: Course
 	): Promise<PermissionContextEntity> {
@@ -235,13 +241,13 @@ export class ColumnBoardService {
 
 		const columns = columnBoard.children.filter((child): child is Column => isColumn(child));
 		await Promise.all(
-			columns.map(async (column) => this.pocMigrateColumnToPermissionContext(column, permissionCtxEntity, course))
+			columns.map(async (column) => this.pocCreateColumnToPermissionContext(column, permissionCtxEntity, course))
 		);
 
 		return permissionCtxEntity;
 	}
 
-	private async pocMigrateColumnToPermissionContext(
+	private async pocCreateColumnToPermissionContext(
 		column: Column,
 		parentContext: PermissionContextEntity,
 		course: Course
@@ -263,14 +269,14 @@ export class ColumnBoardService {
 
 		await Promise.all(
 			cards.map(async (card) =>
-				this.pocMigrateOtherToPermissionContext(card, permissionCtxEntity, course, 'Card with course context')
+				this.pocCreateOtherToPermissionContext(card, permissionCtxEntity, course, 'Card with course context')
 			)
 		);
 
 		return permissionCtxEntity;
 	}
 
-	private async pocMigrateOtherToPermissionContext<T extends AnyBoardDo>(
+	private async pocCreateOtherToPermissionContext<T extends AnyBoardDo>(
 		boardNode: T,
 		parentContext: PermissionContextEntity,
 		course: Course,
@@ -290,7 +296,7 @@ export class ColumnBoardService {
 		const elements = boardNode.children.filter((el): el is SubmissionItem => !(el instanceof SubmissionItem));
 		await Promise.all(
 			elements.map((el) =>
-				this.pocMigrateOtherToPermissionContext(el, permissionCtxEntity, course, 'Element with course context')
+				this.pocCreateOtherToPermissionContext(el, permissionCtxEntity, course, 'Element with course context')
 			)
 		);
 
@@ -299,14 +305,14 @@ export class ColumnBoardService {
 		const submissionItems = children.filter((el): el is SubmissionItem => el instanceof SubmissionItem);
 		await Promise.all(
 			submissionItems.map((submissionItem) =>
-				this.pocMigrateSubmissionItemToPermissionContext(submissionItem, permissionCtxEntity, course)
+				this.pocCreateSubmissionItemToPermissionContext(submissionItem, permissionCtxEntity, course)
 			)
 		);
 
 		return permissionCtxEntity;
 	}
 
-	private async pocMigrateSubmissionItemToPermissionContext(
+	private async pocCreateSubmissionItemToPermissionContext(
 		boardNode: SubmissionItem,
 		parentContext: PermissionContextEntity,
 		course: Course
@@ -341,7 +347,7 @@ export class ColumnBoardService {
 
 		await Promise.all(
 			submissionItemElements.map((el) =>
-				this.pocMigrateOtherToPermissionContext(
+				this.pocCreateOtherToPermissionContext(
 					el,
 					permissionCtxEntity,
 					course,
