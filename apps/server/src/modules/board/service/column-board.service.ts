@@ -4,7 +4,6 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import {
 	AnyBoardDo,
 	BoardExternalReference,
-	BoardExternalReferenceType,
 	Card,
 	Column,
 	ColumnBoard,
@@ -15,6 +14,10 @@ import {
 	Permission,
 	PermissionContextEntity,
 	UserDelta,
+	Course,
+	isColumn,
+	SubmissionItem,
+	isCard,
 } from '@shared/domain';
 import { PermissionContextRepo, CourseRepo } from '@shared/repo';
 import { ObjectId } from 'bson';
@@ -40,7 +43,7 @@ export class ColumnBoardService {
 	async findIdsByExternalReference(reference: BoardExternalReference): Promise<EntityId[]> {
 		const ids = await this.boardDoRepo.findIdsByExternalReference(reference);
 		// run migrateColumnBoardToPermissionContext for each id await
-		await Promise.all(ids.map((id) => this.migrateColumnBoardToPermissionContext(id)));
+		await Promise.all(ids.map((id) => this.pocMigrateBoardToPermissionContext(id)));
 
 		return ids;
 	}
@@ -148,7 +151,7 @@ export class ColumnBoardService {
 
 		await this.boardDoRepo.save(columnBoard);
 
-		await this.migrateColumnBoardToPermissionContext(columnBoard.id);
+		await this.pocMigrateBoardToPermissionContext(columnBoard.id);
 
 		return columnBoard;
 	}
@@ -161,7 +164,7 @@ export class ColumnBoardService {
 	}
 
 	// NOTE: this is a idempotent in-place migration for POC purposes
-	private async migrateColumnBoardToPermissionContext(id: EntityId) {
+	private async pocMigrateBoardToPermissionContext(id: EntityId) {
 		const hasPermissionContext = await this.permissionCtxRepo
 			.findByContextReference(id)
 			.then(() => true)
@@ -172,55 +175,181 @@ export class ColumnBoardService {
 			});
 		const board = await this.boardDoRepo.findById(id, 1);
 
-		if (
-			!hasPermissionContext &&
-			board instanceof ColumnBoard &&
-			board.context.type === BoardExternalReferenceType.Course
-		) {
-			// NOTE: apply migration, defaulting to course context
+		if (hasPermissionContext) return;
+
+		if (board instanceof ColumnBoard) {
+			// const contextStore: Map<string, PermissionContextEntity> = new Map();
+
 			const course = await this.courseRepo.findById(board.context.id);
-
-			// NOTE: hardcoded permissions for POC purposes
-			const STUDENT_PERMISSIONS = [Permission.BOARD_READ];
-			const TEACHER_PERMISSIONS = [
-				Permission.BOARD_READ,
-				Permission.BOARD_CREATE_COLUMN,
-				Permission.BOARD_CREATE_COLUMN,
-				Permission.BOARD_DELETE,
-				Permission.BOARD_UPDATE_TITLE,
-			];
-			const SUBSTITUTE_TEACHER_PERMISSIONS = [...TEACHER_PERMISSIONS];
-
-			const studentIds = course.getStudentIds().map((userId) => {
-				return {
-					userId,
-					includedPermissions: STUDENT_PERMISSIONS,
-					excludedPermissions: [],
-				};
-			});
-			const teacherIds = course.getTeacherIds().map((userId) => {
-				return {
-					userId,
-					includedPermissions: TEACHER_PERMISSIONS,
-					excludedPermissions: [],
-				};
-			});
-			const substituteTeacherIds = course.getSubstitutionTeacherIds().map((userId) => {
-				return {
-					userId,
-					includedPermissions: SUBSTITUTE_TEACHER_PERMISSIONS,
-					excludedPermissions: [],
-				};
-			});
-
-			const permissionCtxEntity = new PermissionContextEntity({
-				name: 'ColumnBoard with course context',
-				parentContext: null,
-				contextReference: new ObjectId(id),
-				userDelta: new UserDelta([...studentIds, ...teacherIds, ...substituteTeacherIds]),
-			});
-
-			await this.permissionCtxRepo.save(permissionCtxEntity);
+			await this.pocMigrateColumnBoardToPermissionContext(board, course);
 		}
+	}
+
+	private async pocMigrateColumnBoardToPermissionContext(
+		columnBoard: ColumnBoard,
+		course: Course
+	): Promise<PermissionContextEntity> {
+		// NOTE: apply migration, defaulting to course context
+
+		// NOTE: hardcoded permissions for POC purposes
+		const STUDENT_PERMISSIONS = [Permission.BOARD_READ];
+		const TEACHER_PERMISSIONS = [
+			Permission.BOARD_READ,
+			Permission.BOARD_CREATE_COLUMN,
+			Permission.BOARD_CREATE_COLUMN,
+			Permission.BOARD_DELETE,
+			Permission.BOARD_UPDATE_TITLE,
+		];
+		const SUBSTITUTE_TEACHER_PERMISSIONS = [...TEACHER_PERMISSIONS];
+
+		const studentIds = course.getStudentIds().map((userId) => {
+			return {
+				userId,
+				includedPermissions: STUDENT_PERMISSIONS,
+				excludedPermissions: [],
+			};
+		});
+		const teacherIds = course.getTeacherIds().map((userId) => {
+			return {
+				userId,
+				includedPermissions: TEACHER_PERMISSIONS,
+				excludedPermissions: [],
+			};
+		});
+		const substituteTeacherIds = course.getSubstitutionTeacherIds().map((userId) => {
+			return {
+				userId,
+				includedPermissions: SUBSTITUTE_TEACHER_PERMISSIONS,
+				excludedPermissions: [],
+			};
+		});
+
+		const permissionCtxEntity = new PermissionContextEntity({
+			name: 'ColumnBoard with course context',
+			parentContext: null,
+			contextReference: new ObjectId(columnBoard.id),
+			userDelta: new UserDelta([...studentIds, ...teacherIds, ...substituteTeacherIds]),
+		});
+
+		await this.permissionCtxRepo.save(permissionCtxEntity);
+
+		const columns = columnBoard.children.filter((child): child is Column => isColumn(child));
+		await Promise.all(
+			columns.map(async (column) => this.pocMigrateColumnToPermissionContext(column, permissionCtxEntity, course))
+		);
+
+		return permissionCtxEntity;
+	}
+
+	private async pocMigrateColumnToPermissionContext(
+		column: Column,
+		parentContext: PermissionContextEntity,
+		course: Course
+	): Promise<PermissionContextEntity> {
+		// NOTE: apply migration, defaulting to course context
+
+		const permissionCtxEntity = new PermissionContextEntity({
+			name: 'Column with course context',
+			parentContext,
+			contextReference: new ObjectId(column.id),
+			userDelta: new UserDelta([]),
+		});
+
+		await this.permissionCtxRepo.save(permissionCtxEntity);
+
+		const { children } = await this.boardDoRepo.findById(column.id, 1);
+
+		const cards = children.filter((child): child is Card => isCard(child));
+
+		await Promise.all(
+			cards.map(async (card) =>
+				this.pocMigrateOtherToPermissionContext(card, permissionCtxEntity, course, 'Card with course context')
+			)
+		);
+
+		return permissionCtxEntity;
+	}
+
+	private async pocMigrateOtherToPermissionContext<T extends AnyBoardDo>(
+		boardNode: T,
+		parentContext: PermissionContextEntity,
+		course: Course,
+		name = 'Boardnode with course context'
+	): Promise<PermissionContextEntity> {
+		// NOTE: apply migration, defaulting to course context
+
+		const permissionCtxEntity = new PermissionContextEntity({
+			name,
+			parentContext,
+			contextReference: new ObjectId(boardNode.id),
+			userDelta: new UserDelta([]),
+		});
+
+		await this.permissionCtxRepo.save(permissionCtxEntity);
+
+		const elements = boardNode.children.filter((el): el is SubmissionItem => !(el instanceof SubmissionItem));
+		await Promise.all(
+			elements.map((el) =>
+				this.pocMigrateOtherToPermissionContext(el, permissionCtxEntity, course, 'Element with course context')
+			)
+		);
+
+		const { children } = await this.boardDoRepo.findById(boardNode.id, 1);
+
+		const submissionItems = children.filter((el): el is SubmissionItem => el instanceof SubmissionItem);
+		await Promise.all(
+			submissionItems.map((submissionItem) =>
+				this.pocMigrateSubmissionItemToPermissionContext(submissionItem, permissionCtxEntity, course)
+			)
+		);
+
+		return permissionCtxEntity;
+	}
+
+	private async pocMigrateSubmissionItemToPermissionContext(
+		boardNode: SubmissionItem,
+		parentContext: PermissionContextEntity,
+		course: Course
+	): Promise<PermissionContextEntity> {
+		// NOTE: apply migration, defaulting to course context
+		const otherStudentIds = course
+			.getStudentIds()
+			.filter((userId) => userId !== boardNode.userId)
+			.map((userId) => {
+				return {
+					userId,
+					includedPermissions: [],
+					excludedPermissions: [Permission.BOARD_READ],
+				};
+			});
+
+		const studentIds = [
+			...otherStudentIds,
+			{ userId: boardNode.userId, includedPermissions: [Permission.BOARD_READ], excludedPermissions: [] },
+		];
+
+		const permissionCtxEntity = new PermissionContextEntity({
+			name: 'Submission item with course context',
+			parentContext,
+			contextReference: new ObjectId(boardNode.id),
+			userDelta: new UserDelta([...studentIds]),
+		});
+
+		await this.permissionCtxRepo.save(permissionCtxEntity);
+
+		const { children: submissionItemElements } = await this.boardDoRepo.findById(boardNode.id, 1);
+
+		await Promise.all(
+			submissionItemElements.map((el) =>
+				this.pocMigrateOtherToPermissionContext(
+					el,
+					permissionCtxEntity,
+					course,
+					'SubmissionItemElement with course context'
+				)
+			)
+		);
+
+		return permissionCtxEntity;
 	}
 }
