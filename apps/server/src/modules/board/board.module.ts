@@ -4,7 +4,7 @@ import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { ContentElementFactory } from '@shared/domain';
 import { ConsoleWriterModule } from '@infra/console';
-import { CourseRepo } from '@shared/repo';
+import { CourseRepo, PermissionContextRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor } from './repo';
 import {
@@ -37,6 +37,7 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		BoardDoCopyService,
 		ColumnBoardCopyService,
 		SchoolSpecificFileCopyServiceFactory,
+		PermissionContextRepo,
 	],
 	exports: [
 		BoardDoAuthorizableService,
