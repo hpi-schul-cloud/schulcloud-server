@@ -148,6 +148,8 @@ export class ColumnBoardService {
 
 		await this.boardDoRepo.save(columnBoard);
 
+		await this.migrateColumnBoardToPermissionContext(columnBoard.id);
+
 		return columnBoard;
 	}
 
