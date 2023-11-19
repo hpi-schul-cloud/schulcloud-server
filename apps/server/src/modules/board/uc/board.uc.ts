@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { BoardExternalReference, Column, ColumnBoard, EntityId, Permission } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@modules/authorization/domain';
@@ -19,65 +19,8 @@ export class BoardUc extends BaseUc {
 		private readonly logger: LegacyLogger,
 		protected readonly permissionContextService: PermissionContextService
 	) {
-		super(authorizationService, boardDoAuthorizableService);
+		super(authorizationService, boardDoAuthorizableService, permissionContextService);
 		this.logger.setContext(BoardUc.name);
-	}
-
-	private async pocHasPermission(
-		userId: EntityId,
-		contextReference: EntityId,
-		permissionsToContain: Permission[]
-	): Promise<boolean> {
-		this.logger.debug({ action: 'pocHasPermission', userId, contextReference, permissionsToContain });
-		const permissions = await this.permissionContextService.resolvePermissions(userId, contextReference);
-		const hasPermission = permissionsToContain.every((permission) => permissions.includes(permission));
-		return hasPermission;
-	}
-
-	private async pocCheckPermission(
-		userId: EntityId,
-		contextReference: EntityId,
-		permissionsToContain: Permission[]
-	): Promise<void> {
-		const hasPermission = await this.pocHasPermission(userId, contextReference, permissionsToContain);
-		if (!hasPermission) {
-			throw new UnauthorizedException();
-		}
-	}
-
-	private async pocFilterColumnBoardChildrenByPermission(userId: EntityId, columnBoard: ColumnBoard): Promise<void> {
-		// NOTE: This function will be obsolete once the authorization can be applied in the repo level
-		const columnsToRemove = await Promise.all(
-			columnBoard.children.map(async (child) => {
-				return {
-					column: child,
-					hasPermission: await this.pocHasPermission(userId, child.id, [Permission.BOARD_READ]),
-				};
-			})
-		);
-
-		columnsToRemove.forEach((columnToRemove) => {
-			if (!columnToRemove.hasPermission) {
-				columnBoard.removeChild(columnToRemove.column);
-			}
-		});
-
-		const cardsToRemove = await Promise.all(
-			columnBoard.children
-				.flatMap((child) => child.children)
-				.map(async (child) => {
-					return {
-						card: child,
-						hasPermission: await this.pocHasPermission(userId, child.id, [Permission.BOARD_READ]),
-					};
-				})
-		);
-
-		cardsToRemove.forEach((cardToRemove) => {
-			if (!cardToRemove.hasPermission) {
-				columnBoard.removeChild(cardToRemove.card);
-			}
-		});
 	}
 
 	async findBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {

@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Card, ContentElementType, EntityId } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService, Action } from '@modules/authorization';
+import { AuthorizationService, Action, PermissionContextService } from '@modules/authorization';
 import { CardService, ColumnService, BoardDoAuthorizableService } from '../service';
 import { BaseUc } from './base.uc';
 
@@ -13,9 +13,10 @@ export class ColumnUc extends BaseUc {
 		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly cardService: CardService,
 		private readonly columnService: ColumnService,
-		private readonly logger: LegacyLogger
+		private readonly logger: LegacyLogger,
+		protected readonly permissionContextService: PermissionContextService
 	) {
-		super(authorizationService, boardDoAuthorizableService);
+		super(authorizationService, boardDoAuthorizableService, permissionContextService);
 		this.logger.setContext(ColumnUc.name);
 	}
 

@@ -19,7 +19,7 @@ import {
 	UserBoardRoles,
 	UserRoleEnum,
 } from '@shared/domain';
-import { AuthorizationService, Action } from '@modules/authorization';
+import { AuthorizationService, Action, PermissionContextService } from '@modules/authorization';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { BaseUc } from './base.uc';
 
@@ -30,9 +30,10 @@ export class SubmissionItemUc extends BaseUc {
 		protected readonly authorizationService: AuthorizationService,
 		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		protected readonly elementService: ContentElementService,
-		protected readonly submissionItemService: SubmissionItemService
+		protected readonly submissionItemService: SubmissionItemService,
+		protected readonly permissionContextService: PermissionContextService
 	) {
-		super(authorizationService, boardDoAuthorizableService);
+		super(authorizationService, boardDoAuthorizableService, permissionContextService);
 	}
 
 	async findSubmissionItems(

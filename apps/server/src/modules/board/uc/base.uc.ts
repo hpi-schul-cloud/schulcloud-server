@@ -1,13 +1,70 @@
-import { AnyBoardDo, EntityId, SubmissionItem, UserRoleEnum } from '@shared/domain';
-import { ForbiddenException } from '@nestjs/common';
-import { AuthorizationService, Action } from '@modules/authorization';
+import { AnyBoardDo, ColumnBoard, EntityId, Permission, SubmissionItem, UserRoleEnum } from '@shared/domain';
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import { AuthorizationService, Action, PermissionContextService } from '@modules/authorization';
 import { BoardDoAuthorizableService } from '../service';
 
 export abstract class BaseUc {
 	constructor(
 		protected readonly authorizationService: AuthorizationService,
-		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService
+		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		protected readonly permissionContextService: PermissionContextService
 	) {}
+
+	protected async pocHasPermission(
+		userId: EntityId,
+		contextReference: EntityId,
+		permissionsToContain: Permission[]
+	): Promise<boolean> {
+		const permissions = await this.permissionContextService.resolvePermissions(userId, contextReference);
+		const hasPermission = permissionsToContain.every((permission) => permissions.includes(permission));
+		return hasPermission;
+	}
+
+	protected async pocCheckPermission(
+		userId: EntityId,
+		contextReference: EntityId,
+		permissionsToContain: Permission[]
+	): Promise<void> {
+		const hasPermission = await this.pocHasPermission(userId, contextReference, permissionsToContain);
+		if (!hasPermission) {
+			throw new UnauthorizedException();
+		}
+	}
+
+	protected async pocFilterColumnBoardChildrenByPermission(userId: EntityId, columnBoard: ColumnBoard): Promise<void> {
+		// NOTE: This function will be obsolete once the authorization can be applied in the repo level
+		const columnsToRemove = await Promise.all(
+			columnBoard.children.map(async (child) => {
+				return {
+					column: child,
+					hasPermission: await this.pocHasPermission(userId, child.id, [Permission.BOARD_READ]),
+				};
+			})
+		);
+
+		columnsToRemove.forEach((columnToRemove) => {
+			if (!columnToRemove.hasPermission) {
+				columnBoard.removeChild(columnToRemove.column);
+			}
+		});
+
+		const cardsToRemove = await Promise.all(
+			columnBoard.children
+				.flatMap((child) => child.children)
+				.map(async (child) => {
+					return {
+						card: child,
+						hasPermission: await this.pocHasPermission(userId, child.id, [Permission.BOARD_READ]),
+					};
+				})
+		);
+
+		cardsToRemove.forEach((cardToRemove) => {
+			if (!cardToRemove.hasPermission) {
+				columnBoard.removeChild(cardToRemove.card);
+			}
+		});
+	}
 
 	protected async checkPermission(
 		userId: EntityId,
