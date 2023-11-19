@@ -47,8 +47,9 @@ export class BoardUc extends BaseUc {
 	async deleteBoard(userId: EntityId, boardId: EntityId): Promise<void> {
 		this.logger.debug({ action: 'deleteBoard', userId, boardId });
 
+		await this.pocCheckPermission(userId, boardId, [Permission.BOARD_DELETE]);
 		const board = await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.write);
+		// await this.checkPermission(userId, board, Action.write);
 
 		await this.columnBoardService.delete(board);
 	}
@@ -56,8 +57,9 @@ export class BoardUc extends BaseUc {
 	async updateBoardTitle(userId: EntityId, boardId: EntityId, title: string): Promise<void> {
 		this.logger.debug({ action: 'updateBoardTitle', userId, boardId, title });
 
+		await this.pocCheckPermission(userId, boardId, [Permission.BOARD_UPDATE_TITLE]);
 		const board = await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.write);
+		// await this.checkPermission(userId, board, Action.write);
 
 		await this.columnBoardService.updateTitle(board, title);
 	}
@@ -65,6 +67,7 @@ export class BoardUc extends BaseUc {
 	async createColumn(userId: EntityId, boardId: EntityId): Promise<Column> {
 		this.logger.debug({ action: 'createColumn', userId, boardId });
 
+		await this.pocCheckPermission(userId, boardId, [Permission.BOARD_COLUMN_CREATE]);
 		const board = await this.columnBoardService.findById(boardId);
 		await this.checkPermission(userId, board, Action.write);
 
@@ -80,11 +83,14 @@ export class BoardUc extends BaseUc {
 	): Promise<void> {
 		this.logger.debug({ action: 'moveColumn', userId, columnId, targetBoardId, targetPosition });
 
+		await this.pocCheckPermission(userId, columnId, [Permission.BOARD_COLUMN_MOVE]);
+		await this.pocCheckPermission(userId, targetBoardId, [Permission.BOARD_COLUMN_MOVE]);
+
 		const column = await this.columnService.findById(columnId);
 		const targetBoard = await this.columnBoardService.findById(targetBoardId);
 
-		await this.checkPermission(userId, column, Action.write);
-		await this.checkPermission(userId, targetBoard, Action.write);
+		// await this.checkPermission(userId, column, Action.write);
+		// await this.checkPermission(userId, targetBoard, Action.write);
 
 		await this.columnService.move(column, targetBoard, targetPosition);
 	}
