@@ -120,6 +120,4 @@ export class CourseCopyService {
 		};
 		return status;
 	}
-
-
 }

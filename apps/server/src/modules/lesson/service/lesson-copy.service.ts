@@ -236,7 +236,7 @@ export class LessonCopyService {
 					status: CopyStatusEnum.PARTIAL,
 				};
 				if (nexboardContent) {
-					nexboardStatus.status = CopyStatusEnum.FAIL;
+					nexboardStatus.status = CopyStatusEnum.NOT_DOING;
 				}
 				copiedContentStatus.push(nexboardStatus);
 			}
