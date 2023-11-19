@@ -25,6 +25,24 @@ import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 
+const DEFAULT_TEACHER_PERMISSIONS = [
+	Permission.BOARD_READ,
+	Permission.BOARD_COLUMN_CREATE,
+	Permission.BOARD_DELETE,
+	Permission.BOARD_UPDATE_TITLE,
+
+	Permission.BOARD_COLUMN_CREATE,
+	Permission.BOARD_COLUMN_MOVE,
+	Permission.BOARD_COLUMN_DELETE,
+	Permission.BOARD_COLUMN_UPDATE_TITLE,
+
+	Permission.BOARD_CARD_CREATE,
+	Permission.BOARD_CARD_MOVE,
+];
+const DEFAULT_SUBSTITUTE_TEACHER_PERMISSIONS = DEFAULT_TEACHER_PERMISSIONS;
+
+const DEFAULT_STUDENT_PERMISSIONS = [Permission.BOARD_READ];
+
 @Injectable()
 export class ColumnBoardService {
 	constructor(
@@ -198,34 +216,24 @@ export class ColumnBoardService {
 		// NOTE: apply migration, defaulting to course context
 
 		// NOTE: hardcoded permissions for POC purposes
-		const STUDENT_PERMISSIONS = [Permission.BOARD_READ];
-		const TEACHER_PERMISSIONS = [
-			Permission.BOARD_READ,
-			Permission.BOARD_CREATE_COLUMN,
-			Permission.BOARD_CREATE_COLUMN,
-			Permission.BOARD_DELETE,
-			Permission.BOARD_UPDATE_TITLE,
-		];
-		const SUBSTITUTE_TEACHER_PERMISSIONS = [...TEACHER_PERMISSIONS];
-
 		const studentIds = course.getStudentIds().map((userId) => {
 			return {
 				userId,
-				includedPermissions: STUDENT_PERMISSIONS,
+				includedPermissions: DEFAULT_STUDENT_PERMISSIONS,
 				excludedPermissions: [],
 			};
 		});
 		const teacherIds = course.getTeacherIds().map((userId) => {
 			return {
 				userId,
-				includedPermissions: TEACHER_PERMISSIONS,
+				includedPermissions: DEFAULT_TEACHER_PERMISSIONS,
 				excludedPermissions: [],
 			};
 		});
 		const substituteTeacherIds = course.getSubstitutionTeacherIds().map((userId) => {
 			return {
 				userId,
-				includedPermissions: SUBSTITUTE_TEACHER_PERMISSIONS,
+				includedPermissions: DEFAULT_SUBSTITUTE_TEACHER_PERMISSIONS,
 				excludedPermissions: [],
 			};
 		});

@@ -1,4 +1,4 @@
-import { Embeddable, Entity, Index, ManyToOne, Property, Unique } from '@mikro-orm/core';
+import { Embeddable, Entity, Index, ManyToOne, Property, Unique, Reference } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { Permission } from '../interface';
@@ -41,16 +41,23 @@ export class PermissionContextEntity extends BaseEntityWithTimestamps {
 	@Property()
 	userDelta: UserDelta;
 
-	@ManyToOne(() => PermissionContextEntity, { nullable: true })
+	@ManyToOne(() => PermissionContextEntity, { wrappedReference: true, fieldName: 'parentContext' })
 	@Index()
-	parentContext: PermissionContextEntity | null;
+	_parentContext: Reference<PermissionContextEntity> | null;
 
 	constructor(props: IPermissionContextProperties) {
 		super();
 		this.contextReference = props.contextReference;
-		this.parentContext = props.parentContext;
+		this._parentContext = props.parentContext ? new Reference(props.parentContext) : null;
 		this.name = props.name ?? null;
 		this.userDelta = props.userDelta ?? new UserDelta([]);
+	}
+
+	get parentContext(): Promise<PermissionContextEntity | null> {
+		if (!this._parentContext || this._parentContext.isInitialized()) {
+			return Promise.resolve(this._parentContext?.getEntity() ?? null);
+		}
+		return this._parentContext.load();
 	}
 
 	private resolveUserDelta(userId: User['id']): {
@@ -62,9 +69,12 @@ export class PermissionContextEntity extends BaseEntityWithTimestamps {
 		return userDelta;
 	}
 
-	public resolvedPermissions(userId: User['id']): Permission[] {
-		const parentPermissions = this.parentContext?.resolvedPermissions(userId) ?? [];
-
+	public async resolvedPermissions(userId: User['id']): Promise<Permission[]> {
+		const parent = await this.parentContext;
+		let parentPermissions: Permission[] = [];
+		if (parent) {
+			parentPermissions = await parent.resolvedPermissions(userId);
+		}
 		const userDelta = this.resolveUserDelta(userId);
 
 		const finalPermissions = parentPermissions
