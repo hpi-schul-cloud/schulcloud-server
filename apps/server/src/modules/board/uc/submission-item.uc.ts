@@ -63,7 +63,7 @@ export class SubmissionItemUc extends BaseUc {
 		await this.checkPermission(userId, submissionContainerElement, Action.read);
 
 		let submissionItems = submissionContainerElement.children.filter(isSubmissionItem);
-		submissionItems = await this.filterByReadPermission(userId, submissionItems);
+		// submissionItems = await this.filterByReadPermission(userId, submissionItems);
 
 		const boardAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainerElement);
 		let users = boardAuthorizable.users.filter((user) => user.userRoleEnum === UserRoleEnum.STUDENT);
