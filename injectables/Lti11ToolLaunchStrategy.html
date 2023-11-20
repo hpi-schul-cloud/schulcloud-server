@@ -326,7 +326,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>buildToolLaunchDataFromConcreteConfig(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, data: <a href="../interfaces/IToolLaunchParams.html" target="_self">IToolLaunchParams</a>)</code>
+                    <code>buildToolLaunchDataFromConcreteConfig(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, data: <a href="../interfaces/ToolLaunchParams.html" target="_self">ToolLaunchParams</a>)</code>
                 </td>
             </tr>
 
@@ -375,7 +375,7 @@
                                         <tr>
                                                 <td>data</td>
                                             <td>
-                                                            <code><a href="../interfaces/IToolLaunchParams.html" target="_self" >IToolLaunchParams</a></code>
+                                                            <code><a href="../interfaces/ToolLaunchParams.html" target="_self" >ToolLaunchParams</a></code>
                                             </td>
 
                                             <td>
@@ -1044,7 +1044,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>buildToolLaunchDataFromTools(data: <a href="../interfaces/IToolLaunchParams.html" target="_self">IToolLaunchParams</a>)</code>
+                    <code>buildToolLaunchDataFromTools(data: <a href="../interfaces/ToolLaunchParams.html" target="_self">ToolLaunchParams</a>)</code>
                 </td>
             </tr>
 
@@ -1081,7 +1081,7 @@
                                         <tr>
                                                 <td>data</td>
                                             <td>
-                                                            <code><a href="../interfaces/IToolLaunchParams.html" target="_self" >IToolLaunchParams</a></code>
+                                                            <code><a href="../interfaces/ToolLaunchParams.html" target="_self" >ToolLaunchParams</a></code>
                                             </td>
 
                                             <td>
@@ -1195,7 +1195,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createLaunchData(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, data: <a href="../interfaces/IToolLaunchParams.html" target="_self">IToolLaunchParams</a>)</code>
+                    <code>createLaunchData(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, data: <a href="../interfaces/ToolLaunchParams.html" target="_self">ToolLaunchParams</a>)</code>
                 </td>
             </tr>
 
@@ -1244,7 +1244,7 @@
                                         <tr>
                                                 <td>data</td>
                                             <td>
-                                                            <code><a href="../interfaces/IToolLaunchParams.html" target="_self" >IToolLaunchParams</a></code>
+                                                            <code><a href="../interfaces/ToolLaunchParams.html" target="_self" >ToolLaunchParams</a></code>
                                             </td>
 
                                             <td>
@@ -1643,7 +1643,7 @@ import {
 } from &#x27;../auto-parameter-strategy&#x27;;
 import { Lti11EncryptionService } from &#x27;../lti11-encryption.service&#x27;;
 import { AbstractLaunchStrategy } from &#x27;./abstract-launch.strategy&#x27;;
-import { IToolLaunchParams } from &#x27;./tool-launch-params.interface&#x27;;
+import { ToolLaunchParams } from &#x27;./tool-launch-params.interface&#x27;;
 
 @Injectable()
 export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
@@ -1662,7 +1662,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public override async buildToolLaunchDataFromConcreteConfig(
 		userId: EntityId,
-		data: IToolLaunchParams
+		data: ToolLaunchParams
 	): Promise&lt;PropertyData[]&gt; {
 		const { config } &#x3D; data.externalTool;
 		const contextId: EntityId &#x3D; data.contextExternalTool.contextRef.id;

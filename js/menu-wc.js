@@ -172,13 +172,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/AccountModule.html" data-type="entity-link" >AccountModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-AccountModule-049555a92e0f0d68239ab81b300eaec7b3b81928c4ced9736e142c16c58eb3ba01fdbb571fe3c9ed944c4700355378af418b69fdb87bdcf6e8f91a3c738d7055"' : 'data-bs-target="#xs-injectables-links-module-AccountModule-049555a92e0f0d68239ab81b300eaec7b3b81928c4ced9736e142c16c58eb3ba01fdbb571fe3c9ed944c4700355378af418b69fdb87bdcf6e8f91a3c738d7055"' }>
+                                        'data-bs-target="#injectables-links-module-AccountModule-ff2771348e6a69dfe22cfded6b239cd7ce0f81d2b0e7f5e38056e622d9806cd582d9234384d1ba080640b5bc85663604d8b0ac8fd3ae260babea39064e5bb881"' : 'data-bs-target="#xs-injectables-links-module-AccountModule-ff2771348e6a69dfe22cfded6b239cd7ce0f81d2b0e7f5e38056e622d9806cd582d9234384d1ba080640b5bc85663604d8b0ac8fd3ae260babea39064e5bb881"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-AccountModule-049555a92e0f0d68239ab81b300eaec7b3b81928c4ced9736e142c16c58eb3ba01fdbb571fe3c9ed944c4700355378af418b69fdb87bdcf6e8f91a3c738d7055"' :
-                                        'id="xs-injectables-links-module-AccountModule-049555a92e0f0d68239ab81b300eaec7b3b81928c4ced9736e142c16c58eb3ba01fdbb571fe3c9ed944c4700355378af418b69fdb87bdcf6e8f91a3c738d7055"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-AccountModule-ff2771348e6a69dfe22cfded6b239cd7ce0f81d2b0e7f5e38056e622d9806cd582d9234384d1ba080640b5bc85663604d8b0ac8fd3ae260babea39064e5bb881"' :
+                                        'id="xs-injectables-links-module-AccountModule-ff2771348e6a69dfe22cfded6b239cd7ce0f81d2b0e7f5e38056e622d9806cd582d9234384d1ba080640b5bc85663604d8b0ac8fd3ae260babea39064e5bb881"' }>
                                         <li class="link">
                                             <a href="injectables/AccountLookupService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AccountLookupService</a>
                                         </li>
@@ -580,13 +580,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/CollaborativeStorageAdapterModule.html" data-type="entity-link" >CollaborativeStorageAdapterModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-CollaborativeStorageAdapterModule-82fec2c90f6758392484457337e917aad05dae3ffc87c235a7b4561319d12b5ea92f3d740f3f97f2095893803bda0a06be8cff0687356d2f3539aaf0566e393e"' : 'data-bs-target="#xs-injectables-links-module-CollaborativeStorageAdapterModule-82fec2c90f6758392484457337e917aad05dae3ffc87c235a7b4561319d12b5ea92f3d740f3f97f2095893803bda0a06be8cff0687356d2f3539aaf0566e393e"' }>
+                                        'data-bs-target="#injectables-links-module-CollaborativeStorageAdapterModule-e9dafec1023e89cfd05a0715d8eafb31bbcb3e248a289a44bfba4ca8df8683afe6532b6f37746aac1613cf9760b96e91a3f4f7723ac4f58ce7b9bf48b645684c"' : 'data-bs-target="#xs-injectables-links-module-CollaborativeStorageAdapterModule-e9dafec1023e89cfd05a0715d8eafb31bbcb3e248a289a44bfba4ca8df8683afe6532b6f37746aac1613cf9760b96e91a3f4f7723ac4f58ce7b9bf48b645684c"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-CollaborativeStorageAdapterModule-82fec2c90f6758392484457337e917aad05dae3ffc87c235a7b4561319d12b5ea92f3d740f3f97f2095893803bda0a06be8cff0687356d2f3539aaf0566e393e"' :
-                                        'id="xs-injectables-links-module-CollaborativeStorageAdapterModule-82fec2c90f6758392484457337e917aad05dae3ffc87c235a7b4561319d12b5ea92f3d740f3f97f2095893803bda0a06be8cff0687356d2f3539aaf0566e393e"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-CollaborativeStorageAdapterModule-e9dafec1023e89cfd05a0715d8eafb31bbcb3e248a289a44bfba4ca8df8683afe6532b6f37746aac1613cf9760b96e91a3f4f7723ac4f58ce7b9bf48b645684c"' :
+                                        'id="xs-injectables-links-module-CollaborativeStorageAdapterModule-e9dafec1023e89cfd05a0715d8eafb31bbcb3e248a289a44bfba4ca8df8683afe6532b6f37746aac1613cf9760b96e91a3f4f7723ac4f58ce7b9bf48b645684c"' }>
                                         <li class="link">
                                             <a href="injectables/CollaborativeStorageAdapter.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CollaborativeStorageAdapter</a>
                                         </li>
@@ -1557,13 +1557,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/LoggerModule.html" data-type="entity-link" >LoggerModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-LoggerModule-02a85fdc48916c51bdff81ac7f5c5efef55a1429f0ce8f693ba113db8d49d5e66b835b5870c786cc12c60c05316fed40514fd161667676d18f332c46138d6782"' : 'data-bs-target="#xs-injectables-links-module-LoggerModule-02a85fdc48916c51bdff81ac7f5c5efef55a1429f0ce8f693ba113db8d49d5e66b835b5870c786cc12c60c05316fed40514fd161667676d18f332c46138d6782"' }>
+                                        'data-bs-target="#injectables-links-module-LoggerModule-4fff43d544c598e21bdf167cb3c5fda2aa0edf90aa62009cd91f814a09b8e197b94062fb3b4abe49e67085f743dc18787e464ce3dcf669e7f9c7c62f8ba31548"' : 'data-bs-target="#xs-injectables-links-module-LoggerModule-4fff43d544c598e21bdf167cb3c5fda2aa0edf90aa62009cd91f814a09b8e197b94062fb3b4abe49e67085f743dc18787e464ce3dcf669e7f9c7c62f8ba31548"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-LoggerModule-02a85fdc48916c51bdff81ac7f5c5efef55a1429f0ce8f693ba113db8d49d5e66b835b5870c786cc12c60c05316fed40514fd161667676d18f332c46138d6782"' :
-                                        'id="xs-injectables-links-module-LoggerModule-02a85fdc48916c51bdff81ac7f5c5efef55a1429f0ce8f693ba113db8d49d5e66b835b5870c786cc12c60c05316fed40514fd161667676d18f332c46138d6782"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-LoggerModule-4fff43d544c598e21bdf167cb3c5fda2aa0edf90aa62009cd91f814a09b8e197b94062fb3b4abe49e67085f743dc18787e464ce3dcf669e7f9c7c62f8ba31548"' :
+                                        'id="xs-injectables-links-module-LoggerModule-4fff43d544c598e21bdf167cb3c5fda2aa0edf90aa62009cd91f814a09b8e197b94062fb3b4abe49e67085f743dc18787e464ce3dcf669e7f9c7c62f8ba31548"' }>
                                         <li class="link">
                                             <a href="injectables/ErrorLogger.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ErrorLogger</a>
                                         </li>
@@ -5665,6 +5665,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/AcceptLoginRequestBody.html" data-type="entity-link" >AcceptLoginRequestBody</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/AccountConfig.html" data-type="entity-link" >AccountConfig</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/AccountParams.html" data-type="entity-link" >AccountParams</a>
                             </li>
                             <li class="link">
@@ -5749,10 +5752,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/BoardNodeProps.html" data-type="entity-link" >BoardNodeProps</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/CalendarEvent.html" data-type="entity-link" >CalendarEvent</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/CardNodeProps.html" data-type="entity-link" >CardNodeProps</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/CardProps.html" data-type="entity-link" >CardProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ClassEntityProps.html" data-type="entity-link" >ClassEntityProps</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/ClassProps.html" data-type="entity-link" >ClassProps</a>
@@ -5764,6 +5773,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/ClassSourceOptionsProps.html" data-type="entity-link" >ClassSourceOptionsProps</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/CleanOptions.html" data-type="entity-link" >CleanOptions</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CollaborativeStorageStrategy.html" data-type="entity-link" >CollaborativeStorageStrategy</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CollectionFilePath.html" data-type="entity-link" >CollectionFilePath</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/ColumnBoardNodeProps.html" data-type="entity-link" >ColumnBoardNodeProps</a>
                             </li>
                             <li class="link">
@@ -5773,10 +5791,61 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/ColumnProps.html" data-type="entity-link" >ColumnProps</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/CommonCartridgeConfig.html" data-type="entity-link" >CommonCartridgeConfig</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CommonCartridgeElement.html" data-type="entity-link" >CommonCartridgeElement</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CommonCartridgeFile.html" data-type="entity-link" >CommonCartridgeFile</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ComponentEtherpadProperties.html" data-type="entity-link" >ComponentEtherpadProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ComponentGeogebraProperties.html" data-type="entity-link" >ComponentGeogebraProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ComponentInternalProperties.html" data-type="entity-link" >ComponentInternalProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ComponentLernstoreProperties.html" data-type="entity-link" >ComponentLernstoreProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ComponentNexboardProperties.html" data-type="entity-link" >ComponentNexboardProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ComponentTextProperties.html" data-type="entity-link" >ComponentTextProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ContextExternalToolProperties.html" data-type="entity-link" >ContextExternalToolProperties</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/ContextExternalToolProps.html" data-type="entity-link" >ContextExternalToolProps</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/CopyFileDO.html" data-type="entity-link" >CopyFileDO</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CopyFileDomainObjectProps.html" data-type="entity-link" >CopyFileDomainObjectProps</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/CopyFiles.html" data-type="entity-link" >CopyFiles</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CopyFilesOfParentParams.html" data-type="entity-link" >CopyFilesOfParentParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CopyFilesRequestInfo.html" data-type="entity-link" >CopyFilesRequestInfo</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CoreModuleConfig.html" data-type="entity-link" >CoreModuleConfig</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CourseGroupProperties.html" data-type="entity-link" >CourseGroupProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CourseProperties.html" data-type="entity-link" >CourseProperties</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/CreateJwtParams.html" data-type="entity-link" >CreateJwtParams</a>
@@ -5785,10 +5854,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/CreateJwtPayload.html" data-type="entity-link" >CreateJwtPayload</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/CreateNews.html" data-type="entity-link" >CreateNews</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/CustomLtiProperty.html" data-type="entity-link" >CustomLtiProperty</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/DashboardGridElementModelProperties.html" data-type="entity-link" >DashboardGridElementModelProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/DashboardModelProperties.html" data-type="entity-link" >DashboardModelProperties</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/DeletionClientConfig.html" data-type="entity-link" >DeletionClientConfig</a>
@@ -5830,6 +5905,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/DeletionTargetRef.html" data-type="entity-link" >DeletionTargetRef</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/EncryptionService.html" data-type="entity-link" >EncryptionService</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/EntityWithSchool.html" data-type="entity-link" >EntityWithSchool</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ErrorType.html" data-type="entity-link" >ErrorType</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/ExternalSourceEntityProps.html" data-type="entity-link" >ExternalSourceEntityProps</a>
                             </li>
                             <li class="link">
@@ -5842,6 +5926,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/ExternalToolProps.html" data-type="entity-link" >ExternalToolProps</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/ExternalToolPseudonymEntityProps.html" data-type="entity-link" >ExternalToolPseudonymEntityProps</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/ExternalToolSearchQuery.html" data-type="entity-link" >ExternalToolSearchQuery</a>
                             </li>
                             <li class="link">
@@ -5851,7 +5938,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/FeathersService.html" data-type="entity-link" >FeathersService</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/FederalStateProperties.html" data-type="entity-link" >FederalStateProperties</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/File.html" data-type="entity-link" >File</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/FileDO.html" data-type="entity-link" >FileDO</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/FileDomainObjectProps.html" data-type="entity-link" >FileDomainObjectProps</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/FileElementNodeProps.html" data-type="entity-link" >FileElementNodeProps</a>
@@ -5866,7 +5962,25 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/FilePermissionEntityProps.html" data-type="entity-link" >FilePermissionEntityProps</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/FileRecordParams.html" data-type="entity-link" >FileRecordParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/FileRecordProperties.html" data-type="entity-link" >FileRecordProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/FileRecordSecurityCheckProperties.html" data-type="entity-link" >FileRecordSecurityCheckProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/FileRequestInfo.html" data-type="entity-link" >FileRequestInfo</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/FileSecurityCheckEntityProps.html" data-type="entity-link" >FileSecurityCheckEntityProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/FilesStorageClientConfig.html" data-type="entity-link" >FilesStorageClientConfig</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/FileStorageConfig.html" data-type="entity-link" >FileStorageConfig</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/GetFile.html" data-type="entity-link" >GetFile</a>
@@ -5923,40 +6037,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/H5PContentParentParams.html" data-type="entity-link" >H5PContentParentParams</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/H5PContentProperties.html" data-type="entity-link" >H5PContentProperties</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/H5PContentResponse.html" data-type="entity-link" >H5PContentResponse</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/HtmlMailContent.html" data-type="entity-link" >HtmlMailContent</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/IAccountConfig.html" data-type="entity-link" >IAccountConfig</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/IBbbSettings.html" data-type="entity-link" >IBbbSettings</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ICalendarEvent.html" data-type="entity-link" >ICalendarEvent</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IClassEntityProps.html" data-type="entity-link" >IClassEntityProps</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ICleanOptions.html" data-type="entity-link" >ICleanOptions</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ICollaborativeStorageStrategy.html" data-type="entity-link" >ICollaborativeStorageStrategy</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ICollectionFilePath.html" data-type="entity-link" >ICollectionFilePath</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ICommonCartridgeConfig.html" data-type="entity-link" >ICommonCartridgeConfig</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ICommonCartridgeElement.html" data-type="entity-link" >ICommonCartridgeElement</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ICommonCartridgeFile.html" data-type="entity-link" >ICommonCartridgeFile</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/ICommonCartridgeFileBuilder.html" data-type="entity-link" >ICommonCartridgeFileBuilder</a>
@@ -5965,70 +6055,19 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/ICommonCartridgeOrganizationBuilder.html" data-type="entity-link" >ICommonCartridgeOrganizationBuilder</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/IComponentEtherpadProperties.html" data-type="entity-link" >IComponentEtherpadProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IComponentGeogebraProperties.html" data-type="entity-link" >IComponentGeogebraProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IComponentInternalProperties.html" data-type="entity-link" >IComponentInternalProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IComponentLernstoreProperties.html" data-type="entity-link" >IComponentLernstoreProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IComponentNexboardProperties.html" data-type="entity-link" >IComponentNexboardProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IComponentTextProperties.html" data-type="entity-link" >IComponentTextProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IContextExternalToolProperties.html" data-type="entity-link" >IContextExternalToolProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ICopyFileDO.html" data-type="entity-link" >ICopyFileDO</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ICopyFileDomainObjectProps.html" data-type="entity-link" >ICopyFileDomainObjectProps</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ICopyFilesOfParentParams.html" data-type="entity-link" >ICopyFilesOfParentParams</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ICopyFilesRequestInfo.html" data-type="entity-link" >ICopyFilesRequestInfo</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ICoreModuleConfig.html" data-type="entity-link" >ICoreModuleConfig</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ICourseGroupProperties.html" data-type="entity-link" >ICourseGroupProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ICourseProperties.html" data-type="entity-link" >ICourseProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ICreateNews.html" data-type="entity-link" >ICreateNews</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/ICurrentUser.html" data-type="entity-link" >ICurrentUser</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IDashboardModelProperties.html" data-type="entity-link" >IDashboardModelProperties</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/IDashboardRepo.html" data-type="entity-link" >IDashboardRepo</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/IdentityManagementConfig.html" data-type="entity-link" >IdentityManagementConfig</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/IdToken.html" data-type="entity-link" >IdToken</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/IEncryptionService.html" data-type="entity-link" >IEncryptionService</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/IEntity.html" data-type="entity-link" >IEntity</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IEntityWithSchool.html" data-type="entity-link" >IEntityWithSchool</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/IEntityWithTimestamps.html" data-type="entity-link" >IEntityWithTimestamps</a>
@@ -6037,64 +6076,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/IError.html" data-type="entity-link" >IError</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/IErrorType.html" data-type="entity-link" >IErrorType</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IExternalToolPseudonymEntityProps.html" data-type="entity-link" >IExternalToolPseudonymEntityProps</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IFederalStateProperties.html" data-type="entity-link" >IFederalStateProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IFileDO.html" data-type="entity-link" >IFileDO</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IFileDomainObjectProps.html" data-type="entity-link" >IFileDomainObjectProps</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IFileRecordParams.html" data-type="entity-link" >IFileRecordParams</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IFileRecordProperties.html" data-type="entity-link" >IFileRecordProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IFileRecordSecurityCheckProperties.html" data-type="entity-link" >IFileRecordSecurityCheckProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IFileRequestInfo.html" data-type="entity-link" >IFileRequestInfo</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IFilesStorageClientConfig.html" data-type="entity-link" >IFilesStorageClientConfig</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IFileStorageConfig.html" data-type="entity-link" >IFileStorageConfig</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/IFindOptions.html" data-type="entity-link" >IFindOptions</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/IGridElement.html" data-type="entity-link" >IGridElement</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/IH5PContentProperties.html" data-type="entity-link" >IH5PContentProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IIdentityManagementConfig.html" data-type="entity-link" >IIdentityManagementConfig</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IImportUserProperties.html" data-type="entity-link" >IImportUserProperties</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/IImportUserScope.html" data-type="entity-link" >IImportUserScope</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IInterceptorConfig.html" data-type="entity-link" >IInterceptorConfig</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IJsonAccount.html" data-type="entity-link" >IJsonAccount</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IJsonUser.html" data-type="entity-link" >IJsonUser</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/IKeycloakConfigurationInputFiles.html" data-type="entity-link" >IKeycloakConfigurationInputFiles</a>
@@ -6103,37 +6091,10 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/IKeycloakSettings.html" data-type="entity-link" >IKeycloakSettings</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/ILearnroom.html" data-type="entity-link" >ILearnroom</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ILearnroomElement.html" data-type="entity-link" >ILearnroomElement</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/ILegacyLogger.html" data-type="entity-link" class="deprecated-name">ILegacyLogger</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/ILessonParent.html" data-type="entity-link" >ILessonParent</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ILessonProperties.html" data-type="entity-link" >ILessonProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ILoggerConfig.html" data-type="entity-link" >ILoggerConfig</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IMailConfig.html" data-type="entity-link" >IMailConfig</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IMaterialProperties.html" data-type="entity-link" >IMaterialProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IMigrationOptions.html" data-type="entity-link" >IMigrationOptions</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/INameMatch.html" data-type="entity-link" >INameMatch</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/INewsProperties.html" data-type="entity-link" >INewsProperties</a>
+                                <a href="interfaces/ImportUserProperties.html" data-type="entity-link" >ImportUserProperties</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/INewsScope.html" data-type="entity-link" >INewsScope</a>
@@ -6142,106 +6103,43 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/InlineAttachment.html" data-type="entity-link" >InlineAttachment</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/InterceptorConfig.html" data-type="entity-link" >InterceptorConfig</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/IntrospectResponse.html" data-type="entity-link" >IntrospectResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IPagination.html" data-type="entity-link" >IPagination</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IParentInfo.html" data-type="entity-link" >IParentInfo</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IRelatedResourceProperties.html" data-type="entity-link" >IRelatedResourceProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IRepoLoader.html" data-type="entity-link" >IRepoLoader</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IRetryOptions.html" data-type="entity-link" >IRetryOptions</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IRoleProperties.html" data-type="entity-link" >IRoleProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ISchoolExternalToolProperties.html" data-type="entity-link" >ISchoolExternalToolProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ISchoolProperties.html" data-type="entity-link" >ISchoolProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ISchoolYearProperties.html" data-type="entity-link" >ISchoolYearProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IScopeInfo.html" data-type="entity-link" >IScopeInfo</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IServerConfig.html" data-type="entity-link" >IServerConfig</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IShareTokenProperties.html" data-type="entity-link" >IShareTokenProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IStorageProviderProperties.html" data-type="entity-link" >IStorageProviderProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ISubmissionProperties.html" data-type="entity-link" >ISubmissionProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ISystemProperties.html" data-type="entity-link" >ISystemProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ITargetGroupProperties.html" data-type="entity-link" >ITargetGroupProperties</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/ITask.html" data-type="entity-link" >ITask</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/ITaskCreate.html" data-type="entity-link" >ITaskCreate</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ITaskParent.html" data-type="entity-link" >ITaskParent</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ITaskProperties.html" data-type="entity-link" >ITaskProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ITaskStatus.html" data-type="entity-link" >ITaskStatus</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ITaskUpdate.html" data-type="entity-link" >ITaskUpdate</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ITeamProperties.html" data-type="entity-link" >ITeamProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ITeamUserProperties.html" data-type="entity-link" >ITeamUserProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ITemporaryFileProperties.html" data-type="entity-link" >ITemporaryFileProperties</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/IToolFeatures.html" data-type="entity-link" >IToolFeatures</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/IToolLaunchParams.html" data-type="entity-link" >IToolLaunchParams</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IToolLaunchStrategy.html" data-type="entity-link" >IToolLaunchStrategy</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IUserConfig.html" data-type="entity-link" >IUserConfig</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IUserProperties.html" data-type="entity-link" >IUserProperties</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/IVideoConferenceSettings.html" data-type="entity-link" >IVideoConferenceSettings</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/JsonAccount.html" data-type="entity-link" >JsonAccount</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/JsonUser.html" data-type="entity-link" >JsonUser</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/JwtConstants.html" data-type="entity-link" >JwtConstants</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/JwtPayload.html" data-type="entity-link" >JwtPayload</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/Learnroom.html" data-type="entity-link" >Learnroom</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/LearnroomElement.html" data-type="entity-link" >LearnroomElement</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/LessonParent.html" data-type="entity-link" >LessonParent</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/LessonProperties.html" data-type="entity-link" >LessonProperties</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/LinkElementNodeProps.html" data-type="entity-link" >LinkElementNodeProps</a>
@@ -6256,10 +6154,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/Loggable.html" data-type="entity-link" >Loggable</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/LoggerConfig.html" data-type="entity-link" >LoggerConfig</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/Mail.html" data-type="entity-link" >Mail</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/MailAttachment.html" data-type="entity-link" >MailAttachment</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/MailConfig.html" data-type="entity-link" >MailConfig</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/MailContent.html" data-type="entity-link" >MailContent</a>
@@ -6271,7 +6175,19 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/MailServiceOptions.html" data-type="entity-link" >MailServiceOptions</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/MaterialProperties.html" data-type="entity-link" >MaterialProperties</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/Meta.html" data-type="entity-link" >Meta</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/MigrationOptions.html" data-type="entity-link" >MigrationOptions</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/NameMatch.html" data-type="entity-link" >NameMatch</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/NewsProperties.html" data-type="entity-link" >NewsProperties</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/NewsTargetFilter.html" data-type="entity-link" >NewsTargetFilter</a>
@@ -6293,6 +6209,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/Options.html" data-type="entity-link" >Options</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/Pagination.html" data-type="entity-link" >Pagination</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ParentInfo.html" data-type="entity-link" >ParentInfo</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/PlainTextMailContent.html" data-type="entity-link" >PlainTextMailContent</a>
@@ -6355,6 +6277,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/RejectRequestBody.html" data-type="entity-link" >RejectRequestBody</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/RelatedResourceProperties.html" data-type="entity-link" >RelatedResourceProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/RepoLoader.html" data-type="entity-link" >RepoLoader</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/RetryOptions.html" data-type="entity-link" >RetryOptions</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/RichTextElementNodeProps.html" data-type="entity-link" >RichTextElementNodeProps</a>
                             </li>
                             <li class="link">
@@ -6371,6 +6302,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/RocketChatUserProps.html" data-type="entity-link" >RocketChatUserProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/RoleProperties.html" data-type="entity-link" >RoleProperties</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/RpcMessage.html" data-type="entity-link" >RpcMessage</a>
@@ -6424,13 +6358,34 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/ScanResult.html" data-type="entity-link" >ScanResult</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/SchoolExternalToolProperties.html" data-type="entity-link" >SchoolExternalToolProperties</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/SchoolExternalToolProps.html" data-type="entity-link" >SchoolExternalToolProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SchoolProperties.html" data-type="entity-link" >SchoolProperties</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/SchoolSpecificFileCopyService.html" data-type="entity-link" >SchoolSpecificFileCopyService</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/SchoolYearProperties.html" data-type="entity-link" >SchoolYearProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ScopeInfo.html" data-type="entity-link" >ScopeInfo</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ServerConfig.html" data-type="entity-link" >ServerConfig</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/ShareTokenInfoDto.html" data-type="entity-link" >ShareTokenInfoDto</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ShareTokenProperties.html" data-type="entity-link" >ShareTokenProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/StorageProviderProperties.html" data-type="entity-link" >StorageProviderProperties</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/SubmissionContainerElementProps.html" data-type="entity-link" >SubmissionContainerElementProps</a>
@@ -6445,7 +6400,46 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/SubmissionItemProps.html" data-type="entity-link" >SubmissionItemProps</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/SubmissionProperties.html" data-type="entity-link" >SubmissionProperties</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/SuccessfulRes.html" data-type="entity-link" >SuccessfulRes</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SystemProperties.html" data-type="entity-link" >SystemProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/TargetGroupProperties.html" data-type="entity-link" >TargetGroupProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/TaskCreate.html" data-type="entity-link" >TaskCreate</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/TaskParent.html" data-type="entity-link" >TaskParent</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/TaskProperties.html" data-type="entity-link" >TaskProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/TaskStatus.html" data-type="entity-link" >TaskStatus</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/TaskUpdate.html" data-type="entity-link" >TaskUpdate</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/TeamProperties.html" data-type="entity-link" >TeamProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/TeamUserProperties.html" data-type="entity-link" >TeamUserProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/TemporaryFileProperties.html" data-type="entity-link" >TemporaryFileProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ToolLaunchParams.html" data-type="entity-link" >ToolLaunchParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ToolLaunchStrategy.html" data-type="entity-link" >ToolLaunchStrategy</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/ToolVersion.html" data-type="entity-link" >ToolVersion</a>
@@ -6461,6 +6455,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/UserBoardRoles.html" data-type="entity-link" >UserBoardRoles</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/UserConfig.html" data-type="entity-link" >UserConfig</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/UserData.html" data-type="entity-link" >UserData</a>
@@ -6479,6 +6476,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/UserParams.html" data-type="entity-link" >UserParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/UserProperties.html" data-type="entity-link" >UserProperties</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/VideoConferenceOptions.html" data-type="entity-link" >VideoConferenceOptions</a>

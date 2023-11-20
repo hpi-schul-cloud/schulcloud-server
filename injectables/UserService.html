@@ -154,7 +154,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, userDORepo: <a href="../injectables/UserDORepo.html" target="_self">UserDORepo</a>, configService: <a href="../classes/User.html" target="_self">ConfigService&lt;IUserConfig | &gt;</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>)</code>
+<code>constructor(userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, userDORepo: <a href="../injectables/UserDORepo.html" target="_self">UserDORepo</a>, configService: <a href="../classes/User.html" target="_self">ConfigService&lt;UserConfig | &gt;</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -204,7 +204,7 @@
                                                         <td>configService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../classes/User.html" target="_self" >ConfigService&lt;IUserConfig | &gt;</a></code>
+                                                                        <code><a href="../classes/User.html" target="_self" >ConfigService&lt;UserConfig | &gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1197,6 +1197,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountService } from &#x27;@modules/account&#x27;;
 import { AccountDto } from &#x27;@modules/account/services/dto&#x27;;
 // invalid import
+import { OauthCurrentUser } from &#x27;@modules/authentication/interface&#x27;;
 import { CurrentUserMapper } from &#x27;@modules/authentication/mapper&#x27;;
 import { RoleDto } from &#x27;@modules/role/service/dto/role.dto&#x27;;
 import { RoleService } from &#x27;@modules/role/service/role.service&#x27;;
@@ -1206,8 +1207,7 @@ import { EntityId, IFindOptions, LanguageType, User } from &#x27;@shared/domain&
 import { Page, RoleReference, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { UserRepo } from &#x27;@shared/repo&#x27;;
 import { UserDORepo } from &#x27;@shared/repo/user/user-do.repo&#x27;;
-import { OauthCurrentUser } from &#x27;@modules/authentication/interface&#x27;;
-import { IUserConfig } from &#x27;../interfaces&#x27;;
+import { UserConfig } from &#x27;../interfaces&#x27;;
 import { UserMapper } from &#x27;../mapper/user.mapper&#x27;;
 import { UserDto } from &#x27;../uc/dto/user.dto&#x27;;
 import { UserQuery } from &#x27;./user-query.type&#x27;;
@@ -1217,7 +1217,7 @@ export class UserService {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly userDORepo: UserDORepo,
-		private readonly configService: ConfigService&lt;IUserConfig, true&gt;,
+		private readonly configService: ConfigService&lt;UserConfig, true&gt;,
 		private readonly roleService: RoleService,
 		private readonly accountService: AccountService
 	) {}

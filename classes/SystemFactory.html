@@ -1360,14 +1360,14 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ISystemProperties, LdapConfig, OauthConfig, OidcConfig, SystemEntity } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LdapConfig, OauthConfig, OidcConfig, SystemEntity, SystemProperties } from &#x27;@shared/domain&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 
-export class SystemFactory extends BaseFactory&lt;SystemEntity, ISystemProperties&gt; {
+export class SystemFactory extends BaseFactory&lt;SystemEntity, SystemProperties&gt; {
 	withOauthConfig(): this {
-		const params: DeepPartial&lt;ISystemProperties&gt; &#x3D; {
+		const params: DeepPartial&lt;SystemProperties&gt; &#x3D; {
 			oauthConfig: new OauthConfig({
 				clientId: &#x27;12345&#x27;,
 				clientSecret: &#x27;mocksecret&#x27;,
@@ -1388,7 +1388,7 @@ export class SystemFactory extends BaseFactory&lt;SystemEntity, ISystemPropertie
 	}
 
 	withLdapConfig(otherParams?: DeepPartial&lt;LdapConfig&gt;): this {
-		const params: DeepPartial&lt;ISystemProperties&gt; &#x3D; {
+		const params: DeepPartial&lt;SystemProperties&gt; &#x3D; {
 			ldapConfig: new LdapConfig({
 				url: &#x27;ldaps:mock.de:389&#x27;,
 				active: true,

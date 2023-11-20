@@ -420,7 +420,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>configure(options: <a href="../interfaces/IRetryOptions.html" target="_self">IRetryOptions</a>)</code>
+                    <code>configure(options: <a href="../interfaces/RetryOptions.html" target="_self">RetryOptions</a>)</code>
                 </td>
             </tr>
 
@@ -460,7 +460,7 @@
                                         <tr>
                                                 <td>options</td>
                                             <td>
-                                                            <code><a href="../interfaces/IRetryOptions.html" target="_self" >IRetryOptions</a></code>
+                                                            <code><a href="../interfaces/RetryOptions.html" target="_self" >RetryOptions</a></code>
                                             </td>
 
                                             <td>
@@ -768,7 +768,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>seed(options: <a href="../interfaces/IRetryOptions.html" target="_self">IRetryOptions</a>)</code>
+                    <code>seed(options: <a href="../interfaces/RetryOptions.html" target="_self">RetryOptions</a>)</code>
                 </td>
             </tr>
 
@@ -808,7 +808,7 @@
                                         <tr>
                                                 <td>options</td>
                                             <td>
-                                                            <code><a href="../interfaces/IRetryOptions.html" target="_self" >IRetryOptions</a></code>
+                                                            <code><a href="../interfaces/RetryOptions.html" target="_self" >RetryOptions</a></code>
                                             </td>
 
                                             <td>
@@ -848,18 +848,18 @@ import { KeycloakConfigurationUc } from &#x27;../uc/keycloak-configuration.uc&#x
 
 const defaultError &#x3D; new Error(&#x27;IDM is not reachable or authentication failed.&#x27;);
 
-interface IRetryOptions {
+interface RetryOptions {
 	retryCount?: number;
 	retryDelay?: number;
 }
 
-interface IMigrationOptions {
+interface MigrationOptions {
 	skip?: number;
 	query?: string;
 	verbose?: boolean;
 }
 
-interface ICleanOptions {
+interface CleanOptions {
 	pageSize?: number;
 }
 @Console({ command: &#x27;idm&#x27;, description: &#x27;Prefixes all Identity Management (IDM) related console commands.&#x27; })
@@ -917,7 +917,7 @@ export class KeycloakConsole {
 			},
 		],
 	})
-	async clean(options: IRetryOptions &amp; ICleanOptions): Promise&lt;void&gt; {
+	async clean(options: RetryOptions &amp; CleanOptions): Promise&lt;void&gt; {
 		await this.repeatCommand(
 			&#x27;clean&#x27;,
 			async () &#x3D;&gt; {
@@ -939,7 +939,7 @@ export class KeycloakConsole {
 		description: &#x27;Add all seed users to the IDM.&#x27;,
 		options: KeycloakConsole.retryFlags,
 	})
-	async seed(options: IRetryOptions): Promise&lt;void&gt; {
+	async seed(options: RetryOptions): Promise&lt;void&gt; {
 		await this.repeatCommand(
 			&#x27;seed&#x27;,
 			async () &#x3D;&gt; {
@@ -961,7 +961,7 @@ export class KeycloakConsole {
 		description: &#x27;Configures Keycloak identity providers.&#x27;,
 		options: [...KeycloakConsole.retryFlags],
 	})
-	async configure(options: IRetryOptions): Promise&lt;void&gt; {
+	async configure(options: RetryOptions): Promise&lt;void&gt; {
 		await this.repeatCommand(
 			&#x27;configure&#x27;,
 			async () &#x3D;&gt; {
@@ -996,7 +996,7 @@ export class KeycloakConsole {
 			},
 		],
 	})
-	async migrate(options: IRetryOptions &amp; IMigrationOptions): Promise&lt;void&gt; {
+	async migrate(options: RetryOptions &amp; MigrationOptions): Promise&lt;void&gt; {
 		await this.repeatCommand(
 			&#x27;migrate&#x27;,
 			async () &#x3D;&gt; {

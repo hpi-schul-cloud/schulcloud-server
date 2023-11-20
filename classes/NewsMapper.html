@@ -187,7 +187,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/ICreateNews.html" target="_self" >ICreateNews</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/CreateNews.html" target="_self" >CreateNews</a></code>
 
                         </div>
                             <div class="io-description">
@@ -483,7 +483,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { News, ICreateNews, INewsScope, IUpdateNews, NewsTargetModel } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CreateNews, INewsScope, IUpdateNews, News, NewsTargetModel } from &#x27;@shared/domain&#x27;;
 import { LogMessageData } from &#x27;@src/core/logger&#x27;;
 import { CreateNewsParams, FilterNewsParams, NewsResponse, UpdateNewsParams } from &#x27;../controller/dto&#x27;;
 import { SchoolInfoMapper } from &#x27;./school-info.mapper&#x27;;
@@ -534,7 +534,7 @@ export class NewsMapper {
 		return dto;
 	}
 
-	static mapCreateNewsToDomain(params: CreateNewsParams): ICreateNews {
+	static mapCreateNewsToDomain(params: CreateNewsParams): CreateNews {
 		const dto &#x3D; {
 			title: params.title,
 			content: params.content,

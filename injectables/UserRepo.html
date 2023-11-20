@@ -491,7 +491,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findWithoutImportUser(school: <a href="../classes/SchoolEntity.html" target="_self">SchoolEntity</a>, filters?: <a href="../interfaces/INameMatch.html" target="_self">INameMatch</a>, options?: <a href="../classes/User.html" target="_self">IFindOptions&lt;User&gt;</a>)</code>
+                    <code>findWithoutImportUser(school: <a href="../classes/SchoolEntity.html" target="_self">SchoolEntity</a>, filters?: <a href="../interfaces/NameMatch.html" target="_self">NameMatch</a>, options?: <a href="../classes/User.html" target="_self">IFindOptions&lt;User&gt;</a>)</code>
                 </td>
             </tr>
 
@@ -536,7 +536,7 @@
                                         <tr>
                                                 <td>filters</td>
                                             <td>
-                                                            <code><a href="../interfaces/INameMatch.html" target="_self" >INameMatch</a></code>
+                                                            <code><a href="../interfaces/NameMatch.html" target="_self" >NameMatch</a></code>
                                             </td>
 
                                             <td>
@@ -1012,7 +1012,7 @@ import {
 	EntityId,
 	IFindOptions,
 	ImportUser,
-	INameMatch,
+	NameMatch,
 	Role,
 	SchoolEntity,
 	SortOrder,
@@ -1052,7 +1052,7 @@ export class UserRepo extends BaseRepo&lt;User&gt; {
 	 */
 	async findWithoutImportUser(
 		school: SchoolEntity,
-		filters?: INameMatch,
+		filters?: NameMatch,
 		options?: IFindOptions&lt;User&gt;
 	): Promise&lt;Counted&lt;User[]&gt;&gt; {
 		const { _id: schoolId } &#x3D; school;

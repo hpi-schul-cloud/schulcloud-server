@@ -834,7 +834,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAllUnmatchedUsers(currentUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, query: <a href="../interfaces/INameMatch.html" target="_self">INameMatch</a>, options?: <a href="../classes/User.html" target="_self">IFindOptions&lt;User&gt;</a>)</code>
+                    <code>findAllUnmatchedUsers(currentUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, query: <a href="../interfaces/NameMatch.html" target="_self">NameMatch</a>, options?: <a href="../classes/User.html" target="_self">IFindOptions&lt;User&gt;</a>)</code>
                 </td>
             </tr>
 
@@ -884,7 +884,7 @@ The current user must have permission to read schools users and view importusers
                                         <tr>
                                                 <td>query</td>
                                             <td>
-                                                            <code><a href="../interfaces/INameMatch.html" target="_self" >INameMatch</a></code>
+                                                            <code><a href="../interfaces/NameMatch.html" target="_self" >NameMatch</a></code>
                                             </td>
 
                                             <td>
@@ -1631,6 +1631,10 @@ The current user must have permission to read schools users and view importusers
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
+import { AccountService } from &#x27;@modules/account/services/account.service&#x27;;
+import { AccountDto } from &#x27;@modules/account/services/dto/account.dto&#x27;;
+import { AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { UserAlreadyAssignedToImportUserError } from &#x27;@shared/common&#x27;;
 import {
@@ -1640,10 +1644,10 @@ import {
 	IFindOptions,
 	IImportUserScope,
 	ImportUser,
-	INameMatch,
 	LegacySchoolDo,
 	MatchCreator,
 	MatchCreatorScope,
+	NameMatch,
 	Permission,
 	SchoolFeatures,
 	SystemEntity,
@@ -1651,10 +1655,6 @@ import {
 } from &#x27;@shared/domain&#x27;;
 import { ImportUserRepo, SystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { AccountService } from &#x27;@modules/account/services/account.service&#x27;;
-import { AccountDto } from &#x27;@modules/account/services/dto/account.dto&#x27;;
-import { AuthorizationService } from &#x27;@modules/authorization&#x27;;
-import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
 import { AccountSaveDto } from &#x27;../../account/services/dto&#x27;;
 import {
 	MigrationMayBeCompleted,
@@ -1796,7 +1796,7 @@ export class UserImportUc {
 	 */
 	async findAllUnmatchedUsers(
 		currentUserId: EntityId,
-		query: INameMatch,
+		query: NameMatch,
 		options?: IFindOptions&lt;User&gt;
 	): Promise&lt;Counted&lt;User[]&gt;&gt; {
 		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);

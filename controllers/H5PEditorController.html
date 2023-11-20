@@ -1441,7 +1441,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
+import { Authenticate } from &#x27;@modules/authentication/decorator/auth.decorator&#x27;;
+import {
 	BadRequestException,
 	Body,
 	Controller,
@@ -1461,13 +1463,10 @@
 import { FileFieldsInterceptor } from &#x27;@nestjs/platform-express&#x27;;
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
-import { ICurrentUser, CurrentUser } from &#x27;@modules/authentication&#x27;;
 import { Request, Response } from &#x27;express&#x27;;
-import { Authenticate } from &#x27;@modules/authentication/decorator/auth.decorator&#x27;;
 
 import { H5PEditorUc } from &#x27;../uc/h5p.uc&#x27;;
 
-import { AjaxPostBodyParamsTransformPipe } from &#x27;./dto/ajax/post.body.params.transform-pipe&#x27;;
 import {
 	AjaxGetQueryParams,
 	AjaxPostBodyParams,
@@ -1480,6 +1479,7 @@ import {
 	PostH5PContentCreateParams,
 	SaveH5PEditorParams,
 } from &#x27;./dto&#x27;;
+import { AjaxPostBodyParamsTransformPipe } from &#x27;./dto/ajax/post.body.params.transform-pipe&#x27;;
 import { H5PEditorModelContentResponse, H5PEditorModelResponse, H5PSaveResponse } from &#x27;./dto/h5p-editor.response&#x27;;
 
 @ApiTags(&#x27;h5p-editor&#x27;)

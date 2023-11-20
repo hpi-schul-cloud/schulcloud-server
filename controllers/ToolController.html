@@ -856,7 +856,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, Res } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, Res } from &#x27;@nestjs/common&#x27;;
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
@@ -872,7 +873,6 @@ import { ValidationError } from &#x27;@shared/common&#x27;;
 import { PaginationParams } from &#x27;@shared/controller&#x27;;
 import { IFindOptions, Page } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
 import { Response } from &#x27;express&#x27;;
 import { ExternalToolSearchQuery } from &#x27;../../common/interface&#x27;;
 import { ExternalTool, ExternalToolMetadata } from &#x27;../domain&#x27;;

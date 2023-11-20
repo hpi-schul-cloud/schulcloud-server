@@ -269,7 +269,7 @@ import { SchoolEntity } from &#x27;@shared/domain/entity/school.entity&#x27;;
 import { CustomParameterEntryEntity } from &#x27;../../common/entity&#x27;;
 import { ExternalToolEntity } from &#x27;../../external-tool/entity&#x27;;
 
-export interface ISchoolExternalToolProperties {
+export interface SchoolExternalToolProperties {
 	tool: ExternalToolEntity;
 	school: SchoolEntity;
 	schoolParameters?: CustomParameterEntryEntity[];
@@ -290,7 +290,7 @@ export class SchoolExternalToolEntity extends BaseEntityWithTimestamps {
 	@Property()
 	toolVersion: number;
 
-	constructor(props: ISchoolExternalToolProperties) {
+	constructor(props: SchoolExternalToolProperties) {
 		super();
 		this.tool &#x3D; props.tool;
 		this.school &#x3D; props.school;

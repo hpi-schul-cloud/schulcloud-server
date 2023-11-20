@@ -121,7 +121,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(authenticationService: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, idmOauthService: <a href="../classes/IdentityManagementOauthService.html" target="_self">IdentityManagementOauthService</a>, configService: <a href="../interfaces/IIdentityManagementConfig.html" target="_self">ConfigService&lt;IIdentityManagementConfig | &gt;</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>)</code>
+<code>constructor(authenticationService: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, idmOauthService: <a href="../classes/IdentityManagementOauthService.html" target="_self">IdentityManagementOauthService</a>, configService: <a href="../interfaces/IdentityManagementConfig.html" target="_self">ConfigService&lt;IdentityManagementConfig | &gt;</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -171,7 +171,7 @@
                                                         <td>configService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IIdentityManagementConfig.html" target="_self" >ConfigService&lt;IIdentityManagementConfig | &gt;</a></code>
+                                                                        <code><a href="../interfaces/IdentityManagementConfig.html" target="_self" >ConfigService&lt;IdentityManagementConfig | &gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -467,17 +467,17 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Strategy } from &#x27;passport-local&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IdentityManagementConfig, IdentityManagementOauthService } from &#x27;@infra/identity-management&#x27;;
+import { AccountDto } from &#x27;@modules/account/services/dto&#x27;;
+import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
-import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
-import bcrypt from &#x27;bcryptjs&#x27;;
-import { UserRepo } from &#x27;@shared/repo&#x27;;
-import { AccountDto } from &#x27;@modules/account/services/dto&#x27;;
 import { GuardAgainst } from &#x27;@shared/common/utils/guard-against&#x27;;
-import { IdentityManagementOauthService, IIdentityManagementConfig } from &#x27;@infra/identity-management&#x27;;
-import { CurrentUserMapper } from &#x27;../mapper&#x27;;
+import { UserRepo } from &#x27;@shared/repo&#x27;;
+import bcrypt from &#x27;bcryptjs&#x27;;
+import { Strategy } from &#x27;passport-local&#x27;;
 import { ICurrentUser } from &#x27;../interface&#x27;;
+import { CurrentUserMapper } from &#x27;../mapper&#x27;;
 import { AuthenticationService } from &#x27;../services/authentication.service&#x27;;
 
 @Injectable()
@@ -485,7 +485,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 	constructor(
 		private readonly authenticationService: AuthenticationService,
 		private readonly idmOauthService: IdentityManagementOauthService,
-		private readonly configService: ConfigService&lt;IIdentityManagementConfig, true&gt;,
+		private readonly configService: ConfigService&lt;IdentityManagementConfig, true&gt;,
 		private readonly userRepo: UserRepo
 	) {
 		super();

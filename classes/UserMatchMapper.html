@@ -175,7 +175,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/INameMatch.html" target="_self" >INameMatch</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/NameMatch.html" target="_self" >NameMatch</a></code>
 
                         </div>
                             <div class="io-description">
@@ -277,14 +277,14 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { StringValidator } from &#x27;@shared/common&#x27;;
-import { INameMatch, MatchCreator, User } from &#x27;@shared/domain&#x27;;
-import { UserRole, UserMatchResponse } from &#x27;../controller/dto&#x27;;
+import { MatchCreator, NameMatch, User } from &#x27;@shared/domain&#x27;;
+import { UserMatchResponse, UserRole } from &#x27;../controller/dto&#x27;;
 import { FilterUserParams } from &#x27;../controller/dto/filter-user.params&#x27;;
 import { ImportUserMatchMapper } from &#x27;./match.mapper&#x27;;
 
 export class UserMatchMapper {
-	static mapToDomain(query: FilterUserParams): INameMatch {
-		const scope: INameMatch &#x3D; {};
+	static mapToDomain(query: FilterUserParams): NameMatch {
+		const scope: NameMatch &#x3D; {};
 		if (query.name) {
 			if (StringValidator.isNotEmptyString(query.name, true)) {
 				scope.name &#x3D; query.name;

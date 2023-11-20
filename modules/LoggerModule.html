@@ -241,14 +241,14 @@ import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { utilities, WinstonModule } from &#x27;nest-winston&#x27;;
 import winston from &#x27;winston&#x27;;
 import { ErrorLogger } from &#x27;./error-logger&#x27;;
-import { ILoggerConfig } from &#x27;./interfaces&#x27;;
+import { LoggerConfig } from &#x27;./interfaces&#x27;;
 import { LegacyLogger } from &#x27;./legacy-logger.service&#x27;;
 import { Logger } from &#x27;./logger&#x27;;
 
 @Module({
 	imports: [
 		WinstonModule.forRootAsync({
-			useFactory: (configService: ConfigService&lt;ILoggerConfig, true&gt;) &#x3D;&gt; {
+			useFactory: (configService: ConfigService&lt;LoggerConfig, true&gt;) &#x3D;&gt; {
 				return {
 					levels: winston.config.syslog.levels,
 					level: configService.get&lt;string&gt;(&#x27;NEST_LOG_LEVEL&#x27;),

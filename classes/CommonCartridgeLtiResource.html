@@ -78,8 +78,8 @@
                 <h3>Implements</h3>
             </p>
             <p class="comment">
-                            <code><a href="../interfaces/ICommonCartridgeElement.html" target="_self" >ICommonCartridgeElement</a></code>
-                            <code><a href="../interfaces/ICommonCartridgeFile.html" target="_self" >ICommonCartridgeFile</a></code>
+                            <code><a href="../interfaces/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
+                            <code><a href="../interfaces/CommonCartridgeFile.html" target="_self" >CommonCartridgeFile</a></code>
             </p>
 
 
@@ -306,9 +306,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Builder } from &#x27;xml2js&#x27;;
-import { ICommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
-import { ICommonCartridgeFile } from &#x27;./common-cartridge-file.interface&#x27;;
+import { CommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from &#x27;./common-cartridge-enums&#x27;;
+import { CommonCartridgeFile } from &#x27;./common-cartridge-file.interface&#x27;;
 
 export type ICommonCartridgeLtiResourceProps &#x3D; {
 	type: CommonCartridgeResourceType.LTI;
@@ -320,7 +320,7 @@ export type ICommonCartridgeLtiResourceProps &#x3D; {
 	url: string;
 };
 
-export class CommonCartridgeLtiResource implements ICommonCartridgeElement, ICommonCartridgeFile {
+export class CommonCartridgeLtiResource implements CommonCartridgeElement, CommonCartridgeFile {
 	constructor(private readonly props: ICommonCartridgeLtiResourceProps, private readonly xmlBuilder: Builder) {}
 
 	canInline(): boolean {

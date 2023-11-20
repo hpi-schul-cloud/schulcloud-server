@@ -289,16 +289,16 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
-import { Inject } from &#x27;@nestjs/common&#x27;;
-import { ContextExternalToolValidationService } from &#x27;./context-external-tool-validation.service&#x27;;
-import { SchoolExternalToolValidationService } from &#x27;../../school-external-tool/service&#x27;;
-import { IToolFeatures, ToolFeatures } from &#x27;../../tool-config&#x27;;
-import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
-import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
-import { ContextExternalTool } from &#x27;../domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject } from &#x27;@nestjs/common&#x27;;
+import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
 import { ToolConfigurationStatus } from &#x27;../../common/enum&#x27;;
 import { CommonToolService } from &#x27;../../common/service&#x27;;
+import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
+import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
+import { SchoolExternalToolValidationService } from &#x27;../../school-external-tool/service&#x27;;
+import { IToolFeatures, ToolFeatures } from &#x27;../../tool-config&#x27;;
+import { ContextExternalTool } from &#x27;../domain&#x27;;
+import { ContextExternalToolValidationService } from &#x27;./context-external-tool-validation.service&#x27;;
 
 @Injectable()
 export class ToolVersionService {

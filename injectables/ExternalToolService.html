@@ -143,7 +143,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolRepo: <a href="../injectables/ExternalToolRepo.html" target="_self">ExternalToolRepo</a>, oauthProviderService: <a href="../classes/OauthProviderService.html" target="_self">OauthProviderService</a>, mapper: <a href="../injectables/ExternalToolServiceMapper.html" target="_self">ExternalToolServiceMapper</a>, schoolExternalToolRepo: <a href="../injectables/SchoolExternalToolRepo.html" target="_self">SchoolExternalToolRepo</a>, contextExternalToolRepo: <a href="../injectables/ContextExternalToolRepo.html" target="_self">ContextExternalToolRepo</a>, encryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>, legacyLogger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, externalToolVersionService: <a href="../injectables/ExternalToolVersionIncrementService.html" target="_self">ExternalToolVersionIncrementService</a>)</code>
+<code>constructor(externalToolRepo: <a href="../injectables/ExternalToolRepo.html" target="_self">ExternalToolRepo</a>, oauthProviderService: <a href="../classes/OauthProviderService.html" target="_self">OauthProviderService</a>, mapper: <a href="../injectables/ExternalToolServiceMapper.html" target="_self">ExternalToolServiceMapper</a>, schoolExternalToolRepo: <a href="../injectables/SchoolExternalToolRepo.html" target="_self">SchoolExternalToolRepo</a>, contextExternalToolRepo: <a href="../injectables/ContextExternalToolRepo.html" target="_self">ContextExternalToolRepo</a>, encryptionService: <a href="../interfaces/EncryptionService.html" target="_self">EncryptionService</a>, legacyLogger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, externalToolVersionService: <a href="../injectables/ExternalToolVersionIncrementService.html" target="_self">ExternalToolVersionIncrementService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -229,7 +229,7 @@
                                                         <td>encryptionService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IEncryptionService.html" target="_self" >IEncryptionService</a></code>
+                                                                        <code><a href="../interfaces/EncryptionService.html" target="_self" >EncryptionService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1018,11 +1018,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
-import { EntityId, IFindOptions, Page } from &#x27;@shared/domain&#x27;;
-import { DefaultEncryptionService, IEncryptionService } from &#x27;@infra/encryption&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DefaultEncryptionService, EncryptionService } from &#x27;@infra/encryption&#x27;;
 import { OauthProviderService } from &#x27;@infra/oauth-provider&#x27;;
 import { ProviderOauthClient } from &#x27;@infra/oauth-provider/dto&#x27;;
+import { Inject, Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
+import { EntityId, IFindOptions, Page } from &#x27;@shared/domain&#x27;;
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from &#x27;@shared/repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { TokenEndpointAuthMethod } from &#x27;../../common/enum&#x27;;
@@ -1040,7 +1040,7 @@ export class ExternalToolService {
 		private readonly mapper: ExternalToolServiceMapper,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
-		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService,
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
 		private readonly legacyLogger: LegacyLogger,
 		private readonly externalToolVersionService: ExternalToolVersionIncrementService
 	) {}

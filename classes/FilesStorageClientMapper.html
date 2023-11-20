@@ -147,7 +147,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapCopyFileListResponseToCopyFilesDto(copyFileListResponse: <a href="../classes/DomainObject.html" target="_self">ICopyFileDomainObjectProps[]</a>)</code>
+                    <code>mapCopyFileListResponseToCopyFilesDto(copyFileListResponse: <a href="../classes/DomainObject.html" target="_self">CopyFileDomainObjectProps[]</a>)</code>
                 </td>
             </tr>
 
@@ -178,7 +178,7 @@
                                         <tr>
                                                 <td>copyFileListResponse</td>
                                             <td>
-                                                            <code><a href="../classes/DomainObject.html" target="_self" >ICopyFileDomainObjectProps[]</a></code>
+                                                            <code><a href="../classes/DomainObject.html" target="_self" >CopyFileDomainObjectProps[]</a></code>
                                             </td>
 
                                             <td>
@@ -216,7 +216,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapCopyFileResponseToCopyFileDto(response: <a href="../interfaces/ICopyFileDomainObjectProps.html" target="_self">ICopyFileDomainObjectProps</a>)</code>
+                    <code>mapCopyFileResponseToCopyFileDto(response: <a href="../interfaces/CopyFileDomainObjectProps.html" target="_self">CopyFileDomainObjectProps</a>)</code>
                 </td>
             </tr>
 
@@ -247,7 +247,7 @@
                                         <tr>
                                                 <td>response</td>
                                             <td>
-                                                            <code><a href="../interfaces/ICopyFileDomainObjectProps.html" target="_self" >ICopyFileDomainObjectProps</a></code>
+                                                            <code><a href="../interfaces/CopyFileDomainObjectProps.html" target="_self" >CopyFileDomainObjectProps</a></code>
                                             </td>
 
                                             <td>
@@ -354,7 +354,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapfileRecordListResponseToDomainFilesDto(fileRecordListResponse: <a href="../classes/DomainObject.html" target="_self">IFileDomainObjectProps[]</a>)</code>
+                    <code>mapfileRecordListResponseToDomainFilesDto(fileRecordListResponse: <a href="../classes/DomainObject.html" target="_self">FileDomainObjectProps[]</a>)</code>
                 </td>
             </tr>
 
@@ -385,7 +385,7 @@
                                         <tr>
                                                 <td>fileRecordListResponse</td>
                                             <td>
-                                                            <code><a href="../classes/DomainObject.html" target="_self" >IFileDomainObjectProps[]</a></code>
+                                                            <code><a href="../classes/DomainObject.html" target="_self" >FileDomainObjectProps[]</a></code>
                                             </td>
 
                                             <td>
@@ -423,7 +423,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapFileRecordResponseToFileDto(fileRecordResponse: <a href="../interfaces/IFileDomainObjectProps.html" target="_self">IFileDomainObjectProps</a>)</code>
+                    <code>mapFileRecordResponseToFileDto(fileRecordResponse: <a href="../interfaces/FileDomainObjectProps.html" target="_self">FileDomainObjectProps</a>)</code>
                 </td>
             </tr>
 
@@ -454,7 +454,7 @@
                                         <tr>
                                                 <td>fileRecordResponse</td>
                                             <td>
-                                                            <code><a href="../interfaces/IFileDomainObjectProps.html" target="_self" >IFileDomainObjectProps</a></code>
+                                                            <code><a href="../interfaces/FileDomainObjectProps.html" target="_self" >FileDomainObjectProps</a></code>
                                             </td>
 
                                             <td>
@@ -559,11 +559,11 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LessonEntity, Submission, Task } from &#x27;@shared/domain&#x27;;
 import { FileRecordParentType } from &#x27;@infra/rabbitmq&#x27;;
 import { CopyFileDto, FileDto } from &#x27;../dto&#x27;;
-import { EntitiesWithFiles, ICopyFileDomainObjectProps, IFileDomainObjectProps } from &#x27;../interfaces&#x27;;
+import { CopyFileDomainObjectProps, EntitiesWithFiles, FileDomainObjectProps } from &#x27;../interfaces&#x27;;
 
 export class FilesStorageClientMapper {
-	static mapfileRecordListResponseToDomainFilesDto(fileRecordListResponse: IFileDomainObjectProps[]): FileDto[] {
-		const filesDto &#x3D; fileRecordListResponse.map((record: IFileDomainObjectProps) &#x3D;&gt; {
+	static mapfileRecordListResponseToDomainFilesDto(fileRecordListResponse: FileDomainObjectProps[]): FileDto[] {
+		const filesDto &#x3D; fileRecordListResponse.map((record: FileDomainObjectProps) &#x3D;&gt; {
 			const fileDto &#x3D; FilesStorageClientMapper.mapFileRecordResponseToFileDto(record);
 
 			return fileDto;
@@ -572,7 +572,7 @@ export class FilesStorageClientMapper {
 		return filesDto;
 	}
 
-	static mapCopyFileListResponseToCopyFilesDto(copyFileListResponse: ICopyFileDomainObjectProps[]): CopyFileDto[] {
+	static mapCopyFileListResponseToCopyFilesDto(copyFileListResponse: CopyFileDomainObjectProps[]): CopyFileDto[] {
 		const filesDto &#x3D; copyFileListResponse.map((response) &#x3D;&gt; {
 			const fileDto &#x3D; FilesStorageClientMapper.mapCopyFileResponseToCopyFileDto(response);
 
@@ -582,7 +582,7 @@ export class FilesStorageClientMapper {
 		return filesDto;
 	}
 
-	static mapFileRecordResponseToFileDto(fileRecordResponse: IFileDomainObjectProps) {
+	static mapFileRecordResponseToFileDto(fileRecordResponse: FileDomainObjectProps) {
 		const parentType &#x3D; FilesStorageClientMapper.mapStringToParentType(fileRecordResponse.parentType);
 		const fileDto &#x3D; new FileDto({
 			id: fileRecordResponse.id,
@@ -594,7 +594,7 @@ export class FilesStorageClientMapper {
 		return fileDto;
 	}
 
-	static mapCopyFileResponseToCopyFileDto(response: ICopyFileDomainObjectProps) {
+	static mapCopyFileResponseToCopyFileDto(response: CopyFileDomainObjectProps) {
 		const dto &#x3D; new CopyFileDto({
 			id: response.id,
 			sourceId: response.sourceId,

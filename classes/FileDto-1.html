@@ -119,7 +119,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(props: <a href="../interfaces/IFileDomainObjectProps.html" target="_self">IFileDomainObjectProps</a>)</code>
+<code>constructor(props: <a href="../interfaces/FileDomainObjectProps.html" target="_self">FileDomainObjectProps</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -145,7 +145,7 @@
                                                         <td>props</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IFileDomainObjectProps.html" target="_self" >IFileDomainObjectProps</a></code>
+                                                                        <code><a href="../interfaces/FileDomainObjectProps.html" target="_self" >FileDomainObjectProps</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -283,9 +283,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain&#x27;;
-import { FileRecordParentType } from &#x27;@infra/rabbitmq&#x27;;
-import { IFileDomainObjectProps } from &#x27;../interfaces&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FileRecordParentType } from &#x27;@infra/rabbitmq&#x27;;
+import { EntityId } from &#x27;@shared/domain&#x27;;
+import { FileDomainObjectProps } from &#x27;../interfaces&#x27;;
 
 export class FileDto {
 	id: EntityId;
@@ -296,7 +296,7 @@ export class FileDto {
 
 	parentId: EntityId;
 
-	constructor(props: IFileDomainObjectProps) {
+	constructor(props: FileDomainObjectProps) {
 		this.id &#x3D; props.id;
 		this.name &#x3D; props.name;
 		this.parentType &#x3D; props.parentType;

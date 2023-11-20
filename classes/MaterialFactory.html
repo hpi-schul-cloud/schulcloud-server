@@ -1235,12 +1235,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IMaterialProperties, Material } from &#x27;@shared/domain/entity/materials.entity&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Material, MaterialProperties } from &#x27;@shared/domain/entity/materials.entity&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 
-class MaterialFactory extends BaseFactory&lt;Material, IMaterialProperties&gt; {}
+class MaterialFactory extends BaseFactory&lt;Material, MaterialProperties&gt; {}
 
-export const materialFactory &#x3D; MaterialFactory.define&lt;Material, IMaterialProperties&gt;(Material, ({ sequence }) &#x3D;&gt; {
+export const materialFactory &#x3D; MaterialFactory.define&lt;Material, MaterialProperties&gt;(Material, ({ sequence }) &#x3D;&gt; {
 	return {
 		client: &#x27;test material client&#x27;,
 		description: &#x27;test material description&#x27;,

@@ -935,7 +935,7 @@ They only can join a conference:</p>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/IScopeInfo.html" target="_self" >Promise&lt;IScopeInfo&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/ScopeInfo.html" target="_self" >Promise&lt;ScopeInfo&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1443,6 +1443,14 @@ They only can join a conference:</p>
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
+import { CalendarService } from &#x27;@infra/calendar&#x27;;
+import { CalendarEventDto } from &#x27;@infra/calendar/dto/calendar-event.dto&#x27;;
+import { ICurrentUser } from &#x27;@modules/authentication&#x27;;
+import { Action, AuthorizationContextBuilder } from &#x27;@modules/authorization&#x27;;
+import { AuthorizableReferenceType, AuthorizationReferenceService } from &#x27;@modules/authorization/domain&#x27;;
+import { CourseService } from &#x27;@modules/learnroom&#x27;;
+import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
+import { UserService } from &#x27;@modules/user&#x27;;
 import { BadRequestException, ForbiddenException, Injectable } from &#x27;@nestjs/common&#x27;;
 import {
 	Course,
@@ -1457,16 +1465,8 @@ import {
 	VideoConferenceOptionsDO,
 } from &#x27;@shared/domain&#x27;;
 import { VideoConferenceScope } from &#x27;@shared/domain/interface&#x27;;
-import { CalendarService } from &#x27;@infra/calendar&#x27;;
-import { CalendarEventDto } from &#x27;@infra/calendar/dto/calendar-event.dto&#x27;;
 import { TeamsRepo } from &#x27;@shared/repo&#x27;;
 import { VideoConferenceRepo } from &#x27;@shared/repo/videoconference/video-conference.repo&#x27;;
-import { ICurrentUser } from &#x27;@modules/authentication&#x27;;
-import { Action, AuthorizationContextBuilder } from &#x27;@modules/authorization&#x27;;
-import { AuthorizationReferenceService, AuthorizableReferenceType } from &#x27;@modules/authorization/domain&#x27;;
-import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
-import { CourseService } from &#x27;@modules/learnroom&#x27;;
-import { UserService } from &#x27;@modules/user&#x27;;
 import {
 	BBBBaseMeetingConfig,
 	BBBBaseResponse,
@@ -1481,7 +1481,7 @@ import {
 } from &#x27;../bbb&#x27;;
 import { ErrorStatus } from &#x27;../error/error-status.enum&#x27;;
 import { defaultVideoConferenceOptions, VideoConferenceOptions } from &#x27;../interface&#x27;;
-import { IScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from &#x27;./dto&#x27;;
+import { ScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from &#x27;./dto&#x27;;
 
 const PermissionMapping &#x3D; {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,
@@ -1530,7 +1530,7 @@ export class VideoConferenceDeprecatedUc {
 		const { userId, schoolId } &#x3D; currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
-		const scopeInfo: IScopeInfo &#x3D; await this.getScopeInfo(userId, conferenceScope, refId);
+		const scopeInfo: ScopeInfo &#x3D; await this.getScopeInfo(userId, conferenceScope, refId);
 
 		const bbbRole: BBBRole &#x3D; await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
 
@@ -1594,7 +1594,7 @@ export class VideoConferenceDeprecatedUc {
 
 		await this.throwOnFeaturesDisabled(schoolId);
 
-		const scopeInfo: IScopeInfo &#x3D; await this.getScopeInfo(userId, conferenceScope, refId);
+		const scopeInfo: ScopeInfo &#x3D; await this.getScopeInfo(userId, conferenceScope, refId);
 
 		const bbbRole: BBBRole &#x3D; await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
 
@@ -1649,7 +1649,7 @@ export class VideoConferenceDeprecatedUc {
 
 		await this.throwOnFeaturesDisabled(schoolId);
 
-		const scopeInfo: IScopeInfo &#x3D; await this.getScopeInfo(userId, conferenceScope, refId);
+		const scopeInfo: ScopeInfo &#x3D; await this.getScopeInfo(userId, conferenceScope, refId);
 
 		const bbbRole: BBBRole &#x3D; await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
 
@@ -1781,13 +1781,13 @@ export class VideoConferenceDeprecatedUc {
 	 * @param {EntityId} userId
 	 * @param {VideoConferenceScope} conferenceScope
 	 * @param {EntityId} refId eventId or courseId, depending on scope.
-	 * @returns {Promise&lt;IScopeInfo&gt;}
+	 * @returns {Promise&lt;ScopeInfo&gt;}
 	 */
 	protected async getScopeInfo(
 		userId: EntityId,
 		conferenceScope: VideoConferenceScope,
 		refId: string
-	): Promise&lt;IScopeInfo&gt; {
+	): Promise&lt;ScopeInfo&gt; {
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE: {
 				const course: Course &#x3D; await this.courseService.findById(refId);

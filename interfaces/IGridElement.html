@@ -179,7 +179,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>addReferences(anotherReference: <a href="../interfaces/ILearnroom.html" target="_self">ILearnroom[]</a>)</code>
+<code>addReferences(anotherReference: <a href="../interfaces/Learnroom.html" target="_self">Learnroom[]</a>)</code>
                 </td>
             </tr>
 
@@ -210,7 +210,7 @@
                                         <tr>
                                                 <td>anotherReference</td>
                                             <td>
-                                                            <code><a href="../interfaces/ILearnroom.html" target="_self" >ILearnroom[]</a></code>
+                                                            <code><a href="../interfaces/Learnroom.html" target="_self" >Learnroom[]</a></code>
                                             </td>
 
                                             <td>
@@ -263,7 +263,7 @@
                 <td class="col-md-4">
 
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/ILearnroom.html" target="_self" >ILearnroom[]</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/Learnroom.html" target="_self" >Learnroom[]</a></code>
 
                         </div>
                 </td>
@@ -357,7 +357,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>removeReference(reference: <a href="../interfaces/ILearnroom.html" target="_self">ILearnroom</a>)</code>
+<code>removeReference(reference: <a href="../interfaces/Learnroom.html" target="_self">Learnroom</a>)</code>
                 </td>
             </tr>
 
@@ -388,7 +388,7 @@
                                         <tr>
                                                 <td>reference</td>
                                             <td>
-                                                            <code><a href="../interfaces/ILearnroom.html" target="_self" >ILearnroom</a></code>
+                                                            <code><a href="../interfaces/Learnroom.html" target="_self" >Learnroom</a></code>
                                             </td>
 
                                             <td>
@@ -620,9 +620,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { NotFoundException, BadRequestException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, NotFoundException } from &#x27;@nestjs/common&#x27;;
+import { Learnroom } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId, LearnroomMetadata } from &#x27;@shared/domain/types&#x27;;
-import { ILearnroom } from &#x27;@shared/domain/interface&#x27;;
 
 const defaultColumns &#x3D; 4;
 
@@ -637,11 +637,11 @@ export interface IGridElement {
 
 	removeReferenceByIndex(index: number): void;
 
-	removeReference(reference: ILearnroom): void;
+	removeReference(reference: Learnroom): void;
 
-	getReferences(): ILearnroom[];
+	getReferences(): Learnroom[];
 
-	addReferences(anotherReference: ILearnroom[]): void;
+	addReferences(anotherReference: Learnroom[]): void;
 
 	setGroupName(newGroupName: string): void;
 }
@@ -661,7 +661,7 @@ export class GridElement implements IGridElement {
 
 	title?: string;
 
-	private sortReferences &#x3D; (a: ILearnroom, b: ILearnroom) &#x3D;&gt; {
+	private sortReferences &#x3D; (a: Learnroom, b: Learnroom) &#x3D;&gt; {
 		const titleA &#x3D; a.getMetadata().title;
 		const titleB &#x3D; b.getMetadata().title;
 		if (titleA &lt; titleB) {
@@ -673,29 +673,29 @@ export class GridElement implements IGridElement {
 		return 0;
 	};
 
-	private constructor(props: { id?: EntityId; title?: string; references: ILearnroom[] }) {
+	private constructor(props: { id?: EntityId; title?: string; references: Learnroom[] }) {
 		if (props.id) this.id &#x3D; props.id;
 		if (props.title) this.title &#x3D; props.title;
 		this.references &#x3D; props.references.sort(this.sortReferences);
 	}
 
-	static FromPersistedReference(id: EntityId, reference: ILearnroom): GridElement {
+	static FromPersistedReference(id: EntityId, reference: Learnroom): GridElement {
 		return new GridElement({ id, references: [reference] });
 	}
 
-	static FromPersistedGroup(id: EntityId, title: string | undefined, group: ILearnroom[]): GridElement {
+	static FromPersistedGroup(id: EntityId, title: string | undefined, group: Learnroom[]): GridElement {
 		return new GridElement({ id, title, references: group });
 	}
 
-	static FromSingleReference(reference: ILearnroom): GridElement {
+	static FromSingleReference(reference: Learnroom): GridElement {
 		return new GridElement({ references: [reference] });
 	}
 
-	static FromGroup(title: string, references: ILearnroom[]): GridElement {
+	static FromGroup(title: string, references: Learnroom[]): GridElement {
 		return new GridElement({ title, references });
 	}
 
-	references: ILearnroom[];
+	references: Learnroom[];
 
 	hasId(): boolean {
 		return !!this.id;
@@ -705,7 +705,7 @@ export class GridElement implements IGridElement {
 		return this.id;
 	}
 
-	getReferences(): ILearnroom[] {
+	getReferences(): Learnroom[] {
 		return this.references;
 	}
 
@@ -719,7 +719,7 @@ export class GridElement implements IGridElement {
 		this.references.splice(index, 1);
 	}
 
-	removeReference(reference: ILearnroom): void {
+	removeReference(reference: Learnroom): void {
 		const index &#x3D; this.references.indexOf(reference);
 		if (index &#x3D;&#x3D;&#x3D; -1) {
 			throw new BadRequestException(&#x27;reference not found.&#x27;);
@@ -727,7 +727,7 @@ export class GridElement implements IGridElement {
 		this.references.splice(index, 1);
 	}
 
-	addReferences(anotherReference: ILearnroom[]): void {
+	addReferences(anotherReference: Learnroom[]): void {
 		if (!this.isGroup()) {
 			this.references &#x3D; this.references.concat(anotherReference).sort(this.sortReferences);
 			this.setGroupName(&#x27;&#x27;);
@@ -850,7 +850,7 @@ export class DashboardEntity {
 		};
 	}
 
-	setLearnRooms(rooms: ILearnroom[]): void {
+	setLearnRooms(rooms: Learnroom[]): void {
 		this.removeRoomsNotInList(rooms);
 		const newRooms &#x3D; this.determineNewRoomsIn(rooms);
 
@@ -859,7 +859,7 @@ export class DashboardEntity {
 		});
 	}
 
-	private removeRoomsNotInList(roomList: ILearnroom[]): void {
+	private removeRoomsNotInList(roomList: Learnroom[]): void {
 		[...this.grid.keys()].forEach((key) &#x3D;&gt; {
 			const element &#x3D; this.grid.get(key) as IGridElement;
 			const currentRooms &#x3D; element.getReferences();
@@ -874,8 +874,8 @@ export class DashboardEntity {
 		});
 	}
 
-	private determineNewRoomsIn(rooms: ILearnroom[]): ILearnroom[] {
-		const result: ILearnroom[] &#x3D; [];
+	private determineNewRoomsIn(rooms: Learnroom[]): Learnroom[] {
+		const result: Learnroom[] &#x3D; [];
 		const existingRooms &#x3D; this.allRooms();
 		rooms.forEach((room) &#x3D;&gt; {
 			if (!existingRooms.includes(room)) {
@@ -885,13 +885,13 @@ export class DashboardEntity {
 		return result;
 	}
 
-	private allRooms(): ILearnroom[] {
+	private allRooms(): Learnroom[] {
 		const elements &#x3D; [...this.grid.values()];
 		const references &#x3D; elements.map((el) &#x3D;&gt; el.getReferences()).flat();
 		return references;
 	}
 
-	private addRoom(room: ILearnroom): void {
+	private addRoom(room: Learnroom): void {
 		const index &#x3D; this.getFirstOpenIndex();
 		const newElement &#x3D; GridElement.FromSingleReference(room);
 		this.grid.set(index, newElement);

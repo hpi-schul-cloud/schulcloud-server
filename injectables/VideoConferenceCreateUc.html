@@ -398,7 +398,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>prepareBBBCreateConfigBuilder(scope: <a href="../classes/ScopeRef.html" target="_self">ScopeRef</a>, options: <a href="../interfaces/VideoConferenceOptions.html" target="_self">VideoConferenceOptions</a>, scopeInfo: <a href="../interfaces/IScopeInfo.html" target="_self">IScopeInfo</a>)</code>
+                    <code>prepareBBBCreateConfigBuilder(scope: <a href="../classes/ScopeRef.html" target="_self">ScopeRef</a>, options: <a href="../interfaces/VideoConferenceOptions.html" target="_self">VideoConferenceOptions</a>, scopeInfo: <a href="../interfaces/ScopeInfo.html" target="_self">ScopeInfo</a>)</code>
                 </td>
             </tr>
 
@@ -453,7 +453,7 @@
                                         <tr>
                                                 <td>scopeInfo</td>
                                             <td>
-                                                            <code><a href="../interfaces/IScopeInfo.html" target="_self" >IScopeInfo</a></code>
+                                                            <code><a href="../interfaces/ScopeInfo.html" target="_self" >ScopeInfo</a></code>
                                             </td>
 
                                             <td>
@@ -633,9 +633,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ForbiddenException, Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { UserService } from &#x27;@modules/user&#x27;;
+import { ForbiddenException, Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId, UserDO } from &#x27;@shared/domain&#x27;;
-import { UserService } from &#x27;@modules/user&#x27;;
 import {
 	BBBBaseMeetingConfig,
 	BBBCreateConfigBuilder,
@@ -648,7 +648,7 @@ import {
 import { ErrorStatus } from &#x27;../error/error-status.enum&#x27;;
 import { VideoConferenceOptions } from &#x27;../interface&#x27;;
 import { VideoConferenceService } from &#x27;../service&#x27;;
-import { IScopeInfo, ScopeRef } from &#x27;./dto&#x27;;
+import { ScopeInfo, ScopeRef } from &#x27;./dto&#x27;;
 
 @Injectable()
 export class VideoConferenceCreateUc {
@@ -683,7 +683,7 @@ export class VideoConferenceCreateUc {
 
 		await this.verifyFeaturesEnabled(user.schoolId);
 
-		const scopeInfo: IScopeInfo &#x3D; await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
+		const scopeInfo: ScopeInfo &#x3D; await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
 
 		const bbbRole: BBBRole &#x3D; await this.videoConferenceService.determineBbbRole(
 			currentUserId,
@@ -702,7 +702,7 @@ export class VideoConferenceCreateUc {
 	private prepareBBBCreateConfigBuilder(
 		scope: ScopeRef,
 		options: VideoConferenceOptions,
-		scopeInfo: IScopeInfo
+		scopeInfo: ScopeInfo
 	): BBBCreateConfigBuilder {
 		const configBuilder: BBBCreateConfigBuilder &#x3D; new BBBCreateConfigBuilder({
 			name: this.videoConferenceService.sanitizeString(scopeInfo.title),

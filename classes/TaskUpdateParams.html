@@ -78,7 +78,7 @@
                 <h3>Implements</h3>
             </p>
             <p class="comment">
-                            <code><a href="../interfaces/ITaskUpdate.html" target="_self" >ITaskUpdate</a></code>
+                            <code><a href="../interfaces/TaskUpdate.html" target="_self" >TaskUpdate</a></code>
             </p>
 
 
@@ -406,11 +406,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
-import { IsDate, IsMongoId, IsOptional, IsString } from &#x27;class-validator&#x27;;
-import { InputFormat, ITaskUpdate } from &#x27;@shared/domain&#x27;;
 import { SanitizeHtml } from &#x27;@shared/controller&#x27;;
+import { InputFormat, TaskUpdate } from &#x27;@shared/domain&#x27;;
+import { IsDate, IsMongoId, IsOptional, IsString } from &#x27;class-validator&#x27;;
 
-export class TaskUpdateParams implements ITaskUpdate {
+export class TaskUpdateParams implements TaskUpdate {
 	@IsString()
 	@IsMongoId()
 	@IsOptional()

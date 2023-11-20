@@ -431,7 +431,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAll(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, pagination: <a href="../interfaces/IPagination.html" target="_self">IPagination</a>)</code>
+                    <code>findAll(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, pagination: <a href="../interfaces/Pagination.html" target="_self">Pagination</a>)</code>
                 </td>
             </tr>
 
@@ -474,7 +474,7 @@
                                         <tr>
                                                 <td>pagination</td>
                                             <td>
-                                                            <code><a href="../interfaces/IPagination.html" target="_self" >IPagination</a></code>
+                                                            <code><a href="../interfaces/Pagination.html" target="_self" >Pagination</a></code>
                                             </td>
 
                                             <td>
@@ -512,7 +512,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAllFinished(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, pagination?: <a href="../interfaces/IPagination.html" target="_self">IPagination</a>)</code>
+                    <code>findAllFinished(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, pagination?: <a href="../interfaces/Pagination.html" target="_self">Pagination</a>)</code>
                 </td>
             </tr>
 
@@ -555,7 +555,7 @@
                                         <tr>
                                                 <td>pagination</td>
                                             <td>
-                                                            <code><a href="../interfaces/IPagination.html" target="_self" >IPagination</a></code>
+                                                            <code><a href="../interfaces/Pagination.html" target="_self" >Pagination</a></code>
                                             </td>
 
                                             <td>
@@ -594,7 +594,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAllForStudent(user: <a href="../interfaces/User.html" target="_self">User</a>, pagination: <a href="../interfaces/IPagination.html" target="_self">IPagination</a>)</code>
+                    <code>findAllForStudent(user: <a href="../interfaces/User.html" target="_self">User</a>, pagination: <a href="../interfaces/Pagination.html" target="_self">Pagination</a>)</code>
                 </td>
             </tr>
 
@@ -637,7 +637,7 @@
                                         <tr>
                                                 <td>pagination</td>
                                             <td>
-                                                            <code><a href="../interfaces/IPagination.html" target="_self" >IPagination</a></code>
+                                                            <code><a href="../interfaces/Pagination.html" target="_self" >Pagination</a></code>
                                             </td>
 
                                             <td>
@@ -676,7 +676,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAllForTeacher(user: <a href="../interfaces/User.html" target="_self">User</a>, pagination: <a href="../interfaces/IPagination.html" target="_self">IPagination</a>)</code>
+                    <code>findAllForTeacher(user: <a href="../interfaces/User.html" target="_self">User</a>, pagination: <a href="../interfaces/Pagination.html" target="_self">Pagination</a>)</code>
                 </td>
             </tr>
 
@@ -719,7 +719,7 @@
                                         <tr>
                                                 <td>pagination</td>
                                             <td>
-                                                            <code><a href="../interfaces/IPagination.html" target="_self" >IPagination</a></code>
+                                                            <code><a href="../interfaces/Pagination.html" target="_self" >Pagination</a></code>
                                             </td>
 
                                             <td>
@@ -1033,21 +1033,21 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Action, AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { LessonService } from &#x27;@modules/lesson&#x27;;
 import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import {
 	Counted,
 	Course,
 	EntityId,
-	IPagination,
-	ITaskStatus,
 	LessonEntity,
+	Pagination,
 	Permission,
 	SortOrder,
+	TaskStatus,
 	TaskWithStatusVo,
 	User,
 } from &#x27;@shared/domain&#x27;;
 import { CourseRepo, TaskRepo } from &#x27;@shared/repo&#x27;;
-import { LessonService } from &#x27;@modules/lesson&#x27;;
 import { TaskService } from &#x27;../service&#x27;;
 
 @Injectable()
@@ -1060,7 +1060,7 @@ export class TaskUC {
 		private readonly taskService: TaskService
 	) {}
 
-	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise&lt;Counted&lt;TaskWithStatusVo[]&gt;&gt; {
+	async findAllFinished(userId: EntityId, pagination?: Pagination): Promise&lt;Counted&lt;TaskWithStatusVo[]&gt;&gt; {
 		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
 
 		this.authorizationService.checkOneOfPermissions(user, [
@@ -1088,7 +1088,7 @@ export class TaskUC {
 		);
 
 		const taskWithStatusVos &#x3D; tasks.map((task) &#x3D;&gt; {
-			let status: ITaskStatus;
+			let status: TaskStatus;
 			if (this.authorizationService.hasPermission(user, task, AuthorizationContextBuilder.write([]))) {
 				status &#x3D; task.createTeacherStatusForUser(user);
 			} else {
@@ -1101,7 +1101,7 @@ export class TaskUC {
 		return [taskWithStatusVos, total];
 	}
 
-	async findAll(userId: EntityId, pagination: IPagination): Promise&lt;Counted&lt;TaskWithStatusVo[]&gt;&gt; {
+	async findAll(userId: EntityId, pagination: Pagination): Promise&lt;Counted&lt;TaskWithStatusVo[]&gt;&gt; {
 		let response: Counted&lt;TaskWithStatusVo[]&gt;;
 
 		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
@@ -1158,7 +1158,7 @@ export class TaskUC {
 		return result;
 	}
 
-	private async findAllForStudent(user: User, pagination: IPagination): Promise&lt;Counted&lt;TaskWithStatusVo[]&gt;&gt; {
+	private async findAllForStudent(user: User, pagination: Pagination): Promise&lt;Counted&lt;TaskWithStatusVo[]&gt;&gt; {
 		const courses &#x3D; await this.getPermittedCourses(user, Action.read);
 		const openCourses &#x3D; courses.filter((c) &#x3D;&gt; !c.isFinished());
 		const lessons &#x3D; await this.getPermittedLessons(user, openCourses);
@@ -1187,7 +1187,7 @@ export class TaskUC {
 		return [taskWithStatusVos, total];
 	}
 
-	private async findAllForTeacher(user: User, pagination: IPagination): Promise&lt;Counted&lt;TaskWithStatusVo[]&gt;&gt; {
+	private async findAllForTeacher(user: User, pagination: Pagination): Promise&lt;Counted&lt;TaskWithStatusVo[]&gt;&gt; {
 		const courses &#x3D; await this.getPermittedCourses(user, Action.write);
 		const openCourses &#x3D; courses.filter((c) &#x3D;&gt; !c.isFinished());
 		const lessons &#x3D; await this.getPermittedLessons(user, openCourses);

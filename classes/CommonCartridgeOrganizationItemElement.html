@@ -78,7 +78,7 @@
                 <h3>Implements</h3>
             </p>
             <p class="comment">
-                            <code><a href="../interfaces/ICommonCartridgeElement.html" target="_self" >ICommonCartridgeElement</a></code>
+                            <code><a href="../interfaces/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
             </p>
 
 
@@ -212,7 +212,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ICommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
 import { ICommonCartridgeResourceProps } from &#x27;./common-cartridge-resource-item-element&#x27;;
 import { createIdentifier } from &#x27;./utils&#x27;;
 
@@ -223,7 +223,7 @@ export type ICommonCartridgeOrganizationProps &#x3D; {
 	resources: ICommonCartridgeResourceProps[];
 };
 
-export class CommonCartridgeOrganizationItemElement implements ICommonCartridgeElement {
+export class CommonCartridgeOrganizationItemElement implements CommonCartridgeElement {
 	constructor(private readonly props: ICommonCartridgeOrganizationProps) {}
 
 	transform(): Record&lt;string, unknown&gt; {

@@ -191,9 +191,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, ForbiddenException, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IError } from &#x27;@infra/rabbitmq&#x27;;
+import { BadRequestException, ForbiddenException, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { ErrorUtils } from &#x27;@src/core/error/utils&#x27;;
-import { IError } from &#x27;@infra/rabbitmq&#x27;;
 
 export class ErrorMapper {
 	static mapRpcErrorResponseToDomainError(

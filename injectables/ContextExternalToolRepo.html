@@ -490,7 +490,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>entityFactory(props: <a href="../interfaces/IContextExternalToolProperties.html" target="_self">IContextExternalToolProperties</a>)</code>
+<code>entityFactory(props: <a href="../interfaces/ContextExternalToolProperties.html" target="_self">ContextExternalToolProperties</a>)</code>
                 </td>
             </tr>
 
@@ -527,7 +527,7 @@
                                         <tr>
                                                 <td>props</td>
                                             <td>
-                                                            <code><a href="../interfaces/IContextExternalToolProperties.html" target="_self" >IContextExternalToolProperties</a></code>
+                                                            <code><a href="../interfaces/ContextExternalToolProperties.html" target="_self" >ContextExternalToolProperties</a></code>
                                             </td>
 
                                             <td>
@@ -897,7 +897,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/IContextExternalToolProperties.html" target="_self" >IContextExternalToolProperties</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/ContextExternalToolProperties.html" target="_self" >ContextExternalToolProperties</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1698,19 +1698,19 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityName } from &#x27;@mikro-orm/core&#x27;;
 import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { BaseDORepo } from &#x27;@shared/repo&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { ToolContextType } from &#x27;@modules/tool/common/enum/tool-context-type.enum&#x27;;
 import { ContextExternalTool, ContextRef } from &#x27;@modules/tool/context-external-tool/domain&#x27;;
 import {
 	ContextExternalToolEntity,
+	ContextExternalToolProperties,
 	ContextExternalToolType,
-	IContextExternalToolProperties,
 } from &#x27;@modules/tool/context-external-tool/entity&#x27;;
 import { ContextExternalToolQuery } from &#x27;@modules/tool/context-external-tool/uc/dto/context-external-tool.types&#x27;;
 import { SchoolExternalToolRefDO } from &#x27;@modules/tool/school-external-tool/domain&#x27;;
 import { SchoolExternalToolEntity } from &#x27;@modules/tool/school-external-tool/entity&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { BaseDORepo } from &#x27;@shared/repo&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { EntityId } from &#x27;../../domain&#x27;;
 import { ExternalToolRepoMapper } from &#x27;../externaltool&#x27;;
 import { ContextExternalToolScope } from &#x27;./context-external-tool.scope&#x27;;
@@ -1719,7 +1719,7 @@ import { ContextExternalToolScope } from &#x27;./context-external-tool.scope&#x2
 export class ContextExternalToolRepo extends BaseDORepo&lt;
 	ContextExternalTool,
 	ContextExternalToolEntity,
-	IContextExternalToolProperties
+	ContextExternalToolProperties
 &gt; {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
@@ -1729,7 +1729,7 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;
 		return ContextExternalToolEntity;
 	}
 
-	entityFactory(props: IContextExternalToolProperties): ContextExternalToolEntity {
+	entityFactory(props: ContextExternalToolProperties): ContextExternalToolEntity {
 		return new ContextExternalToolEntity(props);
 	}
 
@@ -1806,7 +1806,7 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: ContextExternalTool): IContextExternalToolProperties {
+	mapDOToEntityProperties(entityDO: ContextExternalTool): ContextExternalToolProperties {
 		return {
 			contextId: entityDO.contextRef.id,
 			contextType: this.mapContextTypeToEntityType(entityDO.contextRef.type),

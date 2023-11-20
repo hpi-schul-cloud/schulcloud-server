@@ -1239,12 +1239,12 @@
 	ContentMetadata,
 	H5PContent,
 	H5PContentParentType,
-	IH5PContentProperties,
+	H5PContentProperties,
 } from &#x27;@src/modules/h5p-editor/entity&#x27;;
 import { ObjectID } from &#x27;bson&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 
-class H5PContentFactory extends BaseFactory&lt;H5PContent, IH5PContentProperties&gt; {}
+class H5PContentFactory extends BaseFactory&lt;H5PContent, H5PContentProperties&gt; {}
 
 export const h5pContentFactory &#x3D; H5PContentFactory.define(H5PContent, ({ sequence }) &#x3D;&gt; {
 	return {

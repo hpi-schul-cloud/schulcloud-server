@@ -547,7 +547,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Counted, EntityId, IComponentProperties, LessonEntity } from &#x27;@shared/domain&#x27;;
+import { ComponentProperties, Counted, EntityId, LessonEntity } from &#x27;@shared/domain&#x27;;
 import { AuthorizationLoaderService } from &#x27;@src/modules/authorization&#x27;;
 import { LessonRepo } from &#x27;../repository&#x27;;
 
@@ -582,7 +582,7 @@ export class LessonService implements AuthorizationLoaderService {
 		const lessons &#x3D; await this.lessonRepo.findByUserId(userId);
 
 		const updatedLessons &#x3D; lessons.map((lesson: LessonEntity) &#x3D;&gt; {
-			lesson.contents.map((c: IComponentProperties) &#x3D;&gt; {
+			lesson.contents.map((c: ComponentProperties) &#x3D;&gt; {
 				if (c.user &#x3D;&#x3D;&#x3D; userId) {
 					c.user &#x3D; &#x27;&#x27;;
 				}

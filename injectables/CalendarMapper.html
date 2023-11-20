@@ -118,7 +118,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>mapToDto(event: <a href="../interfaces/ICalendarEvent.html" target="_self">ICalendarEvent</a>)</code>
+<code>mapToDto(event: <a href="../interfaces/CalendarEvent.html" target="_self">CalendarEvent</a>)</code>
                 </td>
             </tr>
 
@@ -149,7 +149,7 @@
                                         <tr>
                                                 <td>event</td>
                                             <td>
-                                                            <code><a href="../interfaces/ICalendarEvent.html" target="_self" >ICalendarEvent</a></code>
+                                                            <code><a href="../interfaces/CalendarEvent.html" target="_self" >CalendarEvent</a></code>
                                             </td>
 
                                             <td>
@@ -178,13 +178,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ICalendarEvent } from &#x27;@infra/calendar/interface/calendar-event.interface&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CalendarEvent } from &#x27;@infra/calendar/interface/calendar-event.interface&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { CalendarEventDto } from &#x27;../dto/calendar-event.dto&#x27;;
 
 @Injectable()
 export class CalendarMapper {
-	mapToDto(event: ICalendarEvent): CalendarEventDto {
+	mapToDto(event: CalendarEvent): CalendarEventDto {
 		const { attributes } &#x3D; event.data[0];
 		return new CalendarEventDto({
 			teamId: attributes[&#x27;x-sc-teamid&#x27;],

@@ -235,7 +235,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>create(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, params: <a href="../interfaces/ICreateNews.html" target="_self">ICreateNews</a>)</code>
+                    <code>create(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, params: <a href="../interfaces/CreateNews.html" target="_self">CreateNews</a>)</code>
                 </td>
             </tr>
 
@@ -290,7 +290,7 @@
                                         <tr>
                                                 <td>params</td>
                                             <td>
-                                                            <code><a href="../interfaces/ICreateNews.html" target="_self" >ICreateNews</a></code>
+                                                            <code><a href="../interfaces/CreateNews.html" target="_self" >CreateNews</a></code>
                                             </td>
 
                                             <td>
@@ -1011,11 +1011,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FeathersAuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import {
 	Counted,
+	CreateNews,
 	EntityId,
-	ICreateNews,
 	IFindOptions,
 	INewsScope,
 	IUpdateNews,
@@ -1027,7 +1028,6 @@ import {
 import { NewsRepo, NewsTargetFilter } from &#x27;@shared/repo&#x27;;
 import { CrudOperation } from &#x27;@shared/types&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { FeathersAuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { NewsCrudOperationLoggable } from &#x27;../loggable/news-crud-operation.loggable&#x27;;
 
 type NewsPermission &#x3D; Permission.NEWS_VIEW | Permission.NEWS_EDIT;
@@ -1049,7 +1049,7 @@ export class NewsUc {
 	 * @param params
 	 * @returns
 	 */
-	public async create(userId: EntityId, schoolId: EntityId, params: ICreateNews): Promise&lt;News&gt; {
+	public async create(userId: EntityId, schoolId: EntityId, params: CreateNews): Promise&lt;News&gt; {
 		const { targetModel, targetId } &#x3D; params.target;
 		await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, [Permission.NEWS_CREATE]);
 

@@ -286,9 +286,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, Patch } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
+import { Body, Controller, Get, Patch } from &#x27;@nestjs/common&#x27;;
 import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
 import { ResolvedUserMapper } from &#x27;../mapper&#x27;;
 import { UserUc } from &#x27;../uc&#x27;;
 import { ChangeLanguageParams, ResolvedUserResponse, SuccessfulResponse } from &#x27;./dto&#x27;;

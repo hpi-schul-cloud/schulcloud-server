@@ -152,10 +152,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module, DynamicModule } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DynamicModule, Module } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
+import { MailConfig } from &#x27;./interfaces/mail-config&#x27;;
 import { MailService } from &#x27;./mail.service&#x27;;
-import { IMailConfig } from &#x27;./interfaces/mail-config&#x27;;
 
 interface MailModuleOptions {
 	exchange: string;
@@ -173,7 +173,7 @@ export class MailModule {
 					provide: &#x27;MAIL_SERVICE_OPTIONS&#x27;,
 					useValue: { exchange: options.exchange, routingKey: options.routingKey },
 				},
-				ConfigService&lt;IMailConfig, true&gt;,
+				ConfigService&lt;MailConfig, true&gt;,
 			],
 			exports: [MailService],
 		};

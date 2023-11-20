@@ -438,7 +438,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
+import { CopyApiResponse, CopyMapper } from &#x27;@modules/copy-helper&#x27;;
+import {
 	Body,
 	Controller,
 	ForbiddenException,
@@ -451,8 +453,6 @@
 } from &#x27;@nestjs/common&#x27;;
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError, RequestTimeout } from &#x27;@shared/common&#x27;;
-import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
-import { CopyApiResponse, CopyMapper } from &#x27;@modules/copy-helper&#x27;;
 // invalid import can produce dependency cycles
 import { serverConfig } from &#x27;@modules/server/server.config&#x27;;
 import { ShareTokenInfoResponseMapper, ShareTokenResponseMapper } from &#x27;../mapper&#x27;;

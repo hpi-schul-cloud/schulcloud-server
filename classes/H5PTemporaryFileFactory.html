@@ -1266,17 +1266,17 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ITemporaryFileProperties, H5pEditorTempFile } from &#x27;@src/modules/h5p-editor/entity&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { H5pEditorTempFile, TemporaryFileProperties } from &#x27;@src/modules/h5p-editor/entity&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 
 const oneDay &#x3D; 24 * 60 * 60 * 1000;
 
-class H5PTemporaryFileFactory extends BaseFactory&lt;H5pEditorTempFile, ITemporaryFileProperties&gt; {
+class H5PTemporaryFileFactory extends BaseFactory&lt;H5pEditorTempFile, TemporaryFileProperties&gt; {
 	isExpired(): this {
 		const birthtime &#x3D; new Date(Date.now() - oneDay * 2); // Created two days ago
 		const expiresAt &#x3D; new Date(Date.now() - oneDay); // Expired yesterday
-		const params: DeepPartial&lt;ITemporaryFileProperties&gt; &#x3D; { expiresAt, birthtime };
+		const params: DeepPartial&lt;TemporaryFileProperties&gt; &#x3D; { expiresAt, birthtime };
 
 		return this.params(params);
 	}

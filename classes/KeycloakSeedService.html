@@ -294,7 +294,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createOrUpdateIdmAccount(account: <a href="../interfaces/IJsonAccount.html" target="_self">IJsonAccount</a>, user: <a href="../interfaces/IJsonUser.html" target="_self">IJsonUser</a>)</code>
+                    <code>createOrUpdateIdmAccount(account: <a href="../interfaces/JsonAccount.html" target="_self">JsonAccount</a>, user: <a href="../interfaces/JsonUser.html" target="_self">JsonUser</a>)</code>
                 </td>
             </tr>
 
@@ -325,7 +325,7 @@
                                         <tr>
                                                 <td>account</td>
                                             <td>
-                                                            <code><a href="../interfaces/IJsonAccount.html" target="_self" >IJsonAccount</a></code>
+                                                            <code><a href="../interfaces/JsonAccount.html" target="_self" >JsonAccount</a></code>
                                             </td>
 
                                             <td>
@@ -337,7 +337,7 @@
                                         <tr>
                                                 <td>user</td>
                                             <td>
-                                                            <code><a href="../interfaces/IJsonUser.html" target="_self" >IJsonUser</a></code>
+                                                            <code><a href="../interfaces/JsonUser.html" target="_self" >JsonUser</a></code>
                                             </td>
 
                                             <td>
@@ -393,7 +393,7 @@
                 <td class="col-md-4">
 
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/IJsonAccount.html" target="_self" >Promise&lt;IJsonAccount[]&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/JsonAccount.html" target="_self" >Promise&lt;JsonAccount[]&gt;</a></code>
 
                         </div>
                 </td>
@@ -433,7 +433,7 @@
                 <td class="col-md-4">
 
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/User.html" target="_self" >Promise&lt;IJsonUser[]&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/User.html" target="_self" >Promise&lt;JsonUser[]&gt;</a></code>
 
                         </div>
                 </td>
@@ -493,12 +493,12 @@
 import { Inject } from &#x27;@nestjs/common&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import fs from &#x27;node:fs/promises&#x27;;
-import { IJsonAccount } from &#x27;../interface/json-account.interface&#x27;;
-import { IJsonUser } from &#x27;../interface/json-user.interface&#x27;;
 import { KeycloakAdministrationService } from &#x27;../../keycloak-administration/service/keycloak-administration.service&#x27;;
+import { JsonAccount } from &#x27;../interface/json-account.interface&#x27;;
+import { JsonUser } from &#x27;../interface/json-user.interface&#x27;;
 import {
-	KeycloakConfigurationInputFiles,
 	IKeycloakConfigurationInputFiles,
+	KeycloakConfigurationInputFiles,
 } from &#x27;../interface/keycloak-configuration-input-files.interface&#x27;;
 
 export class KeycloakSeedService {
@@ -548,7 +548,7 @@ export class KeycloakSeedService {
 		return deletedUsers;
 	}
 
-	private async createOrUpdateIdmAccount(account: IJsonAccount, user: IJsonUser): Promise&lt;boolean&gt; {
+	private async createOrUpdateIdmAccount(account: JsonAccount, user: JsonUser): Promise&lt;boolean&gt; {
 		const idmUserRepresentation: UserRepresentation &#x3D; {
 			username: account.username,
 			firstName: user.firstName,
@@ -582,14 +582,14 @@ export class KeycloakSeedService {
 		return false;
 	}
 
-	private async loadAccounts(): Promise&lt;IJsonAccount[]&gt; {
+	private async loadAccounts(): Promise&lt;JsonAccount[]&gt; {
 		const data &#x3D; await fs.readFile(this.inputFiles.accountsFile, { encoding: &#x27;utf-8&#x27; });
-		return JSON.parse(data) as IJsonAccount[];
+		return JSON.parse(data) as JsonAccount[];
 	}
 
-	private async loadUsers(): Promise&lt;IJsonUser[]&gt; {
+	private async loadUsers(): Promise&lt;JsonUser[]&gt; {
 		const data &#x3D; await fs.readFile(this.inputFiles.usersFile, { encoding: &#x27;utf-8&#x27; });
-		return JSON.parse(data) as IJsonUser[];
+		return JSON.parse(data) as JsonUser[];
 	}
 }
 </code></pre>

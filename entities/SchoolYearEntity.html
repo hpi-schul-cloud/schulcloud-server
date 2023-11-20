@@ -226,14 +226,14 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Property } from &#x27;@mikro-orm/core&#x27;;
 import { BaseEntity } from &#x27;./base.entity&#x27;;
 
-export interface ISchoolYearProperties {
+export interface SchoolYearProperties {
 	name: string;
 	startDate: Date;
 	endDate: Date;
 }
 
 @Entity({ tableName: &#x27;years&#x27; })
-export class SchoolYearEntity extends BaseEntity implements ISchoolYearProperties {
+export class SchoolYearEntity extends BaseEntity implements SchoolYearProperties {
 	@Property()
 	name: string;
 
@@ -243,7 +243,7 @@ export class SchoolYearEntity extends BaseEntity implements ISchoolYearPropertie
 	@Property()
 	endDate: Date;
 
-	constructor(props: ISchoolYearProperties) {
+	constructor(props: SchoolYearProperties) {
 		super();
 		this.name &#x3D; props.name;
 		this.startDate &#x3D; props.startDate;

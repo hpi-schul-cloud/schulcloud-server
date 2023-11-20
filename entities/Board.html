@@ -184,7 +184,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Collection, Entity, IdentifiedReference, ManyToMany, OneToOne, wrap } from &#x27;@mikro-orm/core&#x27;;
 import { BadRequestException, NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { ILearnroomElement } from &#x27;../../interface&#x27;;
+import { LearnroomElement } from &#x27;../../interface&#x27;;
 import { EntityId } from &#x27;../../types&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;../base.entity&#x27;;
 import type { Course } from &#x27;../course.entity&#x27;;
@@ -215,7 +215,7 @@ export class Board extends BaseEntityWithTimestamps {
 	@ManyToMany(&#x27;BoardElement&#x27;, undefined, { fieldName: &#x27;referenceIds&#x27; })
 	references &#x3D; new Collection&lt;BoardElement&gt;(this);
 
-	getByTargetId(id: EntityId): ILearnroomElement {
+	getByTargetId(id: EntityId): LearnroomElement {
 		const element &#x3D; this.getElementByTargetId(id);
 		return element.target;
 	}

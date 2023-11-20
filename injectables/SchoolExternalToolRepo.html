@@ -403,7 +403,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>entityFactory(props: <a href="../interfaces/ISchoolExternalToolProperties.html" target="_self">ISchoolExternalToolProperties</a>)</code>
+<code>entityFactory(props: <a href="../interfaces/SchoolExternalToolProperties.html" target="_self">SchoolExternalToolProperties</a>)</code>
                 </td>
             </tr>
 
@@ -440,7 +440,7 @@
                                         <tr>
                                                 <td>props</td>
                                             <td>
-                                                            <code><a href="../interfaces/ISchoolExternalToolProperties.html" target="_self" >ISchoolExternalToolProperties</a></code>
+                                                            <code><a href="../interfaces/SchoolExternalToolProperties.html" target="_self" >SchoolExternalToolProperties</a></code>
                                             </td>
 
                                             <td>
@@ -733,7 +733,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/ISchoolExternalToolProperties.html" target="_self" >ISchoolExternalToolProperties</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/SchoolExternalToolProperties.html" target="_self" >SchoolExternalToolProperties</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1609,22 +1609,22 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityName } from &#x27;@mikro-orm/core&#x27;;
 import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
+import { ExternalToolEntity } from &#x27;@modules/tool/external-tool/entity&#x27;;
+import { SchoolExternalTool } from &#x27;@modules/tool/school-external-tool/domain&#x27;;
+import { SchoolExternalToolEntity, SchoolExternalToolProperties } from &#x27;@modules/tool/school-external-tool/entity&#x27;;
+import { SchoolExternalToolQuery } from &#x27;@modules/tool/school-external-tool/uc/dto/school-external-tool.types&#x27;;
 import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
 import { SchoolEntity } from &#x27;@shared/domain&#x27;;
 import { BaseDORepo } from &#x27;@shared/repo/base.do.repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { SchoolExternalToolQuery } from &#x27;@modules/tool/school-external-tool/uc/dto/school-external-tool.types&#x27;;
-import { ISchoolExternalToolProperties, SchoolExternalToolEntity } from &#x27;@modules/tool/school-external-tool/entity&#x27;;
-import { SchoolExternalTool } from &#x27;@modules/tool/school-external-tool/domain&#x27;;
-import { ExternalToolEntity } from &#x27;@modules/tool/external-tool/entity&#x27;;
-import { SchoolExternalToolScope } from &#x27;./school-external-tool.scope&#x27;;
 import { ExternalToolRepoMapper } from &#x27;../externaltool&#x27;;
+import { SchoolExternalToolScope } from &#x27;./school-external-tool.scope&#x27;;
 
 @Injectable()
 export class SchoolExternalToolRepo extends BaseDORepo&lt;
 	SchoolExternalTool,
 	SchoolExternalToolEntity,
-	ISchoolExternalToolProperties
+	SchoolExternalToolProperties
 &gt; {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
@@ -1634,7 +1634,7 @@ export class SchoolExternalToolRepo extends BaseDORepo&lt;
 		return SchoolExternalToolEntity;
 	}
 
-	entityFactory(props: ISchoolExternalToolProperties): SchoolExternalToolEntity {
+	entityFactory(props: SchoolExternalToolProperties): SchoolExternalToolEntity {
 		return new SchoolExternalToolEntity(props);
 	}
 
@@ -1691,7 +1691,7 @@ export class SchoolExternalToolRepo extends BaseDORepo&lt;
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: SchoolExternalTool): ISchoolExternalToolProperties {
+	mapDOToEntityProperties(entityDO: SchoolExternalTool): SchoolExternalToolProperties {
 		return {
 			school: this._em.getReference(SchoolEntity, entityDO.schoolId),
 			tool: this._em.getReference(ExternalToolEntity, entityDO.toolId),

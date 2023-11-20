@@ -906,27 +906,27 @@ pseudonym table and distinguish between added and deleted users.</p>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { TeamDto, TeamUserDto } from &#x27;@modules/collaborative-storage&#x27;;
+import { PseudonymService } from &#x27;@modules/pseudonym&#x27;;
+import { ExternalTool } from &#x27;@modules/tool/external-tool/domain&#x27;;
+import { ExternalToolService } from &#x27;@modules/tool/external-tool/service&#x27;;
+import { UserService } from &#x27;@modules/user&#x27;;
+import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { Pseudonym, UserDO } from &#x27;@shared/domain/&#x27;;
 import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
 import { LtiToolRepo } from &#x27;@shared/repo/ltitool/&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { TeamDto, TeamUserDto } from &#x27;@modules/collaborative-storage&#x27;;
-import { PseudonymService } from &#x27;@modules/pseudonym&#x27;;
-import { UserService } from &#x27;@modules/user&#x27;;
-import { ExternalToolService } from &#x27;@modules/tool/external-tool/service&#x27;;
-import { ExternalTool } from &#x27;@modules/tool/external-tool/domain&#x27;;
 import { TeamRolePermissionsDto } from &#x27;../../dto/team-role-permissions.dto&#x27;;
-import { ICollaborativeStorageStrategy } from &#x27;../base.interface.strategy&#x27;;
+import { CollaborativeStorageStrategy } from &#x27;../base.interface.strategy&#x27;;
 import { NextcloudClient } from &#x27;./nextcloud.client&#x27;;
 
 /**
  * Nextcloud Strategy Implementation for Collaborative Storage
  *
- * @implements {ICollaborativeStorageStrategy}
+ * @implements {CollaborativeStorageStrategy}
  */
 @Injectable()
-export class NextcloudStrategy implements ICollaborativeStorageStrategy {
+export class NextcloudStrategy implements CollaborativeStorageStrategy {
 	constructor(
 		private readonly logger: LegacyLogger,
 		private readonly client: NextcloudClient,

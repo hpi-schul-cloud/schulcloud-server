@@ -78,7 +78,7 @@
                 <h3>Implements</h3>
             </p>
             <p class="comment">
-                            <code><a href="../interfaces/ICommonCartridgeElement.html" target="_self" >ICommonCartridgeElement</a></code>
+                            <code><a href="../interfaces/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
             </p>
 
 
@@ -116,7 +116,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(props: <a href="../undefineds/ICommonCartridgeManifestProps.html" target="_self">ICommonCartridgeManifestProps</a>, metadataProps: <a href="../undefineds/ICommonCartridgeMetadataProps.html" target="_self">ICommonCartridgeMetadataProps</a>, organizations: <a href="../interfaces/ICommonCartridgeElement.html" target="_self">ICommonCartridgeElement[]</a>, resources: <a href="../interfaces/ICommonCartridgeElement.html" target="_self">ICommonCartridgeElement[]</a>)</code>
+<code>constructor(props: <a href="../undefineds/ICommonCartridgeManifestProps.html" target="_self">ICommonCartridgeManifestProps</a>, metadataProps: <a href="../undefineds/ICommonCartridgeMetadataProps.html" target="_self">ICommonCartridgeMetadataProps</a>, organizations: <a href="../interfaces/CommonCartridgeElement.html" target="_self">CommonCartridgeElement[]</a>, resources: <a href="../interfaces/CommonCartridgeElement.html" target="_self">CommonCartridgeElement[]</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -166,7 +166,7 @@
                                                         <td>organizations</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/ICommonCartridgeElement.html" target="_self" >ICommonCartridgeElement[]</a></code>
+                                                                        <code><a href="../interfaces/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement[]</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -178,7 +178,7 @@
                                                         <td>resources</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/ICommonCartridgeElement.html" target="_self" >ICommonCartridgeElement[]</a></code>
+                                                                        <code><a href="../interfaces/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement[]</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -248,22 +248,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ICommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
+import { CommonCartridgeVersion } from &#x27;./common-cartridge-enums&#x27;;
 import { CommonCartridgeMetadataElement, ICommonCartridgeMetadataProps } from &#x27;./common-cartridge-metadata-element&#x27;;
 import { CommonCartridgeOrganizationWrapperElement } from &#x27;./common-cartridge-organization-wrapper-element&#x27;;
 import { CommonCartridgeResourceWrapperElement } from &#x27;./common-cartridge-resource-wrapper-element&#x27;;
-import { CommonCartridgeVersion } from &#x27;./common-cartridge-enums&#x27;;
 
 export type ICommonCartridgeManifestProps &#x3D; {
 	identifier: string;
 };
 
-export class CommonCartridgeManifestElement implements ICommonCartridgeElement {
+export class CommonCartridgeManifestElement implements CommonCartridgeElement {
 	constructor(
 		private readonly props: ICommonCartridgeManifestProps,
 		private readonly metadataProps: ICommonCartridgeMetadataProps,
-		private readonly organizations: ICommonCartridgeElement[],
-		private readonly resources: ICommonCartridgeElement[]
+		private readonly organizations: CommonCartridgeElement[],
+		private readonly resources: CommonCartridgeElement[]
 	) {}
 
 	transform(): Record&lt;string, unknown&gt; {

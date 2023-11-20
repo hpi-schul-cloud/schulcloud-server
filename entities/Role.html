@@ -233,7 +233,7 @@
 import { Permission, RoleName } from &#x27;../interface&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 
-export interface IRoleProperties {
+export interface RoleProperties {
 	permissions?: Permission[];
 	roles?: Role[];
 	name: RoleName;
@@ -251,7 +251,7 @@ export class Role extends BaseEntityWithTimestamps {
 	@ManyToMany({ entity: &#x27;Role&#x27; })
 	roles &#x3D; new Collection&lt;Role&gt;(this);
 
-	constructor(props: IRoleProperties) {
+	constructor(props: RoleProperties) {
 		super();
 		this.name &#x3D; props.name;
 		if (props.permissions) this.permissions &#x3D; props.permissions;

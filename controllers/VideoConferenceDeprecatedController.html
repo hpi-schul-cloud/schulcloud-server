@@ -473,7 +473,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
+import {
 	BadRequestException,
 	Body,
 	Controller,
@@ -486,7 +487,6 @@
 } from &#x27;@nestjs/common&#x27;;
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { VideoConferenceScope } from &#x27;@shared/domain/interface&#x27;;
-import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
 import { BBBBaseResponse } from &#x27;../bbb&#x27;;
 import { defaultVideoConferenceOptions } from &#x27;../interface&#x27;;
 import { VideoConferenceResponseDeprecatedMapper } from &#x27;../mapper/vc-deprecated-response.mapper&#x27;;

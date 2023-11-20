@@ -492,7 +492,7 @@ import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system
 import { EntityId } from &#x27;../types&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 
-export interface ISystemProperties {
+export interface SystemProperties {
 	type: string;
 	url?: string;
 	alias?: string;
@@ -678,7 +678,7 @@ export class OidcConfig {
 
 @Entity({ tableName: &#x27;systems&#x27; })
 export class SystemEntity extends BaseEntityWithTimestamps {
-	constructor(props: ISystemProperties) {
+	constructor(props: SystemProperties) {
 		super();
 		this.type &#x3D; props.type;
 		this.url &#x3D; props.url;

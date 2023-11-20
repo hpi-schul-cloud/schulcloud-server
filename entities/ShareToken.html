@@ -357,7 +357,7 @@ import { BaseEntityWithTimestamps } from &#x27;@shared/domain/entity/base.entity
 import { EntityId } from &#x27;@shared/domain/types/entity-id&#x27;;
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenString } from &#x27;../domainobject/share-token.do&#x27;;
 
-export interface IShareTokenProperties {
+export interface ShareTokenProperties {
 	token: ShareTokenString;
 	parentType: ShareTokenParentType;
 	parentId: EntityId | ObjectId;
@@ -395,7 +395,7 @@ export class ShareToken extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	expiresAt?: Date;
 
-	constructor(props: IShareTokenProperties) {
+	constructor(props: ShareTokenProperties) {
 		super();
 		this.token &#x3D; props.token;
 		this.parentType &#x3D; props.parentType;

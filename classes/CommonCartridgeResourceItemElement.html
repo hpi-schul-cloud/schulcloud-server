@@ -78,8 +78,8 @@
                 <h3>Implements</h3>
             </p>
             <p class="comment">
-                            <code><a href="../interfaces/ICommonCartridgeElement.html" target="_self" >ICommonCartridgeElement</a></code>
-                            <code><a href="../interfaces/ICommonCartridgeFile.html" target="_self" >ICommonCartridgeFile</a></code>
+                            <code><a href="../interfaces/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
+                            <code><a href="../interfaces/CommonCartridgeFile.html" target="_self" >CommonCartridgeFile</a></code>
             </p>
 
 
@@ -350,6 +350,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Builder } from &#x27;xml2js&#x27;;
+import { CommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
+import { CommonCartridgeResourceType } from &#x27;./common-cartridge-enums&#x27;;
+import { CommonCartridgeFile } from &#x27;./common-cartridge-file.interface&#x27;;
 import { CommonCartridgeLtiResource, ICommonCartridgeLtiResourceProps } from &#x27;./common-cartridge-lti-resource&#x27;;
 import {
 	CommonCartridgeWebContentResource,
@@ -359,17 +362,14 @@ import {
 	CommonCartridgeWebLinkResourceElement,
 	ICommonCartridgeWebLinkResourceProps,
 } from &#x27;./common-cartridge-web-link-resource&#x27;;
-import { ICommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
-import { ICommonCartridgeFile } from &#x27;./common-cartridge-file.interface&#x27;;
-import { CommonCartridgeResourceType } from &#x27;./common-cartridge-enums&#x27;;
 
 export type ICommonCartridgeResourceProps &#x3D;
 	| ICommonCartridgeLtiResourceProps
 	| ICommonCartridgeWebContentResourceProps
 	| ICommonCartridgeWebLinkResourceProps;
 
-export class CommonCartridgeResourceItemElement implements ICommonCartridgeElement, ICommonCartridgeFile {
-	private readonly inner: ICommonCartridgeElement &amp; ICommonCartridgeFile;
+export class CommonCartridgeResourceItemElement implements CommonCartridgeElement, CommonCartridgeFile {
+	private readonly inner: CommonCartridgeElement &amp; CommonCartridgeFile;
 
 	constructor(props: ICommonCartridgeResourceProps, xmlBuilder: Builder) {
 		if (props.type &#x3D;&#x3D;&#x3D; CommonCartridgeResourceType.LTI) {

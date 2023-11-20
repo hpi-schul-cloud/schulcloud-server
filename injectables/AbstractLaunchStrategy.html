@@ -582,7 +582,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>buildToolLaunchDataFromConcreteConfig(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, config: <a href="../interfaces/IToolLaunchParams.html" target="_self">IToolLaunchParams</a>)</code>
+                    <code>buildToolLaunchDataFromConcreteConfig(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, config: <a href="../interfaces/ToolLaunchParams.html" target="_self">ToolLaunchParams</a>)</code>
                 </td>
             </tr>
 
@@ -625,7 +625,7 @@
                                         <tr>
                                                 <td>config</td>
                                             <td>
-                                                            <code><a href="../interfaces/IToolLaunchParams.html" target="_self" >IToolLaunchParams</a></code>
+                                                            <code><a href="../interfaces/ToolLaunchParams.html" target="_self" >ToolLaunchParams</a></code>
                                             </td>
 
                                             <td>
@@ -733,7 +733,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>buildToolLaunchDataFromTools(data: <a href="../interfaces/IToolLaunchParams.html" target="_self">IToolLaunchParams</a>)</code>
+                    <code>buildToolLaunchDataFromTools(data: <a href="../interfaces/ToolLaunchParams.html" target="_self">ToolLaunchParams</a>)</code>
                 </td>
             </tr>
 
@@ -764,7 +764,7 @@
                                         <tr>
                                                 <td>data</td>
                                             <td>
-                                                            <code><a href="../interfaces/IToolLaunchParams.html" target="_self" >IToolLaunchParams</a></code>
+                                                            <code><a href="../interfaces/ToolLaunchParams.html" target="_self" >ToolLaunchParams</a></code>
                                             </td>
 
                                             <td>
@@ -954,7 +954,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createLaunchData(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, data: <a href="../interfaces/IToolLaunchParams.html" target="_self">IToolLaunchParams</a>)</code>
+                    <code>createLaunchData(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, data: <a href="../interfaces/ToolLaunchParams.html" target="_self">ToolLaunchParams</a>)</code>
                 </td>
             </tr>
 
@@ -997,7 +997,7 @@
                                         <tr>
                                                 <td>data</td>
                                             <td>
-                                                            <code><a href="../interfaces/IToolLaunchParams.html" target="_self" >IToolLaunchParams</a></code>
+                                                            <code><a href="../interfaces/ToolLaunchParams.html" target="_self" >ToolLaunchParams</a></code>
                                             </td>
 
                                             <td>
@@ -1441,11 +1441,11 @@ import {
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
 } from &#x27;../auto-parameter-strategy&#x27;;
-import { IToolLaunchParams } from &#x27;./tool-launch-params.interface&#x27;;
-import { IToolLaunchStrategy } from &#x27;./tool-launch-strategy.interface&#x27;;
+import { ToolLaunchParams } from &#x27;./tool-launch-params.interface&#x27;;
+import { ToolLaunchStrategy } from &#x27;./tool-launch-strategy.interface&#x27;;
 
 @Injectable()
-export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
+export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 	private readonly autoParameterStrategyMap: Map&lt;CustomParameterType, AutoParameterStrategy&gt;;
 
 	constructor(
@@ -1462,7 +1462,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		]);
 	}
 
-	public async createLaunchData(userId: EntityId, data: IToolLaunchParams): Promise&lt;ToolLaunchData&gt; {
+	public async createLaunchData(userId: EntityId, data: ToolLaunchParams): Promise&lt;ToolLaunchData&gt; {
 		const launchData: ToolLaunchData &#x3D; this.buildToolLaunchDataFromExternalTool(data.externalTool);
 
 		const launchDataProperties: PropertyData[] &#x3D; await this.buildToolLaunchDataFromTools(data);
@@ -1479,7 +1479,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 
 	public abstract buildToolLaunchDataFromConcreteConfig(
 		userId: EntityId,
-		config: IToolLaunchParams
+		config: ToolLaunchParams
 	): Promise&lt;PropertyData[]&gt;;
 
 	public abstract buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string | null;
@@ -1561,7 +1561,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		return launchData;
 	}
 
-	private async buildToolLaunchDataFromTools(data: IToolLaunchParams): Promise&lt;PropertyData[]&gt; {
+	private async buildToolLaunchDataFromTools(data: ToolLaunchParams): Promise&lt;PropertyData[]&gt; {
 		const propertyData: PropertyData[] &#x3D; [];
 		const { externalTool, schoolExternalTool, contextExternalTool } &#x3D; data;
 		const customParameters &#x3D; externalTool.parameters || [];

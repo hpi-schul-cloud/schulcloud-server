@@ -352,22 +352,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IdentityManagementModule } from &#x27;@infra/identity-management&#x27;;
+import { Module } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { PermissionService } from &#x27;@shared/domain&#x27;;
 import { SystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
-import { IdentityManagementModule } from &#x27;@infra/identity-management&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger/logger.module&#x27;;
+import { ServerConfig } from &#x27;../server/server.config&#x27;;
+import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb, AccountIdmToDtoMapperIdm } from &#x27;./mapper&#x27;;
 import { AccountRepo } from &#x27;./repo/account.repo&#x27;;
-import { AccountService } from &#x27;./services/account.service&#x27;;
-import { AccountValidationService } from &#x27;./services/account.validation.service&#x27;;
 import { AccountServiceDb } from &#x27;./services/account-db.service&#x27;;
 import { AccountServiceIdm } from &#x27;./services/account-idm.service&#x27;;
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb, AccountIdmToDtoMapperIdm } from &#x27;./mapper&#x27;;
-import { IServerConfig } from &#x27;../server/server.config&#x27;;
 import { AccountLookupService } from &#x27;./services/account-lookup.service&#x27;;
+import { AccountService } from &#x27;./services/account.service&#x27;;
+import { AccountValidationService } from &#x27;./services/account.validation.service&#x27;;
 
-function accountIdmToDtoMapperFactory(configService: ConfigService&lt;IServerConfig, true&gt;): AccountIdmToDtoMapper {
+function accountIdmToDtoMapperFactory(configService: ConfigService&lt;ServerConfig, true&gt;): AccountIdmToDtoMapper {
 	if (configService.get&lt;boolean&gt;(&#x27;FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED&#x27;) &#x3D;&#x3D;&#x3D; true) {
 		return new AccountIdmToDtoMapperIdm();
 	}

@@ -558,7 +558,7 @@ export enum PreviewStatus {
 	PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE &#x3D; &#x27;preview_not_possible_wrong_mime_type&#x27;,
 }
 
-export interface IFileRecordSecurityCheckProperties {
+export interface FileRecordSecurityCheckProperties {
 	status?: ScanStatus;
 	reason?: string;
 	requestToken?: string;
@@ -580,7 +580,7 @@ export class FileRecordSecurityCheck {
 	@Property()
 	updatedAt &#x3D; new Date();
 
-	constructor(props: IFileRecordSecurityCheckProperties) {
+	constructor(props: FileRecordSecurityCheckProperties) {
 		if (props.status !&#x3D;&#x3D; undefined) {
 			this.status &#x3D; props.status;
 		}
@@ -593,7 +593,7 @@ export class FileRecordSecurityCheck {
 	}
 }
 
-export interface IFileRecordProperties {
+export interface FileRecordProperties {
 	size: number;
 	name: string;
 	mimeType: string;
@@ -605,13 +605,13 @@ export interface IFileRecordProperties {
 	isCopyFrom?: EntityId;
 }
 
-interface IParentInfo {
+interface ParentInfo {
 	schoolId: EntityId;
 	parentId: EntityId;
 	parentType: FileRecordParentType;
 }
 
-// TODO: IEntityWithSchool
+// TODO: EntityWithSchool
 
 /**
  * Note: The file record entity will not manage any entity relations by itself.
@@ -674,7 +674,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return result;
 	}
 
-	constructor(props: IFileRecordProperties) {
+	constructor(props: FileRecordProperties) {
 		super();
 		this.size &#x3D; props.size;
 		this.name &#x3D; props.name;
@@ -701,7 +701,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return this.securityCheck.requestToken;
 	}
 
-	public copy(userId: EntityId, targetParentInfo: IParentInfo): FileRecord {
+	public copy(userId: EntityId, targetParentInfo: ParentInfo): FileRecord {
 		const { size, name, mimeType, id } &#x3D; this;
 		const { parentType, parentId, schoolId } &#x3D; targetParentInfo;
 
@@ -785,7 +785,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return isPreviewPossible;
 	}
 
-	public getParentInfo(): IParentInfo {
+	public getParentInfo(): ParentInfo {
 		const { parentId, parentType, schoolId } &#x3D; this;
 
 		return { parentId, parentType, schoolId };

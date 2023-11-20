@@ -120,7 +120,7 @@ IMPORTANT: This service will not guarantee that the id is valid, it will only tr
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(idmService: <a href="../classes/IdentityManagementService.html" target="_self">IdentityManagementService</a>, configService: <a href="../interfaces/IServerConfig.html" target="_self">ConfigService&lt;IServerConfig | &gt;</a>)</code>
+<code>constructor(idmService: <a href="../classes/IdentityManagementService.html" target="_self">IdentityManagementService</a>, configService: <a href="../interfaces/ServerConfig.html" target="_self">ConfigService&lt;ServerConfig | &gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -158,7 +158,7 @@ IMPORTANT: This service will not guarantee that the id is valid, it will only tr
                                                         <td>configService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IServerConfig.html" target="_self" >ConfigService&lt;IServerConfig | &gt;</a></code>
+                                                                        <code><a href="../interfaces/ServerConfig.html" target="_self" >ConfigService&lt;ServerConfig | &gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -342,11 +342,11 @@ IMPORTANT: This method will not guarantee that the id is valid, it will only try
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IdentityManagementService } from &#x27;@infra/identity-management&#x27;;
+import { ServerConfig } from &#x27;@modules/server/server.config&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { EntityId } from &#x27;@shared/domain&#x27;;
-import { IdentityManagementService } from &#x27;@infra/identity-management&#x27;;
-import { IServerConfig } from &#x27;@modules/server/server.config&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
 
 /**
@@ -359,7 +359,7 @@ import { ObjectId } from &#x27;bson&#x27;;
 export class AccountLookupService {
 	constructor(
 		private readonly idmService: IdentityManagementService,
-		private readonly configService: ConfigService&lt;IServerConfig, true&gt;
+		private readonly configService: ConfigService&lt;ServerConfig, true&gt;
 	) {}
 
 	/**

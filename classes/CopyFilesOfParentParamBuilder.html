@@ -127,7 +127,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>build(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, source: <a href="../interfaces/IFileRequestInfo.html" target="_self">IFileRequestInfo</a>, target: <a href="../interfaces/IFileRequestInfo.html" target="_self">IFileRequestInfo</a>)</code>
+                    <code>build(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, source: <a href="../interfaces/FileRequestInfo.html" target="_self">FileRequestInfo</a>, target: <a href="../interfaces/FileRequestInfo.html" target="_self">FileRequestInfo</a>)</code>
                 </td>
             </tr>
 
@@ -170,7 +170,7 @@
                                         <tr>
                                                 <td>source</td>
                                             <td>
-                                                            <code><a href="../interfaces/IFileRequestInfo.html" target="_self" >IFileRequestInfo</a></code>
+                                                            <code><a href="../interfaces/FileRequestInfo.html" target="_self" >FileRequestInfo</a></code>
                                             </td>
 
                                             <td>
@@ -182,7 +182,7 @@
                                         <tr>
                                                 <td>target</td>
                                             <td>
-                                                            <code><a href="../interfaces/IFileRequestInfo.html" target="_self" >IFileRequestInfo</a></code>
+                                                            <code><a href="../interfaces/FileRequestInfo.html" target="_self" >FileRequestInfo</a></code>
                                             </td>
 
                                             <td>
@@ -195,7 +195,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/ICopyFilesRequestInfo.html" target="_self" >ICopyFilesRequestInfo</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/CopyFilesRequestInfo.html" target="_self" >CopyFilesRequestInfo</a></code>
 
                         </div>
                             <div class="io-description">
@@ -216,11 +216,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain&#x27;;
-import { IFileRequestInfo } from &#x27;../interfaces&#x27;;
-import { ICopyFilesRequestInfo } from &#x27;../interfaces/copy-file-request-info&#x27;;
+import { FileRequestInfo } from &#x27;../interfaces&#x27;;
+import { CopyFilesRequestInfo } from &#x27;../interfaces/copy-file-request-info&#x27;;
 
 export class CopyFilesOfParentParamBuilder {
-	static build(userId: EntityId, source: IFileRequestInfo, target: IFileRequestInfo): ICopyFilesRequestInfo {
+	static build(userId: EntityId, source: FileRequestInfo, target: FileRequestInfo): CopyFilesRequestInfo {
 		const fileRequestInfo &#x3D; {
 			userId,
 			source,

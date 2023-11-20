@@ -498,12 +498,12 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId, Page } from &#x27;@shared/domain&#x27;;
+import { CustomParameter } from &#x27;../../common/domain&#x27;;
+import { CustomParameterScope } from &#x27;../../common/enum&#x27;;
+import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
+import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
 import { IToolFeatures, ToolFeatures } from &#x27;../../tool-config&#x27;;
 import { ExternalTool } from &#x27;../domain&#x27;;
-import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
-import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
-import { CustomParameterScope } from &#x27;../../common/enum&#x27;;
-import { CustomParameter } from &#x27;../../common/domain&#x27;;
 import { ContextExternalToolTemplateInfo } from &#x27;../uc/dto&#x27;;
 
 @Injectable()

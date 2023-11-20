@@ -322,16 +322,16 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, NotFoundException, Param, Query, Res, StreamableFile } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
+import { Controller, Get, NotFoundException, Param, Query, Res, StreamableFile } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { ICurrentUser, Authenticate, CurrentUser } from &#x27;@modules/authentication&#x27;;
 import { PaginationParams } from &#x27;@shared/controller/&#x27;;
 import { Response } from &#x27;express&#x27;;
-import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { CourseUc } from &#x27;../uc/course.uc&#x27;;
-import { CourseExportUc } from &#x27;../uc/course-export.uc&#x27;;
-import { CourseMetadataListResponse, CourseUrlParams, CourseQueryParams } from &#x27;./dto&#x27;;
 import { CourseMapper } from &#x27;../mapper/course.mapper&#x27;;
+import { CourseExportUc } from &#x27;../uc/course-export.uc&#x27;;
+import { CourseUc } from &#x27;../uc/course.uc&#x27;;
+import { CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from &#x27;./dto&#x27;;
 
 @ApiTags(&#x27;Courses&#x27;)
 @Authenticate(&#x27;jwt&#x27;)

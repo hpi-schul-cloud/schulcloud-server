@@ -261,7 +261,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>entityFactory(props: <a href="../interfaces/ISchoolProperties.html" target="_self">ISchoolProperties</a>)</code>
+<code>entityFactory(props: <a href="../interfaces/SchoolProperties.html" target="_self">SchoolProperties</a>)</code>
                 </td>
             </tr>
 
@@ -298,7 +298,7 @@
                                         <tr>
                                                 <td>props</td>
                                             <td>
-                                                            <code><a href="../interfaces/ISchoolProperties.html" target="_self" >ISchoolProperties</a></code>
+                                                            <code><a href="../interfaces/SchoolProperties.html" target="_self" >SchoolProperties</a></code>
                                             </td>
 
                                             <td>
@@ -534,7 +534,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/ISchoolProperties.html" target="_self" >ISchoolProperties</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/SchoolProperties.html" target="_self" >SchoolProperties</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1413,9 +1413,9 @@ import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import {
 	EntityId,
-	ISchoolProperties,
 	LegacySchoolDo,
 	SchoolEntity,
+	SchoolProperties,
 	SystemEntity,
 	UserLoginMigrationEntity,
 } from &#x27;@shared/domain&#x27;;
@@ -1426,7 +1426,7 @@ import { BaseDORepo } from &#x27;../base.do.repo&#x27;;
  * @deprecated because it uses the deprecated LegacySchoolDo.
  */
 @Injectable()
-export class LegacySchoolRepo extends BaseDORepo&lt;LegacySchoolDo, SchoolEntity, ISchoolProperties&gt; {
+export class LegacySchoolRepo extends BaseDORepo&lt;LegacySchoolDo, SchoolEntity, SchoolProperties&gt; {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
@@ -1452,7 +1452,7 @@ export class LegacySchoolRepo extends BaseDORepo&lt;LegacySchoolDo, SchoolEntity
 		return schoolDo;
 	}
 
-	entityFactory(props: ISchoolProperties): SchoolEntity {
+	entityFactory(props: SchoolProperties): SchoolEntity {
 		return new SchoolEntity(props);
 	}
 
@@ -1473,7 +1473,7 @@ export class LegacySchoolRepo extends BaseDORepo&lt;LegacySchoolDo, SchoolEntity
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: LegacySchoolDo): ISchoolProperties {
+	mapDOToEntityProperties(entityDO: LegacySchoolDo): SchoolProperties {
 		return {
 			externalId: entityDO.externalId,
 			features: entityDO.features,

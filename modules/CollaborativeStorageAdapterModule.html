@@ -66,10 +66,6 @@
 <title>cluster_CollaborativeStorageAdapterModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 1580,-268 1580,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_CollaborativeStorageAdapterModule_exports</title>
-<polygon fill="none" stroke="black" points="481,-208 481,-260 681,-260 681,-208 481,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_CollaborativeStorageAdapterModule_providers</title>
 <polygon fill="none" stroke="black" points="490,-78 490,-130 1572,-130 1572,-78 490,-78"/>
@@ -77,6 +73,10 @@
 <g id="clust3" class="cluster">
 <title>cluster_CollaborativeStorageAdapterModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 482,-130 482,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_CollaborativeStorageAdapterModule_exports</title>
+<polygon fill="none" stroke="black" points="481,-208 481,-260 681,-260 681,-208 481,-208"/>
 </g>
 <!-- LoggerModule -->
 <g id="node1" class="node">
@@ -308,20 +308,20 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
+import { PseudonymModule } from &#x27;@modules/pseudonym&#x27;;
+import { ToolModule } from &#x27;@modules/tool&#x27;;
+import { UserModule } from &#x27;@modules/user&#x27;;
 import { HttpModule } from &#x27;@nestjs/axios&#x27;;
 import { Module, Provider } from &#x27;@nestjs/common&#x27;;
 import { LtiToolRepo } from &#x27;@shared/repo/ltitool/&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
-import { ToolModule } from &#x27;@modules/tool&#x27;;
-import { PseudonymModule } from &#x27;@modules/pseudonym&#x27;;
-import { UserModule } from &#x27;@modules/user&#x27;;
-import { NextcloudStrategy } from &#x27;./strategy/nextcloud/nextcloud.strategy&#x27;;
-import { NextcloudClient } from &#x27;./strategy/nextcloud/nextcloud.client&#x27;;
-import { CollaborativeStorageAdapterMapper } from &#x27;./mapper&#x27;;
 import { CollaborativeStorageAdapter } from &#x27;./collaborative-storage.adapter&#x27;;
+import { CollaborativeStorageAdapterMapper } from &#x27;./mapper&#x27;;
+import { NextcloudClient } from &#x27;./strategy/nextcloud/nextcloud.client&#x27;;
+import { NextcloudStrategy } from &#x27;./strategy/nextcloud/nextcloud.strategy&#x27;;
 
 const storageStrategy: Provider &#x3D; {
-	provide: &#x27;ICollaborativeStorageStrategy&#x27;,
+	provide: &#x27;CollaborativeStorageStrategy&#x27;,
 	useExisting: NextcloudStrategy,
 };
 

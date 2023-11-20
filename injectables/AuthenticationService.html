@@ -127,7 +127,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(jwtService: JwtService, jwtValidationAdapter: <a href="../injectables/JwtValidationAdapter.html" target="_self">JwtValidationAdapter</a>, accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, configService: <a href="../interfaces/IServerConfig.html" target="_self">ConfigService&lt;IServerConfig | &gt;</a>)</code>
+<code>constructor(jwtService: JwtService, jwtValidationAdapter: <a href="../injectables/JwtValidationAdapter.html" target="_self">JwtValidationAdapter</a>, accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, configService: <a href="../interfaces/ServerConfig.html" target="_self">ConfigService&lt;ServerConfig | &gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -189,7 +189,7 @@
                                                         <td>configService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IServerConfig.html" target="_self" >ConfigService&lt;IServerConfig | &gt;</a></code>
+                                                                        <code><a href="../interfaces/ServerConfig.html" target="_self" >ConfigService&lt;ServerConfig | &gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -706,19 +706,19 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountService } from &#x27;@modules/account&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { JwtService } from &#x27;@nestjs/jwt&#x27;;
-import { AccountService } from &#x27;@modules/account&#x27;;
 // invalid import
 import { AccountDto } from &#x27;@modules/account/services/dto&#x27;;
 // invalid import, can produce dependency cycles
-import type { IServerConfig } from &#x27;@modules/server&#x27;;
+import type { ServerConfig } from &#x27;@modules/server&#x27;;
 import { randomUUID } from &#x27;crypto&#x27;;
 import jwt, { JwtPayload } from &#x27;jsonwebtoken&#x27;;
-import { JwtValidationAdapter } from &#x27;../strategy/jwt-validation.adapter&#x27;;
 import { BruteForceError, UnauthorizedLoggableException } from &#x27;../errors&#x27;;
 import { CreateJwtPayload } from &#x27;../interface/jwt-payload&#x27;;
+import { JwtValidationAdapter } from &#x27;../strategy/jwt-validation.adapter&#x27;;
 import { LoginDto } from &#x27;../uc/dto&#x27;;
 
 @Injectable()
@@ -727,7 +727,7 @@ export class AuthenticationService {
 		private readonly jwtService: JwtService,
 		private readonly jwtValidationAdapter: JwtValidationAdapter,
 		private readonly accountService: AccountService,
-		private readonly configService: ConfigService&lt;IServerConfig, true&gt;
+		private readonly configService: ConfigService&lt;ServerConfig, true&gt;
 	) {}
 
 	async loadAccount(username: string, systemId?: string): Promise&lt;AccountDto&gt; {

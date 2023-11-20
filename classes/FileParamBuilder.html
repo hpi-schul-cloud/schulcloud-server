@@ -183,7 +183,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/IFileRequestInfo.html" target="_self" >IFileRequestInfo</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/FileRequestInfo.html" target="_self" >FileRequestInfo</a></code>
 
                         </div>
                             <div class="io-description">
@@ -204,11 +204,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain&#x27;;
-import { EntitiesWithFiles, IFileRequestInfo } from &#x27;../interfaces&#x27;;
+import { EntitiesWithFiles, FileRequestInfo } from &#x27;../interfaces&#x27;;
 import { FilesStorageClientMapper } from &#x27;./files-storage-client.mapper&#x27;;
 
 export class FileParamBuilder {
-	static build(schoolId: EntityId, parent: EntitiesWithFiles): IFileRequestInfo {
+	static build(schoolId: EntityId, parent: EntitiesWithFiles): FileRequestInfo {
 		const parentType &#x3D; FilesStorageClientMapper.mapEntityToParentType(parent);
 		const fileRequestInfo &#x3D; {
 			parentType,

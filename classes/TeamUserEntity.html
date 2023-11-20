@@ -137,7 +137,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(props: <a href="../interfaces/ITeamUserProperties.html" target="_self">ITeamUserProperties</a>)</code>
+<code>constructor(props: <a href="../interfaces/TeamUserProperties.html" target="_self">TeamUserProperties</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -163,7 +163,7 @@
                                                         <td>props</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/ITeamUserProperties.html" target="_self" >ITeamUserProperties</a></code>
+                                                                        <code><a href="../interfaces/TeamUserProperties.html" target="_self" >TeamUserProperties</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -455,12 +455,12 @@ import { Role } from &#x27;./role.entity&#x27;;
 import { SchoolEntity } from &#x27;./school.entity&#x27;;
 import { User } from &#x27;./user.entity&#x27;;
 
-export interface ITeamProperties {
+export interface TeamProperties {
 	name: string;
 	teamUsers?: TeamUserEntity[];
 }
 
-export interface ITeamUserProperties {
+export interface TeamUserProperties {
 	user: User;
 	role: Role;
 	school: SchoolEntity;
@@ -468,7 +468,7 @@ export interface ITeamUserProperties {
 
 @Embeddable()
 export class TeamUserEntity {
-	constructor(props: ITeamUserProperties) {
+	constructor(props: TeamUserProperties) {
 		this.userId &#x3D; props.user;
 		this.role &#x3D; props.role;
 		this.schoolId &#x3D; props.school;
@@ -517,7 +517,7 @@ export class TeamEntity extends BaseEntityWithTimestamps {
 		this.userIds &#x3D; value;
 	}
 
-	constructor(props: ITeamProperties) {
+	constructor(props: TeamProperties) {
 		super();
 		this.name &#x3D; props.name;
 		this.userIds &#x3D; props.teamUsers ? props.teamUsers.map((teamUser) &#x3D;&gt; new TeamUserEntity(teamUser)) : [];

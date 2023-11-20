@@ -262,7 +262,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/CalendarEventDto.html" target="_self" >Promise&lt;CalendarEventDto&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/CalendarEvent.html" target="_self" >Promise&lt;CalendarEventDto&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -355,7 +355,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/ICalendarEvent.html" target="_self" >Observable&lt;AxiosResponse&lt;ICalendarEvent&gt;&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/CalendarEvent.html" target="_self" >Observable&lt;AxiosResponse&lt;CalendarEvent&gt;&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -439,11 +439,11 @@ import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x
 import { EntityId } from &#x27;@shared/domain&#x27;;
 import { ErrorUtils } from &#x27;@src/core/error/utils&#x27;;
 import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
-import { Observable, firstValueFrom } from &#x27;rxjs&#x27;;
+import { firstValueFrom, Observable } from &#x27;rxjs&#x27;;
 import { URL, URLSearchParams } from &#x27;url&#x27;;
-import { CalendarMapper } from &#x27;../mapper/calendar.mapper&#x27;;
 import { CalendarEventDto } from &#x27;../dto/calendar-event.dto&#x27;;
-import { ICalendarEvent } from &#x27;../interface/calendar-event.interface&#x27;;
+import { CalendarEvent } from &#x27;../interface/calendar-event.interface&#x27;;
+import { CalendarMapper } from &#x27;../mapper/calendar.mapper&#x27;;
 
 @Injectable()
 export class CalendarService {
@@ -469,7 +469,7 @@ export class CalendarService {
 				timeout: this.timeoutMs,
 			})
 		)
-			.then((resp: AxiosResponse&lt;ICalendarEvent&gt;) &#x3D;&gt; this.calendarMapper.mapToDto(resp.data))
+			.then((resp: AxiosResponse&lt;CalendarEvent&gt;) &#x3D;&gt; this.calendarMapper.mapToDto(resp.data))
 			.catch((error) &#x3D;&gt; {
 				throw new InternalServerErrorException(
 					null,
@@ -482,7 +482,7 @@ export class CalendarService {
 		path: string,
 		queryParams: URLSearchParams,
 		config: AxiosRequestConfig
-	): Observable&lt;AxiosResponse&lt;ICalendarEvent&gt;&gt; {
+	): Observable&lt;AxiosResponse&lt;CalendarEvent&gt;&gt; {
 		const url: URL &#x3D; new URL(this.baseURL);
 		url.pathname &#x3D; path;
 		url.search &#x3D; queryParams.toString();

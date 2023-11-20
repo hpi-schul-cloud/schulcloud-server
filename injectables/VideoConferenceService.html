@@ -821,7 +821,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/IScopeInfo.html" target="_self" >Promise&lt;IScopeInfo&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/ScopeInfo.html" target="_self" >Promise&lt;ScopeInfo&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1580,7 +1580,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, ForbiddenException, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CalendarEventDto, CalendarService } from &#x27;@infra/calendar&#x27;;
+import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { CourseService } from &#x27;@modules/learnroom&#x27;;
+import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
+import { UserService } from &#x27;@modules/user&#x27;;
+import { BadRequestException, ForbiddenException, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import {
 	Course,
 	EntityId,
@@ -1596,16 +1601,11 @@ import {
 	VideoConferenceOptionsDO,
 	VideoConferenceScope,
 } from &#x27;@shared/domain&#x27;;
-import { CalendarEventDto, CalendarService } from &#x27;@infra/calendar&#x27;;
 import { TeamsRepo, VideoConferenceRepo } from &#x27;@shared/repo&#x27;;
-import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
-import { CourseService } from &#x27;@modules/learnroom&#x27;;
-import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
-import { UserService } from &#x27;@modules/user&#x27;;
 import { BBBRole } from &#x27;../bbb&#x27;;
 import { ErrorStatus } from &#x27;../error&#x27;;
 import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from &#x27;../interface&#x27;;
-import { IScopeInfo, VideoConferenceState } from &#x27;../uc/dto&#x27;;
+import { ScopeInfo, VideoConferenceState } from &#x27;../uc/dto&#x27;;
 
 @Injectable()
 export class VideoConferenceService {
@@ -1747,7 +1747,7 @@ export class VideoConferenceService {
 		return text.replace(/[^\dA-Za-zÀ-ÖØ-öø-ÿ.\-&#x3D;_&#x60;´ ]/g, &#x27;&#x27;);
 	}
 
-	async getScopeInfo(userId: EntityId, scopeId: string, scope: VideoConferenceScope): Promise&lt;IScopeInfo&gt; {
+	async getScopeInfo(userId: EntityId, scopeId: string, scope: VideoConferenceScope): Promise&lt;ScopeInfo&gt; {
 		switch (scope) {
 			case VideoConferenceScope.COURSE: {
 				const course: Course &#x3D; await this.courseService.findById(scopeId);
@@ -1779,7 +1779,7 @@ export class VideoConferenceService {
 		scopeId: EntityId,
 		scope: VideoConferenceScope
 	): Promise&lt;{ role: BBBRole; isGuest: boolean }&gt; {
-		const scopeInfo: IScopeInfo &#x3D; await this.getScopeInfo(userId, scopeId, scope);
+		const scopeInfo: ScopeInfo &#x3D; await this.getScopeInfo(userId, scopeId, scope);
 
 		const role: BBBRole &#x3D; await this.determineBbbRole(userId, scopeInfo.scopeId, scope);
 

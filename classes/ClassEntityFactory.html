@@ -1298,14 +1298,14 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DeepPartial } from &#x27;fishery&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ClassEntity, ClassEntityProps, ClassSourceOptionsEntity } from &#x27;@modules/class/entity&#x27;;
 import { BaseFactory } from &#x27;@shared/testing/factory/base.factory&#x27;;
-import { ClassEntity, ClassSourceOptionsEntity, IClassEntityProps } from &#x27;@modules/class/entity&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
+import { DeepPartial } from &#x27;fishery&#x27;;
 
-class ClassEntityFactory extends BaseFactory&lt;ClassEntity, IClassEntityProps&gt; {
+class ClassEntityFactory extends BaseFactory&lt;ClassEntity, ClassEntityProps&gt; {
 	withUserIds(userIds: ObjectId[]): this {
-		const params: DeepPartial&lt;IClassEntityProps&gt; &#x3D; {
+		const params: DeepPartial&lt;ClassEntityProps&gt; &#x3D; {
 			userIds,
 		};
 

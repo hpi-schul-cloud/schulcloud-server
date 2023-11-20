@@ -179,7 +179,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/ITaskCreate.html" target="_self" >ITaskCreate</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/TaskCreate.html" target="_self" >TaskCreate</a></code>
 
                         </div>
                             <div class="io-description">
@@ -248,7 +248,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/ITaskUpdate.html" target="_self" >ITaskUpdate</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/TaskUpdate.html" target="_self" >TaskUpdate</a></code>
 
                         </div>
                             <div class="io-description">
@@ -337,7 +337,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { InputFormat, ITaskCreate, ITaskUpdate, RichText, TaskWithStatusVo } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { InputFormat, RichText, TaskCreate, TaskUpdate, TaskWithStatusVo } from &#x27;@shared/domain&#x27;;
 import { TaskCreateParams, TaskResponse, TaskUpdateParams } from &#x27;../controller/dto&#x27;;
 import { TaskStatusMapper } from &#x27;./task-status.mapper&#x27;;
 
@@ -375,8 +375,8 @@ export class TaskMapper {
 		return dto;
 	}
 
-	static mapTaskUpdateToDomain(params: TaskUpdateParams): ITaskUpdate {
-		const dto: ITaskUpdate &#x3D; {
+	static mapTaskUpdateToDomain(params: TaskUpdateParams): TaskUpdate {
+		const dto: TaskUpdate &#x3D; {
 			name: params.name,
 			courseId: params.courseId,
 			lessonId: params.lessonId,
@@ -390,8 +390,8 @@ export class TaskMapper {
 		return dto;
 	}
 
-	static mapTaskCreateToDomain(params: TaskCreateParams): ITaskCreate {
-		const dto: ITaskCreate &#x3D; {
+	static mapTaskCreateToDomain(params: TaskCreateParams): TaskCreate {
+		const dto: TaskCreate &#x3D; {
 			name: params.name || &#x27;Draft&#x27;,
 			courseId: params.courseId,
 			lessonId: params.lessonId,

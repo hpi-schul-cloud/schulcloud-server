@@ -1391,35 +1391,35 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ISubmissionProperties, Submission } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Submission, SubmissionProperties } from &#x27;@shared/domain&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 import { schoolFactory } from &#x27;./school.factory&#x27;;
 import { taskFactory } from &#x27;./task.factory&#x27;;
 import { userFactory } from &#x27;./user.factory&#x27;;
 
-class SubmissionFactory extends BaseFactory&lt;Submission, ISubmissionProperties&gt; {
+class SubmissionFactory extends BaseFactory&lt;Submission, SubmissionProperties&gt; {
 	graded(): this {
-		const params: DeepPartial&lt;ISubmissionProperties&gt; &#x3D; { graded: true };
+		const params: DeepPartial&lt;SubmissionProperties&gt; &#x3D; { graded: true };
 
 		return this.params(params);
 	}
 
 	submitted(): this {
-		const params: DeepPartial&lt;ISubmissionProperties&gt; &#x3D; { submitted: true };
+		const params: DeepPartial&lt;SubmissionProperties&gt; &#x3D; { submitted: true };
 
 		return this.params(params);
 	}
 
 	studentWithId(): this {
-		const params: DeepPartial&lt;ISubmissionProperties&gt; &#x3D; { student: userFactory.buildWithId() };
+		const params: DeepPartial&lt;SubmissionProperties&gt; &#x3D; { student: userFactory.buildWithId() };
 
 		return this.params(params);
 	}
 
 	teamMembersWithId(numberOfTeamMembers: number): this {
 		const teamMembers &#x3D; userFactory.buildListWithId(numberOfTeamMembers);
-		const params: DeepPartial&lt;ISubmissionProperties&gt; &#x3D; { teamMembers };
+		const params: DeepPartial&lt;SubmissionProperties&gt; &#x3D; { teamMembers };
 
 		return this.params(params);
 	}

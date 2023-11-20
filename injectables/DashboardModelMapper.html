@@ -785,7 +785,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>mapReferenceToModel(reference: <a href="../interfaces/ILearnroom.html" target="_self">ILearnroom</a>)</code>
+<code>mapReferenceToModel(reference: <a href="../interfaces/Learnroom.html" target="_self">Learnroom</a>)</code>
                 </td>
             </tr>
 
@@ -816,7 +816,7 @@
                                         <tr>
                                                 <td>reference</td>
                                             <td>
-                                                            <code><a href="../interfaces/ILearnroom.html" target="_self" >ILearnroom</a></code>
+                                                            <code><a href="../interfaces/Learnroom.html" target="_self" >Learnroom</a></code>
                                             </td>
 
                                             <td>
@@ -939,17 +939,17 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { wrap, EntityManager } from &#x27;@mikro-orm/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager, wrap } from &#x27;@mikro-orm/core&#x27;;
 import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import {
+	Course,
 	DashboardEntity,
-	GridElement,
-	GridElementWithPosition,
-	ILearnroom,
-	LearnroomTypes,
 	DashboardGridElementModel,
 	DashboardModelEntity,
-	Course,
+	GridElement,
+	GridElementWithPosition,
+	Learnroom,
+	LearnroomTypes,
 	User,
 } from &#x27;@shared/domain&#x27;;
 
@@ -980,7 +980,7 @@ export class DashboardModelMapper {
 		return new DashboardEntity(modelEntity.id, { grid, userId: modelEntity.user.id });
 	}
 
-	mapReferenceToModel(reference: ILearnroom): Course {
+	mapReferenceToModel(reference: Learnroom): Course {
 		const metadata &#x3D; reference.getMetadata();
 		if (metadata.type &#x3D;&#x3D;&#x3D; LearnroomTypes.Course) {
 			const course &#x3D; reference as Course;

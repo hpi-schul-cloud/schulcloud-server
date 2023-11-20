@@ -275,7 +275,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>entityFactory(props: <a href="../interfaces/IUserProperties.html" target="_self">IUserProperties</a>)</code>
+<code>entityFactory(props: <a href="../interfaces/UserProperties.html" target="_self">UserProperties</a>)</code>
                 </td>
             </tr>
 
@@ -312,7 +312,7 @@
                                         <tr>
                                                 <td>props</td>
                                             <td>
-                                                            <code><a href="../interfaces/IUserProperties.html" target="_self" >IUserProperties</a></code>
+                                                            <code><a href="../interfaces/UserProperties.html" target="_self" >UserProperties</a></code>
                                             </td>
 
                                             <td>
@@ -733,7 +733,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/IUserProperties.html" target="_self" >IUserProperties</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/UserProperties.html" target="_self" >UserProperties</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1609,14 +1609,14 @@ import { EntityNotFoundError } from &#x27;@shared/common&#x27;;
 import {
 	EntityId,
 	IFindOptions,
-	IPagination,
-	IUserProperties,
+	Pagination,
 	Role,
 	SchoolEntity,
 	SortOrder,
 	SortOrderMap,
 	SystemEntity,
 	User,
+	UserProperties,
 } from &#x27;@shared/domain&#x27;;
 import { RoleReference } from &#x27;@shared/domain/domainobject&#x27;;
 import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
@@ -1625,17 +1625,17 @@ import { BaseDORepo, Scope } from &#x27;@shared/repo&#x27;;
 import { UserScope } from &#x27;./user.scope&#x27;;
 
 @Injectable()
-export class UserDORepo extends BaseDORepo&lt;UserDO, User, IUserProperties&gt; {
+export class UserDORepo extends BaseDORepo&lt;UserDO, User, UserProperties&gt; {
 	get entityName(): EntityName&lt;User&gt; {
 		return User;
 	}
 
-	entityFactory(props: IUserProperties): User {
+	entityFactory(props: UserProperties): User {
 		return new User(props);
 	}
 
 	async find(query: UserQuery, options?: IFindOptions&lt;UserDO&gt;) {
-		const pagination: IPagination &#x3D; options?.pagination || {};
+		const pagination: Pagination &#x3D; options?.pagination || {};
 		const order: QueryOrderMap&lt;User&gt; &#x3D; this.createQueryOrderMap(options?.order || {});
 		const scope: Scope&lt;User&gt; &#x3D; new UserScope()
 			.bySchoolId(query.schoolId)
@@ -1725,7 +1725,7 @@ export class UserDORepo extends BaseDORepo&lt;UserDO, User, IUserProperties&gt; 
 		return user;
 	}
 
-	mapDOToEntityProperties(entityDO: UserDO): IUserProperties {
+	mapDOToEntityProperties(entityDO: UserDO): UserProperties {
 		return {
 			email: entityDO.email,
 			firstName: entityDO.firstName,

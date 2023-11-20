@@ -1235,14 +1235,14 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Course, IComponentProperties, ILessonProperties, LessonEntity } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ComponentProperties, Course, LessonEntity, LessonProperties } from &#x27;@shared/domain&#x27;;
 
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 import { courseFactory } from &#x27;./course.factory&#x27;;
 
-class LessonFactory extends BaseFactory&lt;LessonEntity, ILessonProperties&gt; {}
+class LessonFactory extends BaseFactory&lt;LessonEntity, LessonProperties&gt; {}
 
-export const lessonFactory &#x3D; LessonFactory.define&lt;LessonEntity, ILessonProperties&gt;(
+export const lessonFactory &#x3D; LessonFactory.define&lt;LessonEntity, LessonProperties&gt;(
 	LessonEntity,
 	({ sequence, params }) &#x3D;&gt; {
 		let course: Course;
@@ -1252,7 +1252,7 @@ export const lessonFactory &#x3D; LessonFactory.define&lt;LessonEntity, ILessonP
 			course &#x3D; courseFactory.build();
 		}
 
-		const contents: IComponentProperties[] &#x3D; [];
+		const contents: ComponentProperties[] &#x3D; [];
 		if (params.contents) {
 			params.contents.forEach((element) &#x3D;&gt; {
 				contents.push(element);

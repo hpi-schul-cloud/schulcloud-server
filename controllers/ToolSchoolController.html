@@ -736,39 +736,39 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from &#x27;@nestjs/common&#x27;;
+import {
+	ApiBadRequestResponse,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
-	ApiResponse,
 	ApiOkResponse,
-	ApiBadRequestResponse,
+	ApiOperation,
+	ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
-	ApiOperation,
 } from &#x27;@nestjs/swagger&#x27;;
-import { Body, Controller, Delete, Get, Param, Post, Query, Put, HttpCode, HttpStatus } from &#x27;@nestjs/common&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
+import { ExternalToolSearchListResponse } from &#x27;../../external-tool/controller/dto&#x27;;
+import { SchoolExternalTool, SchoolExternalToolMetadata } from &#x27;../domain&#x27;;
 import {
+	SchoolExternalToolMetadataMapper,
 	SchoolExternalToolRequestMapper,
 	SchoolExternalToolResponseMapper,
-	SchoolExternalToolMetadataMapper,
 } from &#x27;../mapper&#x27;;
-import { ExternalToolSearchListResponse } from &#x27;../../external-tool/controller/dto&#x27;;
+import { SchoolExternalToolUc } from &#x27;../uc&#x27;;
+import { SchoolExternalToolDto } from &#x27;../uc/dto/school-external-tool.types&#x27;;
 import {
 	SchoolExternalToolIdParams,
+	SchoolExternalToolMetadataResponse,
 	SchoolExternalToolPostParams,
 	SchoolExternalToolResponse,
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
-	SchoolExternalToolMetadataResponse,
 } from &#x27;./dto&#x27;;
-import { SchoolExternalToolDto } from &#x27;../uc/dto/school-external-tool.types&#x27;;
-import { SchoolExternalToolUc } from &#x27;../uc&#x27;;
-import { SchoolExternalTool, SchoolExternalToolMetadata } from &#x27;../domain&#x27;;
 
 @ApiTags(&#x27;Tool&#x27;)
 @Authenticate(&#x27;jwt&#x27;)

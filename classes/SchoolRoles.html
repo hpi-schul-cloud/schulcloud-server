@@ -216,9 +216,9 @@
 } from &#x27;@mikro-orm/core&#x27;;
 import { UserLoginMigrationEntity } from &#x27;@shared/domain/entity/user-login-migration.entity&#x27;;
 import { BaseEntity } from &#x27;./base.entity&#x27;;
+import { FederalStateEntity } from &#x27;./federal-state.entity&#x27;;
 import { SchoolYearEntity } from &#x27;./schoolyear.entity&#x27;;
 import { SystemEntity } from &#x27;./system.entity&#x27;;
-import { FederalStateEntity } from &#x27;./federal-state.entity&#x27;;
 
 export enum SchoolFeatures {
 	ROCKET_CHAT &#x3D; &#x27;rocketChat&#x27;,
@@ -231,7 +231,7 @@ export enum SchoolFeatures {
 	ENABLE_LDAP_SYNC_DURING_MIGRATION &#x3D; &#x27;enableLdapSyncDuringMigration&#x27;,
 }
 
-export interface ISchoolProperties {
+export interface SchoolProperties {
 	_id?: string;
 	externalId?: string;
 	inMaintenanceSince?: Date;
@@ -311,7 +311,7 @@ export class SchoolEntity extends BaseEntity {
 	@ManyToOne(() &#x3D;&gt; FederalStateEntity, { fieldName: &#x27;federalState&#x27;, nullable: false })
 	federalState: FederalStateEntity;
 
-	constructor(props: ISchoolProperties) {
+	constructor(props: SchoolProperties) {
 		super();
 		if (props.externalId) {
 			this.externalId &#x3D; props.externalId;

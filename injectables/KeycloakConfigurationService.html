@@ -163,7 +163,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(kcAdmin: <a href="../injectables/KeycloakAdministrationService.html" target="_self">KeycloakAdministrationService</a>, configService: <a href="../interfaces/IServerConfig.html" target="_self">ConfigService&lt;IServerConfig | &gt;</a>, oidcIdentityProviderMapper: <a href="../classes/OidcIdentityProviderMapper.html" target="_self">OidcIdentityProviderMapper</a>, systemOidcService: <a href="../injectables/SystemOidcService.html" target="_self">SystemOidcService</a>)</code>
+<code>constructor(kcAdmin: <a href="../injectables/KeycloakAdministrationService.html" target="_self">KeycloakAdministrationService</a>, configService: <a href="../interfaces/ServerConfig.html" target="_self">ConfigService&lt;ServerConfig | &gt;</a>, oidcIdentityProviderMapper: <a href="../classes/OidcIdentityProviderMapper.html" target="_self">OidcIdentityProviderMapper</a>, systemOidcService: <a href="../injectables/SystemOidcService.html" target="_self">SystemOidcService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -201,7 +201,7 @@
                                                         <td>configService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IServerConfig.html" target="_self" >ConfigService&lt;IServerConfig | &gt;</a></code>
+                                                                        <code><a href="../interfaces/ServerConfig.html" target="_self" >ConfigService&lt;ServerConfig | &gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1041,11 +1041,11 @@ import ClientRepresentation from &#x27;@keycloak/keycloak-admin-client/lib/defs/
 import IdentityProviderMapperRepresentation from &#x27;@keycloak/keycloak-admin-client/lib/defs/identityProviderMapperRepresentation&#x27;;
 import IdentityProviderRepresentation from &#x27;@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation&#x27;;
 import ProtocolMapperRepresentation from &#x27;@keycloak/keycloak-admin-client/lib/defs/protocolMapperRepresentation&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { IServerConfig } from &#x27;@modules/server/server.config&#x27;;
+import { ServerConfig } from &#x27;@modules/server/server.config&#x27;;
 import { OidcConfigDto } from &#x27;@modules/system/service&#x27;;
 import { SystemOidcService } from &#x27;@modules/system/service/system-oidc.service&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { KeycloakAdministrationService } from &#x27;../../keycloak-administration/service/keycloak-administration.service&#x27;;
 import { OidcIdentityProviderMapper } from &#x27;../mapper/identity-provider.mapper&#x27;;
 
@@ -1063,7 +1063,7 @@ const oidcExternalSubMapperName &#x3D; &#x27;External Sub Mapper&#x27;;
 export class KeycloakConfigurationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
-		private readonly configService: ConfigService&lt;IServerConfig, true&gt;,
+		private readonly configService: ConfigService&lt;ServerConfig, true&gt;,
 		private readonly oidcIdentityProviderMapper: OidcIdentityProviderMapper,
 		private readonly systemOidcService: SystemOidcService
 	) {}

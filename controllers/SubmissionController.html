@@ -298,9 +298,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Delete, Get, Param } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
+import { Controller, Delete, Get, Param } from &#x27;@nestjs/common&#x27;;
 import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
 import { SubmissionMapper } from &#x27;../mapper&#x27;;
 import { SubmissionUc } from &#x27;../uc&#x27;;
 import { SubmissionStatusListResponse, SubmissionUrlParams, TaskUrlParams } from &#x27;./dto&#x27;;

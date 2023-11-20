@@ -611,7 +611,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Enum, IdentifiedReference, ManyToOne, Property, Unique, wrap } from &#x27;@mikro-orm/core&#x27;;
-import { IEntityWithSchool, RoleName } from &#x27;../interface&#x27;;
+import { EntityWithSchool, RoleName } from &#x27;../interface&#x27;;
 import { BaseEntityReference, BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 import { SchoolEntity } from &#x27;./school.entity&#x27;;
 import { SystemEntity } from &#x27;./system.entity&#x27;;
@@ -619,7 +619,7 @@ import type { User } from &#x27;./user.entity&#x27;;
 
 export type IImportUserRoleName &#x3D; RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.STUDENT;
 
-export interface IImportUserProperties {
+export interface ImportUserProperties {
 	// references
 	school: SchoolEntity;
 	system: SystemEntity;
@@ -646,8 +646,8 @@ export enum MatchCreator {
 @Unique({ properties: [&#x27;school&#x27;, &#x27;externalId&#x27;] })
 @Unique({ properties: [&#x27;school&#x27;, &#x27;ldapDn&#x27;] })
 @Unique({ properties: [&#x27;school&#x27;, &#x27;email&#x27;] })
-export class ImportUser extends BaseEntityWithTimestamps implements IEntityWithSchool {
-	constructor(props: IImportUserProperties) {
+export class ImportUser extends BaseEntityWithTimestamps implements EntityWithSchool {
+	constructor(props: ImportUserProperties) {
 		super();
 		this.school &#x3D; wrap(props.school).toReference();
 		this.system &#x3D; wrap(props.system).toReference();

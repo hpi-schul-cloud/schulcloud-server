@@ -164,7 +164,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, permissionService: <a href="../injectables/PermissionService.html" target="_self">PermissionService</a>, accountValidationService: <a href="../injectables/AccountValidationService.html" target="_self">AccountValidationService</a>, configService: <a href="../interfaces/IAccountConfig.html" target="_self">ConfigService&lt;IAccountConfig | &gt;</a>)</code>
+<code>constructor(accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, permissionService: <a href="../injectables/PermissionService.html" target="_self">PermissionService</a>, accountValidationService: <a href="../injectables/AccountValidationService.html" target="_self">AccountValidationService</a>, configService: <a href="../interfaces/AccountConfig.html" target="_self">ConfigService&lt;AccountConfig | &gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -238,7 +238,7 @@
                                                         <td>configService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IAccountConfig.html" target="_self" >ConfigService&lt;IAccountConfig | &gt;</a></code>
+                                                                        <code><a href="../interfaces/AccountConfig.html" target="_self" >ConfigService&lt;AccountConfig | &gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1575,7 +1575,9 @@ Callable when the current user&#39;s password was force set or this is the first
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountService } from &#x27;@modules/account/services/account.service&#x27;;
+import { AccountDto } from &#x27;@modules/account/services/dto/account.dto&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import {
 	AuthorizationError,
@@ -1585,13 +1587,11 @@ import {
 } from &#x27;@shared/common/error&#x27;;
 import { Account, EntityId, Permission, PermissionService, Role, RoleName, SchoolEntity, User } from &#x27;@shared/domain&#x27;;
 import { UserRepo } from &#x27;@shared/repo&#x27;;
-import { AccountService } from &#x27;@modules/account/services/account.service&#x27;;
-import { AccountDto } from &#x27;@modules/account/services/dto/account.dto&#x27;;
 
-import { BruteForcePrevention } from &#x27;@src/imports-from-feathers&#x27;;
 import { ICurrentUser } from &#x27;@modules/authentication&#x27;;
+import { BruteForcePrevention } from &#x27;@src/imports-from-feathers&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
-import { IAccountConfig } from &#x27;../account-config&#x27;;
+import { AccountConfig } from &#x27;../account-config&#x27;;
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
@@ -1616,7 +1616,7 @@ export class AccountUc {
 		private readonly userRepo: UserRepo,
 		private readonly permissionService: PermissionService,
 		private readonly accountValidationService: AccountValidationService,
-		private readonly configService: ConfigService&lt;IAccountConfig, true&gt;
+		private readonly configService: ConfigService&lt;AccountConfig, true&gt;
 	) {}
 
 	/**

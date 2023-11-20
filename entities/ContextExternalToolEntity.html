@@ -351,7 +351,7 @@ import { CustomParameterEntryEntity } from &#x27;../../common/entity&#x27;;
 import { SchoolExternalToolEntity } from &#x27;../../school-external-tool/entity&#x27;;
 import { ContextExternalToolType } from &#x27;./context-external-tool-type.enum&#x27;;
 
-export interface IContextExternalToolProperties {
+export interface ContextExternalToolProperties {
 	schoolTool: SchoolExternalToolEntity;
 
 	contextId: string;
@@ -385,7 +385,7 @@ export class ContextExternalToolEntity extends BaseEntityWithTimestamps {
 	@Property()
 	toolVersion: number;
 
-	constructor(props: IContextExternalToolProperties) {
+	constructor(props: ContextExternalToolProperties) {
 		super();
 		this.schoolTool &#x3D; props.schoolTool;
 		this.contextId &#x3D; props.contextId;

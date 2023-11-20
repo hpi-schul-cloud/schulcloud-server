@@ -318,10 +318,10 @@
 
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { IEncryptionService } from &#x27;./encryption.interface&#x27;;
+import { EncryptionService } from &#x27;./encryption.interface&#x27;;
 
 @Injectable()
-export class SymetricKeyEncryptionService implements IEncryptionService {
+export class SymetricKeyEncryptionService implements EncryptionService {
 	constructor(private logger: LegacyLogger, private key?: string) {
 		if (!this.key) {
 			this.logger.warn(&#x27;No AES key defined. Encryption will no work&#x27;);

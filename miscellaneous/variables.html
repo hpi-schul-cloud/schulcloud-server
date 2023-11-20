@@ -3042,7 +3042,7 @@ This allows adding console commands to execute provider methods.</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../interfaces/IFileStorageConfig.html" target="_self" >IFileStorageConfig</a></code>
+                        <i>Type : </i>        <code><a href="../interfaces/FileStorageConfig.html" target="_self" >FileStorageConfig</a></code>
 
                     </td>
                 </tr>
@@ -3419,7 +3419,7 @@ This allows adding console commands to execute provider methods.</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../interfaces/IServerConfig.html" target="_self" >IServerConfig</a></code>
+                        <i>Type : </i>        <code><a href="../interfaces/ServerConfig.html" target="_self" >ServerConfig</a></code>
 
                     </td>
                 </tr>
@@ -3586,7 +3586,7 @@ must use</p>
                     <td class="col-md-4">
                         <i>Default value : </i><code>BaseFactory.define&lt;
 	ContextExternalToolEntity,
-	IContextExternalToolProperties
+	ContextExternalToolProperties
 &gt;(ContextExternalToolEntity, () &#x3D;&gt; {
 	return {
 		contextId: courseFactory.buildWithId().id,
@@ -4152,7 +4152,7 @@ must use</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;CourseNews, INewsProperties&gt;(CourseNews, ({ sequence }) &#x3D;&gt; {
+                        <i>Default value : </i><code>BaseFactory.define&lt;CourseNews, NewsProperties&gt;(CourseNews, ({ sequence }) &#x3D;&gt; {
 	return {
 		title: &#x60;news ${sequence}&#x60;,
 		content: &#x60;content of news ${sequence}&#x60;,
@@ -4181,7 +4181,7 @@ must use</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;CourseNews, INewsProperties&gt;(
+                        <i>Default value : </i><code>BaseFactory.define&lt;CourseNews, NewsProperties&gt;(
 	CourseNews,
 	({ sequence }) &#x3D;&gt; {
 		return {
@@ -4213,7 +4213,7 @@ must use</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;SchoolNews, INewsProperties&gt;(SchoolNews, ({ sequence }) &#x3D;&gt; {
+                        <i>Default value : </i><code>BaseFactory.define&lt;SchoolNews, NewsProperties&gt;(SchoolNews, ({ sequence }) &#x3D;&gt; {
 	return {
 		title: &#x60;news ${sequence}&#x60;,
 		content: &#x60;content of news ${sequence}&#x60;,
@@ -4242,7 +4242,7 @@ must use</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;SchoolNews, INewsProperties&gt;(
+                        <i>Default value : </i><code>BaseFactory.define&lt;SchoolNews, NewsProperties&gt;(
 	SchoolNews,
 	({ sequence }) &#x3D;&gt; {
 		return {
@@ -4274,7 +4274,7 @@ must use</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;TeamNews, INewsProperties&gt;(TeamNews, ({ sequence }) &#x3D;&gt; {
+                        <i>Default value : </i><code>BaseFactory.define&lt;TeamNews, NewsProperties&gt;(TeamNews, ({ sequence }) &#x3D;&gt; {
 	return {
 		title: &#x60;news ${sequence}&#x60;,
 		content: &#x60;content of news ${sequence}&#x60;,
@@ -4303,7 +4303,7 @@ must use</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;TeamNews, INewsProperties&gt;(TeamNews, ({ sequence }) &#x3D;&gt; {
+                        <i>Default value : </i><code>BaseFactory.define&lt;TeamNews, NewsProperties&gt;(TeamNews, ({ sequence }) &#x3D;&gt; {
 	return {
 		title: &#x60;news ${sequence}&#x60;,
 		content: &#x60;content of news ${sequence}&#x60;,
@@ -5652,7 +5652,7 @@ it should ensure an empty result</p>
                     <td class="col-md-4">
                         <i>Default value : </i><code>BaseFactory.define&lt;
 	ExternalToolPseudonymEntity,
-	IExternalToolPseudonymEntityProps
+	ExternalToolPseudonymEntityProps
 &gt;(ExternalToolPseudonymEntity, ({ sequence }) &#x3D;&gt; {
 	return {
 		pseudonym: &#x60;pseudonym-${sequence}&#x60;,
@@ -5682,7 +5682,7 @@ it should ensure an empty result</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;FederalStateEntity, IFederalStateProperties&gt;(
+                        <i>Default value : </i><code>BaseFactory.define&lt;FederalStateEntity, FederalStateProperties&gt;(
 	FederalStateEntity,
 	() &#x3D;&gt; {
 		return {
@@ -7374,7 +7374,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>LessonFactory.define&lt;LessonEntity, ILessonProperties&gt;(
+                        <i>Default value : </i><code>LessonFactory.define&lt;LessonEntity, LessonProperties&gt;(
 	LessonEntity,
 	({ sequence, params }) &#x3D;&gt; {
 		let course: Course;
@@ -7384,7 +7384,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 			course &#x3D; courseFactory.build();
 		}
 
-		const contents: IComponentProperties[] &#x3D; [];
+		const contents: ComponentProperties[] &#x3D; [];
 		if (params.contents) {
 			params.contents.forEach((element) &#x3D;&gt; {
 				contents.push(element);
@@ -7804,7 +7804,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>MaterialFactory.define&lt;Material, IMaterialProperties&gt;(Material, ({ sequence }) &#x3D;&gt; {
+                        <i>Default value : </i><code>MaterialFactory.define&lt;Material, MaterialProperties&gt;(Material, ({ sequence }) &#x3D;&gt; {
 	return {
 		client: &#x27;test material client&#x27;,
 		description: &#x27;test material description&#x27;,
@@ -7915,7 +7915,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../interfaces/IErrorType.html" target="_self" >IErrorType</a></code>
+                        <i>Type : </i>        <code><a href="../interfaces/ErrorType.html" target="_self" >ErrorType</a></code>
 
                     </td>
                 </tr>
@@ -8460,7 +8460,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;Role, IRoleProperties&gt;(Role, ({ sequence }) &#x3D;&gt; {
+                        <i>Default value : </i><code>BaseFactory.define&lt;Role, RoleProperties&gt;(Role, ({ sequence }) &#x3D;&gt; {
 	return {
 		name: &#x60;role${sequence}&#x60; as unknown as RoleName,
 	};
@@ -9049,7 +9049,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                     <td class="col-md-4">
                         <i>Default value : </i><code>BaseFactory.define&lt;
 	SchoolExternalToolEntity,
-	ISchoolExternalToolProperties
+	SchoolExternalToolProperties
 &gt;(SchoolExternalToolEntity, () &#x3D;&gt; {
 	return {
 		tool: externalToolEntityFactory.buildWithId(),
@@ -9117,7 +9117,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;SchoolEntity, ISchoolProperties&gt;(SchoolEntity, ({ sequence }) &#x3D;&gt; {
+                        <i>Default value : </i><code>BaseFactory.define&lt;SchoolEntity, SchoolProperties&gt;(SchoolEntity, ({ sequence }) &#x3D;&gt; {
 	return {
 		name: &#x60;school #${sequence}&#x60;,
 		schoolYear: schoolYearFactory.build(),
@@ -9146,7 +9146,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;SchoolYearEntity, ISchoolYearProperties&gt;(SchoolYearEntity, () &#x3D;&gt; {
+                        <i>Default value : </i><code>BaseFactory.define&lt;SchoolYearEntity, SchoolYearProperties&gt;(SchoolYearEntity, () &#x3D;&gt; {
 	const year &#x3D; new Date().getFullYear();
 	const nextYear &#x3D; (year + 1).toString().substr(-2);
 	const name &#x3D; &#x60;${year}/${nextYear}&#x60;;
@@ -9176,7 +9176,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#SeedFederalStateProperties" target="_self" >SeedFederalStateProperties[]</a></code>
+                        <i>Type : </i>        <code><a href="../interfaces/FederalStateProperties.html" target="_self" >SeedFederalStateProperties[]</a></code>
 
                     </td>
                 </tr>
@@ -9381,7 +9381,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#SeedSchoolProperties" target="_self" >SeedSchoolProperties[]</a></code>
+                        <i>Type : </i>        <code><a href="../interfaces/SchoolProperties.html" target="_self" >SeedSchoolProperties[]</a></code>
 
                     </td>
                 </tr>
@@ -9643,7 +9643,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#SeedSchoolYearProperties" target="_self" >SeedSchoolYearProperties[]</a></code>
+                        <i>Type : </i>        <code><a href="../interfaces/SchoolYearProperties.html" target="_self" >SeedSchoolYearProperties[]</a></code>
 
                     </td>
                 </tr>
@@ -9829,7 +9829,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;StorageProviderEntity, IStorageProviderProperties&gt;(
+                        <i>Default value : </i><code>BaseFactory.define&lt;StorageProviderEntity, StorageProviderProperties&gt;(
 	StorageProviderEntity,
 	() &#x3D;&gt; {
 		return {
@@ -9868,7 +9868,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>{
-	provide: &#x27;ICollaborativeStorageStrategy&#x27;,
+	provide: &#x27;CollaborativeStorageStrategy&#x27;,
 	useExisting: NextcloudStrategy,
 }</code>
                     </td>

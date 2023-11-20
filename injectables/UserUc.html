@@ -114,7 +114,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, configService: <a href="../classes/User.html" target="_self">ConfigService&lt;IUserConfig | &gt;</a>)</code>
+<code>constructor(userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, configService: <a href="../classes/User.html" target="_self">ConfigService&lt;UserConfig | &gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -152,7 +152,7 @@
                                                         <td>configService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../classes/User.html" target="_self" >ConfigService&lt;IUserConfig | &gt;</a></code>
+                                                                        <code><a href="../classes/User.html" target="_self" >ConfigService&lt;UserConfig | &gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -404,11 +404,11 @@ import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { EntityId, LanguageType, User } from &#x27;@shared/domain&#x27;;
 import { UserRepo } from &#x27;@shared/repo&#x27;;
 import { ChangeLanguageParams } from &#x27;../controller/dto&#x27;;
-import { IUserConfig } from &#x27;../interfaces&#x27;;
+import { UserConfig } from &#x27;../interfaces&#x27;;
 
 @Injectable()
 export class UserUc {
-	constructor(private readonly userRepo: UserRepo, private readonly configService: ConfigService&lt;IUserConfig, true&gt;) {}
+	constructor(private readonly userRepo: UserRepo, private readonly configService: ConfigService&lt;UserConfig, true&gt;) {}
 
 	async me(userId: EntityId): Promise&lt;[User, string[]]&gt; {
 		const user &#x3D; await this.userRepo.findById(userId, true);

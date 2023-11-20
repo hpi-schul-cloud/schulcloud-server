@@ -1298,16 +1298,16 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CourseGroup, ICourseGroupProperties } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CourseGroup, CourseGroupProperties } from &#x27;@shared/domain&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
-import { courseFactory } from &#x27;./course.factory&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
+import { courseFactory } from &#x27;./course.factory&#x27;;
 import { userFactory } from &#x27;./user.factory&#x27;;
 
-class CourseGroupFactory extends BaseFactory&lt;CourseGroup, ICourseGroupProperties&gt; {
+class CourseGroupFactory extends BaseFactory&lt;CourseGroup, CourseGroupProperties&gt; {
 	studentsWithId(numberOfStudents: number): this {
 		const students &#x3D; userFactory.buildListWithId(numberOfStudents);
-		const params: DeepPartial&lt;ICourseGroupProperties&gt; &#x3D; { students };
+		const params: DeepPartial&lt;CourseGroupProperties&gt; &#x3D; { students };
 
 		return this.params(params);
 	}

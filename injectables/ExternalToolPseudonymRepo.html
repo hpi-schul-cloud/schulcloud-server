@@ -764,7 +764,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/IExternalToolPseudonymEntityProps.html" target="_self" >IExternalToolPseudonymEntityProps</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/ExternalToolPseudonymEntityProps.html" target="_self" >ExternalToolPseudonymEntityProps</a></code>
 
                         </div>
                             <div class="io-description">
@@ -851,10 +851,10 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager, ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, IFindOptions, IPagination, Page, Pseudonym } from &#x27;@shared/domain&#x27;;
+import { EntityId, IFindOptions, Page, Pagination, Pseudonym } from &#x27;@shared/domain&#x27;;
 import { Scope } from &#x27;@shared/repo&#x27;;
 import { PseudonymSearchQuery } from &#x27;../domain&#x27;;
-import { ExternalToolPseudonymEntity, IExternalToolPseudonymEntityProps } from &#x27;../entity&#x27;;
+import { ExternalToolPseudonymEntity, ExternalToolPseudonymEntityProps } from &#x27;../entity&#x27;;
 import { PseudonymScope } from &#x27;../entity/pseudonym.scope&#x27;;
 
 @Injectable()
@@ -901,7 +901,7 @@ export class ExternalToolPseudonymRepo {
 			.getUnitOfWork()
 			.getById&lt;ExternalToolPseudonymEntity&gt;(ExternalToolPseudonymEntity.name, domainObject.id);
 
-		const entityProps: IExternalToolPseudonymEntityProps &#x3D; this.mapDomainObjectToEntityProperties(domainObject);
+		const entityProps: ExternalToolPseudonymEntityProps &#x3D; this.mapDomainObjectToEntityProperties(domainObject);
 		let entity: ExternalToolPseudonymEntity &#x3D; new ExternalToolPseudonymEntity(entityProps);
 
 		if (existing) {
@@ -952,7 +952,7 @@ export class ExternalToolPseudonymRepo {
 		return pseudonym;
 	}
 
-	protected mapDomainObjectToEntityProperties(entityDO: Pseudonym): IExternalToolPseudonymEntityProps {
+	protected mapDomainObjectToEntityProperties(entityDO: Pseudonym): ExternalToolPseudonymEntityProps {
 		return {
 			pseudonym: entityDO.pseudonym,
 			toolId: new ObjectId(entityDO.toolId),
@@ -961,7 +961,7 @@ export class ExternalToolPseudonymRepo {
 	}
 
 	async findPseudonym(query: PseudonymSearchQuery, options?: IFindOptions&lt;Pseudonym&gt;): Promise&lt;Page&lt;Pseudonym&gt;&gt; {
-		const pagination: IPagination &#x3D; options?.pagination ?? {};
+		const pagination: Pagination &#x3D; options?.pagination ?? {};
 		const scope: Scope&lt;ExternalToolPseudonymEntity&gt; &#x3D; new PseudonymScope()
 			.byPseudonym(query.pseudonym)
 			.byToolId(query.toolId)

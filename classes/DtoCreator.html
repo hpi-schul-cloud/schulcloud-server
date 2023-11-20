@@ -484,7 +484,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/ITaskStatus.html" target="_self" >ITaskStatus</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/TaskStatus.html" target="_self" >TaskStatus</a></code>
 
                         </div>
                             <div class="io-description">
@@ -965,6 +965,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
+import { Action, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import {
 	Board,
@@ -973,14 +974,13 @@ import {
 	ColumnboardBoardElement,
 	ColumnBoardTarget,
 	Course,
-	ITaskStatus,
 	LessonEntity,
 	Permission,
 	Task,
+	TaskStatus,
 	TaskWithStatusVo,
 	User,
 } from &#x27;@shared/domain&#x27;;
-import { AuthorizationService, Action } from &#x27;@modules/authorization&#x27;;
 import {
 	ColumnBoardMetaData,
 	LessonMetaData,
@@ -1092,8 +1092,8 @@ class DtoCreator {
 		return { type: RoomBoardElementTypes.TASK, content };
 	}
 
-	private createTaskStatus(task: Task): ITaskStatus {
-		let status: ITaskStatus;
+	private createTaskStatus(task: Task): TaskStatus {
+		let status: TaskStatus;
 		if (this.isTeacher()) {
 			status &#x3D; task.createTeacherStatusForUser(this.user);
 		} else {

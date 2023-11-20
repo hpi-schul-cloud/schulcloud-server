@@ -340,15 +340,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ForbiddenException, Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { UserService } from &#x27;@modules/user&#x27;;
 import { ErrorStatus } from &#x27;@modules/video-conference/error/error-status.enum&#x27;;
-import { UserService } from &#x27;@modules/user&#x27;;
+import { ForbiddenException, Injectable } from &#x27;@nestjs/common&#x27;;
+import { EntityId, UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from &#x27;@shared/domain&#x27;;
 import { BBBBaseMeetingConfig, BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBService } from &#x27;../bbb&#x27;;
-import { IScopeInfo, ScopeRef, VideoConferenceInfo, VideoConferenceState } from &#x27;./dto&#x27;;
-import { VideoConferenceService } from &#x27;../service&#x27;;
-import { PermissionMapping } from &#x27;../mapper/video-conference.mapper&#x27;;
 import { defaultVideoConferenceOptions, VideoConferenceOptions } from &#x27;../interface&#x27;;
+import { PermissionMapping } from &#x27;../mapper/video-conference.mapper&#x27;;
+import { VideoConferenceService } from &#x27;../service&#x27;;
+import { ScopeInfo, ScopeRef, VideoConferenceInfo, VideoConferenceState } from &#x27;./dto&#x27;;
 
 @Injectable()
 export class VideoConferenceInfoUc {
@@ -369,7 +369,7 @@ export class VideoConferenceInfoUc {
 
 		await this.videoConferenceService.throwOnFeaturesDisabled(user.schoolId);
 
-		const scopeInfo: IScopeInfo &#x3D; await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
+		const scopeInfo: ScopeInfo &#x3D; await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
 
 		const bbbRole: BBBRole &#x3D; await this.videoConferenceService.determineBbbRole(
 			currentUserId,

@@ -334,19 +334,19 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import AdmZip from &#x27;adm-zip&#x27;;
 import { Builder } from &#x27;xml2js&#x27;;
+import { CommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
 import { CommonCartridgeVersion } from &#x27;./common-cartridge-enums&#x27;;
-import { ICommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
 import { CommonCartridgeManifestElement } from &#x27;./common-cartridge-manifest-element&#x27;;
-import {
-	CommonCartridgeResourceItemElement,
-	ICommonCartridgeResourceProps,
-} from &#x27;./common-cartridge-resource-item-element&#x27;;
 import {
 	CommonCartridgeOrganizationItemElement,
 	ICommonCartridgeOrganizationProps,
 } from &#x27;./common-cartridge-organization-item-element&#x27;;
+import {
+	CommonCartridgeResourceItemElement,
+	ICommonCartridgeResourceProps,
+} from &#x27;./common-cartridge-resource-item-element&#x27;;
 
-export type ICommonCartridgeFileBuilderOptions &#x3D; {
+export type CommonCartridgeFileBuilderOptions &#x3D; {
 	identifier: string;
 	title: string;
 	copyrightOwners: string;
@@ -373,11 +373,11 @@ class CommonCartridgeOrganizationBuilder implements ICommonCartridgeOrganization
 		private readonly zipBuilder: AdmZip
 	) {}
 
-	get organization(): ICommonCartridgeElement {
+	get organization(): CommonCartridgeElement {
 		return new CommonCartridgeOrganizationItemElement(this.props);
 	}
 
-	get resources(): ICommonCartridgeElement[] {
+	get resources(): CommonCartridgeElement[] {
 		return this.props.resources.map(
 			(resourceProps) &#x3D;&gt; new CommonCartridgeResourceItemElement(resourceProps, this.xmlBuilder)
 		);
@@ -402,7 +402,7 @@ export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
 
 	private readonly resources &#x3D; new Array&lt;CommonCartridgeResourceItemElement&gt;();
 
-	constructor(private readonly options: ICommonCartridgeFileBuilderOptions) {}
+	constructor(private readonly options: CommonCartridgeFileBuilderOptions) {}
 
 	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder {
 		const organizationBuilder &#x3D; new CommonCartridgeOrganizationBuilder(props, this.xmlBuilder, this.zipBuilder);

@@ -208,7 +208,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(fileSystemAdapter: <a href="../injectables/FileSystemAdapter.html" target="_self">FileSystemAdapter</a>, databaseManagementService: <a href="../injectables/DatabaseManagementService.html" target="_self">DatabaseManagementService</a>, bsonConverter: <a href="../injectables/BsonConverter.html" target="_self">BsonConverter</a>, configService: ConfigService, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, em: EntityManager, defaultEncryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>, ldapEncryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>)</code>
+<code>constructor(fileSystemAdapter: <a href="../injectables/FileSystemAdapter.html" target="_self">FileSystemAdapter</a>, databaseManagementService: <a href="../injectables/DatabaseManagementService.html" target="_self">DatabaseManagementService</a>, bsonConverter: <a href="../injectables/BsonConverter.html" target="_self">BsonConverter</a>, configService: ConfigService, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, em: EntityManager, defaultEncryptionService: <a href="../interfaces/EncryptionService.html" target="_self">EncryptionService</a>, ldapEncryptionService: <a href="../interfaces/EncryptionService.html" target="_self">EncryptionService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -306,7 +306,7 @@
                                                         <td>defaultEncryptionService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IEncryptionService.html" target="_self" >IEncryptionService</a></code>
+                                                                        <code><a href="../interfaces/EncryptionService.html" target="_self" >EncryptionService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -318,7 +318,7 @@
                                                         <td>ldapEncryptionService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IEncryptionService.html" target="_self" >IEncryptionService</a></code>
+                                                                        <code><a href="../interfaces/EncryptionService.html" target="_self" >EncryptionService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -937,7 +937,7 @@ The behaviour should match $ mongoexport</p>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Path.html" target="_self" >Promise&lt;ICollectionFilePath[]&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Path.html" target="_self" >Promise&lt;CollectionFilePath[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1009,7 +1009,7 @@ The behaviour should match $ mongoexport</p>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Path.html" target="_self" >Promise&lt;ICollectionFilePath[]&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Path.html" target="_self" >Promise&lt;CollectionFilePath[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1685,19 +1685,19 @@ The behaviour should match $ mongoimport</p>
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
+import { DatabaseManagementService } from &#x27;@infra/database&#x27;;
+import { DefaultEncryptionService, EncryptionService, LdapEncryptionService } from &#x27;@infra/encryption&#x27;;
+import { FileSystemAdapter } from &#x27;@infra/file-system&#x27;;
 import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { StorageProviderEntity, SystemEntity } from &#x27;@shared/domain&#x27;;
-import { DatabaseManagementService } from &#x27;@infra/database&#x27;;
-import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from &#x27;@infra/encryption&#x27;;
-import { FileSystemAdapter } from &#x27;@infra/file-system&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { orderBy } from &#x27;lodash&#x27;;
 import { BsonConverter } from &#x27;../converter/bson.converter&#x27;;
 import { generateSeedData } from &#x27;../seed-data/generateSeedData&#x27;;
 
-export interface ICollectionFilePath {
+export interface CollectionFilePath {
 	filePath: string;
 	collectionName: string;
 }
@@ -1721,8 +1721,8 @@ export class DatabaseManagementUc {
 		private readonly configService: ConfigService,
 		private readonly logger: LegacyLogger,
 		private em: EntityManager,
-		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService,
-		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: IEncryptionService
+		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService,
+		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: EncryptionService
 	) {
 		this.logger.setContext(DatabaseManagementUc.name);
 	}
@@ -1761,9 +1761,9 @@ export class DatabaseManagementUc {
 
 	/**
 	 * Loads all collection names from database and adds related file paths.
-	 * @returns {ICollectionFilePath}
+	 * @returns {CollectionFilePath}
 	 */
-	private async loadAllCollectionsFromDatabase(targetFolder: string): Promise&lt;ICollectionFilePath[]&gt; {
+	private async loadAllCollectionsFromDatabase(targetFolder: string): Promise&lt;CollectionFilePath[]&gt; {
 		const collections &#x3D; await this.databaseManagementService.getCollectionNames();
 		const collectionsWithFilePaths &#x3D; collections.map((collectionName) &#x3D;&gt; {
 			return {
@@ -1776,9 +1776,9 @@ export class DatabaseManagementUc {
 
 	/**
 	 * Loads all collection names and file paths from backup files.
-	 * @returns {ICollectionFilePath}
+	 * @returns {CollectionFilePath}
 	 */
-	private async loadAllCollectionsFromFilesystem(baseDir: string): Promise&lt;ICollectionFilePath[]&gt; {
+	private async loadAllCollectionsFromFilesystem(baseDir: string): Promise&lt;CollectionFilePath[]&gt; {
 		const filenames &#x3D; await this.fileSystemAdapter.readDir(baseDir);
 		const collectionsWithFilePaths &#x3D; filenames.map((fileName) &#x3D;&gt; {
 			return {
@@ -1793,14 +1793,14 @@ export class DatabaseManagementUc {
 	 * Scans &lt;source&gt; for existing collections and optionally filters them based on &lt;collectionNameFilter&gt;
 	 * @param source
 	 * @param collectionNameFilter
-	 * @returns {ICollectionFilePath} the filtered collection names and related file paths
+	 * @returns {CollectionFilePath} the filtered collection names and related file paths
 	 */
 	private async loadCollectionsAvailableFromSourceAndFilterByCollectionNames(
 		source: &#x27;files&#x27; | &#x27;database&#x27;,
 		folder: string,
 		collectionNameFilter?: string[]
 	) {
-		let allCollectionsWithFilePaths: ICollectionFilePath[] &#x3D; [];
+		let allCollectionsWithFilePaths: CollectionFilePath[] &#x3D; [];
 
 		// load all available collections from source
 		if (source &#x3D;&#x3D;&#x3D; &#x27;files&#x27;) {

@@ -191,7 +191,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>entityFactory(props: <a href="../interfaces/IShareTokenProperties.html" target="_self">IShareTokenProperties</a>)</code>
+<code>entityFactory(props: <a href="../interfaces/ShareTokenProperties.html" target="_self">ShareTokenProperties</a>)</code>
                 </td>
             </tr>
 
@@ -228,7 +228,7 @@
                                         <tr>
                                                 <td>props</td>
                                             <td>
-                                                            <code><a href="../interfaces/IShareTokenProperties.html" target="_self" >IShareTokenProperties</a></code>
+                                                            <code><a href="../interfaces/ShareTokenProperties.html" target="_self" >ShareTokenProperties</a></code>
                                             </td>
 
                                             <td>
@@ -385,7 +385,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/IShareTokenProperties.html" target="_self" >IShareTokenProperties</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/ShareTokenProperties.html" target="_self" >ShareTokenProperties</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1265,15 +1265,15 @@
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { BaseDORepo } from &#x27;@shared/repo/base.do.repo&#x27;;
 import { ShareTokenContext, ShareTokenDO, ShareTokenPayload, ShareTokenString } from &#x27;../domainobject/share-token.do&#x27;;
-import { IShareTokenProperties, ShareToken } from &#x27;../entity/share-token.entity&#x27;;
+import { ShareToken, ShareTokenProperties } from &#x27;../entity/share-token.entity&#x27;;
 
 @Injectable()
-export class ShareTokenRepo extends BaseDORepo&lt;ShareTokenDO, ShareToken, IShareTokenProperties&gt; {
+export class ShareTokenRepo extends BaseDORepo&lt;ShareTokenDO, ShareToken, ShareTokenProperties&gt; {
 	get entityName(): EntityName&lt;ShareToken&gt; {
 		return ShareToken;
 	}
 
-	entityFactory(props: IShareTokenProperties): ShareToken {
+	entityFactory(props: ShareTokenProperties): ShareToken {
 		return new ShareToken(props);
 	}
 
@@ -1306,8 +1306,8 @@ export class ShareTokenRepo extends BaseDORepo&lt;ShareTokenDO, ShareToken, ISha
 		return domainObject;
 	}
 
-	protected mapDOToEntityProperties(domainObject: ShareTokenDO): IShareTokenProperties {
-		const properties: IShareTokenProperties &#x3D; {
+	protected mapDOToEntityProperties(domainObject: ShareTokenDO): ShareTokenProperties {
+		const properties: ShareTokenProperties &#x3D; {
 			token: domainObject.token,
 			parentType: domainObject.payload.parentType,
 			parentId: domainObject.payload.parentId,

@@ -508,7 +508,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapContentToResource(lessonId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, content: <a href="../undefineds/IComponentProperties.html" target="_self">IComponentProperties</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>)</code>
+                    <code>mapContentToResource(lessonId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, content: <a href="../undefineds/ComponentProperties.html" target="_self">ComponentProperties</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>)</code>
                 </td>
             </tr>
 
@@ -551,7 +551,7 @@
                                         <tr>
                                                 <td>content</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#IComponentProperties" target="_self" >IComponentProperties</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#ComponentProperties" target="_self" >ComponentProperties</a></code>
                                             </td>
 
                                             <td>
@@ -745,11 +745,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Course, EntityId, IComponentProperties, Task } from &#x27;@shared/domain&#x27;;
-import { LessonService } from &#x27;@modules/lesson/service&#x27;;
-import { ComponentType } from &#x27;@src/shared/domain/entity/lesson.entity&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LessonService } from &#x27;@modules/lesson/service&#x27;;
 import { TaskService } from &#x27;@modules/task/service&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { ComponentProperties, Course, EntityId, Task } from &#x27;@shared/domain&#x27;;
+import { ComponentType } from &#x27;@src/shared/domain/entity/lesson.entity&#x27;;
 import {
 	CommonCartridgeFileBuilder,
 	CommonCartridgeIntendedUseType,
@@ -758,8 +758,8 @@ import {
 	ICommonCartridgeResourceProps,
 	ICommonCartridgeWebContentResourceProps,
 } from &#x27;../common-cartridge&#x27;;
-import { CourseService } from &#x27;./course.service&#x27;;
 import { createIdentifier } from &#x27;../common-cartridge/utils&#x27;;
+import { CourseService } from &#x27;./course.service&#x27;;
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -831,7 +831,7 @@ export class CommonCartridgeExportService {
 
 	private mapContentToResource(
 		lessonId: string,
-		content: IComponentProperties,
+		content: ComponentProperties,
 		version: CommonCartridgeVersion
 	): ICommonCartridgeResourceProps | undefined {
 		const commonProps &#x3D; {

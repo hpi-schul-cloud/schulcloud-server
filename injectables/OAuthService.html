@@ -131,7 +131,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, oauthAdapterService: <a href="../injectables/OauthAdapterService.html" target="_self">OauthAdapterService</a>, oAuthEncryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, provisioningService: <a href="../injectables/ProvisioningService.html" target="_self">ProvisioningService</a>, systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>, migrationCheckService: <a href="../injectables/MigrationCheckService.html" target="_self">MigrationCheckService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>)</code>
+<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, oauthAdapterService: <a href="../injectables/OauthAdapterService.html" target="_self">OauthAdapterService</a>, oAuthEncryptionService: <a href="../interfaces/EncryptionService.html" target="_self">EncryptionService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, provisioningService: <a href="../injectables/ProvisioningService.html" target="_self">ProvisioningService</a>, systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>, migrationCheckService: <a href="../injectables/MigrationCheckService.html" target="_self">MigrationCheckService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -181,7 +181,7 @@
                                                         <td>oAuthEncryptionService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IEncryptionService.html" target="_self" >IEncryptionService</a></code>
+                                                                        <code><a href="../interfaces/EncryptionService.html" target="_self" >EncryptionService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -897,9 +897,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DefaultEncryptionService, IEncryptionService } from &#x27;@infra/encryption&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DefaultEncryptionService, EncryptionService } from &#x27;@infra/encryption&#x27;;
 import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
-import { ProvisioningService, OauthDataDto } from &#x27;@modules/provisioning&#x27;;
+import { OauthDataDto, ProvisioningService } from &#x27;@modules/provisioning&#x27;;
 import { SystemService } from &#x27;@modules/system&#x27;;
 import { SystemDto } from &#x27;@modules/system/service&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
@@ -920,7 +920,7 @@ export class OAuthService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly oauthAdapterService: OauthAdapterService,
-		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
 		private readonly logger: LegacyLogger,
 		private readonly provisioningService: ProvisioningService,
 		private readonly systemService: SystemService,

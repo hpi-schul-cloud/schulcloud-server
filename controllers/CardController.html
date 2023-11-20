@@ -790,7 +790,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
+import {
 	Body,
 	Controller,
 	Delete,
@@ -806,7 +807,6 @@
 } from &#x27;@nestjs/common&#x27;;
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
-import { ICurrentUser, Authenticate, CurrentUser } from &#x27;@modules/authentication&#x27;;
 import { CardUc, ColumnUc } from &#x27;../uc&#x27;;
 import {
 	AnyContentElementResponse,
