@@ -1419,16 +1419,6 @@
 			"type": "number",
 			"default": 3046,
 			"description": "Port address for tldraw client app"
-		},
-		"PORT_TLDRAW": {
-			"type": "number",
-			"default": 3345,
-			"description": "Address for tldraw ws"
-		},
-		"PORT_TLDRAW_MANAGEMENT": {
-			"type": "number",
-			"default": 3349,
-			"description": "Address for tldraw management app"
 		}
 	},
 	"required": [],
