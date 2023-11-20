@@ -111,12 +111,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(taskService: <a href="../injectables/TaskService.html" target="_self">TaskService</a>, lessonRepo: <a href="../injectables/LessonRepo.html" target="_self">LessonRepo</a>, boardRepo: <a href="../injectables/BoardRepo.html" target="_self">BoardRepo</a>, columnBoardService: <a href="../injectables/ColumnBoardService.html" target="_self">ColumnBoardService</a>, columnBoardTargetService: <a href="../injectables/ColumnBoardTargetService.html" target="_self">ColumnBoardTargetService</a>)</code>
+<code>constructor(taskService: <a href="../injectables/TaskService.html" target="_self">TaskService</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>, boardRepo: <a href="../injectables/BoardRepo.html" target="_self">BoardRepo</a>, columnBoardService: <a href="../injectables/ColumnBoardService.html" target="_self">ColumnBoardService</a>, columnBoardTargetService: <a href="../injectables/ColumnBoardTargetService.html" target="_self">ColumnBoardTargetService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -146,10 +146,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>lessonRepo</td>
+                                                        <td>lessonService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/LessonRepo.html" target="_self" >LessonRepo</a></code>
+                                                                        <code><a href="../injectables/LessonService.html" target="_self" >LessonService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -230,8 +230,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -299,8 +299,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -377,25 +377,26 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
+import { ColumnBoardService } from &#x27;@modules/board&#x27;;
+import { LessonService } from &#x27;@modules/lesson&#x27;;
+import { TaskService } from &#x27;@modules/task&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Board, BoardExternalReferenceType, ColumnBoardTarget, EntityId } from &#x27;@shared/domain&#x27;;
-import { BoardRepo, LessonRepo } from &#x27;@shared/repo&#x27;;
-import { ColumnBoardService } from &#x27;@modules/board&#x27;;
-import { TaskService } from &#x27;@modules/task/service&#x27;;
+import { BoardRepo } from &#x27;@shared/repo&#x27;;
 import { ColumnBoardTargetService } from &#x27;./column-board-target.service&#x27;;
 
 @Injectable()
 export class RoomsService {
 	constructor(
 		private readonly taskService: TaskService,
-		private readonly lessonRepo: LessonRepo,
+		private readonly lessonService: LessonService,
 		private readonly boardRepo: BoardRepo,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnBoardTargetService: ColumnBoardTargetService
 	) {}
 
 	async updateBoard(board: Board, roomId: EntityId, userId: EntityId): Promise&lt;Board&gt; {
-		const [courseLessons] &#x3D; await this.lessonRepo.findAllByCourseIds([roomId]);
+		const [courseLessons] &#x3D; await this.lessonService.findByCourseIds([roomId]);
 		const [courseTasks] &#x3D; await this.taskService.findBySingleParent(userId, roomId);
 
 		const courseColumnBoardTargets &#x3D; await this.handleColumnBoardIntegration(roomId);

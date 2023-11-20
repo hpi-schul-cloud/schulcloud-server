@@ -127,7 +127,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -204,8 +204,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -273,8 +273,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -342,8 +342,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:27</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -404,15 +404,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findByCourseIds(courseIds: <a href="../undefineds/EntityId.html" target="_self">EntityId[]</a>)</code>
+                    <code>findByCourseIds(courseIds: <a href="../undefineds/EntityId.html" target="_self">EntityId[]</a>, filters?: literal type)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -440,6 +440,18 @@
 
                                             <td>
                                                     No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>filters</td>
+                                            <td>
+                                                        <code>literal type</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
                                             </td>
 
 
@@ -480,8 +492,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -533,13 +545,14 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Counted, EntityId, IComponentProperties, LessonEntity } from &#x27;@shared/domain&#x27;;
-import { LessonRepo } from &#x27;@shared/repo&#x27;;
-import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
+import { AuthorizationLoaderService } from &#x27;@src/modules/authorization&#x27;;
+import { LessonRepo } from &#x27;../repository&#x27;;
 
 @Injectable()
-export class LessonService {
+export class LessonService implements AuthorizationLoaderService {
 	constructor(
 		private readonly lessonRepo: LessonRepo,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
@@ -555,8 +568,8 @@ export class LessonService {
 		return this.lessonRepo.findById(lessonId);
 	}
 
-	async findByCourseIds(courseIds: EntityId[]): Promise&lt;Counted&lt;LessonEntity[]&gt;&gt; {
-		return this.lessonRepo.findAllByCourseIds(courseIds);
+	async findByCourseIds(courseIds: EntityId[], filters?: { hidden?: boolean }): Promise&lt;Counted&lt;LessonEntity[]&gt;&gt; {
+		return this.lessonRepo.findAllByCourseIds(courseIds, filters);
 	}
 
 	async findAllLessonsByUserId(userId: EntityId): Promise&lt;LessonEntity[]&gt; {
