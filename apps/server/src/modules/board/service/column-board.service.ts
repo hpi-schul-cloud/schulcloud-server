@@ -18,6 +18,7 @@ import {
 	isColumn,
 	SubmissionItem,
 	isCard,
+	SubmissionContainerElement,
 } from '@shared/domain';
 import { PermissionContextRepo, CourseRepo } from '@shared/repo';
 import { Forbidden } from '@feathersjs/errors';
@@ -204,7 +205,7 @@ export class ColumnBoardService {
 				if (e.status === 404) return false;
 				throw e;
 			});
-		const board = await this.boardDoRepo.findById(id, 1);
+		const board = await this.boardDoRepo.findById(id, 10);
 
 		if (hasPermissionContext) return;
 
@@ -278,7 +279,7 @@ export class ColumnBoardService {
 
 		await this.permissionCtxRepo.save(permissionCtxEntity);
 
-		const { children } = await this.boardDoRepo.findById(column.id, 1);
+		const { children } = await this.boardDoRepo.findById(column.id, 10);
 
 		const cards = children.filter((child): child is Card => isCard(child));
 
@@ -299,12 +300,29 @@ export class ColumnBoardService {
 	): Promise<PermissionContextEntity> {
 		// NOTE: apply migration, defaulting to course context
 
-		const permissionCtxEntity = new PermissionContextEntity({
+		let permissionCtxEntity = new PermissionContextEntity({
 			name,
 			parentContext,
 			contextReference: new ObjectId(boardNode.id),
 			userDelta: new UserDelta([]),
 		});
+
+		if (boardNode instanceof SubmissionContainerElement) {
+			const students = course.getStudentIds().map((userId) => {
+				return {
+					userId,
+					includedPermissions: [Permission.BOARD_ELEMENT_CAN_SUBMIT],
+					excludedPermissions: [],
+				};
+			});
+
+			permissionCtxEntity = new PermissionContextEntity({
+				name: 'SubmissionContainerElement with course context',
+				parentContext,
+				contextReference: new ObjectId(boardNode.id),
+				userDelta: new UserDelta(students),
+			});
+		}
 
 		await this.permissionCtxRepo.save(permissionCtxEntity);
 
@@ -315,7 +333,7 @@ export class ColumnBoardService {
 			)
 		);
 
-		const { children } = await this.boardDoRepo.findById(boardNode.id, 1);
+		const { children } = await this.boardDoRepo.findById(boardNode.id, 10);
 
 		const submissionItems = children.filter((el): el is SubmissionItem => el instanceof SubmissionItem);
 		await Promise.all(
@@ -340,7 +358,7 @@ export class ColumnBoardService {
 				return {
 					userId,
 					includedPermissions: [],
-					excludedPermissions: [Permission.BOARD_READ],
+					excludedPermissions: [Permission.BOARD_READ, Permission.BOARD_ELEMENT_CAN_SUBMIT],
 				};
 			});
 
@@ -358,7 +376,7 @@ export class ColumnBoardService {
 
 		await this.permissionCtxRepo.save(permissionCtxEntity);
 
-		const { children: submissionItemElements } = await this.boardDoRepo.findById(boardNode.id, 1);
+		const { children: submissionItemElements } = await this.boardDoRepo.findById(boardNode.id, 10);
 
 		await Promise.all(
 			submissionItemElements.map((el) =>

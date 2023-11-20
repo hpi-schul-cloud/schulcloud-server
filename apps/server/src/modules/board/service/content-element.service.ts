@@ -10,6 +10,7 @@ import {
 	isAnyContentElement,
 	Permission,
 	PermissionContextEntity,
+	SubmissionContainerElement,
 	SubmissionItem,
 	UserDelta,
 } from '@shared/domain';
@@ -49,7 +50,7 @@ export class ContentElementService {
 	}
 
 	async pocCreateElementPermissionCtx(element: AnyContentElementDo, parentContext: PermissionContextEntity) {
-		if (element instanceof SubmissionItem) {
+		if (element instanceof SubmissionContainerElement) {
 			// NOTE: this will be simplified once we have user groups
 			const rootId = (await this.boardDoRepo.getAncestorIds(element))[0];
 			const columnBoard = await this.boardDoRepo.findByClassAndId(ColumnBoard, rootId);
@@ -63,7 +64,7 @@ export class ContentElementService {
 			});
 
 			const permissionCtxEntity = new PermissionContextEntity({
-				name: 'Element permission context',
+				name: 'SubmissionContainerElement permission context',
 				parentContext,
 				contextReference: new ObjectId(element.id),
 				userDelta: new UserDelta(updatedStudentsPermissions),
