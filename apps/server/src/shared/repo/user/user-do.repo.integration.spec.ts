@@ -234,6 +234,7 @@ describe('UserRepo', () => {
 					language: LanguageType.DE,
 					forcePasswordChange: false,
 					preferences: { firstLogin: true },
+					birthday: new Date(),
 				},
 				id.toHexString()
 			);
@@ -276,6 +277,7 @@ describe('UserRepo', () => {
 					outdatedSince: testEntity.outdatedSince,
 					lastLoginSystemChange: testEntity.lastLoginSystemChange,
 					previousExternalId: testEntity.previousExternalId,
+					birthday: testEntity.birthday,
 				})
 			);
 		});
@@ -299,6 +301,7 @@ describe('UserRepo', () => {
 						outdatedSince: new Date(),
 						lastLoginSystemChange: new Date(),
 						previousExternalId: 'someId',
+						birthday: new Date(),
 					},
 					'testId'
 				);
@@ -321,6 +324,7 @@ describe('UserRepo', () => {
 				outdatedSince: testDO.outdatedSince,
 				lastLoginSystemChange: testDO.lastLoginSystemChange,
 				previousExternalId: testDO.previousExternalId,
+				birthday: testDO.birthday,
 			});
 		});
 	});

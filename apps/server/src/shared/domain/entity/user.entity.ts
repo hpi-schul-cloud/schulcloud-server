@@ -26,6 +26,7 @@ export interface UserProperties {
 	lastLoginSystemChange?: Date;
 	outdatedSince?: Date;
 	previousExternalId?: string;
+	birthday?: Date;
 }
 
 @Entity({ tableName: 'users' })
@@ -96,6 +97,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	outdatedSince?: Date;
 
+	@Property({ nullable: true })
+	birthday?: Date;
+
 	constructor(props: UserProperties) {
 		super();
 		this.firstName = props.firstName;
@@ -112,6 +116,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.lastLoginSystemChange = props.lastLoginSystemChange;
 		this.outdatedSince = props.outdatedSince;
 		this.previousExternalId = props.previousExternalId;
+		this.birthday = props.birthday;
 	}
 
 	public resolvePermissions(): string[] {

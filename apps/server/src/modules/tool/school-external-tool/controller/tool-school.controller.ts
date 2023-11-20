@@ -15,12 +15,17 @@ import {
 import { ValidationError } from '@shared/common';
 import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchListResponse } from '../../external-tool/controller/dto';
-import { SchoolExternalTool } from '../domain';
-import { SchoolExternalToolRequestMapper, SchoolExternalToolResponseMapper } from '../mapper';
+import { SchoolExternalTool, SchoolExternalToolMetadata } from '../domain';
+import {
+	SchoolExternalToolMetadataMapper,
+	SchoolExternalToolRequestMapper,
+	SchoolExternalToolResponseMapper,
+} from '../mapper';
 import { SchoolExternalToolUc } from '../uc';
 import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
 import {
 	SchoolExternalToolIdParams,
+	SchoolExternalToolMetadataResponse,
 	SchoolExternalToolPostParams,
 	SchoolExternalToolResponse,
 	SchoolExternalToolSearchListResponse,
@@ -135,5 +140,25 @@ export class ToolSchoolController {
 		this.logger.debug(`SchoolExternalTool with id ${response.id} was created by user with id ${currentUser.userId}`);
 
 		return response;
+	}
+
+	@Get('/:schoolExternalToolId/metadata')
+	@ApiOperation({ summary: 'Gets the metadata of an school external tool.' })
+	@ApiOkResponse({
+		description: 'Metadata of school external tool fetched successfully.',
+		type: SchoolExternalToolMetadataResponse,
+	})
+	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
+	async getMetaDataForExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: SchoolExternalToolIdParams
+	): Promise<SchoolExternalToolMetadataResponse> {
+		const schoolExternalToolMetadata: SchoolExternalToolMetadata =
+			await this.schoolExternalToolUc.getMetadataForSchoolExternalTool(currentUser.userId, params.schoolExternalToolId);
+
+		const mapped: SchoolExternalToolMetadataResponse =
+			SchoolExternalToolMetadataMapper.mapToSchoolExternalToolMetadataResponse(schoolExternalToolMetadata);
+
+		return mapped;
 	}
 }

@@ -44,6 +44,7 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 			const domainObject: SchoolExternalTool = this.mapEntityToDO(entity);
 			return domainObject;
 		});
+
 		return domainObjects;
 	}
 

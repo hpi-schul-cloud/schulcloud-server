@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CopyFilesService } from '@modules/files-storage-client';
-import { TaskCopyService } from '@modules/task/service';
+import { TaskCopyService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	BaseEntity,
@@ -18,7 +18,6 @@ import {
 	Material,
 } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { LessonRepo } from '@shared/repo';
 import {
 	courseFactory,
 	lessonFactory,
@@ -27,6 +26,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { LessonRepo } from '../repository';
 import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
 import { NexboardService } from './nexboard.service';
