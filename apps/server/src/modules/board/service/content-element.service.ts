@@ -49,10 +49,14 @@ export class ContentElementService {
 		return parent;
 	}
 
-	async pocCreateElementPermissionCtx(element: AnyContentElementDo, parentContext: PermissionContextEntity) {
+	async pocCreateElementPermissionCtx(
+		element: AnyContentElementDo,
+		parent: Card | SubmissionItem,
+		parentContext: PermissionContextEntity
+	) {
 		if (element instanceof SubmissionContainerElement) {
 			// NOTE: this will be simplified once we have user groups
-			const rootId = (await this.boardDoRepo.getAncestorIds(element))[0];
+			const rootId = (await this.boardDoRepo.getAncestorIds(parent))[0];
 			const columnBoard = await this.boardDoRepo.findByClassAndId(ColumnBoard, rootId);
 			const course = await this.courseRepo.findById(columnBoard.context.id);
 			const updatedStudentsPermissions = course.students.getItems().map((student) => {
@@ -62,7 +66,6 @@ export class ContentElementService {
 					excludedPermissions: [],
 				};
 			});
-
 			const permissionCtxEntity = new PermissionContextEntity({
 				name: 'SubmissionContainerElement permission context',
 				parentContext,
@@ -85,14 +88,7 @@ export class ContentElementService {
 		parent.addChild(element);
 
 		const parentContext = await this.permissionCtxRepo.findByContextReference(parent.id);
-
-		const permissionCtxEntity = new PermissionContextEntity({
-			name: 'Card permission context',
-			parentContext,
-			contextReference: new ObjectId(element.id),
-		});
-		await this.pocCreateElementPermissionCtx(element, parentContext);
-		await this.permissionCtxRepo.save(permissionCtxEntity);
+		await this.pocCreateElementPermissionCtx(element, parent, parentContext);
 
 		await this.boardDoRepo.save(parent.children, parent);
 		return element;

@@ -73,6 +73,8 @@ export class ElementUc extends BaseUc {
 		contentElementId: EntityId,
 		completed: boolean
 	): Promise<SubmissionItem> {
+		await this.pocCheckPermission(userId, contentElementId, [Permission.BOARD_ELEMENT_CAN_SUBMIT]);
+
 		const submissionContainerElement = await this.elementService.findById(contentElementId);
 
 		if (!isSubmissionContainerElement(submissionContainerElement)) {
