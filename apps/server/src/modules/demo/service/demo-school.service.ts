@@ -1,14 +1,11 @@
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountSaveDto } from '@modules/account/services/dto';
-import { CourseCreateDto } from '@modules/learnroom';
-import { CourseService } from '@modules/learnroom/service';
+import { AccountService } from '@modules/account';
+import { CourseService } from '@modules/learnroom';
 import { FederalStateService, LegacySchoolService } from '@modules/legacy-school';
-import { LessonService } from '@modules/lesson/service';
+import { LessonService } from '@modules/lesson';
 import { RoleService } from '@modules/role';
-import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, RoleReference, UserDO } from '@shared/domain';
+import { EntityId, LegacySchoolDo, RoleName, RoleReference, UserDO } from '@shared/domain';
 import crypto from 'crypto';
 import demoschoolConfig from '../configurations/default-demoschool';
 import { CreationProtocol, CreationProtocolEntityType } from '../types';
@@ -106,7 +103,7 @@ export class DemoSchoolService {
 		const studentIds = mapUserEmailsToIds(students, users);
 		const substitutionTeacherIds = mapUserEmailsToIds(substitutionTeachers, users);
 
-		const courseDto: CourseCreateDto = {
+		const courseDto = {
 			name,
 			schoolId,
 			teacherIds,
@@ -153,9 +150,10 @@ export class DemoSchoolService {
 
 	async createUser(schoolId: string, config: UserConfig, postfix: string, password: string): Promise<CreationProtocol> {
 		const { firstName, lastName, email, roleNames } = config;
-		const roles: RoleDto[] = await this.roleService.findByNames(roleNames);
+		const roles: Array<{ id?: string; name: RoleName }> = await this.roleService.findByNames(roleNames);
 		const roleRefs = roles.map(
-			(role: RoleDto): RoleReference => new RoleReference({ id: role.id || '', name: role.name })
+			(role: { id?: string; name: RoleName }): RoleReference =>
+				new RoleReference({ id: role.id || '', name: role.name })
 		);
 		const extendedEmail = email?.replace('@', `${postfix}@`);
 
@@ -174,8 +172,8 @@ export class DemoSchoolService {
 		return { id: userDo.id, type: CreationProtocolEntityType.USER, key: extendedEmail, children: [] };
 	}
 
-	private async createAccount(user: UserDO, password: string): Promise<AccountSaveDto> {
-		const accountSaveDto: AccountSaveDto = {
+	private async createAccount(user: UserDO, password: string) {
+		const accountSaveDto = {
 			username: user.email,
 			password,
 			userId: user.id,
