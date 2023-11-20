@@ -203,8 +203,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="65"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:65</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -270,8 +270,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="69"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:69</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -339,8 +339,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="112"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:112</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="113"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:113</a></div>
                         </td>
                     </tr>
 
@@ -612,10 +612,11 @@ export class SanisResponseMapper {
 
 	mapToExternalUserDto(source: SanisResponse): ExternalUserDto {
 		const mapped &#x3D; new ExternalUserDto({
-			firstName: source.person.name.vorname,
-			lastName: source.person.name.familienname,
+			firstName: source.person.name?.vorname,
+			lastName: source.person.name?.familienname,
 			roles: [this.mapSanisRoleToRoleName(source)],
 			externalId: source.pid,
+			birthday: source.person.geburt?.datum ? new Date(source.person.geburt?.datum) : undefined,
 		});
 
 		return mapped;

@@ -282,8 +282,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="175"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:175</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="177"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:177</a></div>
                         </td>
                     </tr>
 
@@ -432,8 +432,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="130"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:130</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="132"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:132</a></div>
                         </td>
                     </tr>
 
@@ -687,8 +687,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="200"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:200</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="202"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:202</a></div>
                         </td>
                     </tr>
 
@@ -858,6 +858,7 @@ export class OidcProvisioningService {
 			user.email &#x3D; externalUser.email ?? existingUser.email;
 			user.roles &#x3D; roleRefs ?? existingUser.roles;
 			user.schoolId &#x3D; schoolId ?? existingUser.schoolId;
+			user.birthday &#x3D; externalUser.birthday ?? existingUser.birthday;
 		} else {
 			createNewAccount &#x3D; true;
 
@@ -874,6 +875,7 @@ export class OidcProvisioningService {
 				email: externalUser.email ?? &#x27;&#x27;,
 				roles: roleRefs ?? [],
 				schoolId,
+				birthday: externalUser.birthday,
 			});
 		}
 

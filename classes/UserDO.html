@@ -96,6 +96,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Optional</span>
+                                <a href="#birthday" >birthday</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Optional</span>
                                 <a href="#createdAt" >createdAt</a>
                             </li>
                             <li>
@@ -193,7 +197,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">apps/server/src/shared/domain/domainobject/user.do.ts:43</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">apps/server/src/shared/domain/domainobject/user.do.ts:45</a></div>
                             </td>
                         </tr>
 
@@ -236,6 +240,33 @@
     <h3 id="inputs">
         Properties
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="birthday"></a>
+                    <span class="name">
+                            <span class="modifier">Optional</span>
+                        <span ><b>birthday</b></span>
+                        <a href="#birthday"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">apps/server/src/shared/domain/domainobject/user.do.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -834,6 +865,8 @@ export class UserDO extends BaseDO {
 
 	previousExternalId?: string;
 
+	birthday?: Date;
+
 	constructor(domainObject: UserDO) {
 		super(domainObject.id);
 
@@ -856,6 +889,7 @@ export class UserDO extends BaseDO {
 		this.lastLoginSystemChange &#x3D; domainObject.lastLoginSystemChange;
 		this.outdatedSince &#x3D; domainObject.outdatedSince;
 		this.previousExternalId &#x3D; domainObject.previousExternalId;
+		this.birthday &#x3D; domainObject.birthday;
 	}
 }
 </code></pre>
