@@ -539,6 +539,11 @@
 			"default": false,
 			"description": "Enable nexboard"
 		},
+		"FEATURE_COPY_NEXBOARD_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable nexboard on copy course."
+		},
 		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
 			"type": "boolean",
 			"default": true,
