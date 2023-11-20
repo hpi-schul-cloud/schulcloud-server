@@ -21,6 +21,14 @@ const h5pConfig = new H5PConfig(undefined, {
 	setFinishedEnabled: false,
 });
 
+interface LibrariesContentType {
+	h5p_libraries: string[];
+}
+
+function isLibrariesContentType(object: any): object is LibrariesContentType {
+	return 'h5p_libraries' in object;
+}
+
 @Injectable()
 export class H5PLibraryManagementService {
 	contentTypeCache: ContentTypeCache;
@@ -51,7 +59,11 @@ export class H5PLibraryManagementService {
 		const librariesYamlContent = readFileSync(Configuration.get('H5P_EDITOR__LIBRARY_LIST_PATH') as string, {
 			encoding: 'utf-8',
 		});
-		this.libraryWishList = (parse(librariesYamlContent) as { h5p_libraries: string[] }).h5p_libraries;
+		if (isLibrariesContentType(parse(librariesYamlContent))) {
+			this.libraryWishList = (parse(librariesYamlContent) as LibrariesContentType).h5p_libraries;
+		} else {
+			this.libraryWishList = [];
+		}
 	}
 
 	public async uninstallUnwantedLibraries(
