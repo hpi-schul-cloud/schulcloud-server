@@ -16,11 +16,11 @@ spec:
   paused: false
   selector:
     matchLabels:
-      app: tldraw
+      app: tldraw-server
   template:
     metadata:
       labels:
-        app: tldraw
+        app: tldraw-server
     spec:
       securityContext:
         runAsUser: 1000
@@ -33,7 +33,7 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3345
-          name: tldraw
+          name: tldraw-ws-server
           protocol: TCP
         envFrom:
         - configMapRef:
