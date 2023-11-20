@@ -136,7 +136,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsUrl()<br />@ApiProperty({required: true, nullable: false})<br />
+                            @IsString()<br />@ApiProperty({required: true, nullable: false})<br />
                         </code>
                     </td>
                 </tr>
@@ -162,10 +162,10 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
-import { IsUrl } from &#x27;class-validator&#x27;;
+import { IsString } from &#x27;class-validator&#x27;;
 
 export class GetMetaTagDataBody {
-	@IsUrl()
+	@IsString()
 	@ApiProperty({
 		required: true,
 		nullable: false,

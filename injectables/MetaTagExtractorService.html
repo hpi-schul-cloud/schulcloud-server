@@ -85,8 +85,12 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getDefaultMetaData" >getDefaultMetaData</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
-                                <a href="#fetchMetaData" >fetchMetaData</a>
+                                <a href="#getMetaData" >getMetaData</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -101,6 +105,11 @@
                                     <span class="modifier">Private</span>
                                 <a href="#tryFilenameAsFallback" >tryFilenameAsFallback</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#tryInternalLinkMetaTags" >tryInternalLinkMetaTags</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -113,6 +122,54 @@
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(internalLinkMataTagService: <a href="../injectables/MetaTagInternalUrlService.html" target="_self">MetaTagInternalUrlService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/meta-tag-extractor/service/meta-tag-extractor.service.ts:9</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>internalLinkMataTagService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MetaTagInternalUrlService.html" target="_self" >MetaTagInternalUrlService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
             <section data-compodoc="block-methods">
     
@@ -123,26 +180,95 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="fetchMetaData"></a>
+                    <a name="getDefaultMetaData"></a>
                     <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>fetchMetaData</b></span>
-                        <a href="#fetchMetaData"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Private</span>
+                        <span ><b>getDefaultMetaData</b></span>
+                        <a href="#getDefaultMetaData"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>fetchMetaData(url: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>getDefaultMetaData(url: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">apps/server/src/modules/meta-tag-extractor/service/meta-tag-extractor.service.ts:15</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">apps/server/src/modules/meta-tag-extractor/service/meta-tag-extractor.service.ts:65</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>url</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#MetaData" target="_self" >MetaData</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMetaData"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getMetaData</b></span>
+                        <a href="#getMetaData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getMetaData(url: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="12"
+                                    class="link-to-prism">apps/server/src/modules/meta-tag-extractor/service/meta-tag-extractor.service.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -210,8 +336,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">apps/server/src/modules/meta-tag-extractor/service/meta-tag-extractor.service.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">apps/server/src/modules/meta-tag-extractor/service/meta-tag-extractor.service.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -298,8 +424,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/meta-tag-extractor/service/meta-tag-extractor.service.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="30"
+                                    class="link-to-prism">apps/server/src/modules/meta-tag-extractor/service/meta-tag-extractor.service.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -367,8 +493,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">apps/server/src/modules/meta-tag-extractor/service/meta-tag-extractor.service.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="50"
+                                    class="link-to-prism">apps/server/src/modules/meta-tag-extractor/service/meta-tag-extractor.service.ts:50</a></div>
                         </td>
                     </tr>
 
@@ -414,6 +540,76 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tryInternalLinkMetaTags"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>tryInternalLinkMetaTags</b></span>
+                        <a href="#tryInternalLinkMetaTags"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>tryInternalLinkMetaTags(url: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">apps/server/src/modules/meta-tag-extractor/service/meta-tag-extractor.service.ts:26</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>url</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Meta.html" target="_self" >Promise&lt;MetaData | undefined&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -424,24 +620,29 @@
 import ogs from &#x27;open-graph-scraper&#x27;;
 import { ImageObject } from &#x27;open-graph-scraper/dist/lib/types&#x27;;
 import { basename } from &#x27;path&#x27;;
-
-export type MetaData &#x3D; {
-	title: string;
-	description: string;
-	url: string;
-	image?: ImageObject;
-};
+import type { MetaData } from &#x27;../types&#x27;;
+import { MetaTagInternalUrlService } from &#x27;./meta-tag-internal-url.service&#x27;;
 
 @Injectable()
 export class MetaTagExtractorService {
-	async fetchMetaData(url: string): Promise&lt;MetaData&gt; {
+	constructor(private readonly internalLinkMataTagService: MetaTagInternalUrlService) {}
+
+	async getMetaData(url: string): Promise&lt;MetaData&gt; {
 		if (url.length &#x3D;&#x3D;&#x3D; 0) {
 			throw new Error(&#x60;MetaTagExtractorService requires a valid URL. Given URL: ${url}&#x60;);
 		}
 
-		const metaData &#x3D; (await this.tryExtractMetaTags(url)) ?? this.tryFilenameAsFallback(url);
+		const metaData &#x3D;
+			(await this.tryInternalLinkMetaTags(url)) ??
+			(await this.tryExtractMetaTags(url)) ??
+			this.tryFilenameAsFallback(url) ??
+			this.getDefaultMetaData(url);
 
-		return metaData ?? { url, title: &#x27;&#x27;, description: &#x27;&#x27; };
+		return metaData;
+	}
+
+	private async tryInternalLinkMetaTags(url: string): Promise&lt;MetaData | undefined&gt; {
+		return this.internalLinkMataTagService.tryInternalLinkMetaTags(url);
 	}
 
 	private async tryExtractMetaTags(url: string): Promise&lt;MetaData | undefined&gt; {
@@ -457,6 +658,7 @@ export class MetaTagExtractorService {
 				description,
 				image,
 				url,
+				type: &#x27;external&#x27;,
 			};
 		} catch (error) {
 			return undefined;
@@ -471,10 +673,15 @@ export class MetaTagExtractorService {
 				title,
 				description: &#x27;&#x27;,
 				url,
+				type: &#x27;unknown&#x27;,
 			};
 		} catch (error) {
 			return undefined;
 		}
+	}
+
+	private getDefaultMetaData(url: string): MetaData {
+		return { url, title: &#x27;&#x27;, description: &#x27;&#x27;, type: &#x27;unknown&#x27; };
 	}
 
 	private pickImage(images: ImageObject[], minWidth &#x3D; 400): ImageObject | undefined {

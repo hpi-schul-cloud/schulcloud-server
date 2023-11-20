@@ -96,7 +96,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
-                                <a href="#getData" >getData</a>
+                                <a href="#getMetaTags" >getMetaTags</a>
                             </li>
                         </ul>
                     </td>
@@ -119,7 +119,7 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getData"></a>
+                    <a name="getMetaTags"></a>
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
@@ -127,15 +127,15 @@
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier">Async</span>
-                        <span ><b>getData</b></span>
-                        <a href="#getData"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getMetaTags</b></span>
+                        <a href="#getMetaTags"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getData(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, bodyParams: <a href="../classes/GetMetaTagDataBody.html" target="_self">GetMetaTagDataBody</a>)</code>
+                    <code>getMetaTags(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, bodyParams: <a href="../classes/GetMetaTagDataBody.html" target="_self">GetMetaTagDataBody</a>)</code>
                 </td>
             </tr>
 
@@ -149,8 +149,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">apps/server/src/modules/meta-tag-extractor/controller/meta-tag-extractor.controller.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">apps/server/src/modules/meta-tag-extractor/controller/meta-tag-extractor.controller.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -212,10 +212,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, InternalServerErrorException, Post, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
+import { Body, Controller, InternalServerErrorException, Post, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
-import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { MetaTagExtractorUc } from &#x27;../uc&#x27;;
 import { MetaTagExtractorResponse } from &#x27;./dto&#x27;;
 import { GetMetaTagDataBody } from &#x27;./post-link-url.body.params&#x27;;
@@ -231,11 +230,11 @@ export class MetaTagExtractorController {
 	@ApiResponse({ status: 401, type: UnauthorizedException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post(&#x27;&#x27;)
-	async getData(
+	async getMetaTags(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() bodyParams: GetMetaTagDataBody
 	): Promise&lt;MetaTagExtractorResponse&gt; {
-		const result &#x3D; await this.metaTagExtractorUc.fetchMetaData(currentUser.userId, bodyParams.url);
+		const result &#x3D; await this.metaTagExtractorUc.getMetaData(currentUser.userId, bodyParams.url);
 		const imageUrl &#x3D; result.image?.url;
 		const response &#x3D; new MetaTagExtractorResponse({ ...result, imageUrl });
 		return response;
