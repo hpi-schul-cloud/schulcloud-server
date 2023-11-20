@@ -3,8 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType, IComponentProperties } from '@shared/domain';
-import { LessonRepo } from '@shared/repo';
-import { lessonFactory, setupEntities } from '@shared/testing';
+import { setupEntities } from '@shared/testing';
+import { LessonRepo } from '../repository';
 import { LessonCreateDto } from '../types';
 import { LessonService } from './lesson.service';
 
@@ -83,9 +83,19 @@ describe('LessonService', () => {
 			const courseIds = ['course-1', 'course-2'];
 			lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
 
-			await expect(lessonService.findByCourseIds(courseIds)).resolves.not.toThrow();
-			expect(lessonRepo.findAllByCourseIds).toBeCalledTimes(1);
-			expect(lessonRepo.findAllByCourseIds).toBeCalledWith(courseIds);
+			await lessonService.findByCourseIds(courseIds);
+
+			expect(lessonRepo.findAllByCourseIds).toBeCalledWith(courseIds, undefined);
+		});
+
+		it('should pass filters', async () => {
+			const courseIds = ['course-1', 'course-2'];
+			lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+			const filters = { hidden: false };
+
+			await lessonService.findByCourseIds(courseIds, filters);
+
+			expect(lessonRepo.findAllByCourseIds).toBeCalledWith(courseIds, filters);
 		});
 	});
 

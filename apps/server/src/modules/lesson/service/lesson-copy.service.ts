@@ -1,4 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { CopyDictionary, CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyFilesService, FileUrlReplacement } from '@modules/files-storage-client';
+import { TaskCopyService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import {
 	ComponentType,
@@ -11,12 +14,8 @@ import {
 	LessonEntity,
 	Material,
 } from '@shared/domain';
-import { LessonRepo } from '@shared/repo';
-import { CopyDictionary, CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { CopyFilesService } from '@modules/files-storage-client';
-import { FileUrlReplacement } from '@modules/files-storage-client/service/copy-files.service';
-import { TaskCopyService } from '@modules/task/service/task-copy.service';
 import { randomBytes } from 'crypto';
+import { LessonRepo } from '../repository';
 import { LessonCopyParams } from '../types';
 import { EtherpadService } from './etherpad.service';
 import { NexboardService } from './nexboard.service';
