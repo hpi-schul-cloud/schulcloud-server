@@ -103,6 +103,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#getMetadataForSchoolExternalTool" >getMetadataForSchoolExternalTool</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#getSchoolExternalTool" >getSchoolExternalTool</a>
                             </li>
                             <li>
@@ -127,12 +131,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, schoolExternalToolValidationService: <a href="../injectables/SchoolExternalToolValidationService.html" target="_self">SchoolExternalToolValidationService</a>, toolPermissionHelper: <a href="../injectables/ToolPermissionHelper.html" target="_self">ToolPermissionHelper</a>)</code>
+<code>constructor(schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, schoolExternalToolValidationService: <a href="../injectables/SchoolExternalToolValidationService.html" target="_self">SchoolExternalToolValidationService</a>, schoolExternalToolMetadataService: <a href="../injectables/SchoolExternalToolMetadataService.html" target="_self">SchoolExternalToolMetadataService</a>, toolPermissionHelper: <a href="../injectables/ToolPermissionHelper.html" target="_self">ToolPermissionHelper</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -178,6 +182,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/SchoolExternalToolValidationService.html" target="_self" >SchoolExternalToolValidationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>schoolExternalToolMetadataService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SchoolExternalToolMetadataService.html" target="_self" >SchoolExternalToolMetadataService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -233,8 +249,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -314,8 +330,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="59"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:59</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="64"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -396,8 +412,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -489,8 +505,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -552,6 +568,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getMetadataForSchoolExternalTool"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getMetadataForSchoolExternalTool</b></span>
+                        <a href="#getMetadataForSchoolExternalTool"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getMetadataForSchoolExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="104"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:104</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>schoolExternalToolId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Meta.html" target="_self" >Promise&lt;SchoolExternalToolMetadata&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getSchoolExternalTool"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -570,8 +667,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="71"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:71</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -651,8 +748,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="79"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:79</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:84</a></div>
                         </td>
                     </tr>
 
@@ -733,8 +830,12 @@ import { EntityId, Permission } from &#x27;@shared/domain&#x27;;
 import { AuthorizationContext, AuthorizationContextBuilder } from &#x27;@modules/authorization&#x27;;
 import { ToolPermissionHelper } from &#x27;../../common/uc/tool-permission-helper&#x27;;
 import { ContextExternalToolService } from &#x27;../../context-external-tool/service&#x27;;
-import { SchoolExternalTool } from &#x27;../domain&#x27;;
-import { SchoolExternalToolService, SchoolExternalToolValidationService } from &#x27;../service&#x27;;
+import { SchoolExternalTool, SchoolExternalToolMetadata } from &#x27;../domain&#x27;;
+import {
+	SchoolExternalToolService,
+	SchoolExternalToolValidationService,
+	SchoolExternalToolMetadataService,
+} from &#x27;../service&#x27;;
 import { SchoolExternalToolDto, SchoolExternalToolQueryInput } from &#x27;./dto/school-external-tool.types&#x27;;
 
 @Injectable()
@@ -743,6 +844,7 @@ export class SchoolExternalToolUc {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
+		private readonly schoolExternalToolMetadataService: SchoolExternalToolMetadataService,
 		private readonly toolPermissionHelper: ToolPermissionHelper
 	) {}
 
@@ -824,6 +926,22 @@ export class SchoolExternalToolUc {
 
 		const saved &#x3D; await this.schoolExternalToolService.saveSchoolExternalTool(updated);
 		return saved;
+	}
+
+	async getMetadataForSchoolExternalTool(
+		userId: EntityId,
+		schoolExternalToolId: EntityId
+	): Promise&lt;SchoolExternalToolMetadata&gt; {
+		const schoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolService.findById(schoolExternalToolId);
+
+		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
+
+		const metadata: SchoolExternalToolMetadata &#x3D; await this.schoolExternalToolMetadataService.getMetadata(
+			schoolExternalToolId
+		);
+
+		return metadata;
 	}
 }
 </code></pre>
