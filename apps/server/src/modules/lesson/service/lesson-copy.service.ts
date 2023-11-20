@@ -171,6 +171,7 @@ export class LessonCopyService {
 	}> {
 		const etherpadEnabled = Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean;
 		const nexboardEnabled = Configuration.get('FEATURE_NEXBOARD_ENABLED') as boolean;
+		const copyNexboardEnabled = Configuration.get('FEATURE_COPY_NEXBOARD_ENABLED') as boolean;
 		const copiedContent: IComponentProperties[] = [];
 		const copiedContentStatus: CopyStatus[] = [];
 		for (let i = 0; i < content.length; i += 1) {
@@ -227,7 +228,7 @@ export class LessonCopyService {
 				copiedContent.push(linkContent);
 				copiedContentStatus.push(embeddedTaskStatus);
 			}
-			if (element.component === ComponentType.NEXBOARD && nexboardEnabled) {
+			if (element.component === ComponentType.NEXBOARD && nexboardEnabled && copyNexboardEnabled) {
 				// eslint-disable-next-line no-await-in-loop
 				const nexboardContent = await this.copyNexboard(element, params);
 				const nexboardStatus = {
@@ -236,7 +237,9 @@ export class LessonCopyService {
 					status: CopyStatusEnum.PARTIAL,
 				};
 				if (nexboardContent) {
-					nexboardStatus.status = CopyStatusEnum.NOT_DOING;
+					copiedContent.push(nexboardContent);
+				} else {
+					nexboardStatus.status = CopyStatusEnum.FAIL;
 				}
 				copiedContentStatus.push(nexboardStatus);
 			}
