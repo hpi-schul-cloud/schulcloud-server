@@ -1,13 +1,13 @@
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Controller, Get, NotFoundException, Param, Query, Res, StreamableFile } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { PaginationParams } from '@shared/controller/';
 import { Response } from 'express';
-import { ConfigService } from '@nestjs/config';
-import { CourseUc } from '../uc/course.uc';
-import { CourseExportUc } from '../uc/course-export.uc';
-import { CourseMetadataListResponse, CourseUrlParams, CourseQueryParams } from './dto';
 import { CourseMapper } from '../mapper/course.mapper';
+import { CourseExportUc } from '../uc/course-export.uc';
+import { CourseUc } from '../uc/course.uc';
+import { CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from './dto';
 
 @ApiTags('Courses')
 @Authenticate('jwt')

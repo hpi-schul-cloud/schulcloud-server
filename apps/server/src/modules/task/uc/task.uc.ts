@@ -1,19 +1,19 @@
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { LessonService } from '@modules/lesson';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import {
 	Counted,
 	Course,
 	EntityId,
-	IPagination,
-	ITaskStatus,
 	LessonEntity,
+	Pagination,
 	Permission,
 	SortOrder,
+	TaskStatus,
 	TaskWithStatusVo,
 	User,
 } from '@shared/domain';
 import { CourseRepo, TaskRepo } from '@shared/repo';
-import { LessonService } from '@modules/lesson';
 import { TaskService } from '../service';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class TaskUC {
 		private readonly taskService: TaskService
 	) {}
 
-	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
+	async findAllFinished(userId: EntityId, pagination?: Pagination): Promise<Counted<TaskWithStatusVo[]>> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		this.authorizationService.checkOneOfPermissions(user, [
@@ -54,7 +54,7 @@ export class TaskUC {
 		);
 
 		const taskWithStatusVos = tasks.map((task) => {
-			let status: ITaskStatus;
+			let status: TaskStatus;
 			if (this.authorizationService.hasPermission(user, task, AuthorizationContextBuilder.write([]))) {
 				status = task.createTeacherStatusForUser(user);
 			} else {
@@ -67,7 +67,7 @@ export class TaskUC {
 		return [taskWithStatusVos, total];
 	}
 
-	async findAll(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
+	async findAll(userId: EntityId, pagination: Pagination): Promise<Counted<TaskWithStatusVo[]>> {
 		let response: Counted<TaskWithStatusVo[]>;
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -124,7 +124,7 @@ export class TaskUC {
 		return result;
 	}
 
-	private async findAllForStudent(user: User, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
+	private async findAllForStudent(user: User, pagination: Pagination): Promise<Counted<TaskWithStatusVo[]>> {
 		const courses = await this.getPermittedCourses(user, Action.read);
 		const openCourses = courses.filter((c) => !c.isFinished());
 		const lessons = await this.getPermittedLessons(user, openCourses);
@@ -153,7 +153,7 @@ export class TaskUC {
 		return [taskWithStatusVos, total];
 	}
 
-	private async findAllForTeacher(user: User, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
+	private async findAllForTeacher(user: User, pagination: Pagination): Promise<Counted<TaskWithStatusVo[]>> {
 		const courses = await this.getPermittedCourses(user, Action.write);
 		const openCourses = courses.filter((c) => !c.isFinished());
 		const lessons = await this.getPermittedLessons(user, openCourses);

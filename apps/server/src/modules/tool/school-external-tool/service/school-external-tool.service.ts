@@ -4,10 +4,10 @@ import { SchoolExternalToolRepo } from '@shared/repo';
 import { ToolConfigurationStatus } from '../../common/enum';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
 
 @Injectable()
 export class SchoolExternalToolService {

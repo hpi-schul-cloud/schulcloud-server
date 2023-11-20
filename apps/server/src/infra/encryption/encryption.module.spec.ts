@@ -1,11 +1,11 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DefaultEncryptionService, EncryptionModule, IEncryptionService, LdapEncryptionService } from '.';
+import { DefaultEncryptionService, EncryptionModule, EncryptionService, LdapEncryptionService } from '.';
 
 describe('EncryptionModule', () => {
 	let module: TestingModule;
-	let defaultService: IEncryptionService;
-	let ldapService: IEncryptionService;
+	let defaultService: EncryptionService;
+	let ldapService: EncryptionService;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({

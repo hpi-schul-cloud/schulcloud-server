@@ -1,4 +1,4 @@
-export interface IIdentityManagementConfig {
+export interface IdentityManagementConfig {
 	FEATURE_IDENTITY_MANAGEMENT_ENABLED: boolean;
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: boolean;
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: boolean;

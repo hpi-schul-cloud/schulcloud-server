@@ -1,5 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ICurrentUser } from '@modules/authentication';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, Permission, Role, SortOrder, User } from '@shared/domain';
@@ -9,8 +11,6 @@ import {
 	externalToolFactory,
 	oauth2ToolConfigFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { ICurrentUser } from '@modules/authentication';
-import { Action, AuthorizationService } from '@modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalTool, ExternalToolMetadata, Oauth2ToolConfig } from '../domain';
 import {

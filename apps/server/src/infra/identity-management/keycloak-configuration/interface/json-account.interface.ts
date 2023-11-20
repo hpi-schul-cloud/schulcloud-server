@@ -1,4 +1,4 @@
-export interface IJsonAccount {
+export interface JsonAccount {
 	_id: {
 		$oid: string;
 	};

@@ -16,7 +16,7 @@ export interface IImportUserScope {
 	classes?: string;
 }
 
-export interface INameMatch {
+export interface NameMatch {
 	/**
 	 * Match filter for lastName or firstName
 	 */

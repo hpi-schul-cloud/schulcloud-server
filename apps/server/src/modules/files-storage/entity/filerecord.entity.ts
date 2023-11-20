@@ -34,7 +34,7 @@ export enum PreviewStatus {
 	PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE = 'preview_not_possible_wrong_mime_type',
 }
 
-export interface IFileRecordSecurityCheckProperties {
+export interface FileRecordSecurityCheckProperties {
 	status?: ScanStatus;
 	reason?: string;
 	requestToken?: string;
@@ -56,7 +56,7 @@ export class FileRecordSecurityCheck {
 	@Property()
 	updatedAt = new Date();
 
-	constructor(props: IFileRecordSecurityCheckProperties) {
+	constructor(props: FileRecordSecurityCheckProperties) {
 		if (props.status !== undefined) {
 			this.status = props.status;
 		}
@@ -69,7 +69,7 @@ export class FileRecordSecurityCheck {
 	}
 }
 
-export interface IFileRecordProperties {
+export interface FileRecordProperties {
 	size: number;
 	name: string;
 	mimeType: string;
@@ -81,13 +81,13 @@ export interface IFileRecordProperties {
 	isCopyFrom?: EntityId;
 }
 
-interface IParentInfo {
+interface ParentInfo {
 	schoolId: EntityId;
 	parentId: EntityId;
 	parentType: FileRecordParentType;
 }
 
-// TODO: IEntityWithSchool
+// TODO: EntityWithSchool
 
 /**
  * Note: The file record entity will not manage any entity relations by itself.
@@ -150,7 +150,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return result;
 	}
 
-	constructor(props: IFileRecordProperties) {
+	constructor(props: FileRecordProperties) {
 		super();
 		this.size = props.size;
 		this.name = props.name;
@@ -177,7 +177,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return this.securityCheck.requestToken;
 	}
 
-	public copy(userId: EntityId, targetParentInfo: IParentInfo): FileRecord {
+	public copy(userId: EntityId, targetParentInfo: ParentInfo): FileRecord {
 		const { size, name, mimeType, id } = this;
 		const { parentType, parentId, schoolId } = targetParentInfo;
 
@@ -261,7 +261,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return isPreviewPossible;
 	}
 
-	public getParentInfo(): IParentInfo {
+	public getParentInfo(): ParentInfo {
 		const { parentId, parentType, schoolId } = this;
 
 		return { parentId, parentType, schoolId };
