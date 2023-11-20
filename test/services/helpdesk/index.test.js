@@ -2,10 +2,10 @@
 const assert = require('assert');
 const { expect } = require('chai');
 const sinon = require('sinon');
-const appPromise = require('../../../src/app');
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const appPromise = require('../../../src/app');
 
-describe.only('helpdesk service', function test() {
+describe('helpdesk service', function test() {
 	this.timeout(10000);
 	let app;
 	let helpdeskService;
@@ -36,7 +36,8 @@ describe.only('helpdesk service', function test() {
 	});
 
 	after((done) => {
-		//app.use('/mails', originalMailService);
+		app.unuse('/mails');
+		app.use('/mails', originalMailService);
 		helpdeskService
 			.remove(testProblem)
 			.then((result) => {
@@ -48,21 +49,11 @@ describe.only('helpdesk service', function test() {
 			});
 	});
 
-	beforeEach(() => {
-		//	app.unuse('/mails');
-		//	app.use('/mails', originalMailService);
-	});
-
-	afterEach(() => {
-		app.unuse('/mails');
-	});
-
 	it('registered the helpdesk service', () => {
 		assert.ok(helpdeskService);
 	});
 
 	it('POST /helpdesk to admin with valid data', () => {
-		app.use('/mails', originalMailService);
 		const postBody = {
 			type: 'contactAdmin',
 			subject: 'Dies ist ein Titel 2',
@@ -79,7 +70,6 @@ describe.only('helpdesk service', function test() {
 	});
 
 	it('POST /helpdesk to admin without schoolId', () => {
-		app.use('/mails', originalMailService);
 		const postBody = {
 			type: 'contactAdmin',
 			subject: 'Dies ist ein Titel 3',
@@ -94,7 +84,6 @@ describe.only('helpdesk service', function test() {
 	});
 
 	it('POST /helpdesk to admin without data', () => {
-		app.use('/mails', originalMailService);
 		const postBody = {
 			type: 'contactAdmin',
 			subject: 'Dies ist ein Titel 3',
@@ -107,7 +96,6 @@ describe.only('helpdesk service', function test() {
 	});
 
 	it('POST /helpdesk to schoolcloud with problem, valid data', () => {
-		app.use('/mails', originalMailService);
 		const postBody = {
 			type: 'contactHPI',
 			subject: 'Dies ist ein Titel 4',
@@ -128,6 +116,7 @@ describe.only('helpdesk service', function test() {
 			problemDescription: 'Dies ist die Problembeschreibung 1',
 			replyEmail: 'test@mail.de',
 		};
+		app.unuse('/mails');
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
 		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
@@ -142,6 +131,7 @@ describe.only('helpdesk service', function test() {
 			problemDescription: 'Dies ist die Problembeschreibung 1',
 			replyEmail: 'test@mail.de',
 		};
+		app.unuse('/mails');
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
 		const tempScTheme = Configuration.get('SUPPORT_PROBLEM_EMAIL_ADDRESS');
@@ -159,6 +149,7 @@ describe.only('helpdesk service', function test() {
 			problemDescription: 'Dies ist die Problembeschreibung 1',
 			replyEmail: 'test@mail.de',
 		};
+		app.unuse('/mails');
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
 		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
@@ -174,6 +165,7 @@ describe.only('helpdesk service', function test() {
 			problemDescription: 'Dies ist die Problembeschreibung 2',
 			replyEmail: 'test@mail.de',
 		};
+		app.unuse('/mails');
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
 		const tempScTheme = Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS');

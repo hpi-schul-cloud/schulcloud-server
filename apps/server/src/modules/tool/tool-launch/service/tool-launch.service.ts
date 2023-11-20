@@ -1,7 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
-import { CommonToolService } from '../../common/service';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
@@ -15,7 +14,8 @@ import {
 	IToolLaunchStrategy,
 	Lti11ToolLaunchStrategy,
 	OAuth2ToolLaunchStrategy,
-} from './strategy';
+} from './launch-strategy';
+import { ToolVersionService } from '../../context-external-tool/service/tool-version-service';
 
 @Injectable()
 export class ToolLaunchService {
@@ -27,7 +27,7 @@ export class ToolLaunchService {
 		private readonly basicToolLaunchStrategy: BasicToolLaunchStrategy,
 		private readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy,
 		private readonly oauth2ToolLaunchStrategy: OAuth2ToolLaunchStrategy,
-		private readonly commonToolService: CommonToolService
+		private readonly toolVersionService: ToolVersionService
 	) {
 		this.strategies = new Map();
 		this.strategies.set(ToolConfigType.BASIC, basicToolLaunchStrategy);
@@ -53,7 +53,7 @@ export class ToolLaunchService {
 
 		const { externalTool, schoolExternalTool } = await this.loadToolHierarchy(schoolExternalToolId);
 
-		this.isToolStatusLatestOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
+		await this.isToolStatusLatestOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
 
 		const strategy: IToolLaunchStrategy | undefined = this.strategies.get(externalTool.config.type);
 
@@ -83,17 +83,18 @@ export class ToolLaunchService {
 		};
 	}
 
-	private isToolStatusLatestOrThrow(
+	private async isToolStatusLatestOrThrow(
 		userId: EntityId,
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
-	): void {
-		const status: ToolConfigurationStatus = this.commonToolService.determineToolConfigurationStatus(
+	): Promise<void> {
+		const status = await this.toolVersionService.determineToolConfigurationStatus(
 			externalTool,
 			schoolExternalTool,
 			contextExternalTool
 		);
+
 		if (status !== ToolConfigurationStatus.LATEST) {
 			throw new ToolStatusOutdatedLoggableException(userId, contextExternalTool.id ?? '');
 		}

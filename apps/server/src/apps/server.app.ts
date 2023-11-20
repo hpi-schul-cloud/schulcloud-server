@@ -2,25 +2,25 @@
 // application imports
 /* eslint-disable no-console */
 import { MikroORM } from '@mikro-orm/core';
-import { AccountService } from '@modules/account/services/account.service';
+import { NestFactory } from '@nestjs/core';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import { enableOpenApiDocs } from '@shared/controller/swagger';
+import { Mail, MailService } from '@infra/mail';
+import { LegacyLogger, Logger } from '@src/core/logger';
+import { AccountService } from '@modules/account';
+import { TeamService } from '@modules/teams/service/team.service';
 import { AccountValidationService } from '@modules/account/services/account.validation.service';
 import { AccountUc } from '@modules/account/uc/account.uc';
 import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
 import { GroupService } from '@modules/group';
 import { RocketChatService } from '@modules/rocketchat';
 import { ServerModule } from '@modules/server';
-import { TeamService } from '@modules/teams/service/team.service';
-import { NestFactory } from '@nestjs/core';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import { enableOpenApiDocs } from '@shared/controller/swagger';
-import { Mail, MailService } from '@shared/infra/mail';
-import { LegacyLogger, Logger } from '@src/core/logger';
 import express from 'express';
 import { join } from 'path';
 
 // register source-map-support for debugging
-import { FeathersRosterService } from '@modules/pseudonym';
 import { install as sourceMapInstall } from 'source-map-support';
+import { FeathersRosterService } from '@modules/pseudonym';
 import legacyAppPromise = require('../../../../src/app');
 
 import { AppStartLoggable } from './helpers/app-start-loggable';

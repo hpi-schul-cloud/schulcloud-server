@@ -17,7 +17,7 @@ chai.use(chaiAsPromised);
 chai.use(chaiHttp);
 const { expect } = chai;
 
-describe.only('LdapConfigService', () => {
+describe('LdapConfigService', () => {
 	let app;
 	let server;
 	let nestServices;
@@ -38,10 +38,6 @@ describe.only('LdapConfigService', () => {
 		Configuration.reset(configBefore);
 		await server.close();
 		await closeNestServices(nestServices);
-	});
-
-	afterEach(() => {
-		app.unuse('ldap');
 	});
 
 	describe('GET route', () => {
@@ -161,17 +157,19 @@ describe.only('LdapConfigService', () => {
 			};
 		}
 
-		beforeEach(() => {
-			ldapServiceMock = new MockLdapService();
-			app.use('ldap', ldapServiceMock);
+		before(() => {
+			originalLdapService = app.service('ldap');
 		});
 
 		after(() => {
+			app.unuse('ldap');
 			app.use('ldap', originalLdapService);
 		});
 
-		afterEach(() => {
-			app.unuse('ldap');
+		beforeEach(() => {
+			app.unuse('/ldap');
+			ldapServiceMock = new MockLdapService();
+			app.use('ldap', ldapServiceMock);
 		});
 
 		beforeEach(async () => {
@@ -183,7 +181,6 @@ describe.only('LdapConfigService', () => {
 				roles: ['administrator'],
 			});
 			params = await testObjects.generateRequestParamsFromUser(admin);
-			originalLdapService = app.service('ldap');
 		});
 
 		it("should allow adding a new system based on the given LDAP config to the user's school", async () => {
@@ -229,10 +226,8 @@ describe.only('LdapConfigService', () => {
 		});
 
 		it('should catch common errors', async () => {
-			ldapServiceMock.getUsers = sinon.fake.rejects(new LDAPConnectionError());
-
 			app.unuse('ldap');
-
+			ldapServiceMock.getUsers = sinon.fake.rejects(new LDAPConnectionError());
 			app.use('ldap', ldapServiceMock);
 
 			const result = await app
@@ -303,19 +298,19 @@ describe.only('LdapConfigService', () => {
 			};
 		}
 
-		beforeEach(() => {
-			ldapServiceMock = new MockLdapService();
-			app.unuse('ldap');
-
-			app.use('ldap', ldapServiceMock);
-		});
-
-		afterEach(() => {
-			app.unuse('ldap');
+		before(() => {
+			originalLdapService = app.service('ldap');
 		});
 
 		after(() => {
+			app.unuse('ldap');
 			app.use('ldap', originalLdapService);
+		});
+
+		beforeEach(() => {
+			app.unuse('/ldap');
+			ldapServiceMock = new MockLdapService();
+			app.use('/ldap', ldapServiceMock);
 		});
 
 		beforeEach(async () => {
@@ -337,7 +332,6 @@ describe.only('LdapConfigService', () => {
 				roles: ['administrator'],
 			});
 			params = await testObjects.generateRequestParamsFromUser(admin);
-			originalLdapService = app.service('ldap');
 		});
 
 		it('should verify the given config and patch the system and school', async () => {

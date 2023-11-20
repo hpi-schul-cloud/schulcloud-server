@@ -4,17 +4,16 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
-import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
-import { PreviewGeneratorProducerModule } from '@shared/infra/preview-generator';
-import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq/rabbitmq.module';
-import { S3ClientModule } from '@shared/infra/s3-client';
+import { AntivirusModule } from '@infra/antivirus';
+import { PreviewGeneratorProducerModule } from '@infra/preview-generator';
+import { RabbitMQWrapperModule } from '@infra/rabbitmq';
+import { S3ClientModule } from '@infra/s3-client';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { FileRecord, FileRecordSecurityCheck } from './entity';
 import { config, s3Config } from './files-storage.config';
 import { FileRecordRepo } from './repo';
-import { FilesStorageService } from './service/files-storage.service';
-import { PreviewService } from './service/preview.service';
+import { FilesStorageService, PreviewService } from './service';
 
 const imports = [
 	LoggerModule,

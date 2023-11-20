@@ -8,6 +8,7 @@ class UserAccountService {
 		this.lock = new Semaphore(5);
 	}
 
+	// Feathers 5: at least one standard service method must be implemented to be considered a service
 	get() {
 		return undefined;
 	}

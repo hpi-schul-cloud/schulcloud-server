@@ -53,6 +53,9 @@ describe.only('datasourceRuns service', () => {
 		});
 		mockery.registerMock('./strategies', [MockSyncer, MockSyncerWithData]);
 		datasourceRunsService = app.service('datasourceRuns');
+
+		app.unuse('/sync/userAccount');
+		app.unuse('/sync');
 		// eslint-disable-next-line global-require
 		//const sync = require('../../../src/services/sync');
 		//app.configure(sync);

@@ -22,6 +22,7 @@ describe.only('IservIdmLDAPStrategy', () => {
 	});
 
 	after(() => {
+		app.unuse('/ldap');
 		app.use('/ldap', originalLdapService);
 	});
 
@@ -42,6 +43,7 @@ describe.only('IservIdmLDAPStrategy', () => {
 		}
 
 		beforeEach(() => {
+			app.unuse('/ldap');
 			ldapServiceMock = new MockLdapService();
 			app.use('/ldap', ldapServiceMock);
 		});
@@ -159,6 +161,7 @@ describe.only('IservIdmLDAPStrategy', () => {
 		}
 
 		beforeEach(() => {
+			app.unuse('/ldap');
 			ldapServiceMock = new MockLdapService();
 			app.use('/ldap', ldapServiceMock);
 		});
@@ -235,6 +238,7 @@ describe.only('IservIdmLDAPStrategy', () => {
 		}
 
 		beforeEach(() => {
+			app.unuse('/ldap');
 			ldapServiceMock = new MockLdapService();
 			app.use('/ldap', ldapServiceMock);
 		});

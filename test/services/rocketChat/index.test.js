@@ -12,7 +12,7 @@ const testObjects = require('../helpers/testObjects')(appPromise());
 
 const { expect } = chai;
 
-describe.only('rocket.chat user service', () => {
+describe('rocket.chat user service', () => {
 	delete require.cache[require.resolve('../../../src/app')];
 
 	let app;
@@ -24,7 +24,9 @@ describe.only('rocket.chat user service', () => {
 		app = await appPromise();
 		// const rcMock = await rcMockServer({});
 		const rocketChatService = {
-			getUserList: () => ({ users: [{ _id: 'someId', username: 'someUsername' }] }),
+			getUserList: () => {
+				return { users: [{ _id: 'someId', username: 'someUsername' }] };
+			},
 		};
 		mockery.enable({
 			warnOnUnregistered: false,
@@ -38,9 +40,15 @@ describe.only('rocket.chat user service', () => {
 		delete require.cache[require.resolve('../../../src/services/rocketChat/services/rocketChatUser.js')];
 		delete require.cache[require.resolve('../../../src/services/rocketChat/helpers.js')];
 		delete require.cache[require.resolve('../../../src/services/rocketChat/index.js')];
+		const rocketChat = require('../../../src/services/rocketChat');
 
 		app = await appPromise();
 
+		app.unuse('/rocketChat/channel');
+		app.unuse('/rocketChat/user');
+		app.unuse('/rocketChat/login');
+		app.unuse('/rocketChat/logout');
+		app.configure(rocketChat);
 		rocketChatUserService = app.service('/rocketChat/user');
 
 		server = await app.listen(0);
@@ -92,7 +100,9 @@ class NestRocketChatServiceMock {
 		this.app = app;
 	}
 
-	get() {}
+	get() {
+		return undefined;
+	}
 
 	async logoutUser(authToken, rcId) {
 		return { authToken, rcId };
@@ -128,12 +138,14 @@ class RocketChatUserServiceMock {
 		this.app = app;
 	}
 
-	get() {}
-
 	constructor(mockFunction) {
 		if (mockFunction) {
 			this.getOrCreateRocketChatAccount = mockFunction;
 		}
+	}
+
+	get() {
+		return undefined;
 	}
 
 	async getOrCreateRocketChatAccount(userId, params) {
@@ -168,14 +180,10 @@ describe('rocket.chat login service', async () => {
 		await closeNestServices(nestServices);
 	});
 
-	afterEach(() => {
-		app.unuse('/rocketChat/channel');
-		app.unuse('/nest-rocket-chat');
-		app.unuse('/rocketChat/user');
-	});
-
 	const setupServices = async (RCNestMock, RCUserMock) => {
+		app.unuse('/nest-rocket-chat');
 		app.use('/nest-rocket-chat', RCNestMock || new NestRocketChatServiceMock());
+		app.unuse('/rocketChat/user');
 		app.use('/rocketChat/user', RCUserMock || new RocketChatUserServiceMock());
 		const setupData = await testObjects.setupUser();
 		return setupData;
@@ -244,14 +252,10 @@ describe('rocket.chat logout service', async () => {
 		await closeNestServices(nestServices);
 	});
 
-	afterEach(() => {
-		app.unuse('/rocketChat/channel');
-		app.unuse('/nest-rocket-chat');
-		app.unuse('/rocketChat/user');
-	});
-
 	const setupServices = async (RCNestMock, RCUserMock) => {
+		app.unuse('/nest-rocket-chat');
 		app.use('/nest-rocket-chat', RCNestMock || new NestRocketChatServiceMock());
+		app.unuse('/rocketChat/user');
 		app.use('/rocketChat/user', RCUserMock || new RocketChatUserServiceMock());
 
 		const setupData = await testObjects.setupUser();

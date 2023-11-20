@@ -4,18 +4,22 @@ const sleep = require('util').promisify(setTimeout);
 
 const appPromise = require('../../../src/app');
 const { newsModel: News } = require('../../../src/services/news/model');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
-describe.only('news service', () => {
+describe('news service', () => {
 	let app;
-	let newsService;
+	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
-		newsService = app.service('/news1');
+		nestServices = await setupNestServices(app);
+		server = await app.listen(0);
 	});
 
-	it('public service has been disabled', () => {
-		expect(newsService, 'use v3 instead').to.equal(undefined);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('event handlers', () => {

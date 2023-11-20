@@ -22,8 +22,8 @@ describe('hook helpers', () => {
 
 	before(async () => {
 		app = await appPromise();
-		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
+		server = await app.listen(0);
 	});
 
 	after(async () => {

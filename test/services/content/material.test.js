@@ -14,8 +14,8 @@ describe.only('material service', () => {
 
 	before(async () => {
 		app = await appPromise();
-		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
+		server = await app.listen(0);
 	});
 
 	after(async () => {
@@ -40,10 +40,6 @@ describe.only('material service', () => {
 		let teacherBParams;
 		let materialA;
 		let materialB;
-
-		before((done) => {
-			server = app.listen(0, done);
-		});
 
 		before(async () => {
 			[materialA, materialB] = await Promise.all([
