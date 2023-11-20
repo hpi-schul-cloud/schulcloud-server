@@ -29,6 +29,10 @@ function isLibrariesContentType(object: any): object is LibrariesContentType {
 	return 'h5p_libraries' in object;
 }
 
+function isUserType(object: any): object is IUser {
+	return true;
+}
+
 @Injectable()
 export class H5PLibraryManagementService {
 	contentTypeCache: ContentTypeCache;
@@ -98,9 +102,20 @@ export class H5PLibraryManagementService {
 		if (contentType === undefined) {
 			throw new NotFoundException('this library does not exist');
 		}
-		const user: IUser = { canUpdateAndInstallLibraries: true } as IUser;
-		await this.contentTypeRepo.installContentType(librariesToInstall[lastPositionLibrariesToInstallArray], user);
-		await this.installLibraries(librariesToInstall.slice(0, lastPositionLibrariesToInstallArray));
+		const userObj = {
+			canCreateRestricted: true,
+			canInstallRecommended: true,
+			canUpdateAndInstallLibraries: true,
+			email: 'a@b.de',
+			id: 'a',
+			name: 'a',
+			type: 'local',
+		};
+		if (isUserType(userObj)) {
+			const user: IUser = userObj;
+			await this.contentTypeRepo.installContentType(librariesToInstall[lastPositionLibrariesToInstallArray], user);
+			await this.installLibraries(librariesToInstall.slice(0, lastPositionLibrariesToInstallArray));
+		}
 	}
 
 	public async run(): Promise<void> {
