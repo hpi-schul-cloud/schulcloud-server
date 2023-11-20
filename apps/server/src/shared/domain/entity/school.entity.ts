@@ -34,6 +34,7 @@ export interface ISchoolProperties {
 	purpose?: SchoolPurpose;
 	enableStudentTeamCreation?: boolean;
 	logo_dataUrl?: string;
+	logo_name?: string;
 	fileStorageType?: FileStorageType;
 	language?: string;
 	timezone?: string;
@@ -115,6 +116,9 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	logo_dataUrl?: string;
+
+	@Property({ nullable: true })
+	logo_name?: string;
 
 	@Property({ nullable: true })
 	fileStorageType?: FileStorageType;

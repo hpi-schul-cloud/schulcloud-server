@@ -24,6 +24,7 @@ export class SchoolEntityMapper {
 			purpose: entity.purpose,
 			county: entity.county,
 			logo_dataUrl: entity.logo_dataUrl,
+			logo_name: entity.logo_name,
 			fileStorageType: entity.fileStorageType,
 			language: entity.language,
 			timezone: entity.timezone,

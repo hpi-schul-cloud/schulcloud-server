@@ -22,6 +22,7 @@ export class SchoolResponse {
 		this.inMaintenance = props.inMaintenance;
 		this.isExternal = props.isExternal;
 		this.logo_dataUrl = props.logo_dataUrl;
+		this.logo_name = props.logo_name;
 		this.fileStorageType = props.fileStorageType;
 		this.language = props.language;
 		this.timezone = props.timezone;
@@ -70,6 +71,9 @@ export class SchoolResponse {
 
 	@ApiPropertyOptional()
 	logo_dataUrl?: string;
+
+	@ApiPropertyOptional()
+	logo_name?: string;
 
 	@ApiPropertyOptional({ enum: FileStorageType, enumName: 'FileStorageType' })
 	fileStorageType?: FileStorageType;
