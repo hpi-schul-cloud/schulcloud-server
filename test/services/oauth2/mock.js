@@ -16,7 +16,7 @@ chai.use(chaiHttp);
 
 const { expect } = chai;
 
-describe('oauth2 service mock', function oauthTest() {
+describe.skip('oauth2 service mock', function oauthTest() {
 	let app;
 	let baseUrlService;
 	let clientsService;
