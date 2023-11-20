@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, PermissionContextEntity } from '@shared/domain';
+import { EntityId, IPermissionContextProperties, PermissionContextEntity } from '@shared/domain';
 import { BaseRepo } from '../base.repo';
 
 // TODO: add test

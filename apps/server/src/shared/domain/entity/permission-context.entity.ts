@@ -41,7 +41,7 @@ export class PermissionContextEntity extends BaseEntityWithTimestamps {
 	@Property()
 	userDelta: UserDelta;
 
-	@ManyToOne(() => PermissionContextEntity, { wrappedReference: true, fieldName: 'parentContext' })
+	@ManyToOne(() => PermissionContextEntity, { wrappedReference: true, fieldName: 'parentContext', nullable: true })
 	@Index()
 	_parentContext: Reference<PermissionContextEntity> | null;
 

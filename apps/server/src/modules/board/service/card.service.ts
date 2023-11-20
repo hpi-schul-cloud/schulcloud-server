@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Card, Column, ContentElementType, EntityId } from '@shared/domain';
+import { Card, Column, ContentElementType, EntityId, PermissionContextEntity } from '@shared/domain';
+import { PermissionContextRepo } from '@shared/repo';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
@@ -10,7 +11,8 @@ export class CardService {
 	constructor(
 		private readonly boardDoRepo: BoardDoRepo,
 		private readonly boardDoService: BoardDoService,
-		private readonly contentElementService: ContentElementService
+		private readonly contentElementService: ContentElementService,
+		private readonly permissionCtxRepo: PermissionContextRepo
 	) {}
 
 	async findById(cardId: EntityId): Promise<Card> {
@@ -37,6 +39,14 @@ export class CardService {
 		});
 
 		parent.addChild(card);
+
+		const parentContext = await this.permissionCtxRepo.findByContextReference(parent.id);
+		const permissionCtxEntity = new PermissionContextEntity({
+			name: 'Card permission context',
+			parentContext,
+			contextReference: new ObjectId(card.id),
+		});
+		await this.permissionCtxRepo.save(permissionCtxEntity);
 
 		await this.boardDoRepo.save(parent.children, parent);
 

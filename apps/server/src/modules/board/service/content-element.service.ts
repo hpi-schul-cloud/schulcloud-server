@@ -7,8 +7,11 @@ import {
 	ContentElementType,
 	EntityId,
 	isAnyContentElement,
+	PermissionContextEntity,
 	SubmissionItem,
 } from '@shared/domain';
+import { PermissionContextRepo } from '@shared/repo';
+import { ObjectId } from 'bson';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
@@ -19,7 +22,8 @@ export class ContentElementService {
 	constructor(
 		private readonly boardDoRepo: BoardDoRepo,
 		private readonly boardDoService: BoardDoService,
-		private readonly contentElementFactory: ContentElementFactory
+		private readonly contentElementFactory: ContentElementFactory,
+		private readonly permissionCtxRepo: PermissionContextRepo
 	) {}
 
 	async findById(elementId: EntityId): Promise<AnyContentElementDo> {
@@ -40,9 +44,29 @@ export class ContentElementService {
 		return parent;
 	}
 
+	async pocCreateElementPermissionCtx(element: AnyContentElementDo, parentContext: PermissionContextEntity) {
+		const permissionCtxEntity = new PermissionContextEntity({
+			name: 'Element permission context',
+			parentContext,
+			contextReference: new ObjectId(element.id),
+		});
+		await this.permissionCtxRepo.save(permissionCtxEntity);
+	}
+
 	async create(parent: Card | SubmissionItem, type: ContentElementType): Promise<AnyContentElementDo> {
 		const element = this.contentElementFactory.build(type);
 		parent.addChild(element);
+
+		const parentContext = await this.permissionCtxRepo.findByContextReference(parent.id);
+
+		const permissionCtxEntity = new PermissionContextEntity({
+			name: 'Card permission context',
+			parentContext,
+			contextReference: new ObjectId(element.id),
+		});
+		await this.pocCreateElementPermissionCtx(element, parentContext);
+		await this.permissionCtxRepo.save(permissionCtxEntity);
+
 		await this.boardDoRepo.save(parent.children, parent);
 		return element;
 	}
