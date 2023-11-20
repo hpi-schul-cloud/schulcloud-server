@@ -1,23 +1,24 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
-import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { LessonService } from '@modules/lesson';
+import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { CourseRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { TaskCopyService } from '../service';
-import { TaskCopyUC } from './task-copy.uc';
 import { TaskCopyParentParams } from '../types';
+import { TaskCopyUC } from './task-copy.uc';
 
 describe('task copy uc', () => {
 	let uc: TaskCopyUC;
 	let userRepo: DeepMocked<UserRepo>;
 	let taskRepo: DeepMocked<TaskRepo>;
 	let courseRepo: DeepMocked<CourseRepo>;
-	let lessonRepo: DeepMocked<LessonRepo>;
+	let lessonService: DeepMocked<LessonService>;
 	let authorisation: DeepMocked<AuthorizationService>;
 	let taskCopyService: DeepMocked<TaskCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
@@ -42,8 +43,8 @@ describe('task copy uc', () => {
 					useValue: createMock<CourseRepo>(),
 				},
 				{
-					provide: LessonRepo,
-					useValue: createMock<LessonRepo>(),
+					provide: LessonService,
+					useValue: createMock<LessonService>(),
 				},
 				{
 					provide: AuthorizationService,
@@ -69,7 +70,7 @@ describe('task copy uc', () => {
 		taskRepo = module.get(TaskRepo);
 		authorisation = module.get(AuthorizationService);
 		courseRepo = module.get(CourseRepo);
-		lessonRepo = module.get(LessonRepo);
+		lessonService = module.get(LessonService);
 		taskCopyService = module.get(TaskCopyService);
 		copyHelperService = module.get(CopyHelperService);
 	});
@@ -104,7 +105,7 @@ describe('task copy uc', () => {
 
 			authorisation.getUserWithPermissions.mockResolvedValueOnce(user);
 			taskRepo.findById.mockResolvedValueOnce(task);
-			lessonRepo.findById.mockResolvedValueOnce(lesson);
+			lessonService.findById.mockResolvedValueOnce(lesson);
 			taskRepo.findBySingleParent.mockResolvedValueOnce([allTasks, allTasks.length]);
 			courseRepo.findById.mockResolvedValueOnce(course);
 			authorisation.hasPermission.mockReturnValueOnce(true).mockReturnValueOnce(true);
@@ -187,7 +188,7 @@ describe('task copy uc', () => {
 
 				await uc.copyTask(user.id, task.id, { lessonId: lesson.id, userId });
 
-				expect(lessonRepo.findById).toBeCalledWith(lesson.id);
+				expect(lessonService.findById).toBeCalledWith(lesson.id);
 			});
 
 			it('should pass without destination lesson', async () => {
@@ -195,7 +196,7 @@ describe('task copy uc', () => {
 
 				await uc.copyTask(user.id, task.id, { userId });
 
-				expect(lessonRepo.findById).not.toHaveBeenCalled();
+				expect(lessonService.findById).not.toHaveBeenCalled();
 			});
 		});
 
@@ -365,7 +366,7 @@ describe('task copy uc', () => {
 				userRepo.findById.mockResolvedValueOnce(user);
 				taskRepo.findById.mockResolvedValueOnce(task);
 				courseRepo.findById.mockResolvedValueOnce(course);
-				lessonRepo.findById.mockResolvedValueOnce(lesson);
+				lessonService.findById.mockResolvedValueOnce(lesson);
 				// first canReadTask > second canWriteLesson
 				authorisation.hasPermission.mockReturnValueOnce(true).mockReturnValueOnce(false);
 

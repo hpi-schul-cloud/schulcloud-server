@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsUrl } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class GetMetaTagDataBody {
-	@IsUrl()
+	@IsString()
 	@ApiProperty({
 		required: true,
 		nullable: false,
