@@ -1,3 +1,4 @@
+// please use the nestjs configuration module and service
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
@@ -29,6 +30,7 @@ export class HydraAdapter extends OauthProviderService {
 		this.hydraUri = Configuration.get('HYDRA_URI') as string;
 	}
 
+	// please add explict ts public key words on all places
 	acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<ProviderRedirectResponse> {
 		return this.put<ProviderRedirectResponse>('consent', 'accept', challenge, body);
 	}
@@ -40,11 +42,13 @@ export class HydraAdapter extends OauthProviderService {
 	async acceptLogoutRequest(challenge: string): Promise<ProviderRedirectResponse> {
 		const url = `${this.hydraUri}/oauth2/auth/requests/logout/accept?logout_challenge=${challenge}`;
 		const response: Promise<ProviderRedirectResponse> = this.request<ProviderRedirectResponse>('PUT', url);
+
 		return response;
 	}
 
 	getConsentRequest(challenge: string): Promise<ProviderConsentResponse> {
 		const response: Promise<ProviderConsentResponse> = this.get<ProviderConsentResponse>('consent', challenge);
+
 		return response;
 	}
 
@@ -139,6 +143,7 @@ export class HydraAdapter extends OauthProviderService {
 		return response;
 	}
 
+	// it can be private
 	protected async put<T>(
 		flow: string,
 		action: string,
@@ -152,10 +157,12 @@ export class HydraAdapter extends OauthProviderService {
 		);
 	}
 
+	// it can be private
 	protected async get<T>(flow: string, challenge: string): Promise<T> {
 		return this.request<T>('GET', `${this.hydraUri}/oauth2/auth/requests/${flow}?${flow}_challenge=${challenge}`);
 	}
 
+	// should be private
 	protected async request<T>(
 		method: Method,
 		url: string,
@@ -183,6 +190,7 @@ export class HydraAdapter extends OauthProviderService {
 			);
 
 		const response: AxiosResponse<T> = await firstValueFrom(observable);
+
 		return response.data;
 	}
 }

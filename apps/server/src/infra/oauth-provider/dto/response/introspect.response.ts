@@ -1,3 +1,4 @@
+// Is it valid that the most parameters are optional?
 export interface IntrospectResponse {
 	active: boolean;
 

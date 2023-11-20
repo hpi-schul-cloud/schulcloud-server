@@ -1,3 +1,4 @@
+// please add link to specification
 export interface ProviderOauthClient {
 	allowed_cors_origins?: string[];
 

@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+// use relative pathes
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
@@ -19,8 +20,11 @@ import { of, throwError } from 'rxjs';
 import { ProviderConsentSessionResponse } from '../dto';
 import { HydraOauthFailedLoggableException } from '../loggable';
 import { HydraAdapter } from './hydra.adapter';
+
+// jest is already globel imported you can remove this line and use it directly
 import resetAllMocks = jest.resetAllMocks;
 
+// This is not a valid test case. The HydraAdapter should be tested directly.
 class HydraAdapterSpec extends HydraAdapter {
 	public async requestSpec<T>(
 		method: Method,
@@ -247,10 +251,12 @@ describe('HydraService', () => {
 		});
 
 		describe('getOAuth2Client', () => {
+			// the when descriptions are lost :)
 			const setup = () => {
 				const data: ProviderOauthClient = {
 					client_id: 'client',
 				};
+				// you can use Once
 				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
 
 				return {
@@ -258,6 +264,8 @@ describe('HydraService', () => {
 				};
 			};
 
+			// test 2 different things put the it only explain one that not match to the expects.
+			// we have multiple its with same problem
 			it('should get oauth2 client', async () => {
 				const { data } = setup();
 
@@ -277,6 +285,7 @@ describe('HydraService', () => {
 		});
 
 		describe('createOAuth2Client', () => {
+			// description when
 			const setup = () => {
 				const data: ProviderOauthClient = {
 					client_id: 'client',
@@ -308,6 +317,7 @@ describe('HydraService', () => {
 		});
 
 		describe('updateOAuth2Client', () => {
+			// description when
 			const setup = () => {
 				const data: ProviderOauthClient = {
 					client_id: 'client',
@@ -353,6 +363,8 @@ describe('HydraService', () => {
 						url: `${hydraUri}/clients/clientId`,
 						method: 'DELETE',
 						headers: {
+							// We should not use httpS for internal request, only http if it is possible.
+							// For the adapter always https is used
 							'X-Forwarded-Proto': 'https',
 						},
 					})
@@ -373,6 +385,7 @@ describe('HydraService', () => {
 		});
 
 		describe('getConsentRequest', () => {
+			// description when
 			const setup = () => {
 				const config: AxiosRequestConfig = {
 					method: 'GET',
@@ -396,6 +409,7 @@ describe('HydraService', () => {
 		});
 
 		describe('acceptConsentRequest', () => {
+			// description when and many more places, feel free to solve all
 			const setup = () => {
 				const body: AcceptConsentRequestBody = {
 					grant_scope: ['offline', 'openid'],
@@ -509,6 +523,7 @@ describe('HydraService', () => {
 			});
 		});
 
+		// please check the desciption order, it do not explain well the situation that should be tested
 		describe('Logout Flow', () => {
 			describe('acceptLogoutRequest', () => {
 				const setup = () => {

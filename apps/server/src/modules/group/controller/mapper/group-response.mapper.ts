@@ -15,11 +15,14 @@ const typeMapping: Record<GroupTypes, GroupTypeResponse> = {
 };
 
 export class GroupResponseMapper {
+	// rename mapToClassInfoSearchListResponse
+	// add explicit public
 	static mapToClassInfosToListResponse(
 		classInfos: Page<ClassInfoDto>,
 		skip?: number,
 		limit?: number
 	): ClassInfoSearchListResponse {
+		// rename const to maybe ClassInfoResponse?
 		const mappedData: ClassInfoResponse[] = classInfos.data.map((classInfo) =>
 			this.mapToClassInfoToResponse(classInfo)
 		);
@@ -34,7 +37,9 @@ export class GroupResponseMapper {
 		return response;
 	}
 
+	// rename to mapToClassInfoResponse
 	private static mapToClassInfoToResponse(classInfo: ClassInfoDto): ClassInfoResponse {
+		// rename const to maybe ClassInfoResponse?
 		const mapped = new ClassInfoResponse({
 			id: classInfo.id,
 			type: classInfo.type,
@@ -50,16 +55,19 @@ export class GroupResponseMapper {
 	}
 
 	static mapToGroupResponse(resolvedGroup: ResolvedGroupDto): GroupResponse {
+		// rename const to maybe groupResponse?
 		const mapped: GroupResponse = new GroupResponse({
 			id: resolvedGroup.id,
 			name: resolvedGroup.name,
 			type: typeMapping[resolvedGroup.type],
+			// put it to a const before
 			externalSource: resolvedGroup.externalSource
 				? new ExternalSourceResponse({
 						externalId: resolvedGroup.externalSource.externalId,
 						systemId: resolvedGroup.externalSource.systemId,
 				  })
 				: undefined,
+			// put it to a const before
 			users: resolvedGroup.users.map(
 				(user) =>
 					new GroupUserResponse({

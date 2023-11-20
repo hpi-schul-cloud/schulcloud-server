@@ -1,3 +1,4 @@
+// please add link to specification
 export interface ProviderOidcContext {
 	acr_values?: string[];
 

@@ -1,3 +1,4 @@
+// Is it valid that all parameters are optional?
 export interface AcceptLoginRequestBody {
 	subject?: string;
 

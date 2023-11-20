@@ -1,4 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+// invalid import
+// add comment that it is used for backward compatiplity
 import { ClassEntity } from '@modules/class/entity';
 import { classEntityFactory } from '@modules/class/entity/testing';
 import { ServerTestModule } from '@modules/server';
@@ -53,6 +55,7 @@ describe('Group (API)', () => {
 				const teacherUser: User = userFactory.buildWithId({ school, roles: [teacherRole] });
 				const system: SystemEntity = systemFactory.buildWithId();
 				const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
+				// rename class to classEntity
 				const clazz: ClassEntity = classEntityFactory.buildWithId({
 					name: 'Group A',
 					schoolId: school._id,

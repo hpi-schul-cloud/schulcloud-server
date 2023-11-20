@@ -10,6 +10,7 @@ import {
 	RejectRequestBody,
 } from './dto';
 
+// rename the hydra folder to service and move this into this folder
 export abstract class OauthProviderService {
 	abstract getLoginRequest(challenge: string): Promise<ProviderLoginResponse>;
 
