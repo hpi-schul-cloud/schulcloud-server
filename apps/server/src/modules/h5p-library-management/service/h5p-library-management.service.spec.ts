@@ -1,12 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
-import {
-	ContentStorage,
-	LibraryStorage,
-	s3ConfigContent,
-	s3ConfigLibraries,
-} from '@modules/h5p-editor/h5p-editor.module';
+import { ContentStorage, LibraryStorage } from '@src/modules/h5p-editor/service';
 import { IHubContentType, ILibraryAdministrationOverviewItem } from '@lumieducation/h5p-server/build/src/types';
+import { s3ConfigContent, s3ConfigLibraries } from '@src/modules/h5p-editor/h5p-editor.config';
 import { H5PLibraryManagementService } from './h5p-library-management.service';
 
 jest.mock('@lumieducation/h5p-server', () => {
