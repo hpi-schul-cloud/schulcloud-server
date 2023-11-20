@@ -1,20 +1,20 @@
+import { BoardModule } from '@modules/board';
+import { ToolModule } from '@modules/tool';
 import { forwardRef, Module } from '@nestjs/common';
 import {
 	CourseGroupRepo,
 	CourseRepo,
-	LessonRepo,
-	SchoolExternalToolRepo,
 	LegacySchoolRepo,
+	SchoolExternalToolRepo,
 	SubmissionRepo,
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
-import { ToolModule } from '@modules/tool';
 import { LoggerModule } from '@src/core/logger';
-import { BoardModule } from '@modules/board';
-import { ReferenceLoader, AuthorizationReferenceService, AuthorizationHelper } from './domain';
+import { LessonModule } from '../lesson';
 import { AuthorizationModule } from './authorization.module';
+import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } from './domain';
 
 /**
  * This module is part of an intermediate state. In the future it should be replaced by an AuthorizationApiModule.
@@ -23,7 +23,13 @@ import { AuthorizationModule } from './authorization.module';
  */
 @Module({
 	// TODO: remove forwardRef to TooModule N21-1055
-	imports: [AuthorizationModule, forwardRef(() => ToolModule), forwardRef(() => BoardModule), LoggerModule],
+	imports: [
+		AuthorizationModule,
+		LessonModule,
+		forwardRef(() => ToolModule),
+		forwardRef(() => BoardModule),
+		LoggerModule,
+	],
 	providers: [
 		AuthorizationHelper,
 		ReferenceLoader,
@@ -32,7 +38,6 @@ import { AuthorizationModule } from './authorization.module';
 		CourseGroupRepo,
 		TaskRepo,
 		LegacySchoolRepo,
-		LessonRepo,
 		TeamsRepo,
 		SubmissionRepo,
 		SchoolExternalToolRepo,
