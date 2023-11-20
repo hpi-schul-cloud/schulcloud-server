@@ -83,4 +83,24 @@ export class PermissionContextEntity extends BaseEntityWithTimestamps {
 
 		return [...new Set(finalPermissions)];
 	}
+
+	public async resolveFullPermissionMatrix(): Promise<Map<string, Permission[]>> {
+		const parent = await this.parentContext;
+		let parentPermissionMatrix: Map<string, Permission[]> = new Map();
+		if (parent) {
+			parentPermissionMatrix = await parent.resolveFullPermissionMatrix();
+		}
+
+		const permissionMatrix = new Map(parentPermissionMatrix);
+
+		Object.entries(this.userDelta).forEach(([userId, { includedPermissions, excludedPermissions }]) => {
+			const parentPermissions = parentPermissionMatrix.get(userId) ?? [];
+			const permissions = includedPermissions
+				.concat(parentPermissions)
+				.filter((permission) => !excludedPermissions.includes(permission));
+			permissionMatrix.set(userId, permissions);
+		});
+
+		return permissionMatrix;
+	}
 }

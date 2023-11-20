@@ -3,14 +3,17 @@ import {
 	AnyBoardDo,
 	AnyContentElementDo,
 	Card,
+	ColumnBoard,
 	ContentElementFactory,
 	ContentElementType,
 	EntityId,
 	isAnyContentElement,
+	Permission,
 	PermissionContextEntity,
 	SubmissionItem,
+	UserDelta,
 } from '@shared/domain';
-import { PermissionContextRepo } from '@shared/repo';
+import { CourseRepo, PermissionContextRepo } from '@shared/repo';
 import { ObjectId } from 'bson';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
@@ -23,7 +26,8 @@ export class ContentElementService {
 		private readonly boardDoRepo: BoardDoRepo,
 		private readonly boardDoService: BoardDoService,
 		private readonly contentElementFactory: ContentElementFactory,
-		private readonly permissionCtxRepo: PermissionContextRepo
+		private readonly permissionCtxRepo: PermissionContextRepo,
+		private readonly courseRepo: CourseRepo
 	) {}
 
 	async findById(elementId: EntityId): Promise<AnyContentElementDo> {
@@ -45,12 +49,34 @@ export class ContentElementService {
 	}
 
 	async pocCreateElementPermissionCtx(element: AnyContentElementDo, parentContext: PermissionContextEntity) {
-		const permissionCtxEntity = new PermissionContextEntity({
-			name: 'Element permission context',
-			parentContext,
-			contextReference: new ObjectId(element.id),
-		});
-		await this.permissionCtxRepo.save(permissionCtxEntity);
+		if (element instanceof SubmissionItem) {
+			// NOTE: this will be simplified once we have user groups
+			const rootId = (await this.boardDoRepo.getAncestorIds(element))[0];
+			const columnBoard = await this.boardDoRepo.findByClassAndId(ColumnBoard, rootId);
+			const course = await this.courseRepo.findById(columnBoard.context.id);
+			const updatedStudentsPermissions = course.students.getItems().map((student) => {
+				return {
+					userId: student.id,
+					includedPermissions: [Permission.BOARD_ELEMENT_CAN_SUBMIT],
+					excludedPermissions: [],
+				};
+			});
+
+			const permissionCtxEntity = new PermissionContextEntity({
+				name: 'Element permission context',
+				parentContext,
+				contextReference: new ObjectId(element.id),
+				userDelta: new UserDelta(updatedStudentsPermissions),
+			});
+			await this.permissionCtxRepo.save(permissionCtxEntity);
+		} else {
+			const permissionCtxEntity = new PermissionContextEntity({
+				name: 'Element permission context',
+				parentContext,
+				contextReference: new ObjectId(element.id),
+			});
+			await this.permissionCtxRepo.save(permissionCtxEntity);
+		}
 	}
 
 	async create(parent: Card | SubmissionItem, type: ContentElementType): Promise<AnyContentElementDo> {

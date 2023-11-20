@@ -5,6 +5,7 @@ import {
 	EntityId,
 	isSubmissionContainerElement,
 	isSubmissionItem,
+	Permission,
 	SubmissionItem,
 	UserRoleEnum,
 } from '@shared/domain';
@@ -35,14 +36,20 @@ export class ElementUc extends BaseUc {
 		elementId: EntityId,
 		content: AnyElementContentBody
 	): Promise<AnyContentElementDo> {
-		const element = await this.getElementWithWritePermission(userId, elementId);
+		await this.pocCheckPermission(userId, elementId, [Permission.BOARD_ELEMENT_UPDATE]);
+
+		const element = await this.elementService.findById(elementId);
+		// const element = await this.getElementWithWritePermission(userId, elementId);
 
 		await this.elementService.update(element, content);
 		return element;
 	}
 
 	async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
-		const element = await this.getElementWithWritePermission(userId, elementId);
+		await this.pocCheckPermission(userId, elementId, [Permission.BOARD_ELEMENT_DELETE]);
+
+		const element = await this.elementService.findById(elementId);
+		// const element = await this.getElementWithWritePermission(userId, elementId);
 
 		await this.elementService.delete(element);
 	}
