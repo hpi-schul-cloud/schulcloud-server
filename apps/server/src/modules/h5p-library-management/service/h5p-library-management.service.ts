@@ -54,7 +54,7 @@ export class H5PLibraryManagementService {
 		this.libraryWishList = (parse(librariesYamlContent) as { h5p_libraries: string[] }).h5p_libraries;
 	}
 
-	async uninstallUnwantedLibraries(
+	public async uninstallUnwantedLibraries(
 		wantedLibraries: string[],
 		librariesToCheck: ILibraryAdministrationOverviewItem[]
 	): Promise<void> {
@@ -76,7 +76,7 @@ export class H5PLibraryManagementService {
 		);
 	}
 
-	async installLibraries(librariesToInstall: string[]): Promise<void> {
+	public async installLibraries(librariesToInstall: string[]): Promise<void> {
 		if (librariesToInstall.length === 0) {
 			return;
 		}
@@ -91,7 +91,7 @@ export class H5PLibraryManagementService {
 		await this.installLibraries(librariesToInstall.slice(0, lastPositionLibrariesToInstallArray));
 	}
 
-	async run(): Promise<void> {
+	public async run(): Promise<void> {
 		const installedLibraries = await this.libraryAdministration.getLibraries();
 		await this.uninstallUnwantedLibraries(this.libraryWishList, installedLibraries);
 		await this.installLibraries(this.libraryWishList);
