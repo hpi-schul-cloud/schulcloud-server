@@ -26,6 +26,7 @@ describe(RecursiveDeleteVisitor.name, () => {
 	let em: DeepMocked<EntityManager>;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
+	let drawingElementAdapterService: DeepMocked<DrawingElementAdapterService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -42,6 +43,7 @@ describe(RecursiveDeleteVisitor.name, () => {
 		em = module.get(EntityManager);
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 		contextExternalToolService = module.get(ContextExternalToolService);
+		drawingElementAdapterService = module.get(DrawingElementAdapterService);
 
 		await setupEntities();
 	});
@@ -189,6 +191,14 @@ describe(RecursiveDeleteVisitor.name, () => {
 			await service.visitDrawingElementAsync(childDrawingElement);
 
 			expect(em.remove).toHaveBeenCalledWith(em.getReference(childDrawingElement.constructor, childDrawingElement.id));
+		});
+
+		it('should trigger deletion of tldraw data via adapter', async () => {
+			const { childDrawingElement } = setup();
+
+			await service.visitDrawingElementAsync(childDrawingElement);
+
+			expect(drawingElementAdapterService.deleteDrawingBinData).toHaveBeenCalledWith(childDrawingElement.drawingName);
 		});
 	});
 
