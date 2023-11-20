@@ -26,6 +26,7 @@ export interface ISchoolProperties {
 	name: string;
 	officialSchoolNumber?: string;
 	systems?: SystemEntity[];
+	permissions?: SchoolRoles;
 	features?: SchoolFeature[];
 	currentYear?: SchoolYearEntity;
 	userLoginMigration?: UserLoginMigrationEntity;
@@ -131,48 +132,27 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 
 	constructor(props: ISchoolProperties) {
 		super();
-		if (props.externalId) {
-			this.externalId = props.externalId;
-		}
-		if (props.previousExternalId) {
-			this.previousExternalId = props.previousExternalId;
-		}
+		this.externalId = props.externalId;
+		this.previousExternalId = props.previousExternalId;
 		this.inMaintenanceSince = props.inMaintenanceSince;
-		if (props.inUserMigration !== null) {
-			this.inUserMigration = props.inUserMigration;
-		}
+		this.inUserMigration = props.inUserMigration;
 		this.name = props.name;
-		if (props.officialSchoolNumber) {
-			this.officialSchoolNumber = props.officialSchoolNumber;
-		}
+		this.officialSchoolNumber = props.officialSchoolNumber;
 		if (props.systems) {
 			this.systems.set(props.systems);
 		}
-		if (props.features) {
-			this.features = props.features;
-		}
-		if (props.currentYear) {
-			this.currentYear = props.currentYear;
-		}
-		if (props.userLoginMigration) {
-			this.userLoginMigration = props.userLoginMigration;
-		}
+		this.permissions = props.permissions;
+		this.features = props.features;
+		this.currentYear = props.currentYear;
+		this.userLoginMigration = props.userLoginMigration;
 		this.federalState = props.federalState;
-
-		if (props.purpose) {
-			this.purpose = props.purpose;
-		}
-
-		if (props.fileStorageType) {
-			this.fileStorageType = props.fileStorageType;
-		}
-
-		if (props.language) {
-			this.language = props.language;
-		}
-
-		if (props.timezone) {
-			this.timezone = props.timezone;
-		}
+		this.county = props.county;
+		this.purpose = props.purpose;
+		this.enableStudentTeamCreation = props.enableStudentTeamCreation;
+		this.logo_dataUrl = props.logo_dataUrl;
+		this.logo_name = props.logo_name;
+		this.fileStorageType = props.fileStorageType;
+		this.language = props.language;
+		this.timezone = props.timezone;
 	}
 }
