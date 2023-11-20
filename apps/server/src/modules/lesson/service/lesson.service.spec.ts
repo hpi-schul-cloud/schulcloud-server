@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType, IComponentProperties } from '@shared/domain';
-import { setupEntities } from '@shared/testing';
+import { lessonFactory, setupEntities } from '@shared/testing';
 import { LessonRepo } from '../repository';
 import { LessonCreateDto } from '../types';
 import { LessonService } from './lesson.service';
