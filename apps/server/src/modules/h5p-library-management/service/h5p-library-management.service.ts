@@ -9,7 +9,7 @@ import {
 } from '@lumieducation/h5p-server';
 import ContentManager from '@lumieducation/h5p-server/build/src/ContentManager';
 import ContentTypeInformationRepository from '@lumieducation/h5p-server/build/src/ContentTypeInformationRepository';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ContentStorage, LibraryStorage } from '@src/modules/h5p-editor';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { readFileSync } from 'fs';
@@ -84,7 +84,7 @@ export class H5PLibraryManagementService {
 		// avoid conflicts, install one-by-one:
 		const contentType = await this.contentTypeCache.get(librariesToInstall[lastPositionLibrariesToInstallArray]);
 		if (contentType === undefined) {
-			throw new Error('this library does not exist');
+			throw new NotFoundException('this library does not exist');
 		}
 		const user: IUser = { canUpdateAndInstallLibraries: true } as IUser;
 		await this.contentTypeRepo.installContentType(librariesToInstall[lastPositionLibrariesToInstallArray], user);
