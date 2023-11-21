@@ -53,11 +53,11 @@ export class CourseCopyService {
 		return courseStatus;
 	}
 
-		// Exclude LESSON_CONTENT_NEXBOARD from boardStatus
+	// Exclude LESSON_CONTENT_NEXBOARD from boardStatus
 	private filterOutNeXboardFromCopyStatus(boardStatus: CopyStatus): CopyStatus {
 		if (boardStatus.elements) {
-			boardStatus.elements = boardStatus.elements.filter(elementStatus =>
-				elementStatus.type !== CopyElementType.LESSON_CONTENT_NEXBOARD
+			boardStatus.elements = boardStatus.elements.filter(
+				(elementStatus) => elementStatus.type !== CopyElementType.LESSON_CONTENT_NEXBOARD
 			);
 		}
 		return boardStatus;
