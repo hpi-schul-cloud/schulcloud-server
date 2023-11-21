@@ -3,12 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { createMock } from '@golevelup/ts-jest';
 import { XApiKeyStrategy } from './x-api-key.strategy';
-import { IXApiKeyConfig } from '../config/x-api-key.config';
+import { XApiKeyConfig } from '../config/x-api-key.config';
 
 describe('XApiKeyStrategy', () => {
 	let module: TestingModule;
 	let strategy: XApiKeyStrategy;
-	let configService: ConfigService<IXApiKeyConfig, true>;
+	let configService: ConfigService<XApiKeyConfig, true>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -17,7 +17,7 @@ describe('XApiKeyStrategy', () => {
 				XApiKeyStrategy,
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService<IXApiKeyConfig, true>>({ get: () => ['1ab2c3d4e5f61ab2c3d4e5f6'] }),
+					useValue: createMock<ConfigService<XApiKeyConfig, true>>({ get: () => ['1ab2c3d4e5f61ab2c3d4e5f6'] }),
 				},
 			],
 		}).compile();
