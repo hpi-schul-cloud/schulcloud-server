@@ -1,14 +1,14 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
-import { IEntityWithSchool } from '../interface';
+import { EntityWithSchool } from '../interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
-import type { ILessonParent } from './lesson.entity';
+import type { LessonParent } from './lesson.entity';
 import { SchoolEntity } from './school.entity';
-import type { ITaskParent } from './task.entity';
+import type { TaskParent } from './task.entity';
 import type { User } from './user.entity';
 
-export interface ICourseGroupProperties {
+export interface CourseGroupProperties {
 	name: string;
 	course: Course;
 	students?: User[];
@@ -16,7 +16,7 @@ export interface ICourseGroupProperties {
 
 @Entity({ tableName: 'coursegroups' })
 @Index({ properties: ['school', 'course'] })
-export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWithSchool, ITaskParent, ILessonParent {
+export class CourseGroup extends BaseEntityWithTimestamps implements EntityWithSchool, TaskParent, LessonParent {
 	@Property()
 	name: string;
 
@@ -32,7 +32,7 @@ export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWith
 	@Index()
 	school: SchoolEntity;
 
-	constructor(props: ICourseGroupProperties) {
+	constructor(props: CourseGroupProperties) {
 		super();
 		this.name = props.name;
 		this.course = props.course;

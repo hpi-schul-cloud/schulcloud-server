@@ -2,24 +2,29 @@ import { Injectable } from '@nestjs/common';
 import ogs from 'open-graph-scraper';
 import { ImageObject } from 'open-graph-scraper/dist/lib/types';
 import { basename } from 'path';
-
-export type MetaData = {
-	title: string;
-	description: string;
-	url: string;
-	image?: ImageObject;
-};
+import type { MetaData } from '../types';
+import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
 
 @Injectable()
 export class MetaTagExtractorService {
-	async fetchMetaData(url: string): Promise<MetaData> {
+	constructor(private readonly internalLinkMataTagService: MetaTagInternalUrlService) {}
+
+	async getMetaData(url: string): Promise<MetaData> {
 		if (url.length === 0) {
 			throw new Error(`MetaTagExtractorService requires a valid URL. Given URL: ${url}`);
 		}
 
-		const metaData = (await this.tryExtractMetaTags(url)) ?? this.tryFilenameAsFallback(url);
+		const metaData =
+			(await this.tryInternalLinkMetaTags(url)) ??
+			(await this.tryExtractMetaTags(url)) ??
+			this.tryFilenameAsFallback(url) ??
+			this.getDefaultMetaData(url);
 
-		return metaData ?? { url, title: '', description: '' };
+		return metaData;
+	}
+
+	private async tryInternalLinkMetaTags(url: string): Promise<MetaData | undefined> {
+		return this.internalLinkMataTagService.tryInternalLinkMetaTags(url);
 	}
 
 	private async tryExtractMetaTags(url: string): Promise<MetaData | undefined> {
@@ -35,6 +40,7 @@ export class MetaTagExtractorService {
 				description,
 				image,
 				url,
+				type: 'external',
 			};
 		} catch (error) {
 			return undefined;
@@ -49,10 +55,15 @@ export class MetaTagExtractorService {
 				title,
 				description: '',
 				url,
+				type: 'unknown',
 			};
 		} catch (error) {
 			return undefined;
 		}
+	}
+
+	private getDefaultMetaData(url: string): MetaData {
+		return { url, title: '', description: '', type: 'unknown' };
 	}
 
 	private pickImage(images: ImageObject[], minWidth = 400): ImageObject | undefined {

@@ -1,8 +1,8 @@
+import { IFileStats, ITemporaryFile } from '@lumieducation/h5p-server';
 import { Entity, Property } from '@mikro-orm/core';
-import { ITemporaryFile, IFileStats } from '@lumieducation/h5p-server';
 import { BaseEntityWithTimestamps } from '@shared/domain';
 
-export interface ITemporaryFileProperties {
+export interface TemporaryFileProperties {
 	filename: string;
 	ownedByUserId: string;
 	expiresAt: Date;
@@ -30,7 +30,7 @@ export class H5pEditorTempFile extends BaseEntityWithTimestamps implements ITemp
 	@Property()
 	size: number;
 
-	constructor({ filename, ownedByUserId, expiresAt, birthtime, size }: ITemporaryFileProperties) {
+	constructor({ filename, ownedByUserId, expiresAt, birthtime, size }: TemporaryFileProperties) {
 		super();
 		this.filename = filename;
 		this.ownedByUserId = ownedByUserId;

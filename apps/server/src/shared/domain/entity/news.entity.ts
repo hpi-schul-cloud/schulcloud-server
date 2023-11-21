@@ -1,13 +1,13 @@
 import { Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
+import { EntityId } from '../types';
+import { NewsTarget, NewsTargetModel } from '../types/news.types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import { SchoolEntity } from './school.entity';
 import type { TeamEntity } from './team.entity';
 import type { User } from './user.entity';
-import { NewsTarget, NewsTargetModel } from '../types/news.types';
-import { EntityId } from '../types';
 
-export interface INewsProperties {
+export interface NewsProperties {
 	title: string;
 	content: string;
 	displayAt: Date;
@@ -69,7 +69,7 @@ export abstract class News extends BaseEntityWithTimestamps {
 
 	permissions: string[] = [];
 
-	constructor(props: INewsProperties) {
+	constructor(props: NewsProperties) {
 		super();
 		this.title = props.title;
 		this.content = props.content;
@@ -80,7 +80,7 @@ export abstract class News extends BaseEntityWithTimestamps {
 		this.sourceDescription = props.sourceDescription;
 	}
 
-	static createInstance(targetModel: NewsTargetModel, props: INewsProperties): News {
+	static createInstance(targetModel: NewsTargetModel, props: NewsProperties): News {
 		let news: News;
 		if (targetModel === NewsTargetModel.Course) {
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -101,7 +101,7 @@ export class SchoolNews extends News {
 	@ManyToOne(() => SchoolEntity)
 	target!: SchoolEntity;
 
-	constructor(props: INewsProperties) {
+	constructor(props: NewsProperties) {
 		super(props);
 		this.targetModel = NewsTargetModel.School;
 	}
@@ -115,7 +115,7 @@ export class CourseNews extends News {
 	@ManyToOne('Course', { nullable: true })
 	target!: Course;
 
-	constructor(props: INewsProperties) {
+	constructor(props: NewsProperties) {
 		super(props);
 		this.targetModel = NewsTargetModel.Course;
 	}
@@ -126,7 +126,7 @@ export class TeamNews extends News {
 	@ManyToOne('TeamEntity')
 	target!: TeamEntity;
 
-	constructor(props: INewsProperties) {
+	constructor(props: NewsProperties) {
 		super(props);
 		this.targetModel = NewsTargetModel.Team;
 	}

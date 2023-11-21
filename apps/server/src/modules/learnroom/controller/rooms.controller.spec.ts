@@ -1,8 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain';
 import { ICurrentUser } from '@modules/authentication';
 import { CopyApiResponse, CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { Test, TestingModule } from '@nestjs/testing';
+import { EntityId } from '@shared/domain';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { RoomBoardDTO } from '../types';
 import { CourseCopyUC } from '../uc/course-copy.uc';

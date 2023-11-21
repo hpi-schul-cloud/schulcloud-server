@@ -1,11 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import type { IIdentityManagementConfig } from '@infra/identity-management';
-import type { ICoreModuleConfig } from '@src/core';
-import type { IAccountConfig } from '@modules/account';
-import type { IFilesStorageClientConfig } from '@modules/files-storage-client';
-import type { IUserConfig } from '@modules/user';
-import type { ICommonCartridgeConfig } from '@modules/learnroom/common-cartridge';
-import { IMailConfig } from '@src/infra/mail/interfaces/mail-config';
+import type { IdentityManagementConfig } from '@infra/identity-management';
+import type { AccountConfig } from '@modules/account';
+import type { FilesStorageClientConfig } from '@modules/files-storage-client';
+import type { CommonCartridgeConfig } from '@modules/learnroom/common-cartridge';
+import type { UserConfig } from '@modules/user';
+import type { CoreModuleConfig } from '@src/core';
+import { MailConfig } from '@src/infra/mail/interfaces/mail-config';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -14,19 +14,19 @@ export enum NodeEnvType {
 	MIGRATION = 'migration',
 }
 
-export interface IServerConfig
-	extends ICoreModuleConfig,
-		IUserConfig,
-		IFilesStorageClientConfig,
-		IAccountConfig,
-		IIdentityManagementConfig,
-		ICommonCartridgeConfig,
-		IMailConfig {
+export interface ServerConfig
+	extends CoreModuleConfig,
+		UserConfig,
+		FilesStorageClientConfig,
+		AccountConfig,
+		IdentityManagementConfig,
+		CommonCartridgeConfig,
+		MailConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 }
 
-const config: IServerConfig = {
+const config: ServerConfig = {
 	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,

@@ -518,6 +518,7 @@ describe('OidcProvisioningService', () => {
 		const setupUser = () => {
 			const systemId = 'systemId';
 			const schoolId = 'schoolId';
+			const birthday = new Date('2023-11-17');
 			const existingUser: UserDO = userDoFactory.withRoles([{ id: 'existingRoleId', name: RoleName.USER }]).buildWithId(
 				{
 					firstName: 'existingFirstName',
@@ -525,6 +526,7 @@ describe('OidcProvisioningService', () => {
 					email: 'existingEmail',
 					schoolId: 'existingSchoolId',
 					externalId: 'externalUserId',
+					birthday: new Date('2023-11-16'),
 				},
 				'userId'
 			);
@@ -535,6 +537,7 @@ describe('OidcProvisioningService', () => {
 					email: 'email',
 					schoolId,
 					externalId: 'externalUserId',
+					birthday,
 				},
 				'userId'
 			);
@@ -544,6 +547,7 @@ describe('OidcProvisioningService', () => {
 				lastName: 'lastName',
 				email: 'email',
 				roles: [RoleName.USER],
+				birthday,
 			});
 			const userRole: RoleDto = new RoleDto({
 				id: 'roleId',

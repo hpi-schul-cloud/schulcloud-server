@@ -1,3 +1,3 @@
-export interface IUserConfig {
+export interface UserConfig {
 	AVAILABLE_LANGUAGES: string[];
 }
