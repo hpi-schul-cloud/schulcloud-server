@@ -1,6 +1,6 @@
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Param, Patch } from '@nestjs/common';
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { Body, Controller, Param, Patch } from '@nestjs/common';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LegacyLogger } from '@src/core/logger';
 import { CollaborativeStorageUc } from '../uc/collaborative-storage.uc';
 import { TeamPermissionsBody } from './dto/team-permissions.body.params';

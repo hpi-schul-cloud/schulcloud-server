@@ -7,7 +7,7 @@ import {
 	EntityId,
 	IFindOptions,
 	ImportUser,
-	INameMatch,
+	NameMatch,
 	Role,
 	SchoolEntity,
 	SortOrder,
@@ -47,7 +47,7 @@ export class UserRepo extends BaseRepo<User> {
 	 */
 	async findWithoutImportUser(
 		school: SchoolEntity,
-		filters?: INameMatch,
+		filters?: NameMatch,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
 		const { _id: schoolId } = school;

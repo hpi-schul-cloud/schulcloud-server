@@ -3,11 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { EntityId, LanguageType, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { ChangeLanguageParams } from '../controller/dto';
-import { IUserConfig } from '../interfaces';
+import { UserConfig } from '../interfaces';
 
 @Injectable()
 export class UserUc {
-	constructor(private readonly userRepo: UserRepo, private readonly configService: ConfigService<IUserConfig, true>) {}
+	constructor(private readonly userRepo: UserRepo, private readonly configService: ConfigService<UserConfig, true>) {}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
 		const user = await this.userRepo.findById(userId, true);

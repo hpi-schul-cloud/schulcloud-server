@@ -1,10 +1,10 @@
+import { IError } from '@infra/rabbitmq';
 import {
 	BadRequestException,
 	ConflictException,
 	ForbiddenException,
 	InternalServerErrorException,
 } from '@nestjs/common';
-import { IError } from '@infra/rabbitmq';
 import _ from 'lodash';
 import { ErrorMapper } from './error.mapper';
 

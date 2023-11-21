@@ -1,11 +1,11 @@
-import { DeepPartial } from 'fishery';
+import { ClassEntity, ClassEntityProps, ClassSourceOptionsEntity } from '@modules/class/entity';
 import { BaseFactory } from '@shared/testing/factory/base.factory';
-import { ClassEntity, ClassSourceOptionsEntity, IClassEntityProps } from '@modules/class/entity';
 import { ObjectId } from 'bson';
+import { DeepPartial } from 'fishery';
 
-class ClassEntityFactory extends BaseFactory<ClassEntity, IClassEntityProps> {
+class ClassEntityFactory extends BaseFactory<ClassEntity, ClassEntityProps> {
 	withUserIds(userIds: ObjectId[]): this {
-		const params: DeepPartial<IClassEntityProps> = {
+		const params: DeepPartial<ClassEntityProps> = {
 			userIds,
 		};
 

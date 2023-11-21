@@ -3,14 +3,14 @@ import { ConfigService } from '@nestjs/config';
 import { utilities, WinstonModule } from 'nest-winston';
 import winston from 'winston';
 import { ErrorLogger } from './error-logger';
-import { ILoggerConfig } from './interfaces';
+import { LoggerConfig } from './interfaces';
 import { LegacyLogger } from './legacy-logger.service';
 import { Logger } from './logger';
 
 @Module({
 	imports: [
 		WinstonModule.forRootAsync({
-			useFactory: (configService: ConfigService<ILoggerConfig, true>) => {
+			useFactory: (configService: ConfigService<LoggerConfig, true>) => {
 				return {
 					levels: winston.config.syslog.levels,
 					level: configService.get<string>('NEST_LOG_LEVEL'),

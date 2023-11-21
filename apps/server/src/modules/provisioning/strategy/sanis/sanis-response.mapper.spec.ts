@@ -36,12 +36,16 @@ describe('SanisResponseMapper', () => {
 	const setupSanisResponse = () => {
 		const externalUserId = 'aef1f4fd-c323-466e-962b-a84354c0e713';
 		const externalSchoolId = 'df66c8e6-cfac-40f7-b35b-0da5d8ee680e';
+
 		const sanisResponse: SanisResponse = {
 			pid: externalUserId,
 			person: {
 				name: {
 					vorname: 'firstName',
 					familienname: 'lastName',
+				},
+				geburt: {
+					datum: '2023-11-17',
 				},
 				geschlecht: 'x',
 				lokalisierung: 'de-de',
@@ -124,6 +128,7 @@ describe('SanisResponseMapper', () => {
 					firstName: 'firstName',
 					lastName: 'lastName',
 					roles: [RoleName.STUDENT],
+					birthday: new Date('2023-11-17'),
 				});
 			});
 		});

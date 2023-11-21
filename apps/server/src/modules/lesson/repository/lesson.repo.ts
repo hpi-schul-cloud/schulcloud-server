@@ -1,8 +1,8 @@
+import { EntityDictionary } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { Counted, EntityId, LessonEntity, SortOrder } from '@shared/domain';
-import { EntityDictionary } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseRepo } from '../base.repo';
+import { BaseRepo } from '@shared/repo';
 import { LessonScope } from './lesson-scope';
 
 @Injectable()

@@ -1,4 +1,4 @@
-export interface IPagination {
+export interface Pagination {
 	skip?: number;
 	limit?: number;
 }
@@ -11,6 +11,6 @@ export enum SortOrder {
 export type SortOrderMap<T> = Partial<Record<keyof T, SortOrder>>;
 
 export interface IFindOptions<T> {
-	pagination?: IPagination;
+	pagination?: Pagination;
 	order?: SortOrderMap<T>;
 }

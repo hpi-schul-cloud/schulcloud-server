@@ -6,7 +6,7 @@ import { Page } from '@shared/domain';
 import { ErrorResponse } from '@src/core/error/dto';
 import { GroupUc } from '../uc';
 import { ClassInfoDto, ResolvedGroupDto } from '../uc/dto';
-import { ClassInfoSearchListResponse, ClassSortParams, GroupIdParams, GroupResponse, ClassFilterParams } from './dto';
+import { ClassFilterParams, ClassInfoSearchListResponse, ClassSortParams, GroupIdParams, GroupResponse } from './dto';
 import { GroupResponseMapper } from './mapper';
 
 @ApiTags('Group')

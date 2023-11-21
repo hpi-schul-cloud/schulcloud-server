@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { LessonRepo } from '@shared/repo';
-import { lessonFactory, setupEntities } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ComponentType, IComponentProperties } from '@shared/domain';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ComponentProperties, ComponentType } from '@shared/domain';
+import { lessonFactory, setupEntities } from '@shared/testing';
+import { LessonRepo } from '../repository';
 import { LessonService } from './lesson.service';
 
 describe('LessonService', () => {
@@ -71,9 +71,19 @@ describe('LessonService', () => {
 			const courseIds = ['course-1', 'course-2'];
 			lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
 
-			await expect(lessonService.findByCourseIds(courseIds)).resolves.not.toThrow();
-			expect(lessonRepo.findAllByCourseIds).toBeCalledTimes(1);
-			expect(lessonRepo.findAllByCourseIds).toBeCalledWith(courseIds);
+			await lessonService.findByCourseIds(courseIds);
+
+			expect(lessonRepo.findAllByCourseIds).toBeCalledWith(courseIds, undefined);
+		});
+
+		it('should pass filters', async () => {
+			const courseIds = ['course-1', 'course-2'];
+			lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+			const filters = { hidden: false };
+
+			await lessonService.findByCourseIds(courseIds, filters);
+
+			expect(lessonRepo.findAllByCourseIds).toBeCalledWith(courseIds, filters);
 		});
 	});
 
@@ -81,7 +91,7 @@ describe('LessonService', () => {
 		describe('when finding by userId', () => {
 			const setup = () => {
 				const userId = new ObjectId();
-				const contentExample: IComponentProperties = {
+				const contentExample: ComponentProperties = {
 					title: 'title',
 					hidden: false,
 					user: userId,
@@ -122,7 +132,7 @@ describe('LessonService', () => {
 		describe('when deleting by userId', () => {
 			const setup = () => {
 				const userId = new ObjectId();
-				const contentExample: IComponentProperties = {
+				const contentExample: ComponentProperties = {
 					title: 'title',
 					hidden: false,
 					user: userId,

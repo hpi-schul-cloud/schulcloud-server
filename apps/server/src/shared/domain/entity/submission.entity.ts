@@ -8,7 +8,7 @@ import { SchoolEntity } from './school.entity';
 import type { Task } from './task.entity';
 import type { User } from './user.entity';
 
-export interface ISubmissionProperties {
+export interface SubmissionProperties {
 	school: SchoolEntity;
 	task: Task;
 	student: User;
@@ -57,7 +57,7 @@ export class Submission extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	gradeComment?: string;
 
-	constructor(props: ISubmissionProperties) {
+	constructor(props: SubmissionProperties) {
 		super();
 		this.school = props.school;
 		this.student = props.student;

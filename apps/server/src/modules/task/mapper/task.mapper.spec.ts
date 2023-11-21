@@ -1,14 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InputFormat, ITaskStatus, ITaskUpdate, Task, TaskParentDescriptions } from '@shared/domain';
+import { InputFormat, Task, TaskParentDescriptions, TaskStatus, TaskUpdate } from '@shared/domain';
 import { setupEntities, taskFactory } from '@shared/testing';
 import { TaskCreateParams, TaskResponse, TaskStatusResponse, TaskUpdateParams } from '../controller/dto';
 import { TaskMapper } from './task.mapper';
 
-const createExpectedResponse = (
-	task: Task,
-	status: ITaskStatus,
-	descriptions: TaskParentDescriptions
-): TaskResponse => {
+const createExpectedResponse = (task: Task, status: TaskStatus, descriptions: TaskParentDescriptions): TaskResponse => {
 	const expectedStatus = Object.create(TaskStatusResponse.prototype) as TaskStatusResponse;
 	expectedStatus.graded = status.graded;
 	expectedStatus.maxSubmissions = status.maxSubmissions;
@@ -88,7 +84,7 @@ describe('task.mapper', () => {
 			};
 			const result = TaskMapper.mapTaskUpdateToDomain(params);
 
-			const expected: ITaskUpdate = {
+			const expected: TaskUpdate = {
 				name: params.name,
 				courseId: params.courseId,
 				lessonId: params.lessonId,
@@ -112,7 +108,7 @@ describe('task.mapper', () => {
 			};
 			const result = TaskMapper.mapTaskCreateToDomain(params);
 
-			const expected: ITaskUpdate = {
+			const expected: TaskUpdate = {
 				name: params.name,
 				courseId: params.courseId,
 				lessonId: params.lessonId,
