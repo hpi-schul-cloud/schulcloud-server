@@ -1,7 +1,6 @@
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Body, Controller, InternalServerErrorException, Post, UnauthorizedException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { MetaTagExtractorUc } from '../uc';
 import { MetaTagExtractorResponse } from './dto';
 import { GetMetaTagDataBody } from './post-link-url.body.params';
@@ -17,11 +16,11 @@ export class MetaTagExtractorController {
 	@ApiResponse({ status: 401, type: UnauthorizedException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post('')
-	async getData(
+	async getMetaTags(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() bodyParams: GetMetaTagDataBody
 	): Promise<MetaTagExtractorResponse> {
-		const result = await this.metaTagExtractorUc.fetchMetaData(currentUser.userId, bodyParams.url);
+		const result = await this.metaTagExtractorUc.getMetaData(currentUser.userId, bodyParams.url);
 		const imageUrl = result.image?.url;
 		const response = new MetaTagExtractorResponse({ ...result, imageUrl });
 		return response;

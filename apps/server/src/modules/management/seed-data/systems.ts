@@ -1,10 +1,10 @@
 /* eslint-disable no-template-curly-in-string */
-import { ISystemProperties } from '@shared/domain';
+import { SystemProperties } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { systemFactory } from '@shared/testing';
 import { DeepPartial } from 'fishery';
 
-type SystemPartial = DeepPartial<ISystemProperties> & {
+type SystemPartial = DeepPartial<SystemProperties> & {
 	id?: string;
 	createdAt?: string;
 	updatedAt?: string;
@@ -66,7 +66,7 @@ const data: SystemPartial[] = [
 export function generateSystems(injectEnvVars: (s: string) => string) {
 	const systems = data.map((d) => {
 		d = JSON.parse(injectEnvVars(JSON.stringify(d))) as typeof d;
-		const params: DeepPartial<ISystemProperties> = {
+		const params: DeepPartial<SystemProperties> = {
 			alias: d.alias,
 			displayName: d.displayName,
 			type: d.type,

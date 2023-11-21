@@ -1,10 +1,10 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
+import { CopyFileDO, FileDO, FilesStorageEvents, FilesStorageExchange } from '@infra/rabbitmq';
+import { RpcMessage } from '@infra/rabbitmq/rpc-message';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { RpcMessage } from '@infra/rabbitmq/rpc-message';
 import { LegacyLogger } from '@src/core/logger';
-import { FilesStorageEvents, FilesStorageExchange, ICopyFileDO, IFileDO } from '@infra/rabbitmq';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
@@ -30,7 +30,7 @@ export class FilesStorageConsumer {
 	@UseRequestContext()
 	public async copyFilesOfParent(
 		@RabbitPayload() payload: CopyFilesOfParentPayload
-	): Promise<RpcMessage<ICopyFileDO[]>> {
+	): Promise<RpcMessage<CopyFileDO[]>> {
 		this.logger.debug({ action: 'copyFilesOfParent', payload });
 
 		const { userId, source, target } = payload;
@@ -45,7 +45,7 @@ export class FilesStorageConsumer {
 		queue: FilesStorageEvents.LIST_FILES_OF_PARENT,
 	})
 	@UseRequestContext()
-	public async getFilesOfParent(@RabbitPayload() payload: FileRecordParams): Promise<RpcMessage<IFileDO[]>> {
+	public async getFilesOfParent(@RabbitPayload() payload: FileRecordParams): Promise<RpcMessage<FileDO[]>> {
 		this.logger.debug({ action: 'getFilesOfParent', payload });
 
 		const [fileRecords, total] = await this.filesStorageService.getFileRecordsOfParent(payload.parentId);
@@ -60,7 +60,7 @@ export class FilesStorageConsumer {
 		queue: FilesStorageEvents.DELETE_FILES_OF_PARENT,
 	})
 	@UseRequestContext()
-	public async deleteFilesOfParent(@RabbitPayload() payload: EntityId): Promise<RpcMessage<IFileDO[]>> {
+	public async deleteFilesOfParent(@RabbitPayload() payload: EntityId): Promise<RpcMessage<FileDO[]>> {
 		this.logger.debug({ action: 'deleteFilesOfParent', payload });
 
 		const [fileRecords, total] = await this.filesStorageService.getFileRecordsOfParent(payload);

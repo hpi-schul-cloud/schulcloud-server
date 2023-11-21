@@ -1,6 +1,6 @@
+import { IError, RpcMessage } from '@infra/rabbitmq/rpc-message';
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { ApiValidationError, BusinessError } from '@shared/common';
-import { IError, RpcMessage } from '@infra/rabbitmq/rpc-message';
 import { ErrorLogger, Loggable } from '@src/core/logger';
 import { LoggingUtils } from '@src/core/logger/logging.utils';
 import { Response } from 'express';

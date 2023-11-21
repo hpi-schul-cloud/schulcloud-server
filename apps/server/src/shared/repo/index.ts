@@ -12,7 +12,6 @@ export * from './coursegroup';
 export * from './dashboard';
 export * from './federalstate';
 export * from './importuser';
-export * from './lesson';
 export * from './ltitool';
 export * from './materials';
 export * from './mongo.patterns';

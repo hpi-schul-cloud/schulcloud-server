@@ -2,10 +2,10 @@ import CryptoJs from 'crypto-js';
 
 import { Injectable } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
-import { IEncryptionService } from './encryption.interface';
+import { EncryptionService } from './encryption.interface';
 
 @Injectable()
-export class SymetricKeyEncryptionService implements IEncryptionService {
+export class SymetricKeyEncryptionService implements EncryptionService {
 	constructor(private logger: LegacyLogger, private key?: string) {
 		if (!this.key) {
 			this.logger.warn('No AES key defined. Encryption will no work');

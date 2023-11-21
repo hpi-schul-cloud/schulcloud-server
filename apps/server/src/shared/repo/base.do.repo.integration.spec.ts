@@ -1,12 +1,12 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Entity, EntityName, Property } from '@mikro-orm/core';
-import { BaseDO, BaseEntityWithTimestamps } from '@shared/domain';
+import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
+import { Entity, EntityName, Property } from '@mikro-orm/core';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { BaseDO, BaseEntityWithTimestamps } from '@shared/domain';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { LegacyLogger } from '@src/core/logger';
-import { createMock } from '@golevelup/ts-jest';
 
 describe('BaseDORepo', () => {
 	@Entity()
@@ -14,7 +14,7 @@ describe('BaseDORepo', () => {
 		@Property()
 		name: string;
 
-		constructor(props: ITestEntityProperties = { name: 'test' }) {
+		constructor(props: TestEntityProperties = { name: 'test' }) {
 			super();
 			this.name = props.name;
 		}
@@ -30,17 +30,17 @@ describe('BaseDORepo', () => {
 		}
 	}
 
-	interface ITestEntityProperties {
+	interface TestEntityProperties {
 		name: string;
 	}
 
 	@Injectable()
-	class TestRepo extends BaseDORepo<TestDO, TestEntity, ITestEntityProperties> {
+	class TestRepo extends BaseDORepo<TestDO, TestEntity, TestEntityProperties> {
 		get entityName(): EntityName<TestEntity> {
 			return TestEntity;
 		}
 
-		entityFactory(props: ITestEntityProperties): TestEntity {
+		entityFactory(props: TestEntityProperties): TestEntity {
 			return new TestEntity(props);
 		}
 
@@ -48,7 +48,7 @@ describe('BaseDORepo', () => {
 			return new TestDO({ id: entity.id, name: entity.name });
 		}
 
-		mapDOToEntityProperties(entityDO: TestDO): ITestEntityProperties {
+		mapDOToEntityProperties(entityDO: TestDO): TestEntityProperties {
 			return {
 				name: entityDO.name,
 			};
@@ -95,7 +95,7 @@ describe('BaseDORepo', () => {
 	});
 
 	describe('entityFactory', () => {
-		const props: ITestEntityProperties = {
+		const props: TestEntityProperties = {
 			name: 'name',
 		};
 
