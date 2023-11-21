@@ -1414,11 +1414,6 @@
 			"type": "string",
 			"default": "http://localhost:3349/api/v3",
 			"description": "Address for tldraw management app"
-		},
-		"PORT_TLDRAW_CLIENT": {
-			"type": "number",
-			"default": 3046,
-			"description": "Port address for tldraw client app"
 		}
 	},
 	"required": [],
