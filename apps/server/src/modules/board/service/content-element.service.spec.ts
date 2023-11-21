@@ -171,7 +171,7 @@ describe(ContentElementService.name, () => {
 
 				await service.create(card, ContentElementType.RICH_TEXT);
 
-				expect(contentElementFactory.build).toHaveBeenCalledWith(ContentElementType.RICH_TEXT, card.id);
+				expect(contentElementFactory.build).toHaveBeenCalledWith(ContentElementType.RICH_TEXT);
 			});
 
 			it('should call addChild method of parent element', async () => {
