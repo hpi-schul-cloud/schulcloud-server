@@ -1,8 +1,8 @@
-import { ISchoolYearProperties } from '@shared/domain';
+import { SchoolYearProperties } from '@shared/domain';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { DeepPartial } from 'fishery';
 
-type SeedSchoolYearProperties = Pick<ISchoolYearProperties, 'name'> & {
+type SeedSchoolYearProperties = Pick<SchoolYearProperties, 'name'> & {
 	id: string;
 	endDate: string;
 	startDate: string;
@@ -79,7 +79,7 @@ const seedSchoolYears: SeedSchoolYearProperties[] = [
 
 export function generateSchoolYears() {
 	return seedSchoolYears.map((year) => {
-		const params: DeepPartial<ISchoolYearProperties> = {
+		const params: DeepPartial<SchoolYearProperties> = {
 			endDate: new Date(year.endDate),
 			name: year.name,
 			startDate: new Date(year.startDate),

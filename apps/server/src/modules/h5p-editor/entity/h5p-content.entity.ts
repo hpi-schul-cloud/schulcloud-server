@@ -106,7 +106,7 @@ export enum H5PContentParentType {
 	'Lesson' = 'lessons',
 }
 
-export interface IH5PContentProperties {
+export interface H5PContentProperties {
 	creatorId: EntityId;
 	parentType: H5PContentParentType;
 	parentId: EntityId;
@@ -149,7 +149,7 @@ export class H5PContent extends BaseEntityWithTimestamps {
 	@Property({ type: JsonType })
 	content: unknown;
 
-	constructor({ parentType, parentId, creatorId, schoolId, metadata, content }: IH5PContentProperties) {
+	constructor({ parentType, parentId, creatorId, schoolId, metadata, content }: H5PContentProperties) {
 		super();
 
 		this.parentType = parentType;

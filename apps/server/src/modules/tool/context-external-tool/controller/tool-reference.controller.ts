@@ -1,6 +1,6 @@
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { ToolReference } from '../domain';
 import { ContextExternalToolResponseMapper } from '../mapper';
 import { ToolReferenceUc } from '../uc';

@@ -1,10 +1,10 @@
 import { LearnroomMetadata } from '@shared/domain/types';
 
-export interface ILearnroom {
+export interface Learnroom {
 	getMetadata: () => LearnroomMetadata;
 }
 
-export interface ILearnroomElement {
+export interface LearnroomElement {
 	publish: () => void;
 	unpublish: () => void;
 }
