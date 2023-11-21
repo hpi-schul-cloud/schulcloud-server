@@ -5,7 +5,7 @@ import { SortOrder } from '@shared/domain';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { cleanupCollections, federalStateFactory, schoolFactory, systemFactory } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
-import { SCHOOL_REPO } from '../../domain';
+import { SchoolFeature, SCHOOL_REPO } from '../../domain';
 import { SchoolEntityMapper } from './mapper';
 import { SchoolMikroOrmRepo } from './school.repo';
 
@@ -134,30 +134,51 @@ describe('SchoolMikroOrmRepo', () => {
 	});
 
 	describe('getSchool', () => {
-		it('should throw NotFound if entity is not found', async () => {
-			const someId = new ObjectId().toHexString();
+		describe('when entity is not found', () => {
+			it('should throw NotFound', async () => {
+				const someId = new ObjectId().toHexString();
 
-			await expect(() => repo.getSchool(someId)).rejects.toThrow(NotFoundError);
+				await expect(() => repo.getSchool(someId)).rejects.toThrow(NotFoundError);
+			});
 		});
 
 		describe('when entity is found', () => {
 			const setup = async () => {
 				const systems = systemFactory.buildList(2);
-				const someId = new ObjectId().toHexString();
-				const entity = schoolFactory.buildWithId({ systems }, someId);
+				const schoolId = new ObjectId().toHexString();
+				const entity = schoolFactory.buildWithId({ systems }, schoolId);
 				await em.persistAndFlush([entity]);
 				em.clear();
 				const schoolDo = SchoolEntityMapper.mapToDo(entity);
 
-				return { schoolDo, someId };
+				return { schoolDo, schoolId };
 			};
 
 			it('should return school with all refs populated', async () => {
-				const { schoolDo, someId } = await setup();
+				const { schoolDo, schoolId } = await setup();
 
-				const result = await repo.getSchool(someId);
+				const result = await repo.getSchool(schoolId);
 
 				expect(result).toEqual(schoolDo);
+			});
+		});
+
+		describe('when enableStudentTeamCreation prop on entity is true', () => {
+			const setupWithEnableStudentTeamCreation = async () => {
+				const schoolId = new ObjectId().toHexString();
+				const entity = schoolFactory.buildWithId({ enableStudentTeamCreation: true }, schoolId);
+				await em.persistAndFlush([entity]);
+				em.clear();
+				const schoolDo = SchoolEntityMapper.mapToDo(entity);
+
+				return { schoolDo, schoolId };
+			};
+			it('should add IS_TEAM_CREATION_BY_STUDENTS_ENABLED to features', async () => {
+				const { schoolId } = await setupWithEnableStudentTeamCreation();
+
+				const result = await repo.getSchool(schoolId);
+
+				expect(result.getProps().features?.has(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED)).toBe(true);
 			});
 		});
 	});
