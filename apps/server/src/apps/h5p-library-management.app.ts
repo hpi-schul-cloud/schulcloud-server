@@ -26,6 +26,7 @@ async function bootstrap() {
 	console.log(`##### Start H5P Library Management ######`);
 	console.log('#########################################');
 
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	await nestApp.get(H5PLibraryManagementService).run();
 	// await app.get(H5PLibraryManagementService).run();
 	// TODO: properly close app (there is some issue with the logger)
