@@ -4,7 +4,6 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SchoolQueryParams, SchoolUrlParams } from './dto/param';
 import { SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
-import { SchoolResponseMapper } from './mapper';
 import { SchoolUc } from './school.uc';
 
 @ApiTags('School')
