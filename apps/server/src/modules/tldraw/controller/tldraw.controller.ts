@@ -9,14 +9,14 @@ import { TldrawDeleteParams } from '@src/modules/tldraw/controller/tldraw.params
 export class TldrawController {
 	constructor(private readonly tldrawService: TldrawService) {}
 
-	@ApiOperation({ summary: 'Delete every element of tldraw drawing by his docName.' })
+	@ApiOperation({ summary: 'Delete every element of tldraw drawing by its docName.' })
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Delete(':docName')
-	async deleteByDrawingName(@Param() urlParams: TldrawDeleteParams) {
-		await this.tldrawService.deleteByDrawingName(urlParams.docName);
+	async deleteByDocName(@Param() urlParams: TldrawDeleteParams) {
+		await this.tldrawService.deleteByDocName(urlParams.docName);
 	}
 }

@@ -198,7 +198,7 @@ describe(RecursiveDeleteVisitor.name, () => {
 
 			await service.visitDrawingElementAsync(childDrawingElement);
 
-			expect(drawingElementAdapterService.deleteDrawingBinData).toHaveBeenCalledWith(childDrawingElement.drawingName);
+			expect(drawingElementAdapterService.deleteDrawingBinData).toHaveBeenCalledWith(childDrawingElement.id);
 		});
 	});
 

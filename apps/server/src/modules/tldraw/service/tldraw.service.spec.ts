@@ -39,12 +39,12 @@ describe(TldrawService.name, () => {
 				const drawing = tldrawEntityFactory.build();
 
 				await repo.create(drawing);
-				const result = await repo.findByDrawingName(drawing.docName);
+				const result = await repo.findByDocName(drawing.docName);
 
 				expect(result.length).toEqual(1);
 
-				await service.deleteByDrawingName(drawing.docName);
-				const emptyResult = await repo.findByDrawingName(drawing.docName);
+				await service.deleteByDocName(drawing.docName);
+				const emptyResult = await repo.findByDocName(drawing.docName);
 
 				expect(emptyResult.length).toEqual(0);
 			});

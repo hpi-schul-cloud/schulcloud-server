@@ -3,13 +3,9 @@ import { ContentElementType } from '@shared/domain';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class DrawingElementContent {
-	constructor({ drawingName, description }: DrawingElementContent) {
-		this.drawingName = drawingName;
+	constructor({ description }: DrawingElementContent) {
 		this.description = description;
 	}
-
-	@ApiProperty()
-	drawingName: string;
 
 	@ApiProperty()
 	description: string;

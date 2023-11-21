@@ -48,7 +48,7 @@ export class ContentElementService {
 				throw new BadRequestException('Cannot create multiple drawings in one Card');
 			}
 		}
-		const element = this.contentElementFactory.build(type, parent.id);
+		const element = this.contentElementFactory.build(type);
 		parent.addChild(element);
 		await this.boardDoRepo.save(parent.children, parent);
 		return element;

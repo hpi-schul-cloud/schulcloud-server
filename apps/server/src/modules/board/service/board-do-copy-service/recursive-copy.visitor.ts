@@ -128,7 +128,6 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		const copy = new DrawingElement({
 			id: new ObjectId().toHexString(),
 			description: original.description,
-			drawingName: original.drawingName,
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),

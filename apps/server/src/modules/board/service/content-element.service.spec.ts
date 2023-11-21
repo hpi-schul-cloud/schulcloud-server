@@ -272,7 +272,6 @@ describe(ContentElementService.name, () => {
 			const setup = () => {
 				const drawingElement = drawingElementFactory.build();
 				const content = new DrawingContentBody();
-				content.drawingName = 'test-drawingName';
 				content.description = 'test-description';
 				const card = cardFactory.build();
 				boardDoRepo.findParentOfId.mockResolvedValue(card);
@@ -285,7 +284,6 @@ describe(ContentElementService.name, () => {
 
 				await service.update(drawingElement, content);
 
-				expect(drawingElement.drawingName).toEqual(content.drawingName);
 				expect(drawingElement.description).toEqual(content.description);
 			});
 

@@ -76,10 +76,6 @@ export class RichTextContentBody {
 export class DrawingContentBody {
 	@IsString()
 	@ApiProperty()
-	drawingName!: string;
-
-	@IsString()
-	@ApiProperty()
 	description!: string;
 }
 

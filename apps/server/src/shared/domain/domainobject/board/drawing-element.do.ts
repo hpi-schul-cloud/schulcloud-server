@@ -2,14 +2,6 @@ import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 export class DrawingElement extends BoardComposite<DrawingElementProps> {
-	get drawingName(): string {
-		return this.props.drawingName;
-	}
-
-	set drawingName(value: string) {
-		this.props.drawingName = value;
-	}
-
 	get description(): string {
 		return this.props.description;
 	}
@@ -32,7 +24,6 @@ export class DrawingElement extends BoardComposite<DrawingElementProps> {
 }
 
 export interface DrawingElementProps extends BoardCompositeProps {
-	drawingName: string;
 	description: string;
 }
 

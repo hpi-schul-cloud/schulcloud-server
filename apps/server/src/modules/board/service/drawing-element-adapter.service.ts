@@ -10,9 +10,9 @@ export class DrawingElementAdapterService {
 		this.logger.setContext(DrawingElementAdapterService.name);
 	}
 
-	async deleteDrawingBinData(drawingName: string): Promise<void> {
+	async deleteDrawingBinData(docName: string): Promise<void> {
 		await firstValueFrom(
-			this.httpService.delete(`${Configuration.get('TLDRAW_URI') as string}/tldraw-document/${drawingName}`, {
+			this.httpService.delete(`${Configuration.get('TLDRAW_URI') as string}/tldraw-document/${docName}`, {
 				headers: {
 					Accept: 'Application/json',
 				},

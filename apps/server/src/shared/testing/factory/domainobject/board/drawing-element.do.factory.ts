@@ -12,7 +12,6 @@ export const drawingElementFactory = BaseFactory.define<DrawingElement, DrawingE
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
-			drawingName: 'testName',
 			description: '',
 		};
 	}

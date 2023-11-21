@@ -10,8 +10,8 @@ export class TldrawRepo {
 		await this._em.persistAndFlush(entity);
 	}
 
-	async findByDrawingName(drawingName: string): Promise<TldrawDrawing[]> {
-		return this._em.find(TldrawDrawing, { docName: drawingName });
+	async findByDocName(docName: string): Promise<TldrawDrawing[]> {
+		return this._em.find(TldrawDrawing, { docName });
 	}
 
 	async delete(entity: TldrawDrawing | TldrawDrawing[]): Promise<void> {

@@ -39,13 +39,13 @@ describe('TldrawController', () => {
 					docName: 'test-name',
 				};
 
-				const ucSpy = jest.spyOn(service, 'deleteByDrawingName').mockImplementation(() => Promise.resolve());
+				const ucSpy = jest.spyOn(service, 'deleteByDocName').mockImplementation(() => Promise.resolve());
 				return { params, ucSpy };
 			};
 
 			it('should call service with parentIds', async () => {
 				const { params, ucSpy } = setup();
-				await controller.deleteByDrawingName(params);
+				await controller.deleteByDocName(params);
 				expect(ucSpy).toHaveBeenCalledWith('test-name');
 			});
 		});

@@ -23,7 +23,7 @@ export class DrawingElementResponseMapper implements BaseResponseMapper {
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
 			type: ContentElementType.DRAWING,
-			content: new DrawingElementContent({ drawingName: element.drawingName, description: element.description }),
+			content: new DrawingElementContent({ description: element.description }),
 		});
 
 		return result;
