@@ -1,21 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
+import { LessonCopyService, LessonService } from '@modules/lesson';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
-import { CourseRepo, LessonRepo, UserRepo } from '@shared/repo';
+import { CourseRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
-import { EtherpadService, LessonCopyService } from '@modules/lesson/service';
 import { LessonCopyUC } from './lesson-copy.uc';
 
 describe('lesson copy uc', () => {
 	let module: TestingModule;
 	let uc: LessonCopyUC;
 	let userRepo: DeepMocked<UserRepo>;
-	let lessonRepo: DeepMocked<LessonRepo>;
+	let lessonService: DeepMocked<LessonService>;
 	let courseRepo: DeepMocked<CourseRepo>;
 	let authorisation: DeepMocked<AuthorizationService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
@@ -35,8 +35,8 @@ describe('lesson copy uc', () => {
 					useValue: createMock<UserRepo>(),
 				},
 				{
-					provide: LessonRepo,
-					useValue: createMock<LessonRepo>(),
+					provide: LessonService,
+					useValue: createMock<LessonService>(),
 				},
 				{
 					provide: CourseRepo,
@@ -54,16 +54,12 @@ describe('lesson copy uc', () => {
 					provide: CopyHelperService,
 					useValue: createMock<CopyHelperService>(),
 				},
-				{
-					provide: EtherpadService,
-					useValue: createMock<EtherpadService>(),
-				},
 			],
 		}).compile();
 
 		uc = module.get(LessonCopyUC);
 		userRepo = module.get(UserRepo);
-		lessonRepo = module.get(LessonRepo);
+		lessonService = module.get(LessonService);
 		authorisation = module.get(AuthorizationService);
 		courseRepo = module.get(CourseRepo);
 		lessonCopyService = module.get(LessonCopyService);
@@ -128,8 +124,8 @@ describe('lesson copy uc', () => {
 				authorisation.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorisation.hasPermission.mockReturnValue(true);
 
-				lessonRepo.findById.mockResolvedValueOnce(lesson);
-				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([allLessons, allLessons.length]);
+				lessonService.findById.mockResolvedValueOnce(lesson);
+				lessonService.findByCourseIds.mockResolvedValueOnce([allLessons, allLessons.length]);
 				courseRepo.findById.mockResolvedValueOnce(course);
 
 				lessonCopyService.copyLesson.mockResolvedValueOnce(status);
@@ -185,8 +181,8 @@ describe('lesson copy uc', () => {
 				authorisation.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorisation.hasPermission.mockReturnValue(true);
 
-				lessonRepo.findById.mockResolvedValueOnce(lesson);
-				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([allLessons, allLessons.length]);
+				lessonService.findById.mockResolvedValueOnce(lesson);
+				lessonService.findByCourseIds.mockResolvedValueOnce([allLessons, allLessons.length]);
 				courseRepo.findById.mockResolvedValueOnce(course);
 
 				lessonCopyService.copyLesson.mockResolvedValueOnce(status);
@@ -221,7 +217,7 @@ describe('lesson copy uc', () => {
 
 				await uc.copyLesson(userId, lessonId, parentParams);
 
-				expect(lessonRepo.findById).toBeCalledWith(lessonId);
+				expect(lessonService.findById).toBeCalledWith(lessonId);
 			});
 
 			it('should fetch destination course', async () => {
@@ -285,7 +281,7 @@ describe('lesson copy uc', () => {
 
 				await uc.copyLesson(userId, lessonId, parentParams);
 
-				expect(lessonRepo.findAllByCourseIds).toHaveBeenCalledWith([courseId]);
+				expect(lessonService.findByCourseIds).toHaveBeenCalledWith([courseId]);
 			});
 		});
 
@@ -300,7 +296,7 @@ describe('lesson copy uc', () => {
 				const parentParams = { courseId: course.id, userId: new ObjectId().toHexString() };
 
 				userRepo.findById.mockResolvedValueOnce(user);
-				lessonRepo.findById.mockResolvedValueOnce(lesson);
+				lessonService.findById.mockResolvedValueOnce(lesson);
 				courseRepo.findById.mockResolvedValueOnce(course);
 				authorisation.hasPermission.mockReturnValueOnce(false);
 
@@ -331,7 +327,7 @@ describe('lesson copy uc', () => {
 				const parentParams = { courseId: course.id, userId: new ObjectId().toHexString() };
 
 				userRepo.findById.mockResolvedValueOnce(user);
-				lessonRepo.findById.mockResolvedValueOnce(lesson);
+				lessonService.findById.mockResolvedValueOnce(lesson);
 				courseRepo.findById.mockResolvedValueOnce(course);
 				authorisation.checkPermission.mockImplementationOnce(() => {
 					throw new ForbiddenException();

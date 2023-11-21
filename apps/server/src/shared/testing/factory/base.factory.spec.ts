@@ -1,7 +1,7 @@
 import { BaseFactory } from './base.factory';
 
 describe('BaseFactory', () => {
-	interface IUserProperties {
+	interface UserProperties {
 		email: string;
 		roles: string[];
 		nickName?: string;
@@ -14,7 +14,7 @@ describe('BaseFactory', () => {
 
 		nickName?: string;
 
-		constructor(props: IUserProperties) {
+		constructor(props: UserProperties) {
 			this.email = props.email;
 			this.roles = props.roles;
 			this.nickName = props.nickName;
@@ -29,7 +29,7 @@ describe('BaseFactory', () => {
 	describe('when defining the factory', () => {
 		it('should call the constructor', () => {
 			const Constructor = jest.fn();
-			const factory = BaseFactory.define<typeof Constructor, IUserProperties>(Constructor, () => {
+			const factory = BaseFactory.define<typeof Constructor, UserProperties>(Constructor, () => {
 				return {
 					email: 'joe@example.com',
 					roles: ['member'],
@@ -41,7 +41,7 @@ describe('BaseFactory', () => {
 		});
 
 		it('should create an instance of the class', () => {
-			const factory = BaseFactory.define<User, IUserProperties>(User, () => {
+			const factory = BaseFactory.define<User, UserProperties>(User, () => {
 				return {
 					email: 'joe@example.com',
 					roles: ['member'],
@@ -52,7 +52,7 @@ describe('BaseFactory', () => {
 		});
 
 		it('should override default properties', () => {
-			const factory = BaseFactory.define<User, IUserProperties>(User, () => {
+			const factory = BaseFactory.define<User, UserProperties>(User, () => {
 				return {
 					email: 'joe@example.com',
 					roles: ['member'],
@@ -63,7 +63,7 @@ describe('BaseFactory', () => {
 		});
 
 		it('should call afterBuild hook', () => {
-			const factory = BaseFactory.define<User, IUserProperties>(User, () => {
+			const factory = BaseFactory.define<User, UserProperties>(User, () => {
 				return {
 					email: 'joe@example.com',
 					roles: ['member'],
@@ -79,7 +79,7 @@ describe('BaseFactory', () => {
 		});
 
 		it('should delegate transient params as a trait', () => {
-			const factory = BaseFactory.define<User, IUserProperties, UserTransientParams>(User, ({ transientParams }) => {
+			const factory = BaseFactory.define<User, UserProperties, UserTransientParams>(User, ({ transientParams }) => {
 				const { registered, numTasks } = transientParams;
 				return { email: `joe-${registered ? 'r' : 'u'}-${numTasks || '0'}@example.com`, roles: ['member'] };
 			});
@@ -88,7 +88,7 @@ describe('BaseFactory', () => {
 		});
 
 		it('should delegate transientParams as a build option', () => {
-			const factory = BaseFactory.define<User, IUserProperties, UserTransientParams>(User, ({ transientParams }) => {
+			const factory = BaseFactory.define<User, UserProperties, UserTransientParams>(User, ({ transientParams }) => {
 				const { registered, numTasks } = transientParams;
 				return { email: `joe-${registered ? 'r' : 'u'}-${numTasks || '0'}@example.com`, roles: ['member'] };
 			});
@@ -97,7 +97,7 @@ describe('BaseFactory', () => {
 		});
 
 		it('should delegate associations as a trait', () => {
-			const factory = BaseFactory.define<User, IUserProperties>(User, ({ associations }) => {
+			const factory = BaseFactory.define<User, UserProperties>(User, ({ associations }) => {
 				return {
 					email: 'joe@example.com',
 					roles: associations.roles || ['member'],
@@ -108,7 +108,7 @@ describe('BaseFactory', () => {
 		});
 
 		it('should delegate associations as build option', () => {
-			const factory = BaseFactory.define<User, IUserProperties, UserTransientParams>(User, ({ associations }) => {
+			const factory = BaseFactory.define<User, UserProperties, UserTransientParams>(User, ({ associations }) => {
 				return {
 					email: 'joe@example.com',
 					roles: associations.roles || ['member'],
@@ -120,7 +120,7 @@ describe('BaseFactory', () => {
 	});
 
 	describe('when subclassing the factory', () => {
-		class UserFactory extends BaseFactory<User, IUserProperties, UserTransientParams> {
+		class UserFactory extends BaseFactory<User, UserProperties, UserTransientParams> {
 			admin() {
 				return this.params({ roles: ['admin'] });
 			}
@@ -168,7 +168,7 @@ describe('BaseFactory', () => {
 	describe('when builing a list of objects', () => {
 		it('should call the constructor for each item', () => {
 			const Constructor = jest.fn();
-			const factory = BaseFactory.define<typeof Constructor, IUserProperties>(Constructor, ({ sequence }) => {
+			const factory = BaseFactory.define<typeof Constructor, UserProperties>(Constructor, ({ sequence }) => {
 				return {
 					email: `joe-${sequence}@example.com`,
 					roles: ['member'],
@@ -179,7 +179,7 @@ describe('BaseFactory', () => {
 		});
 
 		it('should create an instance of the class for each item', () => {
-			const factory = BaseFactory.define<User, IUserProperties>(User, ({ sequence }) => {
+			const factory = BaseFactory.define<User, UserProperties>(User, ({ sequence }) => {
 				return {
 					email: `joe-${sequence}@example.com`,
 					roles: ['member'],
@@ -192,7 +192,7 @@ describe('BaseFactory', () => {
 		});
 
 		it('should override properties', () => {
-			const factory = BaseFactory.define<User, IUserProperties>(User, ({ sequence }) => {
+			const factory = BaseFactory.define<User, UserProperties>(User, ({ sequence }) => {
 				return {
 					email: `joe-${sequence}@example.com`,
 					roles: ['member'],

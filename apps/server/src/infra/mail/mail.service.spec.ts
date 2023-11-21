@@ -1,10 +1,10 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { MailConfig } from './interfaces/mail-config';
 import { Mail } from './mail.interface';
 import { MailService } from './mail.service';
-import { IMailConfig } from './interfaces/mail-config';
 
 describe('MailService', () => {
 	let module: TestingModule;
@@ -24,7 +24,7 @@ describe('MailService', () => {
 				{ provide: 'MAIL_SERVICE_OPTIONS', useValue: mailServiceOptions },
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService<IMailConfig, true>>({ get: () => ['schul-cloud.org', 'example.com'] }),
+					useValue: createMock<ConfigService<MailConfig, true>>({ get: () => ['schul-cloud.org', 'example.com'] }),
 				},
 			],
 		}).compile();

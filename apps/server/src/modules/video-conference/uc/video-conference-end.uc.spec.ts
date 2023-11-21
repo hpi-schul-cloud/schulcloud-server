@@ -1,15 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UserService } from '@modules/user';
-import { userDoFactory } from '@shared/testing';
-import { UserDO, VideoConferenceScope } from '@shared/domain';
-import { ObjectId } from 'bson';
 import { ForbiddenException } from '@nestjs/common';
-import { BBBService, VideoConferenceService } from '../service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { UserDO, VideoConferenceScope } from '@shared/domain';
+import { userDoFactory } from '@shared/testing';
+import { ObjectId } from 'bson';
 import { BBBBaseResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';
-import { IScopeInfo, VideoConference, VideoConferenceState } from './dto';
-import { VideoConferenceEndUc } from './video-conference-end.uc';
 import { ErrorStatus } from '../error/error-status.enum';
+import { BBBService, VideoConferenceService } from '../service';
+import { ScopeInfo, VideoConference, VideoConferenceState } from './dto';
+import { VideoConferenceEndUc } from './video-conference-end.uc';
 
 describe('VideoConferenceEndUc', () => {
 	let module: TestingModule;
@@ -57,7 +57,7 @@ describe('VideoConferenceEndUc', () => {
 				const user: UserDO = userDoFactory.buildWithId();
 				const currentUserId: string = user.id as string;
 				const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
-				const scopeInfo: IScopeInfo = {
+				const scopeInfo: ScopeInfo = {
 					scopeId: scope.id,
 					scopeName: 'scopeName',
 					title: 'title',
@@ -93,7 +93,7 @@ describe('VideoConferenceEndUc', () => {
 				const user: UserDO = userDoFactory.buildWithId();
 				const currentUserId: string = user.id as string;
 				const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
-				const scopeInfo: IScopeInfo = {
+				const scopeInfo: ScopeInfo = {
 					scopeId: scope.id,
 					scopeName: 'scopeName',
 					title: 'title',

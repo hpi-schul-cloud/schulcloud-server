@@ -1,4 +1,4 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { H5PAjaxEndpoint, H5PEditor, IPlayerModel } from '@lumieducation/h5p-server';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -8,9 +8,9 @@ import { AuthorizationContextBuilder, AuthorizationReferenceService } from '@src
 import { UserService } from '@src/modules/user';
 import { Request } from 'express';
 import { Readable } from 'stream';
+import { H5PEditorProvider, H5PPlayerProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { ContentStorage, LibraryStorage } from '../service';
-import { H5PEditorProvider, H5PPlayerProvider } from '../provider';
 import { TemporaryFileStorage } from '../service/temporary-file-storage.service';
 import { H5PEditorUc } from './h5p.uc';
 

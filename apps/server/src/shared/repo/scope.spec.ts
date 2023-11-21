@@ -2,7 +2,7 @@ import { Entity, Property } from '@mikro-orm/core';
 import { EmptyResultQuery } from './query/empty-result.query';
 import { Scope } from './scope';
 
-export interface ITestEntityProperties {
+export interface TestEntityProperties {
 	name: string;
 	numbers?: number[];
 }
@@ -15,7 +15,7 @@ class TestEntity {
 	@Property()
 	numbers: number[];
 
-	constructor(props: ITestEntityProperties) {
+	constructor(props: TestEntityProperties) {
 		this.name = props.name;
 		this.numbers = props.numbers || [];
 	}

@@ -6,8 +6,8 @@ import { PreviewInputMimeTypes } from '../interface';
 import {
 	FileRecord,
 	FileRecordParentType,
+	FileRecordProperties,
 	FileRecordSecurityCheck,
-	IFileRecordProperties,
 	PreviewStatus,
 	ScanStatus,
 } from './filerecord.entity';
@@ -18,7 +18,7 @@ describe('FileRecord Entity', () => {
 	});
 
 	describe('when creating a new instance using the constructor', () => {
-		let props: IFileRecordProperties;
+		let props: FileRecordProperties;
 
 		beforeEach(() => {
 			props = {

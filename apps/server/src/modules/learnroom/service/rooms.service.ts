@@ -1,23 +1,24 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ColumnBoardService } from '@modules/board';
+import { LessonService } from '@modules/lesson';
+import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { Board, BoardExternalReferenceType, ColumnBoardTarget, EntityId } from '@shared/domain';
-import { BoardRepo, LessonRepo } from '@shared/repo';
-import { ColumnBoardService } from '@modules/board';
-import { TaskService } from '@modules/task/service';
+import { BoardRepo } from '@shared/repo';
 import { ColumnBoardTargetService } from './column-board-target.service';
 
 @Injectable()
 export class RoomsService {
 	constructor(
 		private readonly taskService: TaskService,
-		private readonly lessonRepo: LessonRepo,
+		private readonly lessonService: LessonService,
 		private readonly boardRepo: BoardRepo,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnBoardTargetService: ColumnBoardTargetService
 	) {}
 
 	async updateBoard(board: Board, roomId: EntityId, userId: EntityId): Promise<Board> {
-		const [courseLessons] = await this.lessonRepo.findAllByCourseIds([roomId]);
+		const [courseLessons] = await this.lessonService.findByCourseIds([roomId]);
 		const [courseTasks] = await this.taskService.findBySingleParent(userId, roomId);
 
 		const courseColumnBoardTargets = await this.handleColumnBoardIntegration(roomId);

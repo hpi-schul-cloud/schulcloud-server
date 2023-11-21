@@ -1,7 +1,7 @@
-import { ICommonCartridgeElement } from './common-cartridge-element.interface';
+import { CommonCartridgeElement } from './common-cartridge-element.interface';
 
-export class CommonCartridgeResourceWrapperElement implements ICommonCartridgeElement {
-	constructor(private readonly resourceElements: ICommonCartridgeElement[]) {}
+export class CommonCartridgeResourceWrapperElement implements CommonCartridgeElement {
+	constructor(private readonly resourceElements: CommonCartridgeElement[]) {}
 
 	transform(): Record<string, unknown> {
 		return {

@@ -1,5 +1,5 @@
 import { EntityId, LessonEntity } from '@shared/domain';
-import { Scope } from '../scope';
+import { Scope } from '@shared/repo';
 
 export class LessonScope extends Scope<LessonEntity> {
 	byCourseIds(courseIds: EntityId[]): LessonScope {
