@@ -69,9 +69,7 @@ export class H5PLibraryManagementService {
 		const librariesYamlContent = readFileSync(filePath, { encoding: 'utf-8' });
 		if (isLibrariesContentType(parse(librariesYamlContent))) {
 			this.libraryWishList = (parse(librariesYamlContent) as LibrariesContentType).h5p_libraries;
-		} else {
-			this.libraryWishList = [];
-		}
+		} 
 	}
 
 	public async uninstallUnwantedLibraries(
