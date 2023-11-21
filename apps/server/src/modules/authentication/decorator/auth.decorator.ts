@@ -6,11 +6,11 @@ import {
 	UnauthorizedException,
 	UseGuards,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { Request } from 'express';
 import { ExtractJwt } from 'passport-jwt';
-import { ICurrentUser } from '../interface/user';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
+import { ICurrentUser } from '../interface/user';
 import { JwtExtractor } from '../strategy/jwt-extractor';
 
 const STRATEGIES = ['jwt'] as const;

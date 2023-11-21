@@ -1,9 +1,9 @@
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller/';
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 // invalid import can produce dependency cycles
 import { serverConfig } from '@modules/server/server.config';
 import { TaskMapper } from '../mapper';

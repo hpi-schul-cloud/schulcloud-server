@@ -1,6 +1,6 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
-import { DashboardEntity, EntityId, GridPositionWithGroupIndex, GridPosition, SortOrder } from '@shared/domain';
-import { IDashboardRepo, CourseRepo } from '@shared/repo';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { DashboardEntity, EntityId, GridPosition, GridPositionWithGroupIndex, SortOrder } from '@shared/domain';
+import { CourseRepo, IDashboardRepo } from '@shared/repo';
 // import { NotFound } from '@feathersjs/errors'; // wrong import? see NotFoundException
 
 @Injectable()

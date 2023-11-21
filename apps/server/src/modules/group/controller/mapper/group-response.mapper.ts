@@ -40,9 +40,10 @@ export class GroupResponseMapper {
 			type: classInfo.type,
 			name: classInfo.name,
 			externalSourceName: classInfo.externalSourceName,
-			teachers: classInfo.teachers,
+			teachers: classInfo.teacherNames,
 			schoolYear: classInfo.schoolYear,
 			isUpgradable: classInfo.isUpgradable,
+			studentCount: classInfo.studentCount,
 		});
 
 		return mapped;

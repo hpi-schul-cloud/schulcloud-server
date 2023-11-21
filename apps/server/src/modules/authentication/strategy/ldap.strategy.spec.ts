@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AccountDto } from '@modules/account/services/dto';
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -15,7 +16,6 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AccountDto } from '@modules/account/services/dto';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { ICurrentUser } from '../interface';
 import { AuthenticationService } from '../services/authentication.service';
@@ -436,6 +436,7 @@ describe('LdapStrategy', () => {
 					schoolId: school.id,
 					systemId: system.id,
 					accountId: account.id,
+					isExternalUser: true,
 				});
 			});
 		});
@@ -500,6 +501,7 @@ describe('LdapStrategy', () => {
 					schoolId: school.id,
 					systemId: system.id,
 					accountId: account.id,
+					isExternalUser: true,
 				});
 			});
 		});

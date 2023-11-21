@@ -1,18 +1,18 @@
 import AdmZip from 'adm-zip';
 import { Builder } from 'xml2js';
+import { CommonCartridgeElement } from './common-cartridge-element.interface';
 import { CommonCartridgeVersion } from './common-cartridge-enums';
-import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 import { CommonCartridgeManifestElement } from './common-cartridge-manifest-element';
-import {
-	CommonCartridgeResourceItemElement,
-	ICommonCartridgeResourceProps,
-} from './common-cartridge-resource-item-element';
 import {
 	CommonCartridgeOrganizationItemElement,
 	ICommonCartridgeOrganizationProps,
 } from './common-cartridge-organization-item-element';
+import {
+	CommonCartridgeResourceItemElement,
+	ICommonCartridgeResourceProps,
+} from './common-cartridge-resource-item-element';
 
-export type ICommonCartridgeFileBuilderOptions = {
+export type CommonCartridgeFileBuilderOptions = {
 	identifier: string;
 	title: string;
 	copyrightOwners: string;
@@ -39,11 +39,11 @@ class CommonCartridgeOrganizationBuilder implements ICommonCartridgeOrganization
 		private readonly zipBuilder: AdmZip
 	) {}
 
-	get organization(): ICommonCartridgeElement {
+	get organization(): CommonCartridgeElement {
 		return new CommonCartridgeOrganizationItemElement(this.props);
 	}
 
-	get resources(): ICommonCartridgeElement[] {
+	get resources(): CommonCartridgeElement[] {
 		return this.props.resources.map(
 			(resourceProps) => new CommonCartridgeResourceItemElement(resourceProps, this.xmlBuilder)
 		);
@@ -68,7 +68,7 @@ export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
 
 	private readonly resources = new Array<CommonCartridgeResourceItemElement>();
 
-	constructor(private readonly options: ICommonCartridgeFileBuilderOptions) {}
+	constructor(private readonly options: CommonCartridgeFileBuilderOptions) {}
 
 	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder {
 		const organizationBuilder = new CommonCartridgeOrganizationBuilder(props, this.xmlBuilder, this.zipBuilder);
