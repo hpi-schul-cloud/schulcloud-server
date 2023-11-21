@@ -8,7 +8,7 @@ import { DeletionRequestRepo } from './repo/deletion-request.repo';
 import { AuthenticationModule } from '../authentication';
 import { DeletionRequestsController } from './controller/deletion-requests.controller';
 import { DeletionExecutionsController } from './controller/deletion-executions.controller';
-import { IXApiKeyConfig } from '../authentication/config/x-api-key.config';
+import { XApiKeyConfig } from '../authentication/config/x-api-key.config';
 import { DeletionRequestUc } from './uc/deletion-request.uc';
 import { DeletionLogService } from './services/deletion-log.service';
 import { AccountModule } from '../account';
@@ -49,7 +49,7 @@ import { RocketChatUserRepo } from '../rocketchat-user/repo';
 	providers: [
 		DeletionRequestService,
 		DeletionRequestRepo,
-		ConfigService<IXApiKeyConfig, true>,
+		ConfigService<XApiKeyConfig, true>,
 		DeletionRequestUc,
 		DeletionLogService,
 		CourseGroupService,
