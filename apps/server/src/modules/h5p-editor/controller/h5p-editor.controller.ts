@@ -1,3 +1,5 @@
+import { CurrentUser, ICurrentUser } from '@modules/authentication';
+import { Authenticate } from '@modules/authentication/decorator/auth.decorator';
 import {
 	BadRequestException,
 	Body,
@@ -18,13 +20,10 @@ import {
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser, CurrentUser } from '@modules/authentication';
 import { Request, Response } from 'express';
-import { Authenticate } from '@modules/authentication/decorator/auth.decorator';
 
 import { H5PEditorUc } from '../uc/h5p.uc';
 
-import { AjaxPostBodyParamsTransformPipe } from './dto/ajax/post.body.params.transform-pipe';
 import {
 	AjaxGetQueryParams,
 	AjaxPostBodyParams,
@@ -37,6 +36,7 @@ import {
 	PostH5PContentCreateParams,
 	SaveH5PEditorParams,
 } from './dto';
+import { AjaxPostBodyParamsTransformPipe } from './dto/ajax/post.body.params.transform-pipe';
 import { H5PEditorModelContentResponse, H5PEditorModelResponse, H5PSaveResponse } from './dto/h5p-editor.response';
 
 @ApiTags('h5p-editor')

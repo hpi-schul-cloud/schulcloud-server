@@ -1,11 +1,11 @@
-import { ISystemProperties, LdapConfig, OauthConfig, OidcConfig, SystemEntity } from '@shared/domain';
+import { LdapConfig, OauthConfig, OidcConfig, SystemEntity, SystemProperties } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
-export class SystemFactory extends BaseFactory<SystemEntity, ISystemProperties> {
+export class SystemFactory extends BaseFactory<SystemEntity, SystemProperties> {
 	withOauthConfig(): this {
-		const params: DeepPartial<ISystemProperties> = {
+		const params: DeepPartial<SystemProperties> = {
 			oauthConfig: new OauthConfig({
 				clientId: '12345',
 				clientSecret: 'mocksecret',
@@ -26,7 +26,7 @@ export class SystemFactory extends BaseFactory<SystemEntity, ISystemProperties> 
 	}
 
 	withLdapConfig(otherParams?: DeepPartial<LdapConfig>): this {
-		const params: DeepPartial<ISystemProperties> = {
+		const params: DeepPartial<SystemProperties> = {
 			ldapConfig: new LdapConfig({
 				url: 'ldaps:mock.de:389',
 				active: true,

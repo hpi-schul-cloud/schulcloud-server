@@ -1,4 +1,4 @@
-export interface IJsonUser {
+export interface JsonUser {
 	_id: {
 		$oid: string;
 	};

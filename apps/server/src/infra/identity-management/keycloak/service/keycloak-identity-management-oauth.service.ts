@@ -1,8 +1,8 @@
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { OauthConfigDto } from '@modules/system/service';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DefaultEncryptionService, IEncryptionService } from '@infra/encryption';
-import { OauthConfigDto } from '@modules/system/service';
 import qs from 'qs';
 import { lastValueFrom } from 'rxjs';
 import { IdentityManagementOauthService } from '../../identity-management-oauth.service';
@@ -16,7 +16,7 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 		private readonly kcAdminService: KeycloakAdministrationService,
 		private readonly configService: ConfigService,
 		private readonly httpService: HttpService,
-		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService
 	) {
 		super();
 	}
