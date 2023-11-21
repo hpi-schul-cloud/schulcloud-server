@@ -23,7 +23,7 @@ describe('XApiKeyStrategy', () => {
 		}).compile();
 
 		strategy = module.get(XApiKeyStrategy);
-		configService = module.get(ConfigService<IXApiKeyConfig, true>);
+		configService = module.get(ConfigService<XApiKeyConfig, true>);
 	});
 
 	afterAll(async () => {
