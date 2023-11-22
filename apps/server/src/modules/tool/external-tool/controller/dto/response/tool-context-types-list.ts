@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ToolContextType } from '../../../../common/enum';
+import { ToolContextType } from '../../../../common/enum/tool-context-type.enum';
 
 export class ToolContextTypesList {
-	@ApiProperty({ type: [ToolContextType] })
+	@ApiProperty({ enum: ToolContextType, enumName: 'ToolContextType', isArray: true })
 	data: ToolContextType[];
 
 	constructor(data: ToolContextType[]) {
