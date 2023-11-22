@@ -24,6 +24,8 @@ export interface ExternalToolProps {
 	openNewTab: boolean;
 
 	version: number;
+
+	restrictToContexts?: ToolConfigType[];
 }
 
 export class ExternalTool extends BaseDO implements ToolVersion {
@@ -45,6 +47,8 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 
 	version: number;
 
+	restrictToContexts?: ToolConfigType[];
+
 	constructor(props: ExternalToolProps) {
 		super(props.id);
 
@@ -57,6 +61,7 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 		this.isHidden = props.isHidden;
 		this.openNewTab = props.openNewTab;
 		this.version = props.version;
+		this.restrictToContexts = props.restrictToContexts;
 	}
 
 	getVersion(): number {

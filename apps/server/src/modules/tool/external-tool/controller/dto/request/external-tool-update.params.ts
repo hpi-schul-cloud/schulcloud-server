@@ -65,4 +65,9 @@ export class ExternalToolUpdateParams {
 	@IsBoolean()
 	@ApiProperty()
 	openNewTab!: boolean;
+
+	@IsArray()
+	@IsOptional()
+	@ApiPropertyOptional()
+	restrictToContexts?: ToolConfigType[];
 }
