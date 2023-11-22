@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConsoleWriterService } from '@infra/console';
 import { DeletionExecutionUc } from '../uc';
 import { DeletionExecutionConsole } from './deletion-execution.console';
-import { TriggerDeletionExecutionOptionsBuilder } from './builder';
+import { DeletionExecutionTriggerResultBuilder, TriggerDeletionExecutionOptionsBuilder } from './builder';
 
 describe(DeletionExecutionConsole.name, () => {
 	let module: TestingModule;
 	let console: DeletionExecutionConsole;
-	let deletionExecutionUc: DeletionExecutionUc;
+	let deletionExecutionUc: DeepMocked<DeletionExecutionUc>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -59,6 +59,50 @@ describe(DeletionExecutionConsole.name, () => {
 				await console.triggerDeletionExecution(options);
 
 				expect(spy).toBeCalledWith(limit);
+			});
+		});
+
+		describe(`when ${DeletionExecutionUc.name}'s triggerDeletionExecution() method doesn't throw an exception`, () => {
+			const setup = () => {
+				const options = TriggerDeletionExecutionOptionsBuilder.build(1000);
+
+				deletionExecutionUc.triggerDeletionExecution.mockResolvedValueOnce(undefined);
+
+				const spy = jest.spyOn(DeletionExecutionTriggerResultBuilder, 'buildSuccess');
+
+				return { options, spy };
+			};
+
+			it('should prepare result indicating success', async () => {
+				const { options, spy } = setup();
+
+				await console.triggerDeletionExecution(options);
+
+				expect(spy).toHaveBeenCalled();
+			});
+		});
+
+		describe(`when ${DeletionExecutionUc.name}'s triggerDeletionExecution() method throws an exception`, () => {
+			const setup = () => {
+				const options = TriggerDeletionExecutionOptionsBuilder.build(1000);
+
+				const err = new Error('some error occurred...');
+
+				deletionExecutionUc.triggerDeletionExecution.mockRejectedValueOnce(err);
+
+				// const spy = jest.spyOn(ErrorMapper, 'mapRpcErrorResponseToDomainError');
+
+				const spy = jest.spyOn(DeletionExecutionTriggerResultBuilder, 'buildFailure');
+
+				return { options, err, spy };
+			};
+
+			it('should prepare result indicating failure', async () => {
+				const { options, err, spy } = setup();
+
+				await console.triggerDeletionExecution(options);
+
+				expect(spy).toHaveBeenCalledWith(err);
 			});
 		});
 	});

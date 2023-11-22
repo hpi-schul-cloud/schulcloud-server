@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DeletionClient } from '../client';
 import { DeletionExecutionUc } from './deletion-execution.uc';
-import { DeletionExecutionTriggerResultBuilder } from './builder';
 
 describe(DeletionExecutionUc.name, () => {
 	let module: TestingModule;
@@ -37,45 +36,33 @@ describe(DeletionExecutionUc.name, () => {
 	});
 
 	describe('triggerDeletionExecution', () => {
-		describe('when called with valid input', () => {
-			describe("when client doesn't throw any error", () => {
-				const setup = () => {
-					const limit = 1000;
+		describe("when client doesn't throw any error", () => {
+			const setup = () => {
+				const limit = 1000;
 
-					deletionClient.executeDeletions.mockResolvedValueOnce(undefined);
+				deletionClient.executeDeletions.mockResolvedValueOnce(undefined);
 
-					const expectedOutput = DeletionExecutionTriggerResultBuilder.buildSuccess();
+				return { limit };
+			};
 
-					return { limit, expectedOutput };
-				};
+			it('should also not throw an error', async () => {
+				const { limit } = setup();
 
-				it('should return an object with the result containing a successful status info', async () => {
-					const { limit, expectedOutput } = setup();
-
-					const output = await uc.triggerDeletionExecution(limit);
-
-					expect(output).toStrictEqual(expectedOutput);
-				});
+				await expect(uc.triggerDeletionExecution(limit)).resolves.not.toThrow();
 			});
+		});
 
-			describe('when client throws an error', () => {
-				const setup = () => {
-					const error = new Error('connection error');
+		describe('when client throws an error', () => {
+			const setup = () => {
+				const error = new Error('connection error');
 
-					deletionClient.executeDeletions.mockRejectedValueOnce(error);
+				deletionClient.executeDeletions.mockRejectedValueOnce(error);
+			};
 
-					const expectedOutput = DeletionExecutionTriggerResultBuilder.buildFailure(error);
+			it('should also throw an error', async () => {
+				setup();
 
-					return { expectedOutput };
-				};
-
-				it('should return an object with the result containing a failure status info with proper error message', async () => {
-					const { expectedOutput } = setup();
-
-					const output = await uc.triggerDeletionExecution();
-
-					expect(output).toStrictEqual(expectedOutput);
-				});
+				await expect(uc.triggerDeletionExecution()).rejects.toThrow();
 			});
 		});
 	});
