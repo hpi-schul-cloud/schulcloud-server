@@ -1,7 +1,7 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
+import { FilesPreviewEvents, FilesPreviewExchange } from '@infra/rabbitmq';
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { FilesPreviewEvents, FilesPreviewExchange } from '@infra/rabbitmq';
 import { PreviewFileOptions } from './interface';
 import { PreviewActionsLoggable } from './loggable/preview-actions.loggable';
 import { PreviewGeneratorService } from './preview-generator.service';
@@ -18,9 +18,11 @@ export class PreviewGeneratorConsumer {
 		queue: FilesPreviewEvents.GENERATE_PREVIEW,
 	})
 	public async generatePreview(@RabbitPayload() payload: PreviewFileOptions) {
-		this.logger.debug(new PreviewActionsLoggable('PreviewGeneratorConsumer.generatePreview', payload));
+		this.logger.info(new PreviewActionsLoggable('PreviewGeneratorConsumer.generatePreview:start', payload));
 
 		const response = await this.previewGeneratorService.generatePreview(payload);
+
+		this.logger.info(new PreviewActionsLoggable('PreviewGeneratorConsumer.generatePreview:end', payload));
 
 		return { message: response };
 	}

@@ -4,11 +4,11 @@ import ClientRepresentation from '@keycloak/keycloak-admin-client/lib/defs/clien
 import IdentityProviderMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderMapperRepresentation';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import ProtocolMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/protocolMapperRepresentation';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { IServerConfig } from '@modules/server/server.config';
+import { ServerConfig } from '@modules/server/server.config';
 import { OidcConfigDto } from '@modules/system/service';
 import { SystemOidcService } from '@modules/system/service/system-oidc.service';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 
@@ -26,7 +26,7 @@ const oidcExternalSubMapperName = 'External Sub Mapper';
 export class KeycloakConfigurationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
-		private readonly configService: ConfigService<IServerConfig, true>,
+		private readonly configService: ConfigService<ServerConfig, true>,
 		private readonly oidcIdentityProviderMapper: OidcIdentityProviderMapper,
 		private readonly systemOidcService: SystemOidcService
 	) {}

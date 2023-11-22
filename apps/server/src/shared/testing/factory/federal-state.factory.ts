@@ -1,7 +1,7 @@
-import { County, FederalStateEntity, IFederalStateProperties } from '@shared/domain';
+import { County, FederalStateEntity, FederalStateProperties } from '@shared/domain';
 import { BaseFactory } from './base.factory';
 
-export const federalStateFactory = BaseFactory.define<FederalStateEntity, IFederalStateProperties>(
+export const federalStateFactory = BaseFactory.define<FederalStateEntity, FederalStateProperties>(
 	FederalStateEntity,
 	() => {
 		return {

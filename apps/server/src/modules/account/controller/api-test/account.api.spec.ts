@@ -2,7 +2,6 @@ import { EntityManager } from '@mikro-orm/core';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, Permission, RoleName, User } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
 import { accountFactory, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import {
 	AccountByIdBodyParams,
@@ -11,6 +10,7 @@ import {
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
 } from '@src/modules/account/controller/dto';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';

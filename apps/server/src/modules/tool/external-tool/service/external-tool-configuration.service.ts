@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EntityId, Page } from '@shared/domain';
+import { CustomParameter } from '../../common/domain';
+import { CustomParameterScope } from '../../common/enum';
+import { ContextExternalTool } from '../../context-external-tool/domain';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { CustomParameterScope } from '../../common/enum';
-import { CustomParameter } from '../../common/domain';
 import { ContextExternalToolTemplateInfo } from '../uc/dto';
 
 @Injectable()

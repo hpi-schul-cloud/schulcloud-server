@@ -1,9 +1,9 @@
-import { ICommonCartridgeElement } from './common-cartridge-element.interface';
+import { CommonCartridgeElement } from './common-cartridge-element.interface';
 import { CommonCartridgeOrganizationWrapperElement } from './common-cartridge-organization-wrapper-element';
 
 describe('CommonCartridgeOrganizationWrapperElement', () => {
 	it('should transform the organization elements into the expected structure', () => {
-		const organizationElementsMock: ICommonCartridgeElement[] = [
+		const organizationElementsMock: CommonCartridgeElement[] = [
 			{
 				transform: jest.fn().mockReturnValue({ identifier: 'element-1' }),
 			},

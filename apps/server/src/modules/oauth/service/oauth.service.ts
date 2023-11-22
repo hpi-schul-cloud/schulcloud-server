@@ -1,7 +1,6 @@
-import { DefaultEncryptionService, IEncryptionService } from '@infra/encryption';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { ProvisioningService } from '@modules/provisioning';
-import { OauthDataDto } from '@modules/provisioning/dto';
+import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
 import { SystemService } from '@modules/system';
 import { SystemDto } from '@modules/system/service';
 import { UserService } from '@modules/user';
@@ -22,7 +21,7 @@ export class OAuthService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly oauthAdapterService: OauthAdapterService,
-		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
 		private readonly logger: LegacyLogger,
 		private readonly provisioningService: ProvisioningService,
 		private readonly systemService: SystemService,

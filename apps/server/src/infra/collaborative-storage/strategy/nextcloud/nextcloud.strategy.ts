@@ -1,24 +1,24 @@
+import { TeamDto, TeamUserDto } from '@modules/collaborative-storage';
+import { PseudonymService } from '@modules/pseudonym';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { ExternalToolService } from '@modules/tool/external-tool/service';
+import { UserService } from '@modules/user';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Pseudonym, UserDO } from '@shared/domain/';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolRepo } from '@shared/repo/ltitool/';
 import { LegacyLogger } from '@src/core/logger';
-import { TeamDto, TeamUserDto } from '@modules/collaborative-storage';
-import { PseudonymService } from '@modules/pseudonym';
-import { UserService } from '@modules/user';
-import { ExternalToolService } from '@modules/tool/external-tool/service';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
-import { ICollaborativeStorageStrategy } from '../base.interface.strategy';
+import { CollaborativeStorageStrategy } from '../base.interface.strategy';
 import { NextcloudClient } from './nextcloud.client';
 
 /**
  * Nextcloud Strategy Implementation for Collaborative Storage
  *
- * @implements {ICollaborativeStorageStrategy}
+ * @implements {CollaborativeStorageStrategy}
  */
 @Injectable()
-export class NextcloudStrategy implements ICollaborativeStorageStrategy {
+export class NextcloudStrategy implements CollaborativeStorageStrategy {
 	constructor(
 		private readonly logger: LegacyLogger,
 		private readonly client: NextcloudClient,
