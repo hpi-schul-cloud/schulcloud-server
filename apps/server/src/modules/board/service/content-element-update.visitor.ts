@@ -9,6 +9,7 @@ import {
 	ExternalToolElement,
 	FileElement,
 	InputFormat,
+	LearnstoreElement,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
@@ -18,6 +19,7 @@ import {
 	AnyElementContentBody,
 	ExternalToolContentBody,
 	FileContentBody,
+	LearnstoreElementContentBody,
 	LinkContentBody,
 	RichTextContentBody,
 	SubmissionContainerContentBody,
@@ -103,6 +105,13 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 			return Promise.resolve();
 		}
 		return this.rejectNotHandled(externalToolElement);
+	}
+
+	async visitLearnstoreElementAsync(learnstoreElement: LearnstoreElement): Promise<void> {
+		if (this.content instanceof LearnstoreElementContentBody && this.content.content.someId !== undefined) {
+			learnstoreElement.someId = this.content.content.someId;
+		}
+		return this.rejectNotHandled(learnstoreElement);
 	}
 
 	private rejectNotHandled(component: AnyBoardDo): Promise<void> {

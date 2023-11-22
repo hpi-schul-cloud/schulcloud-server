@@ -120,7 +120,7 @@ export class LearnstoreContentBody {
 	@IsMongoId()
 	@IsOptional()
 	@ApiPropertyOptional()
-	contextExternalToolId?: string;
+	someId?: string;
 }
 
 export class LearnstoreElementContentBody extends ElementContentBody {

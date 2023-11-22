@@ -1302,7 +1302,7 @@
 			"default": false,
 			"description": "Enables external tools on the column board"
 		},
-		"FEATURE_COLUMN_BOARD_LEARN_STORE_ENABLED": {
+		"FEATURE_COLUMN_BOARD_LEARNSTORE_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Enables learnstore on the column board"

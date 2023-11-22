@@ -7,6 +7,7 @@ import {
 	EntityId,
 	ExternalToolElement,
 	FileElement,
+	LearnstoreElement,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
@@ -203,6 +204,24 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			status: CopyStatusEnum.SUCCESS,
 		});
 		this.copyMap.set(original.id, copy);
+
+		return Promise.resolve();
+	}
+
+	visitLearnstoreElementAsync(learnstoreElement: LearnstoreElement): Promise<void> {
+		const copy = new LearnstoreElement({
+			id: new ObjectId().toHexString(),
+			someId: learnstoreElement.someId,
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+		this.resultMap.set(learnstoreElement.id, {
+			copyEntity: copy,
+			type: CopyElementType.LEARNSTORE_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+		});
+		this.copyMap.set(learnstoreElement.id, copy);
 
 		return Promise.resolve();
 	}
