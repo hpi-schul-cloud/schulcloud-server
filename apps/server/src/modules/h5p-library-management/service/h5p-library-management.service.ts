@@ -9,11 +9,12 @@ import {
 } from '@lumieducation/h5p-server';
 import ContentManager from '@lumieducation/h5p-server/build/src/ContentManager';
 import ContentTypeInformationRepository from '@lumieducation/h5p-server/build/src/ContentTypeInformationRepository';
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { ContentStorage, LibraryStorage } from '@src/modules/h5p-editor/service';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ContentStorage, LibraryStorage } from '@src/modules/h5p-editor';
 import { readFileSync } from 'fs';
 import { parse } from 'yaml';
 import { ConfigService } from '@nestjs/config';
+import { IHubContentType } from '@lumieducation/h5p-server/build/src/types';
 import { IH5PLibraryManagementConfig } from './h5p-library-management.config';
 
 const h5pConfig = new H5PConfig(undefined, {
@@ -26,16 +27,28 @@ interface LibrariesContentType {
 	h5p_libraries: string[];
 }
 
-function isLibrariesContentType(object: any): object is LibrariesContentType {
-	return 'h5p_libraries' in object;
+function isLibrariesContentType(object: unknown): object is LibrariesContentType {
+	const isType =
+		typeof object === 'object' &&
+		!Array.isArray(object) &&
+		object !== null &&
+		'h5p_libraries' in object &&
+		Array.isArray(object.h5p_libraries);
+
+	return isType;
 }
 
-function isUserType(object: any): object is IUser {
-	return true;
-}
+const castToLibrariesContentType = (object: unknown): LibrariesContentType => {
+	if (!isLibrariesContentType(object)) {
+		throw new InternalServerErrorException('Invalid input type for castToLibrariesContentType');
+	}
+
+	return object;
+};
 
 @Injectable()
 export class H5PLibraryManagementService {
+	// should all this prop private?
 	contentTypeCache: ContentTypeCache;
 
 	contentTypeRepo: ContentTypeInformationRepository;
@@ -66,11 +79,10 @@ export class H5PLibraryManagementService {
 		const contentManager = new ContentManager(this.contentStorage);
 		this.libraryAdministration = new LibraryAdministration(this.libraryManager, contentManager);
 		const filePath = this.configService.get<string>('H5P_EDITOR__LIBRARY_LIST_PATH');
+
 		const librariesYamlContent = readFileSync(filePath, { encoding: 'utf-8' });
-		this.libraryWishList = [];
-		if (isLibrariesContentType(parse(librariesYamlContent))) {
-			this.libraryWishList = (parse(librariesYamlContent) as LibrariesContentType).h5p_libraries;
-		}
+		const librariesContentType = castToLibrariesContentType(parse(librariesYamlContent));
+		this.libraryWishList = librariesContentType.h5p_libraries;
 	}
 
 	public async uninstallUnwantedLibraries(
@@ -95,17 +107,14 @@ export class H5PLibraryManagementService {
 		);
 	}
 
-	public async installLibraries(librariesToInstall: string[]): Promise<void> {
-		if (librariesToInstall.length === 0) {
-			return;
-		}
-		const lastPositionLibrariesToInstallArray = librariesToInstall.length - 1;
-		// avoid conflicts, install one-by-one:
-		const contentType = await this.contentTypeCache.get(librariesToInstall[lastPositionLibrariesToInstallArray]);
+	private checkContentTypeExists(contentType: IHubContentType[]): void {
 		if (contentType === undefined) {
 			throw new NotFoundException('this library does not exist');
 		}
-		const userObj = {
+	}
+
+	private createDefaultIUser(): IUser {
+		const user: IUser = {
 			canCreateRestricted: true,
 			canInstallRecommended: true,
 			canUpdateAndInstallLibraries: true,
@@ -114,11 +123,23 @@ export class H5PLibraryManagementService {
 			name: 'a',
 			type: 'local',
 		};
-		if (isUserType(userObj)) {
-			const user: IUser = userObj;
-			await this.contentTypeRepo.installContentType(librariesToInstall[lastPositionLibrariesToInstallArray], user);
-			await this.installLibraries(librariesToInstall.slice(0, lastPositionLibrariesToInstallArray));
+
+		return user;
+	}
+
+	public async installLibraries(librariesToInstall: string[]): Promise<void> {
+		if (librariesToInstall.length === 0) {
+			return;
 		}
+		const lastPositionLibrariesToInstallArray = librariesToInstall.length - 1;
+		// avoid conflicts, install one-by-one:
+		const contentType = await this.contentTypeCache.get(librariesToInstall[lastPositionLibrariesToInstallArray]);
+		this.checkContentTypeExists(contentType);
+
+		const user = this.createDefaultIUser();
+
+		await this.contentTypeRepo.installContentType(librariesToInstall[lastPositionLibrariesToInstallArray], user);
+		await this.installLibraries(librariesToInstall.slice(0, lastPositionLibrariesToInstallArray));
 	}
 
 	public async run(): Promise<void> {

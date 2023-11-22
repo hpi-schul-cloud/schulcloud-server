@@ -8,13 +8,14 @@ import { S3ClientModule } from '@infra/s3-client';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
-import { UserModule } from '../user';
-import { s3ConfigContent, s3ConfigLibraries } from '../h5p-editor/h5p-editor.config';
-import { H5PContentRepo, LibraryRepo } from '../h5p-editor/repo';
-import { ContentStorage, LibraryStorage } from '../h5p-editor/service';
-import { H5PContent, InstalledLibrary } from '../h5p-editor/entity';
-import { H5PLibraryManagementService } from './service/h5p-library-management.service';
-import { h5PLibraryManagementConfig } from './service/h5p-library-management.config';
+import { H5PEditorModule, s3ConfigContent, s3ConfigLibraries } from '@modules/h5p-editor';
+// This export is always invalid. It is not allow to export repos or entities.
+// In context of no domain object exists maybe it is ok. But i think it is not needed.
+// All this database / mikroORM Stuff is done in H5PEditorModule.
+// If yes remove exports from modules/h5p-editor/index.ts
+// import { H5PEditorModule, s3ConfigContent, s3ConfigLibraries } from '@modules/h5p-editor';
+import { H5PContent, InstalledLibrary } from '@modules/h5p-editor/entity';
+import { H5PLibraryManagementService, h5PLibraryManagementConfig } from './service';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -25,7 +26,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 const imports = [
 	ConfigModule.forRoot(createConfigModuleOptions(h5PLibraryManagementConfig)),
 	CoreModule,
-	UserModule,
+	H5PEditorModule,
 	RabbitMQWrapperModule,
 	MikroOrmModule.forRoot({
 		...defaultMikroOrmOptions,
@@ -34,7 +35,7 @@ const imports = [
 		clientUrl: DB_URL,
 		password: DB_PASSWORD,
 		user: DB_USERNAME,
-		allowGlobalContext: true,
+		// allowGlobalContext: true, Please not
 		entities: [...ALL_ENTITIES, H5PContent, InstalledLibrary],
 	}),
 	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),
@@ -42,13 +43,12 @@ const imports = [
 
 const controllers = [];
 
-const providers = [Logger, H5PLibraryManagementService, ContentStorage, H5PContentRepo, LibraryRepo, LibraryStorage];
+const providers = [Logger, H5PLibraryManagementService];
 
 @Module({
 	imports,
 	controllers,
 	providers,
-	exports: [H5PLibraryManagementService],
+	exports: [],
 })
 export class H5PLibraryManagementModule {}
-export { H5PLibraryManagementService };
