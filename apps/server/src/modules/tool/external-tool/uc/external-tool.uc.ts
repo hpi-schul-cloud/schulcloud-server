@@ -1,13 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions, Page, Permission, User } from '@shared/domain';
 import { AuthorizationService } from '@modules/authorization';
+import { Injectable } from '@nestjs/common';
+import { EntityId, IFindOptions, Permission, User } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalTool, ExternalToolConfig, ExternalToolMetadata } from '../domain';
 import {
 	ExternalToolLogoService,
+	ExternalToolMetadataService,
 	ExternalToolService,
 	ExternalToolValidationService,
-	ExternalToolMetadataService,
 } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
 

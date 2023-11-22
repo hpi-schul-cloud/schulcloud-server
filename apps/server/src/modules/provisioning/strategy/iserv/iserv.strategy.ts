@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo, RoleName, RoleReference, User, UserDO } from '@shared/domain';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { UserService } from '@modules/user';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthSSOError } from '@modules/oauth/loggable';
+import { UserService } from '@modules/user';
+import { Injectable } from '@nestjs/common';
+import { RoleName, User } from '@shared/domain';
+import { LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import {
 	ExternalSchoolDto,
 	ExternalUserDto,

@@ -1,15 +1,15 @@
+import { Action, AuthorizationService } from '@modules/authorization';
 import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { EntityId } from '@shared/domain';
 import {
 	AnyBoardDo,
 	AnyContentElementDo,
-	EntityId,
 	isSubmissionContainerElement,
 	isSubmissionItem,
 	SubmissionItem,
 	UserRoleEnum,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
 import { Logger } from '@src/core/logger';
-import { AuthorizationService, Action } from '@modules/authorization';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { SubmissionItemService } from '../service/submission-item.service';

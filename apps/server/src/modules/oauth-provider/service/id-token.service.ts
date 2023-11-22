@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { LtiToolDO, Pseudonym, TeamEntity, UserDO } from '@shared/domain';
-import { TeamsRepo } from '@shared/repo';
 import { PseudonymService } from '@modules/pseudonym';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { UserService } from '@modules/user';
+import { Injectable } from '@nestjs/common';
+import { TeamEntity } from '@shared/domain';
+import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { TeamsRepo } from '@shared/repo';
 import { IdTokenCreationLoggableException } from '../error/id-token-creation-exception.loggable';
 import { GroupNameIdTuple, IdToken, OauthScope } from '../interface';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';

@@ -3,10 +3,10 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Injectable } from '@nestjs/common';
+import { BoardNode } from '@shared/domain/';
 import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
-	BoardNode,
 	Card,
 	Column,
 	ColumnBoard,
@@ -15,7 +15,7 @@ import {
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 
 @Injectable()

@@ -1,6 +1,7 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { EntityId, Permission, User, UserLoginMigrationDO } from '@shared/domain';
+import { EntityId, Permission, User } from '@shared/domain';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { UserLoginMigrationNotFoundLoggableException } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationRevertService, UserLoginMigrationService } from '../service';
 

@@ -1,6 +1,3 @@
-import { Injectable } from '@nestjs/common';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Course, EntityId, Pseudonym, RoleName, RoleReference, UserDO } from '@shared/domain';
 import { CourseService } from '@modules/learnroom/service';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
@@ -10,6 +7,10 @@ import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { UserService } from '@modules/user';
+import { Injectable } from '@nestjs/common';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { Course, EntityId, RoleName } from '@shared/domain';
+import { Pseudonym, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { PseudonymService } from './pseudonym.service';
 
 interface UserMetdata {

@@ -1,14 +1,8 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import {
-	EntityId,
-	LegacySchoolDo,
-	SchoolEntity,
-	SchoolProperties,
-	SystemEntity,
-	UserLoginMigrationEntity,
-} from '@shared/domain';
+import { EntityId, SchoolEntity, SchoolProperties, SystemEntity, UserLoginMigrationEntity } from '@shared/domain';
+import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { LegacyLogger } from '@src/core/logger';
 import { BaseDORepo } from '../base.do.repo';
 

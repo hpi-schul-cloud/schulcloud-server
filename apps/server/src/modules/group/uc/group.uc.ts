@@ -7,14 +7,15 @@ import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { SystemDto, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, Page, Permission, SchoolYearEntity, SortOrder, User, UserDO } from '@shared/domain';
+import { EntityId, Permission, SchoolYearEntity, SortOrder, User } from '@shared/domain';
+import { LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
+import { SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupUser } from '../domain';
+import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { SortHelper } from '../util';
 import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from './dto';
 import { GroupUcMapper } from './mapper/group-uc.mapper';
-import { SchoolYearQueryType } from '../controller/dto/interface';
-import { UnknownQueryTypeLoggableException } from '../loggable';
 
 @Injectable()
 export class GroupUc {

@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo, UserDO } from '@shared/domain';
+import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { OauthDataDto, ProvisioningDto } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
 import { OidcProvisioningService } from './service/oidc-provisioning.service';

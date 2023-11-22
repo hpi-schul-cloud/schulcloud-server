@@ -1,4 +1,5 @@
-import { LegacySchoolDo, RoleName, UserDO } from '@shared/domain';
+import { RoleName } from '@shared/domain';
+import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { ExternalSchoolDto, ExternalUserDto } from '../../dto';
 
 export class IservMapper {

@@ -12,7 +12,6 @@ import {
 	IFindOptions,
 	IImportUserScope,
 	ImportUser,
-	LegacySchoolDo,
 	MatchCreator,
 	MatchCreatorScope,
 	NameMatch,
@@ -21,6 +20,7 @@ import {
 	SystemEntity,
 	User,
 } from '@shared/domain';
+import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { AccountSaveDto } from '../../account/services/dto';

@@ -1,30 +1,32 @@
 import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import {
-	AnyBoardDo,
-	BoardCompositeVisitor,
 	BoardNode,
-	Card,
 	CardNode,
-	Column,
-	ColumnBoard,
 	ColumnBoardNode,
 	ColumnNode,
 	EntityId,
-	ExternalToolElement,
 	ExternalToolElementNodeEntity,
-	FileElement,
 	FileElementNode,
-	RichTextElement,
 	RichTextElementNode,
-	SubmissionContainerElement,
 	SubmissionContainerElementNode,
-	SubmissionItem,
 	SubmissionItemNode,
 } from '@shared/domain';
+import {
+	AnyBoardDo,
+	BoardCompositeVisitor,
+	Card,
+	Column,
+	ColumnBoard,
+	ExternalToolElement,
+	FileElement,
+	RichTextElement,
+	SubmissionContainerElement,
+	SubmissionItem,
+} from '@shared/domain/domainobject';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { LinkElementNode } from '@shared/domain/entity/boardnode/link-element-node.entity';
-import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { BoardNodeRepo } from './board-node.repo';
 
 type ParentData = {

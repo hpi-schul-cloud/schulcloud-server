@@ -1,7 +1,8 @@
+import { Action, AuthorizationService } from '@modules/authorization';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { AnyBoardDo, AnyContentElementDo, Card, ContentElementType, EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain';
+import { AnyBoardDo, AnyContentElementDo, Card, ContentElementType } from '@shared/domain/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService, Action } from '@modules/authorization';
 import { BoardDoAuthorizableService, CardService, ContentElementService } from '../service';
 import { BaseUc } from './base.uc';
 

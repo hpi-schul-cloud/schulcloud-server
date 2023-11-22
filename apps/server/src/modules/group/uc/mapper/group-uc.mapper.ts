@@ -1,6 +1,7 @@
 import { Class } from '@modules/class/domain';
 import { SystemDto } from '@modules/system';
-import { RoleName, SchoolYearEntity, UserDO } from '@shared/domain';
+import { RoleName, SchoolYearEntity } from '@shared/domain';
+import { UserDO } from '@shared/domain/domainobject';
 import { Group } from '../../domain';
 import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../dto';
 import { ClassRootType } from '../dto/class-root-type';

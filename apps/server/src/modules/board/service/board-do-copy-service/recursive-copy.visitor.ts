@@ -1,19 +1,19 @@
+import { FileRecordParentType } from '@infra/rabbitmq';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { EntityId } from '@shared/domain';
 import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
 	Card,
 	Column,
 	ColumnBoard,
-	EntityId,
 	ExternalToolElement,
 	FileElement,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
-import { FileRecordParentType } from '@infra/rabbitmq';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ObjectId } from 'bson';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 

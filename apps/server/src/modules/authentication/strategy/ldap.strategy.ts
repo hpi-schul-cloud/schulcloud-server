@@ -1,7 +1,8 @@
 import { AccountDto } from '@modules/account/services/dto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { LegacySchoolDo, SystemEntity, User } from '@shared/domain';
+import { SystemEntity, User } from '@shared/domain';
+import { LegacySchoolDo } from '@shared/domain/domainobject/legacy-school.do';
 import { LegacySchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { ErrorLoggable } from '@src/core/error/loggable/error.loggable';
 import { Logger } from '@src/core/logger';

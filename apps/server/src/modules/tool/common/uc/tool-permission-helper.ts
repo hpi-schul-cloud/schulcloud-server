@@ -4,7 +4,8 @@ import { BoardDoAuthorizableService, ContentElementService } from '@modules/boar
 import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { BoardDoAuthorizable, Course, EntityId, LegacySchoolDo, User } from '@shared/domain';
+import { Course, EntityId, User } from '@shared/domain';
+import { BoardDoAuthorizable, LegacySchoolDo } from '@shared/domain/domainobject';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ToolContextType } from '../enum';

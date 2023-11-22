@@ -9,16 +9,13 @@ import {
 	EntityId,
 	Permission,
 	RoleName,
-	RoleReference,
 	SchoolFeatures,
 	TeamEntity,
 	TeamUserEntity,
 	User,
-	UserDO,
-	VideoConferenceDO,
-	VideoConferenceOptionsDO,
 	VideoConferenceScope,
 } from '@shared/domain';
+import { RoleReference, UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';

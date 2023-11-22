@@ -12,9 +12,9 @@ import type {
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 } from '@shared/domain';
+import { BoardNodeType } from '@shared/domain';
 import {
 	AnyBoardDo,
-	BoardNodeType,
 	Card,
 	Column,
 	ColumnBoard,
@@ -24,7 +24,7 @@ import {
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};

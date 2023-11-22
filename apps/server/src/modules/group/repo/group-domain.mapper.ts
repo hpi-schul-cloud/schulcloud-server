@@ -1,5 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExternalSource, ExternalSourceEntity, Role, SchoolEntity, SystemEntity, User } from '@shared/domain';
+import { ExternalSourceEntity, Role, SchoolEntity, SystemEntity, User } from '@shared/domain';
+import { ExternalSource } from '@shared/domain/domainobject';
 import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupUserEntity, GroupValidPeriodEntity } from '../entity';
 

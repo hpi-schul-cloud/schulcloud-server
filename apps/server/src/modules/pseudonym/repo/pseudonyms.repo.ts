@@ -1,9 +1,8 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common';
-import { EntityId, Pseudonym } from '@shared/domain';
+import { EntityId } from '@shared/domain';
+import { Pseudonym } from '@shared/domain/domainobject';
 import { PseudonymEntity, PseudonymEntityProps } from '../entity';
 
-@Injectable()
 export class PseudonymsRepo {
 	constructor(private readonly em: EntityManager) {}
 
