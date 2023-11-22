@@ -650,4 +650,30 @@ describe('ExternalToolConfigurationUc', () => {
 			});
 		});
 	});
+
+	describe('getToolContextTypes', () => {
+		describe('when it is called', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+
+				return { userId };
+			};
+
+			it('should check Permission', async () => {
+				const { userId } = setup();
+
+				await uc.getToolContextTypes(userId);
+
+				expect(toolPermissionHelper.ensurePermission).toHaveBeenCalledWith(userId, 'TOOL_ADMIN');
+			});
+
+			it('should get context types', async () => {
+				const { userId } = setup();
+
+				await uc.getToolContextTypes(userId);
+
+				expect(contextExternalToolService.getToolContextTypes).toHaveBeenCalled();
+			});
+		});
+	});
 });

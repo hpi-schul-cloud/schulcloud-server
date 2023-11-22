@@ -16,7 +16,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@modules/server';
-import { CustomParameterTypeParams } from '@modules/tool/common/enum';
+import { CustomParameterTypeParams, ToolContextType } from '@modules/tool/common/enum';
 import { Response } from 'supertest';
 import { CustomParameterLocationParams, CustomParameterScopeTypeParams } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
@@ -633,7 +633,52 @@ describe('ToolConfigurationController (API)', () => {
 				const response: Response = await loggedInClient.get(
 					`context-external-tools/${contextExternalTool.id}/configuration-template`
 				);
+
 				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+			});
+		});
+	});
+
+	describe('GET tools/context-types', () => {
+		describe('when user is not authorized', () => {
+			const setup = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+				await em.persistAndFlush([teacherAccount, teacherUser]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient };
+			};
+
+			it('should return unauthorized status', async () => {
+				const { loggedInClient } = await setup();
+
+				const response = await loggedInClient.get('context-types');
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user is authorized', () => {
+			const setup = async () => {
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
+
+				await em.persistAndFlush([adminAccount, adminUser]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
+				return { loggedInClient };
+			};
+
+			it('should return all context types', async () => {
+				const { loggedInClient } = await setup();
+
+				const response = await loggedInClient.get('context-types');
+
+				expect(response.body).toEqual({ data: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT] });
 			});
 		});
 	});

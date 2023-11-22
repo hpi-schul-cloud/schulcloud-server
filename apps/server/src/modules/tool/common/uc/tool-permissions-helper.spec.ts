@@ -247,4 +247,24 @@ describe('ToolPermissionHelper', () => {
 			});
 		});
 	});
+
+	describe('ensurePermission', () => {
+		describe('when it is called', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				return {
+					user,
+				};
+			};
+
+			it('should check permissions', async () => {
+				const { user } = setup();
+
+				await helper.ensurePermission(user.id, Permission.TOOL_ADMIN);
+			});
+		});
+	});
 });

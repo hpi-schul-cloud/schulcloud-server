@@ -12,6 +12,7 @@ import { ToolContextType } from '../../common/enum';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextExternalTool, ContextRef } from '../domain';
 import { ContextExternalToolService } from './context-external-tool.service';
+import { ToolContextTypesList } from '../../external-tool/controller/dto/response/tool-context-types-list';
 
 describe('ContextExternalToolService', () => {
 	let module: TestingModule;
@@ -213,6 +214,16 @@ describe('ContextExternalToolService', () => {
 				const result: ContextExternalTool[] = await service.findAllByContext(contextExternalTool.contextRef);
 
 				expect(result).toEqual([contextExternalTool]);
+			});
+		});
+	});
+
+	describe('getToolContextTypes', () => {
+		describe('when it is called', () => {
+			it('should return ToolContextTypes', () => {
+				const types: ToolContextTypesList = service.getToolContextTypes();
+
+				expect(types).toEqual({ data: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT] });
 			});
 		});
 	});
