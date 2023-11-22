@@ -1,9 +1,9 @@
 import { GetFile, S3ClientAdapter } from '@infra/s3-client';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { subClass } from 'gm';
 import { PassThrough } from 'stream';
-import { PreviewFileOptions, PreviewOptions, PreviewResponseMessage } from './interface';
+import { PreviewFileOptions, PreviewInputMimeTypes, PreviewOptions, PreviewResponseMessage } from './interface';
 import { PreviewActionsLoggable } from './loggable/preview-actions.loggable';
 import { PreviewGeneratorBuilder } from './preview-generator.builder';
 
@@ -20,6 +20,9 @@ export class PreviewGeneratorService {
 		const { originFilePath, previewFilePath, previewOptions } = params;
 
 		const original = await this.downloadOriginFile(originFilePath);
+
+		this.checkIfPreviewPossible(original, params);
+
 		const preview = this.resizeAndConvert(original, previewOptions);
 
 		const file = PreviewGeneratorBuilder.buildFile(preview, params.previewOptions);
@@ -34,6 +37,16 @@ export class PreviewGeneratorService {
 		};
 	}
 
+	private checkIfPreviewPossible(original: GetFile, params: PreviewFileOptions): void | UnprocessableEntityException {
+		const isPreviewPossible =
+			original.contentType && Object.values<string>(PreviewInputMimeTypes).includes(original.contentType);
+
+		if (!isPreviewPossible) {
+			this.logger.warning(new PreviewActionsLoggable('PreviewGeneratorService.previewNotPossible', params));
+			throw new UnprocessableEntityException();
+		}
+	}
+
 	private async downloadOriginFile(pathToFile: string): Promise<GetFile> {
 		const file = await this.storageClient.get(pathToFile);
 
@@ -44,6 +57,10 @@ export class PreviewGeneratorService {
 		const { format, width } = previewParams;
 
 		const preview = this.imageMagick(original.data);
+
+		if (original.contentType === PreviewInputMimeTypes.APPLICATION_PDF) {
+			preview.selectFrame(0);
+		}
 
 		if (width) {
 			preview.resize(width, undefined, '>');
