@@ -3,6 +3,7 @@ import type { ColumnBoard } from '../column-board.do';
 import type { Column } from '../column.do';
 import type { ExternalToolElement } from '../external-tool-element.do';
 import type { FileElement } from '../file-element.do';
+import { LearnstoreElement } from '../learnstore-element.do';
 import type { LinkElement } from '../link-element.do';
 import type { RichTextElement } from '../rich-text-element.do';
 import type { SubmissionContainerElement } from '../submission-container-element.do';
@@ -18,6 +19,7 @@ export interface BoardCompositeVisitor {
 	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void;
 	visitSubmissionItem(submissionItem: SubmissionItem): void;
 	visitExternalToolElement(externalToolElement: ExternalToolElement): void;
+	visitLearnstoreElement(learnstoreElement: LearnstoreElement): void;
 }
 
 export interface BoardCompositeVisitorAsync {
@@ -30,4 +32,5 @@ export interface BoardCompositeVisitorAsync {
 	visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void>;
 	visitSubmissionItemAsync(submissionItem: SubmissionItem): Promise<void>;
 	visitExternalToolElementAsync(externalToolElement: ExternalToolElement): Promise<void>;
+	visitLearnstoreElementAsync(learnstoreElement: LearnstoreElement): Promise<void>;
 }

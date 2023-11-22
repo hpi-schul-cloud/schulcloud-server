@@ -8,4 +8,5 @@ export enum BoardNodeType {
 	SUBMISSION_CONTAINER_ELEMENT = 'submission-container-element',
 	SUBMISSION_ITEM = 'submission-item',
 	EXTERNAL_TOOL = 'external-tool',
+	LEARNSTORE = 'learnstore',
 }

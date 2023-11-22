@@ -15,6 +15,8 @@ import {
 	ExternalToolElementNodeEntity,
 	FileElement,
 	FileElementNode,
+	LearnstoreElement,
+	LearnstoreElementNodeEntity,
 	RichTextElement,
 	RichTextElementNode,
 	SubmissionContainerElement,
@@ -176,6 +178,20 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 
 		this.createOrUpdateBoardNode(boardNode);
 		this.visitChildren(externalToolElement, boardNode);
+	}
+
+	visitLearnstoreElement(learnstoreElement: LearnstoreElement): void {
+		const parentData: ParentData | undefined = this.parentsMap.get(learnstoreElement.id);
+
+		const boardNode: LearnstoreElementNodeEntity = new LearnstoreElementNodeEntity({
+			id: learnstoreElement.id,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+			someId: learnstoreElement.someId,
+		});
+
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(learnstoreElement, boardNode);
 	}
 
 	private visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {

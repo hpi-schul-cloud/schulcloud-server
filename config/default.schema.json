@@ -1302,6 +1302,11 @@
 			"default": false,
 			"description": "Enables external tools on the column board"
 		},
+		"FEATURE_COLUMN_BOARD_LEARN_STORE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables learnstore on the column board"
+		},
 		"CTL_TOOLS": {
 			"type": "object",
 			"description": "CTL Tools properties",

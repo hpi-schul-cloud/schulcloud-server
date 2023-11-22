@@ -20,6 +20,8 @@ import {
 	ColumnBoard,
 	ExternalToolElement,
 	FileElement,
+	LearnstoreElement,
+	LearnstoreElementNodeEntity,
 	LinkElement,
 	RichTextElement,
 	SubmissionContainerElement,
@@ -181,6 +183,20 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 			contextExternalToolId: boardNode.contextExternalTool?.id,
+		});
+
+		return element;
+	}
+
+	buildLearnstoreElement(boardNode: LearnstoreElementNodeEntity): LearnstoreElement {
+		this.ensureLeafNode(boardNode);
+
+		const element: LearnstoreElement = new LearnstoreElement({
+			id: boardNode.id,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+			someId: boardNode.someId,
 		});
 
 		return element;

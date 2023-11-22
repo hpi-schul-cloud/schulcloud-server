@@ -116,12 +116,29 @@ export class ExternalToolElementContentBody extends ElementContentBody {
 	content!: ExternalToolContentBody;
 }
 
+export class LearnstoreContentBody {
+	@IsMongoId()
+	@IsOptional()
+	@ApiPropertyOptional()
+	contextExternalToolId?: string;
+}
+
+export class LearnstoreElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.LEARNSTORE })
+	type!: ContentElementType.LEARNSTORE;
+
+	@ValidateNested()
+	@ApiProperty()
+	content!: LearnstoreContentBody;
+}
+
 export type AnyElementContentBody =
 	| FileContentBody
 	| LinkContentBody
 	| RichTextContentBody
 	| SubmissionContainerContentBody
-	| ExternalToolContentBody;
+	| ExternalToolContentBody
+	| LearnstoreContentBody;
 
 export class UpdateElementContentBodyParams {
 	@ValidateNested()
@@ -134,6 +151,7 @@ export class UpdateElementContentBodyParams {
 				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
 				{ value: SubmissionContainerElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
 				{ value: ExternalToolElementContentBody, name: ContentElementType.EXTERNAL_TOOL },
+				{ value: LearnstoreElementContentBody, name: ContentElementType.LEARNSTORE },
 			],
 		},
 		keepDiscriminatorProperty: true,
@@ -145,6 +163,7 @@ export class UpdateElementContentBodyParams {
 			{ $ref: getSchemaPath(RichTextElementContentBody) },
 			{ $ref: getSchemaPath(SubmissionContainerElementContentBody) },
 			{ $ref: getSchemaPath(ExternalToolElementContentBody) },
+			{ $ref: getSchemaPath(LearnstoreElementContentBody) },
 		],
 	})
 	data!:
@@ -152,5 +171,6 @@ export class UpdateElementContentBodyParams {
 		| LinkElementContentBody
 		| RichTextElementContentBody
 		| SubmissionContainerElementContentBody
-		| ExternalToolElementContentBody;
+		| ExternalToolElementContentBody
+		| LearnstoreElementContentBody;
 }

@@ -12,6 +12,7 @@ import {
 	ColumnBoard,
 	ExternalToolElement,
 	FileElement,
+	LearnstoreElement,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
@@ -81,6 +82,13 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 		this.deleteNode(externalToolElement);
 
 		await this.visitChildrenAsync(externalToolElement);
+	}
+
+	async visitLearnstoreElementAsync(learnstoreElement: LearnstoreElement): Promise<void> {
+		// TODO: delete learnstore reference
+		this.deleteNode(learnstoreElement);
+
+		await this.visitChildrenAsync(learnstoreElement);
 	}
 
 	deleteNode(domainObject: AnyBoardDo): void {

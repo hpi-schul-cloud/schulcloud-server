@@ -4,4 +4,5 @@ export enum ContentElementType {
 	RICH_TEXT = 'richText',
 	SUBMISSION_CONTAINER = 'submissionContainer',
 	EXTERNAL_TOOL = 'externalTool',
+	LEARNSTORE = 'learnstore',
 }

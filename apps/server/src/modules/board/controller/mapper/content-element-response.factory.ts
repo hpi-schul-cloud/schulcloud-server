@@ -10,6 +10,7 @@ import {
 import { BaseResponseMapper } from './base-mapper.interface';
 import { ExternalToolElementResponseMapper } from './external-tool-element-response.mapper';
 import { FileElementResponseMapper } from './file-element-response.mapper';
+import { LearnStoreElementResponseMapper } from './learn-store-element-response.mapper';
 import { LinkElementResponseMapper } from './link-element-response.mapper';
 import { RichTextElementResponseMapper } from './rich-text-element-response.mapper';
 import { SubmissionContainerElementResponseMapper } from './submission-container-element-response.mapper';
@@ -21,6 +22,7 @@ export class ContentElementResponseFactory {
 		RichTextElementResponseMapper.getInstance(),
 		SubmissionContainerElementResponseMapper.getInstance(),
 		ExternalToolElementResponseMapper.getInstance(),
+		LearnStoreElementResponseMapper.getInstance(),
 	];
 
 	static mapToResponse(element: AnyBoardDo): AnyContentElementResponse {

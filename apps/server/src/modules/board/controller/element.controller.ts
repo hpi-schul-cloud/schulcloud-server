@@ -13,8 +13,7 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { CardUc } from '../uc';
-import { ElementUc } from '../uc/element.uc';
+import { CardUc, ElementUc } from '../uc';
 import {
 	AnyContentElementResponse,
 	ContentElementUrlParams,
@@ -23,6 +22,8 @@ import {
 	ExternalToolElementResponse,
 	FileElementContentBody,
 	FileElementResponse,
+	LearnstoreElementContentBody,
+	LearnstoreElementResponse,
 	LinkElementContentBody,
 	LinkElementResponse,
 	MoveContentElementBody,
@@ -67,7 +68,8 @@ export class ElementController {
 		RichTextElementContentBody,
 		SubmissionContainerElementContentBody,
 		ExternalToolElementContentBody,
-		LinkElementContentBody
+		LinkElementContentBody,
+		LearnstoreElementContentBody
 	)
 	@ApiResponse({
 		status: 201,
@@ -78,6 +80,7 @@ export class ElementController {
 				{ $ref: getSchemaPath(LinkElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
+				{ $ref: getSchemaPath(LearnstoreElementResponse) },
 			],
 		},
 	})

@@ -24,6 +24,7 @@ import {
 	CreateContentElementBodyParams,
 	ExternalToolElementResponse,
 	FileElementResponse,
+	LearnstoreElementResponse,
 	LinkElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
@@ -116,6 +117,7 @@ export class CardController {
 
 	@ApiOperation({ summary: 'Create a new element on a card.' })
 	@ApiExtraModels(
+		LearnstoreElementResponse,
 		ExternalToolElementResponse,
 		FileElementResponse,
 		LinkElementResponse,
@@ -126,6 +128,7 @@ export class CardController {
 		status: 201,
 		schema: {
 			oneOf: [
+				{ $ref: getSchemaPath(LearnstoreElementResponse) },
 				{ $ref: getSchemaPath(ExternalToolElementResponse) },
 				{ $ref: getSchemaPath(FileElementResponse) },
 				{ $ref: getSchemaPath(LinkElementResponse) },
