@@ -29,11 +29,11 @@ export class DeletionClient {
 	}
 
 	async queueDeletionRequest(input: DeletionRequestInput): Promise<DeletionRequestOutput> {
-		const request = this.httpService.post(this.postDeletionRequestsEndpoint, input, this.defaultHeaders());
-
 		let resp: AxiosResponse<DeletionRequestOutput>;
 
 		try {
+			const request = this.httpService.post(this.postDeletionRequestsEndpoint, input, this.defaultHeaders());
+
 			resp = (await firstValueFrom(request)) as AxiosResponse<DeletionRequestOutput>;
 		} catch (err: unknown) {
 			// Throw an error if sending deletion request has failed.
@@ -75,11 +75,11 @@ export class DeletionClient {
 			requestConfig = { ...this.defaultHeaders() };
 		}
 
-		const request = this.httpService.post(this.postDeletionExecutionsEndpoint, null, requestConfig);
-
 		let resp: AxiosResponse;
 
 		try {
+			const request = this.httpService.post(this.postDeletionExecutionsEndpoint, null, requestConfig);
+
 			resp = await firstValueFrom(request);
 		} catch (err: unknown) {
 			// Throw an error if sending deletion request(s) execution trigger has failed.

@@ -1,4 +1,4 @@
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { AxiosResponse } from 'axios';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
@@ -51,6 +51,23 @@ describe(DeletionClient.name, () => {
 	});
 
 	describe('queueDeletionRequest', () => {
+		describe('when sending the HTTP request failed', () => {
+			const setup = () => {
+				const input = DeletionRequestInputBuilder.build('user', '652f1625e9bc1a13bdaae48b');
+
+				const error = new Error('unknown error');
+				httpService.post.mockReturnValueOnce(throwError(() => error));
+
+				return { input };
+			};
+
+			it('should catch and throw an error', async () => {
+				const { input } = setup();
+
+				await expect(client.queueDeletionRequest(input)).rejects.toThrow(Error);
+			});
+		});
+
 		describe('when received valid response with expected HTTP status code', () => {
 			const setup = () => {
 				const input = DeletionRequestInputBuilder.build('user', '652f1625e9bc1a13bdaae48b');
@@ -153,6 +170,19 @@ describe(DeletionClient.name, () => {
 	});
 
 	describe('executeDeletions', () => {
+		describe('when sending the HTTP request failed', () => {
+			const setup = () => {
+				const error = new Error('unknown error');
+				httpService.post.mockReturnValueOnce(throwError(() => error));
+			};
+
+			it('should catch and throw an error', async () => {
+				setup();
+
+				await expect(client.executeDeletions()).rejects.toThrow(Error);
+			});
+		});
+
 		describe('when received valid response with expected HTTP status code', () => {
 			const setup = () => {
 				const limit = 10;
