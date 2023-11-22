@@ -1,10 +1,10 @@
-import { firstValueFrom } from 'rxjs';
-import { AxiosResponse } from 'axios';
-import { Injectable, BadGatewayException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { BadGatewayException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ErrorUtils } from '@src/core/error/utils';
-import { DeletionRequestInput, DeletionRequestOutput, DeletionClientConfig } from './interface';
+import { AxiosResponse } from 'axios';
+import { firstValueFrom } from 'rxjs';
+import { DeletionClientConfig, DeletionRequestInput, DeletionRequestOutput } from './interface';
 
 @Injectable()
 export class DeletionClient {
@@ -29,41 +29,37 @@ export class DeletionClient {
 	}
 
 	async queueDeletionRequest(input: DeletionRequestInput): Promise<DeletionRequestOutput> {
-		let resp: AxiosResponse<DeletionRequestOutput>;
-
 		try {
-			const request = this.httpService.post(this.postDeletionRequestsEndpoint, input, this.defaultHeaders());
+			const request = this.httpService.post<DeletionRequestOutput>(
+				this.postDeletionRequestsEndpoint,
+				input,
+				this.defaultHeaders()
+			);
 
-			resp = (await firstValueFrom(request)) as AxiosResponse<DeletionRequestOutput>;
-		} catch (err: unknown) {
+			const resp = await firstValueFrom(request);
+
+			// Throw an error if any other status code (other than expected "202 Accepted" is returned).
+			if (resp.status !== 202) {
+				throw new Error(`invalid HTTP status code in a response from the server - ${resp.status} instead of 202`);
+			}
+
+			// Throw an error if server didn't return a requestId in a response (and it is
+			// required as it gives client the reference to the created deletion request).
+			if (!resp.data.requestId) {
+				throw new Error('no valid requestId returned from the server');
+			}
+
+			// Throw an error if server didn't return a deletionPlannedAt timestamp so the user
+			// will not be aware after which date the deletion request's execution will begin.
+			if (!resp.data.deletionPlannedAt) {
+				throw Error('no valid deletionPlannedAt returned from the server');
+			}
+
+			return resp.data;
+		} catch (err) {
 			// Throw an error if sending deletion request has failed.
 			throw new BadGatewayException('DeletionClient:queueDeletionRequest', ErrorUtils.createHttpExceptionOptions(err));
 		}
-
-		// Throw an error if any other status code (other than expected "202 Accepted" is returned).
-		if (resp.status !== 202) {
-			const err = new Error(`invalid HTTP status code in a response from the server - ${resp.status} instead of 202`);
-
-			throw new BadGatewayException('DeletionClient:queueDeletionRequest', ErrorUtils.createHttpExceptionOptions(err));
-		}
-
-		// Throw an error if server didn't return a requestId in a response (and it is
-		// required as it gives client the reference to the created deletion request).
-		if (!resp.data.requestId) {
-			const err = new Error('no valid requestId returned from the server');
-
-			throw new BadGatewayException('DeletionClient:queueDeletionRequest', ErrorUtils.createHttpExceptionOptions(err));
-		}
-
-		// Throw an error if server didn't return a deletionPlannedAt timestamp so the user
-		// will not be aware after which date the deletion request's execution will begin.
-		if (!resp.data.deletionPlannedAt) {
-			const err = Error('no valid deletionPlannedAt returned from the server');
-
-			throw new BadGatewayException('DeletionClient:queueDeletionRequest', ErrorUtils.createHttpExceptionOptions(err));
-		}
-
-		return resp.data;
 	}
 
 	async executeDeletions(limit?: number): Promise<void> {
