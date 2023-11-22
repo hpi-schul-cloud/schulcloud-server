@@ -1,32 +1,32 @@
-import { ISubmissionProperties, Submission } from '@shared/domain';
+import { Submission, SubmissionProperties } from '@shared/domain';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 import { schoolFactory } from './school.factory';
 import { taskFactory } from './task.factory';
 import { userFactory } from './user.factory';
 
-class SubmissionFactory extends BaseFactory<Submission, ISubmissionProperties> {
+class SubmissionFactory extends BaseFactory<Submission, SubmissionProperties> {
 	graded(): this {
-		const params: DeepPartial<ISubmissionProperties> = { graded: true };
+		const params: DeepPartial<SubmissionProperties> = { graded: true };
 
 		return this.params(params);
 	}
 
 	submitted(): this {
-		const params: DeepPartial<ISubmissionProperties> = { submitted: true };
+		const params: DeepPartial<SubmissionProperties> = { submitted: true };
 
 		return this.params(params);
 	}
 
 	studentWithId(): this {
-		const params: DeepPartial<ISubmissionProperties> = { student: userFactory.buildWithId() };
+		const params: DeepPartial<SubmissionProperties> = { student: userFactory.buildWithId() };
 
 		return this.params(params);
 	}
 
 	teamMembersWithId(numberOfTeamMembers: number): this {
 		const teamMembers = userFactory.buildListWithId(numberOfTeamMembers);
-		const params: DeepPartial<ISubmissionProperties> = { teamMembers };
+		const params: DeepPartial<SubmissionProperties> = { teamMembers };
 
 		return this.params(params);
 	}

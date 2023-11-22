@@ -17,9 +17,9 @@ import { ToolStatusOutdatedLoggableException } from '../error';
 import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import {
 	BasicToolLaunchStrategy,
-	IToolLaunchParams,
 	Lti11ToolLaunchStrategy,
 	OAuth2ToolLaunchStrategy,
+	ToolLaunchParams,
 } from './launch-strategy';
 import { ToolLaunchService } from './tool-launch.service';
 import { ToolVersionService } from '../../context-external-tool/service/tool-version-service';
@@ -98,7 +98,7 @@ describe('ToolLaunchService', () => {
 					openNewTab: false,
 				});
 
-				const launchParams: IToolLaunchParams = {
+				const launchParams: ToolLaunchParams = {
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
@@ -165,7 +165,7 @@ describe('ToolLaunchService', () => {
 				const externalTool: ExternalTool = externalToolFactory.build();
 				externalTool.config.type = 'unknown' as ToolConfigType;
 
-				const launchParams: IToolLaunchParams = {
+				const launchParams: ToolLaunchParams = {
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
@@ -207,7 +207,7 @@ describe('ToolLaunchService', () => {
 					openNewTab: false,
 				});
 
-				const launchParams: IToolLaunchParams = {
+				const launchParams: ToolLaunchParams = {
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,

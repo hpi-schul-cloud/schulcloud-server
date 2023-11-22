@@ -1,15 +1,15 @@
+import { OauthProviderService } from '@infra/oauth-provider';
 import {
 	AcceptConsentRequestBody,
 	ProviderConsentResponse,
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '@infra/oauth-provider/dto';
-import { AcceptQuery, ConsentRequestBody } from '@modules/oauth-provider/controller/dto';
 import { ICurrentUser } from '@modules/authentication';
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { IdTokenService } from '@modules/oauth-provider/service/id-token.service';
-import { OauthProviderService } from '@infra/oauth-provider';
+import { AcceptQuery, ConsentRequestBody } from '@modules/oauth-provider/controller/dto';
 import { IdToken } from '@modules/oauth-provider/interface/id-token';
+import { IdTokenService } from '@modules/oauth-provider/service/id-token.service';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class OauthProviderConsentFlowUc {

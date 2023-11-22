@@ -1,4 +1,8 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountDto } from '@modules/account/services/dto/account.dto';
+import { AuthorizationService } from '@modules/authorization';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import {
@@ -8,10 +12,10 @@ import {
 	IFindOptions,
 	IImportUserScope,
 	ImportUser,
-	INameMatch,
 	LegacySchoolDo,
 	MatchCreator,
 	MatchCreatorScope,
+	NameMatch,
 	Permission,
 	SchoolFeatures,
 	SystemEntity,
@@ -19,10 +23,6 @@ import {
 } from '@shared/domain';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountDto } from '@modules/account/services/dto/account.dto';
-import { AuthorizationService } from '@modules/authorization';
-import { LegacySchoolService } from '@modules/legacy-school';
 import { AccountSaveDto } from '../../account/services/dto';
 import {
 	MigrationMayBeCompleted,
@@ -164,7 +164,7 @@ export class UserImportUc {
 	 */
 	async findAllUnmatchedUsers(
 		currentUserId: EntityId,
-		query: INameMatch,
+		query: NameMatch,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);

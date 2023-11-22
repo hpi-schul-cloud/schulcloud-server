@@ -1,8 +1,9 @@
+import { FeathersAuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import {
 	Counted,
+	CreateNews,
 	EntityId,
-	ICreateNews,
 	IFindOptions,
 	INewsScope,
 	IUpdateNews,
@@ -14,7 +15,6 @@ import {
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';
 import { CrudOperation } from '@shared/types';
 import { Logger } from '@src/core/logger';
-import { FeathersAuthorizationService } from '@modules/authorization';
 import { NewsCrudOperationLoggable } from '../loggable/news-crud-operation.loggable';
 
 type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;
@@ -36,7 +36,7 @@ export class NewsUc {
 	 * @param params
 	 * @returns
 	 */
-	public async create(userId: EntityId, schoolId: EntityId, params: ICreateNews): Promise<News> {
+	public async create(userId: EntityId, schoolId: EntityId, params: CreateNews): Promise<News> {
 		const { targetModel, targetId } = params.target;
 		await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, [Permission.NEWS_CREATE]);
 

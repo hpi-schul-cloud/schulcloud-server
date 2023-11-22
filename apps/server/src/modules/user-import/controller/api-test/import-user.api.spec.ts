@@ -1,29 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { PaginationParams } from '@shared/controller';
-import {
-	ImportUser,
-	MatchCreator,
-	Permission,
-	RoleName,
-	SchoolEntity,
-	SchoolFeatures,
-	SortOrder,
-	SystemEntity,
-	User,
-} from '@shared/domain';
 import { ICurrentUser } from '@modules/authentication';
-import {
-	cleanupCollections,
-	importUserFactory,
-	mapUserToCurrentUser,
-	roleFactory,
-	schoolFactory,
-	systemFactory,
-	userFactory,
-} from '@shared/testing';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server/server.module';
 import {
@@ -42,6 +19,29 @@ import {
 	UserMatchResponse,
 	UserRole,
 } from '@modules/user-import/controller/dto';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { PaginationParams } from '@shared/controller';
+import {
+	ImportUser,
+	MatchCreator,
+	Permission,
+	RoleName,
+	SchoolEntity,
+	SchoolFeatures,
+	SortOrder,
+	SystemEntity,
+	User,
+} from '@shared/domain';
+import {
+	cleanupCollections,
+	importUserFactory,
+	mapUserToCurrentUser,
+	roleFactory,
+	schoolFactory,
+	systemFactory,
+	userFactory,
+} from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
 

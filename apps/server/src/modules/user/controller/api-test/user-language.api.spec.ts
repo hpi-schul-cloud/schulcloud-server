@@ -2,12 +2,12 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { ApiValidationError } from '@shared/common';
-import { LanguageType, User } from '@shared/domain';
-import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server/server.module';
+import { ApiValidationError } from '@shared/common';
+import { LanguageType, User } from '@shared/domain';
+import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
 
