@@ -1,5 +1,6 @@
 import {
 	AnyBoardDo,
+	AnyContentElementDo,
 	Card,
 	Column,
 	ColumnBoard,
@@ -33,6 +34,88 @@ export abstract class BaseService {
 		protected readonly boardDoRepo: BoardDoRepo,
 		protected readonly courseRepo: CourseRepo
 	) {}
+
+	protected async createBoardPermissionCtx(
+		referenceId: EntityId,
+		parentReferenceId: EntityId | null,
+		name?: string
+	): Promise<PermissionContextEntity> {
+		const parentContext = parentReferenceId
+			? await this.permissionCtxRepo.findByContextReference(parentReferenceId)
+			: null;
+
+		const permissionCtxEntity = new PermissionContextEntity({
+			name,
+			parentContext,
+			contextReference: new ObjectId(referenceId),
+		});
+		await this.permissionCtxRepo.save(permissionCtxEntity);
+
+		return permissionCtxEntity;
+	}
+
+	protected async pocCreateSubmissionItemPermissionCtx(
+		userId: EntityId,
+		submissionContainer: SubmissionContainerElement,
+		submissionItemId: EntityId
+	) {
+		// NOTE: this will be simplified once we have user groups
+		const parentContext = await this.permissionCtxRepo.findByContextReference(submissionContainer.id);
+
+		const rootId = (await this.boardDoRepo.getAncestorIds(submissionContainer))[0];
+		const columnBoard = await this.boardDoRepo.findByClassAndId(ColumnBoard, rootId);
+		const course = await this.courseRepo.findById(columnBoard.context.id);
+		const revokeStudentsPermissions = course.students
+			.getItems()
+			.filter((student) => student.id !== userId)
+			.map((student) => {
+				return {
+					userId: student.id,
+					includedPermissions: [],
+					excludedPermissions: [PermissionCrud.UPDATE, PermissionCrud.DELETE],
+				};
+			});
+
+		const permissionCtxEntity = new PermissionContextEntity({
+			name: 'Element permission context',
+			parentContext,
+			contextReference: new ObjectId(submissionItemId),
+			userDelta: new UserDelta(revokeStudentsPermissions),
+		});
+		await this.permissionCtxRepo.save(permissionCtxEntity);
+	}
+
+	protected async pocCreateElementPermissionCtx(element: AnyContentElementDo, parent: Card | SubmissionItem) {
+		const parentContext = await this.permissionCtxRepo.findByContextReference(parent.id);
+
+		if (element instanceof SubmissionContainerElement) {
+			// NOTE: this will be simplified once we have user groups
+			const rootId = (await this.boardDoRepo.getAncestorIds(parent))[0];
+			const columnBoard = await this.boardDoRepo.findByClassAndId(ColumnBoard, rootId);
+			const course = await this.courseRepo.findById(columnBoard.context.id);
+			const updatedStudentsPermissions = course.students.getItems().map((student) => {
+				return {
+					userId: student.id,
+					includedPermissions: [PermissionCrud.CREATE],
+					excludedPermissions: [],
+				};
+			});
+			const permissionCtxEntity = new PermissionContextEntity({
+				name: 'SubmissionContainerElement permission context',
+				parentContext,
+				contextReference: new ObjectId(element.id),
+				userDelta: new UserDelta(updatedStudentsPermissions),
+			});
+			await this.permissionCtxRepo.save(permissionCtxEntity);
+		} else {
+			const permissionCtxEntity = new PermissionContextEntity({
+				name: 'Element permission context',
+				parentContext,
+				contextReference: new ObjectId(element.id),
+			});
+			await this.permissionCtxRepo.save(permissionCtxEntity);
+		}
+	}
 
 	// NOTE: this is a idempotent in-place migration for POC purposes
 	protected async pocMigrateBoardToPermissionContext(id: EntityId) {

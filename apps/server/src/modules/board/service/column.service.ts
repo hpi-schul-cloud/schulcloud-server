@@ -1,17 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { Column, ColumnBoard, EntityId, PermissionContextEntity } from '@shared/domain';
+import { Column, ColumnBoard, EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
-import { PermissionContextRepo } from '@shared/repo';
+import { CourseRepo, PermissionContextRepo } from '@shared/repo';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
+import { BaseService } from './base.service';
 
 @Injectable()
-export class ColumnService {
+export class ColumnService extends BaseService {
 	constructor(
-		private readonly boardDoRepo: BoardDoRepo,
+		protected readonly boardDoRepo: BoardDoRepo,
 		private readonly boardDoService: BoardDoService,
-		private readonly permissionCtxRepo: PermissionContextRepo
-	) {}
+		protected readonly permissionCtxRepo: PermissionContextRepo,
+		protected readonly courseRepo: CourseRepo
+	) {
+		super(permissionCtxRepo, boardDoRepo, courseRepo);
+	}
 
 	async findById(columnId: EntityId): Promise<Column> {
 		const column = await this.boardDoRepo.findByClassAndId(Column, columnId);
@@ -29,13 +33,7 @@ export class ColumnService {
 
 		parent.addChild(column);
 
-		const parentContext = await this.permissionCtxRepo.findByContextReference(parent.id);
-		const permissionCtxEntity = new PermissionContextEntity({
-			name: 'Column permission context',
-			parentContext,
-			contextReference: new ObjectId(column.id),
-		});
-		await this.permissionCtxRepo.save(permissionCtxEntity);
+		await this.createBoardPermissionCtx(column.id, parent.id, 'Column permission context');
 
 		await this.boardDoRepo.save(parent.children, parent);
 

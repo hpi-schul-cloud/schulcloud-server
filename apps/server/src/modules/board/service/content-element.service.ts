@@ -3,33 +3,30 @@ import {
 	AnyBoardDo,
 	AnyContentElementDo,
 	Card,
-	ColumnBoard,
 	ContentElementFactory,
 	ContentElementType,
 	EntityId,
 	isAnyContentElement,
-	PermissionContextEntity,
-	PermissionCrud,
-	SubmissionContainerElement,
 	SubmissionItem,
-	UserDelta,
 } from '@shared/domain';
 import { CourseRepo, PermissionContextRepo } from '@shared/repo';
-import { ObjectId } from 'bson';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
+import { BaseService } from './base.service';
 
 @Injectable()
-export class ContentElementService {
+export class ContentElementService extends BaseService {
 	constructor(
-		private readonly boardDoRepo: BoardDoRepo,
+		protected readonly boardDoRepo: BoardDoRepo,
 		private readonly boardDoService: BoardDoService,
 		private readonly contentElementFactory: ContentElementFactory,
-		private readonly permissionCtxRepo: PermissionContextRepo,
-		private readonly courseRepo: CourseRepo
-	) {}
+		protected readonly permissionCtxRepo: PermissionContextRepo,
+		protected readonly courseRepo: CourseRepo
+	) {
+		super(permissionCtxRepo, boardDoRepo, courseRepo);
+	}
 
 	async findById(elementId: EntityId): Promise<AnyContentElementDo> {
 		const element = await this.boardDoRepo.findById(elementId);
@@ -49,46 +46,11 @@ export class ContentElementService {
 		return parent;
 	}
 
-	async pocCreateElementPermissionCtx(
-		element: AnyContentElementDo,
-		parent: Card | SubmissionItem,
-		parentContext: PermissionContextEntity
-	) {
-		if (element instanceof SubmissionContainerElement) {
-			// NOTE: this will be simplified once we have user groups
-			const rootId = (await this.boardDoRepo.getAncestorIds(parent))[0];
-			const columnBoard = await this.boardDoRepo.findByClassAndId(ColumnBoard, rootId);
-			const course = await this.courseRepo.findById(columnBoard.context.id);
-			const updatedStudentsPermissions = course.students.getItems().map((student) => {
-				return {
-					userId: student.id,
-					includedPermissions: [PermissionCrud.CREATE],
-					excludedPermissions: [],
-				};
-			});
-			const permissionCtxEntity = new PermissionContextEntity({
-				name: 'SubmissionContainerElement permission context',
-				parentContext,
-				contextReference: new ObjectId(element.id),
-				userDelta: new UserDelta(updatedStudentsPermissions),
-			});
-			await this.permissionCtxRepo.save(permissionCtxEntity);
-		} else {
-			const permissionCtxEntity = new PermissionContextEntity({
-				name: 'Element permission context',
-				parentContext,
-				contextReference: new ObjectId(element.id),
-			});
-			await this.permissionCtxRepo.save(permissionCtxEntity);
-		}
-	}
-
 	async create(parent: Card | SubmissionItem, type: ContentElementType): Promise<AnyContentElementDo> {
 		const element = this.contentElementFactory.build(type);
 		parent.addChild(element);
 
-		const parentContext = await this.permissionCtxRepo.findByContextReference(parent.id);
-		await this.pocCreateElementPermissionCtx(element, parent, parentContext);
+		await this.pocCreateElementPermissionCtx(element, parent);
 
 		await this.boardDoRepo.save(parent.children, parent);
 		return element;
