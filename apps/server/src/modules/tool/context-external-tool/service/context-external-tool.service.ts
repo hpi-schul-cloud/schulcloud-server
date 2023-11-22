@@ -3,6 +3,8 @@ import { EntityId } from '@shared/domain';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { ContextExternalTool, ContextRef } from '../domain';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
+import { ToolContextTypesList } from '../../external-tool/controller/dto/response/tool-context-types-list';
+import { ToolContextType } from '../../common/enum';
 
 @Injectable()
 export class ContextExternalToolService {
@@ -46,5 +48,11 @@ export class ContextExternalToolService {
 		});
 
 		return contextExternalTools;
+	}
+
+	getToolContextTypes(): ToolContextTypesList {
+		const toolContextTypes: ToolContextTypesList = { data: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT] };
+
+		return toolContextTypes;
 	}
 }

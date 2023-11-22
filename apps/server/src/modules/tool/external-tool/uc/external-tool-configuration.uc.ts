@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { EntityId, Permission } from '@shared/domain';
+import { EntityId, Permission, User } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { AuthorizationContext, AuthorizationContextBuilder } from '@modules/authorization';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
@@ -12,6 +12,7 @@ import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalTool } from '../domain';
 import { ExternalToolConfigurationService, ExternalToolLogoService, ExternalToolService } from '../service';
 import { ContextExternalToolTemplateInfo } from './dto';
+import { ToolContextTypesList } from '../controller/dto/response/tool-context-types-list';
 
 @Injectable()
 export class ExternalToolConfigurationUc {
@@ -24,6 +25,14 @@ export class ExternalToolConfigurationUc {
 		private readonly externalToolConfigurationService: ExternalToolConfigurationService,
 		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
+
+	public async getToolContextTypes(userId: EntityId): Promise<ToolContextTypesList> {
+		await this.toolPermissionHelper.ensurePermission(userId, Permission.TOOL_ADMIN);
+
+		const toolContextTypes: ToolContextTypesList = this.contextExternalToolService.getToolContextTypes();
+
+		return toolContextTypes;
+	}
 
 	public async getAvailableToolsForSchool(userId: EntityId, schoolId: EntityId): Promise<ExternalTool[]> {
 		const externalTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({});
