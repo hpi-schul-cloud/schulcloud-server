@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import {
 	FederalStateEntity,
-	ISchoolProperties,
 	SchoolFeatures,
+	SchoolProperties,
 	SchoolRoles,
 	SchoolYearEntity,
 	SystemEntity,
@@ -12,7 +12,7 @@ import { DeepPartial } from 'fishery';
 import { EFederalState } from './federalstates';
 import { SeedSchoolYearEnum } from './schoolyears';
 
-type SeedSchoolProperties = Omit<ISchoolProperties, 'systems' | 'federalState'> & {
+type SeedSchoolProperties = Omit<SchoolProperties, 'systems' | 'federalState'> & {
 	id: string;
 	updatedAt?: string;
 	createdAt?: string;
@@ -288,7 +288,7 @@ export function generateSchools(entities: {
 			entities.federalStates.find((fs) => partial.federalState && fs.name === partial.federalState) ??
 			federalStateFactory.build();
 
-		const params: DeepPartial<ISchoolProperties> = {
+		const params: DeepPartial<SchoolProperties> = {
 			externalId: partial.externalId,
 			features: partial.features,
 			inMaintenanceSince: partial.inMaintenanceSince,

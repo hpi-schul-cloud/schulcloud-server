@@ -2,15 +2,15 @@ import { EntityName } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { ShareTokenContext, ShareTokenDO, ShareTokenPayload, ShareTokenString } from '../domainobject/share-token.do';
-import { IShareTokenProperties, ShareToken } from '../entity/share-token.entity';
+import { ShareToken, ShareTokenProperties } from '../entity/share-token.entity';
 
 @Injectable()
-export class ShareTokenRepo extends BaseDORepo<ShareTokenDO, ShareToken, IShareTokenProperties> {
+export class ShareTokenRepo extends BaseDORepo<ShareTokenDO, ShareToken, ShareTokenProperties> {
 	get entityName(): EntityName<ShareToken> {
 		return ShareToken;
 	}
 
-	entityFactory(props: IShareTokenProperties): ShareToken {
+	entityFactory(props: ShareTokenProperties): ShareToken {
 		return new ShareToken(props);
 	}
 
@@ -43,8 +43,8 @@ export class ShareTokenRepo extends BaseDORepo<ShareTokenDO, ShareToken, IShareT
 		return domainObject;
 	}
 
-	protected mapDOToEntityProperties(domainObject: ShareTokenDO): IShareTokenProperties {
-		const properties: IShareTokenProperties = {
+	protected mapDOToEntityProperties(domainObject: ShareTokenDO): ShareTokenProperties {
+		const properties: ShareTokenProperties = {
 			token: domainObject.token,
 			parentType: domainObject.payload.parentType,
 			parentId: domainObject.payload.parentId,

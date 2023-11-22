@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, Permission, User } from '@shared/domain';
 import { schoolExternalToolFactory, setupEntities, userFactory } from '@shared/testing';
@@ -6,7 +7,11 @@ import { AuthorizationContextBuilder } from '@modules/authorization';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { SchoolExternalTool } from '../domain';
-import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
+import {
+	SchoolExternalToolMetadataService,
+	SchoolExternalToolService,
+	SchoolExternalToolValidationService,
+} from '../service';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 import { SchoolExternalToolUc } from './school-external-tool.uc';
 
@@ -18,6 +23,7 @@ describe('SchoolExternalToolUc', () => {
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let schoolExternalToolValidationService: DeepMocked<SchoolExternalToolValidationService>;
 	let toolPermissionHelper: DeepMocked<ToolPermissionHelper>;
+	let schoolExternalToolMetadataService: DeepMocked<SchoolExternalToolMetadataService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -40,6 +46,10 @@ describe('SchoolExternalToolUc', () => {
 					provide: ToolPermissionHelper,
 					useValue: createMock<ToolPermissionHelper>(),
 				},
+				{
+					provide: SchoolExternalToolMetadataService,
+					useValue: createMock<SchoolExternalToolMetadataService>(),
+				},
 			],
 		}).compile();
 
@@ -48,6 +58,7 @@ describe('SchoolExternalToolUc', () => {
 		contextExternalToolService = module.get(ContextExternalToolService);
 		schoolExternalToolValidationService = module.get(SchoolExternalToolValidationService);
 		toolPermissionHelper = module.get(ToolPermissionHelper);
+		schoolExternalToolMetadataService = module.get(SchoolExternalToolMetadataService);
 	});
 
 	afterAll(async () => {
@@ -356,6 +367,57 @@ describe('SchoolExternalToolUc', () => {
 			const result: SchoolExternalTool = await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool);
 
 			expect(result).toEqual(updatedTool);
+		});
+	});
+
+	describe('getMetadataForSchoolExternalTool', () => {
+		describe('when authorize user', () => {
+			const setupMetadata = () => {
+				const toolId = new ObjectId().toHexString();
+				const tool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ id: toolId }, toolId);
+				const userId: string = new ObjectId().toHexString();
+				const user: User = userFactory.buildWithId({}, userId);
+
+				schoolExternalToolService.findById.mockResolvedValue(tool);
+
+				return {
+					user,
+					tool,
+				};
+			};
+
+			it('should check the permissions of the user', async () => {
+				const { user, tool } = setupMetadata();
+
+				await uc.getMetadataForSchoolExternalTool(user.id, tool.id!);
+
+				expect(toolPermissionHelper.ensureSchoolPermissions).toHaveBeenCalledWith(
+					user.id,
+					tool,
+					AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN])
+				);
+			});
+		});
+
+		describe('when externalToolId is given', () => {
+			const setupMetadata = () => {
+				const user: User = userFactory.buildWithId();
+
+				const toolId: string = new ObjectId().toHexString();
+
+				return {
+					toolId,
+					user,
+				};
+			};
+
+			it('should call the service to get metadata', async () => {
+				const { toolId, user } = setupMetadata();
+
+				await uc.getMetadataForSchoolExternalTool(user.id, toolId);
+
+				expect(schoolExternalToolMetadataService.getMetadata).toHaveBeenCalledWith(toolId);
+			});
 		});
 	});
 });

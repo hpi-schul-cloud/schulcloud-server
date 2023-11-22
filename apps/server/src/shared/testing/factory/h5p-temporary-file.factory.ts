@@ -1,14 +1,14 @@
-import { ITemporaryFileProperties, H5pEditorTempFile } from '@src/modules/h5p-editor/entity';
+import { H5pEditorTempFile, TemporaryFileProperties } from '@src/modules/h5p-editor/entity';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
 const oneDay = 24 * 60 * 60 * 1000;
 
-class H5PTemporaryFileFactory extends BaseFactory<H5pEditorTempFile, ITemporaryFileProperties> {
+class H5PTemporaryFileFactory extends BaseFactory<H5pEditorTempFile, TemporaryFileProperties> {
 	isExpired(): this {
 		const birthtime = new Date(Date.now() - oneDay * 2); // Created two days ago
 		const expiresAt = new Date(Date.now() - oneDay); // Expired yesterday
-		const params: DeepPartial<ITemporaryFileProperties> = { expiresAt, birthtime };
+		const params: DeepPartial<TemporaryFileProperties> = { expiresAt, birthtime };
 
 		return this.params(params);
 	}

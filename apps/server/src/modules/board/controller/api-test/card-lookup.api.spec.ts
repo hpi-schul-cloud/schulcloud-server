@@ -1,4 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
@@ -15,9 +18,6 @@ import {
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
-import { ICurrentUser } from '@modules/authentication';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 import { CardIdsParams, CardListResponse } from '../dto';

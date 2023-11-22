@@ -6,8 +6,8 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId, LegacySchoolDo, SchoolFeatures, SystemTypeEnum, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import {
+	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
-	UserLoginMigrationNotFoundLoggableException,
 } from '../loggable';
 
 @Injectable()
@@ -47,12 +47,14 @@ export class UserLoginMigrationService {
 		return updatedUserLoginMigration;
 	}
 
-	public async setMigrationMandatory(schoolId: string, mandatory: boolean): Promise<UserLoginMigrationDO> {
-		// this.checkGracePeriod(userLoginMigration);
-		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+	public async setMigrationMandatory(
+		userLoginMigration: UserLoginMigrationDO,
+		mandatory: boolean
+	): Promise<UserLoginMigrationDO> {
+		this.checkGracePeriod(userLoginMigration);
 
-		if (!userLoginMigration) {
-			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
+		if (userLoginMigration.closedAt) {
+			throw new UserLoginMigrationAlreadyClosedLoggableException(userLoginMigration.closedAt, userLoginMigration.id);
 		}
 
 		if (mandatory) {

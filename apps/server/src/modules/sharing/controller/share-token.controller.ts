@@ -1,3 +1,5 @@
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import {
 	Body,
 	Controller,
@@ -11,8 +13,6 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError, RequestTimeout } from '@shared/common';
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 // invalid import can produce dependency cycles
 import { serverConfig } from '@modules/server/server.config';
 import { ShareTokenInfoResponseMapper, ShareTokenResponseMapper } from '../mapper';

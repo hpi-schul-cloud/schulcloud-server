@@ -4,9 +4,9 @@ import { externalToolFactory, schoolExternalToolFactory } from '@shared/testing/
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
 
 describe('SchoolExternalToolValidationService', () => {
 	let module: TestingModule;
@@ -80,14 +80,6 @@ describe('SchoolExternalToolValidationService', () => {
 				await service.validate(schoolExternalTool);
 
 				expect(externalToolService.findById).toHaveBeenCalledWith(schoolExternalTool.toolId);
-			});
-
-			it('should call commonToolValidationService.checkForDuplicateParameters', async () => {
-				const { schoolExternalTool } = setup();
-
-				await service.validate(schoolExternalTool);
-
-				expect(commonToolValidationService.checkForDuplicateParameters).toHaveBeenCalledWith(schoolExternalTool);
 			});
 
 			it('should call commonToolValidationService.checkCustomParameterEntries', async () => {

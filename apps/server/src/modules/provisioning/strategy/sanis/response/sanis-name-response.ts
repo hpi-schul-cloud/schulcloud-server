@@ -1,5 +1,5 @@
 export interface SanisNameResponse {
-	familienname: string;
+	familienname?: string;
 
-	vorname: string;
+	vorname?: string;
 }

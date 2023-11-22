@@ -1,7 +1,7 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { FilesPreviewEvents, FilesPreviewExchange, RpcMessageProducer } from '@infra/rabbitmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { FilesPreviewEvents, FilesPreviewExchange, RpcMessageProducer } from '@infra/rabbitmq';
 import { Logger } from '@src/core/logger';
 import { PreviewFileOptions, PreviewResponseMessage } from './interface';
 import { PreviewModuleConfig } from './interface/preview-consumer-config';
@@ -21,10 +21,11 @@ export class PreviewProducer extends RpcMessageProducer {
 	}
 
 	async generate(payload: PreviewFileOptions): Promise<PreviewResponseMessage> {
-		this.logger.debug(new PreviewActionsLoggable('PreviewProducer.generate:started', payload));
+		this.logger.info(new PreviewActionsLoggable('PreviewProducer.generate:started', payload));
+
 		const response = await this.request<PreviewResponseMessage>(FilesPreviewEvents.GENERATE_PREVIEW, payload);
 
-		this.logger.debug(new PreviewActionsLoggable('PreviewProducer.generate:finished', payload));
+		this.logger.info(new PreviewActionsLoggable('PreviewProducer.generate:finished', payload));
 
 		return response;
 	}

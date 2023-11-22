@@ -3,9 +3,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
 	EntityId,
-	ISchoolProperties,
 	LegacySchoolDo,
 	SchoolEntity,
+	SchoolProperties,
 	SystemEntity,
 	UserLoginMigrationEntity,
 } from '@shared/domain';
@@ -16,7 +16,7 @@ import { BaseDORepo } from '../base.do.repo';
  * @deprecated because it uses the deprecated LegacySchoolDo.
  */
 @Injectable()
-export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity, ISchoolProperties> {
+export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity, SchoolProperties> {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
@@ -42,7 +42,7 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity, I
 		return schoolDo;
 	}
 
-	entityFactory(props: ISchoolProperties): SchoolEntity {
+	entityFactory(props: SchoolProperties): SchoolEntity {
 		return new SchoolEntity(props);
 	}
 
@@ -63,7 +63,7 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity, I
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: LegacySchoolDo): ISchoolProperties {
+	mapDOToEntityProperties(entityDO: LegacySchoolDo): SchoolProperties {
 		return {
 			externalId: entityDO.externalId,
 			features: entityDO.features,

@@ -1,7 +1,7 @@
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { LegacySchoolDo, Permission, User, UserLoginMigrationDO } from '@shared/domain';
+import { EntityId, LegacySchoolDo, Permission, User, UserLoginMigrationDO } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import {
 	SchoolNumberMissingLoggableException,
@@ -21,7 +21,7 @@ export class StartUserLoginMigrationUc {
 		this.logger.setContext(StartUserLoginMigrationUc.name);
 	}
 
-	async startMigration(userId: string, schoolId: string): Promise<UserLoginMigrationDO> {
+	async startMigration(userId: EntityId, schoolId: EntityId): Promise<UserLoginMigrationDO> {
 		await this.checkPreconditions(userId, schoolId);
 
 		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
@@ -31,18 +31,15 @@ export class StartUserLoginMigrationUc {
 		if (!userLoginMigration) {
 			userLoginMigration = await this.userLoginMigrationService.startMigration(schoolId);
 
-			this.logger.info(new UserLoginMigrationStartLoggable(userId, userLoginMigration.id as string));
+			this.logger.info(new UserLoginMigrationStartLoggable(userId, userLoginMigration.id));
 		} else if (userLoginMigration.closedAt) {
-			throw new UserLoginMigrationAlreadyClosedLoggableException(
-				userLoginMigration.id as string,
-				userLoginMigration.closedAt
-			);
+			throw new UserLoginMigrationAlreadyClosedLoggableException(userLoginMigration.closedAt, userLoginMigration.id);
 		}
 
 		return userLoginMigration;
 	}
 
-	async checkPreconditions(userId: string, schoolId: string): Promise<void> {
+	private async checkPreconditions(userId: string, schoolId: string): Promise<void> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
 
