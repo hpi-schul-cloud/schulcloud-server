@@ -2,7 +2,6 @@ import { HttpService } from '@nestjs/axios';
 import { BadGatewayException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ErrorUtils } from '@src/core/error/utils';
-import { AxiosResponse } from 'axios';
 import { firstValueFrom } from 'rxjs';
 import { DeletionClientConfig, DeletionRequestInput, DeletionRequestOutput } from './interface';
 
@@ -71,21 +70,19 @@ export class DeletionClient {
 			requestConfig = { ...this.defaultHeaders() };
 		}
 
-		let resp: AxiosResponse;
-
 		try {
 			const request = this.httpService.post(this.postDeletionExecutionsEndpoint, null, requestConfig);
 
-			resp = await firstValueFrom(request);
+			const resp = await firstValueFrom(request);
+
+			if (resp.status !== 204) {
+				// Throw an error if any other status code (other than expected "204 No Content" is returned).
+				const err = new Error(`invalid HTTP status code in a response from the server - ${resp.status} instead of 204`);
+
+				throw new BadGatewayException('DeletionClient:executeDeletions', ErrorUtils.createHttpExceptionOptions(err));
+			}
 		} catch (err: unknown) {
 			// Throw an error if sending deletion request(s) execution trigger has failed.
-			throw new BadGatewayException('DeletionClient:executeDeletions', ErrorUtils.createHttpExceptionOptions(err));
-		}
-
-		if (resp.status !== 204) {
-			// Throw an error if any other status code (other than expected "204 No Content" is returned).
-			const err = new Error(`invalid HTTP status code in a response from the server - ${resp.status} instead of 204`);
-
 			throw new BadGatewayException('DeletionClient:executeDeletions', ErrorUtils.createHttpExceptionOptions(err));
 		}
 	}
