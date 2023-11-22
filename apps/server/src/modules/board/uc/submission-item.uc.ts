@@ -14,7 +14,7 @@ import {
 	isRichTextElement,
 	isSubmissionContainerElement,
 	isSubmissionItem,
-	Permission,
+	PermissionCrud,
 	RichTextElement,
 	SubmissionItem,
 	UserBoardRoles,
@@ -40,7 +40,7 @@ export class SubmissionItemUc extends BaseUc {
 	private async filterByReadPermission(userId: EntityId, submissionItems: SubmissionItem[]): Promise<SubmissionItem[]> {
 		const itemsWithPermission = await Promise.all(
 			submissionItems.map(async (item) => {
-				const hasPermission = await this.pocHasPermission(userId, item.id, [Permission.BOARD_ELEMENT_CAN_SUBMIT]);
+				const hasPermission = await this.pocHasPermission(userId, item.id, [PermissionCrud.READ]);
 				return { hasPermission, submissionItem: item };
 			})
 		);
@@ -83,7 +83,7 @@ export class SubmissionItemUc extends BaseUc {
 		submissionItemId: EntityId,
 		completed: boolean
 	): Promise<SubmissionItem> {
-		await this.pocCheckPermission(userId, submissionItemId, [Permission.BOARD_ELEMENT_CAN_SUBMIT]);
+		await this.pocCheckPermission(userId, submissionItemId, [PermissionCrud.UPDATE]);
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
 		// await this.checkSubmissionItemWritePermission(userId, submissionItem);
 		await this.submissionItemService.update(submissionItem, completed);
@@ -99,7 +99,7 @@ export class SubmissionItemUc extends BaseUc {
 		if (type !== ContentElementType.RICH_TEXT && type !== ContentElementType.FILE) {
 			throw new BadRequestException();
 		}
-		await this.pocCheckPermission(userId, submissionItemId, [Permission.BOARD_ELEMENT_CAN_SUBMIT]);
+		await this.pocCheckPermission(userId, submissionItemId, [PermissionCrud.CREATE]);
 
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
 

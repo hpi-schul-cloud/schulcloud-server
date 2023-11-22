@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { Card, ContentElementType, EntityId, Permission } from '@shared/domain';
+import { Card, ContentElementType, EntityId, PermissionCrud } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService, PermissionContextService } from '@modules/authorization';
 import { CardService, ColumnService, BoardDoAuthorizableService } from '../service';
@@ -23,7 +23,7 @@ export class ColumnUc extends BaseUc {
 	async deleteColumn(userId: EntityId, columnId: EntityId): Promise<void> {
 		this.logger.debug({ action: 'deleteColumn', userId, columnId });
 
-		await this.pocCheckPermission(userId, columnId, [Permission.BOARD_COLUMN_DELETE]);
+		await this.pocCheckPermission(userId, columnId, [PermissionCrud.DELETE]);
 
 		const column = await this.columnService.findById(columnId);
 		// await this.checkPermission(userId, column, Action.write);
@@ -34,7 +34,7 @@ export class ColumnUc extends BaseUc {
 	async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise<void> {
 		this.logger.debug({ action: 'updateColumnTitle', userId, columnId, title });
 
-		await this.pocCheckPermission(userId, columnId, [Permission.BOARD_COLUMN_UPDATE_TITLE]);
+		await this.pocCheckPermission(userId, columnId, [PermissionCrud.UPDATE]);
 
 		const column = await this.columnService.findById(columnId);
 		// await this.checkPermission(userId, column, Action.write);
@@ -45,7 +45,7 @@ export class ColumnUc extends BaseUc {
 	async createCard(userId: EntityId, columnId: EntityId, requiredEmptyElements?: ContentElementType[]): Promise<Card> {
 		this.logger.debug({ action: 'createCard', userId, columnId });
 
-		await this.pocCheckPermission(userId, columnId, [Permission.BOARD_CARD_CREATE]);
+		await this.pocCheckPermission(userId, columnId, [PermissionCrud.CREATE]);
 		const column = await this.columnService.findById(columnId);
 		// await this.checkPermission(userId, column, Action.read);
 
@@ -57,8 +57,8 @@ export class ColumnUc extends BaseUc {
 	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, targetPosition: number): Promise<void> {
 		this.logger.debug({ action: 'moveCard', userId, cardId, targetColumnId, toPosition: targetPosition });
 
-		await this.pocCheckPermission(userId, cardId, [Permission.BOARD_CARD_MOVE]);
-		await this.pocCheckPermission(userId, targetColumnId, [Permission.BOARD_CARD_MOVE]);
+		await this.pocCheckPermission(userId, cardId, [PermissionCrud.UPDATE]);
+		await this.pocCheckPermission(userId, targetColumnId, [PermissionCrud.UPDATE]);
 
 		const card = await this.cardService.findById(cardId);
 		const targetColumn = await this.columnService.findById(targetColumnId);

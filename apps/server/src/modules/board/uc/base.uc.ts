@@ -1,4 +1,4 @@
-import { AnyBoardDo, ColumnBoard, EntityId, Permission, SubmissionItem, UserRoleEnum } from '@shared/domain';
+import { AnyBoardDo, ColumnBoard, EntityId, PermissionCrud, SubmissionItem, UserRoleEnum } from '@shared/domain';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { AuthorizationService, Action, PermissionContextService } from '@modules/authorization';
 import { BoardDoAuthorizableService } from '../service';
@@ -13,7 +13,7 @@ export abstract class BaseUc {
 	protected async pocHasPermission(
 		userId: EntityId,
 		contextReference: EntityId,
-		permissionsToContain: Permission[]
+		permissionsToContain: PermissionCrud[]
 	): Promise<boolean> {
 		const permissions = await this.permissionContextService.resolvePermissions(userId, contextReference);
 		const hasPermission = permissionsToContain.every((permission) => permissions.includes(permission));
@@ -23,7 +23,7 @@ export abstract class BaseUc {
 	protected async pocCheckPermission(
 		userId: EntityId,
 		contextReference: EntityId,
-		permissionsToContain: Permission[]
+		permissionsToContain: PermissionCrud[]
 	): Promise<void> {
 		const hasPermission = await this.pocHasPermission(userId, contextReference, permissionsToContain);
 		if (!hasPermission) {
@@ -37,7 +37,7 @@ export abstract class BaseUc {
 			columnBoard.children.map(async (child) => {
 				return {
 					column: child,
-					hasPermission: await this.pocHasPermission(userId, child.id, [Permission.BOARD_READ]),
+					hasPermission: await this.pocHasPermission(userId, child.id, [PermissionCrud.READ]),
 				};
 			})
 		);
@@ -54,7 +54,7 @@ export abstract class BaseUc {
 				.map(async (child) => {
 					return {
 						card: child,
-						hasPermission: await this.pocHasPermission(userId, child.id, [Permission.BOARD_READ]),
+						hasPermission: await this.pocHasPermission(userId, child.id, [PermissionCrud.READ]),
 					};
 				})
 		);

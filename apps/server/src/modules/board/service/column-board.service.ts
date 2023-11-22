@@ -11,7 +11,6 @@ import {
 	ContentElementType,
 	EntityId,
 	RichTextElement,
-	Permission,
 	PermissionContextEntity,
 	UserDelta,
 	Course,
@@ -19,6 +18,7 @@ import {
 	SubmissionItem,
 	isCard,
 	SubmissionContainerElement,
+	PermissionCrud,
 } from '@shared/domain';
 import { PermissionContextRepo, CourseRepo } from '@shared/repo';
 import { Forbidden } from '@feathersjs/errors';
@@ -27,29 +27,14 @@ import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 
 const DEFAULT_TEACHER_PERMISSIONS = [
-	Permission.BOARD_READ,
-	Permission.BOARD_COLUMN_CREATE,
-	Permission.BOARD_DELETE,
-	Permission.BOARD_UPDATE_TITLE,
-
-	Permission.BOARD_COLUMN_CREATE,
-	Permission.BOARD_COLUMN_MOVE,
-	Permission.BOARD_COLUMN_DELETE,
-	Permission.BOARD_COLUMN_UPDATE_TITLE,
-
-	Permission.BOARD_CARD_CREATE,
-	Permission.BOARD_CARD_MOVE,
-	Permission.BOARD_CARD_DELETE,
-	Permission.BOARD_CARD_UPDATE,
-
-	Permission.BOARD_ELEMENT_CREATE,
-	Permission.BOARD_ELEMENT_MOVE,
-	Permission.BOARD_ELEMENT_DELETE,
-	Permission.BOARD_ELEMENT_UPDATE,
+	PermissionCrud.CREATE,
+	PermissionCrud.READ,
+	PermissionCrud.UPDATE,
+	PermissionCrud.DELETE,
 ];
 const DEFAULT_SUBSTITUTE_TEACHER_PERMISSIONS = DEFAULT_TEACHER_PERMISSIONS;
 
-const DEFAULT_STUDENT_PERMISSIONS = [Permission.BOARD_READ];
+const DEFAULT_STUDENT_PERMISSIONS = [PermissionCrud.READ];
 
 @Injectable()
 export class ColumnBoardService {
@@ -311,7 +296,7 @@ export class ColumnBoardService {
 			const students = course.getStudentIds().map((userId) => {
 				return {
 					userId,
-					includedPermissions: [Permission.BOARD_ELEMENT_CAN_SUBMIT],
+					includedPermissions: [PermissionCrud.CREATE],
 					excludedPermissions: [],
 				};
 			});
@@ -358,13 +343,22 @@ export class ColumnBoardService {
 				return {
 					userId,
 					includedPermissions: [],
-					excludedPermissions: [Permission.BOARD_READ, Permission.BOARD_ELEMENT_CAN_SUBMIT],
+					excludedPermissions: [
+						PermissionCrud.UPDATE,
+						PermissionCrud.DELETE,
+						PermissionCrud.CREATE,
+						PermissionCrud.READ,
+					],
 				};
 			});
 
 		const studentIds = [
 			...otherStudentIds,
-			{ userId: boardNode.userId, includedPermissions: [Permission.BOARD_READ], excludedPermissions: [] },
+			{
+				userId: boardNode.userId,
+				includedPermissions: [PermissionCrud.UPDATE, PermissionCrud.DELETE],
+				excludedPermissions: [],
+			},
 		];
 
 		const permissionCtxEntity = new PermissionContextEntity({

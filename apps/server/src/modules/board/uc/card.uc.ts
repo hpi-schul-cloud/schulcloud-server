@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { AnyBoardDo, AnyContentElementDo, Card, ContentElementType, EntityId, Permission } from '@shared/domain';
+import { AnyBoardDo, AnyContentElementDo, Card, ContentElementType, EntityId, PermissionCrud } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService, Action, PermissionContextService } from '@modules/authorization';
 import { BoardDoAuthorizableService, CardService, ContentElementService } from '../service';
@@ -27,7 +27,7 @@ export class CardUc extends BaseUc {
 
 		const cardsWithPermission = await Promise.all(
 			cards.map(async (card) => {
-				const hasPermission = await this.pocHasPermission(userId, card.id, [Permission.BOARD_READ]);
+				const hasPermission = await this.pocHasPermission(userId, card.id, [PermissionCrud.READ]);
 				return { card, hasPermission };
 			})
 		);
@@ -43,7 +43,7 @@ export class CardUc extends BaseUc {
 	async updateCardHeight(userId: EntityId, cardId: EntityId, height: number): Promise<void> {
 		this.logger.debug({ action: 'updateCardHeight', userId, cardId, height });
 
-		await this.pocCheckPermission(userId, cardId, [Permission.BOARD_CARD_UPDATE]);
+		await this.pocCheckPermission(userId, cardId, [PermissionCrud.UPDATE]);
 
 		const card = await this.cardService.findById(cardId);
 		// await this.checkPermission(userId, card, Action.write);
@@ -54,7 +54,7 @@ export class CardUc extends BaseUc {
 	async updateCardTitle(userId: EntityId, cardId: EntityId, title: string): Promise<void> {
 		this.logger.debug({ action: 'updateCardTitle', userId, cardId, title });
 
-		await this.pocCheckPermission(userId, cardId, [Permission.BOARD_CARD_UPDATE]);
+		await this.pocCheckPermission(userId, cardId, [PermissionCrud.UPDATE]);
 		const card = await this.cardService.findById(cardId);
 		// await this.checkPermission(userId, card, Action.write);
 
@@ -64,7 +64,7 @@ export class CardUc extends BaseUc {
 	async deleteCard(userId: EntityId, cardId: EntityId): Promise<void> {
 		this.logger.debug({ action: 'deleteCard', userId, cardId });
 
-		await this.pocCheckPermission(userId, cardId, [Permission.BOARD_CARD_DELETE]);
+		await this.pocCheckPermission(userId, cardId, [PermissionCrud.DELETE]);
 		const card = await this.cardService.findById(cardId);
 		// await this.checkPermission(userId, card, Action.write);
 
@@ -81,7 +81,7 @@ export class CardUc extends BaseUc {
 	): Promise<AnyContentElementDo> {
 		this.logger.debug({ action: 'createElement', userId, cardId, type });
 
-		await this.pocCheckPermission(userId, cardId, [Permission.BOARD_ELEMENT_CREATE]);
+		await this.pocCheckPermission(userId, cardId, [PermissionCrud.CREATE]);
 
 		const card = await this.cardService.findById(cardId);
 		// await this.checkPermission(userId, card, Action.write);
@@ -102,8 +102,8 @@ export class CardUc extends BaseUc {
 	): Promise<void> {
 		this.logger.debug({ action: 'moveCard', userId, elementId, targetCardId, targetPosition });
 
-		await this.pocCheckPermission(userId, elementId, [Permission.BOARD_ELEMENT_MOVE]);
-		await this.pocCheckPermission(userId, targetCardId, [Permission.BOARD_ELEMENT_MOVE]);
+		await this.pocCheckPermission(userId, elementId, [PermissionCrud.UPDATE]);
+		await this.pocCheckPermission(userId, targetCardId, [PermissionCrud.UPDATE]);
 
 		const element = await this.elementService.findById(elementId);
 		const targetCard = await this.cardService.findById(targetCardId);

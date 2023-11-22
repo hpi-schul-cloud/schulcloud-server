@@ -5,8 +5,8 @@ import {
 	ColumnBoard,
 	EntityId,
 	isSubmissionContainerElement,
-	Permission,
 	PermissionContextEntity,
+	PermissionCrud,
 	SubmissionContainerElement,
 	SubmissionItem,
 	UserDelta,
@@ -44,7 +44,7 @@ export class SubmissionItemService {
 				return {
 					userId: student.id,
 					includedPermissions: [],
-					excludedPermissions: [Permission.BOARD_ELEMENT_CAN_SUBMIT, Permission.BOARD_READ],
+					excludedPermissions: [PermissionCrud.UPDATE, PermissionCrud.DELETE],
 				};
 			});
 

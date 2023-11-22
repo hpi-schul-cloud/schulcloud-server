@@ -1,12 +1,20 @@
 import { Embeddable, Entity, Index, ManyToOne, Property, Unique, Reference } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from './base.entity';
-import { Permission } from '../interface';
 import { User } from './user.entity';
+
+export enum PermissionCrud {
+	CREATE = 'CREATE',
+	READ = 'READ',
+	UPDATE = 'UPDATE',
+	DELETE = 'DELETE',
+}
 
 @Embeddable()
 export class UserDelta {
-	constructor(data: { userId: string; includedPermissions: Permission[]; excludedPermissions: Permission[] }[]) {
+	constructor(
+		data: { userId: string; includedPermissions: PermissionCrud[]; excludedPermissions: PermissionCrud[] }[]
+	) {
 		data.forEach((userDelta) => {
 			this[userDelta.userId] = {
 				includedPermissions: userDelta.includedPermissions,
@@ -16,8 +24,8 @@ export class UserDelta {
 	}
 
 	[userId: string]: {
-		includedPermissions: Permission[];
-		excludedPermissions: Permission[];
+		includedPermissions: PermissionCrud[];
+		excludedPermissions: PermissionCrud[];
 	};
 }
 
@@ -61,17 +69,17 @@ export class PermissionContextEntity extends BaseEntityWithTimestamps {
 	}
 
 	private resolveUserDelta(userId: User['id']): {
-		includedPermissions: Permission[];
-		excludedPermissions: Permission[];
+		includedPermissions: PermissionCrud[];
+		excludedPermissions: PermissionCrud[];
 	} {
 		const userDelta = this.userDelta[userId] ?? { includedPermissions: [], excludedPermissions: [] };
 
 		return userDelta;
 	}
 
-	public async resolvedPermissions(userId: User['id']): Promise<Permission[]> {
+	public async resolvedPermissions(userId: User['id']): Promise<PermissionCrud[]> {
 		const parent = await this.parentContext;
-		let parentPermissions: Permission[] = [];
+		let parentPermissions: PermissionCrud[] = [];
 		if (parent) {
 			parentPermissions = await parent.resolvedPermissions(userId);
 		}
@@ -84,9 +92,9 @@ export class PermissionContextEntity extends BaseEntityWithTimestamps {
 		return [...new Set(finalPermissions)];
 	}
 
-	public async resolveFullPermissionMatrix(): Promise<Map<string, Permission[]>> {
+	public async resolveFullPermissionMatrix(): Promise<Map<string, PermissionCrud[]>> {
 		const parent = await this.parentContext;
-		let parentPermissionMatrix: Map<string, Permission[]> = new Map();
+		let parentPermissionMatrix: Map<string, PermissionCrud[]> = new Map();
 		if (parent) {
 			parentPermissionMatrix = await parent.resolveFullPermissionMatrix();
 		}

@@ -8,8 +8,8 @@ import {
 	ContentElementType,
 	EntityId,
 	isAnyContentElement,
-	Permission,
 	PermissionContextEntity,
+	PermissionCrud,
 	SubmissionContainerElement,
 	SubmissionItem,
 	UserDelta,
@@ -62,7 +62,7 @@ export class ContentElementService {
 			const updatedStudentsPermissions = course.students.getItems().map((student) => {
 				return {
 					userId: student.id,
-					includedPermissions: [Permission.BOARD_ELEMENT_CAN_SUBMIT],
+					includedPermissions: [PermissionCrud.CREATE],
 					excludedPermissions: [],
 				};
 			});

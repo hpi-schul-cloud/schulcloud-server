@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { BoardExternalReference, Column, ColumnBoard, EntityId, Permission } from '@shared/domain';
+import { BoardExternalReference, Column, ColumnBoard, EntityId, PermissionCrud } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@modules/authorization/domain';
 import { Action, PermissionContextService } from '@modules/authorization';
@@ -25,7 +25,7 @@ export class BoardUc extends BaseUc {
 
 	async findBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {
 		this.logger.debug({ action: 'findBoard', userId, boardId });
-		await this.pocCheckPermission(userId, boardId, [Permission.BOARD_READ]);
+		await this.pocCheckPermission(userId, boardId, [PermissionCrud.READ]);
 
 		const board = await this.columnBoardService.findById(boardId);
 		// await this.checkPermission(userId, board, Action.read);
@@ -37,7 +37,7 @@ export class BoardUc extends BaseUc {
 	async findBoardContext(userId: EntityId, boardId: EntityId): Promise<BoardExternalReference> {
 		this.logger.debug({ action: 'findBoardContext', userId, boardId });
 
-		await this.pocCheckPermission(userId, boardId, [Permission.BOARD_READ]);
+		await this.pocCheckPermission(userId, boardId, [PermissionCrud.READ]);
 		const board = await this.columnBoardService.findById(boardId);
 		// await this.checkPermission(userId, board, Action.read);
 
@@ -47,7 +47,7 @@ export class BoardUc extends BaseUc {
 	async deleteBoard(userId: EntityId, boardId: EntityId): Promise<void> {
 		this.logger.debug({ action: 'deleteBoard', userId, boardId });
 
-		await this.pocCheckPermission(userId, boardId, [Permission.BOARD_DELETE]);
+		await this.pocCheckPermission(userId, boardId, [PermissionCrud.DELETE]);
 		const board = await this.columnBoardService.findById(boardId);
 		// await this.checkPermission(userId, board, Action.write);
 
@@ -57,7 +57,7 @@ export class BoardUc extends BaseUc {
 	async updateBoardTitle(userId: EntityId, boardId: EntityId, title: string): Promise<void> {
 		this.logger.debug({ action: 'updateBoardTitle', userId, boardId, title });
 
-		await this.pocCheckPermission(userId, boardId, [Permission.BOARD_UPDATE_TITLE]);
+		await this.pocCheckPermission(userId, boardId, [PermissionCrud.UPDATE]);
 		const board = await this.columnBoardService.findById(boardId);
 		// await this.checkPermission(userId, board, Action.write);
 
@@ -67,7 +67,7 @@ export class BoardUc extends BaseUc {
 	async createColumn(userId: EntityId, boardId: EntityId): Promise<Column> {
 		this.logger.debug({ action: 'createColumn', userId, boardId });
 
-		await this.pocCheckPermission(userId, boardId, [Permission.BOARD_COLUMN_CREATE]);
+		await this.pocCheckPermission(userId, boardId, [PermissionCrud.CREATE]);
 		const board = await this.columnBoardService.findById(boardId);
 		await this.checkPermission(userId, board, Action.write);
 
@@ -83,8 +83,8 @@ export class BoardUc extends BaseUc {
 	): Promise<void> {
 		this.logger.debug({ action: 'moveColumn', userId, columnId, targetBoardId, targetPosition });
 
-		await this.pocCheckPermission(userId, columnId, [Permission.BOARD_COLUMN_MOVE]);
-		await this.pocCheckPermission(userId, targetBoardId, [Permission.BOARD_COLUMN_MOVE]);
+		await this.pocCheckPermission(userId, columnId, [PermissionCrud.UPDATE]);
+		await this.pocCheckPermission(userId, targetBoardId, [PermissionCrud.UPDATE]);
 
 		const column = await this.columnService.findById(columnId);
 		const targetBoard = await this.columnBoardService.findById(targetBoardId);
