@@ -36,32 +36,54 @@ function isOrganizationResourceCollection(
 	return item._tag === 'resourceCollection';
 }
 
+function isOrganizationItemCollectionArray(
+	children: OrganizationItemCollection[] | OrganizationResourceCollection
+): children is OrganizationItemCollection[] {
+	return Array.isArray(children);
+}
+
+function createRecordForResourceCollection(
+	resourceCollection: OrganizationResourceCollection
+): Record<string, unknown> {
+	return {
+		$: {
+			identifier: resourceCollection.identifier,
+		},
+		title: resourceCollection.title,
+		item: resourceCollection.resources.map((content) => {
+			return {
+				$: {
+					identifier: createIdentifier(),
+					identifierref: content.identifier,
+				},
+				title: content.title,
+			};
+		}),
+	};
+}
+
 export class CommonCartridgeOrganizationItemElement implements ICommonCartridgeElement {
 	constructor(private readonly props: CommonCartridgeOrganizationItemElementProps) {}
 
 	transform(): Record<string, unknown> {
-		if (isOrganizationItemCollection(this.props)) {
-			return {};
+		if (isOrganizationItemCollection(this.props) && isOrganizationItemCollectionArray(this.props.children)) {
+			return {
+				$: {
+					identifier: createIdentifier(),
+				},
+				title: this.props.title,
+				item: this.props.children.map((child) => new CommonCartridgeOrganizationItemElement(child).transform()), // TODO rekursiv weiter?
+			};
+		}
+
+		if (isOrganizationItemCollection(this.props) && !isOrganizationItemCollectionArray(this.props.children)) {
+			return createRecordForResourceCollection(this.props.children);
 		}
 
 		if (isOrganizationResourceCollection(this.props)) {
-			return {};
+			return createRecordForResourceCollection(this.props);
 		}
 
-		return {
-			$: {
-				identifier: this.props.identifier,
-			},
-			title: this.props.title,
-			item: this.props.resources.map((content) => {
-				return {
-					$: {
-						identifier: createIdentifier(),
-						identifierref: content.identifier,
-					},
-					title: content.title,
-				};
-			}),
-		};
+		return {};
 	}
 }
