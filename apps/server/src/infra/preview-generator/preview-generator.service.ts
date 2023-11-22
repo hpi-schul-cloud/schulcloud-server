@@ -62,6 +62,10 @@ export class PreviewGeneratorService {
 			preview.selectFrame(0);
 		}
 
+		if (original.contentType === PreviewInputMimeTypes.IMAGE_GIF) {
+			preview.coalesce();
+		}
+
 		if (width) {
 			preview.resize(width, undefined, '>');
 		}
