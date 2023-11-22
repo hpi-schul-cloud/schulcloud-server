@@ -11,40 +11,25 @@ import {
 	ContentElementType,
 	EntityId,
 	RichTextElement,
-	PermissionContextEntity,
-	UserDelta,
-	Course,
-	isColumn,
-	SubmissionItem,
-	isCard,
-	SubmissionContainerElement,
-	PermissionCrud,
 } from '@shared/domain';
 import { PermissionContextRepo, CourseRepo } from '@shared/repo';
 import { Forbidden } from '@feathersjs/errors';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
-
-const DEFAULT_TEACHER_PERMISSIONS = [
-	PermissionCrud.CREATE,
-	PermissionCrud.READ,
-	PermissionCrud.UPDATE,
-	PermissionCrud.DELETE,
-];
-const DEFAULT_SUBSTITUTE_TEACHER_PERMISSIONS = DEFAULT_TEACHER_PERMISSIONS;
-
-const DEFAULT_STUDENT_PERMISSIONS = [PermissionCrud.READ];
+import { BaseService } from './base.service';
 
 @Injectable()
-export class ColumnBoardService {
+export class ColumnBoardService extends BaseService {
 	constructor(
-		private readonly boardDoRepo: BoardDoRepo,
+		protected readonly boardDoRepo: BoardDoRepo,
 		private readonly boardDoService: BoardDoService,
 		private readonly contentElementFactory: ContentElementFactory,
-		private readonly permissionCtxRepo: PermissionContextRepo,
-		private readonly courseRepo: CourseRepo
-	) {}
+		protected readonly permissionCtxRepo: PermissionContextRepo,
+		protected readonly courseRepo: CourseRepo
+	) {
+		super(permissionCtxRepo, boardDoRepo, courseRepo);
+	}
 
 	async findById(boardId: EntityId): Promise<ColumnBoard> {
 		const board = await this.boardDoRepo.findByClassAndId(ColumnBoard, boardId);
@@ -178,211 +163,5 @@ export class ColumnBoardService {
 		element.text = text;
 
 		return element;
-	}
-
-	// NOTE: this is a idempotent in-place migration for POC purposes
-	private async pocMigrateBoardToPermissionContext(id: EntityId) {
-		const hasPermissionContext = await this.permissionCtxRepo
-			.findByContextReference(id)
-			.then(() => true)
-			.catch((e) => {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				if (e.status === 404) return false;
-				throw e;
-			});
-		const board = await this.boardDoRepo.findById(id, 10);
-
-		if (hasPermissionContext) return;
-
-		if (board instanceof ColumnBoard) {
-			// const contextStore: Map<string, PermissionContextEntity> = new Map();
-
-			const course = await this.courseRepo.findById(board.context.id);
-			await this.pocCreateColumnBoardToPermissionContext(board, course);
-		}
-	}
-
-	private async pocCreateColumnBoardToPermissionContext(
-		columnBoard: ColumnBoard,
-		course: Course
-	): Promise<PermissionContextEntity> {
-		// NOTE: apply migration, defaulting to course context
-
-		// NOTE: hardcoded permissions for POC purposes
-		const studentIds = course.getStudentIds().map((userId) => {
-			return {
-				userId,
-				includedPermissions: DEFAULT_STUDENT_PERMISSIONS,
-				excludedPermissions: [],
-			};
-		});
-		const teacherIds = course.getTeacherIds().map((userId) => {
-			return {
-				userId,
-				includedPermissions: DEFAULT_TEACHER_PERMISSIONS,
-				excludedPermissions: [],
-			};
-		});
-		const substituteTeacherIds = course.getSubstitutionTeacherIds().map((userId) => {
-			return {
-				userId,
-				includedPermissions: DEFAULT_SUBSTITUTE_TEACHER_PERMISSIONS,
-				excludedPermissions: [],
-			};
-		});
-
-		const permissionCtxEntity = new PermissionContextEntity({
-			name: 'ColumnBoard with course context',
-			parentContext: null,
-			contextReference: new ObjectId(columnBoard.id),
-			userDelta: new UserDelta([...studentIds, ...teacherIds, ...substituteTeacherIds]),
-		});
-
-		await this.permissionCtxRepo.save(permissionCtxEntity);
-
-		const columns = columnBoard.children.filter((child): child is Column => isColumn(child));
-		await Promise.all(
-			columns.map(async (column) => this.pocCreateColumnToPermissionContext(column, permissionCtxEntity, course))
-		);
-
-		return permissionCtxEntity;
-	}
-
-	private async pocCreateColumnToPermissionContext(
-		column: Column,
-		parentContext: PermissionContextEntity,
-		course: Course
-	): Promise<PermissionContextEntity> {
-		// NOTE: apply migration, defaulting to course context
-
-		const permissionCtxEntity = new PermissionContextEntity({
-			name: 'Column with course context',
-			parentContext,
-			contextReference: new ObjectId(column.id),
-			userDelta: new UserDelta([]),
-		});
-
-		await this.permissionCtxRepo.save(permissionCtxEntity);
-
-		const { children } = await this.boardDoRepo.findById(column.id, 10);
-
-		const cards = children.filter((child): child is Card => isCard(child));
-
-		await Promise.all(
-			cards.map(async (card) =>
-				this.pocCreateOtherToPermissionContext(card, permissionCtxEntity, course, 'Card with course context')
-			)
-		);
-
-		return permissionCtxEntity;
-	}
-
-	private async pocCreateOtherToPermissionContext<T extends AnyBoardDo>(
-		boardNode: T,
-		parentContext: PermissionContextEntity,
-		course: Course,
-		name = 'Boardnode with course context'
-	): Promise<PermissionContextEntity> {
-		// NOTE: apply migration, defaulting to course context
-
-		let permissionCtxEntity = new PermissionContextEntity({
-			name,
-			parentContext,
-			contextReference: new ObjectId(boardNode.id),
-			userDelta: new UserDelta([]),
-		});
-
-		if (boardNode instanceof SubmissionContainerElement) {
-			const students = course.getStudentIds().map((userId) => {
-				return {
-					userId,
-					includedPermissions: [PermissionCrud.CREATE],
-					excludedPermissions: [],
-				};
-			});
-
-			permissionCtxEntity = new PermissionContextEntity({
-				name: 'SubmissionContainerElement with course context',
-				parentContext,
-				contextReference: new ObjectId(boardNode.id),
-				userDelta: new UserDelta(students),
-			});
-		}
-
-		await this.permissionCtxRepo.save(permissionCtxEntity);
-
-		const elements = boardNode.children.filter((el): el is SubmissionItem => !(el instanceof SubmissionItem));
-		await Promise.all(
-			elements.map((el) =>
-				this.pocCreateOtherToPermissionContext(el, permissionCtxEntity, course, 'Element with course context')
-			)
-		);
-
-		const { children } = await this.boardDoRepo.findById(boardNode.id, 10);
-
-		const submissionItems = children.filter((el): el is SubmissionItem => el instanceof SubmissionItem);
-		await Promise.all(
-			submissionItems.map((submissionItem) =>
-				this.pocCreateSubmissionItemToPermissionContext(submissionItem, permissionCtxEntity, course)
-			)
-		);
-
-		return permissionCtxEntity;
-	}
-
-	private async pocCreateSubmissionItemToPermissionContext(
-		boardNode: SubmissionItem,
-		parentContext: PermissionContextEntity,
-		course: Course
-	): Promise<PermissionContextEntity> {
-		// NOTE: apply migration, defaulting to course context
-		const otherStudentIds = course
-			.getStudentIds()
-			.filter((userId) => userId !== boardNode.userId)
-			.map((userId) => {
-				return {
-					userId,
-					includedPermissions: [],
-					excludedPermissions: [
-						PermissionCrud.UPDATE,
-						PermissionCrud.DELETE,
-						PermissionCrud.CREATE,
-						PermissionCrud.READ,
-					],
-				};
-			});
-
-		const studentIds = [
-			...otherStudentIds,
-			{
-				userId: boardNode.userId,
-				includedPermissions: [PermissionCrud.UPDATE, PermissionCrud.DELETE],
-				excludedPermissions: [],
-			},
-		];
-
-		const permissionCtxEntity = new PermissionContextEntity({
-			name: 'Submission item with course context',
-			parentContext,
-			contextReference: new ObjectId(boardNode.id),
-			userDelta: new UserDelta([...studentIds]),
-		});
-
-		await this.permissionCtxRepo.save(permissionCtxEntity);
-
-		const { children: submissionItemElements } = await this.boardDoRepo.findById(boardNode.id, 10);
-
-		await Promise.all(
-			submissionItemElements.map((el) =>
-				this.pocCreateOtherToPermissionContext(
-					el,
-					permissionCtxEntity,
-					course,
-					'SubmissionItemElement with course context'
-				)
-			)
-		);
-
-		return permissionCtxEntity;
 	}
 }
