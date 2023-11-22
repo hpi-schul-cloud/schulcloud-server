@@ -101,6 +101,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Private</span>
+                                <a href="#checkIfPreviewPossible" >checkIfPreviewPossible</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#downloadOriginFile" >downloadOriginFile</a>
                             </li>
@@ -195,6 +199,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="checkIfPreviewPossible"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>checkIfPreviewPossible</b></span>
+                        <a href="#checkIfPreviewPossible"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkIfPreviewPossible(original: <a href="../interfaces/GetFile.html" target="_self">GetFile</a>, params: <a href="../interfaces/PreviewFileOptions.html" target="_self">PreviewFileOptions</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>original</td>
+                                            <td>
+                                                            <code><a href="../interfaces/GetFile.html" target="_self" >GetFile</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>params</td>
+                                            <td>
+                                                            <code><a href="../interfaces/PreviewFileOptions.html" target="_self" >PreviewFileOptions</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>void | UnprocessableEntityException</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="downloadOriginFile"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -214,8 +299,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="37"
-                                    class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:37</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="50"
+                                    class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:50</a></div>
                         </td>
                     </tr>
 
@@ -353,8 +438,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="43"
-                                    class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:43</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -451,11 +536,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { GetFile, S3ClientAdapter } from &#x27;@infra/s3-client&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { subClass } from &#x27;gm&#x27;;
 import { PassThrough } from &#x27;stream&#x27;;
-import { PreviewFileOptions, PreviewOptions, PreviewResponseMessage } from &#x27;./interface&#x27;;
+import { PreviewFileOptions, PreviewInputMimeTypes, PreviewOptions, PreviewResponseMessage } from &#x27;./interface&#x27;;
 import { PreviewActionsLoggable } from &#x27;./loggable/preview-actions.loggable&#x27;;
 import { PreviewGeneratorBuilder } from &#x27;./preview-generator.builder&#x27;;
 
@@ -472,6 +557,9 @@ export class PreviewGeneratorService {
 		const { originFilePath, previewFilePath, previewOptions } &#x3D; params;
 
 		const original &#x3D; await this.downloadOriginFile(originFilePath);
+
+		this.checkIfPreviewPossible(original, params);
+
 		const preview &#x3D; this.resizeAndConvert(original, previewOptions);
 
 		const file &#x3D; PreviewGeneratorBuilder.buildFile(preview, params.previewOptions);
@@ -486,6 +574,16 @@ export class PreviewGeneratorService {
 		};
 	}
 
+	private checkIfPreviewPossible(original: GetFile, params: PreviewFileOptions): void | UnprocessableEntityException {
+		const isPreviewPossible &#x3D;
+			original.contentType &amp;&amp; Object.values&lt;string&gt;(PreviewInputMimeTypes).includes(original.contentType);
+
+		if (!isPreviewPossible) {
+			this.logger.warning(new PreviewActionsLoggable(&#x27;PreviewGeneratorService.previewNotPossible&#x27;, params));
+			throw new UnprocessableEntityException();
+		}
+	}
+
 	private async downloadOriginFile(pathToFile: string): Promise&lt;GetFile&gt; {
 		const file &#x3D; await this.storageClient.get(pathToFile);
 
@@ -496,6 +594,10 @@ export class PreviewGeneratorService {
 		const { format, width } &#x3D; previewParams;
 
 		const preview &#x3D; this.imageMagick(original.data);
+
+		if (original.contentType &#x3D;&#x3D;&#x3D; PreviewInputMimeTypes.APPLICATION_PDF) {
+			preview.selectFrame(0);
+		}
 
 		if (width) {
 			preview.resize(width, undefined, &#x27;&gt;&#x27;);
