@@ -13,6 +13,7 @@ import {
 	ColumnNode,
 	ExternalToolElementNodeEntity,
 	FileElementNode,
+	LearnstoreElementNodeEntity,
 	LinkElementNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
@@ -100,4 +101,5 @@ export const ALL_ENTITIES = [
 	UserLoginMigrationEntity,
 	VideoConference,
 	GroupEntity,
+	LearnstoreElementNodeEntity,
 ];

@@ -81,10 +81,11 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			BoardNodeType.RICH_TEXT_ELEMENT,
 			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
 			BoardNodeType.EXTERNAL_TOOL,
+			BoardNodeType.LEARNSTORE,
 		]);
 
 		const elements = this.buildChildren<
-			ExternalToolElement | FileElement | LinkElement | RichTextElement | SubmissionContainerElement
+			LearnstoreElement | ExternalToolElement | FileElement | LinkElement | RichTextElement | SubmissionContainerElement
 		>(boardNode);
 
 		const card = new Card({

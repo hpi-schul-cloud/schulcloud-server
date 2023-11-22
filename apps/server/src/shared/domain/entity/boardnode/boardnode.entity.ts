@@ -3,8 +3,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { AnyBoardDo } from '../../domainobject';
 import { EntityId } from '../../types';
 import { BaseEntityWithTimestamps } from '../base.entity';
-import { BoardDoBuilder } from './types';
-import { BoardNodeType } from './types/board-node-type';
+import { BoardDoBuilder, BoardNodeType } from './types';
 
 const PATH_SEPARATOR = ',';
 

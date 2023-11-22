@@ -26,7 +26,3 @@ export class LearnstoreElement extends BoardComposite<LearnstoreElementProps> {
 export interface LearnstoreElementProps extends BoardCompositeProps {
 	someId?: string;
 }
-
-export function isLearnstoreElement(reference: unknown): reference is LearnstoreElement {
-	return reference instanceof LearnstoreElement;
-}

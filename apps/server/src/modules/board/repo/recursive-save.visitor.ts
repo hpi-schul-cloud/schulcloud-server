@@ -190,8 +190,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			someId: learnstoreElement.someId,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(learnstoreElement, boardNode);
+		this.saveRecursive(boardNode, learnstoreElement);
 	}
 
 	private visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {
