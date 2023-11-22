@@ -1,5 +1,5 @@
-const service = require('../../../utils/feathers-mongoose');
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const service = require('../../../../src/utils/feathers-mongoose');
 
 const { BadRequest } = require('../../../../src/errors');
 

@@ -7,7 +7,7 @@ const Material = require('../../../src/services/content/material-model');
 const { cleanup, createTestCourse, createTestUser, createTestLesson, generateRequestParamsFromUser } =
 	require('../helpers/testObjects')(appPromise());
 
-describe.only('material service', () => {
+describe('material service', () => {
 	let app;
 	let server;
 	let nestServices;

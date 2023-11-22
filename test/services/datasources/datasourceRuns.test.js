@@ -38,7 +38,7 @@ class MockSyncerWithData extends Syncer {
 	}
 }
 
-describe.only('datasourceRuns service', () => {
+describe('datasourceRuns service', () => {
 	let app;
 	let datasourceRunsService;
 	let server;
@@ -57,8 +57,8 @@ describe.only('datasourceRuns service', () => {
 		app.unuse('/sync/userAccount');
 		app.unuse('/sync');
 		// eslint-disable-next-line global-require
-		//const sync = require('../../../src/services/sync');
-		//app.configure(sync);
+		const sync = require('../../../src/services/sync');
+		app.configure(sync);
 		server = await app.listen(0);
 	});
 

@@ -6,7 +6,7 @@ const appPromise = require('../../../../src/app');
 const AbstractLDAPStrategy = require('../../../../src/services/ldap/strategies/interface');
 const IservIdmLDAPStrategy = require('../../../../src/services/ldap/strategies/iserv-idm');
 
-describe.only('IservIdmLDAPStrategy', () => {
+describe('IservIdmLDAPStrategy', () => {
 	it('implements AbstractLDAPStrategy', () => {
 		expect(new IservIdmLDAPStrategy()).to.be.instanceOf(AbstractLDAPStrategy);
 	});
