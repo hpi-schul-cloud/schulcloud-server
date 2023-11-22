@@ -1,19 +1,19 @@
 import { createMock } from '@golevelup/ts-jest';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-	ISchoolProperties,
 	LegacySchoolDo,
 	SchoolEntity,
+	SchoolProperties,
 	SchoolRolePermission,
 	SchoolRoles,
 	SchoolYearEntity,
 	SystemEntity,
 	UserLoginMigrationEntity,
 } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import {
 	legacySchoolDoFactory,
 	schoolFactory,
@@ -241,10 +241,10 @@ describe('LegacySchoolRepo', () => {
 			};
 		};
 
-		it('should map SchoolDO properties to ISchoolProperties', async () => {
+		it('should map SchoolDO properties to SchoolProperties', async () => {
 			const { entityDO, emGetReferenceSpy, system1, system2, userLoginMigration } = await setup();
 
-			const result: ISchoolProperties = repo.mapDOToEntityProperties(entityDO);
+			const result: SchoolProperties = repo.mapDOToEntityProperties(entityDO);
 
 			expect(result.externalId).toEqual(entityDO.externalId);
 			expect(result.features).toEqual(entityDO.features);

@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentType, IComponentProperties, LessonEntity } from '@shared/domain';
+import { ComponentProperties, ComponentType, LessonEntity } from '@shared/domain';
 import { cleanupCollections, courseFactory, lessonFactory, materialFactory, taskFactory } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@infra/database';
@@ -165,7 +165,7 @@ describe('LessonRepo', () => {
 		it('should return lessons which contains a specific userId', async () => {
 			// Arrange
 			const userId = new ObjectId().toHexString();
-			const contentExample: IComponentProperties = {
+			const contentExample: ComponentProperties = {
 				title: 'title',
 				hidden: false,
 				user: userId,
@@ -195,7 +195,7 @@ describe('LessonRepo', () => {
 		it('should update Lessons without deleted user', async () => {
 			// Arrange
 			const userId = new ObjectId().toHexString();
-			const contentExample: IComponentProperties = {
+			const contentExample: ComponentProperties = {
 				title: 'title',
 				hidden: false,
 				user: userId,

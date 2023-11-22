@@ -5,6 +5,8 @@ import { OauthProviderServiceModule } from '@infra/oauth-provider';
 import { EncryptionModule } from '@infra/encryption';
 import { ExternalToolRepo } from '@shared/repo';
 import { ToolConfigModule } from '../tool-config.module';
+import { ExternalToolMetadataMapper } from './mapper';
+import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
 import {
 	ExternalToolConfigurationService,
 	ExternalToolLogoService,
@@ -13,6 +15,7 @@ import {
 	ExternalToolServiceMapper,
 	ExternalToolValidationService,
 	ExternalToolVersionIncrementService,
+	ExternalToolMetadataService,
 } from './service';
 import { CommonToolModule } from '../common';
 
@@ -27,6 +30,9 @@ import { CommonToolModule } from '../common';
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
 		ExternalToolRepo,
+		ExternalToolMetadataService,
+		ExternalToolMetadataMapper,
+		ToolContextMapper,
 	],
 	exports: [
 		ExternalToolService,
@@ -34,6 +40,7 @@ import { CommonToolModule } from '../common';
 		ExternalToolVersionIncrementService,
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
+		ExternalToolMetadataService,
 	],
 })
 export class ExternalToolModule {}

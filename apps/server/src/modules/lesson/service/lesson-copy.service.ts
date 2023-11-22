@@ -1,22 +1,21 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { CopyDictionary, CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyFilesService, FileUrlReplacement } from '@modules/files-storage-client';
+import { TaskCopyService } from '@modules/task/service/task-copy.service';
 import { Injectable } from '@nestjs/common';
 import {
+	ComponentEtherpadProperties,
+	ComponentGeogebraProperties,
+	ComponentLernstoreProperties,
+	ComponentNexboardProperties,
+	ComponentProperties,
+	ComponentTextProperties,
 	ComponentType,
-	IComponentEtherpadProperties,
-	IComponentGeogebraProperties,
-	IComponentLernstoreProperties,
-	IComponentNexboardProperties,
-	IComponentProperties,
-	IComponentTextProperties,
 	LessonEntity,
 	Material,
 } from '@shared/domain';
-import { LessonRepo } from '@shared/repo';
-import { CopyDictionary, CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { CopyFilesService } from '@modules/files-storage-client';
-import { FileUrlReplacement } from '@modules/files-storage-client/service/copy-files.service';
-import { TaskCopyService } from '@modules/task/service/task-copy.service';
 import { randomBytes } from 'crypto';
+import { LessonRepo } from '../repository';
 import { LessonCopyParams } from '../types';
 import { EtherpadService } from './etherpad.service';
 import { NexboardService } from './nexboard.service';
@@ -109,7 +108,7 @@ export class LessonCopyService {
 			return lessonStatus;
 		}
 
-		copiedLesson.contents = copiedLesson.contents.map((value: IComponentProperties) =>
+		copiedLesson.contents = copiedLesson.contents.map((value: ComponentProperties) =>
 			this.updateCopiedEmbeddedTaskId(value, copyDict)
 		);
 
@@ -118,10 +117,7 @@ export class LessonCopyService {
 		return lessonStatus;
 	}
 
-	private updateCopiedEmbeddedTaskId = (
-		value: IComponentProperties,
-		copyDict: CopyDictionary
-	): IComponentProperties => {
+	private updateCopiedEmbeddedTaskId = (value: ComponentProperties, copyDict: CopyDictionary): ComponentProperties => {
 		if (value.component !== ComponentType.INTERNAL || value.content === undefined || value.content.url === undefined) {
 			return value;
 		}
@@ -145,10 +141,10 @@ export class LessonCopyService {
 	};
 
 	private replaceUrlsInContents(
-		contents: IComponentProperties[],
+		contents: ComponentProperties[],
 		fileUrlReplacements: FileUrlReplacement[]
-	): IComponentProperties[] {
-		contents = contents.map((item: IComponentProperties) => {
+	): ComponentProperties[] {
+		contents = contents.map((item: ComponentProperties) => {
 			if (item.component === 'text' && item.content && 'text' in item.content && item.content.text) {
 				let { text } = item.content;
 				fileUrlReplacements.forEach(({ regex, replacement }) => {
@@ -163,15 +159,15 @@ export class LessonCopyService {
 	}
 
 	private async copyLessonContent(
-		content: IComponentProperties[],
+		content: ComponentProperties[],
 		params: LessonCopyParams
 	): Promise<{
-		copiedContent: IComponentProperties[];
+		copiedContent: ComponentProperties[];
 		contentStatus: CopyStatus[];
 	}> {
 		const etherpadEnabled = Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean;
 		const nexboardEnabled = Configuration.get('FEATURE_NEXBOARD_ENABLED') as boolean;
-		const copiedContent: IComponentProperties[] = [];
+		const copiedContent: ComponentProperties[] = [];
 		const copiedContentStatus: CopyStatus[] = [];
 		for (let i = 0; i < content.length; i += 1) {
 			const element = content[i];
@@ -247,20 +243,20 @@ export class LessonCopyService {
 		return { copiedContent, contentStatus };
 	}
 
-	private copyTextContent(element: IComponentProperties): IComponentProperties {
+	private copyTextContent(element: ComponentProperties): ComponentProperties {
 		return {
 			title: element.title,
 			hidden: element.hidden,
 			component: ComponentType.TEXT,
 			user: element.user, // TODO should be params.user - but that made the server crash, but property is normally undefined
 			content: {
-				text: (element.content as IComponentTextProperties).text,
+				text: (element.content as ComponentTextProperties).text,
 			},
 		};
 	}
 
-	private copyLernStore(element: IComponentProperties): IComponentProperties {
-		const lernstore: IComponentProperties = {
+	private copyLernStore(element: ComponentProperties): ComponentProperties {
+		const lernstore: ComponentProperties = {
 			title: element.title,
 			hidden: element.hidden,
 			component: ComponentType.LERNSTORE,
@@ -268,7 +264,7 @@ export class LessonCopyService {
 		};
 
 		if (element.content) {
-			const resources = ((element.content as IComponentLernstoreProperties).resources ?? []).map(
+			const resources = ((element.content as ComponentLernstoreProperties).resources ?? []).map(
 				({ client, description, merlinReference, title, url }) => {
 					const result = {
 						client,
@@ -281,27 +277,27 @@ export class LessonCopyService {
 				}
 			);
 
-			const lernstoreContent: IComponentLernstoreProperties = { resources };
+			const lernstoreContent: ComponentLernstoreProperties = { resources };
 			lernstore.content = lernstoreContent;
 		}
 
 		return lernstore;
 	}
 
-	private static copyGeogebra(originalElement: IComponentProperties): IComponentProperties {
-		const copy = { ...originalElement, hidden: true } as IComponentProperties;
-		copy.content = { ...copy.content, materialId: '' } as IComponentGeogebraProperties;
+	private static copyGeogebra(originalElement: ComponentProperties): ComponentProperties {
+		const copy = { ...originalElement, hidden: true } as ComponentProperties;
+		copy.content = { ...copy.content, materialId: '' } as ComponentGeogebraProperties;
 		delete copy._id;
 		return copy;
 	}
 
 	private async copyEtherpad(
-		originalElement: IComponentProperties,
+		originalElement: ComponentProperties,
 		params: LessonCopyParams
-	): Promise<IComponentProperties | false> {
-		const copy = { ...originalElement } as IComponentProperties;
+	): Promise<ComponentProperties | false> {
+		const copy = { ...originalElement } as ComponentProperties;
 		delete copy._id;
-		const content = { ...copy.content, url: '' } as IComponentEtherpadProperties;
+		const content = { ...copy.content, url: '' } as ComponentEtherpadProperties;
 		content.title = randomBytes(12).toString('hex');
 
 		const etherpadPadId = await this.etherpadService.createEtherpad(
@@ -319,12 +315,12 @@ export class LessonCopyService {
 	}
 
 	private async copyNexboard(
-		originalElement: IComponentProperties,
+		originalElement: ComponentProperties,
 		params: LessonCopyParams
-	): Promise<IComponentProperties | false> {
-		const copy = { ...originalElement } as IComponentProperties;
+	): Promise<ComponentProperties | false> {
+		const copy = { ...originalElement } as ComponentProperties;
 		delete copy._id;
-		const content = { ...copy.content, url: '', board: '' } as IComponentNexboardProperties;
+		const content = { ...copy.content, url: '', board: '' } as ComponentNexboardProperties;
 
 		const nexboard = await this.nexboardService.createNexboard(params.user.id, content.title, content.description);
 		if (nexboard) {
@@ -389,8 +385,8 @@ export class LessonCopyService {
 		return { copiedMaterials, materialsStatus };
 	}
 
-	private copyEmbeddedTaskLink(originalElement: IComponentProperties) {
-		const copy = JSON.parse(JSON.stringify(originalElement)) as IComponentProperties;
+	private copyEmbeddedTaskLink(originalElement: ComponentProperties) {
+		const copy = JSON.parse(JSON.stringify(originalElement)) as ComponentProperties;
 		delete copy._id;
 		return copy;
 	}

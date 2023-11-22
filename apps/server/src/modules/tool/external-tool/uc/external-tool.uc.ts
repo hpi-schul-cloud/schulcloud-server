@@ -2,8 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { EntityId, IFindOptions, Page, Permission, User } from '@shared/domain';
 import { AuthorizationService } from '@modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { ExternalTool, ExternalToolConfig } from '../domain';
-import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
+import { ExternalTool, ExternalToolConfig, ExternalToolMetadata } from '../domain';
+import {
+	ExternalToolLogoService,
+	ExternalToolService,
+	ExternalToolValidationService,
+	ExternalToolMetadataService,
+} from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
 
 @Injectable()
@@ -12,7 +17,8 @@ export class ExternalToolUc {
 		private readonly externalToolService: ExternalToolService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly toolValidationService: ExternalToolValidationService,
-		private readonly externalToolLogoService: ExternalToolLogoService
+		private readonly externalToolLogoService: ExternalToolLogoService,
+		private readonly externalToolMetadataService: ExternalToolMetadataService
 	) {}
 
 	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
@@ -72,6 +78,15 @@ export class ExternalToolUc {
 
 		const promise: Promise<void> = this.externalToolService.deleteExternalTool(toolId);
 		return promise;
+	}
+
+	async getMetadataForExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolMetadata> {
+		// TODO N21-1496: Change External Tools to use authorizationService.checkPermission
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
+		const metadata: ExternalToolMetadata = await this.externalToolMetadataService.getMetadata(toolId);
+
+		return metadata;
 	}
 
 	private async ensurePermission(userId: EntityId, permission: Permission) {

@@ -53,10 +53,11 @@ export class SanisResponseMapper {
 
 	mapToExternalUserDto(source: SanisResponse): ExternalUserDto {
 		const mapped = new ExternalUserDto({
-			firstName: source.person.name.vorname,
-			lastName: source.person.name.familienname,
+			firstName: source.person.name?.vorname,
+			lastName: source.person.name?.familienname,
 			roles: [this.mapSanisRoleToRoleName(source)],
 			externalId: source.pid,
+			birthday: source.person.geburt?.datum ? new Date(source.person.geburt?.datum) : undefined,
 		});
 
 		return mapped;
