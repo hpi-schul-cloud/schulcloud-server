@@ -77,11 +77,9 @@ export class DeletionClient {
 
 			if (resp.status !== 204) {
 				// Throw an error if any other status code (other than expected "204 No Content" is returned).
-				const err = new Error(`invalid HTTP status code in a response from the server - ${resp.status} instead of 204`);
-
-				throw new BadGatewayException('DeletionClient:executeDeletions', ErrorUtils.createHttpExceptionOptions(err));
+				throw new Error(`invalid HTTP status code in a response from the server - ${resp.status} instead of 204`);
 			}
-		} catch (err: unknown) {
+		} catch (err) {
 			// Throw an error if sending deletion request(s) execution trigger has failed.
 			throw new BadGatewayException('DeletionClient:executeDeletions', ErrorUtils.createHttpExceptionOptions(err));
 		}
