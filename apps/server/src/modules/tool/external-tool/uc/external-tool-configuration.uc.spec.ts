@@ -672,7 +672,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				await uc.getToolContextTypes(userId);
 
-				expect(contextExternalToolService.getToolContextTypes).toHaveBeenCalled();
+				expect(externalToolConfigurationService.getToolContextTypes).toHaveBeenCalled();
 			});
 		});
 	});

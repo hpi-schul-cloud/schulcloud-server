@@ -8,13 +8,14 @@ import {
 	setupEntities,
 } from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
-import { CustomParameterScope } from '../../common/enum';
+import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ContextExternalToolTemplateInfo } from '../uc';
 import { ExternalToolConfigurationService } from './external-tool-configuration.service';
+import { ToolContextTypesList } from '../controller/dto/response/tool-context-types-list';
 
 describe('ExternalToolConfigurationService', () => {
 	let module: TestingModule;
@@ -207,6 +208,16 @@ describe('ExternalToolConfigurationService', () => {
 				service.filterParametersForScope(externalTool, scope);
 
 				expect(externalTool.parameters?.every((parameter: CustomParameter) => parameter.scope === scope)).toBe(true);
+			});
+		});
+	});
+
+	describe('getToolContextTypes', () => {
+		describe('when it is called', () => {
+			it('should return ToolContextTypes', () => {
+				const types: ToolContextTypesList = service.getToolContextTypes();
+
+				expect(types).toEqual({ data: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT] });
 			});
 		});
 	});

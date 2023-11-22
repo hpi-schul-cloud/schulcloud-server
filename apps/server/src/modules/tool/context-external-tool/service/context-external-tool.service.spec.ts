@@ -217,14 +217,4 @@ describe('ContextExternalToolService', () => {
 			});
 		});
 	});
-
-	describe('getToolContextTypes', () => {
-		describe('when it is called', () => {
-			it('should return ToolContextTypes', () => {
-				const types: ToolContextTypesList = service.getToolContextTypes();
-
-				expect(types).toEqual({ data: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT] });
-			});
-		});
-	});
 });

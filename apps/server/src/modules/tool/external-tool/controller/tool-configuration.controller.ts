@@ -20,9 +20,8 @@ import {
 	SchoolExternalToolConfigurationTemplateResponse,
 	SchoolExternalToolIdParams,
 	SchoolIdParams,
+	ToolContextTypesList,
 } from './dto';
-import { ToolContextType } from '../../common/enum';
-import { ToolContextTypesList } from './dto/response/tool-context-types-list';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

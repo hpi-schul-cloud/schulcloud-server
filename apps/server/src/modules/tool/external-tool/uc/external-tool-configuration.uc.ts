@@ -29,7 +29,7 @@ export class ExternalToolConfigurationUc {
 	public async getToolContextTypes(userId: EntityId): Promise<ToolContextTypesList> {
 		await this.toolPermissionHelper.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		const toolContextTypes: ToolContextTypesList = this.contextExternalToolService.getToolContextTypes();
+		const toolContextTypes: ToolContextTypesList = this.externalToolConfigurationService.getToolContextTypes();
 
 		return toolContextTypes;
 	}

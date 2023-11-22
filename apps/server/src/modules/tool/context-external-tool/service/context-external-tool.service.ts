@@ -49,10 +49,4 @@ export class ContextExternalToolService {
 
 		return contextExternalTools;
 	}
-
-	public getToolContextTypes(): ToolContextTypesList {
-		const toolContextTypes: ToolContextTypesList = { data: Object.values(ToolContextType) };
-
-		return toolContextTypes;
-	}
 }

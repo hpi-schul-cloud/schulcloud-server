@@ -1,12 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EntityId, Page } from '@shared/domain';
 import { CustomParameter } from '../../common/domain';
-import { CustomParameterScope } from '../../common/enum';
+import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ContextExternalToolTemplateInfo } from '../uc/dto';
+import { ToolContextTypesList } from '../controller/dto/response/tool-context-types-list';
 
 @Injectable()
 export class ExternalToolConfigurationService {
@@ -80,5 +81,11 @@ export class ExternalToolConfigurationService {
 				(parameter: CustomParameter) => parameter.scope === scope
 			);
 		}
+	}
+
+	public getToolContextTypes(): ToolContextTypesList {
+		const toolContextTypes: ToolContextTypesList = { data: Object.values(ToolContextType) };
+
+		return toolContextTypes;
 	}
 }
