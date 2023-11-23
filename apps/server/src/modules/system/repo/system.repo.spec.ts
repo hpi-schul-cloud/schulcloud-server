@@ -4,7 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { cleanupCollections, systemEntityFactory } from '@shared/testing';
-import { SystemProps } from '../domain';
+import { System, SystemProps } from '../domain';
+import { SystemDomainMapper } from './system-domain.mapper';
 import { SystemRepo } from './system.repo';
 
 describe(SystemRepo.name, () => {
@@ -116,6 +117,60 @@ describe(SystemRepo.name, () => {
 				const result = await repo.findById(new ObjectId().toHexString());
 
 				expect(result).toBeNull();
+			});
+		});
+	});
+
+	describe('delete', () => {
+		describe('when the system exists', () => {
+			const setup = async () => {
+				const systemEntity: SystemEntity = systemEntityFactory.buildWithId();
+
+				await em.persistAndFlush([systemEntity]);
+				em.clear();
+
+				const props: SystemProps = SystemDomainMapper.mapEntityToDomainObjectProperties(systemEntity);
+				const system: System = new System(props);
+
+				return {
+					system,
+				};
+			};
+
+			it('should delete the system', async () => {
+				const { system } = await setup();
+
+				await repo.delete(system);
+
+				expect(await em.findOne(SystemEntity, { id: system.id })).toBeNull();
+			});
+
+			it('should return true', async () => {
+				const { system } = await setup();
+
+				const result = await repo.delete(system);
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when the system does not exists', () => {
+			const setup = () => {
+				const systemEntity: SystemEntity = systemEntityFactory.buildWithId();
+				const props: SystemProps = SystemDomainMapper.mapEntityToDomainObjectProperties(systemEntity);
+				const system: System = new System(props);
+
+				return {
+					system,
+				};
+			};
+
+			it('should return false', async () => {
+				const { system } = setup();
+
+				const result = await repo.delete(system);
+
+				expect(result).toEqual(false);
 			});
 		});
 	});
