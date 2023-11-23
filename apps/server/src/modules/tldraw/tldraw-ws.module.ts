@@ -1,15 +1,34 @@
-import { Module } from '@nestjs/common';
+import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@src/config';
+import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
+import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
+import { TldrawDrawing } from '@modules/tldraw/entities';
+import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { TldrawBoardRepo, YMongodb } from './repo';
 import { TldrawWsService } from './service';
 import { TldrawWs } from './controller';
 import { config } from './config';
 
+const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
+	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
+};
 @Module({
-	imports: [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))],
+	imports: [
+		CoreModule,
+		MikroOrmModule.forRoot({
+			...defaultMikroOrmOptions,
+			type: 'mongo',
+			clientUrl: DB_URL,
+			password: DB_PASSWORD,
+			user: DB_USERNAME,
+			entities: [TldrawDrawing],
+		}),
+		ConfigModule.forRoot(createConfigModuleOptions(config)),
+	],
 	providers: [Logger, TldrawWs, TldrawWsService, TldrawBoardRepo, YMongodb],
 })
 export class TldrawWsModule {}

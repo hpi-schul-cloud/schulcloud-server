@@ -15,7 +15,7 @@ export class YMongodb {
 
 	private _transact;
 
-	constructor(readonly configService: ConfigService<TldrawConfig, true>, private readonly _em: EntityManager) {
+	constructor(private readonly configService: ConfigService<TldrawConfig, true>, private readonly _em: EntityManager) {
 		this.flushSize = this.configService.get<number>('TLDRAW_DB_FLUSH_SIZE') ?? 400;
 		const adapter = new MongodbAdapter(configService, _em);
 
