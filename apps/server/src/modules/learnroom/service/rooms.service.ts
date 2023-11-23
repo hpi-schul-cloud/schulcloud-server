@@ -3,8 +3,9 @@ import { ColumnBoardService } from '@modules/board';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
-import { Board, ColumnBoardTarget, EntityId } from '@shared/domain';
+import { Board, ColumnBoardTarget } from '@shared/domain';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { BoardRepo } from '@shared/repo';
 import { ColumnBoardTargetService } from './column-board-target.service';
 

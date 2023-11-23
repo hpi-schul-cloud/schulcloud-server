@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { Counted, EntityId, Submission } from '@shared/domain';
-import { SubmissionRepo } from '@shared/repo';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { Injectable } from '@nestjs/common';
+import { Submission } from '@shared/domain';
+import { Counted, EntityId } from '@shared/domain/types';
+import { SubmissionRepo } from '@shared/repo';
 
 @Injectable()
 export class SubmissionService {

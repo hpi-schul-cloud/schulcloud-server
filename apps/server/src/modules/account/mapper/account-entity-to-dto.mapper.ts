@@ -1,4 +1,5 @@
-import { Account, Counted } from '@shared/domain';
+import { Account } from '@shared/domain';
+import { Counted } from '@shared/domain/types';
 import { AccountDto } from '../services/dto/account.dto';
 
 export class AccountEntityToDtoMapper {

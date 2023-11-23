@@ -7,20 +7,16 @@ import { BadRequestException, ForbiddenException, Injectable, InternalServerErro
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import {
 	Account,
-	Counted,
-	EntityId,
 	IFindOptions,
-	IImportUserScope,
 	ImportUser,
 	MatchCreator,
-	MatchCreatorScope,
-	NameMatch,
 	Permission,
 	SchoolFeatures,
 	SystemEntity,
 	User,
 } from '@shared/domain';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
+import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from '@shared/domain/types';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { AccountSaveDto } from '../../account/services/dto';

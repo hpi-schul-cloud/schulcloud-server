@@ -1,13 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId, Permission } from '@shared/domain';
 import { AuthorizationContext, AuthorizationContextBuilder } from '@modules/authorization';
+import { Injectable } from '@nestjs/common';
+import { Permission } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { SchoolExternalTool, SchoolExternalToolMetadata } from '../domain';
 import {
+	SchoolExternalToolMetadataService,
 	SchoolExternalToolService,
 	SchoolExternalToolValidationService,
-	SchoolExternalToolMetadataService,
 } from '../service';
 import { SchoolExternalToolDto, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 

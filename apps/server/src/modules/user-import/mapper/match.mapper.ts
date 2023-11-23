@@ -1,5 +1,6 @@
-import { MatchCreator, MatchCreatorScope } from '@shared/domain';
-import { MatchType, FilterMatchType } from '../controller/dto';
+import { MatchCreator } from '@shared/domain';
+import { MatchCreatorScope } from '@shared/domain/types';
+import { FilterMatchType, MatchType } from '../controller/dto';
 
 export class ImportUserMatchMapper {
 	static mapImportUserMatchScopeToDomain(match: FilterMatchType): MatchCreatorScope {

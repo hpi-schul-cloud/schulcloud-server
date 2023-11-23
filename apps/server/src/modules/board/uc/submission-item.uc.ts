@@ -7,7 +7,6 @@ import {
 	NotFoundException,
 	UnprocessableEntityException,
 } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
 import {
 	ContentElementType,
 	FileElement,
@@ -20,6 +19,7 @@ import {
 	UserBoardRoles,
 	UserRoleEnum,
 } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { BaseUc } from './base.uc';
 

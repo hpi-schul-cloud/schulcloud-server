@@ -1,4 +1,5 @@
-import { EntityId, LanguageType } from '@shared/domain';
+import { LanguageType } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 
 export class UserDto {
 	constructor(user: UserDto) {

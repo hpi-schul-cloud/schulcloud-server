@@ -1,8 +1,9 @@
 import { ColumnBoardService, ContentElementService } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
 import { Injectable } from '@nestjs/common';
-import { Course, EntityId } from '@shared/domain';
+import { Course } from '@shared/domain';
 import { AnyContentElementDo, BoardExternalReferenceType, ColumnBoard } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 
 import { CustomParameterType, ToolContextType } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';

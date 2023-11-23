@@ -2,8 +2,8 @@ import { Injectable, NotFoundException, UnprocessableEntityException } from '@ne
 import { ObjectId } from 'bson';
 
 import { ValidationError } from '@shared/common';
-import { EntityId } from '@shared/domain';
 import { isSubmissionContainerElement, SubmissionContainerElement, SubmissionItem } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';

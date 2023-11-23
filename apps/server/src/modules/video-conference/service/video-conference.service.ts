@@ -6,7 +6,6 @@ import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import {
 	Course,
-	EntityId,
 	Permission,
 	RoleName,
 	SchoolFeatures,
@@ -16,6 +15,7 @@ import {
 	VideoConferenceScope,
 } from '@shared/domain';
 import { RoleReference, UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';

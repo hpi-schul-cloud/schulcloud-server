@@ -1,6 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BoardNode, EntityId } from '@shared/domain';
+import { BoardNode } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 
 @Injectable()
 export class BoardNodeRepo {

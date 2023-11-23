@@ -1,7 +1,8 @@
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import { Counted, IdmAccount, IdmAccountUpdate } from '@shared/domain';
+import { IdmAccount, IdmAccountUpdate } from '@shared/domain';
+import { Counted } from '@shared/domain/types';
 import { IdentityManagementService, SearchOptions } from '../../identity-management.service';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 

@@ -11,9 +11,9 @@ import { ContextExternalToolQuery } from '@modules/tool/context-external-tool/uc
 import { SchoolExternalToolRefDO } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { BaseDORepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { EntityId } from '../../domain';
 import { ExternalToolRepoMapper } from '../externaltool';
 import { ContextExternalToolScope } from './context-external-tool.scope';
 

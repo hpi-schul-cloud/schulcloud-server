@@ -1,7 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, User } from '@shared/domain';
+import { User } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { ForbiddenLoggableException } from '../error';
 import { AuthorizationContext } from '../type';

@@ -1,8 +1,8 @@
 import { Action } from '@modules/authorization';
 import { AuthorizationService } from '@modules/authorization/domain';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
 import { BoardExternalReference, Column, ColumnBoard } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { CardService, ColumnBoardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';

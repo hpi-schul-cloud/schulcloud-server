@@ -4,8 +4,9 @@ import { OAuthService, OAuthTokenDto } from '@modules/oauth';
 import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { EntityId, Permission, User } from '@shared/domain';
+import { Permission, User } from '@shared/domain';
 import { LegacySchoolDo, Page, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import {
 	ExternalSchoolNumberMissingLoggableException,

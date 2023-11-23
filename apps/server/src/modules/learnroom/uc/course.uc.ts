@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PaginationParams } from '@shared/controller/';
-import { Counted, Course, EntityId, SortOrder } from '@shared/domain';
+import { Course, SortOrder } from '@shared/domain';
+import { Counted, EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
 
 @Injectable()

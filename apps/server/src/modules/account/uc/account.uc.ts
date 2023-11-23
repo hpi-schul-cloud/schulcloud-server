@@ -8,7 +8,8 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
-import { Account, EntityId, Permission, PermissionService, Role, RoleName, SchoolEntity, User } from '@shared/domain';
+import { Account, Permission, PermissionService, Role, RoleName, SchoolEntity, User } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 
 import { ICurrentUser } from '@modules/authentication';

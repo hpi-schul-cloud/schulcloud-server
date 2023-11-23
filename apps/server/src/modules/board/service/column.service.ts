@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
 import { Column, ColumnBoard } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';

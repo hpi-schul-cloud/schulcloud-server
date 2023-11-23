@@ -1,8 +1,8 @@
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '@shared/repo';
 
 @Injectable()

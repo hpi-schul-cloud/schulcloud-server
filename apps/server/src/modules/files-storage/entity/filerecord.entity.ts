@@ -1,7 +1,8 @@
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
-import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
+import { BaseEntityWithTimestamps } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import path from 'path';
 import { v4 as uuid } from 'uuid';
 import { ErrorType } from '../error';

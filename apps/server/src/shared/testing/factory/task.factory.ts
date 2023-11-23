@@ -1,5 +1,6 @@
-import { Task, TaskProperties } from '@shared/domain';
+import { Task } from '@shared/domain';
 import { User } from '@shared/domain/entity';
+import { TaskProperties } from '@shared/domain/types';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 import { schoolFactory } from './school.factory';

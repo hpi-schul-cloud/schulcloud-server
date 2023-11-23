@@ -3,8 +3,9 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { SystemDto, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId, SchoolFeatures, SystemTypeEnum } from '@shared/domain';
+import { SchoolFeatures } from '@shared/domain';
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { EntityId, SystemTypeEnum } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import {
 	UserLoginMigrationAlreadyClosedLoggableException,

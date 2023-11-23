@@ -1,4 +1,5 @@
-import { EntityId, TaskWithStatusVo } from '@shared/domain';
+import { TaskWithStatusVo } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 
 export type RoomBoardDTO = {
 	roomId: string;

@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { Loggable, LogMessage } from '@src/core/logger';
 
 export class UserMigrationSuccessfulLoggable implements Loggable {

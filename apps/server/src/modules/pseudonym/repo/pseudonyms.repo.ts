@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain';
 import { Pseudonym } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { PseudonymEntity, PseudonymEntityProps } from '../entity';
 
 export class PseudonymsRepo {

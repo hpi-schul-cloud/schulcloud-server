@@ -3,7 +3,6 @@ import { UserQuery } from '@modules/user/service/user-query.type';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import {
-	EntityId,
 	IFindOptions,
 	Pagination,
 	Role,
@@ -17,6 +16,7 @@ import {
 import { RoleReference } from '@shared/domain/domainobject';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { EntityId } from '@shared/domain/types';
 import { BaseDORepo, Scope } from '@shared/repo';
 import { UserScope } from './user.scope';
 

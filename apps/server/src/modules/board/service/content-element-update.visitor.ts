@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller';
-import { InputFormat } from '@shared/domain';
 import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
@@ -14,6 +13,7 @@ import {
 	SubmissionItem,
 } from '@shared/domain/domainobject';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { InputFormat } from '@shared/domain/types';
 import {
 	AnyElementContentBody,
 	ExternalToolContentBody,

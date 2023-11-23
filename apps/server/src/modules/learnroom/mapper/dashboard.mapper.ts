@@ -1,5 +1,6 @@
-import { DashboardEntity, GridElementWithPosition, LearnroomMetadata } from '@shared/domain';
-import { DashboardResponse, DashboardGridElementResponse, DashboardGridSubElementResponse } from '../controller/dto';
+import { DashboardEntity, GridElementWithPosition } from '@shared/domain';
+import { LearnroomMetadata } from '@shared/domain/types';
+import { DashboardGridElementResponse, DashboardGridSubElementResponse, DashboardResponse } from '../controller/dto';
 
 export class DashboardMapper {
 	static mapToResponse(dashboard: DashboardEntity): DashboardResponse {

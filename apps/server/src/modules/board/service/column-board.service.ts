@@ -1,7 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { EntityId } from '@shared/domain';
 import {
 	AnyBoardDo,
 	BoardExternalReference,
@@ -12,6 +11,7 @@ import {
 	ContentElementType,
 	RichTextElement,
 } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';

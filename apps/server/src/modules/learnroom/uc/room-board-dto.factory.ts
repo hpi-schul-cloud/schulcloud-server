@@ -11,10 +11,10 @@ import {
 	LessonEntity,
 	Permission,
 	Task,
-	TaskStatus,
 	TaskWithStatusVo,
 	User,
 } from '@shared/domain';
+import { TaskStatus } from '@shared/domain/types';
 import {
 	ColumnBoardMetaData,
 	LessonMetaData,

@@ -1,6 +1,6 @@
 /* istanbul ignore file */
-import { InputFormat } from '@shared/domain';
 import { RichTextElement, RichTextElementProps } from '@shared/domain/domainobject';
+import { InputFormat } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { BaseFactory } from '../../base.factory';
 

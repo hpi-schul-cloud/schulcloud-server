@@ -6,7 +6,6 @@ import {
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
-	EntityId,
 	ExternalToolElementNodeEntity,
 	FileElementNode,
 	RichTextElementNode,
@@ -27,6 +26,7 @@ import {
 } from '@shared/domain/domainobject';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { LinkElementNode } from '@shared/domain/entity/boardnode/link-element-node.entity';
+import { EntityId } from '@shared/domain/types';
 import { BoardNodeRepo } from './board-node.repo';
 
 type ParentData = {

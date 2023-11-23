@@ -9,8 +9,9 @@ import { SchoolExternalToolService } from '@modules/tool/school-external-tool/se
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Course, EntityId, RoleName } from '@shared/domain';
+import { Course, RoleName } from '@shared/domain';
 import { Pseudonym, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { PseudonymService } from './pseudonym.service';
 
 interface UserMetdata {

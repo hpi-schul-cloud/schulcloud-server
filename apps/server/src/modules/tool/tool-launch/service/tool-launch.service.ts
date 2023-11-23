@@ -1,7 +1,8 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
+import { ToolVersionService } from '../../context-external-tool/service/tool-version-service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -15,7 +16,6 @@ import {
 	OAuth2ToolLaunchStrategy,
 	ToolLaunchStrategy,
 } from './launch-strategy';
-import { ToolVersionService } from '../../context-external-tool/service/tool-version-service';
 
 @Injectable()
 export class ToolLaunchService {

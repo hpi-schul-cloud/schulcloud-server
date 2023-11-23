@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain';
 import { FileElement, isFileElement, isRichTextElement, RichTextElement } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 

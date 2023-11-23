@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
 import {
 	AnyBoardDo,
 	AnyContentElementDo,
@@ -9,6 +8,7 @@ import {
 	isAnyContentElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';

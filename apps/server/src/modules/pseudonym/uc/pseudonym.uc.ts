@@ -2,8 +2,9 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { LegacySchoolService } from '@modules/legacy-school';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { EntityId, User } from '@shared/domain';
+import { User } from '@shared/domain';
 import { LegacySchoolDo, Pseudonym } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { PseudonymService } from '../service';
 
 @Injectable()

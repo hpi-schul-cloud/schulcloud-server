@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Role, RoleName } from '@shared/domain';
+import { Role, RoleName } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { RoleRepo } from '@shared/repo';
 import { RoleMapper } from '../mapper/role.mapper';
 import { RoleDto } from './dto/role.dto';

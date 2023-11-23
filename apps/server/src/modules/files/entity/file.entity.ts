@@ -1,11 +1,12 @@
 import { Embedded, Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { v4 as uuid } from 'uuid';
-import { EntityId, StorageProviderEntity } from '@shared/domain';
+import { StorageProviderEntity } from '@shared/domain';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
+import { EntityId } from '@shared/domain/types';
+import { v4 as uuid } from 'uuid';
 import { FileOwnerModel } from '../domain';
-import { FileSecurityCheckEntity } from './file-security-check.entity';
 import { FilePermissionEntity } from './file-permission.entity';
+import { FileSecurityCheckEntity } from './file-security-check.entity';
 
 export interface FileEntityProps {
 	createdAt?: Date;

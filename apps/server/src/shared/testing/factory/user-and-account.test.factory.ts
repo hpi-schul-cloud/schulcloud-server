@@ -1,4 +1,5 @@
-import { Account, EntityId, Permission, SchoolEntity, User } from '@shared/domain';
+import { Account, Permission, SchoolEntity, User } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import _ from 'lodash';
 import { accountFactory } from './account.factory';

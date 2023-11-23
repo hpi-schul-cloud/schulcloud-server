@@ -1,7 +1,7 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { ForbiddenException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
 import { AnyBoardDo, SubmissionItem, UserRoleEnum } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { BoardDoAuthorizableService } from '../service';
 
 export abstract class BaseUc {
