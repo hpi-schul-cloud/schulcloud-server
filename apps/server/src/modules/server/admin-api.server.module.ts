@@ -10,12 +10,12 @@ import { FileEntity } from '@modules/files/entity';
 import { FileRecord } from '@modules/files-storage/entity';
 import { RedisClient } from 'redis';
 import { REDIS_CLIENT, RedisModule } from '@src/infra/redis';
-import { DeletionModule } from '../deletion';
 import { defaultMikroOrmOptions, setupSessions } from './server.module';
 import { serverConfig } from './server.config';
 import { AdminApiServerController } from './controller';
+import { DeletionApiModule } from '../deletion/deletion-api.module';
 
-const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConfig)), DeletionModule];
+const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConfig)), DeletionApiModule];
 
 @Module({
 	imports: [
