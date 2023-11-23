@@ -5,6 +5,7 @@ import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { RegistrationPinEntity } from '@src/modules/registration-pin/entity/registration-pin.entity';
 import { Account } from './account.entity';
 import {
 	BoardNode,
@@ -100,4 +101,5 @@ export const ALL_ENTITIES = [
 	UserLoginMigrationEntity,
 	VideoConference,
 	GroupEntity,
+	RegistrationPinEntity,
 ];

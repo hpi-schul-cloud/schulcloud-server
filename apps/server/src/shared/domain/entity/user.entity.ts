@@ -11,6 +11,12 @@ export enum LanguageType {
 	UK = 'uk',
 }
 
+export interface ParentProperties {
+	fristName: string;
+	lastName: string;
+	email: string;
+}
+
 export interface UserProperties {
 	email: string;
 	firstName: string;
@@ -27,6 +33,7 @@ export interface UserProperties {
 	outdatedSince?: Date;
 	previousExternalId?: string;
 	birthday?: Date;
+	parents?: ParentProperties[];
 }
 
 @Entity({ tableName: 'users' })
@@ -100,6 +107,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	birthday?: Date;
 
+	@Property({ nullable: true })
+	parents?: ParentProperties[];
+
 	constructor(props: UserProperties) {
 		super();
 		this.firstName = props.firstName;
@@ -117,6 +127,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.outdatedSince = props.outdatedSince;
 		this.previousExternalId = props.previousExternalId;
 		this.birthday = props.birthday;
+		this.parents = props.parents ?? [];
 	}
 
 	public resolvePermissions(): string[] {

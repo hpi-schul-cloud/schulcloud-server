@@ -1,8 +1,8 @@
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { RegistrationPinsEntity } from './registration-pin.entity';
+import { RegistrationPinEntity } from './registration-pin.entity';
 
-describe(RegistrationPinsEntity.name, () => {
+describe(RegistrationPinEntity.name, () => {
 	beforeAll(async () => {
 		await setupEntities();
 	});
@@ -27,20 +27,20 @@ describe(RegistrationPinsEntity.name, () => {
 		describe('When constructor is called', () => {
 			it('should throw an error by empty constructor', () => {
 				// @ts-expect-error: Test case
-				const test = () => new RegistrationPinsEntity();
+				const test = () => new RegistrationPinEntity();
 				expect(test).toThrow();
 			});
 
 			it('should create a registrationPins by passing required properties', () => {
 				const { props } = setup();
-				const entity: RegistrationPinsEntity = new RegistrationPinsEntity(props);
+				const entity: RegistrationPinEntity = new RegistrationPinEntity(props);
 
-				expect(entity instanceof RegistrationPinsEntity).toEqual(true);
+				expect(entity instanceof RegistrationPinEntity).toEqual(true);
 			});
 
 			it(`should return a valid object with fields values set from the provided complete props object`, () => {
 				const { props } = setup();
-				const entity: RegistrationPinsEntity = new RegistrationPinsEntity(props);
+				const entity: RegistrationPinEntity = new RegistrationPinEntity(props);
 
 				const entityProps = {
 					id: entity.id,

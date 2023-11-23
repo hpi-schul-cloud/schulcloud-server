@@ -1,8 +1,8 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Index, Property } from '@mikro-orm/core';
 import { EntityId } from '@shared/domain';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 
-export interface RegistrationPinsProps {
+export interface RegistrationPinEntityProps {
 	id?: EntityId;
 	email: string;
 	pin: string;
@@ -11,8 +11,10 @@ export interface RegistrationPinsProps {
 }
 
 @Entity({ tableName: 'registrationpins' })
-export class RegistrationPinsEntity extends BaseEntityWithTimestamps {
+@Index({ properties: ['email', 'pin'] })
+export class RegistrationPinEntity extends BaseEntityWithTimestamps {
 	@Property()
+	@Index()
 	email: string;
 
 	@Property()
@@ -22,9 +24,10 @@ export class RegistrationPinsEntity extends BaseEntityWithTimestamps {
 	verified: boolean;
 
 	@Property()
+	@Index()
 	importHash: string;
 
-	constructor(props: RegistrationPinsProps) {
+	constructor(props: RegistrationPinEntityProps) {
 		super();
 		if (props.id != null) {
 			this.id = props.id;
