@@ -88,7 +88,7 @@ function connect() {
 
 	const mongooseOptions = {
 		autoIndex: NODE_ENV !== ENVIRONMENTS.PRODUCTION,
-		minPoolSize: MONGOOSE_CONNECTION_POOL_SIZE, //https://mongoosejs.com/docs/migrating_to_6.html#mongodb-driver-40 ??
+		maxPoolSize: MONGOOSE_CONNECTION_POOL_SIZE, // https://mongoosejs.com/docs/migrating_to_6.html#mongodb-driver-40
 		useNewUrlParser: true,
 	};
 
