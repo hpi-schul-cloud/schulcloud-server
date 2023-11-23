@@ -1,3 +1,5 @@
+import { FileRecordParentType } from '@infra/rabbitmq';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
@@ -12,8 +14,6 @@ import {
 	SubmissionItem,
 } from '@shared/domain';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
-import { FileRecordParentType } from '@infra/rabbitmq';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ObjectId } from 'bson';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 
@@ -133,11 +133,38 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
-		this.resultMap.set(original.id, {
+
+		const result: CopyStatus = {
 			copyEntity: copy,
 			type: CopyElementType.LINK_ELEMENT,
 			status: CopyStatusEnum.SUCCESS,
-		});
+		};
+
+		if (original.imageUrl) {
+			const fileCopy = await this.fileCopyService.copyFilesOfParent({
+				sourceParentId: original.id,
+				targetParentId: copy.id,
+				parentType: FileRecordParentType.BoardNode,
+			});
+			fileCopy.forEach((copyFileDto) => {
+				if (copyFileDto.id) {
+					if (copy.imageUrl.includes(copyFileDto.sourceId)) {
+						copy.imageUrl = copy.imageUrl.replace(copyFileDto.sourceId, copyFileDto.id);
+					} else {
+						copy.imageUrl = '';
+					}
+				}
+			});
+			const fileCopyStatus = fileCopy.map((copyFileDto) => {
+				return {
+					type: CopyElementType.FILE,
+					status: copyFileDto.id ? CopyStatusEnum.SUCCESS : CopyStatusEnum.FAIL,
+					title: copyFileDto.name ?? `(old fileid: ${copyFileDto.sourceId})`,
+				};
+			});
+			result.elements = fileCopyStatus;
+		}
+		this.resultMap.set(original.id, result);
 		this.copyMap.set(original.id, copy);
 
 		return Promise.resolve();
