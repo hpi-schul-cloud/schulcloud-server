@@ -21,7 +21,7 @@ export class SchoolExternalToolResponse {
 	@ApiProperty()
 	toolVersion: number;
 
-	@ApiProperty({ enum: ToolConfigurationStatusResponse })
+	@ApiProperty({ type: ToolConfigurationStatusResponse })
 	status: ToolConfigurationStatusResponse;
 
 	@ApiPropertyOptional()

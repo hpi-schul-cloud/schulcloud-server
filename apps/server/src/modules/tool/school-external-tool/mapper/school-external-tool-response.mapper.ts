@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CustomParameterEntry } from '../../common/domain';
-import { ToolStatusResponseMapper } from '../../common/mapper/tool-status-response.mapper';
+import { ToolStatusResponseMapper } from '../../common/mapper';
 import { ToolConfigurationStatusResponse } from '../../context-external-tool/controller/dto';
 import {
 	CustomParameterEntryResponse,
@@ -28,7 +28,13 @@ export class SchoolExternalToolResponseMapper {
 			toolVersion: schoolExternalTool.toolVersion,
 			status: schoolExternalTool.status
 				? ToolStatusResponseMapper.mapToResponse(schoolExternalTool.status)
-				: ToolConfigurationStatusResponse.UNKNOWN,
+				: new ToolConfigurationStatusResponse({
+						latest: false,
+						isUnkown: true,
+						isDisabled: false,
+						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeSchool: false,
+				  }),
 		};
 	}
 

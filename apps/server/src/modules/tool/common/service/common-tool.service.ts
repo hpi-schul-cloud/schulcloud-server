@@ -16,15 +16,25 @@ export class CommonToolService {
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
 	): ToolConfigurationStatus {
+		const configurationStatus: ToolConfigurationStatus = new ToolConfigurationStatus({
+			latest: false,
+			isDisabled: false,
+			isOutdatedOnScopeContext: true,
+			isOutdatedOnScopeSchool: true,
+			isUnkown: false,
+		});
+
 		if (
 			this.isLatest(schoolExternalTool, externalTool) &&
 			this.isLatest(contextExternalTool, schoolExternalTool) &&
 			this.isLatest(contextExternalTool, externalTool)
 		) {
-			return ToolConfigurationStatus.LATEST;
+			configurationStatus.latest = true;
+			configurationStatus.isOutdatedOnScopeContext = false;
+			configurationStatus.isOutdatedOnScopeSchool = false;
 		}
 
-		return ToolConfigurationStatus.OUTDATED;
+		return configurationStatus;
 	}
 
 	private isLatest(tool1: ToolVersion, tool2: ToolVersion): boolean {

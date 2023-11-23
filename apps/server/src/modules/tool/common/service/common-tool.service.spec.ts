@@ -36,7 +36,7 @@ describe('CommonToolService', () => {
 				};
 			};
 
-			it('should return ToolConfigurationStatus.LATEST', () => {
+			it('should return is latest', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
 				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
@@ -45,7 +45,15 @@ describe('CommonToolService', () => {
 					contextExternalTool
 				);
 
-				expect(result).toBe(ToolConfigurationStatus.LATEST);
+				expect(result).toStrictEqual(
+					new ToolConfigurationStatus({
+						latest: true,
+						isUnkown: false,
+						isDisabled: false,
+						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeSchool: false,
+					})
+				);
 			});
 		});
 
@@ -62,7 +70,7 @@ describe('CommonToolService', () => {
 				};
 			};
 
-			it('should return ToolConfigurationStatus.OUTDATED', () => {
+			it('should return isOutdatedOnScopeContext and isOutdatedOnScopeSchool true', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
 				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
@@ -71,7 +79,15 @@ describe('CommonToolService', () => {
 					contextExternalTool
 				);
 
-				expect(result).toBe(ToolConfigurationStatus.OUTDATED);
+				expect(result).toStrictEqual(
+					new ToolConfigurationStatus({
+						latest: false,
+						isUnkown: false,
+						isDisabled: false,
+						isOutdatedOnScopeContext: true,
+						isOutdatedOnScopeSchool: true,
+					})
+				);
 			});
 		});
 
@@ -88,7 +104,7 @@ describe('CommonToolService', () => {
 				};
 			};
 
-			it('should return ToolConfigurationStatus.OUTDATED', () => {
+			it('should return isOutdatedOnScopeContext true', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
 				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
@@ -97,7 +113,15 @@ describe('CommonToolService', () => {
 					contextExternalTool
 				);
 
-				expect(result).toBe(ToolConfigurationStatus.OUTDATED);
+				expect(result).toStrictEqual(
+					new ToolConfigurationStatus({
+						latest: false,
+						isUnkown: false,
+						isDisabled: false,
+						isOutdatedOnScopeContext: true,
+						isOutdatedOnScopeSchool: false,
+					})
+				);
 			});
 		});
 
@@ -114,7 +138,7 @@ describe('CommonToolService', () => {
 				};
 			};
 
-			it('should return ToolConfigurationStatus.OUTDATED', () => {
+			it('should return isOutdatedOnScopeContext true', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
 				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
@@ -123,7 +147,15 @@ describe('CommonToolService', () => {
 					contextExternalTool
 				);
 
-				expect(result).toBe(ToolConfigurationStatus.OUTDATED);
+				expect(result).toStrictEqual(
+					new ToolConfigurationStatus({
+						latest: false,
+						isUnkown: false,
+						isDisabled: false,
+						isOutdatedOnScopeContext: true,
+						isOutdatedOnScopeSchool: false,
+					})
+				);
 			});
 		});
 
@@ -140,7 +172,7 @@ describe('CommonToolService', () => {
 				};
 			};
 
-			it('should return ToolConfigurationStatus.LATEST', () => {
+			it('should return is latest', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
 				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
@@ -149,7 +181,15 @@ describe('CommonToolService', () => {
 					contextExternalTool
 				);
 
-				expect(result).toBe(ToolConfigurationStatus.LATEST);
+				expect(result).toStrictEqual(
+					new ToolConfigurationStatus({
+						latest: true,
+						isUnkown: false,
+						isDisabled: false,
+						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeSchool: false,
+					})
+				);
 			});
 		});
 
@@ -166,7 +206,7 @@ describe('CommonToolService', () => {
 				};
 			};
 
-			it('should return ToolConfigurationStatus.LATEST', () => {
+			it('should return is latest', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
 				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
@@ -175,7 +215,15 @@ describe('CommonToolService', () => {
 					contextExternalTool
 				);
 
-				expect(result).toBe(ToolConfigurationStatus.LATEST);
+				expect(result).toStrictEqual(
+					new ToolConfigurationStatus({
+						latest: true,
+						isUnkown: false,
+						isDisabled: false,
+						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeSchool: false,
+					})
+				);
 			});
 		});
 
@@ -192,7 +240,7 @@ describe('CommonToolService', () => {
 				};
 			};
 
-			it('should return ToolConfigurationStatus.LATEST', () => {
+			it('should return is latest', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
 				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
@@ -201,7 +249,15 @@ describe('CommonToolService', () => {
 					contextExternalTool
 				);
 
-				expect(result).toBe(ToolConfigurationStatus.LATEST);
+				expect(result).toStrictEqual(
+					new ToolConfigurationStatus({
+						latest: true,
+						isUnkown: false,
+						isDisabled: false,
+						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeSchool: false,
+					})
+				);
 			});
 		});
 	});

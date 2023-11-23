@@ -1,3 +1,4 @@
+import { tr } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -107,7 +108,15 @@ describe('ToolLaunchService', () => {
 				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
 				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
-				toolVersionService.determineToolConfigurationStatus.mockResolvedValueOnce(ToolConfigurationStatus.LATEST);
+				toolVersionService.determineToolConfigurationStatus.mockResolvedValueOnce(
+					new ToolConfigurationStatus({
+						latest: true,
+						isDisabled: false,
+						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeSchool: false,
+						isUnkown: false,
+					})
+				);
 
 				return {
 					launchDataDO,
@@ -173,7 +182,15 @@ describe('ToolLaunchService', () => {
 
 				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
-				toolVersionService.determineToolConfigurationStatus.mockResolvedValueOnce(ToolConfigurationStatus.LATEST);
+				toolVersionService.determineToolConfigurationStatus.mockResolvedValueOnce(
+					new ToolConfigurationStatus({
+						latest: true,
+						isDisabled: false,
+						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeSchool: false,
+						isUnkown: false,
+					})
+				);
 
 				return {
 					launchParams,
@@ -218,7 +235,15 @@ describe('ToolLaunchService', () => {
 				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
 				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
-				toolVersionService.determineToolConfigurationStatus.mockResolvedValueOnce(ToolConfigurationStatus.OUTDATED);
+				toolVersionService.determineToolConfigurationStatus.mockResolvedValueOnce(
+					new ToolConfigurationStatus({
+						latest: false,
+						isDisabled: false,
+						isOutdatedOnScopeContext: true,
+						isOutdatedOnScopeSchool: true,
+						isUnkown: false,
+					})
+				);
 
 				return {
 					launchParams,

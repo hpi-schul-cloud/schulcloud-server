@@ -24,6 +24,12 @@ export const schoolExternalToolFactory = SchoolExternalToolFactory.define(School
 			}),
 		],
 		toolId: 'toolId',
-		status: ToolConfigurationStatus.LATEST,
+		status: new ToolConfigurationStatus({
+			latest: true,
+			isDisabled: false,
+			isOutdatedOnScopeContext: false,
+			isOutdatedOnScopeSchool: false,
+			isUnkown: false,
+		}),
 	};
 });

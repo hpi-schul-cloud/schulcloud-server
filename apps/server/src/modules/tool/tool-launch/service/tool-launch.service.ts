@@ -89,13 +89,13 @@ export class ToolLaunchService {
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
 	): Promise<void> {
-		const status = await this.toolVersionService.determineToolConfigurationStatus(
+		const status: ToolConfigurationStatus = await this.toolVersionService.determineToolConfigurationStatus(
 			externalTool,
 			schoolExternalTool,
 			contextExternalTool
 		);
 
-		if (status !== ToolConfigurationStatus.LATEST) {
+		if (!status.latest) {
 			throw new ToolStatusOutdatedLoggableException(userId, contextExternalTool.id ?? '');
 		}
 	}

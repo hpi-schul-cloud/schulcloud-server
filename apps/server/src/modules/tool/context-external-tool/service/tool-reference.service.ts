@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
+import { ToolConfigurationStatus } from '../../common/enum';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolLogoService, ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -28,7 +29,7 @@ export class ToolReferenceService {
 		);
 		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
-		const status = await this.toolVersionService.determineToolConfigurationStatus(
+		const status: ToolConfigurationStatus = await this.toolVersionService.determineToolConfigurationStatus(
 			externalTool,
 			schoolExternalTool,
 			contextExternalTool

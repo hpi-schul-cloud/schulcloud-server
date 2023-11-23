@@ -19,10 +19,8 @@ export class ToolReferenceResponse {
 	openInNewTab: boolean;
 
 	@ApiProperty({
-		enum: ToolConfigurationStatusResponse,
-		enumName: 'ToolConfigurationStatusResponse',
+		type: ToolConfigurationStatusResponse,
 		nullable: false,
-		required: true,
 		description: 'The status of the tool',
 	})
 	status: ToolConfigurationStatusResponse;
