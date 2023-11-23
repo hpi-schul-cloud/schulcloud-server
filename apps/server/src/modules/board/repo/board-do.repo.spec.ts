@@ -1,20 +1,13 @@
 import { createMock } from '@golevelup/ts-jest';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	AnyBoardDo,
-	BoardExternalReferenceType,
-	Card,
-	CardNode,
-	Column,
-	ColumnBoard,
-	RichTextElementNode,
-} from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { CardNode, RichTextElementNode } from '@shared/domain';
+import { AnyBoardDo, BoardExternalReferenceType, Card, Column, ColumnBoard } from '@shared/domain/domainobject';
 import {
 	cardFactory,
 	cardNodeFactory,

@@ -1,4 +1,5 @@
-import { BoardNodeType, ExternalToolElement, LinkElement } from '@shared/domain';
+import { BoardNodeType } from '@shared/domain';
+import { ExternalToolElement, LinkElement } from '@shared/domain/domainobject';
 import {
 	cardNodeFactory,
 	columnBoardNodeFactory,

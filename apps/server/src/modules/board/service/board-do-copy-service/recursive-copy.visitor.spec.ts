@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LinkElement } from '@shared/domain';
+import { LinkElement } from '@shared/domain/domainobject';
 import { linkElementFactory, setupEntities } from '@shared/testing';
 import { CopyFileDto } from '@src/modules/files-storage-client/dto';
 

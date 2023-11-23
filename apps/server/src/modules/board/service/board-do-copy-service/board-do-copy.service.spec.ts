@@ -1,4 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
+import { FileRecordParentType } from '@infra/rabbitmq';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	Card,
@@ -6,6 +8,9 @@ import {
 	ColumnBoard,
 	ExternalToolElement,
 	FileElement,
+	LinkElement,
+	RichTextElement,
+	SubmissionContainerElement,
 	isCard,
 	isColumn,
 	isColumnBoard,
@@ -14,11 +19,7 @@ import {
 	isLinkElement,
 	isRichTextElement,
 	isSubmissionContainerElement,
-	LinkElement,
-	RichTextElement,
-	SubmissionContainerElement,
-} from '@shared/domain';
-import { FileRecordParentType } from '@infra/rabbitmq';
+} from '@shared/domain/domainobject';
 import {
 	cardFactory,
 	columnBoardFactory,
@@ -31,7 +32,6 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ObjectId } from 'bson';
 import { BoardDoCopyService } from './board-do-copy.service';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';

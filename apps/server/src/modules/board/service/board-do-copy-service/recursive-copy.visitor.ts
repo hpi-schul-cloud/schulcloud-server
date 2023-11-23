@@ -13,6 +13,7 @@ import {
 	SubmissionItem,
 } from '@shared/domain/domainobject';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 
