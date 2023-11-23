@@ -12,6 +12,64 @@
         <link rel="stylesheet" href="../styles/dark.css">
     </head>
     <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
@@ -373,8 +431,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="227"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:227</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="254"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:254</a></div>
                         </td>
                     </tr>
 
@@ -440,8 +498,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="214"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:214</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="241"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:241</a></div>
                         </td>
                     </tr>
 
@@ -578,8 +636,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="210"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:210</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="237"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:237</a></div>
                         </td>
                     </tr>
 
@@ -783,8 +841,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="192"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:192</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="219"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:219</a></div>
                         </td>
                     </tr>
 
@@ -990,8 +1048,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="146"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:146</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="173"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:173</a></div>
                         </td>
                     </tr>
 
@@ -1059,8 +1117,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="165"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:165</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="192"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:192</a></div>
                         </td>
                     </tr>
 
@@ -1128,8 +1186,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="183"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:183</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="210"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:210</a></div>
                         </td>
                     </tr>
 
@@ -1185,7 +1243,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FileRecordParentType } from &#x27;@infra/rabbitmq&#x27;;
+import { CopyElementType, CopyStatus, CopyStatusEnum } from &#x27;@modules/copy-helper&#x27;;
+import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
 	Card,
@@ -1199,8 +1259,6 @@
 	SubmissionItem,
 } from &#x27;@shared/domain&#x27;;
 import { LinkElement } from &#x27;@shared/domain/domainobject/board/link-element.do&#x27;;
-import { FileRecordParentType } from &#x27;@infra/rabbitmq&#x27;;
-import { CopyElementType, CopyStatus, CopyStatusEnum } from &#x27;@modules/copy-helper&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
 import { SchoolSpecificFileCopyService } from &#x27;./school-specific-file-copy.interface&#x27;;
 
@@ -1320,11 +1378,38 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
-		this.resultMap.set(original.id, {
+
+		const result: CopyStatus &#x3D; {
 			copyEntity: copy,
 			type: CopyElementType.LINK_ELEMENT,
 			status: CopyStatusEnum.SUCCESS,
-		});
+		};
+
+		if (original.imageUrl) {
+			const fileCopy &#x3D; await this.fileCopyService.copyFilesOfParent({
+				sourceParentId: original.id,
+				targetParentId: copy.id,
+				parentType: FileRecordParentType.BoardNode,
+			});
+			fileCopy.forEach((copyFileDto) &#x3D;&gt; {
+				if (copyFileDto.id) {
+					if (copy.imageUrl.includes(copyFileDto.sourceId)) {
+						copy.imageUrl &#x3D; copy.imageUrl.replace(copyFileDto.sourceId, copyFileDto.id);
+					} else {
+						copy.imageUrl &#x3D; &#x27;&#x27;;
+					}
+				}
+			});
+			const fileCopyStatus &#x3D; fileCopy.map((copyFileDto) &#x3D;&gt; {
+				return {
+					type: CopyElementType.FILE,
+					status: copyFileDto.id ? CopyStatusEnum.SUCCESS : CopyStatusEnum.FAIL,
+					title: copyFileDto.name ?? &#x60;(old fileid: ${copyFileDto.sourceId})&#x60;,
+				};
+			});
+			result.elements &#x3D; fileCopyStatus;
+		}
+		this.resultMap.set(original.id, result);
 		this.copyMap.set(original.id, copy);
 
 		return Promise.resolve();

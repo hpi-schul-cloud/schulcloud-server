@@ -12,6 +12,64 @@
         <link rel="stylesheet" href="../styles/dark.css">
     </head>
     <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
@@ -66,19 +124,19 @@
 <title>cluster_UserApiModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="136,-70 136,-195 360,-195 360,-70 136,-70"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_UserApiModule_imports</title>
-<polygon fill="none" stroke="black" points="250,-78 250,-130 352,-130 352,-78 250,-78"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_UserApiModule_providers</title>
-<polygon fill="none" stroke="black" points="144,-78 144,-130 242,-130 242,-78 144,-78"/>
+<polygon fill="none" stroke="black" points="254,-78 254,-130 352,-130 352,-78 254,-78"/>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_UserApiModule_imports</title>
+<polygon fill="none" stroke="black" points="144,-78 144,-130 246,-130 246,-78 144,-78"/>
 </g>
 <!-- UserModule -->
 <g id="node1" class="node">
 <title>UserModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="343.98,-122 340.98,-126 319.98,-126 316.98,-122 258.02,-122 258.02,-86 343.98,-86 343.98,-122"/>
-<text text-anchor="middle" x="301" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="237.98,-122 234.98,-126 213.98,-126 210.98,-122 152.02,-122 152.02,-86 237.98,-86 237.98,-122"/>
+<text text-anchor="middle" x="195" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
 </g>
 <!-- UserApiModule -->
 <g id="node2" class="node">
@@ -89,20 +147,20 @@
 <!-- UserModule&#45;&gt;UserApiModule -->
 <g id="edge1" class="edge">
 <title>UserModule&#45;&gt;UserApiModule</title>
-<path fill="none" stroke="black" d="M279.75,-122.11C279.75,-122.11 279.75,-140.99 279.75,-140.99"/>
-<polygon fill="black" stroke="black" points="276.25,-140.99 279.75,-150.99 283.25,-140.99 276.25,-140.99"/>
+<path fill="none" stroke="black" d="M216.25,-122.11C216.25,-122.11 216.25,-140.99 216.25,-140.99"/>
+<polygon fill="black" stroke="black" points="212.75,-140.99 216.25,-150.99 219.75,-140.99 212.75,-140.99"/>
 </g>
 <!-- UserUc -->
 <g id="node3" class="node">
 <title>UserUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="193" cy="-104" rx="40.55" ry="18"/>
-<text text-anchor="middle" x="193" y="-99.8" font-family="Times,serif" font-size="14.00">UserUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="303" cy="-104" rx="40.55" ry="18"/>
+<text text-anchor="middle" x="303" y="-99.8" font-family="Times,serif" font-size="14.00">UserUc</text>
 </g>
 <!-- UserUc&#45;&gt;UserApiModule -->
 <g id="edge2" class="edge">
 <title>UserUc&#45;&gt;UserApiModule</title>
-<path fill="none" stroke="black" d="M214.02,-119.4C214.02,-119.4 214.02,-140.94 214.02,-140.94"/>
-<polygon fill="black" stroke="black" points="210.52,-140.94 214.02,-150.94 217.52,-140.94 210.52,-140.94"/>
+<path fill="none" stroke="black" d="M281.98,-119.4C281.98,-119.4 281.98,-140.94 281.98,-140.94"/>
+<polygon fill="black" stroke="black" points="278.48,-140.94 281.98,-150.94 285.48,-140.94 278.48,-140.94"/>
 </g>
 </g>
 </svg>
