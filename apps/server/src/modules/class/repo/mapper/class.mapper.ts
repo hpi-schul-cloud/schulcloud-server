@@ -23,7 +23,7 @@ export class ClassMapper {
 		});
 	}
 
-	private static mapToEntity(domainObject: Class): ClassEntity {
+	static mapToEntity(domainObject: Class): ClassEntity {
 		return new ClassEntity({
 			id: domainObject.id,
 			name: domainObject.name,

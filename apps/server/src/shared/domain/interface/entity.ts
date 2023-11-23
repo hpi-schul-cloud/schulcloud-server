@@ -11,6 +11,6 @@ export interface IEntityWithTimestamps extends IEntity {
 	updatedAt: Date;
 }
 
-export interface IEntityWithSchool extends IEntity {
+export interface EntityWithSchool extends IEntity {
 	school: SchoolEntity;
 }

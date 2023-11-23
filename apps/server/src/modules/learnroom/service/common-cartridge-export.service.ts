@@ -1,7 +1,7 @@
-import { LessonService } from '@modules/lesson/service';
-import { TaskService } from '@modules/task/service';
+import { LessonService } from '@modules/lesson';
+import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
-import { Course, EntityId, IComponentProperties, Task } from '@shared/domain';
+import { ComponentProperties, Course, EntityId, Task } from '@shared/domain';
 import { ComponentType } from '@src/shared/domain/entity/lesson.entity';
 import {
 	CommonCartridgeFileBuilder,
@@ -84,7 +84,7 @@ export class CommonCartridgeExportService {
 
 	private mapContentToResource(
 		lessonId: string,
-		content: IComponentProperties,
+		content: ComponentProperties,
 		version: CommonCartridgeVersion
 	): ICommonCartridgeResourceProps | undefined {
 		const commonProps = (fileExt: 'html' | 'xml') => {

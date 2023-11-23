@@ -1,19 +1,19 @@
+import { IdentityManagementModule } from '@infra/identity-management';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PermissionService } from '@shared/domain';
 import { SystemRepo, UserRepo } from '@shared/repo';
-import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { LoggerModule } from '@src/core/logger/logger.module';
+import { ServerConfig } from '../server/server.config';
+import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb, AccountIdmToDtoMapperIdm } from './mapper';
 import { AccountRepo } from './repo/account.repo';
-import { AccountService } from './services/account.service';
-import { AccountValidationService } from './services/account.validation.service';
 import { AccountServiceDb } from './services/account-db.service';
 import { AccountServiceIdm } from './services/account-idm.service';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb, AccountIdmToDtoMapperIdm } from './mapper';
-import { IServerConfig } from '../server/server.config';
 import { AccountLookupService } from './services/account-lookup.service';
+import { AccountService } from './services/account.service';
+import { AccountValidationService } from './services/account.validation.service';
 
-function accountIdmToDtoMapperFactory(configService: ConfigService<IServerConfig, true>): AccountIdmToDtoMapper {
+function accountIdmToDtoMapperFactory(configService: ConfigService<ServerConfig, true>): AccountIdmToDtoMapper {
 	if (configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
 		return new AccountIdmToDtoMapperIdm();
 	}

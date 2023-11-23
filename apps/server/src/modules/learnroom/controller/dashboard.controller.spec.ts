@@ -1,3 +1,4 @@
+import { ICurrentUser } from '@modules/authentication';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	DashboardEntity,
@@ -7,7 +8,6 @@ import {
 	LearnroomMetadata,
 	LearnroomTypes,
 } from '@shared/domain';
-import { ICurrentUser } from '@modules/authentication';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardController } from './dashboard.controller';
 import { DashboardResponse } from './dto';

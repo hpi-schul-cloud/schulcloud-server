@@ -8,7 +8,7 @@ import {
 	setupEntities,
 	taskFactory,
 } from '../../testing';
-import { ComponentType, IComponentProperties } from './lesson.entity';
+import { ComponentProperties, ComponentType } from './lesson.entity';
 import { Material } from './materials.entity';
 import { Task } from './task.entity';
 
@@ -152,7 +152,7 @@ describe('Lesson Entity', () => {
 
 	describe('getLessonComponents', () => {
 		it('should return the content components', () => {
-			const expectedTextContent: IComponentProperties = {
+			const expectedTextContent: ComponentProperties = {
 				title: 'test component',
 				hidden: false,
 				component: ComponentType.TEXT,

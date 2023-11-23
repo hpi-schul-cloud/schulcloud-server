@@ -1,8 +1,8 @@
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { OauthProviderService } from '@infra/oauth-provider';
+import { ProviderOauthClient } from '@infra/oauth-provider/dto';
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, IFindOptions, Page } from '@shared/domain';
-import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { OauthProviderService } from '@shared/infra/oauth-provider';
-import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { TokenEndpointAuthMethod } from '../../common/enum';
@@ -10,7 +10,7 @@ import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
-import { ExternalToolVersionService } from './external-tool-version.service';
+import { ExternalToolVersionIncrementService } from './external-tool-version-increment.service';
 
 @Injectable()
 export class ExternalToolService {
@@ -20,9 +20,9 @@ export class ExternalToolService {
 		private readonly mapper: ExternalToolServiceMapper,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
-		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService,
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
 		private readonly legacyLogger: LegacyLogger,
-		private readonly externalToolVersionService: ExternalToolVersionService
+		private readonly externalToolVersionService: ExternalToolVersionIncrementService
 	) {}
 
 	async createExternalTool(externalTool: ExternalTool): Promise<ExternalTool> {

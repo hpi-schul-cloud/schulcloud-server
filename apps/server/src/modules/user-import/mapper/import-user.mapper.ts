@@ -1,9 +1,9 @@
 import { BadRequestException } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
-import { ImportUser, IImportUserScope, SortOrderMap } from '@shared/domain';
+import { IImportUserScope, ImportUser, SortOrderMap } from '@shared/domain';
 import {
-	ImportUserResponse,
 	FilterImportUserParams,
+	ImportUserResponse,
 	ImportUserSortOrder,
 	SortImportUserParams,
 } from '../controller/dto';

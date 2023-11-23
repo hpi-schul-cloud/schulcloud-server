@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { CacheWrapperModule } from '@shared/infra/cache';
-import { IdentityManagementModule } from '@shared/infra/identity-management';
+import { CacheWrapperModule } from '@infra/cache';
+import { IdentityManagementModule } from '@infra/identity-management';
 import { LegacySchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AccountModule } from '@modules/account';

@@ -15,42 +15,78 @@ describe('CurrentUserMapper', () => {
 
 	describe('userToICurrentUser', () => {
 		describe('when mapping from a user entity to the current user object', () => {
-			it('should map with roles', () => {
-				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] });
-				const user = userFactory.buildWithId({
-					roles: [teacherRole],
-				});
-				const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user);
-				expect(currentUser).toMatchObject({
-					accountId,
-					systemId: undefined,
-					roles: [teacherRole.id],
-					schoolId: null,
+			describe('when user has roles', () => {
+				const setup = () => {
+					const teacherRole = roleFactory.buildWithId({
+						name: RoleName.TEACHER,
+						permissions: [Permission.STUDENT_EDIT],
+					});
+					const user = userFactory.buildWithId({
+						roles: [teacherRole],
+					});
+
+					return {
+						teacherRole,
+						user,
+					};
+				};
+
+				it('should map with roles', () => {
+					const { teacherRole, user } = setup();
+
+					const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user, false);
+
+					expect(currentUser).toMatchObject({
+						accountId,
+						systemId: undefined,
+						roles: [teacherRole.id],
+						schoolId: null,
+						isExternalUser: false,
+					});
 				});
 			});
 
-			it('should map without roles', () => {
-				const user = userFactory.buildWithId();
-				const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user);
-				expect(currentUser).toMatchObject({
-					accountId,
-					systemId: undefined,
-					roles: [],
-					schoolId: null,
+			describe('when user has no roles', () => {
+				it('should map without roles', () => {
+					const user = userFactory.buildWithId();
+
+					const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user, true);
+
+					expect(currentUser).toMatchObject({
+						accountId,
+						systemId: undefined,
+						roles: [],
+						schoolId: null,
+						isExternalUser: true,
+					});
 				});
 			});
 
-			it('should map system and school', () => {
-				const user = userFactory.buildWithId({
-					school: schoolFactory.buildWithId(),
-				});
-				const systemId = 'mockSystemId';
-				const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user, systemId);
-				expect(currentUser).toMatchObject({
-					accountId,
-					systemId,
-					roles: [],
-					schoolId: user.school.id,
+			describe('when systemId is provided', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId({
+						school: schoolFactory.buildWithId(),
+					});
+					const systemId = 'mockSystemId';
+
+					return {
+						user,
+						systemId,
+					};
+				};
+
+				it('should map system and school', () => {
+					const { user, systemId } = setup();
+
+					const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user, false, systemId);
+
+					expect(currentUser).toMatchObject({
+						accountId,
+						systemId,
+						roles: [],
+						schoolId: user.school.id,
+						isExternalUser: false,
+					});
 				});
 			});
 		});
@@ -61,6 +97,7 @@ describe('CurrentUserMapper', () => {
 		describe('when userDO has no ID', () => {
 			it('should throw error', () => {
 				const user: UserDO = userDoFactory.build({ createdAt: new Date(), updatedAt: new Date() });
+
 				expect(() => CurrentUserMapper.mapToOauthCurrentUser(accountId, user, undefined, 'idToken')).toThrow(
 					ValidationError
 				);
@@ -100,6 +137,7 @@ describe('CurrentUserMapper', () => {
 					schoolId: user.schoolId,
 					userId,
 					externalIdToken: idToken,
+					isExternalUser: true,
 				});
 			});
 		});
@@ -139,6 +177,7 @@ describe('CurrentUserMapper', () => {
 					schoolId: user.schoolId,
 					userId,
 					externalIdToken: idToken,
+					isExternalUser: true,
 				});
 			});
 		});
@@ -181,7 +220,7 @@ describe('CurrentUserMapper', () => {
 
 	describe('jwtToICurrentUser', () => {
 		describe('when JWT is provided with all claims', () => {
-			it('should return current user', () => {
+			const setup = () => {
 				const jwtPayload: JwtPayload = {
 					accountId: 'dummyAccountId',
 					systemId: 'dummySystemId',
@@ -189,6 +228,7 @@ describe('CurrentUserMapper', () => {
 					schoolId: 'dummySchoolId',
 					userId: 'dummyUserId',
 					support: true,
+					isExternalUser: true,
 					sub: 'dummyAccountId',
 					jti: 'random string',
 					aud: 'some audience',
@@ -196,7 +236,17 @@ describe('CurrentUserMapper', () => {
 					iat: Math.floor(new Date().getTime() / 1000),
 					exp: Math.floor(new Date().getTime() / 1000) + 3600,
 				};
+
+				return {
+					jwtPayload,
+				};
+			};
+
+			it('should return current user', () => {
+				const { jwtPayload } = setup();
+
 				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
+
 				expect(currentUser).toMatchObject({
 					accountId: jwtPayload.accountId,
 					systemId: jwtPayload.systemId,
@@ -206,15 +256,26 @@ describe('CurrentUserMapper', () => {
 					impersonated: jwtPayload.support,
 				});
 			});
+
+			it('should return current user with default for isExternalUser', () => {
+				const { jwtPayload } = setup();
+
+				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
+
+				expect(currentUser).toMatchObject({
+					isExternalUser: jwtPayload.isExternalUser,
+				});
+			});
 		});
 
 		describe('when JWT is provided without optional claims', () => {
-			it('should return current user', () => {
+			const setup = () => {
 				const jwtPayload: JwtPayload = {
 					accountId: 'dummyAccountId',
 					roles: ['mockRoleId'],
 					schoolId: 'dummySchoolId',
 					userId: 'dummyUserId',
+					isExternalUser: false,
 					sub: 'dummyAccountId',
 					jti: 'random string',
 					aud: 'some audience',
@@ -222,12 +283,33 @@ describe('CurrentUserMapper', () => {
 					iat: Math.floor(new Date().getTime() / 1000),
 					exp: Math.floor(new Date().getTime() / 1000) + 3600,
 				};
+
+				return {
+					jwtPayload,
+				};
+			};
+
+			it('should return current user', () => {
+				const { jwtPayload } = setup();
+
 				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
+
 				expect(currentUser).toMatchObject({
 					accountId: jwtPayload.accountId,
 					roles: [jwtPayload.roles[0]],
 					schoolId: jwtPayload.schoolId,
 					userId: jwtPayload.userId,
+					isExternalUser: false,
+				});
+			});
+
+			it('should return current user with default for isExternalUser', () => {
+				const { jwtPayload } = setup();
+
+				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
+
+				expect(currentUser).toMatchObject({
+					isExternalUser: false,
 				});
 			});
 		});
@@ -242,6 +324,7 @@ describe('CurrentUserMapper', () => {
 				schoolId: 'dummySchoolId',
 				userId: 'dummyUserId',
 				impersonated: true,
+				isExternalUser: false,
 			};
 
 			const createJwtPayload: CreateJwtPayload = CurrentUserMapper.mapCurrentUserToCreateJwtPayload(currentUser);
@@ -253,6 +336,7 @@ describe('CurrentUserMapper', () => {
 				schoolId: currentUser.schoolId,
 				userId: currentUser.userId,
 				support: currentUser.impersonated,
+				isExternalUser: false,
 			});
 		});
 	});

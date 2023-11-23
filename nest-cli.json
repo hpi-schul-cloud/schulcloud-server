@@ -45,6 +45,15 @@
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
+		"deletion-console": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/deletion-console.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
 		"files-storage": {
 			"type": "application",
 			"root": "apps/server",
@@ -58,6 +67,15 @@
 			"type": "application",
 			"root": "apps/server",
 			"entryFile": "apps/files-storage-consumer.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
+		"preview-generator-amqp": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/preview-generator-consumer.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"

@@ -1,13 +1,13 @@
+import { PreviewInputMimeTypes } from '@infra/preview-generator';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ErrorType } from '../error';
-import { PreviewInputMimeTypes } from '../interface';
 import {
 	FileRecord,
 	FileRecordParentType,
+	FileRecordProperties,
 	FileRecordSecurityCheck,
-	IFileRecordProperties,
 	PreviewStatus,
 	ScanStatus,
 } from './filerecord.entity';
@@ -18,7 +18,7 @@ describe('FileRecord Entity', () => {
 	});
 
 	describe('when creating a new instance using the constructor', () => {
-		let props: IFileRecordProperties;
+		let props: FileRecordProperties;
 
 		beforeEach(() => {
 			props = {
@@ -780,6 +780,56 @@ describe('FileRecord Entity', () => {
 				const result = fileRecord.getPreviewStatus();
 
 				expect(result).toEqual(PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR);
+			});
+		});
+	});
+
+	describe('fileNameWithoutExtension is called', () => {
+		describe('WHEN file name has extension', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build({ name: 'file-name.jpg' });
+
+				return { fileRecord };
+			};
+
+			it('should return the correct file name without extension', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.fileNameWithoutExtension;
+
+				expect(result).toEqual('file-name');
+			});
+		});
+
+		describe('WHEN file name has not extension', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build({ name: 'file-name' });
+
+				return { fileRecord };
+			};
+
+			it('should return the correct file name without extension', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.fileNameWithoutExtension;
+
+				expect(result).toEqual('file-name');
+			});
+		});
+
+		describe('WHEN file name starts with dot', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build({ name: '.bild.123.jpg' });
+
+				return { fileRecord };
+			};
+
+			it('should return the correct file name without extension', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.fileNameWithoutExtension;
+
+				expect(result).toEqual('.bild.123');
 			});
 		});
 	});

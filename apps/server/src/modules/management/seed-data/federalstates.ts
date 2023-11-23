@@ -1,8 +1,8 @@
-import { County, IFederalStateProperties } from '@shared/domain/entity/federal-state.entity';
+import { County, FederalStateProperties } from '@shared/domain/entity/federal-state.entity';
 import { federalStateFactory } from '@shared/testing/factory/federal-state.factory';
 import { DeepPartial } from 'fishery';
 
-type SeedFederalStateProperties = Omit<IFederalStateProperties, 'counties' | 'createdAt' | 'updatedAt'> & {
+type SeedFederalStateProperties = Omit<FederalStateProperties, 'counties' | 'createdAt' | 'updatedAt'> & {
 	id: string;
 	counties?: (County & { id: string })[];
 	createdAt?: string;
@@ -219,7 +219,7 @@ export function generateFederalStates() {
 					})
 			) ?? [];
 
-		const params: DeepPartial<IFederalStateProperties> = {
+		const params: DeepPartial<FederalStateProperties> = {
 			counties,
 			name: federalState.name,
 			abbreviation: federalState.abbreviation,

@@ -3,7 +3,6 @@ import {
 	Board,
 	BoardElement,
 	BoardElementType,
-	BoardExternalReferenceType,
 	ColumnBoard,
 	ColumnboardBoardElement,
 	ColumnBoardTarget,
@@ -17,6 +16,7 @@ import {
 	TaskBoardElement,
 	User,
 } from '@shared/domain';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
 import { BoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { ColumnBoardCopyService } from '@modules/board/service/column-board-copy.service';

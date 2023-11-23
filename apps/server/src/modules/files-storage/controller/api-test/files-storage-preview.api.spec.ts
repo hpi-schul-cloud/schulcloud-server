@@ -1,4 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AntivirusService } from '@infra/antivirus';
+import { PreviewProducer } from '@infra/preview-generator';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
@@ -6,8 +9,6 @@ import { ExecutionContext, INestApplication, NotFoundException, StreamableFile }
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { EntityId, Permission } from '@shared/domain';
-import { AntivirusService } from '@shared/infra/antivirus';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import NodeClam from 'clamscan';
 import { Request } from 'express';
@@ -62,6 +63,19 @@ class API {
 		};
 	}
 
+	async getPreviewWithEtag(routeName: string, etag: string, query?: string | Record<string, unknown>) {
+		const response = await request(this.app.getHttpServer())
+			.get(routeName)
+			.query(query || {})
+			.set('If-None-Match', etag);
+
+		return {
+			result: response.body as StreamableFile,
+			error: response.body as ApiValidationError,
+			status: response.status,
+		};
+	}
+
 	async getPreviewBytesRange(routeName: string, bytesRange: string, query?: string | Record<string, unknown>) {
 		const response = await request(this.app.getHttpServer())
 			.get(routeName)
@@ -89,6 +103,7 @@ describe('File Controller (API) - preview', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let s3ClientAdapter: DeepMocked<S3ClientAdapter>;
+	let antivirusService: DeepMocked<AntivirusService>;
 	let currentUser: ICurrentUser;
 	let api: API;
 	let schoolId: EntityId;
@@ -103,6 +118,8 @@ describe('File Controller (API) - preview', () => {
 		})
 			.overrideProvider(AntivirusService)
 			.useValue(createMock<AntivirusService>())
+			.overrideProvider(PreviewProducer)
+			.useValue(createMock<PreviewProducer>())
 			.overrideProvider(FILES_STORAGE_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
 			.overrideGuard(JwtAuthGuard)
@@ -123,6 +140,7 @@ describe('File Controller (API) - preview', () => {
 
 		em = module.get(EntityManager);
 		s3ClientAdapter = module.get(FILES_STORAGE_S3_CONNECTION);
+		antivirusService = module.get(AntivirusService);
 		api = new API(app);
 	});
 
@@ -147,6 +165,7 @@ describe('File Controller (API) - preview', () => {
 		uploadPath = `/file/upload/${schoolId}/schools/${schoolId}`;
 
 		jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
+		antivirusService.checkStream.mockResolvedValueOnce({ virus_detected: false });
 	});
 
 	const setScanStatus = async (fileRecordId: EntityId, status: ScanStatus) => {
@@ -293,34 +312,75 @@ describe('File Controller (API) - preview', () => {
 						return { uploadedFile };
 					};
 
-					it('should return status 200 for successful download', async () => {
-						const { uploadedFile } = await setup();
-						const query = {
-							...defaultQueryParameters,
-							forceUpdate: false,
-						};
+					describe('WHEN header contains no etag', () => {
+						it('should return status 200 for successful download', async () => {
+							const { uploadedFile } = await setup();
+							const query = {
+								...defaultQueryParameters,
+								forceUpdate: false,
+							};
 
-						const response = await api.getPreview(`/file/preview/${uploadedFile.id}/${uploadedFile.name}`, query);
+							const response = await api.getPreview(`/file/preview/${uploadedFile.id}/${uploadedFile.name}`, query);
 
-						expect(response.status).toEqual(200);
+							expect(response.status).toEqual(200);
+						});
+
+						it('should return status 206 and required headers for the successful partial file stream download', async () => {
+							const { uploadedFile } = await setup();
+							const query = {
+								...defaultQueryParameters,
+								forceUpdate: false,
+							};
+
+							const response = await api.getPreviewBytesRange(
+								`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
+								'bytes=0-',
+								query
+							);
+
+							expect(response.status).toEqual(206);
+							expect(response.headers['accept-ranges']).toMatch('bytes');
+							expect(response.headers['content-range']).toMatch('bytes 0-3/4');
+							expect(response.headers.etag).toMatch('testTag');
+						});
 					});
 
-					it('should return status 206 and required headers for the successful partial file stream download', async () => {
-						const { uploadedFile } = await setup();
-						const query = {
-							...defaultQueryParameters,
-							forceUpdate: false,
-						};
+					describe('WHEN header contains not matching etag', () => {
+						it('should return status 200 for successful download', async () => {
+							const { uploadedFile } = await setup();
+							const query = {
+								...defaultQueryParameters,
+								forceUpdate: false,
+							};
+							const etag = 'otherTag';
 
-						const response = await api.getPreviewBytesRange(
-							`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
-							'bytes=0-',
-							query
-						);
+							const response = await api.getPreviewWithEtag(
+								`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
+								etag,
+								query
+							);
 
-						expect(response.status).toEqual(206);
-						expect(response.headers['accept-ranges']).toMatch('bytes');
-						expect(response.headers['content-range']).toMatch('bytes 0-3/4');
+							expect(response.status).toEqual(200);
+						});
+					});
+
+					describe('WHEN header contains matching etag', () => {
+						it('should return status 304', async () => {
+							const { uploadedFile } = await setup();
+							const query = {
+								...defaultQueryParameters,
+								forceUpdate: false,
+							};
+							const etag = 'testTag';
+
+							const response = await api.getPreviewWithEtag(
+								`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
+								etag,
+								query
+							);
+
+							expect(response.status).toEqual(304);
+						});
 					});
 				});
 
@@ -329,9 +389,8 @@ describe('File Controller (API) - preview', () => {
 						const { result: uploadedFile } = await api.postUploadFile(uploadPath);
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
-						const originalFile = TestHelper.createFile();
 						const previewFile = TestHelper.createFile('bytes 0-3/4');
-						s3ClientAdapter.get.mockResolvedValueOnce(originalFile).mockResolvedValueOnce(previewFile);
+						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
 						return { uploadedFile };
 					};
@@ -364,6 +423,7 @@ describe('File Controller (API) - preview', () => {
 						expect(response.status).toEqual(206);
 						expect(response.headers['accept-ranges']).toMatch('bytes');
 						expect(response.headers['content-range']).toMatch('bytes 0-3/4');
+						expect(response.headers.etag).toMatch('testTag');
 					});
 				});
 			});
@@ -374,12 +434,8 @@ describe('File Controller (API) - preview', () => {
 					await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 					const error = new NotFoundException();
-					const originalFile = TestHelper.createFile();
 					const previewFile = TestHelper.createFile('bytes 0-3/4');
-					s3ClientAdapter.get
-						.mockRejectedValueOnce(error)
-						.mockResolvedValueOnce(originalFile)
-						.mockResolvedValueOnce(previewFile);
+					s3ClientAdapter.get.mockRejectedValueOnce(error).mockResolvedValueOnce(previewFile);
 
 					return { uploadedFile };
 				};

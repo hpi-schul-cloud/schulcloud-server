@@ -39,7 +39,10 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 		}
 
 		const axiosConfig: AxiosRequestConfig = {
-			headers: { Authorization: `Bearer ${input.accessToken}` },
+			headers: {
+				Authorization: `Bearer ${input.accessToken}`,
+				'Accept-Encoding': 'gzip',
+			},
 		};
 
 		const axiosResponse: AxiosResponse<SanisResponse> = await firstValueFrom(

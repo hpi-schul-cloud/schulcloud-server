@@ -1,4 +1,4 @@
-import { ICommonCartridgeElement } from './common-cartridge-element.interface';
+import { CommonCartridgeElement } from './common-cartridge-element.interface';
 import { ICommonCartridgeResourceProps } from './common-cartridge-resource-item-element';
 import { createIdentifier } from './utils';
 
@@ -62,7 +62,7 @@ function createRecordForResourceCollection(
 	};
 }
 
-export class CommonCartridgeOrganizationItemElement implements ICommonCartridgeElement {
+export class CommonCartridgeOrganizationItemElement implements CommonCartridgeElement {
 	constructor(private readonly props: CommonCartridgeOrganizationItemElementProps) {}
 
 	transform(): Record<string, unknown> {

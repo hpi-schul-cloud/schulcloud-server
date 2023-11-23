@@ -3,8 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AntivirusService } from '@shared/infra/antivirus';
-import { S3ClientAdapter } from '@shared/infra/s3-client';
+import { AntivirusService } from '@infra/antivirus';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
@@ -111,7 +111,7 @@ describe('FilesStorageUC', () => {
 				const previewFileResponse = TestHelper.createFileResponse();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				previewService.getPreview.mockResolvedValueOnce(previewFileResponse);
+				previewService.download.mockResolvedValueOnce(previewFileResponse);
 
 				return { fileDownloadParams, previewParams, userId, fileRecord, singleFileParams, previewFileResponse };
 			};
@@ -129,12 +129,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.downloadPreview(userId, fileDownloadParams, previewParams);
 
-				expect(previewService.getPreview).toHaveBeenCalledWith(
-					fileRecord,
-					fileDownloadParams,
-					previewParams,
-					undefined
-				);
+				expect(previewService.download).toHaveBeenCalledWith(fileRecord, previewParams, undefined);
 			});
 
 			it('should call checkPermission with correct params', async () => {
@@ -211,7 +206,7 @@ describe('FilesStorageUC', () => {
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
 				const error = new Error('test');
-				previewService.getPreview.mockRejectedValueOnce(error);
+				previewService.download.mockRejectedValueOnce(error);
 
 				return { fileDownloadParams, previewParams, userId, error };
 			};
