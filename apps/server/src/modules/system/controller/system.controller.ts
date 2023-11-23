@@ -1,11 +1,9 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { SystemFilterParams } from '@modules/system/controller/dto/system.filter.params';
+import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
+import { ApiForbiddenResponse, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { Authenticate, CurrentUser, ICurrentUser } from '../../authentication';
 import { SystemDto } from '../service';
 import { SystemUc } from '../uc/system.uc';
-import { PublicSystemListResponse } from './dto/public-system-list.response';
-import { PublicSystemResponse } from './dto/public-system-response';
-import { SystemIdParams } from './dto/system-id.params';
+import { PublicSystemListResponse, PublicSystemResponse, SystemFilterParams, SystemIdParams } from './dto';
 import { SystemResponseMapper } from './mapper/system-response.mapper';
 
 @ApiTags('Systems')
@@ -41,5 +39,15 @@ export class SystemController {
 		const mapped: PublicSystemResponse = SystemResponseMapper.mapFromDtoToResponse(systemDto);
 
 		return mapped;
+	}
+
+	@Authenticate('jwt')
+	@Delete(':systemId')
+	@ApiForbiddenResponse()
+	@ApiUnauthorizedResponse()
+	@ApiOperation({ summary: 'Deletes a system.' })
+	@HttpCode(HttpStatus.NO_CONTENT)
+	async deleteSystem(@CurrentUser() currentUser: ICurrentUser, @Param() params: SystemIdParams): Promise<void> {
+		await this.systemUc.delete(currentUser.userId, params.systemId);
 	}
 }

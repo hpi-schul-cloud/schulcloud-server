@@ -13,7 +13,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemEntity, SystemTypeEnum } from '@shared/domain';
-import { systemFactory } from '@shared/testing';
+import { systemEntityFactory } from '@shared/testing';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { v1 } from 'uuid';
@@ -63,7 +63,9 @@ describe('KeycloakConfigurationService Unit', () => {
 		};
 	};
 
-	const systems: SystemEntity[] = systemFactory.withOidcConfig().buildListWithId(1, { type: SystemTypeEnum.OIDC });
+	const systems: SystemEntity[] = systemEntityFactory
+		.withOidcConfig()
+		.buildListWithId(1, { type: SystemTypeEnum.OIDC });
 	const oidcSystems = SystemOidcMapper.mapFromEntitiesToDtos(systems);
 	const idps: IdentityProviderRepresentation[] = [
 		{

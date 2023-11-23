@@ -1,6 +1,6 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@shared/testing';
-import { systemFactory } from '@shared/testing/factory/system.factory';
+import { systemEntityFactory } from '../../testing/factory/systemEntityFactory';
 import { SystemEntity } from './system.entity';
 
 describe('System Entity', () => {
@@ -16,13 +16,13 @@ describe('System Entity', () => {
 		});
 
 		it('should create a system by passing required properties', () => {
-			const system = systemFactory.build();
+			const system = systemEntityFactory.build();
 
 			expect(system instanceof SystemEntity).toEqual(true);
 		});
 
 		it('should create a system by passing required and optional properties', () => {
-			const system = systemFactory
+			const system = systemEntityFactory
 				.withOauthConfig()
 				.build({ url: 'SAMPLE_URL', alias: 'SAMPLE_ALIAS', displayName: 'SAMPLE_NAME' });
 

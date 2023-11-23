@@ -1,22 +1,22 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemEntity, SystemTypeEnum } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { SystemRepo } from '@shared/repo';
-import { systemFactory } from '@shared/testing/factory/system.factory';
+import { LegacySystemRepo } from '@shared/repo';
+import { systemEntityFactory } from '../../testing/factory/systemEntityFactory';
 
 describe('system repo', () => {
 	let module: TestingModule;
-	let repo: SystemRepo;
+	let repo: LegacySystemRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [SystemRepo],
+			providers: [LegacySystemRepo],
 		}).compile();
-		repo = module.get(SystemRepo);
+		repo = module.get(LegacySystemRepo);
 		em = module.get(EntityManager);
 	});
 
@@ -39,7 +39,7 @@ describe('system repo', () => {
 		});
 
 		it('should return right keys', async () => {
-			const system = systemFactory.build();
+			const system = systemEntityFactory.build();
 			await em.persistAndFlush([system]);
 			const result = await repo.findById(system.id);
 			expect(Object.keys(result).sort()).toEqual(
@@ -61,7 +61,7 @@ describe('system repo', () => {
 		});
 
 		it('should return a System that matched by id', async () => {
-			const system = systemFactory.build();
+			const system = systemEntityFactory.build();
 			await em.persistAndFlush([system]);
 			const result = await repo.findById(system.id);
 			expect(result).toEqual(system);
@@ -80,7 +80,7 @@ describe('system repo', () => {
 		});
 
 		it('should return all systems', async () => {
-			const systems = [systemFactory.build(), systemFactory.build({ oauthConfig: undefined })];
+			const systems = [systemEntityFactory.build(), systemEntityFactory.build({ oauthConfig: undefined })];
 			await em.persistAndFlush(systems);
 
 			const result = await repo.findAll();
@@ -91,9 +91,9 @@ describe('system repo', () => {
 	});
 
 	describe('findByFilter', () => {
-		const ldapSystems = systemFactory.withLdapConfig().buildListWithId(2);
-		const oauthSystems = systemFactory.withOauthConfig().buildListWithId(2);
-		const oidcSystems = systemFactory.withOidcConfig().buildListWithId(2);
+		const ldapSystems = systemEntityFactory.withLdapConfig().buildListWithId(2);
+		const oauthSystems = systemEntityFactory.withOauthConfig().buildListWithId(2);
+		const oidcSystems = systemEntityFactory.withOidcConfig().buildListWithId(2);
 
 		beforeAll(async () => {
 			await em.persistAndFlush([...ldapSystems, ...oauthSystems, ...oidcSystems]);

@@ -1,12 +1,12 @@
-import { LdapConfig, OauthConfig, OidcConfig, SystemEntity, SystemProperties } from '@shared/domain';
+import { LdapConfigEntity, OauthConfigEntity, OidcConfigEntity, SystemEntity, SystemEntityProps } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
-export class SystemFactory extends BaseFactory<SystemEntity, SystemProperties> {
+export class SystemEntityFactory extends BaseFactory<SystemEntity, SystemEntityProps> {
 	withOauthConfig(): this {
-		const params: DeepPartial<SystemProperties> = {
-			oauthConfig: new OauthConfig({
+		const params: DeepPartial<SystemEntityProps> = {
+			oauthConfig: new OauthConfigEntity({
 				clientId: '12345',
 				clientSecret: 'mocksecret',
 				idpHint: 'mock-oauth-idpHint',
@@ -25,9 +25,9 @@ export class SystemFactory extends BaseFactory<SystemEntity, SystemProperties> {
 		return this.params(params);
 	}
 
-	withLdapConfig(otherParams?: DeepPartial<LdapConfig>): this {
-		const params: DeepPartial<SystemProperties> = {
-			ldapConfig: new LdapConfig({
+	withLdapConfig(otherParams?: DeepPartial<LdapConfigEntity>): this {
+		const params: DeepPartial<SystemEntityProps> = {
+			ldapConfig: new LdapConfigEntity({
 				url: 'ldaps:mock.de:389',
 				active: true,
 				...otherParams,
@@ -39,7 +39,7 @@ export class SystemFactory extends BaseFactory<SystemEntity, SystemProperties> {
 
 	withOidcConfig(): this {
 		const params = {
-			oidcConfig: new OidcConfig({
+			oidcConfig: new OidcConfigEntity({
 				clientId: 'mock-client-id',
 				clientSecret: 'mock-client-secret',
 				idpHint: 'mock-oidc-idpHint',
@@ -54,10 +54,10 @@ export class SystemFactory extends BaseFactory<SystemEntity, SystemProperties> {
 	}
 }
 
-export const systemFactory = SystemFactory.define(SystemEntity, ({ sequence }) => {
+export const systemEntityFactory = SystemEntityFactory.define(SystemEntity, ({ sequence }) => {
 	return {
 		type: 'oauth',
-		url: 'http://mock.de',
+		url: 'https://mock.de',
 		alias: `system #${sequence}`,
 		displayName: `system #${sequence}DisplayName`,
 		provisioningStrategy: SystemProvisioningStrategy.OIDC,
