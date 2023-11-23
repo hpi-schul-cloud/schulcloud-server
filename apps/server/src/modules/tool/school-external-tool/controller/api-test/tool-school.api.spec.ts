@@ -140,7 +140,13 @@ describe('ToolSchoolController (API)', () => {
 				name: externalToolEntity.name,
 				schoolId: postParams.schoolId,
 				toolId: postParams.toolId,
-				status: ToolConfigurationStatusResponse.LATEST,
+				status: new ToolConfigurationStatusResponse({
+					latest: true,
+					isDisabled: false,
+					isOutdatedOnScopeSchool: false,
+					isOutdatedOnScopeContext: false,
+					isUnkown: false,
+				}),
 				toolVersion: postParams.version,
 				parameters: [
 					{ name: 'param1', value: 'value' },
@@ -297,7 +303,13 @@ describe('ToolSchoolController (API)', () => {
 							name: externalToolEntity.name,
 							schoolId: school.id,
 							toolId: externalToolEntity.id,
-							status: ToolConfigurationStatusResponse.OUTDATED,
+							status: new ToolConfigurationStatusResponse({
+								latest: false,
+								isDisabled: false,
+								isOutdatedOnScopeSchool: true,
+								isOutdatedOnScopeContext: false,
+								isUnkown: false,
+							}),
 							toolVersion: schoolExternalToolEntity.toolVersion,
 							parameters: [
 								{
@@ -340,7 +352,13 @@ describe('ToolSchoolController (API)', () => {
 				name: '',
 				schoolId: school.id,
 				toolId: externalToolEntity.id,
-				status: ToolConfigurationStatusResponse.UNKNOWN,
+				status: new ToolConfigurationStatusResponse({
+					latest: false,
+					isDisabled: false,
+					isOutdatedOnScopeSchool: false,
+					isOutdatedOnScopeContext: false,
+					isUnkown: true,
+				}),
 				toolVersion: schoolExternalToolEntity.toolVersion,
 				parameters: [
 					{
@@ -466,7 +484,13 @@ describe('ToolSchoolController (API)', () => {
 				name: externalToolEntity.name,
 				schoolId: postParamsUpdate.schoolId,
 				toolId: postParamsUpdate.toolId,
-				status: ToolConfigurationStatusResponse.LATEST,
+				status: new ToolConfigurationStatusResponse({
+					latest: true,
+					isDisabled: false,
+					isOutdatedOnScopeSchool: false,
+					isOutdatedOnScopeContext: false,
+					isUnkown: false,
+				}),
 				toolVersion: postParamsUpdate.version,
 				parameters: [
 					{

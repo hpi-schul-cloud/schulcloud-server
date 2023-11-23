@@ -79,7 +79,15 @@ describe('ToolReferenceService', () => {
 				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
-				toolVersionService.determineToolConfigurationStatus.mockResolvedValue(ToolConfigurationStatus.OUTDATED);
+				toolVersionService.determineToolConfigurationStatus.mockResolvedValue(
+					new ToolConfigurationStatus({
+						latest: false,
+						isDisabled: false,
+						isOutdatedOnScopeSchool: true,
+						isOutdatedOnScopeContext: false,
+						isUnkown: false,
+					})
+				);
 				externalToolLogoService.buildLogoUrl.mockReturnValue(logoUrl);
 
 				return {
@@ -123,7 +131,13 @@ describe('ToolReferenceService', () => {
 					logoUrl,
 					displayName: contextExternalTool.displayName as string,
 					openInNewTab: externalTool.openNewTab,
-					status: ToolConfigurationStatus.OUTDATED,
+					status: new ToolConfigurationStatus({
+						latest: false,
+						isDisabled: false,
+						isOutdatedOnScopeSchool: true,
+						isOutdatedOnScopeContext: false,
+						isUnkown: false,
+					}),
 					contextToolId: contextExternalToolId,
 				});
 			});
