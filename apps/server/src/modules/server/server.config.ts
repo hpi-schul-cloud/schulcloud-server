@@ -6,11 +6,6 @@ import type { CommonCartridgeConfig } from '@modules/learnroom/common-cartridge'
 import type { UserConfig } from '@modules/user';
 import type { CoreModuleConfig } from '@src/core';
 import { MailConfig } from '@src/infra/mail/interfaces/mail-config';
-import { MiddlewareConsumer } from '@nestjs/common';
-import { RedisClient } from 'redis';
-import { LegacyLogger } from '@src/core/logger';
-import connectRedis from 'connect-redis';
-import session from 'express-session';
 import { XApiKeyConfig } from '../authentication/config/x-api-key.config';
 
 export enum NodeEnvType {
@@ -57,43 +52,3 @@ const config: ServerConfig = {
 };
 
 export const serverConfig = () => config;
-
-export const setupSessions = (
-	consumer: MiddlewareConsumer,
-	redisClient: RedisClient | undefined,
-	logger: LegacyLogger
-) => {
-	const sessionDuration: number = Configuration.get('SESSION__EXPIRES_SECONDS') as number;
-
-	let store: connectRedis.RedisStore | undefined;
-	if (redisClient) {
-		const RedisStore: connectRedis.RedisStore = connectRedis(session);
-		store = new RedisStore({
-			client: redisClient,
-			ttl: sessionDuration,
-		});
-	} else {
-		logger.warn(
-			'The RedisStore for sessions is not setup, since the environment variable REDIS_URI is not defined. Sessions are using the build-in MemoryStore. This should not be used in production!'
-		);
-	}
-
-	consumer
-		.apply(
-			session({
-				store,
-				secret: Configuration.get('SESSION__SECRET') as string,
-				resave: false,
-				saveUninitialized: false,
-				name: Configuration.has('SESSION__NAME') ? (Configuration.get('SESSION__NAME') as string) : undefined,
-				proxy: Configuration.has('SESSION__PROXY') ? (Configuration.get('SESSION__PROXY') as boolean) : undefined,
-				cookie: {
-					secure: Configuration.get('SESSION__SECURE') as boolean,
-					sameSite: Configuration.get('SESSION__SAME_SITE') as boolean | 'lax' | 'strict' | 'none',
-					httpOnly: Configuration.get('SESSION__HTTP_ONLY') as boolean,
-					maxAge: sessionDuration * 1000,
-				},
-			})
-		)
-		.forRoutes('*');
-};
