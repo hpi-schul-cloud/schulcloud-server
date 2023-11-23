@@ -45,7 +45,7 @@ exports.errorHandler = (error) => {
 			case 'MongoError':
 				return Promise.reject(wrap(new errors.GeneralError(error), error));
 			default:
-				return Promise.reject(wrap(new errors.GeneralError(error), error));
+				return Promise.reject(wrap(error));
 		}
 	}
 

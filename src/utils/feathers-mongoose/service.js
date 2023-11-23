@@ -209,8 +209,9 @@ class Service extends AdapterBase {
 		return model
 			.create(data, params.mongoose)
 			.then((results) => {
-				if (results === undefined) {
-					return [];
+				// https://mongoosejs.com/docs/6.x/docs/migrating_to_6.html#create-with-empty-array
+				if (Array.isArray(results) && results.length === 0) {
+					return results;
 				}
 				if ($populate && this.options.whitelist.includes('$populate')) {
 					return Promise.all(results.map((result) => this.Model.populate(result, $populate)));
