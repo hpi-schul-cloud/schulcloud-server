@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BasicToolConfigResponse, Oauth2ToolConfigResponse, Lti11ToolConfigResponse } from './config';
 import { CustomParameterResponse } from './custom-parameter.response';
-import { ToolConfigType } from '../../../../common/enum';
+import { ToolContextType } from '../../../../common/enum';
 
 export class ExternalToolResponse {
 	@ApiProperty()
@@ -31,8 +31,8 @@ export class ExternalToolResponse {
 	@ApiProperty()
 	version: number;
 
-	@ApiPropertyOptional()
-	restrictToContexts?: ToolConfigType[];
+	@ApiPropertyOptional({ enum: ToolContextType, enumName: 'ToolContextType', isArray: true })
+	restrictToContexts?: ToolContextType[];
 
 	constructor(response: ExternalToolResponse) {
 		this.id = response.id;

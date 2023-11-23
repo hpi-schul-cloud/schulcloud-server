@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ToolContextType } from '../../../../common/enum/tool-context-type.enum';
+import { ToolContextType } from '../../../../common/enum';
 
 export class ToolContextTypesList {
 	@ApiProperty({ enum: ToolContextType, enumName: 'ToolContextType', isArray: true })
