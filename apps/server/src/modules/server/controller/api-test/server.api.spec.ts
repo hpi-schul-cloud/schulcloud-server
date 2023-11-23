@@ -2,12 +2,13 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ServerTestModule } from '@modules/server';
 import request from 'supertest';
+import { RedisModule } from '@src/infra/redis';
 
 describe('Server Controller (API)', () => {
 	let app: INestApplication;
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
-			imports: [ServerTestModule],
+			imports: [ServerTestModule, RedisModule],
 		}).compile();
 
 		app = moduleFixture.createNestApplication();
