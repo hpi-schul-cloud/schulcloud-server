@@ -45,7 +45,7 @@ describe('System (API)', () => {
 			it('should return a list of all systems', async () => {
 				const { system1, system2, system2OauthConfig } = await setup();
 
-				const response: Response = await testApiClient.get(`/systems/public`).expect(200);
+				const response: Response = await testApiClient.get(`/public`).expect(200);
 
 				expect(response.body).toEqual<PublicSystemListResponse>({
 					data: [
@@ -96,7 +96,7 @@ describe('System (API)', () => {
 			it('should return the system', async () => {
 				const { system1 } = await setup();
 
-				const response: Response = await testApiClient.get(`/systems/public/${system1.id}`).expect(200);
+				const response: Response = await testApiClient.get(`/public/${system1.id}`).expect(200);
 
 				expect(response.body).toEqual<PublicSystemResponse>({
 					id: system1.id,
