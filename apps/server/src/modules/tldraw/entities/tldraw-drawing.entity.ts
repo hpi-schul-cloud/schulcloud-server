@@ -34,6 +34,9 @@ export class TldrawDrawing {
 
 	@Property({ nullable: true })
 	action?: string;
+
+	@Property({ nullable: true })
+	part?: number;
 }
 
 export interface TldrawDrawingProps {

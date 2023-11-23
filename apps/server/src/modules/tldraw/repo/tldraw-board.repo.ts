@@ -1,36 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { MongodbPersistence } from 'y-mongodb-provider';
-import { ConfigService } from '@nestjs/config';
-import { TldrawConfig } from '@src/modules/tldraw/config';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
+import { YMongodb } from '@modules/tldraw/repo/y-mongodb';
 import { calculateDiff } from '../utils';
 import { WsSharedDocDo } from '../types';
 
 @Injectable()
 export class TldrawBoardRepo {
-	public connectionString: string;
-
-	public collectionName: string;
-
-	public flushSize: number;
-
-	public multipleCollections: boolean;
-
-	public mdb: MongodbPersistence;
-
-	constructor(public readonly configService: ConfigService<TldrawConfig, true>) {
-		this.connectionString = this.configService.get<string>('CONNECTION_STRING');
-		this.collectionName = this.configService.get<string>('TLDRAW_DB_COLLECTION_NAME') ?? 'drawings';
-		this.flushSize = this.configService.get<number>('TLDRAW_DB_FLUSH_SIZE') ?? 400;
-		this.multipleCollections = this.configService.get<boolean>('TLDRAW_DB_MULTIPLE_COLLECTIONS');
-
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
-		this.mdb = new MongodbPersistence(this.connectionString, {
-			collectionName: this.collectionName,
-			flushSize: this.flushSize,
-			multipleCollections: this.multipleCollections,
-		});
-	}
+	constructor(readonly mdb: YMongodb) {}
 
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
