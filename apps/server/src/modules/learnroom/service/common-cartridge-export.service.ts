@@ -8,6 +8,7 @@ import {
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
+	ICommonCartridgeOrganizationBuilder,
 	ICommonCartridgeResourceProps,
 	ICommonCartridgeWebContentResourceProps,
 } from '../common-cartridge';
@@ -51,10 +52,11 @@ export class CommonCartridgeExportService {
 				identifier: createIdentifier(lesson.id),
 				title: lesson.name,
 				resources: [],
+				_tag: 'resourceCollection',
 			});
 
 			lesson.contents.forEach((content) => {
-				const resourceProps = this.mapContentToResource(lesson.id, content, version);
+				const resourceProps = this.mapContentToResource(lesson.id, content, version, organizationBuilder);
 				if (resourceProps) {
 					organizationBuilder.addResourceToOrganization(resourceProps);
 				}
@@ -75,6 +77,7 @@ export class CommonCartridgeExportService {
 			// FIXME: change the title for tasks organization
 			title: '',
 			resources: [],
+			_tag: 'resourceCollection',
 		});
 
 		tasks.forEach((task) => {
@@ -85,7 +88,8 @@ export class CommonCartridgeExportService {
 	private mapContentToResource(
 		lessonId: string,
 		content: ComponentProperties,
-		version: CommonCartridgeVersion
+		version: CommonCartridgeVersion,
+		orgBuilder: ICommonCartridgeOrganizationBuilder
 	): ICommonCartridgeResourceProps | undefined {
 		const commonProps = (fileExt: 'html' | 'xml') => {
 			return {
@@ -131,9 +135,21 @@ export class CommonCartridgeExportService {
 		if (content.component === ComponentType.LERNSTORE && content.content) {
 			const { resources } = content.content;
 
-			return version === CommonCartridgeVersion.V_1_3_0
-				? { type: CommonCartridgeResourceType.WEB_LINK_V3, url: resources[0].url, ...commonProps('xml') }
-				: { type: CommonCartridgeResourceType.WEB_LINK_V1, url: resources[0].url, ...commonProps('xml') };
+			const resourceProps: ICommonCartridgeResourceProps[] = resources.map((resource) =>
+				version === CommonCartridgeVersion.V_1_3_0
+					? { type: CommonCartridgeResourceType.WEB_LINK_V3, url: resource.url, ...commonProps('xml') }
+					: { type: CommonCartridgeResourceType.WEB_LINK_V1, url: resource.url, ...commonProps('xml') }
+			);
+
+			orgBuilder.addSubOrganization({
+				version,
+				identifier: createIdentifier(content._id),
+				title: content.title,
+				resources: resourceProps,
+				_tag: 'resourceCollection',
+			});
+
+			return undefined;
 		}
 
 		return undefined;

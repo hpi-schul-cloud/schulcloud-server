@@ -5,7 +5,8 @@ import { CommonCartridgeVersion } from './common-cartridge-enums';
 import { CommonCartridgeManifestElement } from './common-cartridge-manifest-element';
 import {
 	CommonCartridgeOrganizationItemElement,
-	ICommonCartridgeOrganizationProps,
+	CommonCartridgeOrganizationItemElementProps,
+	OrganizationItemCollection,
 } from './common-cartridge-organization-item-element';
 import {
 	CommonCartridgeResourceItemElement,
@@ -22,10 +23,11 @@ export type CommonCartridgeFileBuilderOptions = {
 
 export interface ICommonCartridgeOrganizationBuilder {
 	addResourceToOrganization(props: ICommonCartridgeResourceProps): ICommonCartridgeOrganizationBuilder;
+	addSubOrganization(props: CommonCartridgeOrganizationItemElementProps): ICommonCartridgeOrganizationBuilder;
 }
 
 export interface ICommonCartridgeFileBuilder {
-	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder;
+	addOrganization(props: CommonCartridgeOrganizationItemElementProps): ICommonCartridgeOrganizationBuilder;
 
 	addResourceToFile(props: ICommonCartridgeResourceProps): ICommonCartridgeFileBuilder;
 
@@ -34,28 +36,48 @@ export interface ICommonCartridgeFileBuilder {
 
 class CommonCartridgeOrganizationBuilder implements ICommonCartridgeOrganizationBuilder {
 	constructor(
-		private readonly props: ICommonCartridgeOrganizationProps,
+		private readonly props: CommonCartridgeOrganizationItemElementProps,
 		private readonly xmlBuilder: Builder,
 		private readonly zipBuilder: AdmZip
 	) {}
 
+	private resourceProperties: ICommonCartridgeResourceProps[] = [];
+
+	private children: CommonCartridgeOrganizationBuilder[] = [];
+
 	get organization(): CommonCartridgeElement {
-		return new CommonCartridgeOrganizationItemElement(this.props);
+		return new CommonCartridgeOrganizationItemElement(this.orgProps);
+	}
+
+	get orgProps(): OrganizationItemCollection {
+		// TODO resources
+		return {
+			_tag: 'itemCollection',
+			title: this.props.title,
+			children: this.children.map((child) => child.orgProps),
+		};
 	}
 
 	get resources(): CommonCartridgeElement[] {
-		return this.props.resources.map(
-			(resourceProps) => new CommonCartridgeResourceItemElement(resourceProps, this.xmlBuilder)
-		);
+		return this.children
+			.flatMap((child) => child.resourceProperties)
+			.concat(this.resourceProperties)
+			.map((resourceProps) => new CommonCartridgeResourceItemElement(resourceProps, this.xmlBuilder));
 	}
 
 	addResourceToOrganization(props: ICommonCartridgeResourceProps): ICommonCartridgeOrganizationBuilder {
 		const newResource = new CommonCartridgeResourceItemElement(props, this.xmlBuilder);
-		this.props.resources.push(props);
+		this.resourceProperties.push(props);
 		if (!newResource.canInline()) {
 			this.zipBuilder.addFile(props.href, Buffer.from(newResource.content()));
 		}
 		return this;
+	}
+
+	addSubOrganization(props: CommonCartridgeOrganizationItemElementProps): ICommonCartridgeOrganizationBuilder {
+		const subOrgBuilder = new CommonCartridgeOrganizationBuilder(props, this.xmlBuilder, this.zipBuilder);
+		this.children.push(subOrgBuilder);
+		return subOrgBuilder;
 	}
 }
 
@@ -70,7 +92,7 @@ export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
 
 	constructor(private readonly options: CommonCartridgeFileBuilderOptions) {}
 
-	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder {
+	addOrganization(props: CommonCartridgeOrganizationItemElementProps): ICommonCartridgeOrganizationBuilder {
 		const organizationBuilder = new CommonCartridgeOrganizationBuilder(props, this.xmlBuilder, this.zipBuilder);
 		this.organizations.push(organizationBuilder);
 		return organizationBuilder;

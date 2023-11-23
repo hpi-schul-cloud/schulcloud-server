@@ -1,5 +1,5 @@
 import {
-	ICommonCartridgeOrganizationProps,
+	CommonCartridgeOrganizationItemElementProps,
 	CommonCartridgeOrganizationItemElement,
 } from './common-cartridge-organization-item-element';
 import { CommonCartridgeVersion, CommonCartridgeResourceType } from './common-cartridge-enums';
@@ -16,11 +16,12 @@ describe('CommonCartridgeOrganizationItemElement', () => {
 				title: 'Web Link',
 				html: 'html tags for testing',
 			};
-			const props: ICommonCartridgeOrganizationProps = {
+			const props: CommonCartridgeOrganizationItemElementProps = {
 				identifier: 'identifier',
 				title: 'title of organization item element',
 				version: 'version of common cartridge',
 				resources: [webContentResourceProps],
+				_tag: 'resourceCollection',
 			};
 			const organizationItemElement = new CommonCartridgeOrganizationItemElement(props);
 			const transformed = organizationItemElement.transform();

@@ -2,7 +2,7 @@ import AdmZip from 'adm-zip';
 import { parseStringPromise } from 'xml2js';
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from './common-cartridge-enums';
 import { CommonCartridgeFileBuilder, CommonCartridgeFileBuilderOptions } from './common-cartridge-file-builder';
-import { ICommonCartridgeOrganizationProps } from './common-cartridge-organization-item-element';
+import { CommonCartridgeOrganizationItemElementProps } from './common-cartridge-organization-item-element';
 import { ICommonCartridgeResourceProps } from './common-cartridge-resource-item-element';
 
 describe('CommonCartridgeFileBuilder', () => {
@@ -16,11 +16,12 @@ describe('CommonCartridgeFileBuilder', () => {
 		title: 'file-title',
 		version: CommonCartridgeVersion.V_1_1_0,
 	};
-	const organizationProps: ICommonCartridgeOrganizationProps = {
+	const organizationProps: CommonCartridgeOrganizationItemElementProps = {
 		version: CommonCartridgeVersion.V_1_1_0,
 		identifier: 'organization-identifier',
 		title: 'organization-title',
 		resources: [],
+		_tag: 'resourceCollection',
 	};
 	const ltiResourceProps: ICommonCartridgeResourceProps = {
 		version: CommonCartridgeVersion.V_1_1_0,

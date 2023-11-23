@@ -2,19 +2,13 @@ import { CommonCartridgeElement } from './common-cartridge-element.interface';
 import { ICommonCartridgeResourceProps } from './common-cartridge-resource-item-element';
 import { createIdentifier } from './utils';
 
-export type ICommonCartridgeOrganizationProps = {
-	identifier: string;
-	title: string;
-	version: string;
-} & ({ children: ICommonCartridgeOrganizationProps[] } | { resources: ICommonCartridgeResourceProps[] });
-
-type OrganizationItemCollection = {
+export type OrganizationItemCollection = {
 	title: string;
 	children: OrganizationItemCollection[] | OrganizationResourceCollection;
 	_tag: 'itemCollection';
 };
 
-type OrganizationResourceCollection = {
+export type OrganizationResourceCollection = {
 	identifier: string;
 	title: string;
 	version: string;
@@ -72,7 +66,7 @@ export class CommonCartridgeOrganizationItemElement implements CommonCartridgeEl
 					identifier: createIdentifier(),
 				},
 				title: this.props.title,
-				item: this.props.children.map((child) => new CommonCartridgeOrganizationItemElement(child).transform()), // TODO rekursiv weiter?
+				item: this.props.children.map((child) => new CommonCartridgeOrganizationItemElement(child).transform()),
 			};
 		}
 
