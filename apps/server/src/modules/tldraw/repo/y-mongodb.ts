@@ -86,7 +86,7 @@ export class YMongodb {
 	 * @param {Uint8Array} update
 	 * @return {Promise<number>} Returns the clock of the stored update
 	 */
-	storeUpdate(docName: string, update: Uint8Array) {
+	storeUpdate(docName: string, update: Uint8Array): Promise<number> {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
 		return this._transact(docName, (db: MongodbAdapter) => U.storeUpdate(db, docName, update));
 	}

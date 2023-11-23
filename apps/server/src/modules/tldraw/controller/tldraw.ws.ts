@@ -29,16 +29,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	public afterInit(): void {
-		this.tldrawWsService.setPersistence({
-			bindState: async (docName, ydoc) => {
-				await this.tldrawWsService.updateDocument(docName, ydoc);
-			},
-			writeState: async (docName) => {
-				// This is called when all connections to the document are closed.
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-				await this.tldrawWsService.flushDocument(docName);
-			},
-		});
+		// TODO: create index here
 	}
 
 	private getDocNameFromRequest(request: Request): string {

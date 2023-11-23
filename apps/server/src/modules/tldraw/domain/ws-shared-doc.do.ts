@@ -3,9 +3,12 @@ import WebSocket from 'ws';
 import { applyAwarenessUpdate, Awareness, encodeAwarenessUpdate } from 'y-protocols/awareness';
 import { encoding } from 'lib0';
 import { WSMessageType } from '@modules/tldraw/types';
+import { Logger } from '@nestjs/common';
 import { TldrawWsService } from '../service';
 
 export class WsSharedDocDo extends Doc {
+	private readonly logger = new Logger(WsSharedDocDo.name);
+
 	public name: string;
 
 	public conns: Map<WebSocket, Set<number>>;
@@ -28,27 +31,26 @@ export class WsSharedDocDo extends Doc {
 		this.awarenessChannel = `${name}-awareness`;
 
 		this.awareness.on('update', this.awarenessChangeHandler);
+
 		this.on('update', (update: Uint8Array, origin, doc: WsSharedDocDo) => {
 			this.tldrawService.updateHandler(update, origin, doc);
 		});
 
-		// eslint-disable-next-line promise/always-return
-		void this.tldrawService.sub.subscribe([this.name, this.awarenessChannel]).then(() => {
-			console.log('Entered tldrawService.sub.subscribe');
-			this.tldrawService.sub.on('messageBuffer', (channel, update: Uint8Array) => {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-				const channelId = channel.toString();
-				console.log('Sub on messageBuffer, channelId: ', channelId);
+		this.tldrawService.sub
+			.subscribe(this.name, this.awarenessChannel)
+			.then(() => {
+				this.tldrawService.sub.on('messageBuffer', (channel, update) => {
+					const channelId = channel.toString();
 
-				if (channelId === this.name) {
-					console.log('Sub, when applyUpdate');
-					applyUpdate(this, update, this.tldrawService.sub);
-				} else if (channelId === this.awarenessChannel) {
-					console.log('Sub, when applyAwarenessUpdate');
-					applyAwarenessUpdate(this.awareness, update, this.tldrawService.sub);
-				}
-			});
-		});
+					if (channelId === this.name) {
+						applyUpdate(this, update, this.tldrawService.sub);
+					} else if (channelId === this.awarenessChannel) {
+						applyAwarenessUpdate(this.awareness, update, this.tldrawService.sub);
+					}
+				});
+				return null;
+			})
+			.catch((err) => this.logger.error(err));
 	}
 
 	/**
@@ -63,6 +65,11 @@ export class WsSharedDocDo extends Doc {
 		const buff = this.prepareAwarenessMessage(changedClients);
 		this.sendAwarenessMessage(buff);
 	};
+
+	public destroy() {
+		super.destroy();
+		this.tldrawService.sub.unsubscribe(this.name, this.awarenessChannel).catch((err) => this.logger.error(err));
+	}
 
 	/**
 	 * @param {{ added: Array<number>, updated: Array<number>, removed: Array<number> }} changes

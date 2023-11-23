@@ -1,8 +1,8 @@
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME, TLDRAW_DB_URL } from '@src/config';
 import { CoreModule } from '@src/core';
-import { Logger } from '@src/core/logger';
+import { LoggerModule } from '@src/core/logger';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { TldrawDrawing } from '@modules/tldraw/entities';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
@@ -18,17 +18,18 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 };
 @Module({
 	imports: [
+		LoggerModule,
 		CoreModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
-			clientUrl: DB_URL,
+			clientUrl: TLDRAW_DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
 			entities: [TldrawDrawing],
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 	],
-	providers: [Logger, TldrawWs, TldrawWsService, TldrawBoardRepo, YMongodb],
+	providers: [TldrawWs, TldrawWsService, TldrawBoardRepo, YMongodb],
 })
 export class TldrawWsModule {}

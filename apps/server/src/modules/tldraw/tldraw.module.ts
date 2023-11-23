@@ -2,7 +2,7 @@ import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME, DB_URL } from '@src/config';
 import { CoreModule } from '@src/core';
-import { Logger } from '@src/core/logger';
+import { LoggerModule } from '@src/core/logger';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { TldrawDrawing } from '@src/modules/tldraw/entities';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
@@ -23,6 +23,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 
 @Module({
 	imports: [
+		LoggerModule,
 		AuthorizationModule,
 		AuthenticationModule,
 		CoreModule,
@@ -37,7 +38,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 	],
-	providers: [Logger, TldrawService, TldrawBoardRepo, TldrawRepo, YMongodb],
+	providers: [TldrawService, TldrawBoardRepo, TldrawRepo, YMongodb],
 	controllers: [TldrawController],
 })
 export class TldrawModule {}

@@ -1,46 +1,44 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TldrawConfig } from '@src/modules/tldraw/config';
-import { Persitence, WSConnectionState, WSMessageType, WsSharedDocDo } from '@src/modules/tldraw/types';
+import { WSConnectionState, WSMessageType, WsSharedDocDo } from '@src/modules/tldraw/types';
 import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
 import { encoding, decoding, map } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
 import { TldrawBoardRepo } from '@src/modules/tldraw/repo';
-import * as mutex from 'lib0/mutex';
 import { Buffer } from 'node:buffer';
-import { getDocUpdatesFromQueue, pushDocUpdatesToQueue } from '@src/modules/tldraw/redis';
-import { applyUpdate, Doc } from 'yjs';
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
+import { LegacyLogger } from '@src/core/logger';
 
 @Injectable()
 export class TldrawWsService {
 	public pingTimeout: number;
 
-	public persistence: Persitence | null = null;
-
 	public docs = new Map();
 
-	public sub: Redis.Redis;
+	public readonly sub: Redis;
 
-	private mux: mutex.mutex;
-
-	private readonly pub: Redis.Redis;
+	private readonly pub: Redis;
 
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
-		private readonly tldrawBoardRepo: TldrawBoardRepo
+		private readonly tldrawBoardRepo: TldrawBoardRepo,
+		private readonly logger: LegacyLogger
 	) {
+		this.logger.setContext(TldrawWsService.name);
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
 		const redisUrl: string = this.configService.get<string>('REDIS_URI');
-		console.log(`REDIS URL ${redisUrl}`);
-		this.mux = mutex.createMutex();
-		this.sub = new Redis(redisUrl);
-		this.pub = new Redis(redisUrl);
-	}
 
-	public setPersistence(persistence_: Persitence): void {
-		this.persistence = persistence_;
+		this.sub = new Redis(redisUrl, {
+			maxRetriesPerRequest: null,
+		});
+		this.sub.on('error', (err) => this.logger.error('Redis SUB error', err));
+
+		this.pub = new Redis(redisUrl, {
+			maxRetriesPerRequest: null,
+		});
+		this.pub.on('error', (err) => this.logger.error('Redis PUB error', err));
 	}
 
 	/**
@@ -52,15 +50,15 @@ export class TldrawWsService {
 			const controlledIds = doc.conns.get(ws) as Set<number>;
 			doc.conns.delete(ws);
 			removeAwarenessStates(doc.awareness, Array.from(controlledIds), null);
-			if (doc.conns.size === 0 && this.persistence !== null) {
+			if (doc.conns.size === 0) {
 				// if persisted, we store state and destroy ydocument
-				this.persistence
-					.writeState(doc.name, doc)
+				this.tldrawBoardRepo
+					.flushDocument(doc.name)
 					.then(() => {
 						doc.destroy();
 						return null;
 					})
-					.catch(() => {});
+					.catch((err) => this.logger.error(err));
 				this.docs.delete(doc.name);
 			}
 		}
@@ -68,7 +66,7 @@ export class TldrawWsService {
 		try {
 			ws.close();
 		} catch (err) {
-			throw new Error('Cannot close the connection. It is possible that connection is already closed.');
+			this.logger.error('Could not close the connection - it may already be closed');
 		}
 	}
 
@@ -99,27 +97,11 @@ export class TldrawWsService {
 	 */
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
 		const isOriginWSConn = doc.conns.has(origin as WebSocket);
-		console.log('Origin: ', origin);
-		console.log('doc.conns: ', doc.conns);
-		console.log('Update Handler, isOriginWSConn: ', isOriginWSConn);
 		if (isOriginWSConn) {
-			console.log('Update Handler, before promise');
-			void Promise.all([
-				this.pub.publishBuffer(doc.name, Buffer.from(update)),
-				pushDocUpdatesToQueue(this.pub, doc, update),
-			])
-				.then((result) => {
-					console.log('Update handler redis response:', result[0]);
-					return null;
-				})
-				.catch((err) => {
-					console.log('Update Handler Promise Error: ', err);
-				});
-
-			this.propagateUpdate(update, doc);
-		} else {
-			this.propagateUpdate(update, doc);
+			this.pub.publish(doc.name, Buffer.from(update)).catch((err) => this.logger.error(err));
 		}
+
+		this.propagateUpdate(update, doc);
 	}
 
 	/**
@@ -132,15 +114,14 @@ export class TldrawWsService {
 	getYDoc(docName: string, gc = true): WsSharedDocDo {
 		return map.setIfUndefined(this.docs, docName, () => {
 			const doc = new WsSharedDocDo(docName, this, gc);
-			if (this.persistence !== null) {
-				this.persistence.bindState(docName, doc).catch(() => {});
-			}
+
+			this.tldrawBoardRepo.updateDocument(docName, doc).catch((err) => this.logger.error(err));
 			this.docs.set(docName, doc);
 			return doc;
 		});
 	}
 
-	public async messageHandler(conn: WebSocket, doc: WsSharedDocDo, message: Uint8Array): Promise<void> {
+	public messageHandler(conn: WebSocket, doc: WsSharedDocDo, message: Uint8Array): void {
 		try {
 			const encoder = encoding.createEncoder();
 			const decoder = decoding.createDecoder(message);
@@ -159,8 +140,7 @@ export class TldrawWsService {
 					break;
 				case WSMessageType.AWARENESS: {
 					const update = decoding.readVarUint8Array(decoder);
-					const pubResponse = await this.pub.publishBuffer(doc.awarenessChannel, Buffer.from(update));
-					console.log('Message handler awareness response:', pubResponse);
+					this.pub.publish(doc.awarenessChannel, Buffer.from(update)).catch((err) => this.logger.error(err));
 					applyAwarenessUpdate(doc.awareness, update, conn);
 					break;
 				}
@@ -176,7 +156,7 @@ export class TldrawWsService {
 	 * @param {WebSocket} ws
 	 * @param {string} docName
 	 */
-	public async setupWSConnection(ws: WebSocket, docName = 'GLOBAL'): Promise<void> {
+	public setupWSConnection(ws: WebSocket, docName = 'GLOBAL'): void {
 		ws.binaryType = 'arraybuffer';
 		// get doc, initialize if it does not exist yet
 		const doc = this.getYDoc(docName, true);
@@ -185,15 +165,6 @@ export class TldrawWsService {
 		// listen and reply to events
 		ws.on('message', (message: ArrayBufferLike) => {
 			void this.messageHandler(ws, doc, new Uint8Array(message));
-		});
-
-		const redisUpdates = await getDocUpdatesFromQueue(this.pub, doc);
-		console.log('Setup WS Connection redis updates: ', redisUpdates);
-		const redisYDoc = new Doc();
-		redisYDoc.transact(() => {
-			for (const u of redisUpdates) {
-				applyUpdate(redisYDoc, u);
-			}
 		});
 
 		// Check if connection is still alive
@@ -220,33 +191,31 @@ export class TldrawWsService {
 
 			clearInterval(pingInterval);
 		}, this.pingTimeout);
+
 		ws.on('close', () => {
 			this.closeConn(doc, ws);
 			clearInterval(pingInterval);
 		});
+
 		ws.on('pong', () => {
 			pongReceived = true;
 		});
 		{
-			const encoder = encoding.createEncoder();
-			encoding.writeVarUint(encoder, WSMessageType.SYNC);
-			writeSyncStep1(encoder, doc);
-			this.send(doc, ws, encoding.toUint8Array(encoder));
+			const syncEncoder = encoding.createEncoder();
+			encoding.writeVarUint(syncEncoder, WSMessageType.SYNC);
+			writeSyncStep1(syncEncoder, doc);
+			this.send(doc, ws, encoding.toUint8Array(syncEncoder));
 			const awarenessStates = doc.awareness.getStates();
 			if (awarenessStates.size > 0) {
-				encoding.writeVarUint(encoder, WSMessageType.AWARENESS);
-				encoding.writeVarUint8Array(encoder, encodeAwarenessUpdate(doc.awareness, Array.from(awarenessStates.keys())));
-				this.send(doc, ws, encoding.toUint8Array(encoder));
+				const awarenessEncoder = encoding.createEncoder();
+				encoding.writeVarUint(awarenessEncoder, WSMessageType.AWARENESS);
+				encoding.writeVarUint8Array(
+					awarenessEncoder,
+					encodeAwarenessUpdate(doc.awareness, Array.from(awarenessStates.keys()))
+				);
+				this.send(doc, ws, encoding.toUint8Array(awarenessEncoder));
 			}
 		}
-	}
-
-	public async updateDocument(docName: string, ydoc: WsSharedDocDo): Promise<void> {
-		await this.tldrawBoardRepo.updateDocument(docName, ydoc);
-	}
-
-	public async flushDocument(docName: string): Promise<void> {
-		await this.tldrawBoardRepo.flushDocument(docName);
 	}
 
 	private propagateUpdate(update: Uint8Array, doc: WsSharedDocDo): void {

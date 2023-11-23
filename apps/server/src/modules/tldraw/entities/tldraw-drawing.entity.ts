@@ -15,6 +15,9 @@ export class TldrawDrawing {
 		if (props.action) {
 			this.action = props.action;
 		}
+		if (typeof props.part === 'number') {
+			this.part = props.part;
+		}
 	}
 
 	@PrimaryKey()
@@ -46,4 +49,5 @@ export interface TldrawDrawingProps {
 	clock?: number;
 	action?: string;
 	value: string;
+	part?: number;
 }

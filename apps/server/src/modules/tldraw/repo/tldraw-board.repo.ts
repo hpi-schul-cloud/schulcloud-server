@@ -1,28 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
 import { YMongodb } from '@modules/tldraw/repo/y-mongodb';
+import { LegacyLogger } from '@src/core/logger';
 import { calculateDiff } from '../utils';
 import { WsSharedDocDo } from '../types';
 
 @Injectable()
 export class TldrawBoardRepo {
-	constructor(readonly mdb: YMongodb) {}
+	constructor(readonly mdb: YMongodb, private readonly logger: LegacyLogger) {
+		this.logger.setContext(TldrawBoardRepo.name);
+	}
 
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	// eslint-disable-next-line consistent-return
 	public async getYDocFromMdb(docName: string): Promise<Doc> {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
 		const yDoc = await this.mdb.getYDoc(docName);
-		if (yDoc instanceof Doc) {
-			return yDoc;
-		}
+		return yDoc;
 	}
 
 	public updateStoredDocWithDiff(docName: string, diff: Uint8Array): void {
 		const calc = calculateDiff(diff);
 		if (calc > 0) {
-			void this.mdb.storeUpdate(docName, diff);
+			this.mdb.storeUpdate(docName, diff).catch((err) => this.logger.error(err));
 		}
 	}
 
@@ -35,14 +32,13 @@ export class TldrawBoardRepo {
 		applyUpdate(ydoc, encodeStateAsUpdate(persistedYdoc));
 
 		ydoc.on('update', (update: Uint8Array) => {
-			void this.mdb.storeUpdate(docName, update);
+			this.mdb.storeUpdate(docName, update).catch((err) => this.logger.error(err));
 		});
 
 		persistedYdoc.destroy();
 	}
 
 	public async flushDocument(docName: string): Promise<void> {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 		await this.mdb.flushDocument(docName);
 	}
 }
