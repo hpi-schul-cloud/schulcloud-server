@@ -1,13 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { ApiValidationError } from '@shared/common';
-import { SchoolExternalToolValidationService } from '../../school-external-tool/service';
-import { ToolVersionService } from './tool-version-service';
-import { ContextExternalToolValidationService } from './context-external-tool-validation.service';
-import { CommonToolService } from '../../common/service';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
+import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { ToolConfigurationStatus } from '../../common/enum';
+import { CommonToolService } from '../../common/service';
+import { SchoolExternalToolValidationService } from '../../school-external-tool/service';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
+import { ContextExternalToolValidationService } from './context-external-tool-validation.service';
+import { ToolVersionService } from './tool-version-service';
 
 describe('ToolVersionService', () => {
 	let module: TestingModule;

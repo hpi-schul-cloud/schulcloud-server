@@ -4,7 +4,7 @@ import { TeamRolePermissionsDto } from '../dto/team-role-permissions.dto';
 /**
  * base interface for all CollaborativeStorage Strategies
  */
-export interface ICollaborativeStorageStrategy {
+export interface CollaborativeStorageStrategy {
 	/**
 	 * Updates The Permissions for the given Role in the given Team
 	 * @param dto The DTO to be processed

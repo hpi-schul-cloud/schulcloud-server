@@ -1,6 +1,6 @@
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
-import { Counted, EntityId, IComponentProperties, LessonEntity } from '@shared/domain';
+import { ComponentProperties, Counted, EntityId, LessonEntity } from '@shared/domain';
 import { AuthorizationLoaderService } from '@src/modules/authorization';
 import { LessonRepo } from '../repository';
 
@@ -35,7 +35,7 @@ export class LessonService implements AuthorizationLoaderService {
 		const lessons = await this.lessonRepo.findByUserId(userId);
 
 		const updatedLessons = lessons.map((lesson: LessonEntity) => {
-			lesson.contents.map((c: IComponentProperties) => {
+			lesson.contents.map((c: ComponentProperties) => {
 				if (c.user === userId) {
 					c.user = '';
 				}

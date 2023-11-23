@@ -1,3 +1,4 @@
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, Res } from '@nestjs/common';
 import {
 	ApiCreatedResponse,
@@ -14,7 +15,6 @@ import { ValidationError } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { IFindOptions, Page } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Response } from 'express';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalTool, ExternalToolMetadata } from '../domain';

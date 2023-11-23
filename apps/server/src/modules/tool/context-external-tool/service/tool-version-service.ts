@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { Inject } from '@nestjs/common';
-import { ContextExternalToolValidationService } from './context-external-tool-validation.service';
-import { SchoolExternalToolValidationService } from '../../school-external-tool/service';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
-import { ExternalTool } from '../../external-tool/domain';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ContextExternalTool } from '../domain';
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { ToolConfigurationStatus } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
+import { ExternalTool } from '../../external-tool/domain';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { SchoolExternalToolValidationService } from '../../school-external-tool/service';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
+import { ContextExternalTool } from '../domain';
+import { ContextExternalToolValidationService } from './context-external-tool-validation.service';
 
 @Injectable()
 export class ToolVersionService {

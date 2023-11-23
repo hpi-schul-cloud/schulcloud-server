@@ -1,14 +1,14 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { axiosResponseFactory } from '@shared/testing';
 import { AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
+import { CalendarEvent } from '../interface/calendar-event.interface';
 import { CalendarMapper } from '../mapper/calendar.mapper';
-import { ICalendarEvent } from '../interface/calendar-event.interface';
 
 describe('CalendarServiceSpec', () => {
 	let module: TestingModule;
@@ -56,7 +56,7 @@ describe('CalendarServiceSpec', () => {
 			const title = 'eventTitle';
 			const teamId = 'teamId';
 
-			const event: ICalendarEvent = {
+			const event: CalendarEvent = {
 				data: [
 					{
 						attributes: {
@@ -66,7 +66,7 @@ describe('CalendarServiceSpec', () => {
 					},
 				],
 			};
-			const axiosResponse: AxiosResponse<ICalendarEvent> = axiosResponseFactory.build({
+			const axiosResponse: AxiosResponse<CalendarEvent> = axiosResponseFactory.build({
 				data: event,
 			});
 			httpService.get.mockReturnValue(of(axiosResponse));
