@@ -13,7 +13,7 @@ import { config } from './config';
 import { TldrawController } from './controller/tldraw.controller';
 import { TldrawService } from './service/tldraw.service';
 import { TldrawRepo } from './repo/tldraw.repo';
-import { TldrawBoardRepo } from './repo';
+import { TldrawBoardRepo, YMongodb } from './repo';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -37,7 +37,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 	],
-	providers: [Logger, TldrawService, TldrawBoardRepo, TldrawRepo],
+	providers: [Logger, TldrawService, TldrawBoardRepo, TldrawRepo, YMongodb],
 	controllers: [TldrawController],
 })
 export class TldrawModule {}
