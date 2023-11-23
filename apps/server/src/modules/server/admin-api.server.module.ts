@@ -10,8 +10,8 @@ import { FileEntity } from '@modules/files/entity';
 import { FileRecord } from '@modules/files-storage/entity';
 import { RedisClient } from 'redis';
 import { REDIS_CLIENT, RedisModule } from '@src/infra/redis';
-import { defaultMikroOrmOptions, setupSessions } from './server.module';
-import { serverConfig } from './server.config';
+import { defaultMikroOrmOptions } from './server.module';
+import { serverConfig, setupSessions } from './server.config';
 import { AdminApiServerController } from './controller';
 import { DeletionApiModule } from '../deletion/deletion-api.module';
 

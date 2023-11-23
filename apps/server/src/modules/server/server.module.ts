@@ -34,11 +34,9 @@ import { ALL_ENTITIES } from '@shared/domain';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';
-import connectRedis from 'connect-redis';
-import session from 'express-session';
 import { RedisClient } from 'redis';
 import { ServerController } from './controller/server.controller';
-import { serverConfig } from './server.config';
+import { serverConfig, setupSessions } from './server.config';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -83,46 +81,6 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
-};
-
-export const setupSessions = (
-	consumer: MiddlewareConsumer,
-	redisClient: RedisClient | undefined,
-	logger: LegacyLogger
-) => {
-	const sessionDuration: number = Configuration.get('SESSION__EXPIRES_SECONDS') as number;
-
-	let store: connectRedis.RedisStore | undefined;
-	if (redisClient) {
-		const RedisStore: connectRedis.RedisStore = connectRedis(session);
-		store = new RedisStore({
-			client: redisClient,
-			ttl: sessionDuration,
-		});
-	} else {
-		logger.warn(
-			'The RedisStore for sessions is not setup, since the environment variable REDIS_URI is not defined. Sessions are using the build-in MemoryStore. This should not be used in production!'
-		);
-	}
-
-	consumer
-		.apply(
-			session({
-				store,
-				secret: Configuration.get('SESSION__SECRET') as string,
-				resave: false,
-				saveUninitialized: false,
-				name: Configuration.has('SESSION__NAME') ? (Configuration.get('SESSION__NAME') as string) : undefined,
-				proxy: Configuration.has('SESSION__PROXY') ? (Configuration.get('SESSION__PROXY') as boolean) : undefined,
-				cookie: {
-					secure: Configuration.get('SESSION__SECURE') as boolean,
-					sameSite: Configuration.get('SESSION__SAME_SITE') as boolean | 'lax' | 'strict' | 'none',
-					httpOnly: Configuration.get('SESSION__HTTP_ONLY') as boolean,
-					maxAge: sessionDuration * 1000,
-				},
-			})
-		)
-		.forRoutes('*');
 };
 
 /**
