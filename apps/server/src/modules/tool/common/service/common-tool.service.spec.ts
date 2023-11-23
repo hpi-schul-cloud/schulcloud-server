@@ -119,7 +119,7 @@ describe('CommonToolService', () => {
 						isUnkown: false,
 						isDisabled: false,
 						isOutdatedOnScopeContext: true,
-						isOutdatedOnScopeSchool: false,
+						isOutdatedOnScopeSchool: true,
 					})
 				);
 			});
@@ -153,7 +153,7 @@ describe('CommonToolService', () => {
 						isUnkown: false,
 						isDisabled: false,
 						isOutdatedOnScopeContext: true,
-						isOutdatedOnScopeSchool: false,
+						isOutdatedOnScopeSchool: true,
 					})
 				);
 			});

@@ -112,7 +112,15 @@ describe('SchoolExternalToolService', () => {
 							schoolExternalTool
 						);
 
-						expect(schoolExternalToolDOs[0].status).toEqual(ToolConfigurationStatus.OUTDATED);
+						expect(schoolExternalToolDOs[0].status).toEqual(
+							new ToolConfigurationStatus({
+								latest: false,
+								isDisabled: false,
+								isOutdatedOnScopeSchool: true,
+								isOutdatedOnScopeContext: false,
+								isUnkown: false,
+							})
+						);
 					});
 				});
 
@@ -128,7 +136,15 @@ describe('SchoolExternalToolService', () => {
 							schoolExternalTool
 						);
 
-						expect(schoolExternalToolDOs[0].status).toEqual(ToolConfigurationStatus.LATEST);
+						expect(schoolExternalToolDOs[0].status).toEqual(
+							new ToolConfigurationStatus({
+								latest: true,
+								isDisabled: false,
+								isOutdatedOnScopeSchool: false,
+								isOutdatedOnScopeContext: false,
+								isUnkown: false,
+							})
+						);
 					});
 				});
 
@@ -144,7 +160,15 @@ describe('SchoolExternalToolService', () => {
 							schoolExternalTool
 						);
 
-						expect(schoolExternalToolDOs[0].status).toEqual(ToolConfigurationStatus.LATEST);
+						expect(schoolExternalToolDOs[0].status).toEqual(
+							new ToolConfigurationStatus({
+								latest: true,
+								isDisabled: false,
+								isOutdatedOnScopeSchool: false,
+								isOutdatedOnScopeContext: false,
+								isUnkown: false,
+							})
+						);
 					});
 				});
 			});
@@ -170,7 +194,15 @@ describe('SchoolExternalToolService', () => {
 					const schoolExternalToolDOs: SchoolExternalTool[] = await service.findSchoolExternalTools(schoolExternalTool);
 
 					expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
-					expect(schoolExternalToolDOs[0].status).toEqual(ToolConfigurationStatus.LATEST);
+					expect(schoolExternalToolDOs[0].status).toEqual(
+						new ToolConfigurationStatus({
+							latest: true,
+							isDisabled: false,
+							isOutdatedOnScopeSchool: false,
+							isOutdatedOnScopeContext: false,
+							isUnkown: false,
+						})
+					);
 				});
 			});
 
@@ -195,7 +227,15 @@ describe('SchoolExternalToolService', () => {
 					const schoolExternalToolDOs: SchoolExternalTool[] = await service.findSchoolExternalTools(schoolExternalTool);
 
 					expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
-					expect(schoolExternalToolDOs[0].status).toEqual(ToolConfigurationStatus.OUTDATED);
+					expect(schoolExternalToolDOs[0].status).toEqual(
+						new ToolConfigurationStatus({
+							latest: false,
+							isDisabled: false,
+							isOutdatedOnScopeSchool: true,
+							isOutdatedOnScopeContext: false,
+							isUnkown: false,
+						})
+					);
 				});
 			});
 		});

@@ -52,7 +52,13 @@ describe('SchoolExternalToolResponseMapper', () => {
 									value: do1.parameters[0].value,
 								},
 							],
-							status: ToolConfigurationStatusResponse.LATEST,
+							status: new ToolConfigurationStatusResponse({
+								latest: true,
+								isDisabled: false,
+								isOutdatedOnScopeContext: false,
+								isOutdatedOnScopeSchool: false,
+								isUnkown: false,
+							}),
 						},
 						{
 							id: do2.id as string,
@@ -66,7 +72,13 @@ describe('SchoolExternalToolResponseMapper', () => {
 									value: do2.parameters[0].value,
 								},
 							],
-							status: ToolConfigurationStatusResponse.UNKNOWN,
+							status: new ToolConfigurationStatusResponse({
+								latest: false,
+								isDisabled: false,
+								isOutdatedOnScopeContext: false,
+								isOutdatedOnScopeSchool: false,
+								isUnkown: true,
+							}),
 						},
 					])
 				);
@@ -98,7 +110,13 @@ describe('SchoolExternalToolResponseMapper', () => {
 					expect.objectContaining({
 						id: '',
 						name: '',
-						status: ToolConfigurationStatusResponse.UNKNOWN,
+						status: new ToolConfigurationStatusResponse({
+							latest: false,
+							isDisabled: false,
+							isOutdatedOnScopeContext: false,
+							isOutdatedOnScopeSchool: false,
+							isUnkown: true,
+						}),
 					})
 				);
 			});
