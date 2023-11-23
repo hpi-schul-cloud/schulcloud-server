@@ -38,7 +38,7 @@ function isLibrariesContentType(object: unknown): object is LibrariesContentType
 	return isType;
 }
 
-const castToLibrariesContentType = (object: unknown): LibrariesContentType => {
+export const castToLibrariesContentType = (object: unknown): LibrariesContentType => {
 	if (!isLibrariesContentType(object)) {
 		throw new InternalServerErrorException('Invalid input type for castToLibrariesContentType');
 	}

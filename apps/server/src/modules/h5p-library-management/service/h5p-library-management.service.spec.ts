@@ -3,8 +3,9 @@ import { createMock } from '@golevelup/ts-jest';
 import { ContentStorage, LibraryStorage } from '@src/modules/h5p-editor/service';
 import { IHubContentType, ILibraryAdministrationOverviewItem } from '@lumieducation/h5p-server/build/src/types';
 import { ConfigService } from '@nestjs/config';
-import { H5PLibraryManagementService } from './h5p-library-management.service';
+import { H5PLibraryManagementService, castToLibrariesContentType } from './h5p-library-management.service';
 import { IH5PLibraryManagementConfig } from './h5p-library-management.config';
+import { InternalServerErrorException } from '@nestjs/common';
 
 jest.mock('@lumieducation/h5p-server', () => {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -237,6 +238,17 @@ describe('H5PLibraryManagementService', () => {
 
 				uninstallSpy.mockRestore();
 				installSpy.mockRestore();
+			});
+		});
+	});
+
+	describe('castToLibrariesContentType', () => {
+		describe('when castToLibrariesContentType has been called successfully', () => {
+			it('should throw InternalServerErrorException', () => {
+				const randomObject = {
+					random: 1,
+				};
+				expect(() => castToLibrariesContentType(randomObject)).toThrow(InternalServerErrorException);
 			});
 		});
 	});
