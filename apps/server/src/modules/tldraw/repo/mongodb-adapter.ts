@@ -1,11 +1,9 @@
-import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TldrawConfig } from '@modules/tldraw/config';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Sort } from 'mongodb';
 import { TldrawDrawing } from '@modules/tldraw/entities';
 
-@Injectable()
 export class MongodbAdapter {
 	private collectionName: string;
 
