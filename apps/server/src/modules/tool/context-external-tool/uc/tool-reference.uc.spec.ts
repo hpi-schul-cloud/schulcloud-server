@@ -60,7 +60,13 @@ describe('ToolReferenceUc', () => {
 					logoUrl: externalTool.logoUrl,
 					contextToolId: contextExternalTool.id as string,
 					displayName: contextExternalTool.displayName as string,
-					status: ToolConfigurationStatus.LATEST,
+					status: new ToolConfigurationStatus({
+						latest: true,
+						isDisabled: false,
+						isOutdatedOnScopeSchool: false,
+						isOutdatedOnScopeContext: false,
+						isUnkown: false,
+					}),
 					openInNewTab: externalTool.openNewTab,
 				});
 
@@ -146,7 +152,13 @@ describe('ToolReferenceUc', () => {
 					logoUrl: externalTool.logoUrl,
 					contextToolId: contextExternalTool.id as string,
 					displayName: contextExternalTool.displayName as string,
-					status: ToolConfigurationStatus.LATEST,
+					status: new ToolConfigurationStatus({
+						latest: true,
+						isDisabled: false,
+						isOutdatedOnScopeSchool: false,
+						isOutdatedOnScopeContext: false,
+						isUnkown: false,
+					}),
 					openInNewTab: externalTool.openNewTab,
 				});
 

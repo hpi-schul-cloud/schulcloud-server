@@ -160,7 +160,13 @@ describe('ToolReferenceController (API)', () => {
 						{
 							contextToolId: contextExternalToolEntity.id,
 							displayName: contextExternalToolEntity.displayName as string,
-							status: ToolConfigurationStatusResponse.LATEST,
+							status: new ToolConfigurationStatusResponse({
+								latest: true,
+								isDisabled: false,
+								isOutdatedOnScopeSchool: false,
+								isOutdatedOnScopeContext: false,
+								isUnkown: false,
+							}),
 							logoUrl: `http://localhost:3030/api/v3/tools/external-tools/${externalToolEntity.id}/logo`,
 							openInNewTab: externalToolEntity.openNewTab,
 						},
@@ -277,7 +283,13 @@ describe('ToolReferenceController (API)', () => {
 				expect(response.body).toEqual<ToolReferenceResponse>({
 					contextToolId: contextExternalToolEntity.id,
 					displayName: contextExternalToolEntity.displayName as string,
-					status: ToolConfigurationStatusResponse.LATEST,
+					status: new ToolConfigurationStatusResponse({
+						latest: true,
+						isDisabled: false,
+						isOutdatedOnScopeSchool: false,
+						isOutdatedOnScopeContext: false,
+						isUnkown: false,
+					}),
 					logoUrl: `http://localhost:3030/api/v3/tools/external-tools/${externalToolEntity.id}/logo`,
 					openInNewTab: externalToolEntity.openNewTab,
 				});
