@@ -7,9 +7,10 @@ import { PseudonymService } from '@modules/pseudonym/service';
 import { ExternalTool, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
 import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { Permission, User } from '@shared/domain';
+import { User } from '@shared/domain';
 import { Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { Permission } from '@shared/domain/interface';
 import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
 
 @Injectable()

@@ -1,6 +1,6 @@
-import { RoleName } from '@shared/domain';
-import { UserForGroupNotFoundLoggable } from './user-for-group-not-found.loggable';
+import { RoleName } from '@shared/domain/interface';
 import { ExternalGroupUserDto } from '../dto';
+import { UserForGroupNotFoundLoggable } from './user-for-group-not-found.loggable';
 
 describe('UserForGroupNotFoundLoggable', () => {
 	describe('constructor', () => {

@@ -1,8 +1,9 @@
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { Permission, User } from '@shared/domain';
+import { User } from '@shared/domain';
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import {

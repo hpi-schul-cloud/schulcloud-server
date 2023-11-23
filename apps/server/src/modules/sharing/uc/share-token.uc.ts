@@ -7,7 +7,7 @@ import { CourseService } from '@modules/learnroom/service';
 import { LessonCopyService } from '@modules/lesson/service';
 import { TaskCopyService } from '@modules/task/service';
 import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { Permission } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import {

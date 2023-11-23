@@ -7,8 +7,8 @@ import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { UserService } from '@modules/user';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
 import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { Permission } from '@shared/domain/interface';
 import {
 	externalToolFactory,
 	ltiToolDOFactory,

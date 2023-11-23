@@ -7,9 +7,9 @@ import {
 	DashboardModelEntity,
 	GridElement,
 	GridElementWithPosition,
-	Learnroom,
 	User,
 } from '@shared/domain';
+import { Learnroom } from '@shared/domain/interface';
 import { LearnroomTypes } from '@shared/domain/types';
 
 @Injectable()

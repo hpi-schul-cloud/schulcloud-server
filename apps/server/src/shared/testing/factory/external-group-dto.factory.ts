@@ -1,7 +1,7 @@
-import { RoleName } from '@shared/domain';
-import { ObjectId } from 'bson';
-import { ExternalGroupDto } from '@modules/provisioning/dto';
 import { GroupTypes } from '@modules/group';
+import { ExternalGroupDto } from '@modules/provisioning/dto';
+import { RoleName } from '@shared/domain/interface';
+import { ObjectId } from 'bson';
 import { BaseFactory } from './base.factory';
 
 export const externalGroupDtoFactory = BaseFactory.define<ExternalGroupDto, ExternalGroupDto>(

@@ -3,15 +3,15 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { TaskListResponse } from '@modules/task/controller/dto';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 import { InputFormat } from '@shared/domain/types';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	cleanupCollections,
 	courseFactory,
 	submissionFactory,
 	taskFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 } from '@shared/testing';
 
 const tomorrow = new Date(Date.now() + 86400000);

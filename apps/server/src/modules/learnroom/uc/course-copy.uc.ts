@@ -3,7 +3,7 @@ import { AuthorizationContextBuilder } from '@modules/authorization';
 import { AuthorizableReferenceType, AuthorizationReferenceService } from '@modules/authorization/domain';
 import { CopyStatus } from '@modules/copy-helper';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Permission } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseCopyService } from '../service';
 

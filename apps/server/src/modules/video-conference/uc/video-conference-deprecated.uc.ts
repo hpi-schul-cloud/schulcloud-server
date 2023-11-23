@@ -8,9 +8,9 @@ import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
-import { Course, Permission, RoleName, SchoolFeatures, TeamEntity, TeamUserEntity } from '@shared/domain';
+import { Course, SchoolFeatures, TeamEntity, TeamUserEntity } from '@shared/domain';
 import { UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
-import { VideoConferenceScope } from '@shared/domain/interface';
+import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
@@ -27,7 +27,7 @@ import {
 	GuestPolicy,
 } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { VideoConferenceOptions, defaultVideoConferenceOptions } from '../interface';
 import { ScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
 
 const PermissionMapping = {

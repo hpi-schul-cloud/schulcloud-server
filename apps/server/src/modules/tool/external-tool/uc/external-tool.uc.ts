@@ -1,7 +1,8 @@
 import { AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
-import { IFindOptions, Permission, User } from '@shared/domain';
+import { User } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject';
+import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalTool, ExternalToolConfig, ExternalToolMetadata } from '../domain';

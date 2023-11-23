@@ -13,8 +13,8 @@ import {
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
-import { IFindOptions } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject';
+import { IFindOptions } from '@shared/domain/interface';
 import { LegacyLogger } from '@src/core/logger';
 import { Response } from 'express';
 import { ExternalToolSearchQuery } from '../../common/interface';

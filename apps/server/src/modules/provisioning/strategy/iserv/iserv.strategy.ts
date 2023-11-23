@@ -2,8 +2,9 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { OAuthSSOError } from '@modules/oauth/loggable';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { RoleName, User } from '@shared/domain';
+import { User } from '@shared/domain';
 import { LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import {

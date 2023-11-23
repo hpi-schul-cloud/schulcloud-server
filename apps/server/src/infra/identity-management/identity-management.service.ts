@@ -1,4 +1,4 @@
-import { IdmAccount, IdmAccountUpdate } from '@shared/domain';
+import { IdmAccount, IdmAccountUpdate } from '@shared/domain/interface';
 import { Counted } from '@shared/domain/types';
 
 export type SearchOptions = {

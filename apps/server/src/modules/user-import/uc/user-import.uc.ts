@@ -5,17 +5,9 @@ import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
-import {
-	Account,
-	IFindOptions,
-	ImportUser,
-	MatchCreator,
-	Permission,
-	SchoolFeatures,
-	SystemEntity,
-	User,
-} from '@shared/domain';
+import { Account, ImportUser, MatchCreator, SchoolFeatures, SystemEntity, User } from '@shared/domain';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
+import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from '@shared/domain/types';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';

@@ -1,4 +1,4 @@
-import { RoleName } from '@shared/domain';
+import { RoleName } from '@shared/domain/interface';
 import { LtiRole } from '../../common/enum';
 
 const RoleMapping: Partial<Record<RoleName, LtiRole>> = {

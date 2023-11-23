@@ -1,8 +1,9 @@
 import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { LtiPrivacyPermission, RoleName } from '@shared/domain';
+import { LtiPrivacyPermission } from '@shared/domain';
 import { Pseudonym, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Authorization } from 'oauth-1.0a';
 import { LtiRole } from '../../../common/enum';

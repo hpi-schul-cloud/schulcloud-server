@@ -1,4 +1,4 @@
-import { Permission, RoleName } from '@shared/domain';
+import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 
 export class RoleDto {

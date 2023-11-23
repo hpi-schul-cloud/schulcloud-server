@@ -4,8 +4,8 @@ import { AccountDto } from '@modules/account/services/dto';
 import { OAuthService, OAuthTokenDto } from '@modules/oauth';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { userDoFactory } from '@shared/testing';
 

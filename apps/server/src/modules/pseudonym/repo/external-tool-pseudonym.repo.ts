@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { IFindOptions, Pagination } from '@shared/domain';
 import { Page, Pseudonym } from '@shared/domain/domainobject';
+import { IFindOptions, Pagination } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo';
 import { PseudonymSearchQuery } from '../domain';

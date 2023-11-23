@@ -6,7 +6,8 @@ import {
 } from '@modules/authorization';
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { Injectable } from '@nestjs/common';
-import { Permission, User } from '@shared/domain';
+import { User } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';

@@ -1,6 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
-import { ImportUser, SortOrderMap } from '@shared/domain';
+import { ImportUser } from '@shared/domain';
+import { SortOrderMap } from '@shared/domain/interface';
 import { IImportUserScope } from '@shared/domain/types';
 import {
 	FilterImportUserParams,
