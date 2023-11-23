@@ -1,29 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountService } from '@modules/account/services/account.service';
+import { AuthorizationService } from '@modules/authorization';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
-import {
-	ImportUser,
-	LegacySchoolDo,
-	MatchCreator,
-	MatchCreatorScope,
-	Permission,
-	SchoolEntity,
-	SchoolFeatures,
-	SystemEntity,
-	User,
-} from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { ImportUser, MatchCreator, Permission, SchoolEntity, SchoolFeatures, SystemEntity, User } from '@shared/domain';
+import { LegacySchoolDo } from '@shared/domain/domainobject';
+import { MatchCreatorScope } from '@shared/domain/types';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { LoggerModule } from '@src/core/logger';
-import { AccountService } from '@modules/account/services/account.service';
-import { AuthorizationService } from '@modules/authorization';
-import { LegacySchoolService } from '@modules/legacy-school';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,

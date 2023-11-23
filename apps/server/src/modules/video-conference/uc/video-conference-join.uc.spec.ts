@@ -1,16 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { UserService } from '@modules/user';
-import { userDoFactory } from '@shared/testing';
-import { Permission, UserDO, VideoConferenceDO, VideoConferenceScope } from '@shared/domain';
-import { ObjectId } from 'bson';
 import { ForbiddenException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Permission, VideoConferenceScope } from '@shared/domain';
+import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
+import { userDoFactory } from '@shared/testing';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
-import { BBBService, VideoConferenceService } from '../service';
-import { VideoConferenceOptions } from '../interface';
+import { ObjectId } from 'bson';
 import { BBBJoinConfig, BBBJoinResponse, BBBResponse, BBBRole } from '../bbb';
-import { VideoConferenceJoin, VideoConferenceState } from './dto';
 import { ErrorStatus } from '../error/error-status.enum';
+import { VideoConferenceOptions } from '../interface';
+import { BBBService, VideoConferenceService } from '../service';
+import { VideoConferenceJoin, VideoConferenceState } from './dto';
 import { VideoConferenceJoinUc } from './video-conference-join.uc';
 
 describe('VideoConferenceJoinUc', () => {
