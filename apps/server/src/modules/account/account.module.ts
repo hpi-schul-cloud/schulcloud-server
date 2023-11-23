@@ -1,7 +1,7 @@
 import { IdentityManagementModule } from '@infra/identity-management';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PermissionService } from '@shared/domain';
+import { PermissionService } from '@shared/domain/service';
 import { SystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger/logger.module';
 import { ServerConfig } from '../server/server.config';
