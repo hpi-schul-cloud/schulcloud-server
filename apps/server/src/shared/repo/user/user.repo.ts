@@ -8,6 +8,7 @@ import {
 	IFindOptions,
 	ImportUser,
 	NameMatch,
+	ParentProperties,
 	Role,
 	SchoolEntity,
 	SortOrder,
@@ -168,6 +169,12 @@ export class UserRepo extends BaseRepo<User> {
 			id: userId,
 		});
 		return deletedUserNumber;
+	}
+
+	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
+		const user = await this._em.findOneOrFail(User, { id: userId });
+		const parentsEmails = user.parents?.map((parent) => parent.email) ?? [];
+		return parentsEmails;
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {
