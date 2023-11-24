@@ -18,6 +18,7 @@ const types = [
 	'iserv', // SSO providers
 	'ldap', // general and provider-specific LDAP
 	'oidc',
+	'oauth',
 	tspBaseType,
 	tspSchoolType, // Thüringer Schul-Portal
 ];
