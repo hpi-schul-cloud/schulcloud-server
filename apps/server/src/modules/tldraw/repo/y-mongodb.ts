@@ -65,7 +65,7 @@ export class YMongodb {
 		};
 	}
 
-	public async createIndex(): Promise<void> {
+	async createIndex(): Promise<void> {
 		const collection = this.adapter.getCollection();
 		await collection.createIndex({
 			version: 1,

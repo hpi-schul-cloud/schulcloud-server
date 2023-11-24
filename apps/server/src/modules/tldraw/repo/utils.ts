@@ -97,10 +97,10 @@ const convertMongoUpdates = (docs: TldrawDrawing[]) => {
 		if (!doc.part) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			updates.push(doc.value);
+			updates.push(doc.value.buffer);
 		} else if (doc.part === 1) {
 			// merge the docs together that got split because of mongodb size limits
-			const parts = [Buffer.from(doc.value)];
+			const parts = [Buffer.from(doc.value.buffer)];
 			let j;
 			let currentPartId: number | undefined = doc.part;
 			// eslint-disable-next-line no-plusplus
@@ -113,7 +113,7 @@ const convertMongoUpdates = (docs: TldrawDrawing[]) => {
 					if (currentPartId !== part.part - 1) {
 						throw new Error('Couldnt merge updates together because a part is missing!');
 					}
-					parts.push(Buffer.from(part.value));
+					parts.push(Buffer.from(part.value.buffer));
 					currentPartId = part.part;
 				} else {
 					break;

@@ -7,7 +7,7 @@ export const tldrawEntityFactory = BaseFactory.define<TldrawDrawing, TldrawDrawi
 		return {
 			_id: 'test-id',
 			docName: 'test-name',
-			value: 'test-value',
+			value: Buffer.from('test'),
 			version: `test-version-${sequence}`,
 		};
 	}

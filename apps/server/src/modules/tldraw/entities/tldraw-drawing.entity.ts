@@ -30,7 +30,7 @@ export class TldrawDrawing {
 	version: string;
 
 	@Property({ nullable: false })
-	value: string;
+	value: Buffer;
 
 	@Property({ nullable: true })
 	clock?: number;
@@ -48,6 +48,6 @@ export interface TldrawDrawingProps {
 	version: string;
 	clock?: number;
 	action?: string;
-	value: string;
+	value: Buffer;
 	part?: number;
 }
