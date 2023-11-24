@@ -42,7 +42,7 @@ exports.errorHandler = (error) => {
 			case 'MissingSchemaError':
 			case 'DivergentArrayError':
 				return Promise.reject(wrap(new errors.GeneralError(error), error));
-			case 'MongoError':
+			case 'MongoServerError':
 				return Promise.reject(wrap(new errors.GeneralError(error), error));
 			default:
 				return Promise.reject(wrap(error));

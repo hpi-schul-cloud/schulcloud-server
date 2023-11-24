@@ -116,7 +116,8 @@ const db = {};
 // TODO move to homeworks/submission repository, test it there and reuse it here only
 db.findHomeworks = (userId) => HomeworkModel.find({ teacherId: userId }).lean().exec();
 db.findGroupSubmissions = (userId) => SubmissionModel.find({ teamMembers: userId }).lean().exec();
-db.findSubmissions = (userId) => SubmissionModel.find({ stundentId: userId }).lean().exec();
+// https://mongoosejs.com/docs/6.x/docs/migrating_to_6.html#strictquery-is-removed-and-replaced-by-strict
+db.findSubmissions = (userId) => SubmissionModel.find({ studentId: userId }).lean().exec();
 db.findArchivedHomework = (userId) => HomeworkModel.find({ archived: userId }).lean().exec();
 // TODO find solution without cleanup it before
 db.cleanupUnexpectedHomeworks = () =>
@@ -580,7 +581,6 @@ describe('in "task.repo" the function', () => {
 		it('should remove all submissions', async () => {
 			const userId = testHelper.generateObjectId();
 			const otherUserId = testHelper.generateObjectId();
-
 			const submissionProm = testHelper.createTestSubmission({ studentId: userId });
 			const otherSubmissionProm = testHelper.createTestSubmission({ studentId: otherUserId });
 
@@ -588,6 +588,8 @@ describe('in "task.repo" the function', () => {
 
 			const result = await deleteSingleSubmissionsFromUser(userId);
 			expect(result).to.eql(getExpectedDeleteMany(1));
+
+			// https://mongoosejs.com/docs/6.x/docs/migrating_to_6.html#strictquery-is-removed-and-replaced-by-strict
 
 			const dbResult = await db.findSubmissions(userId);
 			expect(dbResult.some(matchId(submission))).to.be.false;

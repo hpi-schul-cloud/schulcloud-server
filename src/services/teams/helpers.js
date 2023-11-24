@@ -85,6 +85,8 @@ const getTeam = (refClass, teamId) => {
 		.get(teamId, populateParams)
 		.catch((err) => {
 			warning(err);
+			// https://mongoosejs.com/docs/6.x/docs/migrating_to_6.html#strictpopulate
+			console.log('getTeam.err', err);
 			throw new Forbidden('You have not the permission.');
 		});
 };
