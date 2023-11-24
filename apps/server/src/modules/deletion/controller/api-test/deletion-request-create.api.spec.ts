@@ -83,6 +83,14 @@ describe(`deletionRequest create (api)`, () => {
 	};
 
 	describe('when create deletionRequest', () => {
+		beforeAll(() => {
+			jest.useFakeTimers();
+			jest.setSystemTime(new Date());
+		});
+
+		afterAll(() => {
+			jest.useRealTimers();
+		});
 		it('should return status 202', async () => {
 			const { deletionRequestToCreate } = setup();
 
