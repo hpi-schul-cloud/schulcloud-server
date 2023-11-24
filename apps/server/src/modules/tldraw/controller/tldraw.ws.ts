@@ -15,11 +15,11 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		private readonly tldrawWsService: TldrawWsService
 	) {}
 
-	public async handleConnection(client: WebSocket, request: Request): Promise<void> {
+	public handleConnection(client: WebSocket, request: Request): void {
 		const docName = this.getDocNameFromRequest(request);
 
 		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
-			await this.tldrawWsService.setupWSConnection(client, docName);
+			this.tldrawWsService.setupWSConnection(client, docName);
 		} else {
 			client.close(
 				WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
@@ -28,8 +28,8 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		}
 	}
 
-	public afterInit(): void {
-		// TODO: create index here
+	public async afterInit(): Promise<void> {
+		await this.tldrawWsService.createDbIndex();
 	}
 
 	private getDocNameFromRequest(request: Request): string {

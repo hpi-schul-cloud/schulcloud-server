@@ -111,7 +111,7 @@ export class TldrawWsService {
 	 * @param  {boolean} gc - whether to allow gc on the doc (applies only when created)
 	 * @return {WsSharedDocDo}
 	 */
-	getYDoc(docName: string, gc = true): WsSharedDocDo {
+	public getYDoc(docName: string, gc = true): WsSharedDocDo {
 		return map.setIfUndefined(this.docs, docName, () => {
 			const doc = new WsSharedDocDo(docName, this, gc);
 
@@ -119,6 +119,10 @@ export class TldrawWsService {
 			this.docs.set(docName, doc);
 			return doc;
 		});
+	}
+
+	public async createDbIndex(): Promise<void> {
+		await this.tldrawBoardRepo.createDbIndex();
 	}
 
 	public messageHandler(conn: WebSocket, doc: WsSharedDocDo, message: Uint8Array): void {

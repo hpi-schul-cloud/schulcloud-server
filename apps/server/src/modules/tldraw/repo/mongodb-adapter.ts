@@ -3,11 +3,16 @@ import { TldrawConfig } from '@modules/tldraw/config';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Sort } from 'mongodb';
 import { TldrawDrawing } from '@modules/tldraw/entities';
+import { MikroORM } from '@mikro-orm/core';
 
 export class MongodbAdapter {
 	private collectionName: string;
 
-	constructor(readonly configService: ConfigService<TldrawConfig, true>, private readonly _em: EntityManager) {
+	constructor(
+		readonly configService: ConfigService<TldrawConfig, true>,
+		private readonly em: EntityManager,
+		private readonly orm: MikroORM
+	) {
 		this.collectionName = this.configService.get<string>('TLDRAW_DB_COLLECTION_NAME') ?? 'drawings';
 	}
 
@@ -39,7 +44,11 @@ export class MongodbAdapter {
 		return curs.toArray();
 	}
 
-	private getCollection() {
-		return this._em.getCollection(this.collectionName);
+	getCollection() {
+		return this.em.getCollection(this.collectionName);
+	}
+
+	async syncIndexes(): Promise<void> {
+		return this.orm.getSchemaGenerator().ensureIndexes();
 	}
 }

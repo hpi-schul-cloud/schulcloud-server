@@ -11,6 +11,10 @@ export class TldrawBoardRepo {
 		this.logger.setContext(TldrawBoardRepo.name);
 	}
 
+	public async createDbIndex(): Promise<void> {
+		await this.mdb.createIndex();
+	}
+
 	public async getYDocFromMdb(docName: string): Promise<Doc> {
 		const yDoc = await this.mdb.getYDoc(docName);
 		return yDoc;

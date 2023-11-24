@@ -5,6 +5,7 @@ import { MongodbAdapter } from '@modules/tldraw/repo/mongodb-adapter';
 import * as promise from 'lib0/promise';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
 import { Injectable } from '@nestjs/common';
+import { MikroORM } from '@mikro-orm/core';
 import * as U from './utils';
 
 @Injectable()
@@ -15,9 +16,15 @@ export class YMongodb {
 
 	private _transact;
 
-	constructor(private readonly configService: ConfigService<TldrawConfig, true>, private readonly _em: EntityManager) {
+	private adapter: MongodbAdapter;
+
+	constructor(
+		private readonly configService: ConfigService<TldrawConfig, true>,
+		private readonly em: EntityManager,
+		private readonly orm: MikroORM
+	) {
 		this.flushSize = this.configService.get<number>('TLDRAW_DB_FLUSH_SIZE') ?? 400;
-		const adapter = new MongodbAdapter(configService, _em);
+		this.adapter = new MongodbAdapter(configService, em, orm);
 
 		this._transact = <T>(docName: string, f: (any) => Promise<T>) => {
 			if (!this.tr[docName]) {
@@ -37,7 +44,7 @@ export class YMongodb {
 				try {
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/ban-ts-comment
 					// @ts-ignore
-					res = await f(adapter);
+					res = await f(this.adapter);
 				} catch (err) {
 					// eslint-disable-next-line no-console
 					console.warn('Error during saving transaction', err);
@@ -56,6 +63,18 @@ export class YMongodb {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			return this.tr[docName];
 		};
+	}
+
+	public async createIndex(): Promise<void> {
+		const collection = this.adapter.getCollection();
+		await collection.createIndex({
+			version: 1,
+			docName: 1,
+			action: 1,
+			clock: 1,
+			part: 1,
+		});
+		await this.adapter.syncIndexes();
 	}
 
 	getYDoc(docName: string): Promise<Doc> {
