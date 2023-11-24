@@ -50,11 +50,19 @@ class CommonCartridgeOrganizationBuilder implements ICommonCartridgeOrganization
 	}
 
 	get orgProps(): OrganizationItemCollection {
-		// TODO resources
 		return {
 			_tag: 'itemCollection',
 			title: this.props.title,
-			children: this.children.map((child) => child.orgProps),
+			children:
+				this.props._tag === 'resourceCollection'
+					? {
+							_tag: 'resourceCollection',
+							resources: this.resourceProperties,
+							identifier: this.props.identifier,
+							version: this.props.version,
+							title: this.props.title,
+					  }
+					: this.children.map((child) => child.orgProps),
 		};
 	}
 
