@@ -39,6 +39,7 @@ const imports = [
 		password: DB_PASSWORD,
 		user: DB_USERNAME,
 		// Needs ALL_ENTITIES for authorization
+		allowGlobalContext: true,
 		entities: [...ALL_ENTITIES, H5PContent, H5pEditorTempFile, InstalledLibrary],
 	}),
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
@@ -65,5 +66,6 @@ const providers = [
 	imports,
 	controllers,
 	providers,
+	exports: [ContentStorage, LibraryStorage],
 })
 export class H5PEditorModule {}
