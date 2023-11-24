@@ -22,11 +22,22 @@ export class SystemRule implements Rule<System> {
 		let isAuthorized: boolean = hasPermissions && hasAccess;
 
 		if (context.action === Action.write) {
-			const canEdit: boolean = domainObject.ldapConfig?.provider === 'general';
-
-			isAuthorized = isAuthorized && canEdit;
+			isAuthorized = isAuthorized && this.canEdit(domainObject);
 		}
 
 		return isAuthorized;
+	}
+
+	public canEdit(system: unknown): boolean {
+		const canEdit: boolean =
+			typeof system === 'object' &&
+			!!system &&
+			'ldapConfig' in system &&
+			typeof system.ldapConfig === 'object' &&
+			!!system.ldapConfig &&
+			'provider' in system.ldapConfig &&
+			system.ldapConfig.provider === 'general';
+
+		return canEdit;
 	}
 }
