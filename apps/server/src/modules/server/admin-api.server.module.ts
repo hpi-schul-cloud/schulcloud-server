@@ -1,16 +1,14 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { DynamicModule, Inject, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
-import { LegacyLogger, LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@src/core/logger';
 import { ConfigModule } from '@nestjs/config';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infra/database';
 import { FileEntity } from '@modules/files/entity';
 import { FileRecord } from '@modules/files-storage/entity';
-import { RedisClient } from 'redis';
-import { REDIS_CLIENT, RedisModule } from '@src/infra/redis';
-import { defaultMikroOrmOptions, setupSessions } from './server.module';
+import { defaultMikroOrmOptions } from './server.module';
 import { serverConfig } from './server.config';
 import { AdminApiServerController } from './controller';
 import { DeletionApiModule } from '../deletion/deletion-api.module';
@@ -31,22 +29,10 @@ const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConf
 			debug: true,
 		}),
 		LoggerModule,
-		RedisModule,
 	],
 	controllers: [AdminApiServerController],
 })
-export class AdminApiServerModule implements NestModule {
-	constructor(
-		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient | undefined,
-		private readonly logger: LegacyLogger
-	) {
-		logger.setContext(AdminApiServerModule.name);
-	}
-
-	configure(consumer: MiddlewareConsumer) {
-		setupSessions(consumer, this.redisClient, this.logger);
-	}
-}
+export class AdminApiServerModule {}
 
 @Module({
 	imports: [
@@ -54,22 +40,10 @@ export class AdminApiServerModule implements NestModule {
 		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
 		RabbitMQWrapperTestModule,
 		LoggerModule,
-		RedisModule,
 	],
 	controllers: [AdminApiServerController],
 })
-export class AdminApiServerTestModule implements NestModule {
-	constructor(
-		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient | undefined,
-		private readonly logger: LegacyLogger
-	) {
-		logger.setContext(AdminApiServerTestModule.name);
-	}
-
-	configure(consumer: MiddlewareConsumer) {
-		setupSessions(consumer, undefined, this.logger);
-	}
-
+export class AdminApiServerTestModule {
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
 			module: AdminApiServerTestModule,
