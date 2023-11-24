@@ -19,6 +19,7 @@ import {
 	AnyElementContentBody,
 	ExternalToolContentBody,
 	FileContentBody,
+	LearnstoreContentBody,
 	LearnstoreElementContentBody,
 	LinkContentBody,
 	RichTextContentBody,
@@ -108,8 +109,9 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 	}
 
 	async visitLearnstoreElementAsync(learnstoreElement: LearnstoreElement): Promise<void> {
-		if (this.content instanceof LearnstoreElementContentBody && this.content.content.someId !== undefined) {
-			learnstoreElement.someId = this.content.content.someId;
+		if (this.content instanceof LearnstoreContentBody && this.content.someId !== undefined) {
+			learnstoreElement.someId = this.content.someId;
+			return Promise.resolve();
 		}
 		return this.rejectNotHandled(learnstoreElement);
 	}

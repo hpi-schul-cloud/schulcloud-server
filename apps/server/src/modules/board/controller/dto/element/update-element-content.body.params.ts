@@ -117,7 +117,6 @@ export class ExternalToolElementContentBody extends ElementContentBody {
 }
 
 export class LearnstoreContentBody {
-	@IsMongoId()
 	@IsOptional()
 	@ApiPropertyOptional()
 	someId?: string;
