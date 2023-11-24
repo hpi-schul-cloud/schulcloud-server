@@ -1,12 +1,12 @@
 import { StringValidator } from '@shared/common';
-import { INameMatch, MatchCreator, User } from '@shared/domain';
-import { UserRole, UserMatchResponse } from '../controller/dto';
+import { MatchCreator, NameMatch, User } from '@shared/domain';
+import { UserMatchResponse, UserRole } from '../controller/dto';
 import { FilterUserParams } from '../controller/dto/filter-user.params';
 import { ImportUserMatchMapper } from './match.mapper';
 
 export class UserMatchMapper {
-	static mapToDomain(query: FilterUserParams): INameMatch {
-		const scope: INameMatch = {};
+	static mapToDomain(query: FilterUserParams): NameMatch {
+		const scope: NameMatch = {};
 		if (query.name) {
 			if (StringValidator.isNotEmptyString(query.name, true)) {
 				scope.name = query.name;

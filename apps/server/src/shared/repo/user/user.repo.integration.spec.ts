@@ -1,8 +1,8 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MatchCreator, SortOrder, SystemEntity, User } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections, importUserFactory, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { UserRepo } from './user.repo';
@@ -70,6 +70,7 @@ describe('user repo', () => {
 					'lastLoginSystemChange',
 					'outdatedSince',
 					'previousExternalId',
+					'birthday',
 				].sort()
 			);
 		});
@@ -133,6 +134,7 @@ describe('user repo', () => {
 			await em.persistAndFlush([userA, userB]);
 			em.clear();
 		});
+
 		it('should return right keys', async () => {
 			const result = await repo.findByExternalIdOrFail(userA.externalId as string, sys.id);
 			expect(Object.keys(result).sort()).toEqual(
@@ -158,6 +160,7 @@ describe('user repo', () => {
 					'lastLoginSystemChange',
 					'outdatedSince',
 					'previousExternalId',
+					'birthday',
 				].sort()
 			);
 		});

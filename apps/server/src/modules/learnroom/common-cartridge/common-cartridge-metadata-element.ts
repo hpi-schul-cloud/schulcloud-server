@@ -1,4 +1,4 @@
-import { ICommonCartridgeElement } from './common-cartridge-element.interface';
+import { CommonCartridgeElement } from './common-cartridge-element.interface';
 import { CommonCartridgeVersion } from './common-cartridge-enums';
 
 export type ICommonCartridgeMetadataProps = {
@@ -8,7 +8,7 @@ export type ICommonCartridgeMetadataProps = {
 	version: CommonCartridgeVersion;
 };
 
-export class CommonCartridgeMetadataElement implements ICommonCartridgeElement {
+export class CommonCartridgeMetadataElement implements CommonCartridgeElement {
 	constructor(private readonly props: ICommonCartridgeMetadataProps) {}
 
 	transform(): Record<string, unknown> {

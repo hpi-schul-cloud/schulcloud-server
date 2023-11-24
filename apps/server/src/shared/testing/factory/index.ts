@@ -39,3 +39,4 @@ export * from './user.do.factory';
 export * from './user.factory';
 export * from './legacy-file-entity-mock.factory';
 export * from './jwt.test.factory';
+export * from './axios-error.factory';

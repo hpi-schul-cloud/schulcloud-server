@@ -1,10 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { ServerTestModule } from '@modules/server/server.module';
+import { SubmissionStatusListResponse } from '@modules/task/controller/dto/submission.response';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { Permission, Submission } from '@shared/domain';
-import { ICurrentUser } from '@modules/authentication';
 import {
 	cleanupCollections,
 	courseGroupFactory,
@@ -14,10 +18,6 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@modules/server/server.module';
-import { SubmissionStatusListResponse } from '@modules/task/controller/dto/submission.response';
 import { Request } from 'express';
 import request from 'supertest';
 

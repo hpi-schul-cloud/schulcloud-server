@@ -1,4 +1,4 @@
-import { ICalendarEvent } from '@infra/calendar/interface/calendar-event.interface';
+import { CalendarEvent } from '@infra/calendar/interface/calendar-event.interface';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CalendarMapper } from './calendar.mapper';
 
@@ -6,7 +6,7 @@ describe('CalendarMapper', () => {
 	let module: TestingModule;
 	let mapper: CalendarMapper;
 
-	const event: ICalendarEvent = {
+	const event: CalendarEvent = {
 		data: [
 			{
 				attributes: {

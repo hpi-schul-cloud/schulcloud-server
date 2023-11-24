@@ -1,17 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { SchoolExternalToolRepo } from '@shared/repo';
 import { ToolConfigurationStatus } from '../../common/enum';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
+import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 
 @Injectable()
 export class SchoolExternalToolService {
 	constructor(
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
-		private readonly externalToolService: ExternalToolService
+		private readonly externalToolService: ExternalToolService,
+		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {}
 
 	async findById(schoolExternalToolId: EntityId): Promise<SchoolExternalTool> {
@@ -39,7 +43,7 @@ export class SchoolExternalToolService {
 
 	private async enrichDataFromExternalTool(tool: SchoolExternalTool): Promise<SchoolExternalTool> {
 		const externalTool: ExternalTool = await this.externalToolService.findById(tool.toolId);
-		const status: ToolConfigurationStatus = this.determineStatus(tool, externalTool);
+		const status: ToolConfigurationStatus = await this.determineStatus(tool, externalTool);
 		const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool({
 			...tool,
 			status,
@@ -49,7 +53,19 @@ export class SchoolExternalToolService {
 		return schoolExternalTool;
 	}
 
-	private determineStatus(tool: SchoolExternalTool, externalTool: ExternalTool): ToolConfigurationStatus {
+	private async determineStatus(
+		tool: SchoolExternalTool,
+		externalTool: ExternalTool
+	): Promise<ToolConfigurationStatus> {
+		if (this.toolFeatures.toolStatusWithoutVersions) {
+			try {
+				await this.schoolExternalToolValidationService.validate(tool);
+				return ToolConfigurationStatus.LATEST;
+			} catch (err) {
+				return ToolConfigurationStatus.OUTDATED;
+			}
+		}
+
 		if (externalTool.version <= tool.toolVersion) {
 			return ToolConfigurationStatus.LATEST;
 		}

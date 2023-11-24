@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { FileRecordParentType } from '@infra/rabbitmq';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecordParentType } from '@infra/rabbitmq';
 import {
 	columnBoardFactory,
 	columnFactory,
@@ -171,6 +171,14 @@ describe(RecursiveDeleteVisitor.name, () => {
 
 			expect(em.remove).toHaveBeenCalledWith(em.getReference(linkElement.constructor, linkElement.id));
 			expect(em.remove).toHaveBeenCalledWith(em.getReference(childLinkElement.constructor, childLinkElement.id));
+		});
+
+		it('should call deleteFilesOfParent', async () => {
+			const { linkElement } = setup();
+
+			await service.visitLinkElementAsync(linkElement);
+
+			expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(linkElement.id);
 		});
 	});
 

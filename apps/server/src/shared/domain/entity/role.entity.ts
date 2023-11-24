@@ -2,7 +2,7 @@ import { Collection, Entity, ManyToMany, Property, Unique } from '@mikro-orm/cor
 import { Permission, RoleName } from '../interface';
 import { BaseEntityWithTimestamps } from './base.entity';
 
-export interface IRoleProperties {
+export interface RoleProperties {
 	permissions?: Permission[];
 	roles?: Role[];
 	name: RoleName;
@@ -20,7 +20,7 @@ export class Role extends BaseEntityWithTimestamps {
 	@ManyToMany({ entity: 'Role' })
 	roles = new Collection<Role>(this);
 
-	constructor(props: IRoleProperties) {
+	constructor(props: RoleProperties) {
 		super();
 		this.name = props.name;
 		if (props.permissions) this.permissions = props.permissions;

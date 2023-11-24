@@ -1,4 +1,6 @@
-import { Module, DynamicModule } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { MailConfig } from './interfaces/mail-config';
 import { MailService } from './mail.service';
 
 interface MailModuleOptions {
@@ -17,6 +19,7 @@ export class MailModule {
 					provide: 'MAIL_SERVICE_OPTIONS',
 					useValue: { exchange: options.exchange, routingKey: options.routingKey },
 				},
+				ConfigService<MailConfig, true>,
 			],
 			exports: [MailService],
 		};

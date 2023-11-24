@@ -1,14 +1,14 @@
-import { Strategy } from 'passport-local';
+import { IdentityManagementConfig, IdentityManagementOauthService } from '@infra/identity-management';
+import { AccountDto } from '@modules/account/services/dto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import bcrypt from 'bcryptjs';
-import { UserRepo } from '@shared/repo';
-import { AccountDto } from '@modules/account/services/dto';
 import { GuardAgainst } from '@shared/common/utils/guard-against';
-import { IdentityManagementOauthService, IIdentityManagementConfig } from '@infra/identity-management';
-import { CurrentUserMapper } from '../mapper';
+import { UserRepo } from '@shared/repo';
+import bcrypt from 'bcryptjs';
+import { Strategy } from 'passport-local';
 import { ICurrentUser } from '../interface';
+import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from '../services/authentication.service';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 	constructor(
 		private readonly authenticationService: AuthenticationService,
 		private readonly idmOauthService: IdentityManagementOauthService,
-		private readonly configService: ConfigService<IIdentityManagementConfig, true>,
+		private readonly configService: ConfigService<IdentityManagementConfig, true>,
 		private readonly userRepo: UserRepo
 	) {
 		super();

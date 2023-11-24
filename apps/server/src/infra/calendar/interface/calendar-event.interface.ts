@@ -1,4 +1,4 @@
-export interface ICalendarEvent {
+export interface CalendarEvent {
 	data: {
 		attributes: {
 			summary: string;

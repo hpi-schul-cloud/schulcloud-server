@@ -1,94 +1,103 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
-import { Page, LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain';
-import { UserLoginMigrationRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
+import { Injectable } from '@nestjs/common';
+import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { UserLoginMigrationRepo } from '@shared/repo';
+import { LegacyLogger, Logger } from '@src/core/logger';
 import { performance } from 'perf_hooks';
-import { OAuthMigrationError } from '../error';
+import {
+	SchoolMigrationDatabaseOperationFailedLoggableException,
+	SchoolNumberMismatchLoggableException,
+} from '../loggable';
 
 @Injectable()
 export class SchoolMigrationService {
 	constructor(
 		private readonly schoolService: LegacySchoolService,
-		private readonly logger: LegacyLogger,
+		private readonly legacyLogger: LegacyLogger,
+		private readonly logger: Logger,
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
 	) {}
 
-	validateGracePeriod(userLoginMigration: UserLoginMigrationDO) {
-		if (userLoginMigration.finishedAt && Date.now() >= userLoginMigration.finishedAt.getTime()) {
-			throw new ValidationError('grace_period_expired: The grace period after finishing migration has expired', {
-				finishedAt: userLoginMigration.finishedAt,
-			});
-		}
-	}
-
-	async migrateSchool(externalId: string, existingSchool: LegacySchoolDo, targetSystemId: string): Promise<void> {
+	public async migrateSchool(
+		existingSchool: LegacySchoolDo,
+		externalId: string,
+		targetSystemId: string
+	): Promise<void> {
 		const schoolDOCopy: LegacySchoolDo = new LegacySchoolDo({ ...existingSchool });
 
 		try {
 			await this.doMigration(externalId, existingSchool, targetSystemId);
-		} catch (e: unknown) {
-			await this.rollbackMigration(schoolDOCopy);
-			this.logger.log({
-				message: `This error occurred during migration of School with official school number`,
-				officialSchoolNumber: existingSchool.officialSchoolNumber,
-				error: e,
-			});
+		} catch (error: unknown) {
+			await this.tryRollbackMigration(schoolDOCopy);
+
+			throw new SchoolMigrationDatabaseOperationFailedLoggableException(existingSchool, 'migration', error);
 		}
 	}
 
-	async schoolToMigrate(
-		currentUserId: string,
+	private async doMigration(externalId: string, school: LegacySchoolDo, targetSystemId: string): Promise<void> {
+		school.previousExternalId = school.externalId;
+		school.externalId = externalId;
+		if (!school.systems) {
+			school.systems = [];
+		}
+		if (!school.systems.includes(targetSystemId)) {
+			school.systems.push(targetSystemId);
+		}
+
+		await this.schoolService.save(school);
+	}
+
+	private async tryRollbackMigration(originalSchoolDO: LegacySchoolDo): Promise<void> {
+		try {
+			await this.schoolService.save(originalSchoolDO);
+		} catch (error: unknown) {
+			this.logger.warning(
+				new SchoolMigrationDatabaseOperationFailedLoggableException(originalSchoolDO, 'rollback', error)
+			);
+		}
+	}
+
+	public async getSchoolForMigration(
+		userId: string,
 		externalId: string,
-		officialSchoolNumber: string | undefined
+		officialSchoolNumber: string
 	): Promise<LegacySchoolDo | null> {
-		if (!officialSchoolNumber) {
-			throw new OAuthMigrationError(
-				'Official school number from target migration system is missing',
-				'ext_official_school_number_missing'
-			);
-		}
+		const user: UserDO = await this.userService.findById(userId);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(user.schoolId);
 
-		const userDO: UserDO | null = await this.userService.findById(currentUserId);
-		if (userDO) {
-			const schoolDO: LegacySchoolDo = await this.schoolService.getSchoolById(userDO.schoolId);
-			this.checkOfficialSchoolNumbersMatch(schoolDO, officialSchoolNumber);
-		}
+		this.checkOfficialSchoolNumbersMatch(school, officialSchoolNumber);
 
-		const existingSchool: LegacySchoolDo | null = await this.schoolService.getSchoolBySchoolNumber(
-			officialSchoolNumber
-		);
-
-		if (!existingSchool) {
-			throw new OAuthMigrationError(
-				'Could not find school by official school number from target migration system',
-				'ext_official_school_missing'
-			);
-		}
-
-		const schoolMigrated: boolean = this.hasSchoolMigrated(externalId, existingSchool.externalId);
+		const schoolMigrated: boolean = this.hasSchoolMigrated(school.externalId, externalId);
 
 		if (schoolMigrated) {
 			return null;
 		}
 
-		return existingSchool;
+		return school;
 	}
 
-	async markUnmigratedUsersAsOutdated(schoolId: string): Promise<void> {
+	private checkOfficialSchoolNumbersMatch(schoolDO: LegacySchoolDo, officialExternalSchoolNumber: string): void {
+		if (schoolDO.officialSchoolNumber !== officialExternalSchoolNumber) {
+			throw new SchoolNumberMismatchLoggableException(
+				schoolDO.officialSchoolNumber ?? '',
+				officialExternalSchoolNumber
+			);
+		}
+	}
+
+	private hasSchoolMigrated(sourceExternalId: string | undefined, targetExternalId: string): boolean {
+		const isExternalIdEquivalent: boolean = sourceExternalId === targetExternalId;
+
+		return isExternalIdEquivalent;
+	}
+
+	public async markUnmigratedUsersAsOutdated(userLoginMigration: UserLoginMigrationDO): Promise<void> {
 		const startTime: number = performance.now();
 
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
-
-		if (!userLoginMigration) {
-			throw new UnprocessableEntityException(`School ${schoolId} has no UserLoginMigration`);
-		}
-
 		const notMigratedUsers: Page<UserDO> = await this.userService.findUsers({
-			schoolId,
+			schoolId: userLoginMigration.schoolId,
 			isOutdated: false,
 			lastLoginSystemChangeSmallerThan: userLoginMigration.startedAt,
 		});
@@ -100,20 +109,18 @@ export class SchoolMigrationService {
 		await this.userService.saveAll(notMigratedUsers.data);
 
 		const endTime: number = performance.now();
-		this.logger.warn(`completeMigration for schoolId ${schoolId} took ${endTime - startTime} milliseconds`);
+		this.legacyLogger.warn(
+			`markUnmigratedUsersAsOutdated for schoolId ${userLoginMigration.schoolId} took ${
+				endTime - startTime
+			} milliseconds`
+		);
 	}
 
-	async unmarkOutdatedUsers(schoolId: string): Promise<void> {
+	public async unmarkOutdatedUsers(userLoginMigration: UserLoginMigrationDO): Promise<void> {
 		const startTime: number = performance.now();
 
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
-
-		if (!userLoginMigration) {
-			throw new UnprocessableEntityException(`School ${schoolId} has no UserLoginMigration`);
-		}
-
 		const migratedUsers: Page<UserDO> = await this.userService.findUsers({
-			schoolId,
+			schoolId: userLoginMigration.schoolId,
 			outdatedSince: userLoginMigration.finishedAt,
 		});
 
@@ -124,45 +131,12 @@ export class SchoolMigrationService {
 		await this.userService.saveAll(migratedUsers.data);
 
 		const endTime: number = performance.now();
-		this.logger.warn(`restartMigration for schoolId ${schoolId} took ${endTime - startTime} milliseconds`);
+		this.legacyLogger.warn(
+			`unmarkOutdatedUsers for schoolId ${userLoginMigration.schoolId} took ${endTime - startTime} milliseconds`
+		);
 	}
 
-	private async doMigration(externalId: string, schoolDO: LegacySchoolDo, targetSystemId: string): Promise<void> {
-		if (schoolDO.systems) {
-			schoolDO.systems.push(targetSystemId);
-		} else {
-			schoolDO.systems = [targetSystemId];
-		}
-		schoolDO.previousExternalId = schoolDO.externalId;
-		schoolDO.externalId = externalId;
-		await this.schoolService.save(schoolDO);
-	}
-
-	private async rollbackMigration(originalSchoolDO: LegacySchoolDo) {
-		if (originalSchoolDO) {
-			await this.schoolService.save(originalSchoolDO);
-		}
-	}
-
-	private checkOfficialSchoolNumbersMatch(schoolDO: LegacySchoolDo, officialExternalSchoolNumber: string): void {
-		if (schoolDO.officialSchoolNumber !== officialExternalSchoolNumber) {
-			throw new OAuthMigrationError(
-				'Current users school is not the same as school found by official school number from target migration system',
-				'ext_official_school_number_mismatch',
-				schoolDO.officialSchoolNumber,
-				officialExternalSchoolNumber
-			);
-		}
-	}
-
-	private hasSchoolMigrated(sourceExternalId: string, targetExternalId?: string): boolean {
-		if (sourceExternalId === targetExternalId) {
-			return true;
-		}
-		return false;
-	}
-
-	async hasSchoolMigratedUser(schoolId: string): Promise<boolean> {
+	public async hasSchoolMigratedUser(schoolId: string): Promise<boolean> {
 		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
 
 		if (!userLoginMigration) {

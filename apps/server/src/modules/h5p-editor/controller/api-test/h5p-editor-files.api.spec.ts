@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { ILibraryName } from '@lumieducation/h5p-server';
 import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMetadata';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { S3ClientAdapter } from '@infra/s3-client';
 import {
 	courseFactory,
 	h5pContentFactory,
@@ -14,7 +14,7 @@ import {
 } from '@shared/testing';
 import { ObjectID } from 'bson';
 import { Readable } from 'stream';
-import { H5PContent, H5PContentParentType, IH5PContentProperties, H5pEditorTempFile } from '../../entity';
+import { H5PContent, H5PContentParentType, H5PContentProperties, H5pEditorTempFile } from '../../entity';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from '../../service';
@@ -45,7 +45,7 @@ const helpers = {
 		const content = {
 			data: `Data #${n}`,
 		};
-		const h5pContentProperties: IH5PContentProperties = {
+		const h5pContentProperties: H5PContentProperties = {
 			creatorId: new ObjectID().toString(),
 			parentId: new ObjectID().toString(),
 			schoolId: new ObjectID().toString(),
