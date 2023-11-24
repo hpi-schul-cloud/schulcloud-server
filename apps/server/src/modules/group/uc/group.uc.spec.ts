@@ -7,7 +7,7 @@ import { classFactory } from '@modules/class/domain/testing/factory/class.factor
 import { LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
-import { SystemDto, SystemService } from '@modules/system';
+import { LegacySystemService, SystemDto } from '@modules/system';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -23,13 +23,13 @@ import {
 	userDoFactory,
 	userFactory,
 } from '@shared/testing';
+import { SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes } from '../domain';
+import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { ClassInfoDto, ResolvedGroupDto } from './dto';
 import { ClassRootType } from './dto/class-root-type';
 import { GroupUc } from './group.uc';
-import { SchoolYearQueryType } from '../controller/dto/interface';
-import { UnknownQueryTypeLoggableException } from '../loggable';
 
 describe('GroupUc', () => {
 	let module: TestingModule;
@@ -37,7 +37,7 @@ describe('GroupUc', () => {
 
 	let groupService: DeepMocked<GroupService>;
 	let classService: DeepMocked<ClassService>;
-	let systemService: DeepMocked<SystemService>;
+	let systemService: DeepMocked<LegacySystemService>;
 	let userService: DeepMocked<UserService>;
 	let roleService: DeepMocked<RoleService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
@@ -57,8 +57,8 @@ describe('GroupUc', () => {
 					useValue: createMock<ClassService>(),
 				},
 				{
-					provide: SystemService,
-					useValue: createMock<SystemService>(),
+					provide: LegacySystemService,
+					useValue: createMock<LegacySystemService>(),
 				},
 				{
 					provide: UserService,
@@ -86,7 +86,7 @@ describe('GroupUc', () => {
 		uc = module.get(GroupUc);
 		groupService = module.get(GroupService);
 		classService = module.get(ClassService);
-		systemService = module.get(SystemService);
+		systemService = module.get(LegacySystemService);
 		userService = module.get(UserService);
 		roleService = module.get(RoleService);
 		schoolService = module.get(LegacySchoolService);
