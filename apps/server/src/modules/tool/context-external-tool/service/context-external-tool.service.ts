@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { ContextExternalToolRepo } from '@shared/repo';
+import { AuthorizationContext, ForbiddenLoggableException } from '@modules/authorization';
 import { ContextExternalTool, ContextRef } from '../domain';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { AuthorizationContext, ForbiddenLoggableException } from '../../../authorization';
 
 @Injectable()
 export class ContextExternalToolService {

@@ -1,6 +1,6 @@
 import { BasicToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from '../../domain';
 import { CustomParameter } from '../../../common/domain';
-import { ToolConfigType, ToolContextType } from '../../../common/enum';
+import { ToolContextType } from '../../../common/enum';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
