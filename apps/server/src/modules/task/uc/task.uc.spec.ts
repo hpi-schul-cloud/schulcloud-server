@@ -29,7 +29,7 @@ describe('TaskUC', () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let taskService: DeepMocked<TaskService>;
 
-	const setupUser = (permissions: [Permission]) => {
+	const setupUser = (permissions: Permission[]) => {
 		const role = roleFactory.build({ permissions });
 		const user = userFactory.buildWithId({ roles: [role] });
 		return user;
