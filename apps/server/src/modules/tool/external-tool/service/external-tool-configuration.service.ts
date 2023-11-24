@@ -75,6 +75,19 @@ export class ExternalToolConfigurationService {
 		return availableTools;
 	}
 
+	public filterForContextRestrictions(
+		availableTools: ContextExternalToolTemplateInfo[],
+		contextType: ToolContextType
+	): ContextExternalToolTemplateInfo[] {
+		const availableToolsForContext: ContextExternalToolTemplateInfo[] = availableTools.filter((availableTool) => {
+			if (availableTool.externalTool.restrictToContexts) {
+				return availableTool.externalTool.restrictToContexts.includes(contextType);
+			}
+			return true;
+		});
+		return availableToolsForContext;
+	}
+
 	public filterParametersForScope(externalTool: ExternalTool, scope: CustomParameterScope) {
 		if (externalTool.parameters) {
 			externalTool.parameters = externalTool.parameters.filter(

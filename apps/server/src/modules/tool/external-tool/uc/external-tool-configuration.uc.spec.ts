@@ -325,6 +325,17 @@ describe('ExternalToolConfigurationUc', () => {
 				);
 			});
 
+			it('should filter for restricted contexts', async () => {
+				const { usedTool, usedSchoolExternalTool } = setup();
+
+				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
+
+				expect(externalToolConfigurationService.filterForContextRestrictions).toHaveBeenCalledWith(
+					[{ externalTool: usedTool, schoolExternalTool: usedSchoolExternalTool }],
+					ToolContextType.COURSE
+				);
+			});
+
 			it('should call filterParametersForScope', async () => {
 				const { usedTool } = setup();
 

@@ -2,9 +2,10 @@ import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Course, Permission, SchoolEntity, User } from '@shared/domain';
+import { Account, Board, Course, Permission, SchoolEntity, User } from '@shared/domain';
 import {
 	accountFactory,
+	boardFactory,
 	contextExternalToolEntityFactory,
 	courseFactory,
 	customParameterFactory,
@@ -111,7 +112,7 @@ describe('ToolConfigurationController (API)', () => {
 			});
 		});
 
-		describe('when tools are available for a course', () => {
+		describe('when tools are available for a context', () => {
 			const setup = async () => {
 				const school: SchoolEntity = schoolFactory.buildWithId();
 
@@ -120,35 +121,65 @@ describe('ToolConfigurationController (API)', () => {
 				]);
 
 				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
+				const board: Board = boardFactory.buildWithId({ course });
 
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					restrictToContexts: [ToolContextType.COURSE],
 					logoBase64: 'logo',
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
 				externalTool.logoUrl = `http://localhost:3030/api/v3/tools/external-tools/${externalTool.id}/logo`;
+
+				const externalToolWithoutContextRestriction: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 
 				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalTool,
 				});
 
-				await em.persistAndFlush([school, course, teacherUser, teacherAccount, externalTool, schoolExternalTool]);
+				const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+					school,
+					tool: externalToolWithoutContextRestriction,
+				});
+
+				await em.persistAndFlush([
+					school,
+					course,
+					board,
+					teacherUser,
+					teacherAccount,
+					externalTool,
+					externalToolWithoutContextRestriction,
+					schoolExternalTool,
+					schoolExternalTool2,
+				]);
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
 				return {
 					course,
+					board,
 					externalTool,
+					externalToolWithoutContextRestriction,
 					schoolExternalTool,
+					schoolExternalTool2,
 					contextParameter,
 					loggedInClient,
 				};
 			};
 
 			it('should return an array of available tools with parameters of scope context', async () => {
-				const { course, externalTool, contextParameter, schoolExternalTool, loggedInClient } = await setup();
+				const {
+					course,
+					externalTool,
+					externalToolWithoutContextRestriction,
+					contextParameter,
+					schoolExternalTool,
+					schoolExternalTool2,
+					loggedInClient,
+				} = await setup();
 
 				const response: Response = await loggedInClient.get(`course/${course.id}/available-tools`);
 
@@ -174,6 +205,31 @@ describe('ToolConfigurationController (API)', () => {
 								},
 							],
 							version: externalTool.version,
+						},
+						{
+							externalToolId: externalToolWithoutContextRestriction.id,
+							name: externalToolWithoutContextRestriction.name,
+							parameters: [],
+							schoolExternalToolId: schoolExternalTool2.id,
+							version: externalToolWithoutContextRestriction.version,
+						},
+					],
+				});
+			});
+
+			it('should not return context restricted tool', async () => {
+				const { board, loggedInClient, externalToolWithoutContextRestriction, schoolExternalTool2 } = await setup();
+
+				const response: Response = await loggedInClient.get(`board-element/${board.id}/available-tools`);
+
+				expect(response.body).toEqual<ContextExternalToolConfigurationTemplateListResponse>({
+					data: [
+						{
+							externalToolId: externalToolWithoutContextRestriction.id,
+							name: externalToolWithoutContextRestriction.name,
+							parameters: [],
+							schoolExternalToolId: schoolExternalTool2.id,
+							version: externalToolWithoutContextRestriction.version,
 						},
 					],
 				});

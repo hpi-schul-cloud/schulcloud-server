@@ -187,6 +187,88 @@ describe('ExternalToolConfigurationService', () => {
 		});
 	});
 
+	describe('filterForContextRestrictions', () => {
+		describe('when tool has no context restrictions', () => {
+			const setup = () => {
+				const contextType = ToolContextType.COURSE;
+
+				const externalTool: ExternalTool = externalToolFactory.build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+
+				const availableTools: ContextExternalToolTemplateInfo[] = [{ externalTool, schoolExternalTool }];
+
+				return {
+					contextType,
+					availableTools,
+				};
+			};
+
+			it('should pass the filter', () => {
+				const { contextType, availableTools } = setup();
+
+				const result: ContextExternalToolTemplateInfo[] = service.filterForContextRestrictions(
+					availableTools,
+					contextType
+				);
+
+				expect(result).toEqual(availableTools);
+			});
+		});
+
+		describe('when context restrictions are given', () => {
+			const setup = () => {
+				const contextType = ToolContextType.COURSE;
+
+				const externalToolWithCourseRestriction: ExternalTool = externalToolFactory.build({
+					restrictToContexts: [ToolContextType.COURSE],
+				});
+				const externalToolWithBoardRestriction: ExternalTool = externalToolFactory.build({
+					restrictToContexts: [ToolContextType.BOARD_ELEMENT],
+				});
+
+				const externalToolWithAllRestrictions: ExternalTool = externalToolFactory.build({
+					restrictToContexts: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT],
+				});
+
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+
+				const availableTools: ContextExternalToolTemplateInfo[] = [
+					{ externalTool: externalToolWithCourseRestriction, schoolExternalTool },
+					{ externalTool: externalToolWithBoardRestriction, schoolExternalTool },
+					{ externalTool: externalToolWithAllRestrictions, schoolExternalTool },
+				];
+
+				return {
+					contextType,
+					availableTools,
+					externalToolWithCourseRestriction,
+					externalToolWithAllRestrictions,
+					schoolExternalTool,
+				};
+			};
+
+			it('should only return tools restricted to this context', () => {
+				const {
+					contextType,
+					availableTools,
+					externalToolWithCourseRestriction,
+					externalToolWithAllRestrictions,
+					schoolExternalTool,
+				} = setup();
+
+				const result: ContextExternalToolTemplateInfo[] = service.filterForContextRestrictions(
+					availableTools,
+					contextType
+				);
+
+				expect(result).toEqual<ContextExternalToolTemplateInfo[]>([
+					{ externalTool: externalToolWithCourseRestriction, schoolExternalTool },
+					{ externalTool: externalToolWithAllRestrictions, schoolExternalTool },
+				]);
+			});
+		});
+	});
+
 	describe('filterParametersForScope', () => {
 		describe('when filtering parameters for scope', () => {
 			const setup = () => {

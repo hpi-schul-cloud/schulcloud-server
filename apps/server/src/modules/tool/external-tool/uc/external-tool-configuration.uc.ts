@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { EntityId, Permission, User } from '@shared/domain';
+import { EntityId, Permission } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { AuthorizationContext, AuthorizationContextBuilder } from '@modules/authorization';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
@@ -12,7 +12,7 @@ import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalTool } from '../domain';
 import { ExternalToolConfigurationService, ExternalToolLogoService, ExternalToolService } from '../service';
 import { ContextExternalToolTemplateInfo } from './dto';
-import { ToolContextTypesList } from '../controller/dto/response/tool-context-types-list';
+import { ToolContextTypesList } from '../controller/dto/response';
 
 @Injectable()
 export class ExternalToolConfigurationUc {
@@ -99,11 +99,16 @@ export class ExternalToolConfigurationUc {
 				contextExternalToolsInUse
 			);
 
-		const availableToolsForContext: ContextExternalToolTemplateInfo[] =
+		let availableToolsForContext: ContextExternalToolTemplateInfo[] =
 			this.externalToolConfigurationService.filterForAvailableExternalTools(
 				externalTools.data,
 				availableSchoolExternalTools
 			);
+
+		availableToolsForContext = this.externalToolConfigurationService.filterForContextRestrictions(
+			availableToolsForContext,
+			contextType
+		);
 
 		availableToolsForContext.forEach((toolTemplateInfo) => {
 			this.externalToolConfigurationService.filterParametersForScope(
