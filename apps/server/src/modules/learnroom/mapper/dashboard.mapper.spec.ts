@@ -1,4 +1,4 @@
-import { DashboardEntity, GridElement, GridElementWithPosition } from '@shared/domain/';
+import { DashboardEntity, GridElement, GridElementWithPosition } from '@shared/domain/entity';
 import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { DashboardResponse } from '../controller/dto';
 import { DashboardMapper } from './dashboard.mapper';

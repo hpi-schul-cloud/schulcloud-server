@@ -4,7 +4,9 @@ import { LessonService } from '@modules/lesson';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
-import { Permission, SortOrder, TaskStatus } from '@shared/domain';
+
+import { Permission, SortOrder } from '@shared/domain/interface';
+import { TaskStatus } from '@shared/domain/types';
 import { CourseRepo, TaskRepo } from '@shared/repo';
 import {
 	courseFactory,
@@ -27,7 +29,7 @@ describe('TaskUC', () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let taskService: DeepMocked<TaskService>;
 
-	const setupUser = (permissions: Permission[]) => {
+	const setupUser = (permissions: [Permission]) => {
 		const role = roleFactory.build({ permissions });
 		const user = userFactory.buildWithId({ roles: [role] });
 		return user;

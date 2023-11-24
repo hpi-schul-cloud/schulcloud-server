@@ -1,4 +1,4 @@
-import { Role, RoleProperties } from '@shared/domain';
+import { Role, RoleProperties } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { BaseFactory } from './base.factory';
 

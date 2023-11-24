@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { User } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object'; // fix import when it is avaible
 import { BaseDO } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
 import {
 	BoardDoRule,
 	ContextExternalToolRule,

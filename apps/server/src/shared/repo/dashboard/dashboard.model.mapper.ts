@@ -8,7 +8,7 @@ import {
 	GridElement,
 	GridElementWithPosition,
 	User,
-} from '@shared/domain';
+} from '@shared/domain/entity';
 import { Learnroom } from '@shared/domain/interface';
 import { LearnroomTypes } from '@shared/domain/types';
 

@@ -1,5 +1,5 @@
 /* eslint-disable no-template-curly-in-string */
-import { SystemProperties } from '@shared/domain';
+import { SystemProperties } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { systemFactory } from '@shared/testing';
 import { DeepPartial } from 'fishery';

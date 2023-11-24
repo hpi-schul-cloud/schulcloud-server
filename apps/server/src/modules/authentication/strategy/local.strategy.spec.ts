@@ -5,7 +5,7 @@ import { AccountDto } from '@modules/account/services/dto';
 import { ServerConfig } from '@modules/server';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { User } from '@shared/domain';
+import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, setupEntities, userFactory } from '@shared/testing';

@@ -1,18 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
+import { AccountDto, AccountService } from '@modules/account';
+import { OauthCurrentUser } from '@modules/authentication/interface';
+import { RoleService } from '@modules/role';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, IFindOptions, LanguageType, Permission, Role, RoleName, SortOrder, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { LanguageType, Role, User } from '@shared/domain/entity';
+import { IFindOptions, Permission, RoleName, SortOrder } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { AccountService, AccountDto } from '@modules/account';
-import { RoleService } from '@modules/role';
-import { OauthCurrentUser } from '@modules/authentication/interface';
 import { UserDto } from '../uc/dto/user.dto';
-import { UserService } from './user.service';
 import { UserQuery } from './user-query.type';
+import { UserService } from './user.service';
 
 describe('UserService', () => {
 	let service: UserService;

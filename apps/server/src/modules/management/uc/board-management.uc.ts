@@ -1,8 +1,8 @@
 import { ConsoleWriterService } from '@infra/console';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BoardNode, Course } from '@shared/domain';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { BoardNode, Course } from '@shared/domain/entity';
 import { EntityId, InputFormat } from '@shared/domain/types';
 import {
 	cardNodeFactory,

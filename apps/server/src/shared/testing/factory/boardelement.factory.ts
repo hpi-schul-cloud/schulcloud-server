@@ -5,7 +5,7 @@ import {
 	LessonEntity,
 	Task,
 	TaskBoardElement,
-} from '@shared/domain';
+} from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { BaseFactory } from './base.factory';

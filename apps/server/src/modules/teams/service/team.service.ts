@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { TeamEntity } from '@shared/domain';
+import { TeamEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
 

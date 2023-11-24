@@ -1,4 +1,4 @@
-import { LessonEntity } from '@shared/domain';
+import { LessonEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo';
 

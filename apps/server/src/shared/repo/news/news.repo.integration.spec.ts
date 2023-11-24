@@ -2,7 +2,8 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { News, SortOrder } from '@shared/domain';
+import { News } from '@shared/domain/entity';
+import { SortOrder } from '@shared/domain/interface';
 import { NewsTargetModel } from '@shared/domain/types';
 import {
 	cleanupCollections,

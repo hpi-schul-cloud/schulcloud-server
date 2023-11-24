@@ -3,7 +3,7 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
 import { LessonService } from '@modules/lesson';
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Course, LessonEntity, Task, User } from '@shared/domain';
+import { Course, LessonEntity, Task, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo, TaskRepo } from '@shared/repo';
 import { TaskCopyService } from '../service';

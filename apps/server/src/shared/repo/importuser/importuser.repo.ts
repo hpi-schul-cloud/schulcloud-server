@@ -2,7 +2,7 @@ import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ImportUser, SchoolEntity, User } from '@shared/domain';
+import { ImportUser, SchoolEntity, User } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';

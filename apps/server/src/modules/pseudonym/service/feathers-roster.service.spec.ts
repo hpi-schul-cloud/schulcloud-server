@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DatabaseObjectNotFoundException } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Course, SchoolEntity } from '@shared/domain';
+import { Course, SchoolEntity } from '@shared/domain/entity';
 
 import { CourseService } from '@modules/learnroom/service/course.service';
 import { ToolContextType } from '@modules/tool/common/enum';

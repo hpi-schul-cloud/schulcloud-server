@@ -2,17 +2,6 @@ import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import {
-	BoardNode,
-	CardNode,
-	ColumnBoardNode,
-	ColumnNode,
-	ExternalToolElementNodeEntity,
-	FileElementNode,
-	RichTextElementNode,
-	SubmissionContainerElementNode,
-	SubmissionItemNode,
-} from '@shared/domain';
-import {
 	AnyBoardDo,
 	BoardCompositeVisitor,
 	Card,
@@ -25,6 +14,17 @@ import {
 	SubmissionItem,
 } from '@shared/domain/domainobject';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import {
+	BoardNode,
+	CardNode,
+	ColumnBoardNode,
+	ColumnNode,
+	ExternalToolElementNodeEntity,
+	FileElementNode,
+	RichTextElementNode,
+	SubmissionContainerElementNode,
+	SubmissionItemNode,
+} from '@shared/domain/entity';
 import { LinkElementNode } from '@shared/domain/entity/boardnode/link-element-node.entity';
 import { EntityId } from '@shared/domain/types';
 import { BoardNodeRepo } from './board-node.repo';

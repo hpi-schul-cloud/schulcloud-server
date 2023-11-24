@@ -2,7 +2,7 @@ import { FilterQuery } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ColumnBoardService } from '@modules/board';
 import { Injectable } from '@nestjs/common';
-import { ColumnBoardTarget } from '@shared/domain';
+import { ColumnBoardTarget } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
 @Injectable()

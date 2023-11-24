@@ -3,7 +3,7 @@ import { OauthProviderService } from '@infra/oauth-provider/index';
 import { ICurrentUser } from '@modules/authentication';
 import { AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/index';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 
 @Injectable()

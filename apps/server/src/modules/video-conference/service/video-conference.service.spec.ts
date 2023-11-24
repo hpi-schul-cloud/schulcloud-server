@@ -7,7 +7,7 @@ import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, SchoolFeatures, TeamUserEntity } from '@shared/domain';
+import { Course, SchoolFeatures, TeamUserEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
 import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';

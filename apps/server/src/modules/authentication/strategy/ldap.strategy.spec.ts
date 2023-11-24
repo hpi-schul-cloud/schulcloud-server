@@ -3,8 +3,8 @@ import { AccountDto } from '@modules/account/services/dto';
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SystemEntity, User } from '@shared/domain';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
+import { SystemEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { LegacySchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import {

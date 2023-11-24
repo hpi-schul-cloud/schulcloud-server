@@ -1,8 +1,8 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { H5PAjaxEndpoint, H5PEditor, H5PPlayer, H5pError } from '@lumieducation/h5p-server';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LanguageType } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject';
+import { LanguageType } from '@shared/domain/entity';
 import { setupEntities } from '@shared/testing';
 import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { UserService } from '@src/modules/user';

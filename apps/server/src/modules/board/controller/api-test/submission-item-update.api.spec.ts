@@ -2,8 +2,8 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SubmissionItemNode } from '@shared/domain';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { SubmissionItemNode } from '@shared/domain/entity';
 import {
 	TestApiClient,
 	UserAndAccountTestFactory,

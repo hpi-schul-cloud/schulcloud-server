@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { RichTextElementNode, RichTextElementNodeProps } from '@shared/domain';
+import { RichTextElementNode, RichTextElementNodeProps } from '@shared/domain/entity';
 import { InputFormat } from '@shared/domain/types';
 import { BaseFactory } from '../base.factory';
 

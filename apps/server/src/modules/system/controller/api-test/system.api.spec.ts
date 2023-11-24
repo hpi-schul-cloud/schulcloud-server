@@ -4,7 +4,7 @@ import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthConfig, SystemEntity } from '@shared/domain';
+import { OauthConfig, SystemEntity } from '@shared/domain/entity';
 import { cleanupCollections, systemFactory } from '@shared/testing';
 import { Request } from 'express';
 import request, { Response } from 'supertest';

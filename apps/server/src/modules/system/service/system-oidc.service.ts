@@ -1,7 +1,7 @@
 import { SystemOidcMapper } from '@modules/system/mapper/system-oidc.mapper';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import { SystemEntity } from '@shared/domain';
+import { SystemEntity } from '@shared/domain/entity';
 import { EntityId, SystemTypeEnum } from '@shared/domain/types';
 import { SystemRepo } from '@shared/repo';
 import { OidcConfigDto } from './dto';

@@ -2,7 +2,7 @@ import { IContentMetadata, ILibraryName } from '@lumieducation/h5p-server';
 import { IContentAuthor, IContentChange } from '@lumieducation/h5p-server/build/src/types';
 import { Embeddable, Embedded, Entity, Enum, Index, JsonType, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseEntityWithTimestamps } from '@shared/domain';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
 @Embeddable()

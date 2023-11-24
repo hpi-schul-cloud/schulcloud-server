@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SystemEntity } from '@shared/domain';
+import { SystemEntity } from '@shared/domain/entity';
 import { SystemTypeEnum } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { SystemScope } from '@shared/repo/system/system-scope';

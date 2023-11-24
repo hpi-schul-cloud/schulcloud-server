@@ -1,4 +1,4 @@
-import { TaskWithStatusVo } from '@shared/domain/';
+import { TaskWithStatusVo } from '@shared/domain/entity';
 import { InputFormat, RichText, TaskCreate, TaskUpdate } from '@shared/domain/types';
 import { TaskCreateParams, TaskResponse, TaskUpdateParams } from '../controller/dto';
 import { TaskStatusMapper } from './task-status.mapper';

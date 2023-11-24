@@ -1,8 +1,8 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, User } from '@shared/domain';
 import { ExternalSource, UserDO } from '@shared/domain/domainobject';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import {
 	cleanupCollections,
 	groupEntityFactory,

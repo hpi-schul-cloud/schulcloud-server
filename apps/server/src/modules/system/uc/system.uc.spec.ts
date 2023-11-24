@@ -1,12 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError } from '@shared/common';
-import { EntityId, SystemEntity, SystemTypeEnum } from '@shared/domain';
-import { systemFactory } from '@shared/testing';
 import { SystemMapper } from '@modules/system/mapper/system.mapper';
 import { SystemDto } from '@modules/system/service/dto/system.dto';
 import { SystemService } from '@modules/system/service/system.service';
 import { SystemUc } from '@modules/system/uc/system.uc';
+import { Test, TestingModule } from '@nestjs/testing';
+import { EntityNotFoundError } from '@shared/common';
+import { SystemEntity } from '@shared/domain/entity';
+import { EntityId, SystemTypeEnum } from '@shared/domain/types';
+import { systemFactory } from '@shared/testing';
 
 describe('SystemUc', () => {
 	let module: TestingModule;

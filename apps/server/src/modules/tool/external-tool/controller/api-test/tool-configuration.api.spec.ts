@@ -4,7 +4,7 @@ import { ServerTestModule } from '@modules/server';
 import { CustomParameterTypeParams } from '@modules/tool/common/enum';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Course, SchoolEntity, User } from '@shared/domain';
+import { Account, Course, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
 	TestApiClient,

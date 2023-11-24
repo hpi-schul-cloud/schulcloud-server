@@ -1,19 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { HydraSsoService, OAuthService } from '@modules/oauth';
+import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
 import { HttpModule } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthConfig } from '@shared/domain';
+import { OauthConfig } from '@shared/domain/entity';
 import { axiosResponseFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
-import { OAuthService, HydraSsoService } from '@modules/oauth';
 import { AxiosResponse } from 'axios';
 import { HydraOauthUc } from '.';
 import { AuthorizationParams } from '../controller/dto';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
-import { OAuthSSOError } from '../loggable';
 import { OAuthTokenDto } from '../interface';
+import { OAuthSSOError } from '../loggable';
 
 class HydraOauthUcSpec extends HydraOauthUc {
 	public validateStatusSpec = (status: number) => this.validateStatus(status);

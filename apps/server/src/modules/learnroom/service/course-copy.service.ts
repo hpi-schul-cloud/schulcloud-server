@@ -1,6 +1,6 @@
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { Injectable } from '@nestjs/common';
-import { Course, User } from '@shared/domain';
+import { Course, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import { BoardCopyService } from './board-copy.service';

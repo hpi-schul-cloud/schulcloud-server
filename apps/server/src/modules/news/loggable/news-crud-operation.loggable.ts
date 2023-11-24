@@ -1,4 +1,4 @@
-import { News } from '@shared/domain';
+import { News } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { CrudOperation } from '@shared/types';
 import { Loggable, LogMessage } from '@src/core/logger';

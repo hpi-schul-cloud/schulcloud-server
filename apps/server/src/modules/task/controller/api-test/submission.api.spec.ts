@@ -8,7 +8,7 @@ import { SubmissionStatusListResponse } from '@modules/task/controller/dto/submi
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { Submission } from '@shared/domain';
+import { Submission } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,

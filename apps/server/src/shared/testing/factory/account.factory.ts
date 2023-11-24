@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { Account, IdmAccountProperties, User } from '@shared/domain';
+import { Account, IdmAccountProperties, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
 import { ObjectId } from 'bson';

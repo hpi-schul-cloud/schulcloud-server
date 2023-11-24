@@ -5,19 +5,10 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { UserQuery } from '@modules/user/service/user-query.type';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import {
-	IFindOptions,
-	LanguageType,
-	Role,
-	RoleName,
-	SchoolEntity,
-	SortOrder,
-	SystemEntity,
-	User,
-	UserProperties,
-} from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { LanguageType, Role, SchoolEntity, SystemEntity, User, UserProperties } from '@shared/domain/entity';
+import { IFindOptions, RoleName, SortOrder } from '@shared/domain/interface';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import {
 	cleanupCollections,

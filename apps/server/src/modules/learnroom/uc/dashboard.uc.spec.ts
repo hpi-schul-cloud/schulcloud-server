@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common/';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, DashboardEntity, GridElement } from '@shared/domain';
+import { Course, DashboardEntity, GridElement } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { CourseRepo, IDashboardRepo } from '@shared/repo';

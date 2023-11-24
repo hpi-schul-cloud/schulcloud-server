@@ -1,4 +1,4 @@
-import { User } from '@shared/domain';
+import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo';
 export class UserScope extends Scope<User> {

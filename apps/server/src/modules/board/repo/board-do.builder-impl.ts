@@ -1,18 +1,4 @@
 import { NotImplementedException } from '@nestjs/common';
-import type {
-	BoardDoBuilder,
-	BoardNode,
-	CardNode,
-	ColumnBoardNode,
-	ColumnNode,
-	ExternalToolElementNodeEntity,
-	FileElementNode,
-	LinkElementNode,
-	RichTextElementNode,
-	SubmissionContainerElementNode,
-	SubmissionItemNode,
-} from '@shared/domain';
-import { BoardNodeType } from '@shared/domain';
 import {
 	AnyBoardDo,
 	Card,
@@ -25,6 +11,20 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
+import type {
+	BoardDoBuilder,
+	BoardNode,
+	CardNode,
+	ColumnBoardNode,
+	ColumnNode,
+	ExternalToolElementNodeEntity,
+	FileElementNode,
+	LinkElementNode,
+	RichTextElementNode,
+	SubmissionContainerElementNode,
+	SubmissionItemNode,
+} from '@shared/domain/entity';
+import { BoardNodeType } from '@shared/domain/entity';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};

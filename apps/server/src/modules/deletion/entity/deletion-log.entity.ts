@@ -1,6 +1,6 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseEntityWithTimestamps } from '@shared/domain';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
 import { DeletionOperationModel } from '../domain/types/deletion-operation-model.enum';

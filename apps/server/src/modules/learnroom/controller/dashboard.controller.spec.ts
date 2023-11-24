@@ -1,6 +1,6 @@
 import { ICurrentUser } from '@modules/authentication';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, GridElement, GridPosition } from '@shared/domain';
+import { DashboardEntity, GridElement, GridPosition } from '@shared/domain/entity';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardController } from './dashboard.controller';

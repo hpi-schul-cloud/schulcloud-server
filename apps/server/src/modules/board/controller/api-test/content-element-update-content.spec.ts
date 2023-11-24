@@ -3,8 +3,8 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { sanitizeRichText } from '@shared/controller';
-import { FileElementNode, RichTextElementNode, SubmissionContainerElementNode } from '@shared/domain';
 import { BoardExternalReferenceType, ContentElementType } from '@shared/domain/domainobject';
+import { FileElementNode, RichTextElementNode, SubmissionContainerElementNode } from '@shared/domain/entity';
 import { InputFormat } from '@shared/domain/types';
 import {
 	TestApiClient,

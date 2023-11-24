@@ -1,4 +1,4 @@
-import { Account } from '@shared/domain';
+import { Account } from '@shared/domain/entity';
 import { Counted } from '@shared/domain/types';
 import { AccountDto } from '../services/dto/account.dto';
 

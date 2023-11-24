@@ -4,24 +4,24 @@ import { getResolvedValues } from '@modules/files-storage/helper';
 import { LessonCopyService } from '@modules/lesson/service';
 import { TaskCopyService } from '@modules/task/service';
 import { Injectable } from '@nestjs/common';
+import { ColumnBoard } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
 import {
 	Board,
 	BoardElement,
 	BoardElementType,
-	ColumnboardBoardElement,
 	ColumnBoardTarget,
+	ColumnboardBoardElement,
 	Course,
-	isColumnBoardTarget,
-	isLesson,
-	isTask,
 	LessonBoardElement,
 	LessonEntity,
 	Task,
 	TaskBoardElement,
 	User,
-} from '@shared/domain';
-import { ColumnBoard } from '@shared/domain/domainobject';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
+	isColumnBoardTarget,
+	isLesson,
+	isTask,
+} from '@shared/domain/entity';
 import { BoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { sortBy } from 'lodash';

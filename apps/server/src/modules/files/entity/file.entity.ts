@@ -1,6 +1,6 @@
 import { Embedded, Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { StorageProviderEntity } from '@shared/domain';
+import { StorageProviderEntity } from '@shared/domain/entity';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { v4 as uuid } from 'uuid';

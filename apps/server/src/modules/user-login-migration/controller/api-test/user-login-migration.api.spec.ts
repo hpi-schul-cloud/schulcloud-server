@@ -5,16 +5,16 @@ import { SanisResponse, SanisRole } from '@modules/provisioning';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, SystemEntity, User } from '@shared/domain';
+import { SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
-	cleanupCollections,
 	JwtTestFactory,
-	schoolFactory,
-	systemFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
+	cleanupCollections,
+	schoolFactory,
+	systemFactory,
 	userFactory,
 	userLoginMigrationFactory,
 } from '@shared/testing';

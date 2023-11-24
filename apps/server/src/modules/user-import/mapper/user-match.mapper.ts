@@ -1,5 +1,5 @@
 import { StringValidator } from '@shared/common';
-import { MatchCreator, User } from '@shared/domain';
+import { MatchCreator, User } from '@shared/domain/entity';
 import { NameMatch } from '@shared/domain/types';
 import { UserMatchResponse, UserRole } from '../controller/dto';
 import { FilterUserParams } from '../controller/dto/filter-user.params';

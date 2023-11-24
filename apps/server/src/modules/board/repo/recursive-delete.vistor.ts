@@ -3,7 +3,6 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Injectable } from '@nestjs/common';
-import { BoardNode } from '@shared/domain/';
 import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
@@ -17,6 +16,7 @@ import {
 	SubmissionItem,
 } from '@shared/domain/domainobject';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { BoardNode } from '@shared/domain/entity';
 
 @Injectable()
 export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {

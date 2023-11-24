@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Course } from '@shared/domain';
+import { Course } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
 

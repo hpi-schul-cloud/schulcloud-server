@@ -1,7 +1,8 @@
 import { Class } from '@modules/class/domain';
 import { SystemDto } from '@modules/system';
-import { SchoolYearEntity } from '@shared/domain';
+
 import { UserDO } from '@shared/domain/domainobject';
+import { SchoolYearEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { Group } from '../../domain';
 import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../dto';

@@ -12,7 +12,7 @@ import {
 	Task,
 	TaskWithStatusVo,
 	User,
-} from '@shared/domain';
+} from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { TaskStatus } from '@shared/domain/types';
 import {

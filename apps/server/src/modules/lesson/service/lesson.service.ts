@@ -1,6 +1,6 @@
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
-import { ComponentProperties, LessonEntity } from '@shared/domain';
+import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { AuthorizationLoaderService } from '@src/modules/authorization';
 import { LessonRepo } from '../repository';

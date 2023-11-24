@@ -1,6 +1,6 @@
 import { FeathersAuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
-import { News } from '@shared/domain';
+import { News } from '@shared/domain/entity';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, CreateNews, EntityId, INewsScope, IUpdateNews, NewsTargetModel } from '@shared/domain/types';
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';

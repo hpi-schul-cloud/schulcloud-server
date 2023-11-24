@@ -9,7 +9,7 @@ import { SingleColumnBoardResponse } from '@modules/learnroom/controller/dto';
 import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, Course, Task } from '@shared/domain';
+import { Board, Course, Task } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
 	boardFactory,

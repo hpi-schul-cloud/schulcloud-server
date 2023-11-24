@@ -5,8 +5,8 @@ import { ServerTestModule } from '@modules/server';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { ColumnBoardNode, ColumnNode } from '@shared/domain';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { ColumnBoardNode, ColumnNode } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import {
 	cleanupCollections,

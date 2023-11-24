@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { Role, User, UserProperties } from '@shared/domain';
+import { Role, User, UserProperties } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { DeepPartial } from 'fishery';
 import _ from 'lodash';

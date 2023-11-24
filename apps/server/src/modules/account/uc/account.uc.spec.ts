@@ -6,7 +6,7 @@ import { ICurrentUser } from '@modules/authentication';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import { Account, Role, SchoolEntity, SchoolRolePermission, SchoolRoles, User } from '@shared/domain';
+import { Account, Role, SchoolEntity, SchoolRolePermission, SchoolRoles, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { PermissionService } from '@shared/domain/service';
 import { Counted, EntityId } from '@shared/domain/types';

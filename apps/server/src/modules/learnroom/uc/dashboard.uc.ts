@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { DashboardEntity, GridPosition, GridPositionWithGroupIndex } from '@shared/domain';
+import { DashboardEntity, GridPosition, GridPositionWithGroupIndex } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo, IDashboardRepo } from '@shared/repo';

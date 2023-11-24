@@ -6,8 +6,8 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CardNode, RichTextElementNode } from '@shared/domain';
 import { AnyBoardDo, BoardExternalReferenceType, Card, Column, ColumnBoard } from '@shared/domain/domainobject';
+import { CardNode, RichTextElementNode } from '@shared/domain/entity';
 import {
 	cardFactory,
 	cardNodeFactory,

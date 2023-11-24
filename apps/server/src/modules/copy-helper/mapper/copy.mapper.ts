@@ -2,7 +2,7 @@ import { LessonCopyApiParams } from '@modules/learnroom/controller/dto/lesson/le
 import { LessonCopyParentParams } from '@modules/lesson/types';
 import { TaskCopyApiParams } from '@modules/task/controller/dto/task-copy.params';
 import { TaskCopyParentParams } from '@modules/task/types';
-import { LessonEntity, Task } from '@shared/domain';
+import { LessonEntity, Task } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { CopyApiResponse } from '../dto/copy.response';
 import { CopyStatus, CopyStatusEnum } from '../types/copy.types';

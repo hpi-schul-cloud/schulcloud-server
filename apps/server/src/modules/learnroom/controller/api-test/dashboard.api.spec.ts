@@ -5,7 +5,7 @@ import { DashboardResponse } from '@modules/learnroom/controller/dto';
 import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, GridElement, User } from '@shared/domain';
+import { DashboardEntity, GridElement, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { IDashboardRepo } from '@shared/repo';
 import { courseFactory, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';

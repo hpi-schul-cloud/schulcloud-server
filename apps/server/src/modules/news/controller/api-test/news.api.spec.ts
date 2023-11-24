@@ -5,7 +5,7 @@ import { CreateNewsParams, NewsListResponse, NewsResponse, UpdateNewsParams } fr
 import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { News } from '@shared/domain';
+import { News } from '@shared/domain/entity';
 import { EntityId, NewsTargetModel } from '@shared/domain/types';
 import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
 import { Request } from 'express';

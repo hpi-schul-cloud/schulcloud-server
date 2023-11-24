@@ -1,4 +1,4 @@
-import { MatchCreator } from '@shared/domain';
+import { MatchCreator } from '@shared/domain/entity';
 import { MatchCreatorScope } from '@shared/domain/types';
 import { FilterMatchType, MatchType } from '../controller/dto';
 

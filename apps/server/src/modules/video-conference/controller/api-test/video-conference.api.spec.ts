@@ -11,7 +11,7 @@ import {
 	TargetModels,
 	User,
 	VideoConference,
-} from '@shared/domain';
+} from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import {
 	TestApiClient,

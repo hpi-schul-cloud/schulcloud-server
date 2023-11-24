@@ -1,6 +1,6 @@
 // All user accounts are organized by school in a single array
 
-import { Role, RoleProperties } from '@shared/domain';
+import { Role, RoleProperties } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { roleFactory } from '@shared/testing';
 import { DeepPartial } from 'fishery';
