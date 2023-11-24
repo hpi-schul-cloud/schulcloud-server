@@ -1,16 +1,9 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
-
-// register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
-
-// application imports
 import { LegacyLogger } from '@src/core/logger';
-import {
-	H5PLibraryManagementModule,
-	H5PLibraryManagementService,
-} from '@modules/h5p-library-management/h5p-library-management.module';
+import { H5PLibraryManagementModule, H5PLibraryManagementService } from '@modules/h5p-library-management';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -26,13 +19,13 @@ async function bootstrap() {
 	console.log(`##### Start H5P Library Management ######`);
 	console.log('#########################################');
 
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+	// to execute it on this place for the ORM the allowGlobalContext: true must be set, but to executed in this way is a hack
 	await nestApp.get(H5PLibraryManagementService).run();
-	// await app.get(H5PLibraryManagementService).run();
 	// TODO: properly close app (there is some issue with the logger)
 	console.log('#########################################');
 	console.log(`##### Close H5P Library Management ######`);
 	console.log('#########################################');
 	await nestApp.close();
+	process.exit(0);
 }
 void bootstrap();
