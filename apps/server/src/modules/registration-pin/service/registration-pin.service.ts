@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RegistrationPinRepo } from '../repo/registration-pin.repo';
+import { RegistrationPinRepo } from '../repo';
 
 @Injectable()
 export class RegistrationPinService {

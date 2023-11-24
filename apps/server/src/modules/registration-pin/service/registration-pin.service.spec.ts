@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userDoFactory } from '@shared/testing';
-import { RegistrationPinService } from './registration-pin.service';
-import { RegistrationPinRepo } from '../repo/registration-pin.repo';
+import { RegistrationPinService } from '.';
+import { RegistrationPinRepo } from '../repo';
 
 describe(RegistrationPinService.name, () => {
 	let module: TestingModule;

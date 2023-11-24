@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { RegistrationPinEntity } from '../entity/registration-pin.entity';
+import { RegistrationPinEntity } from '../entity';
 
 @Injectable()
 export class RegistrationPinRepo {

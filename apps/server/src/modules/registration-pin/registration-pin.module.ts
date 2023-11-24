@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { RegistrationPinService } from './service/registration-pin.service';
-import { RegistrationPinRepo } from './repo/registration-pin.repo';
+import { RegistrationPinService } from './service';
+import { RegistrationPinRepo } from './repo';
 
 @Module({
 	imports: [LoggerModule],

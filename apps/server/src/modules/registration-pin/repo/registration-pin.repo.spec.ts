@@ -2,8 +2,8 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections, userFactory } from '@shared/testing';
-import { RegistrationPinRepo } from './registration-pin.repo';
-import { registrationPinEntityFactory } from '../entity/testing/factory/registration-pin.entity.factory';
+import { RegistrationPinRepo } from '.';
+import { registrationPinEntityFactory } from '../entity/testing';
 
 describe(RegistrationPinRepo.name, () => {
 	let module: TestingModule;

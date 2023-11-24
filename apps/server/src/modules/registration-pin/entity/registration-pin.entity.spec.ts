@@ -1,6 +1,6 @@
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { RegistrationPinEntity } from './registration-pin.entity';
+import { RegistrationPinEntity } from '.';
 
 describe(RegistrationPinEntity.name, () => {
 	beforeAll(async () => {

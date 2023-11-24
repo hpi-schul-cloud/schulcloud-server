@@ -10,7 +10,7 @@ import { FilesService } from '@modules/files/service';
 import { AccountService } from '@modules/account/services';
 import { RocketChatUserService } from '@modules/rocketchat-user';
 import { RocketChatService } from '@modules/rocketchat';
-import { RegistrationPinService } from '@src/modules/registration-pin';
+import { RegistrationPinService } from '@modules/registration-pin';
 import { DeletionRequestService } from '../services/deletion-request.service';
 import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
 import { DeletionLogService } from '../services/deletion-log.service';
