@@ -2,8 +2,11 @@ import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Course, Permission, SchoolEntity, User } from '@shared/domain';
+import { Account, Course, SchoolEntity, User } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	accountFactory,
 	contextExternalToolEntityFactory,
 	courseFactory,
@@ -12,8 +15,6 @@ import {
 	roleFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
 import { ObjectId } from 'bson';

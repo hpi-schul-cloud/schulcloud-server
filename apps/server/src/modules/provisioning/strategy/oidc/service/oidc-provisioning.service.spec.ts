@@ -10,8 +10,9 @@ import { UserService } from '@modules/user';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { RoleName, SchoolFeatures } from '@shared/domain';
+import { SchoolFeatures } from '@shared/domain';
 import { ExternalSource, LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { RoleName } from '@shared/domain/interface';
 import {
 	externalGroupDtoFactory,
 	federalStateFactory,

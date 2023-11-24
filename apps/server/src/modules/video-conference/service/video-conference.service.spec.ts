@@ -7,17 +7,11 @@ import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Course,
-	EntityId,
-	Permission,
-	RoleName,
-	SchoolFeatures,
-	TeamUserEntity,
-	UserDO,
-	VideoConferenceDO,
-	VideoConferenceScope,
-} from '@shared/domain';
+import { Course, SchoolFeatures, TeamUserEntity } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
+
+import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
+import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { courseFactory, roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';

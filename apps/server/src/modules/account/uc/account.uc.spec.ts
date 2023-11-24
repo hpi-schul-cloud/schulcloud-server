@@ -6,19 +6,10 @@ import { ICurrentUser } from '@modules/authentication';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import {
-	Account,
-	Counted,
-	EntityId,
-	Permission,
-	PermissionService,
-	Role,
-	RoleName,
-	SchoolEntity,
-	SchoolRolePermission,
-	SchoolRoles,
-	User,
-} from '@shared/domain';
+import { Account, Role, SchoolEntity, SchoolRolePermission, SchoolRoles, User } from '@shared/domain';
+import { Permission, RoleName } from '@shared/domain/interface';
+import { PermissionService } from '@shared/domain/service';
+import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import { BruteForcePrevention } from '@src/imports-from-feathers';

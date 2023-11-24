@@ -1,31 +1,29 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	Account,
 	Course,
-	Permission,
 	Role,
-	RoleName,
 	SchoolEntity,
 	SchoolFeatures,
 	TargetModels,
 	User,
 	VideoConference,
-	VideoConferenceScope,
 } from '@shared/domain';
+import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	accountFactory,
 	cleanupCollections,
 	courseFactory,
 	roleFactory,
 	schoolFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
-import { ServerTestModule } from '@modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';

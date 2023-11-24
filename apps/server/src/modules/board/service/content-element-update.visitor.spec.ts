@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InputFormat } from '@shared/domain';
+import { InputFormat } from '@shared/domain/types';
 import {
 	cardFactory,
 	columnBoardFactory,

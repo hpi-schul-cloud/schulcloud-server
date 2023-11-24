@@ -3,16 +3,17 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Permission, SchoolEntity, User } from '@shared/domain';
+import { Account, SchoolEntity, User } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	accountFactory,
 	contextExternalToolEntityFactory,
 	customParameterEntityFactory,
 	externalToolEntityFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
 import { ToolConfigurationStatusResponse } from '../../../context-external-tool/controller/dto';
@@ -21,11 +22,11 @@ import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '.
 import { SchoolExternalToolEntity } from '../../entity';
 import {
 	CustomParameterEntryParam,
+	SchoolExternalToolMetadataResponse,
 	SchoolExternalToolPostParams,
 	SchoolExternalToolResponse,
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
-	SchoolExternalToolMetadataResponse,
 } from '../dto';
 
 describe('ToolSchoolController (API)', () => {

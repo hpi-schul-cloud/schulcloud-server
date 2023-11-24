@@ -3,16 +3,17 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, SchoolEntity } from '@shared/domain';
+import { SchoolEntity } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	cleanupCollections,
 	contextExternalToolEntityFactory,
 	externalToolEntityFactory,
 	externalToolFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 } from '@shared/testing';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -29,9 +30,9 @@ import { ExternalToolMetadata } from '../../domain';
 import { ExternalToolEntity } from '../../entity';
 import {
 	ExternalToolCreateParams,
+	ExternalToolMetadataResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
-	ExternalToolMetadataResponse,
 } from '../dto';
 
 describe('ToolController (API)', () => {

@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LtiToolDO } from '@shared/domain';
+import { LtiToolDO } from '@shared/domain/domainobject';
 import { LtiToolRepo } from '@shared/repo';
 import { ltiToolDOFactory } from '@shared/testing';
 import { LtiToolService } from './lti-tool.service';

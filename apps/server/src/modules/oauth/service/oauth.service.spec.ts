@@ -10,7 +10,9 @@ import { SystemService } from '@modules/system/service/system.service';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, OauthConfig, SchoolFeatures, SystemEntity, UserDO } from '@shared/domain';
+import { OauthConfig, SchoolFeatures, SystemEntity } from '@shared/domain';
+import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
+
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { legacySchoolDoFactory, setupEntities, systemFactory, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';

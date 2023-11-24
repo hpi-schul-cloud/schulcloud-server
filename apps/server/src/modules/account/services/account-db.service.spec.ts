@@ -7,7 +7,10 @@ import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { Account, EntityId, Permission, Role, RoleName, SchoolEntity, User } from '@shared/domain';
+import { Account, Role, SchoolEntity, User } from '@shared/domain';
+
+import { Permission, RoleName } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import bcrypt from 'bcryptjs';
 import { LegacyLogger } from '../../../core/logger';

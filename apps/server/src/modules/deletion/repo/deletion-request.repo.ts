@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { SortOrder } from '@shared/domain';
+import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { DeletionRequest } from '../domain/deletion-request.do';
 import { DeletionRequestEntity } from '../entity';

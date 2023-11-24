@@ -1,8 +1,10 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SystemEntity, SystemTypeEnum } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { SystemEntity } from '@shared/domain';
+import {} from '@shared/domain/interface';
+import { SystemTypeEnum } from '@shared/domain/types';
 import { SystemRepo } from '@shared/repo';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 

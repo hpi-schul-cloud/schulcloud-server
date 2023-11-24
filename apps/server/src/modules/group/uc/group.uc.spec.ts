@@ -12,7 +12,9 @@ import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { LegacySchoolDo, Page, Permission, SchoolYearEntity, SortOrder, User, UserDO } from '@shared/domain';
+import { SchoolYearEntity, User } from '@shared/domain';
+import { LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
+import { Permission, SortOrder } from '@shared/domain/interface';
 import {
 	groupFactory,
 	legacySchoolDoFactory,
@@ -23,13 +25,13 @@ import {
 	userDoFactory,
 	userFactory,
 } from '@shared/testing';
+import { SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes } from '../domain';
+import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { ClassInfoDto, ResolvedGroupDto } from './dto';
 import { ClassRootType } from './dto/class-root-type';
 import { GroupUc } from './group.uc';
-import { SchoolYearQueryType } from '../controller/dto/interface';
-import { UnknownQueryTypeLoggableException } from '../loggable';
 
 describe('GroupUc', () => {
 	let module: TestingModule;

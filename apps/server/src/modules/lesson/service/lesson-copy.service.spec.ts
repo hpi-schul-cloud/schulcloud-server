@@ -13,11 +13,11 @@ import {
 	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
-	EntityId,
 	LessonEntity,
 	Material,
 } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
+import { EntityId } from '@shared/domain/types';
 import {
 	courseFactory,
 	lessonFactory,

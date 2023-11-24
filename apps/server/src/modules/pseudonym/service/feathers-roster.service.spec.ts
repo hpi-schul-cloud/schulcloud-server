@@ -2,7 +2,19 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DatabaseObjectNotFoundException } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Course, LegacySchoolDo, Pseudonym, RoleName, SchoolEntity, UserDO } from '@shared/domain';
+import { Course, SchoolEntity } from '@shared/domain';
+
+import { CourseService } from '@modules/learnroom/service/course.service';
+import { ToolContextType } from '@modules/tool/common/enum';
+import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { ExternalToolService } from '@modules/tool/external-tool/service';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
+import { UserService } from '@modules/user';
+import { LegacySchoolDo, Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { RoleName } from '@shared/domain/interface';
 import {
 	contextExternalToolFactory,
 	courseFactory,
@@ -15,15 +27,6 @@ import {
 	UserAndAccountTestFactory,
 	userDoFactory,
 } from '@shared/testing';
-import { CourseService } from '@modules/learnroom/service/course.service';
-import { ToolContextType } from '@modules/tool/common/enum';
-import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
-import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { ExternalToolService } from '@modules/tool/external-tool/service';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
-import { UserService } from '@modules/user';
 import { ObjectId } from 'bson';
 import { FeathersRosterService } from './feathers-roster.service';
 import { PseudonymService } from './pseudonym.service';
