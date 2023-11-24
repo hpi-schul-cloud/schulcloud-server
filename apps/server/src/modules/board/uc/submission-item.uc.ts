@@ -14,12 +14,13 @@ import {
 	isRichTextElement,
 	isSubmissionContainerElement,
 	isSubmissionItem,
+	PermissionCrud,
 	RichTextElement,
 	SubmissionItem,
 	UserBoardRoles,
 	UserRoleEnum,
 } from '@shared/domain';
-import { AuthorizationService, Action } from '@modules/authorization';
+import { AuthorizationService, Action, PermissionContextService } from '@modules/authorization';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { BaseUc } from './base.uc';
 
@@ -30,9 +31,23 @@ export class SubmissionItemUc extends BaseUc {
 		protected readonly authorizationService: AuthorizationService,
 		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		protected readonly elementService: ContentElementService,
-		protected readonly submissionItemService: SubmissionItemService
+		protected readonly submissionItemService: SubmissionItemService,
+		protected readonly permissionContextService: PermissionContextService
 	) {
-		super(authorizationService, boardDoAuthorizableService);
+		super(authorizationService, boardDoAuthorizableService, permissionContextService);
+	}
+
+	private async filterByReadPermission(userId: EntityId, submissionItems: SubmissionItem[]): Promise<SubmissionItem[]> {
+		const itemsWithPermission = await Promise.all(
+			submissionItems.map(async (item) => {
+				const hasPermission = await this.pocHasPermission(userId, item.id, [PermissionCrud.READ]);
+				return { hasPermission, submissionItem: item };
+			})
+		);
+
+		const filteredItems = itemsWithPermission.filter((item) => item.hasPermission).map((item) => item.submissionItem);
+
+		return filteredItems;
 	}
 
 	async findSubmissionItems(
@@ -48,10 +63,12 @@ export class SubmissionItemUc extends BaseUc {
 		await this.checkPermission(userId, submissionContainerElement, Action.read);
 
 		let submissionItems = submissionContainerElement.children.filter(isSubmissionItem);
+		// submissionItems = await this.filterByReadPermission(userId, submissionItems);
 
 		const boardAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainerElement);
 		let users = boardAuthorizable.users.filter((user) => user.userRoleEnum === UserRoleEnum.STUDENT);
 
+		// NOTE: boardAuthorizable can be skipped
 		const isAuthorizedStudent = await this.isAuthorizedStudent(userId, submissionContainerElement);
 		if (isAuthorizedStudent) {
 			submissionItems = submissionItems.filter((item) => item.userId === userId);
@@ -66,8 +83,9 @@ export class SubmissionItemUc extends BaseUc {
 		submissionItemId: EntityId,
 		completed: boolean
 	): Promise<SubmissionItem> {
+		await this.pocCheckPermission(userId, submissionItemId, [PermissionCrud.UPDATE]);
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
-		await this.checkSubmissionItemWritePermission(userId, submissionItem);
+		// await this.checkSubmissionItemWritePermission(userId, submissionItem);
 		await this.submissionItemService.update(submissionItem, completed);
 
 		return submissionItem;
@@ -81,10 +99,11 @@ export class SubmissionItemUc extends BaseUc {
 		if (type !== ContentElementType.RICH_TEXT && type !== ContentElementType.FILE) {
 			throw new BadRequestException();
 		}
+		await this.pocCheckPermission(userId, submissionItemId, [PermissionCrud.CREATE]);
 
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
 
-		await this.checkSubmissionItemWritePermission(userId, submissionItem);
+		// await this.checkSubmissionItemWritePermission(userId, submissionItem);
 
 		const element = await this.elementService.create(submissionItem, type);
 

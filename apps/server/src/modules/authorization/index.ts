@@ -15,3 +15,4 @@ export {
 } from './domain';
 // Should not used anymore
 export { FeathersAuthorizationService } from './feathers';
+export { PermissionContextService } from './permission-context/service/permission-context.service';

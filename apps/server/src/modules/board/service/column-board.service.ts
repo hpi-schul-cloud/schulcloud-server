@@ -12,17 +12,24 @@ import {
 	EntityId,
 	RichTextElement,
 } from '@shared/domain';
+import { PermissionContextRepo, CourseRepo } from '@shared/repo';
+import { Forbidden } from '@feathersjs/errors';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
+import { BaseService } from './base.service';
 
 @Injectable()
-export class ColumnBoardService {
+export class ColumnBoardService extends BaseService {
 	constructor(
-		private readonly boardDoRepo: BoardDoRepo,
+		protected readonly boardDoRepo: BoardDoRepo,
 		private readonly boardDoService: BoardDoService,
-		private readonly contentElementFactory: ContentElementFactory
-	) {}
+		private readonly contentElementFactory: ContentElementFactory,
+		protected readonly permissionCtxRepo: PermissionContextRepo,
+		protected readonly courseRepo: CourseRepo
+	) {
+		super(permissionCtxRepo, boardDoRepo, courseRepo);
+	}
 
 	async findById(boardId: EntityId): Promise<ColumnBoard> {
 		const board = await this.boardDoRepo.findByClassAndId(ColumnBoard, boardId);
@@ -31,7 +38,9 @@ export class ColumnBoardService {
 	}
 
 	async findIdsByExternalReference(reference: BoardExternalReference): Promise<EntityId[]> {
-		const ids = this.boardDoRepo.findIdsByExternalReference(reference);
+		const ids = await this.boardDoRepo.findIdsByExternalReference(reference);
+		// run migrateColumnBoardToPermissionContext for each id await
+		await Promise.all(ids.map((id) => this.pocMigrateBoardToPermissionContext(id)));
 
 		return ids;
 	}
@@ -55,6 +64,8 @@ export class ColumnBoardService {
 	}
 
 	async create(context: BoardExternalReference, title = ''): Promise<ColumnBoard> {
+		if (context.type !== 'course') throw new Forbidden('Only course boards are allowed');
+
 		const columnBoard = new ColumnBoard({
 			id: new ObjectId().toHexString(),
 			title,
@@ -63,6 +74,9 @@ export class ColumnBoardService {
 			updatedAt: new Date(),
 			context,
 		});
+
+		const course = await this.courseRepo.findById(context.id);
+		await this.pocCreateColumnBoardToPermissionContext(columnBoard, course);
 
 		await this.boardDoRepo.save(columnBoard);
 
@@ -138,6 +152,8 @@ export class ColumnBoardService {
 		}
 
 		await this.boardDoRepo.save(columnBoard);
+
+		await this.pocMigrateBoardToPermissionContext(columnBoard.id);
 
 		return columnBoard;
 	}

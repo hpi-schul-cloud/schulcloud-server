@@ -9,18 +9,24 @@ import {
 	isAnyContentElement,
 	SubmissionItem,
 } from '@shared/domain';
+import { CourseRepo, PermissionContextRepo } from '@shared/repo';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
+import { BaseService } from './base.service';
 
 @Injectable()
-export class ContentElementService {
+export class ContentElementService extends BaseService {
 	constructor(
-		private readonly boardDoRepo: BoardDoRepo,
+		protected readonly boardDoRepo: BoardDoRepo,
 		private readonly boardDoService: BoardDoService,
-		private readonly contentElementFactory: ContentElementFactory
-	) {}
+		private readonly contentElementFactory: ContentElementFactory,
+		protected readonly permissionCtxRepo: PermissionContextRepo,
+		protected readonly courseRepo: CourseRepo
+	) {
+		super(permissionCtxRepo, boardDoRepo, courseRepo);
+	}
 
 	async findById(elementId: EntityId): Promise<AnyContentElementDo> {
 		const element = await this.boardDoRepo.findById(elementId);
@@ -43,6 +49,9 @@ export class ContentElementService {
 	async create(parent: Card | SubmissionItem, type: ContentElementType): Promise<AnyContentElementDo> {
 		const element = this.contentElementFactory.build(type);
 		parent.addChild(element);
+
+		await this.pocCreateElementPermissionCtx(element, parent);
+
 		await this.boardDoRepo.save(parent.children, parent);
 		return element;
 	}

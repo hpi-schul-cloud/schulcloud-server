@@ -10,6 +10,7 @@ import {
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
+	PermissionContextRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { LessonModule } from '../lesson';
@@ -37,6 +38,7 @@ import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } f
 		CourseRepo,
 		CourseGroupRepo,
 		TaskRepo,
+		PermissionContextRepo,
 		LegacySchoolRepo,
 		TeamsRepo,
 		SubmissionRepo,

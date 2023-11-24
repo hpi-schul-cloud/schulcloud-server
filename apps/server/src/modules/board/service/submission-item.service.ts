@@ -1,24 +1,23 @@
 import { ObjectId } from 'bson';
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 
 import { EntityId, isSubmissionContainerElement, SubmissionContainerElement, SubmissionItem } from '@shared/domain';
 import { ValidationError } from '@shared/common';
 
+import { CourseRepo, PermissionContextRepo } from '@shared/repo';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
+import { BaseService } from './base.service';
 
 @Injectable()
-export class SubmissionItemService {
-	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
-
-	async findById(id: EntityId): Promise<SubmissionItem> {
-		const element = await this.boardDoRepo.findById(id);
-
-		if (!(element instanceof SubmissionItem)) {
-			throw new NotFoundException(`There is no '${element.constructor.name}' with this id`);
-		}
-
-		return element;
+export class SubmissionItemService extends BaseService {
+	constructor(
+		protected readonly boardDoRepo: BoardDoRepo,
+		private readonly boardDoService: BoardDoService,
+		protected readonly permissionCtxRepo: PermissionContextRepo,
+		protected readonly courseRepo: CourseRepo
+	) {
+		super(permissionCtxRepo, boardDoRepo, courseRepo);
 	}
 
 	async create(
@@ -35,7 +34,7 @@ export class SubmissionItemService {
 		});
 
 		submissionContainer.addChild(submissionItem);
-
+		await this.pocCreateSubmissionItemPermissionCtx(userId, submissionContainer, submissionItem.id);
 		await this.boardDoRepo.save(submissionContainer.children, submissionContainer);
 
 		return submissionItem;

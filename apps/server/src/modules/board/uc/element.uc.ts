@@ -5,11 +5,12 @@ import {
 	EntityId,
 	isSubmissionContainerElement,
 	isSubmissionItem,
+	PermissionCrud,
 	SubmissionItem,
 	UserRoleEnum,
 } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { AuthorizationService, Action } from '@modules/authorization';
+import { AuthorizationService, Action, PermissionContextService } from '@modules/authorization';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { SubmissionItemService } from '../service/submission-item.service';
@@ -23,9 +24,10 @@ export class ElementUc extends BaseUc {
 		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly elementService: ContentElementService,
 		private readonly submissionItemService: SubmissionItemService,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		protected readonly permissionContextService: PermissionContextService
 	) {
-		super(authorizationService, boardDoAuthorizableService);
+		super(authorizationService, boardDoAuthorizableService, permissionContextService);
 		this.logger.setContext(ElementUc.name);
 	}
 
@@ -34,14 +36,20 @@ export class ElementUc extends BaseUc {
 		elementId: EntityId,
 		content: AnyElementContentBody
 	): Promise<AnyContentElementDo> {
-		const element = await this.getElementWithWritePermission(userId, elementId);
+		await this.pocCheckPermission(userId, elementId, [PermissionCrud.UPDATE]);
+
+		const element = await this.elementService.findById(elementId);
+		// const element = await this.getElementWithWritePermission(userId, elementId);
 
 		await this.elementService.update(element, content);
 		return element;
 	}
 
 	async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
-		const element = await this.getElementWithWritePermission(userId, elementId);
+		await this.pocCheckPermission(userId, elementId, [PermissionCrud.DELETE]);
+
+		const element = await this.elementService.findById(elementId);
+		// const element = await this.getElementWithWritePermission(userId, elementId);
 
 		await this.elementService.delete(element);
 	}
@@ -65,6 +73,8 @@ export class ElementUc extends BaseUc {
 		contentElementId: EntityId,
 		completed: boolean
 	): Promise<SubmissionItem> {
+		await this.pocCheckPermission(userId, contentElementId, [PermissionCrud.CREATE]);
+
 		const submissionContainerElement = await this.elementService.findById(contentElementId);
 
 		if (!isSubmissionContainerElement(submissionContainerElement)) {
