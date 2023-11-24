@@ -192,7 +192,7 @@ describe('ExternalToolConfigurationService', () => {
 			const setup = () => {
 				const contextType = ToolContextType.COURSE;
 
-				const externalTool: ExternalTool = externalToolFactory.build();
+				const externalTool: ExternalTool = externalToolFactory.build({ restrictToContexts: [] });
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 
 				const availableTools: ContextExternalToolTemplateInfo[] = [{ externalTool, schoolExternalTool }];

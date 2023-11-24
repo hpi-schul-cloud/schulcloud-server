@@ -80,7 +80,7 @@ export class ExternalToolConfigurationService {
 		contextType: ToolContextType
 	): ContextExternalToolTemplateInfo[] {
 		const availableToolsForContext: ContextExternalToolTemplateInfo[] = availableTools.filter((availableTool) => {
-			if (availableTool.externalTool.restrictToContexts) {
+			if (availableTool.externalTool.restrictToContexts && availableTool.externalTool.restrictToContexts[0]) {
 				return availableTool.externalTool.restrictToContexts.includes(contextType);
 			}
 			return true;

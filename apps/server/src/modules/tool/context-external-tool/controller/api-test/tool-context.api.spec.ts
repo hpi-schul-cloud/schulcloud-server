@@ -80,6 +80,7 @@ describe('ToolContextController (API)', () => {
 							isOptional: true,
 						}),
 					],
+					restrictToContexts: [ToolContextType.COURSE],
 					version: 1,
 				});
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
@@ -171,6 +172,115 @@ describe('ToolContextController (API)', () => {
 
 				expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 				// expected body is missed
+			});
+		});
+
+		describe('when external tool has no restrictions ', () => {
+			const setup = async () => {
+				const school: SchoolEntity = schoolFactory.buildWithId();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
+					Permission.CONTEXT_TOOL_ADMIN,
+				]);
+
+				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
+
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					parameters: [],
+					restrictToContexts: [],
+					version: 1,
+				});
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+					tool: externalToolEntity,
+					school,
+					schoolParameters: [],
+					toolVersion: 1,
+				});
+
+				const postParams: ContextExternalToolPostParams = {
+					schoolToolId: schoolExternalToolEntity.id,
+					contextId: course.id,
+					displayName: course.name,
+					contextType: ToolContextType.COURSE,
+					parameters: [],
+					toolVersion: 1,
+				};
+
+				await em.persistAndFlush([teacherUser, teacherAccount, course, school, schoolExternalToolEntity]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
+				return {
+					loggedInClient,
+					postParams,
+				};
+			};
+
+			it('should create tool', async () => {
+				const { postParams, loggedInClient } = await setup();
+
+				const response = await loggedInClient.post().send(postParams);
+
+				expect(response.statusCode).toEqual(HttpStatus.CREATED);
+				expect(response.body).toEqual<ContextExternalToolResponse>({
+					id: expect.any(String),
+					schoolToolId: postParams.schoolToolId,
+					contextId: postParams.contextId,
+					displayName: postParams.displayName,
+					contextType: postParams.contextType,
+					parameters: [],
+					toolVersion: postParams.toolVersion,
+				});
+			});
+		});
+
+		describe('when external tool restricts to wrong context ', () => {
+			const setup = async () => {
+				const school: SchoolEntity = schoolFactory.buildWithId();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
+					Permission.CONTEXT_TOOL_ADMIN,
+				]);
+
+				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
+
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					parameters: [],
+					restrictToContexts: [ToolContextType.BOARD_ELEMENT],
+					version: 1,
+				});
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+					tool: externalToolEntity,
+					school,
+					schoolParameters: [],
+					toolVersion: 1,
+				});
+
+				const postParams: ContextExternalToolPostParams = {
+					schoolToolId: schoolExternalToolEntity.id,
+					contextId: course.id,
+					displayName: course.name,
+					contextType: ToolContextType.COURSE,
+					parameters: [],
+					toolVersion: 1,
+				};
+
+				await em.persistAndFlush([teacherUser, teacherAccount, course, school, schoolExternalToolEntity]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
+				return {
+					loggedInClient,
+					postParams,
+				};
+			};
+
+			it('should return forbidden', async () => {
+				const { postParams, loggedInClient } = await setup();
+
+				const response = await loggedInClient.post().send(postParams);
+
+				expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 	});

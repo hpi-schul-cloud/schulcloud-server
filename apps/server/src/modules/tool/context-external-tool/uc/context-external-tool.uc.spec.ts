@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	Action,
+	AuthorizationContext,
 	AuthorizationContextBuilder,
 	AuthorizationService,
 	ForbiddenLoggableException,
@@ -96,6 +97,8 @@ describe('ContextExternalToolUc', () => {
 					},
 				});
 
+				const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
+
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				contextExternalToolService.saveContextExternalTool.mockResolvedValue(contextExternalTool);
 
@@ -103,6 +106,7 @@ describe('ContextExternalToolUc', () => {
 					contextExternalTool,
 					userId,
 					schoolId,
+					context,
 				};
 			};
 
@@ -123,6 +127,18 @@ describe('ContextExternalToolUc', () => {
 					userId,
 					contextExternalTool,
 					AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN])
+				);
+			});
+
+			it('should check for context restrictions', async () => {
+				const { contextExternalTool, userId, schoolId, context } = setup();
+
+				await uc.createContextExternalTool(userId, schoolId, contextExternalTool);
+
+				expect(contextExternalToolService.checkContextRestrictions).toHaveBeenCalledWith(
+					contextExternalTool,
+					userId,
+					context
 				);
 			});
 

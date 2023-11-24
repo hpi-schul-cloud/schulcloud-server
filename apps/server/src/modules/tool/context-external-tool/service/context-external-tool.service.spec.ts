@@ -4,19 +4,31 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolRepo } from '@shared/repo';
 import {
 	contextExternalToolFactory,
+	externalToolFactory,
 	legacySchoolDoFactory,
 	schoolExternalToolFactory,
 } from '@shared/testing/factory/domainobject';
-import { AuthorizationService } from '@modules/authorization';
+import {
+	AuthorizationContext,
+	AuthorizationContextBuilder,
+	AuthorizationService,
+	ForbiddenLoggableException,
+} from '@modules/authorization';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { Permission } from '@shared/domain';
 import { ToolContextType } from '../../common/enum';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextExternalTool, ContextRef } from '../domain';
 import { ContextExternalToolService } from './context-external-tool.service';
-import { ToolContextTypesList } from '../../external-tool/controller/dto/response/tool-context-types-list';
+import { ExternalTool } from '../../external-tool/domain';
+import { ExternalToolService } from '../../external-tool/service';
+import { SchoolExternalToolService } from '../../school-external-tool/service';
 
 describe('ContextExternalToolService', () => {
 	let module: TestingModule;
 	let service: ContextExternalToolService;
+	let externalToolService: DeepMocked<ExternalToolService>;
+	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 
 	let contextExternalToolRepo: DeepMocked<ContextExternalToolRepo>;
 
@@ -32,11 +44,21 @@ describe('ContextExternalToolService', () => {
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
+				{
+					provide: ExternalToolService,
+					useValue: createMock<ExternalToolService>(),
+				},
+				{
+					provide: SchoolExternalToolService,
+					useValue: createMock<SchoolExternalToolService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(ContextExternalToolService);
 		contextExternalToolRepo = module.get(ContextExternalToolRepo);
+		externalToolService = module.get(ExternalToolService);
+		schoolExternalToolService = module.get(SchoolExternalToolService);
 	});
 
 	afterAll(async () => {
@@ -214,6 +236,115 @@ describe('ContextExternalToolService', () => {
 				const result: ContextExternalTool[] = await service.findAllByContext(contextExternalTool.contextRef);
 
 				expect(result).toEqual([contextExternalTool]);
+			});
+		});
+	});
+
+	describe('checkContextRestrictions', () => {
+		describe('when contexts are not restricted', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
+
+				const externalTool: ExternalTool = externalToolFactory.build({ restrictToContexts: [] });
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
+
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
+
+				return {
+					userId,
+					context,
+					contextExternalTool,
+					schoolExternalTool,
+				};
+			};
+
+			it('should find SchoolExternalTool', async () => {
+				const { userId, context, contextExternalTool } = setup();
+
+				await service.checkContextRestrictions(contextExternalTool, userId, context);
+
+				expect(schoolExternalToolService.findById).toHaveBeenCalledWith(contextExternalTool.schoolToolRef.schoolToolId);
+			});
+
+			it('should find ExternalTool', async () => {
+				const { userId, context, contextExternalTool, schoolExternalTool } = setup();
+
+				await service.checkContextRestrictions(contextExternalTool, userId, context);
+
+				expect(externalToolService.findById).toHaveBeenCalledWith(schoolExternalTool.toolId);
+			});
+
+			it('should not throw', async () => {
+				const { userId, context, contextExternalTool } = setup();
+
+				const func = async () => service.checkContextRestrictions(contextExternalTool, userId, context);
+
+				await expect(func()).resolves.not.toThrow();
+			});
+		});
+
+		describe('when context is restricted to correct context type', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
+
+				const externalTool: ExternalTool = externalToolFactory.build({ restrictToContexts: [ToolContextType.COURSE] });
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+					contextRef: { type: ToolContextType.COURSE },
+				});
+
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
+
+				return {
+					userId,
+					context,
+					contextExternalTool,
+				};
+			};
+
+			it('should not throw', async () => {
+				const { userId, context, contextExternalTool } = setup();
+
+				const func = async () => service.checkContextRestrictions(contextExternalTool, userId, context);
+
+				await expect(func()).resolves.not.toThrow();
+			});
+		});
+
+		describe('when context is restricted to wrong context type', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
+
+				const externalTool: ExternalTool = externalToolFactory.build({
+					restrictToContexts: [ToolContextType.BOARD_ELEMENT],
+				});
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+					contextRef: { type: ToolContextType.COURSE },
+				});
+
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
+
+				return {
+					userId,
+					context,
+					contextExternalTool,
+				};
+			};
+
+			it('should throw ForbiddenLoggableException', async () => {
+				const { userId, context, contextExternalTool } = setup();
+
+				const func = async () => service.checkContextRestrictions(contextExternalTool, userId, context);
+
+				await expect(func()).rejects.toThrow(new ForbiddenLoggableException(userId, 'ContextExternalTool', context));
 			});
 		});
 	});

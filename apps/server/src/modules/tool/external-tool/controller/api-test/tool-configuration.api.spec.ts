@@ -131,7 +131,9 @@ describe('ToolConfigurationController (API)', () => {
 				});
 				externalTool.logoUrl = `http://localhost:3030/api/v3/tools/external-tools/${externalTool.id}/logo`;
 
-				const externalToolWithoutContextRestriction: ExternalToolEntity = externalToolEntityFactory.buildWithId();
+				const externalToolWithoutContextRestriction: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					restrictToContexts: [],
+				});
 
 				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,

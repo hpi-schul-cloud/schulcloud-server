@@ -3,12 +3,19 @@ import { EntityId } from '@shared/domain';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { ContextExternalTool, ContextRef } from '../domain';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
-import { ToolContextTypesList } from '../../external-tool/controller/dto/response/tool-context-types-list';
-import { ToolContextType } from '../../common/enum';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { ExternalTool } from '../../external-tool/domain';
+import { ExternalToolService } from '../../external-tool/service';
+import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { AuthorizationContext, ForbiddenLoggableException } from '../../../authorization';
 
 @Injectable()
 export class ContextExternalToolService {
-	constructor(private readonly contextExternalToolRepo: ContextExternalToolRepo) {}
+	constructor(
+		private readonly contextExternalToolRepo: ContextExternalToolRepo,
+		private readonly externalToolService: ExternalToolService,
+		private readonly schoolExternalToolService: SchoolExternalToolService
+	) {}
 
 	public async findContextExternalTools(query: ContextExternalToolQuery): Promise<ContextExternalTool[]> {
 		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find(query);
@@ -48,5 +55,23 @@ export class ContextExternalToolService {
 		});
 
 		return contextExternalTools;
+	}
+
+	public async checkContextRestrictions(
+		contextExternalTool: ContextExternalTool,
+		userId: EntityId,
+		context: AuthorizationContext
+	): Promise<void> {
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
+			contextExternalTool.schoolToolRef.schoolToolId
+		);
+
+		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
+
+		if (externalTool.restrictToContexts && externalTool.restrictToContexts[0]) {
+			if (!externalTool.restrictToContexts.includes(contextExternalTool.contextRef.type)) {
+				throw new ForbiddenLoggableException(userId, 'ContextExternalTool', context);
+			}
+		}
 	}
 }
