@@ -10,7 +10,7 @@ import {
 	roleFactory,
 	schoolFactory,
 	schoolYearFactory,
-	systemFactory,
+	systemEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 	userFactory,
@@ -51,7 +51,7 @@ describe('Group (API)', () => {
 
 				const teacherRole: Role = roleFactory.buildWithId({ name: RoleName.TEACHER });
 				const teacherUser: User = userFactory.buildWithId({ school, roles: [teacherRole] });
-				const system: SystemEntity = systemFactory.buildWithId();
+				const system: SystemEntity = systemEntityFactory.buildWithId();
 				const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
 				const clazz: ClassEntity = classEntityFactory.buildWithId({
 					name: 'Group A',
