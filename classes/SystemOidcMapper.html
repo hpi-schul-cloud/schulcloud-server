@@ -193,7 +193,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapFromEntitiesToDtos(entities: <a href="../entitys/SystemEntity.html" target="_self">SystemEntity[]</a>)</code>
+                    <code>mapFromEntitiesToDtos(entities: <a href="../classes/System.html" target="_self">SystemEntity[]</a>)</code>
                 </td>
             </tr>
 
@@ -224,7 +224,7 @@
                                         <tr>
                                                 <td>entities</td>
                                             <td>
-                                                            <code><a href="../entitys/SystemEntity.html" target="_self" >SystemEntity[]</a></code>
+                                                            <code><a href="../classes/System.html" target="_self" >SystemEntity[]</a></code>
                                             </td>
 
                                             <td>
@@ -237,7 +237,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>OidcConfigDto[]</code>
+                            <b>Returns : </b>        <code><a href="../classes/OidcConfigDto.html" target="_self" >OidcConfigDto[]</a></code>
 
                         </div>
                             <div class="io-description">
@@ -306,7 +306,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>OidcConfigDto | undefined</code>
+                            <b>Returns : </b>        <code><a href="../classes/OidcConfigDto.html" target="_self" >OidcConfigDto | undefined</a></code>
 
                         </div>
                             <div class="io-description">
@@ -331,7 +331,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapFromOidcConfigEntityToDto(systemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, oidcConfig: <a href="../classes/OidcConfig.html" target="_self">OidcConfig</a>)</code>
+                    <code>mapFromOidcConfigEntityToDto(systemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, oidcConfig: <a href="../classes/OidcConfigEntity.html" target="_self">OidcConfigEntity</a>)</code>
                 </td>
             </tr>
 
@@ -374,7 +374,7 @@
                                         <tr>
                                                 <td>oidcConfig</td>
                                             <td>
-                                                            <code><a href="../classes/OidcConfig.html" target="_self" >OidcConfig</a></code>
+                                                            <code><a href="../classes/OidcConfigEntity.html" target="_self" >OidcConfigEntity</a></code>
                                             </td>
 
                                             <td>
@@ -407,8 +407,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OidcConfig, SystemEntity } from &#x27;@shared/domain&#x27;;
-import { OidcConfigDto } from &#x27;@modules/system/service/dto/oidc-config.dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OidcConfigDto } from &#x27;@modules/system/service/dto/oidc-config.dto&#x27;;
+import { OidcConfigEntity, SystemEntity } from &#x27;@shared/domain&#x27;;
 
 export class SystemOidcMapper {
 	static mapFromEntityToDto(entity: SystemEntity): OidcConfigDto | undefined {
@@ -418,7 +418,7 @@ export class SystemOidcMapper {
 		return undefined;
 	}
 
-	static mapFromOidcConfigEntityToDto(systemId: string, oidcConfig: OidcConfig): OidcConfigDto {
+	static mapFromOidcConfigEntityToDto(systemId: string, oidcConfig: OidcConfigEntity): OidcConfigDto {
 		return new OidcConfigDto({
 			parentSystemId: systemId,
 			clientId: oidcConfig.clientId,

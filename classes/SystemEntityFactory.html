@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >SystemFactory</li>
+  <li class="breadcrumb-item" >SystemEntityFactory</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/testing/factory/system.factory.ts</code>
+            <code>apps/server/src/shared/testing/factory/systemEntityFactory.ts</code>
         </p>
 
 
@@ -290,7 +290,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>withLdapConfig(otherParams?: <a href="../classes/LdapConfig.html" target="_self">DeepPartial&lt;LdapConfig&gt;</a>)</code>
+<code>withLdapConfig(otherParams?: DeepPartial<LdapConfigEntity>)</code>
                 </td>
             </tr>
 
@@ -298,7 +298,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/system.factory.ts:28</a></div>
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/systemEntityFactory.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -321,7 +321,7 @@
                                         <tr>
                                                 <td>otherParams</td>
                                             <td>
-                                                            <code><a href="../classes/LdapConfig.html" target="_self" >DeepPartial&lt;LdapConfig&gt;</a></code>
+                                                        <code>DeepPartial&lt;LdapConfigEntity&gt;</code>
                                             </td>
 
                                             <td>
@@ -358,7 +358,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="7"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/system.factory.ts:7</a></div>
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/systemEntityFactory.ts:7</a></div>
                         </td>
                     </tr>
 
@@ -386,7 +386,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/system.factory.ts:40</a></div>
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/systemEntityFactory.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -1418,36 +1418,36 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LdapConfig, OauthConfig, OidcConfig, SystemEntity, SystemProperties } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LdapConfigEntity, OauthConfigEntity, OidcConfigEntity, SystemEntity, SystemEntityProps } from &#x27;@shared/domain&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 
-export class SystemFactory extends BaseFactory&lt;SystemEntity, SystemProperties&gt; {
+export class SystemEntityFactory extends BaseFactory&lt;SystemEntity, SystemEntityProps&gt; {
 	withOauthConfig(): this {
-		const params: DeepPartial&lt;SystemProperties&gt; &#x3D; {
-			oauthConfig: new OauthConfig({
+		const params: DeepPartial&lt;SystemEntityProps&gt; &#x3D; {
+			oauthConfig: new OauthConfigEntity({
 				clientId: &#x27;12345&#x27;,
 				clientSecret: &#x27;mocksecret&#x27;,
 				idpHint: &#x27;mock-oauth-idpHint&#x27;,
-				tokenEndpoint: &#x27;http://mock.de/mock/auth/public/mockToken&#x27;,
+				tokenEndpoint: &#x27;https://mock.de/mock/auth/public/mockToken&#x27;,
 				grantType: &#x27;authorization_code&#x27;,
-				redirectUri: &#x27;http://mockhost:3030/api/v3/sso/oauth/&#x27;,
+				redirectUri: &#x27;https://mockhost:3030/api/v3/sso/oauth/&#x27;,
 				scope: &#x27;openid uuid&#x27;,
 				responseType: &#x27;code&#x27;,
-				authEndpoint: &#x27;http://mock.de/auth&#x27;,
+				authEndpoint: &#x27;https://mock.de/auth&#x27;,
 				provider: &#x27;mock_type&#x27;,
-				logoutEndpoint: &#x27;http://mock.de/logout&#x27;,
+				logoutEndpoint: &#x27;https://mock.de/logout&#x27;,
 				issuer: &#x27;mock_issuer&#x27;,
-				jwksEndpoint: &#x27;http://mock.de/jwks&#x27;,
+				jwksEndpoint: &#x27;https://mock.de/jwks&#x27;,
 			}),
 		};
 		return this.params(params);
 	}
 
-	withLdapConfig(otherParams?: DeepPartial&lt;LdapConfig&gt;): this {
-		const params: DeepPartial&lt;SystemProperties&gt; &#x3D; {
-			ldapConfig: new LdapConfig({
+	withLdapConfig(otherParams?: DeepPartial&lt;LdapConfigEntity&gt;): this {
+		const params: DeepPartial&lt;SystemEntityProps&gt; &#x3D; {
+			ldapConfig: new LdapConfigEntity({
 				url: &#x27;ldaps:mock.de:389&#x27;,
 				active: true,
 				...otherParams,
@@ -1459,7 +1459,7 @@ export class SystemFactory extends BaseFactory&lt;SystemEntity, SystemProperties
 
 	withOidcConfig(): this {
 		const params &#x3D; {
-			oidcConfig: new OidcConfig({
+			oidcConfig: new OidcConfigEntity({
 				clientId: &#x27;mock-client-id&#x27;,
 				clientSecret: &#x27;mock-client-secret&#x27;,
 				idpHint: &#x27;mock-oidc-idpHint&#x27;,
@@ -1474,10 +1474,10 @@ export class SystemFactory extends BaseFactory&lt;SystemEntity, SystemProperties
 	}
 }
 
-export const systemFactory &#x3D; SystemFactory.define(SystemEntity, ({ sequence }) &#x3D;&gt; {
+export const systemEntityFactory &#x3D; SystemEntityFactory.define(SystemEntity, ({ sequence }) &#x3D;&gt; {
 	return {
 		type: &#x27;oauth&#x27;,
-		url: &#x27;http://mock.de&#x27;,
+		url: &#x27;https://mock.de&#x27;,
 		alias: &#x60;system #${sequence}&#x60;,
 		displayName: &#x60;system #${sequence}DisplayName&#x60;,
 		provisioningStrategy: SystemProvisioningStrategy.OIDC,
@@ -1522,7 +1522,7 @@ export const systemFactory &#x3D; SystemFactory.define(SystemEntity, ({ sequence
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'SystemFactory.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SystemEntityFactory.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

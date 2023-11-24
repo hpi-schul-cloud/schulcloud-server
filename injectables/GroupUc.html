@@ -243,7 +243,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, classService: <a href="../injectables/ClassService.html" target="_self">ClassService</a>, systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolYearService: <a href="../injectables/SchoolYearService.html" target="_self">SchoolYearService</a>)</code>
+<code>constructor(groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, classService: <a href="../injectables/ClassService.html" target="_self">ClassService</a>, systemService: <a href="../injectables/LegacySystemService.html" target="_self">LegacySystemService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolYearService: <a href="../injectables/SchoolYearService.html" target="_self">SchoolYearService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -293,7 +293,7 @@
                                                         <td>systemService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/SystemService.html" target="_self" >SystemService</a></code>
+                                                                        <code><a href="../injectables/LegacySystemService.html" target="_self" >LegacySystemService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1307,7 +1307,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/SystemDto.html" target="_self" >Promise&lt;Map&lt;EntityId, SystemDto&gt;&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;Map&lt;EntityId, SystemDto&gt;&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1403,7 +1403,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getClassInfoFromGroup(group: <a href="../interfaces/Group.html" target="_self">Group</a>, systemMap: <a href="../classes/SystemDto.html" target="_self">Map&lt;EntityId | SystemDto&gt;</a>)</code>
+                    <code>getClassInfoFromGroup(group: <a href="../interfaces/Group.html" target="_self">Group</a>, systemMap: <a href="../undefineds/EntityId.html" target="_self">Map&lt;EntityId | SystemDto&gt;</a>)</code>
                 </td>
             </tr>
 
@@ -1446,7 +1446,7 @@
                                         <tr>
                                                 <td>systemMap</td>
                                             <td>
-                                                            <code><a href="../classes/SystemDto.html" target="_self" >Map&lt;EntityId | SystemDto&gt;</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Map&lt;EntityId | SystemDto&gt;</a></code>
                                             </td>
 
                                             <td>
@@ -1808,24 +1808,24 @@ import { Class } from &#x27;@modules/class/domain&#x27;;
 import { LegacySchoolService, SchoolYearService } from &#x27;@modules/legacy-school&#x27;;
 import { RoleService } from &#x27;@modules/role&#x27;;
 import { RoleDto } from &#x27;@modules/role/service/dto/role.dto&#x27;;
-import { SystemDto, SystemService } from &#x27;@modules/system&#x27;;
+import { LegacySystemService, SystemDto } from &#x27;@modules/system&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId, LegacySchoolDo, Page, Permission, SchoolYearEntity, SortOrder, User, UserDO } from &#x27;@shared/domain&#x27;;
+import { SchoolYearQueryType } from &#x27;../controller/dto/interface&#x27;;
 import { Group, GroupUser } from &#x27;../domain&#x27;;
+import { UnknownQueryTypeLoggableException } from &#x27;../loggable&#x27;;
 import { GroupService } from &#x27;../service&#x27;;
 import { SortHelper } from &#x27;../util&#x27;;
 import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from &#x27;./dto&#x27;;
 import { GroupUcMapper } from &#x27;./mapper/group-uc.mapper&#x27;;
-import { SchoolYearQueryType } from &#x27;../controller/dto/interface&#x27;;
-import { UnknownQueryTypeLoggableException } from &#x27;../loggable&#x27;;
 
 @Injectable()
 export class GroupUc {
 	constructor(
 		private readonly groupService: GroupService,
 		private readonly classService: ClassService,
-		private readonly systemService: SystemService,
+		private readonly systemService: LegacySystemService,
 		private readonly userService: UserService,
 		private readonly roleService: RoleService,
 		private readonly schoolService: LegacySchoolService,

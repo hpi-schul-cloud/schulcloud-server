@@ -234,7 +234,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, importUserRepo: <a href="../injectables/ImportUserRepo.html" target="_self">ImportUserRepo</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, systemRepo: <a href="../injectables/SystemRepo.html" target="_self">SystemRepo</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, importUserRepo: <a href="../injectables/ImportUserRepo.html" target="_self">ImportUserRepo</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, systemRepo: <a href="../injectables/LegacySystemRepo.html" target="_self">LegacySystemRepo</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -308,7 +308,7 @@
                                                         <td>systemRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/SystemRepo.html" target="_self" >SystemRepo</a></code>
+                                                                        <code><a href="../injectables/LegacySystemRepo.html" target="_self" >LegacySystemRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1168,7 +1168,7 @@ The current user must have permission to read schools users and view importusers
                 <td class="col-md-4">
 
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/SystemEntity.html" target="_self" >Promise&lt;SystemEntity&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/System.html" target="_self" >Promise&lt;SystemEntity&gt;</a></code>
 
                         </div>
                 </td>
@@ -1711,7 +1711,7 @@ import {
 	SystemEntity,
 	User,
 } from &#x27;@shared/domain&#x27;;
-import { ImportUserRepo, SystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
+import { ImportUserRepo, LegacySystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { AccountSaveDto } from &#x27;../../account/services/dto&#x27;;
 import {
@@ -1740,7 +1740,7 @@ export class UserImportUc {
 		private readonly importUserRepo: ImportUserRepo,
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: LegacySchoolService,
-		private readonly systemRepo: SystemRepo,
+		private readonly systemRepo: LegacySystemRepo,
 		private readonly userRepo: UserRepo,
 		private readonly logger: Logger
 	) {

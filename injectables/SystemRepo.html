@@ -122,17 +122,11 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/repo/system/system.repo.ts</code>
+            <code>apps/server/src/modules/system/repo/system.repo.ts</code>
         </p>
 
 
 
-            <p class="comment">
-                <h3>Extends</h3>
-            </p>
-            <p class="comment">
-                            <code><a href="../injectables/BaseRepo.html" target="_self" >BaseRepo</a></code>
-            </p>
 
 
             <section data-compodoc="block-index">
@@ -149,27 +143,14 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#findAll" >findAll</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#findByFilter" >findByFilter</a>
-                            </li>
-                            <li>
-                                <a href="#create" >create</a>
-                            </li>
-                            <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#delete" >delete</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#save" >save</a>
                             </li>
                         </ul>
                     </td>
@@ -179,24 +160,58 @@
 
 
 
-                    <tr>
-                        <td class="col-md-4">
-                            <h6><b>Accessors</b></h6>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <ul class="index-list">
-                                <li>
-                                    <a href="#entityName" >entityName</a>
-                                </li>
-                            </ul>
-                        </td>
-                    </tr>
         </tbody>
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(em: EntityManager)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/system/repo/system.repo.ts:8</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>em</td>
+                                                  
+                                                        <td>
+                                                                    <code>EntityManager</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
             <section data-compodoc="block-methods">
     
@@ -207,189 +222,9 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findAll"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>findAll</b></span>
-                        <a href="#findAll"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAll()</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/shared/repo/system/system.repo.ts:31</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/SystemEntity.html" target="_self" >Promise&lt;SystemEntity[]&gt;</a></code>
-
-                        </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findByFilter"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>findByFilter</b></span>
-                        <a href="#findByFilter"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findByFilter(type: <a href="../undefineds/SystemTypeEnum.html" target="_self">SystemTypeEnum</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/shared/repo/system/system.repo.ts:12</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>type</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#SystemTypeEnum" target="_self" >SystemTypeEnum</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/SystemEntity.html" target="_self" >Promise&lt;SystemEntity[]&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="create"></a>
-                    <span class="name">
-                        <span ><b>create</b></span>
-                        <a href="#create"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>create(entity: T)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../injectables/BaseRepo.html" target="_self" >BaseRepo</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseRepo.html#source" target="_self" >BaseRepo:18</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>entity</td>
-                                            <td>
-                                                        <code>T</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>T</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="delete"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>delete</b></span>
                         <a href="#delete"><span class="icon ion-ios-link"></span></a>
@@ -399,21 +234,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>delete(entities: T | T[])</code>
+                    <code>delete(domainObject: <a href="../classes/System.html" target="_self">System</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../injectables/BaseRepo.html" target="_self" >BaseRepo</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseRepo.html#source" target="_self" >BaseRepo:26</a></code>
-</div>
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">apps/server/src/modules/system/repo/system.repo.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -434,9 +263,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>entities</td>
+                                                <td>domainObject</td>
                                             <td>
-                                                        <code>T | T[]</code>
+                                                            <code><a href="../classes/System.html" target="_self" >System</a></code>
                                             </td>
 
                                             <td>
@@ -449,7 +278,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -465,6 +294,7 @@
                 <td class="col-md-4">
                     <a name="findById"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>findById</b></span>
                         <a href="#findById"><span class="icon ion-ios-link"></span></a>
@@ -474,21 +304,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId | ObjectId</a>)</code>
+                    <code>findById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../injectables/BaseRepo.html" target="_self" >BaseRepo</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseRepo.html#source" target="_self" >BaseRepo:30</a></code>
-</div>
+                            <div class="io-line">Defined in <a href="" data-line="11"
+                                    class="link-to-prism">apps/server/src/modules/system/repo/system.repo.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -511,7 +335,7 @@
                                         <tr>
                                                 <td>id</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId | ObjectId</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
 
                                             <td>
@@ -524,82 +348,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;T&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="save"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>save</b></span>
-                        <a href="#save"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>save(entities: T | T[])</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../injectables/BaseRepo.html" target="_self" >BaseRepo</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseRepo.html#source" target="_self" >BaseRepo:22</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>entities</td>
-                                            <td>
-                                                        <code>T | T[]</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/System.html" target="_self" >Promise&lt;System | null&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -611,69 +360,44 @@
     </table>
 </section>
 
-            <section data-compodoc="block-accessors">
-    <h3 id="accessors">
-        Accessors
-    </h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="entityName"></a>
-                        <span class="name"><b>entityName</b><a href="#entityName"><span class="icon ion-ios-link"></span></a></span>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                        <span class="accessor"><b>get</b><code>entityName()</code></span>
-                    </td>
-                </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/shared/repo/system/system.repo.ts:8</a></div>
-                                </td>
-                            </tr>
-
-            </tbody>
-        </table>
-</section>
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { SystemEntity, SystemTypeEnum } from &#x27;@shared/domain&#x27;;
-import { BaseRepo } from &#x27;@shared/repo/base.repo&#x27;;
-import { SystemScope } from &#x27;@shared/repo/system/system-scope&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EntityId, SystemEntity } from &#x27;@shared/domain&#x27;;
+import { System, SystemProps } from &#x27;../domain&#x27;;
+import { SystemDomainMapper } from &#x27;./system-domain.mapper&#x27;;
 
 @Injectable()
-export class SystemRepo extends BaseRepo&lt;SystemEntity&gt; {
-	get entityName() {
-		return SystemEntity;
-	}
+export class SystemRepo {
+	constructor(private readonly em: EntityManager) {}
 
-	async findByFilter(type: SystemTypeEnum): Promise&lt;SystemEntity[]&gt; {
-		const scope &#x3D; new SystemScope();
-		switch (type) {
-			case SystemTypeEnum.LDAP:
-				scope.withLdapConfig();
-				break;
-			case SystemTypeEnum.OAUTH:
-				scope.withOauthConfig();
-				break;
-			case SystemTypeEnum.OIDC:
-				scope.withOidcConfig();
-				break;
-			default:
-				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-				throw new Error(&#x60;system type ${type} unknown&#x60;);
+	public async findById(id: EntityId): Promise&lt;System | null&gt; {
+		const entity: SystemEntity | null &#x3D; await this.em.findOne(SystemEntity, { id });
+
+		if (!entity) {
+			return null;
 		}
-		return this._em.find(SystemEntity, scope.query);
+
+		const props: SystemProps &#x3D; SystemDomainMapper.mapEntityToDomainObjectProperties(entity);
+
+		const domainObject: System &#x3D; new System(props);
+
+		return domainObject;
 	}
 
-	async findAll(): Promise&lt;SystemEntity[]&gt; {
-		return this._em.find(SystemEntity, {});
+	public async delete(domainObject: System): Promise&lt;boolean&gt; {
+		const entity: SystemEntity | null &#x3D; await this.em.findOne(SystemEntity, { id: domainObject.id });
+
+		if (!entity) {
+			return false;
+		}
+
+		await this.em.removeAndFlush(entity);
+
+		return true;
 	}
 }
 </code></pre>

@@ -168,7 +168,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(systemRepo: <a href="../injectables/SystemRepo.html" target="_self">SystemRepo</a>)</code>
+<code>constructor(systemRepo: <a href="../injectables/LegacySystemRepo.html" target="_self">LegacySystemRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -194,7 +194,7 @@
                                                         <td>systemRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/SystemRepo.html" target="_self" >SystemRepo</a></code>
+                                                                        <code><a href="../injectables/LegacySystemRepo.html" target="_self" >LegacySystemRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -314,7 +314,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;OidcConfigDto&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/OidcConfigDto.html" target="_self" >Promise&lt;OidcConfigDto&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -333,13 +333,13 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityNotFoundError } from &#x27;@shared/common&#x27;;
 import { EntityId, SystemEntity, SystemTypeEnum } from &#x27;@shared/domain&#x27;;
-import { SystemRepo } from &#x27;@shared/repo&#x27;;
-import { SystemOidcMapper } from &#x27;@modules/system/mapper/system-oidc.mapper&#x27;;
+import { LegacySystemRepo } from &#x27;@shared/repo&#x27;;
+import { SystemOidcMapper } from &#x27;../mapper&#x27;;
 import { OidcConfigDto } from &#x27;./dto&#x27;;
 
 @Injectable()
 export class SystemOidcService {
-	constructor(private readonly systemRepo: SystemRepo) {}
+	constructor(private readonly systemRepo: LegacySystemRepo) {}
 
 	async findById(id: EntityId): Promise&lt;OidcConfigDto&gt; {
 		const system &#x3D; await this.systemRepo.findById(id);

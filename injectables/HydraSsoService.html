@@ -339,7 +339,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/OauthConfig.html" target="_self" >Promise&lt;OauthConfig&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;OauthConfigEntity&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -445,7 +445,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>initAuth(oauthConfig: <a href="../classes/OauthConfig.html" target="_self">OauthConfig</a>, axiosConfig: AxiosRequestConfig)</code>
+                    <code>initAuth(oauthConfig: <a href="../classes/OauthConfigEntity.html" target="_self">OauthConfigEntity</a>, axiosConfig: AxiosRequestConfig)</code>
                 </td>
             </tr>
 
@@ -476,7 +476,7 @@
                                         <tr>
                                                 <td>oauthConfig</td>
                                             <td>
-                                                            <code><a href="../classes/OauthConfig.html" target="_self" >OauthConfig</a></code>
+                                                            <code><a href="../classes/OauthConfigEntity.html" target="_self" >OauthConfigEntity</a></code>
                                             </td>
 
                                             <td>
@@ -714,7 +714,7 @@ import { HydraRedirectDto } from &#x27;@modules/oauth/service/dto/hydra.redirect
 import { HttpService } from &#x27;@nestjs/axios&#x27;;
 import { Inject, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
-import { OauthConfig } from &#x27;@shared/domain&#x27;;
+import { OauthConfigEntity } from &#x27;@shared/domain&#x27;;
 import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
 import { LtiToolRepo } from &#x27;@shared/repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
@@ -734,7 +734,7 @@ export class HydraSsoService {
 
 	private readonly HOST: string &#x3D; Configuration.get(&#x27;HOST&#x27;) as string;
 
-	async initAuth(oauthConfig: OauthConfig, axiosConfig: AxiosRequestConfig): Promise&lt;AxiosResponse&gt; {
+	async initAuth(oauthConfig: OauthConfigEntity, axiosConfig: AxiosRequestConfig): Promise&lt;AxiosResponse&gt; {
 		const query &#x3D; QueryString.stringify({
 			response_type: oauthConfig.responseType,
 			scope: oauthConfig.scope,
@@ -804,7 +804,7 @@ export class HydraSsoService {
 		return cookiesDto;
 	}
 
-	async generateConfig(oauthClientId: string): Promise&lt;OauthConfig&gt; {
+	async generateConfig(oauthClientId: string): Promise&lt;OauthConfigEntity&gt; {
 		const tool: LtiToolDO &#x3D; await this.ltiRepo.findByOauthClientId(oauthClientId);
 
 		// Needs to be checked, because the fields can be undefined
@@ -813,7 +813,7 @@ export class HydraSsoService {
 		}
 
 		const hydraUri: string &#x3D; Configuration.get(&#x27;HYDRA_PUBLIC_URI&#x27;) as string;
-		const hydraOauthConfig &#x3D; new OauthConfig({
+		const hydraOauthConfig &#x3D; new OauthConfigEntity({
 			authEndpoint: &#x60;${hydraUri}/oauth2/auth&#x60;,
 			clientId: tool.oAuthClientId,
 			clientSecret: this.oAuthEncryptionService.encrypt(tool.secret),

@@ -144,6 +144,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#delete" >delete</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findByFilter" >findByFilter</a>
                             </li>
                             <li>
@@ -168,12 +172,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>)</code>
+<code>constructor(legacySystemService: <a href="../injectables/LegacySystemService.html" target="_self">LegacySystemService</a>, systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -191,10 +195,34 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
+                                                        <td>legacySystemService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LegacySystemService.html" target="_self" >LegacySystemService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>systemService</td>
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/SystemService.html" target="_self" >SystemService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>authorizationService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -220,6 +248,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="delete"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>delete</b></span>
+                        <a href="#delete"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>delete(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:41</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>systemId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findByFilter"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -238,8 +347,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="11"
-                                    class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:11</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -292,7 +401,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/SystemDto.html" target="_self" >Promise&lt;SystemDto[]&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;SystemDto[]&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -324,8 +433,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -361,7 +470,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/SystemDto.html" target="_self" >Promise&lt;SystemDto&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;SystemDto&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -377,23 +486,29 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityNotFoundError } from &#x27;@shared/common&#x27;;
-import { EntityId, SystemEntity, SystemType, SystemTypeEnum } from &#x27;@shared/domain&#x27;;
-import { SystemDto } from &#x27;@modules/system/service/dto/system.dto&#x27;;
-import { SystemService } from &#x27;@modules/system/service/system.service&#x27;;
+import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
+import { EntityId, Permission, SystemEntity, SystemType, SystemTypeEnum, User } from &#x27;@shared/domain&#x27;;
+import { System } from &#x27;../domain&#x27;;
+import { LegacySystemService, SystemDto, SystemService } from &#x27;../service&#x27;;
 
 @Injectable()
 export class SystemUc {
-	constructor(private readonly systemService: SystemService) {}
+	constructor(
+		private readonly legacySystemService: LegacySystemService,
+		private readonly systemService: SystemService,
+		private readonly authorizationService: AuthorizationService
+	) {}
 
 	async findByFilter(type?: SystemType, onlyOauth &#x3D; false): Promise&lt;SystemDto[]&gt; {
 		let systems: SystemDto[];
 
 		if (onlyOauth) {
-			systems &#x3D; await this.systemService.findByType(SystemTypeEnum.OAUTH);
+			systems &#x3D; await this.legacySystemService.findByType(SystemTypeEnum.OAUTH);
 		} else {
-			systems &#x3D; await this.systemService.findByType(type);
+			systems &#x3D; await this.legacySystemService.findByType(type);
 		}
 
 		systems &#x3D; systems.filter((system: SystemDto) &#x3D;&gt; system.ldapActive !&#x3D;&#x3D; false);
@@ -402,13 +517,30 @@ export class SystemUc {
 	}
 
 	async findById(id: EntityId): Promise&lt;SystemDto&gt; {
-		const system: SystemDto &#x3D; await this.systemService.findById(id);
+		const system: SystemDto &#x3D; await this.legacySystemService.findById(id);
 
 		if (system.ldapActive &#x3D;&#x3D;&#x3D; false) {
 			throw new EntityNotFoundError(SystemEntity.name, { id });
 		}
 
 		return system;
+	}
+
+	async delete(userId: EntityId, systemId: EntityId): Promise&lt;void&gt; {
+		const system: System | null &#x3D; await this.systemService.findById(systemId);
+
+		if (!system) {
+			throw new NotFoundLoggableException(System.name, &#x27;id&#x27;, systemId);
+		}
+
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(
+			user,
+			system,
+			AuthorizationContextBuilder.write([Permission.SYSTEM_CREATE])
+		);
+
+		await this.systemService.delete(system);
 	}
 }
 </code></pre>

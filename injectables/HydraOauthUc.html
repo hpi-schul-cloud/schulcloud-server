@@ -606,7 +606,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HydraRedirectDto } from &#x27;@modules/oauth/service/dto/hydra.redirect.dto&#x27;;
 import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
-import { OauthConfig } from &#x27;@shared/domain&#x27;;
+import { OauthConfigEntity } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
 import { AuthorizationParams } from &#x27;../controller/dto&#x27;;
@@ -634,7 +634,7 @@ export class HydraOauthUc {
 				error || &#x27;sso_auth_code_step&#x27;
 			);
 		}
-		const hydraOauthConfig: OauthConfig &#x3D; await this.hydraSsoService.generateConfig(oauthClientId);
+		const hydraOauthConfig: OauthConfigEntity &#x3D; await this.hydraSsoService.generateConfig(oauthClientId);
 
 		const oauthTokens: OAuthTokenDto &#x3D; await this.oauthService.requestToken(
 			code,
@@ -650,7 +650,7 @@ export class HydraOauthUc {
 	protected validateStatus &#x3D; (status: number): boolean &#x3D;&gt; status &#x3D;&#x3D;&#x3D; 200 || status &#x3D;&#x3D;&#x3D; 302;
 
 	async requestAuthCode(userId: string, jwt: string, oauthClientId: string): Promise&lt;AuthorizationParams&gt; {
-		const hydraOauthConfig: OauthConfig &#x3D; await this.hydraSsoService.generateConfig(oauthClientId);
+		const hydraOauthConfig: OauthConfigEntity &#x3D; await this.hydraSsoService.generateConfig(oauthClientId);
 		const axiosConfig: AxiosRequestConfig &#x3D; {
 			headers: {},
 			withCredentials: true,

@@ -189,7 +189,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, oauthAdapterService: <a href="../injectables/OauthAdapterService.html" target="_self">OauthAdapterService</a>, oAuthEncryptionService: <a href="../interfaces/EncryptionService.html" target="_self">EncryptionService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, provisioningService: <a href="../injectables/ProvisioningService.html" target="_self">ProvisioningService</a>, systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>, migrationCheckService: <a href="../injectables/MigrationCheckService.html" target="_self">MigrationCheckService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>)</code>
+<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, oauthAdapterService: <a href="../injectables/OauthAdapterService.html" target="_self">OauthAdapterService</a>, oAuthEncryptionService: <a href="../interfaces/EncryptionService.html" target="_self">EncryptionService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, provisioningService: <a href="../injectables/ProvisioningService.html" target="_self">ProvisioningService</a>, systemService: <a href="../injectables/LegacySystemService.html" target="_self">LegacySystemService</a>, migrationCheckService: <a href="../injectables/MigrationCheckService.html" target="_self">MigrationCheckService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -275,7 +275,7 @@
                                                         <td>systemService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/SystemService.html" target="_self" >SystemService</a></code>
+                                                                        <code><a href="../injectables/LegacySystemService.html" target="_self" >LegacySystemService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -441,7 +441,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>buildTokenRequestPayload(code: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, oauthConfig: <a href="../classes/OauthConfig.html" target="_self">OauthConfig</a>, redirectUri: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>buildTokenRequestPayload(code: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, oauthConfig: <a href="../classes/OauthConfigEntity.html" target="_self">OauthConfigEntity</a>, redirectUri: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -484,7 +484,7 @@
                                         <tr>
                                                 <td>oauthConfig</td>
                                             <td>
-                                                            <code><a href="../classes/OauthConfig.html" target="_self" >OauthConfig</a></code>
+                                                            <code><a href="../classes/OauthConfigEntity.html" target="_self" >OauthConfigEntity</a></code>
                                             </td>
 
                                             <td>
@@ -790,7 +790,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>requestToken(code: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, oauthConfig: <a href="../classes/OauthConfig.html" target="_self">OauthConfig</a>, redirectUri: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>requestToken(code: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, oauthConfig: <a href="../classes/OauthConfigEntity.html" target="_self">OauthConfigEntity</a>, redirectUri: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -833,7 +833,7 @@
                                         <tr>
                                                 <td>oauthConfig</td>
                                             <td>
-                                                            <code><a href="../classes/OauthConfig.html" target="_self" >OauthConfig</a></code>
+                                                            <code><a href="../classes/OauthConfigEntity.html" target="_self" >OauthConfigEntity</a></code>
                                             </td>
 
                                             <td>
@@ -883,7 +883,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>validateToken(idToken: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, oauthConfig: <a href="../classes/OauthConfig.html" target="_self">OauthConfig</a>)</code>
+                    <code>validateToken(idToken: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, oauthConfig: <a href="../classes/OauthConfigEntity.html" target="_self">OauthConfigEntity</a>)</code>
                 </td>
             </tr>
 
@@ -926,7 +926,7 @@
                                         <tr>
                                                 <td>oauthConfig</td>
                                             <td>
-                                                            <code><a href="../classes/OauthConfig.html" target="_self" >OauthConfig</a></code>
+                                                            <code><a href="../classes/OauthConfigEntity.html" target="_self" >OauthConfigEntity</a></code>
                                             </td>
 
                                             <td>
@@ -958,13 +958,13 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DefaultEncryptionService, EncryptionService } from &#x27;@infra/encryption&#x27;;
 import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
 import { OauthDataDto, ProvisioningService } from &#x27;@modules/provisioning&#x27;;
-import { SystemService } from &#x27;@modules/system&#x27;;
+import { LegacySystemService } from &#x27;@modules/system&#x27;;
 import { SystemDto } from &#x27;@modules/system/service&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
 import { MigrationCheckService } from &#x27;@modules/user-login-migration&#x27;;
 import { Inject } from &#x27;@nestjs/common&#x27;;
 import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
-import { EntityId, LegacySchoolDo, OauthConfig, SchoolFeatures, UserDO } from &#x27;@shared/domain&#x27;;
+import { EntityId, LegacySchoolDo, OauthConfigEntity, SchoolFeatures, UserDO } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import jwt, { JwtPayload } from &#x27;jsonwebtoken&#x27;;
 import { OAuthTokenDto } from &#x27;../interface&#x27;;
@@ -981,7 +981,7 @@ export class OAuthService {
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
 		private readonly logger: LegacyLogger,
 		private readonly provisioningService: ProvisioningService,
-		private readonly systemService: SystemService,
+		private readonly systemService: LegacySystemService,
 		private readonly migrationCheckService: MigrationCheckService,
 		private readonly schoolService: LegacySchoolService
 	) {
@@ -1075,7 +1075,7 @@ export class OAuthService {
 		return !!school.features?.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
 	}
 
-	async requestToken(code: string, oauthConfig: OauthConfig, redirectUri: string): Promise&lt;OAuthTokenDto&gt; {
+	async requestToken(code: string, oauthConfig: OauthConfigEntity, redirectUri: string): Promise&lt;OAuthTokenDto&gt; {
 		const payload: AuthenticationCodeGrantTokenRequest &#x3D; this.buildTokenRequestPayload(code, oauthConfig, redirectUri);
 
 		const responseToken: OauthTokenResponse &#x3D; await this.oauthAdapterService.sendAuthenticationCodeTokenRequest(
@@ -1087,7 +1087,7 @@ export class OAuthService {
 		return tokenDto;
 	}
 
-	async validateToken(idToken: string, oauthConfig: OauthConfig): Promise&lt;JwtPayload&gt; {
+	async validateToken(idToken: string, oauthConfig: OauthConfigEntity): Promise&lt;JwtPayload&gt; {
 		const publicKey: string &#x3D; await this.oauthAdapterService.getPublicKey(oauthConfig.jwksEndpoint);
 		const decodedJWT: string | JwtPayload &#x3D; jwt.verify(idToken, publicKey, {
 			algorithms: [&#x27;RS256&#x27;],
@@ -1104,7 +1104,7 @@ export class OAuthService {
 
 	private buildTokenRequestPayload(
 		code: string,
-		oauthConfig: OauthConfig,
+		oauthConfig: OauthConfigEntity,
 		redirectUri: string
 	): AuthenticationCodeGrantTokenRequest {
 		const decryptedClientSecret: string &#x3D; this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);

@@ -188,7 +188,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(systemRepo: <a href="../injectables/SystemRepo.html" target="_self">SystemRepo</a>, schoolRepo: <a href="../injectables/LegacySchoolRepo.html" target="_self">LegacySchoolRepo</a>, ldapService: <a href="../injectables/LdapService.html" target="_self">LdapService</a>, authenticationService: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(systemRepo: <a href="../injectables/LegacySystemRepo.html" target="_self">LegacySystemRepo</a>, schoolRepo: <a href="../injectables/LegacySchoolRepo.html" target="_self">LegacySchoolRepo</a>, ldapService: <a href="../injectables/LdapService.html" target="_self">LdapService</a>, authenticationService: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -214,7 +214,7 @@
                                                         <td>systemRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/SystemRepo.html" target="_self" >SystemRepo</a></code>
+                                                                        <code><a href="../injectables/LegacySystemRepo.html" target="_self" >LegacySystemRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -721,7 +721,7 @@
 import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
 import { LegacySchoolDo, SystemEntity, User } from &#x27;@shared/domain&#x27;;
-import { LegacySchoolRepo, SystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
+import { LegacySchoolRepo, LegacySystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
 import { ErrorLoggable } from &#x27;@src/core/error/loggable/error.loggable&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { Strategy } from &#x27;passport-custom&#x27;;
@@ -734,7 +734,7 @@ import { LdapService } from &#x27;../services/ldap.service&#x27;;
 @Injectable()
 export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
 	constructor(
-		private readonly systemRepo: SystemRepo,
+		private readonly systemRepo: LegacySystemRepo,
 		private readonly schoolRepo: LegacySchoolRepo,
 		private readonly ldapService: LdapService,
 		private readonly authenticationService: AuthenticationService,
