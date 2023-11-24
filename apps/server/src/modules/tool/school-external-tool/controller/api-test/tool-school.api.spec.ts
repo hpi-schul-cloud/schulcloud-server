@@ -16,7 +16,6 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { toolConfigurationStatusResponseFactory } from '@shared/testing/factory/tool-configuration-status-response.factory';
-import { ToolConfigurationStatusResponse } from '../../../context-external-tool/controller/dto';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../entity';
