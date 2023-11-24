@@ -21,7 +21,6 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { Request, Response } from 'express';
-
 import { H5PEditorUc } from '../uc/h5p.uc';
 
 import {
