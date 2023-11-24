@@ -155,7 +155,7 @@
       namespace: "{{ NAMESPACE }}"
       template: tldraw-server-svc.yml.j2
 
-  - name: Tldraw Ingress
+  - name: TldrawIngress
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"

@@ -6,7 +6,6 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/ssl-redirect: "{{ TLS_ENABELD|default("false") }}"
     nginx.ingress.kubernetes.io/proxy-body-size: "{{ INGRESS_MAX_BODY_SIZE|default("2560") }}m"
     nginx.org/client-max-body-size: "{{ INGRESS_MAX_BODY_SIZE|default("2560") }}m"
     # The following properties added with BC-3606.
