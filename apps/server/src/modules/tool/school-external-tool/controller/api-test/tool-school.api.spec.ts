@@ -15,6 +15,7 @@ import {
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
+import { toolConfigurationStatusResponseFactory } from '@shared/testing/factory/tool-configuration-status-response.factory';
 import { ToolConfigurationStatusResponse } from '../../../context-external-tool/controller/dto';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
@@ -140,12 +141,10 @@ describe('ToolSchoolController (API)', () => {
 				name: externalToolEntity.name,
 				schoolId: postParams.schoolId,
 				toolId: postParams.toolId,
-				status: new ToolConfigurationStatusResponse({
-					latest: true,
+				status: toolConfigurationStatusResponseFactory.build({
 					isDisabled: false,
 					isOutdatedOnScopeSchool: false,
 					isOutdatedOnScopeContext: false,
-					isUnkown: false,
 				}),
 				toolVersion: postParams.version,
 				parameters: [
@@ -303,12 +302,9 @@ describe('ToolSchoolController (API)', () => {
 							name: externalToolEntity.name,
 							schoolId: school.id,
 							toolId: externalToolEntity.id,
-							status: new ToolConfigurationStatusResponse({
-								latest: false,
-								isDisabled: false,
+							status: toolConfigurationStatusResponseFactory.build({
 								isOutdatedOnScopeSchool: true,
 								isOutdatedOnScopeContext: false,
-								isUnkown: false,
 							}),
 							toolVersion: schoolExternalToolEntity.toolVersion,
 							parameters: [
@@ -352,12 +348,9 @@ describe('ToolSchoolController (API)', () => {
 				name: '',
 				schoolId: school.id,
 				toolId: externalToolEntity.id,
-				status: new ToolConfigurationStatusResponse({
-					latest: false,
-					isDisabled: false,
+				status: toolConfigurationStatusResponseFactory.build({
 					isOutdatedOnScopeSchool: false,
 					isOutdatedOnScopeContext: false,
-					isUnkown: true,
 				}),
 				toolVersion: schoolExternalToolEntity.toolVersion,
 				parameters: [
@@ -484,12 +477,10 @@ describe('ToolSchoolController (API)', () => {
 				name: externalToolEntity.name,
 				schoolId: postParamsUpdate.schoolId,
 				toolId: postParamsUpdate.toolId,
-				status: new ToolConfigurationStatusResponse({
-					latest: true,
+				status: toolConfigurationStatusResponseFactory.build({
 					isDisabled: false,
 					isOutdatedOnScopeSchool: false,
 					isOutdatedOnScopeContext: false,
-					isUnkown: false,
 				}),
 				toolVersion: postParamsUpdate.version,
 				parameters: [

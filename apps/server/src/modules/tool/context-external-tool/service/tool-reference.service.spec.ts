@@ -1,8 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
-import { ToolConfigurationStatus } from '../../common/enum';
+import {
+	contextExternalToolFactory,
+	externalToolFactory,
+	schoolExternalToolFactory,
+	toolConfigurationStatusFactory,
+} from '@shared/testing';
 import { ExternalToolLogoService, ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ToolReference } from '../domain';
@@ -80,12 +84,9 @@ describe('ToolReferenceService', () => {
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
 				toolVersionService.determineToolConfigurationStatus.mockResolvedValue(
-					new ToolConfigurationStatus({
-						latest: false,
-						isDisabled: false,
+					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeSchool: true,
 						isOutdatedOnScopeContext: false,
-						isUnkown: false,
 					})
 				);
 				externalToolLogoService.buildLogoUrl.mockReturnValue(logoUrl);
@@ -131,12 +132,9 @@ describe('ToolReferenceService', () => {
 					logoUrl,
 					displayName: contextExternalTool.displayName as string,
 					openInNewTab: externalTool.openNewTab,
-					status: new ToolConfigurationStatus({
-						latest: false,
-						isDisabled: false,
+					status: toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeSchool: true,
 						isOutdatedOnScopeContext: false,
-						isUnkown: false,
 					}),
 					contextToolId: contextExternalToolId,
 				});

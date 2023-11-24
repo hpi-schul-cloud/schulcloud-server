@@ -1,26 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ToolConfigurationStatusResponse {
-	@ApiProperty()
-	latest: boolean;
-
-	@ApiProperty()
+	@ApiProperty({ type: Boolean, description: 'Is the tool disabled for context?' })
 	isDisabled: boolean;
 
-	@ApiProperty()
+	@ApiProperty({
+		type: Boolean,
+		description:
+			'Is the tool outdated on school scope, because of non matching versions or required parameter changes on ExternalTool?',
+	})
 	isOutdatedOnScopeSchool: boolean;
 
-	@ApiProperty()
+	@ApiProperty({
+		type: Boolean,
+		description:
+			'Is the tool outdated on context scope, because of non matching versions or required parameter changes on SchoolExternalTool?',
+	})
 	isOutdatedOnScopeContext: boolean;
 
-	@ApiProperty()
-	isUnkown: boolean;
-
 	constructor(props: ToolConfigurationStatusResponse) {
-		this.latest = props.latest;
 		this.isDisabled = props.isDisabled;
 		this.isOutdatedOnScopeSchool = props.isOutdatedOnScopeSchool;
 		this.isOutdatedOnScopeContext = props.isOutdatedOnScopeContext;
-		this.isUnkown = props.isUnkown;
 	}
 }

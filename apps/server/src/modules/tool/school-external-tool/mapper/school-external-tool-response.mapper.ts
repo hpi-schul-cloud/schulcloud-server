@@ -29,8 +29,6 @@ export class SchoolExternalToolResponseMapper {
 			status: schoolExternalTool.status
 				? ToolStatusResponseMapper.mapToResponse(schoolExternalTool.status)
 				: new ToolConfigurationStatusResponse({
-						latest: false,
-						isUnkown: true,
 						isDisabled: false,
 						isOutdatedOnScopeContext: false,
 						isOutdatedOnScopeSchool: false,

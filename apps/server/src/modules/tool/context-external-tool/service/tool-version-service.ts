@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { ToolConfigurationStatus } from '../../common/enum';
+import { ToolConfigurationStatus } from '../../common/domain';
 import { CommonToolService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -26,24 +26,20 @@ export class ToolVersionService {
 		// TODO N21-1337 remove if statement, when feature flag is removed
 		if (this.toolFeatures.toolStatusWithoutVersions) {
 			const configurationStatus: ToolConfigurationStatus = new ToolConfigurationStatus({
-				latest: true,
 				isDisabled: false,
 				isOutdatedOnScopeContext: false,
 				isOutdatedOnScopeSchool: false,
-				isUnkown: false,
 			});
 
 			try {
 				await this.schoolExternalToolValidationService.validate(schoolExternalTool);
 			} catch (err) {
-				configurationStatus.latest = false;
 				configurationStatus.isOutdatedOnScopeSchool = true;
 			}
 
 			try {
 				await this.contextExternalToolValidationService.validate(contextExternalTool);
 			} catch (err) {
-				configurationStatus.latest = false;
 				configurationStatus.isOutdatedOnScopeContext = true;
 			}
 

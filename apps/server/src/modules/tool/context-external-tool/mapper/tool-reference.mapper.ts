@@ -1,4 +1,4 @@
-import { ToolConfigurationStatus } from '../../common/enum';
+import { ToolConfigurationStatus } from '../../common/domain';
 import { ExternalTool } from '../../external-tool/domain';
 import { ContextExternalTool, ToolReference } from '../domain';
 

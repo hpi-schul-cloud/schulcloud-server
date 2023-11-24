@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { SchoolExternalToolRepo } from '@shared/repo';
-import { ToolConfigurationStatus } from '../../common/enum';
+import { ToolConfigurationStatus } from '../../common/domain';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
@@ -57,41 +57,30 @@ export class SchoolExternalToolService {
 		tool: SchoolExternalTool,
 		externalTool: ExternalTool
 	): Promise<ToolConfigurationStatus> {
-		let configurationStatus: ToolConfigurationStatus = new ToolConfigurationStatus({
-			latest: false,
+		const configurationStatus: ToolConfigurationStatus = new ToolConfigurationStatus({
 			isDisabled: false,
 			isOutdatedOnScopeContext: false,
 			isOutdatedOnScopeSchool: true,
-			isUnkown: false,
+		});
+
+		const latestConfigurationStatus: ToolConfigurationStatus = new ToolConfigurationStatus({
+			isDisabled: false,
+			isOutdatedOnScopeContext: false,
+			isOutdatedOnScopeSchool: false,
 		});
 
 		if (this.toolFeatures.toolStatusWithoutVersions) {
 			try {
 				await this.schoolExternalToolValidationService.validate(tool);
-				configurationStatus = new ToolConfigurationStatus({
-					latest: true,
-					isDisabled: false,
-					isOutdatedOnScopeContext: false,
-					isOutdatedOnScopeSchool: false,
-					isUnkown: false,
-				});
 
-				return configurationStatus;
+				return latestConfigurationStatus;
 			} catch (err) {
 				return configurationStatus;
 			}
 		}
 
 		if (externalTool.version <= tool.toolVersion) {
-			configurationStatus = new ToolConfigurationStatus({
-				latest: true,
-				isDisabled: false,
-				isOutdatedOnScopeContext: false,
-				isOutdatedOnScopeSchool: false,
-				isUnkown: false,
-			});
-
-			return configurationStatus;
+			return latestConfigurationStatus;
 		}
 
 		return configurationStatus;

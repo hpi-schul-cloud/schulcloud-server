@@ -1,8 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
-import { ToolConfigurationStatus } from '../../common/enum';
+import {
+	contextExternalToolFactory,
+	externalToolFactory,
+	schoolExternalToolFactory,
+	toolConfigurationStatusFactory,
+} from '@shared/testing';
+import { ToolConfigurationStatus } from '../../common/domain';
 import { CommonToolService } from '../../common/service';
 import { SchoolExternalToolValidationService } from '../../school-external-tool/service';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
@@ -123,12 +128,9 @@ describe('ToolVersionService', () => {
 				);
 
 				expect(status).toEqual(
-					new ToolConfigurationStatus({
-						latest: true,
-						isDisabled: false,
+					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: false,
 						isOutdatedOnScopeSchool: false,
-						isUnkown: false,
 					})
 				);
 			});
@@ -182,12 +184,9 @@ describe('ToolVersionService', () => {
 				);
 
 				expect(status).toEqual(
-					new ToolConfigurationStatus({
-						latest: false,
-						isDisabled: false,
+					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: false,
 						isOutdatedOnScopeSchool: true,
-						isUnkown: false,
 					})
 				);
 			});
@@ -241,12 +240,9 @@ describe('ToolVersionService', () => {
 				);
 
 				expect(status).toEqual(
-					new ToolConfigurationStatus({
-						latest: false,
-						isDisabled: false,
+					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: true,
 						isOutdatedOnScopeSchool: false,
-						isUnkown: false,
 					})
 				);
 			});
@@ -300,12 +296,10 @@ describe('ToolVersionService', () => {
 				);
 
 				expect(status).toEqual(
-					new ToolConfigurationStatus({
-						latest: false,
+					toolConfigurationStatusFactory.build({
 						isDisabled: false,
 						isOutdatedOnScopeContext: true,
 						isOutdatedOnScopeSchool: true,
-						isUnkown: false,
 					})
 				);
 			});

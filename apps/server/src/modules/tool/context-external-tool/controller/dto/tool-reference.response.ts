@@ -21,6 +21,7 @@ export class ToolReferenceResponse {
 	@ApiProperty({
 		type: ToolConfigurationStatusResponse,
 		nullable: false,
+		required: true,
 		description: 'The status of the tool',
 	})
 	status: ToolConfigurationStatusResponse;

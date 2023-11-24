@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ToolConfigurationStatus } from '../enum';
+import { ToolConfigurationStatus } from '../domain';
 import { ToolVersion } from '../interface';
 
 // TODO N21-1337 remove class when tool versioning is removed
@@ -17,19 +17,21 @@ export class CommonToolService {
 		contextExternalTool: ContextExternalTool
 	): ToolConfigurationStatus {
 		const configurationStatus: ToolConfigurationStatus = new ToolConfigurationStatus({
-			latest: false,
 			isDisabled: false,
 			isOutdatedOnScopeContext: true,
 			isOutdatedOnScopeSchool: true,
-			isUnkown: false,
 		});
 
-		if (
-			this.isLatest(schoolExternalTool, externalTool) &&
-			this.isLatest(contextExternalTool, schoolExternalTool) &&
-			this.isLatest(contextExternalTool, externalTool)
-		) {
-			configurationStatus.latest = true;
+		if (!this.isLatest(schoolExternalTool, externalTool)) {
+			configurationStatus.isOutdatedOnScopeContext = false;
+			configurationStatus.isOutdatedOnScopeSchool = true;
+		} else if (!this.isLatest(contextExternalTool, schoolExternalTool)) {
+			configurationStatus.isOutdatedOnScopeContext = true;
+			configurationStatus.isOutdatedOnScopeSchool = false;
+		} else if (!this.isLatest(contextExternalTool, externalTool)) {
+			configurationStatus.isOutdatedOnScopeContext = true;
+			configurationStatus.isOutdatedOnScopeSchool = true;
+		} else {
 			configurationStatus.isOutdatedOnScopeContext = false;
 			configurationStatus.isOutdatedOnScopeSchool = false;
 		}

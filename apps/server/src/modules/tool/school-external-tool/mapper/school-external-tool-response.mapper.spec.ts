@@ -1,4 +1,5 @@
 import { schoolExternalToolFactory } from '@shared/testing/factory';
+import { toolConfigurationStatusResponseFactory } from '@shared/testing/factory/tool-configuration-status-response.factory';
 import { ToolConfigurationStatusResponse } from '../../context-external-tool/controller/dto';
 import { SchoolExternalToolResponse, SchoolExternalToolSearchListResponse } from '../controller/dto';
 import { SchoolExternalTool } from '../domain';
@@ -52,12 +53,9 @@ describe('SchoolExternalToolResponseMapper', () => {
 									value: do1.parameters[0].value,
 								},
 							],
-							status: new ToolConfigurationStatusResponse({
-								latest: true,
-								isDisabled: false,
+							status: toolConfigurationStatusResponseFactory.build({
 								isOutdatedOnScopeContext: false,
 								isOutdatedOnScopeSchool: false,
-								isUnkown: false,
 							}),
 						},
 						{
@@ -72,12 +70,9 @@ describe('SchoolExternalToolResponseMapper', () => {
 									value: do2.parameters[0].value,
 								},
 							],
-							status: new ToolConfigurationStatusResponse({
-								latest: false,
-								isDisabled: false,
+							status: toolConfigurationStatusResponseFactory.build({
 								isOutdatedOnScopeContext: false,
 								isOutdatedOnScopeSchool: false,
-								isUnkown: true,
 							}),
 						},
 					])
@@ -110,12 +105,9 @@ describe('SchoolExternalToolResponseMapper', () => {
 					expect.objectContaining({
 						id: '',
 						name: '',
-						status: new ToolConfigurationStatusResponse({
-							latest: false,
-							isDisabled: false,
+						status: toolConfigurationStatusResponseFactory.build({
 							isOutdatedOnScopeContext: false,
 							isOutdatedOnScopeSchool: false,
-							isUnkown: true,
 						}),
 					})
 				);

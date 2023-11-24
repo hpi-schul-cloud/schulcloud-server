@@ -10,4 +10,3 @@ export * from './tool-context-type.enum';
 export * from './custom-parameter-location.enum';
 export * from './custom-parameter-scope.enum';
 export * from './custom-parameter-type.enum';
-export * from '../domain/tool-configuration-status';

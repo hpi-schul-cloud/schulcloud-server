@@ -2,9 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { SchoolExternalToolRepo } from '@shared/repo';
+import { toolConfigurationStatusFactory } from '@shared/testing';
 import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
-import { ToolConfigurationStatus } from '../../common/enum';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
@@ -113,12 +113,9 @@ describe('SchoolExternalToolService', () => {
 						);
 
 						expect(schoolExternalToolDOs[0].status).toEqual(
-							new ToolConfigurationStatus({
-								latest: false,
-								isDisabled: false,
+							toolConfigurationStatusFactory.build({
 								isOutdatedOnScopeSchool: true,
 								isOutdatedOnScopeContext: false,
-								isUnkown: false,
 							})
 						);
 					});
@@ -137,12 +134,9 @@ describe('SchoolExternalToolService', () => {
 						);
 
 						expect(schoolExternalToolDOs[0].status).toEqual(
-							new ToolConfigurationStatus({
-								latest: true,
-								isDisabled: false,
+							toolConfigurationStatusFactory.build({
 								isOutdatedOnScopeSchool: false,
 								isOutdatedOnScopeContext: false,
-								isUnkown: false,
 							})
 						);
 					});
@@ -161,12 +155,9 @@ describe('SchoolExternalToolService', () => {
 						);
 
 						expect(schoolExternalToolDOs[0].status).toEqual(
-							new ToolConfigurationStatus({
-								latest: true,
-								isDisabled: false,
+							toolConfigurationStatusFactory.build({
 								isOutdatedOnScopeSchool: false,
 								isOutdatedOnScopeContext: false,
-								isUnkown: false,
 							})
 						);
 					});
@@ -195,12 +186,9 @@ describe('SchoolExternalToolService', () => {
 
 					expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
 					expect(schoolExternalToolDOs[0].status).toEqual(
-						new ToolConfigurationStatus({
-							latest: true,
-							isDisabled: false,
+						toolConfigurationStatusFactory.build({
 							isOutdatedOnScopeSchool: false,
 							isOutdatedOnScopeContext: false,
-							isUnkown: false,
 						})
 					);
 				});
@@ -228,12 +216,9 @@ describe('SchoolExternalToolService', () => {
 
 					expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
 					expect(schoolExternalToolDOs[0].status).toEqual(
-						new ToolConfigurationStatus({
-							latest: false,
-							isDisabled: false,
+						toolConfigurationStatusFactory.build({
 							isOutdatedOnScopeSchool: true,
 							isOutdatedOnScopeContext: false,
-							isUnkown: false,
 						})
 					);
 				});

@@ -1,6 +1,5 @@
 import { BaseDO } from '@shared/domain/domainobject/base.do';
-import { CustomParameterEntry } from '../../common/domain';
-import { ToolConfigurationStatus } from '../../common/enum';
+import { CustomParameterEntry, ToolConfigurationStatus } from '../../common/domain';
 import { ToolVersion } from '../../common/interface';
 
 export interface SchoolExternalToolProps {

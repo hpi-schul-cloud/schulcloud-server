@@ -13,13 +13,13 @@ import {
 	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@modules/server';
+import { toolConfigurationStatusResponseFactory } from '@shared/testing/factory/tool-configuration-status-response.factory';
 import { Response } from 'supertest';
 import { ToolContextType } from '../../../common/enum';
 import { ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
 import { ContextExternalToolContextParams, ToolReferenceListResponse, ToolReferenceResponse } from '../dto';
-import { ToolConfigurationStatusResponse } from '../dto/tool-configuration-status.response';
 
 describe('ToolReferenceController (API)', () => {
 	let app: INestApplication;
@@ -160,12 +160,10 @@ describe('ToolReferenceController (API)', () => {
 						{
 							contextToolId: contextExternalToolEntity.id,
 							displayName: contextExternalToolEntity.displayName as string,
-							status: new ToolConfigurationStatusResponse({
-								latest: true,
+							status: toolConfigurationStatusResponseFactory.build({
 								isDisabled: false,
 								isOutdatedOnScopeSchool: false,
 								isOutdatedOnScopeContext: false,
-								isUnkown: false,
 							}),
 							logoUrl: `http://localhost:3030/api/v3/tools/external-tools/${externalToolEntity.id}/logo`,
 							openInNewTab: externalToolEntity.openNewTab,
@@ -283,12 +281,9 @@ describe('ToolReferenceController (API)', () => {
 				expect(response.body).toEqual<ToolReferenceResponse>({
 					contextToolId: contextExternalToolEntity.id,
 					displayName: contextExternalToolEntity.displayName as string,
-					status: new ToolConfigurationStatusResponse({
-						latest: true,
-						isDisabled: false,
+					status: toolConfigurationStatusResponseFactory.build({
 						isOutdatedOnScopeSchool: false,
 						isOutdatedOnScopeContext: false,
-						isUnkown: false,
 					}),
 					logoUrl: `http://localhost:3030/api/v3/tools/external-tools/${externalToolEntity.id}/logo`,
 					openInNewTab: externalToolEntity.openNewTab,
