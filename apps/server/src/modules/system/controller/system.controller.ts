@@ -1,6 +1,6 @@
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiForbiddenResponse, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { Authenticate, CurrentUser, ICurrentUser } from '../../authentication';
 import { SystemDto } from '../service';
 import { SystemUc } from '../uc/system.uc';
 import { PublicSystemListResponse, PublicSystemResponse, SystemFilterParams, SystemIdParams } from './dto';

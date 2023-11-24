@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { SystemMapper } from '@modules/system/mapper/system.mapper';
 import { SystemDto } from '@modules/system/service/dto/system.dto';
 import { SystemUc } from '@modules/system/uc/system.uc';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -9,6 +8,7 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { EntityId, Permission, SystemEntity, SystemTypeEnum } from '@shared/domain';
 import { setupEntities, systemEntityFactory, systemFactory, userFactory } from '@shared/testing';
 import { AuthorizationContextBuilder, AuthorizationService } from '../../authorization';
+import { SystemMapper } from '../mapper';
 import { LegacySystemService, SystemService } from '../service';
 
 describe('SystemUc', () => {

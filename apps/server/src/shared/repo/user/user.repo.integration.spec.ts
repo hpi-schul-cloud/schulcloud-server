@@ -3,8 +3,14 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MatchCreator, SortOrder, SystemEntity, User } from '@shared/domain';
-import { cleanupCollections, importUserFactory, roleFactory, schoolFactory, userFactory } from '@shared/testing';
-import { systemEntityFactory } from '../../testing/factory/systemEntityFactory';
+import {
+	cleanupCollections,
+	importUserFactory,
+	roleFactory,
+	schoolFactory,
+	systemEntityFactory,
+	userFactory,
+} from '@shared/testing';
 import { UserRepo } from './user.repo';
 
 describe('user repo', () => {

@@ -4,7 +4,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemEntity, SystemTypeEnum } from '@shared/domain';
 import { LegacySystemRepo } from '@shared/repo';
-import { systemEntityFactory } from '../../testing/factory/systemEntityFactory';
+import { systemEntityFactory } from '@shared/testing';
 
 describe('system repo', () => {
 	let module: TestingModule;

@@ -3,9 +3,10 @@ import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { EntityId, SystemEntity, SystemTypeEnum } from '@shared/domain';
 import { LegacySystemRepo } from '@shared/repo';
-import { SystemMapper } from '../mapper/system.mapper';
+import { SystemMapper } from '../mapper';
 import { SystemDto } from './dto';
 
+// TODO N21-1547: Fully replace this service with SystemService
 /**
  * @deprecated use {@link SystemService}
  */

@@ -1,7 +1,7 @@
-import { SystemOidcMapper } from '@modules/system/mapper/system-oidc.mapper';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemEntity } from '@shared/domain';
 import { systemEntityFactory } from '@shared/testing';
+import { SystemOidcMapper } from './system-oidc.mapper';
 
 describe('SystemOidcMapper', () => {
 	let module: TestingModule;
