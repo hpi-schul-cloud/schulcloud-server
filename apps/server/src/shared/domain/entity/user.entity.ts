@@ -12,7 +12,7 @@ export enum LanguageType {
 }
 
 export interface ParentProperties {
-	fristName: string;
+	firstName: string;
 	lastName: string;
 	email: string;
 }

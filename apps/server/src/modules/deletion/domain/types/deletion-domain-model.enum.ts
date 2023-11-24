@@ -6,6 +6,7 @@ export const enum DeletionDomainModel {
 	FILE = 'file',
 	LESSONS = 'lessons',
 	PSEUDONYMS = 'pseudonyms',
+	REGISTRATIONPIN = 'RegistrationPin',
 	ROCKETCHATUSER = 'rocketChatUser',
 	TEAMS = 'teams',
 	USER = 'user',

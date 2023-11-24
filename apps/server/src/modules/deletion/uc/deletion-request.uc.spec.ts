@@ -12,6 +12,7 @@ import { UserService } from '@modules/user';
 import { RocketChatService } from '@modules/rocketchat';
 import { rocketChatUserFactory } from '@modules/rocketchat-user/domain/testing';
 import { RocketChatUser, RocketChatUserService } from '@modules/rocketchat-user';
+import { RegistrationPinService } from '@src/modules/registration-pin';
 import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
@@ -37,6 +38,7 @@ describe(DeletionRequestUc.name, () => {
 	let userService: DeepMocked<UserService>;
 	let rocketChatUserService: DeepMocked<RocketChatUserService>;
 	let rocketChatService: DeepMocked<RocketChatService>;
+	let registrationPinService: DeepMocked<RegistrationPinService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -94,6 +96,10 @@ describe(DeletionRequestUc.name, () => {
 					provide: RocketChatService,
 					useValue: createMock<RocketChatService>(),
 				},
+				{
+					provide: RegistrationPinService,
+					useValue: createMock<RegistrationPinService>(),
+				},
 			],
 		}).compile();
 
@@ -111,6 +117,7 @@ describe(DeletionRequestUc.name, () => {
 		userService = module.get(UserService);
 		rocketChatUserService = module.get(RocketChatUserService);
 		rocketChatService = module.get(RocketChatService);
+		registrationPinService = module.get(RegistrationPinService);
 		await setupEntities();
 	});
 
@@ -172,6 +179,7 @@ describe(DeletionRequestUc.name, () => {
 					userId: deletionRequestToExecute.targetRefId,
 				});
 
+				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(2);
 				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
 				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(2);
 				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(2);
@@ -213,6 +221,16 @@ describe(DeletionRequestUc.name, () => {
 				await uc.executeDeletionRequests();
 
 				expect(accountService.deleteByUserId).toHaveBeenCalled();
+			});
+
+			it('should call registrationPinService.deleteRegistrationPinByEmail to delete user data in registrationPin module', async () => {
+				const { deletionRequestToExecute } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+
+				await uc.executeDeletionRequests();
+
+				expect(registrationPinService.deleteRegistrationPinByEmail).toHaveBeenCalled();
 			});
 
 			it('should call classService.deleteUserDataFromClasses to delete user data in class module', async () => {
@@ -346,7 +364,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(9);
+				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(10);
 			});
 		});
 

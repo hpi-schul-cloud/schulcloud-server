@@ -8,7 +8,6 @@ import {
 	IFindOptions,
 	ImportUser,
 	NameMatch,
-	ParentProperties,
 	Role,
 	SchoolEntity,
 	SortOrder,

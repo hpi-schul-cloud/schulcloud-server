@@ -11,7 +11,6 @@ import { EntityId, IFindOptions, LanguageType, User } from '@shared/domain';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { RegistrationPinService } from '@src/modules/registration-pin/service/registration-pin.service';
 import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
@@ -24,8 +23,7 @@ export class UserService {
 		private readonly userDORepo: UserDORepo,
 		private readonly configService: ConfigService<UserConfig, true>,
 		private readonly roleService: RoleService,
-		private readonly accountService: AccountService,
-		private readonly registrationPinService: RegistrationPinService
+		private readonly accountService: AccountService
 	) {}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
@@ -118,14 +116,14 @@ export class UserService {
 	}
 
 	async deleteUser(userId: EntityId): Promise<number> {
-		const user = await this.userDORepo.findById(userId, true);
-		const parentEmails = await this.userRepo.getParentEmailsFromUser(userId);
-		if (parentEmails.length > 0) {
-			await Promise.all(parentEmails.map((email) => this.registrationPinService.deleteRegistrationPinByEmail(email)));
-		}
-		await this.registrationPinService.deleteRegistrationPinByEmail(user.email);
 		const deletedUserNumber: Promise<number> = this.userRepo.deleteUser(userId);
 
 		return deletedUserNumber;
+	}
+
+	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
+		const parentEmails = this.userRepo.getParentEmailsFromUser(userId);
+
+		return parentEmails;
 	}
 }

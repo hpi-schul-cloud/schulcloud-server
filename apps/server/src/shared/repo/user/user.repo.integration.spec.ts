@@ -2,7 +2,7 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MatchCreator, SortOrder, SystemEntity, User } from '@shared/domain';
+import { MatchCreator, ParentProperties, SortOrder, SystemEntity, User } from '@shared/domain';
 import { cleanupCollections, importUserFactory, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { UserRepo } from './user.repo';
@@ -440,6 +440,37 @@ describe('user repo', () => {
 				email: user3.email,
 				roles: user3.roles,
 				school: user3.school,
+			});
+		});
+	});
+
+	describe('getParentEmailsFromUser', () => {
+		const setup = async () => {
+			const parentOfUser: ParentProperties = {
+				firstName: 'firstName',
+				lastName: 'lastName',
+				email: 'test@test.eu',
+			};
+			const user = userFactory.asStudent().buildWithId({
+				parents: [parentOfUser],
+			});
+			const expectedParentEmail = [parentOfUser.email];
+
+			await em.persistAndFlush(user);
+			em.clear();
+
+			return {
+				user,
+				expectedParentEmail,
+			};
+		};
+
+		describe('when searching user parent email', () => {
+			it('should return array witn parent email', async () => {
+				const { user, expectedParentEmail } = await setup();
+				const result = await repo.getParentEmailsFromUser(user.id);
+
+				expect(result).toEqual(expectedParentEmail);
 			});
 		});
 	});
