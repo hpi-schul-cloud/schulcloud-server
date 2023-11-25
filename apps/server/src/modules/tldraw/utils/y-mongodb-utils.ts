@@ -1,16 +1,16 @@
-import { MongodbAdapter } from '@modules/tldraw/repo/mongodb-adapter';
 import { TldrawDrawing } from '@modules/tldraw/entities';
 import * as binary from 'lib0/binary';
 import * as encoding from 'lib0/encoding';
 import { Buffer } from 'buffer';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
+import { TldrawRepo } from '@modules/tldraw/repo/tldraw.repo';
 
 const MAX_DOCUMENT_SIZE = 15000000;
 
 /**
  * Remove all documents from db with Clock between $from and $to
  */
-export const clearUpdatesRange = async (db: MongodbAdapter, docName: string, from: number, to: number) =>
+export const clearUpdatesRange = async (db: TldrawRepo, docName: string, from: number, to: number) =>
 	db.del({
 		docName,
 		clock: {
@@ -45,7 +45,28 @@ export const createDocumentStateVectorKey = (docName: string) => {
 	};
 };
 
-export const getMongoBulkData = (db: MongodbAdapter, query: object, opts: object) => db.readAsCursor(query, opts);
+export const getMongoBulkData = (db: TldrawRepo, query: object, opts: object) => db.readAsCursor(query, opts);
+
+const mergeDocsTogether = (doc: TldrawDrawing, docs: TldrawDrawing[], docIndex: number) => {
+	const parts = [Buffer.from(doc.value.buffer)];
+	let currentPartId: number | undefined = doc.part;
+	for (let i = docIndex + 1; i < docs.length; i++) {
+		const part = docs[i];
+		if (part.clock === doc.clock) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			if (currentPartId !== part.part - 1) {
+				throw new Error('Couldnt merge updates together because a part is missing!');
+			}
+			parts.push(Buffer.from(part.value.buffer));
+			currentPartId = part.part;
+		} else {
+			break;
+		}
+	}
+
+	return parts;
+};
 
 /**
  * Convert the mongo document array to an array of values (as buffers)
@@ -57,24 +78,12 @@ const convertMongoUpdates = (docs: TldrawDrawing[]) => {
 	for (let i = 0; i < docs.length; i++) {
 		const doc = docs[i];
 		if (!doc.part) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			updates.push(doc.value.buffer);
 		} else if (doc.part === 1) {
 			// merge the docs together that got split because of mongodb size limits
-			const parts = [Buffer.from(doc.value.buffer)];
-			let j;
-			let currentPartId: number | undefined = doc.part;
-			for (j = i + 1; j < docs.length; j++) {
-				const part = docs[j];
-				if (part.clock === doc.clock) {
-					if (currentPartId !== part.part - 1) {
-						throw new Error('Couldnt merge updates together because a part is missing!');
-					}
-					parts.push(Buffer.from(part.value.buffer));
-					currentPartId = part.part;
-				} else {
-					break;
-				}
-			}
+			const parts = mergeDocsTogether(doc, docs, i);
 			updates.push(Buffer.concat(parts));
 		}
 	}
@@ -84,12 +93,12 @@ const convertMongoUpdates = (docs: TldrawDrawing[]) => {
 /**
  * Get all document updates for a specific document.
  */
-export const getMongoUpdates = async (db: MongodbAdapter, docName: string, opts = {}) => {
+export const getMongoUpdates = async (db: TldrawRepo, docName: string, opts = {}) => {
 	const docs = await getMongoBulkData(db, createDocumentUpdateKey(docName), opts);
 	return convertMongoUpdates(docs);
 };
 
-export const getCurrentUpdateClock = (db: MongodbAdapter, docName: string) =>
+export const getCurrentUpdateClock = (db: TldrawRepo, docName: string) =>
 	getMongoBulkData(
 		db,
 		{
@@ -107,7 +116,7 @@ export const getCurrentUpdateClock = (db: MongodbAdapter, docName: string) =>
 		return updates[0].clock;
 	});
 
-export const writeStateVector = async (db: MongodbAdapter, docName: string, sv: Uint8Array, clock: number) => {
+export const writeStateVector = async (db: TldrawRepo, docName: string, sv: Uint8Array, clock: number) => {
 	const encoder = encoding.createEncoder();
 	encoding.writeVarUint(encoder, clock);
 	encoding.writeVarUint8Array(encoder, sv);
@@ -116,7 +125,9 @@ export const writeStateVector = async (db: MongodbAdapter, docName: string, sv: 
 	});
 };
 
-export const storeUpdate = async (db: MongodbAdapter, docName: string, update: Uint8Array) => {
+export const storeUpdate = async (db: TldrawRepo, docName: string, update: Uint8Array) => {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	const clock: number = await getCurrentUpdateClock(db, docName);
 	if (clock === -1) {
 		// make sure that a state vector is always written, so we can search for available documents
@@ -168,7 +179,7 @@ export const mergeUpdates = (updates: Array<Uint8Array>) => {
  * Merge all MongoDB documents of the same yjs document together.
  */
 export const flushDocument = async (
-	db: MongodbAdapter,
+	db: TldrawRepo,
 	docName: string,
 	stateAsUpdate: Uint8Array,
 	stateVector: Uint8Array
