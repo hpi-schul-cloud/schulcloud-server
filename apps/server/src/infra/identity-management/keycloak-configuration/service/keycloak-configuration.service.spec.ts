@@ -12,10 +12,10 @@ import { SystemOidcService } from '@modules/system/service/system-oidc.service';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-
 import { SystemEntity } from '@shared/domain/entity';
 import { SystemTypeEnum } from '@shared/domain/types';
 
+import { systemEntityFactory } from '@shared/testing';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { v1 } from 'uuid';
