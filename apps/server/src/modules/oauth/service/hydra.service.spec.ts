@@ -9,7 +9,7 @@ import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiPrivacyPermission, LtiRoleType, OauthConfig } from '@shared/domain/entity';
+import { LtiPrivacyPermission, LtiRoleType, OauthConfigEntity } from '@shared/domain/entity';
 import { LtiToolRepo } from '@shared/repo';
 import { axiosResponseFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
@@ -47,7 +47,7 @@ describe('HydraService', () => {
 	const scopes = 'openid uuid';
 	const apiHost = 'localhost';
 
-	const oauthConfig: OauthConfig = new OauthConfig({
+	const oauthConfig: OauthConfigEntity = new OauthConfigEntity({
 		clientId: '12345',
 		clientSecret: 'mocksecret',
 		tokenEndpoint: `${hydraUri}/oauth2/token`,
@@ -242,7 +242,7 @@ describe('HydraService', () => {
 			ltiToolRepo.findByOauthClientId.mockResolvedValue(ltiToolDoMock);
 
 			// Act
-			const result: OauthConfig = await service.generateConfig(oauthConfig.clientId);
+			const result: OauthConfigEntity = await service.generateConfig(oauthConfig.clientId);
 
 			// Assert
 			expect(result).toEqual(oauthConfig);

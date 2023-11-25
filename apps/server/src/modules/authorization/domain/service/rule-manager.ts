@@ -12,6 +12,7 @@ import {
 	LessonRule,
 	SchoolExternalToolRule,
 	SubmissionRule,
+	SystemRule,
 	TaskRule,
 	TeamRule,
 	UserLoginMigrationRule,
@@ -36,7 +37,8 @@ export class RuleManager {
 		private readonly boardDoRule: BoardDoRule,
 		private readonly contextExternalToolRule: ContextExternalToolRule,
 		private readonly userLoginMigrationRule: UserLoginMigrationRule,
-		private readonly groupRule: GroupRule
+		private readonly groupRule: GroupRule,
+		private readonly systemRule: SystemRule
 	) {
 		this.rules = [
 			this.courseRule,
@@ -52,6 +54,7 @@ export class RuleManager {
 			this.contextExternalToolRule,
 			this.userLoginMigrationRule,
 			this.groupRule,
+			this.systemRule,
 		];
 	}
 

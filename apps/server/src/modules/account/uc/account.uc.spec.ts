@@ -11,7 +11,7 @@ import { Permission, RoleName } from '@shared/domain/interface';
 import { PermissionService } from '@shared/domain/service';
 import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
-import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { accountFactory, schoolFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ObjectId } from 'bson';
 import {
@@ -422,7 +422,7 @@ describe('AccountUc', () => {
 			userId: mockUnknownRoleUser.id,
 			password: defaultPasswordHash,
 		});
-		const externalSystem = systemFactory.buildWithId();
+		const externalSystem = systemEntityFactory.buildWithId();
 		mockExternalUserAccount = accountFactory.buildWithId({
 			userId: mockExternalUser.id,
 			password: defaultPasswordHash,
@@ -431,25 +431,25 @@ describe('AccountUc', () => {
 		mockAccountWithoutUser = accountFactory.buildWithId({
 			userId: undefined,
 			password: defaultPasswordHash,
-			systemId: systemFactory.buildWithId().id,
+			systemId: systemEntityFactory.buildWithId().id,
 		});
 		mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId(10)).build();
 		mockAccountWithLastFailedLogin = accountFactory.buildWithId({
 			userId: undefined,
 			password: defaultPasswordHash,
-			systemId: systemFactory.buildWithId().id,
+			systemId: systemEntityFactory.buildWithId().id,
 			lasttriedFailedLogin: new Date(),
 		});
 		mockAccountWithOldLastFailedLogin = accountFactory.buildWithId({
 			userId: undefined,
 			password: defaultPasswordHash,
-			systemId: systemFactory.buildWithId().id,
+			systemId: systemEntityFactory.buildWithId().id,
 			lasttriedFailedLogin: new Date(new Date().getTime() - LOGIN_BLOCK_TIME - 1),
 		});
 		mockAccountWithNoLastFailedLogin = accountFactory.buildWithId({
 			userId: undefined,
 			password: defaultPasswordHash,
-			systemId: systemFactory.buildWithId().id,
+			systemId: systemEntityFactory.buildWithId().id,
 			lasttriedFailedLogin: undefined,
 		});
 

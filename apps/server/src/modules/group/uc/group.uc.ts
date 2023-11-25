@@ -4,7 +4,7 @@ import { Class } from '@modules/class/domain';
 import { LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
-import { SystemDto, SystemService } from '@modules/system';
+import { LegacySystemService, SystemDto } from '@modules/system';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
@@ -24,7 +24,7 @@ export class GroupUc {
 	constructor(
 		private readonly groupService: GroupService,
 		private readonly classService: ClassService,
-		private readonly systemService: SystemService,
+		private readonly systemService: LegacySystemService,
 		private readonly userService: UserService,
 		private readonly roleService: RoleService,
 		private readonly schoolService: LegacySchoolService,

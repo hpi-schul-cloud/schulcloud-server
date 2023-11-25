@@ -6,7 +6,7 @@ import { SchoolEntity, SystemEntity } from '@shared/domain/entity';
 
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
-import { cleanupCollections, schoolFactory, systemFactory } from '@shared/testing';
+import { cleanupCollections, schoolFactory, systemEntityFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { userLoginMigrationFactory } from '../../testing/factory/user-login-migration.factory';
 import { UserLoginMigrationRepo } from './user-login-migration.repo';
@@ -44,8 +44,8 @@ describe('UserLoginMigrationRepo', () => {
 		describe('when saving a UserLoginMigrationDO', () => {
 			const setup = async () => {
 				const school: SchoolEntity = schoolFactory.buildWithId();
-				const sourceSystem: SystemEntity = systemFactory.buildWithId();
-				const targetSystem: SystemEntity = systemFactory.buildWithId();
+				const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
+				const targetSystem: SystemEntity = systemEntityFactory.buildWithId();
 
 				const domainObject: UserLoginMigrationDO = new UserLoginMigrationDO({
 					schoolId: school.id,

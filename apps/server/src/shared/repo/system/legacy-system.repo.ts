@@ -4,8 +4,12 @@ import { SystemTypeEnum } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { SystemScope } from '@shared/repo/system/system-scope';
 
+// TODO N21-1547: Fully replace this service with SystemService
+/**
+ * @deprecated use the {@link SystemRepo} from the system module instead
+ */
 @Injectable()
-export class SystemRepo extends BaseRepo<SystemEntity> {
+export class LegacySystemRepo extends BaseRepo<SystemEntity> {
 	get entityName() {
 		return SystemEntity;
 	}

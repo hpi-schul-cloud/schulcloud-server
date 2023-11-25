@@ -21,7 +21,7 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import {
 	legacySchoolDoFactory,
 	setupEntities,
-	systemFactory,
+	systemEntityFactory,
 	userFactory,
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
@@ -341,7 +341,7 @@ describe(UserLoginMigrationUc.name, () => {
 
 		describe('when external school and official school number is defined and school has to be migrated', () => {
 			const setup = () => {
-				const sourceSystem: SystemEntity = systemFactory
+				const sourceSystem: SystemEntity = systemEntityFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 

@@ -1,6 +1,6 @@
 import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { OauthConfig } from '@shared/domain/entity';
+import { OauthConfigEntity } from '@shared/domain/entity';
 import { LegacyLogger } from '@src/core/logger';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { AuthorizationParams } from '../controller/dto';
@@ -28,7 +28,7 @@ export class HydraOauthUc {
 				error || 'sso_auth_code_step'
 			);
 		}
-		const hydraOauthConfig: OauthConfig = await this.hydraSsoService.generateConfig(oauthClientId);
+		const hydraOauthConfig: OauthConfigEntity = await this.hydraSsoService.generateConfig(oauthClientId);
 
 		const oauthTokens: OAuthTokenDto = await this.oauthService.requestToken(
 			code,
@@ -44,7 +44,7 @@ export class HydraOauthUc {
 	protected validateStatus = (status: number): boolean => status === 200 || status === 302;
 
 	async requestAuthCode(userId: string, jwt: string, oauthClientId: string): Promise<AuthorizationParams> {
-		const hydraOauthConfig: OauthConfig = await this.hydraSsoService.generateConfig(oauthClientId);
+		const hydraOauthConfig: OauthConfigEntity = await this.hydraSsoService.generateConfig(oauthClientId);
 		const axiosConfig: AxiosRequestConfig = {
 			headers: {},
 			withCredentials: true,

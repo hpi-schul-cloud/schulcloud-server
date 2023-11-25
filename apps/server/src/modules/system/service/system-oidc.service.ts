@@ -1,14 +1,14 @@
-import { SystemOidcMapper } from '@modules/system/mapper/system-oidc.mapper';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { SystemEntity } from '@shared/domain/entity';
 import { EntityId, SystemTypeEnum } from '@shared/domain/types';
-import { SystemRepo } from '@shared/repo';
+import { LegacySystemRepo } from '@shared/repo';
+import { SystemOidcMapper } from '../mapper';
 import { OidcConfigDto } from './dto';
 
 @Injectable()
 export class SystemOidcService {
-	constructor(private readonly systemRepo: SystemRepo) {}
+	constructor(private readonly systemRepo: LegacySystemRepo) {}
 
 	async findById(id: EntityId): Promise<OidcConfigDto> {
 		const system = await this.systemRepo.findById(id);

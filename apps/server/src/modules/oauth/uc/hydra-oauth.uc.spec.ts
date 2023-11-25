@@ -5,7 +5,7 @@ import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto'
 import { HttpModule } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthConfig } from '@shared/domain/entity';
+import { OauthConfigEntity } from '@shared/domain/entity';
 import { axiosResponseFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AxiosResponse } from 'axios';
@@ -40,7 +40,7 @@ describe('HydraOauthUc', () => {
 	const hydraUri = 'hydraUri';
 	const apiHost = 'apiHost';
 	const nextcloudScopes = 'nextcloudscope';
-	const hydraOauthConfig = new OauthConfig({
+	const hydraOauthConfig = new OauthConfigEntity({
 		authEndpoint: `${hydraUri}/oauth2/auth`,
 		clientId: 'toolClientId',
 		clientSecret: 'toolSecret',

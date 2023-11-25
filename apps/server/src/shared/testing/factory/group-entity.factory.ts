@@ -4,7 +4,7 @@ import { RoleName } from '@shared/domain/interface';
 import { BaseFactory } from './base.factory';
 import { roleFactory } from './role.factory';
 import { schoolFactory } from './school.factory';
-import { systemFactory } from './system.factory';
+import { systemEntityFactory } from './systemEntityFactory';
 import { userFactory } from './user.factory';
 
 export const groupEntityFactory = BaseFactory.define<GroupEntity, GroupEntityProps>(GroupEntity, ({ sequence }) => {
@@ -28,7 +28,7 @@ export const groupEntityFactory = BaseFactory.define<GroupEntity, GroupEntityPro
 		organization: schoolFactory.buildWithId(),
 		externalSource: new ExternalSourceEntity({
 			externalId: `externalId-${sequence}`,
-			system: systemFactory.buildWithId(),
+			system: systemEntityFactory.buildWithId(),
 		}),
 	};
 });

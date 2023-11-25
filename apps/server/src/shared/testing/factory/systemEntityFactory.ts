@@ -1,33 +1,39 @@
-import { LdapConfig, OauthConfig, OidcConfig, SystemEntity, SystemProperties } from '@shared/domain/entity';
+import {
+	LdapConfigEntity,
+	OauthConfigEntity,
+	OidcConfigEntity,
+	SystemEntity,
+	SystemEntityProps,
+} from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
-export class SystemFactory extends BaseFactory<SystemEntity, SystemProperties> {
+export class SystemEntityFactory extends BaseFactory<SystemEntity, SystemEntityProps> {
 	withOauthConfig(): this {
-		const params: DeepPartial<SystemProperties> = {
-			oauthConfig: new OauthConfig({
+		const params: DeepPartial<SystemEntityProps> = {
+			oauthConfig: new OauthConfigEntity({
 				clientId: '12345',
 				clientSecret: 'mocksecret',
 				idpHint: 'mock-oauth-idpHint',
-				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+				tokenEndpoint: 'https://mock.de/mock/auth/public/mockToken',
 				grantType: 'authorization_code',
-				redirectUri: 'http://mockhost:3030/api/v3/sso/oauth/',
+				redirectUri: 'https://mockhost:3030/api/v3/sso/oauth/',
 				scope: 'openid uuid',
 				responseType: 'code',
-				authEndpoint: 'http://mock.de/auth',
+				authEndpoint: 'https://mock.de/auth',
 				provider: 'mock_type',
-				logoutEndpoint: 'http://mock.de/logout',
+				logoutEndpoint: 'https://mock.de/logout',
 				issuer: 'mock_issuer',
-				jwksEndpoint: 'http://mock.de/jwks',
+				jwksEndpoint: 'https://mock.de/jwks',
 			}),
 		};
 		return this.params(params);
 	}
 
-	withLdapConfig(otherParams?: DeepPartial<LdapConfig>): this {
-		const params: DeepPartial<SystemProperties> = {
-			ldapConfig: new LdapConfig({
+	withLdapConfig(otherParams?: DeepPartial<LdapConfigEntity>): this {
+		const params: DeepPartial<SystemEntityProps> = {
+			ldapConfig: new LdapConfigEntity({
 				url: 'ldaps:mock.de:389',
 				active: true,
 				...otherParams,
@@ -39,7 +45,7 @@ export class SystemFactory extends BaseFactory<SystemEntity, SystemProperties> {
 
 	withOidcConfig(): this {
 		const params = {
-			oidcConfig: new OidcConfig({
+			oidcConfig: new OidcConfigEntity({
 				clientId: 'mock-client-id',
 				clientSecret: 'mock-client-secret',
 				idpHint: 'mock-oidc-idpHint',
@@ -54,10 +60,10 @@ export class SystemFactory extends BaseFactory<SystemEntity, SystemProperties> {
 	}
 }
 
-export const systemFactory = SystemFactory.define(SystemEntity, ({ sequence }) => {
+export const systemEntityFactory = SystemEntityFactory.define(SystemEntity, ({ sequence }) => {
 	return {
 		type: 'oauth',
-		url: 'http://mock.de',
+		url: 'https://mock.de',
 		alias: `system #${sequence}`,
 		displayName: `system #${sequence}DisplayName`,
 		provisioningStrategy: SystemProvisioningStrategy.OIDC,

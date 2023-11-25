@@ -6,7 +6,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { accountFactory, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
+import { accountFactory, roleFactory, schoolFactory, systemEntityFactory, userFactory } from '@shared/testing';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
@@ -150,7 +150,7 @@ describe('Login Controller (api)', () => {
 		describe('when user login succeeds', () => {
 			const setup = async () => {
 				const schoolExternalId = 'mockSchoolExternalId';
-				const system: SystemEntity = systemFactory.withLdapConfig().buildWithId({});
+				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
 				const school: SchoolEntity = schoolFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 
@@ -201,7 +201,7 @@ describe('Login Controller (api)', () => {
 		describe('when user login fails', () => {
 			const setup = async () => {
 				const schoolExternalId = 'mockSchoolExternalId';
-				const system: SystemEntity = systemFactory.withLdapConfig().buildWithId({});
+				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
 				const school: SchoolEntity = schoolFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 
@@ -239,7 +239,7 @@ describe('Login Controller (api)', () => {
 		describe('when logging in as a user of the Central LDAP of Brandenburg', () => {
 			const setup = async () => {
 				const officialSchoolNumber = '01234';
-				const system: SystemEntity = systemFactory.withLdapConfig().buildWithId({});
+				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [system],
 					externalId: officialSchoolNumber,
@@ -302,7 +302,7 @@ describe('Login Controller (api)', () => {
 				const schoolExternalId = 'schoolExternalId';
 				const userExternalId = 'userExternalId';
 
-				const system = systemFactory.withOauthConfig().buildWithId({});
+				const system = systemEntityFactory.withOauthConfig().buildWithId({});
 				const school = schoolFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 				const user = userFactory.buildWithId({ school, roles: [studentRoles], externalId: userExternalId });
@@ -392,7 +392,7 @@ describe('Login Controller (api)', () => {
 				const schoolExternalId = 'schoolExternalId';
 				const userExternalId = 'userExternalId';
 
-				const system = systemFactory.withOauthConfig().buildWithId({});
+				const system = systemEntityFactory.withOauthConfig().buildWithId({});
 				const school = schoolFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 				const user = userFactory.buildWithId({ school, roles: [studentRoles], externalId: userExternalId });
