@@ -23,7 +23,7 @@ export class TldrawBoardRepo {
 	public updateStoredDocWithDiff(docName: string, diff: Uint8Array): void {
 		const calc = calculateDiff(diff);
 		if (calc > 0) {
-			this.mdb.storeUpdate(docName, diff).catch((err) => this.logger.error(err));
+			this.mdb.storeUpdateTransactional(docName, diff).catch((err) => this.logger.error(err));
 		}
 	}
 
@@ -36,13 +36,13 @@ export class TldrawBoardRepo {
 		applyUpdate(ydoc, encodeStateAsUpdate(persistedYdoc));
 
 		ydoc.on('update', (update: Uint8Array) => {
-			this.mdb.storeUpdate(docName, update).catch((err) => this.logger.error(err));
+			this.mdb.storeUpdateTransactional(docName, update).catch((err) => this.logger.error(err));
 		});
 
 		persistedYdoc.destroy();
 	}
 
 	public async flushDocument(docName: string): Promise<void> {
-		await this.mdb.flushDocument(docName);
+		await this.mdb.flushDocumentTransactional(docName);
 	}
 }

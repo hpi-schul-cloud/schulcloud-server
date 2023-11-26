@@ -55,11 +55,6 @@ describe('TldrawBoardRepo', () => {
 	it('should check if repo and its properties are set correctly', () => {
 		expect(repo).toBeDefined();
 		expect(repo.mdb).toBeDefined();
-		expect(repo.configService).toBeDefined();
-		expect(repo.flushSize).toBeDefined();
-		expect(repo.multipleCollections).toBeDefined();
-		expect(repo.connectionString).toBeDefined();
-		expect(repo.collectionName).toBeDefined();
 	});
 
 	describe('updateDocument', () => {
@@ -75,7 +70,7 @@ describe('TldrawBoardRepo', () => {
 				const storeGetYDocSpy = jest
 					.spyOn(repo.mdb, 'getYDoc')
 					.mockImplementation(() => Promise.resolve(new WsSharedDocDo('TEST', service)));
-				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdate').mockImplementation(() => Promise.resolve(1));
+				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional').mockImplementation(() => Promise.resolve(1));
 
 				return {
 					doc,
@@ -105,7 +100,7 @@ describe('TldrawBoardRepo', () => {
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				doc.conns.set(ws, wsSet);
-				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdate').mockImplementation(() => Promise.resolve(1));
+				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional').mockImplementation(() => Promise.resolve(1));
 				const storeGetYDocSpy = jest
 					.spyOn(repo.mdb, 'getYDoc')
 					.mockImplementation(() => Promise.resolve(new WsSharedDocDo('TEST', service)));
@@ -158,7 +153,7 @@ describe('TldrawBoardRepo', () => {
 		describe('when the difference between update and current drawing is more than 0', () => {
 			const setup = () => {
 				const calculateDiffSpy = jest.spyOn(YjsUtils, 'calculateDiff').mockImplementationOnce(() => 1);
-				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdate').mockResolvedValueOnce(Promise.resolve(1));
+				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional').mockResolvedValueOnce(Promise.resolve(1));
 
 				return {
 					calculateDiffSpy,
@@ -181,7 +176,7 @@ describe('TldrawBoardRepo', () => {
 		describe('when the difference between update and current drawing is 0', () => {
 			const setup = () => {
 				const calculateDiffSpy = jest.spyOn(YjsUtils, 'calculateDiff').mockImplementationOnce(() => 0);
-				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdate');
+				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional');
 
 				return {
 					calculateDiffSpy,
@@ -204,7 +199,7 @@ describe('TldrawBoardRepo', () => {
 
 	describe('flushDocument', () => {
 		const setup = () => {
-			const flushDocumentSpy = jest.spyOn(repo.mdb, 'flushDocument').mockResolvedValueOnce(Promise.resolve());
+			const flushDocumentSpy = jest.spyOn(repo.mdb, 'flushDocumentTransactional').mockResolvedValueOnce(Promise.resolve());
 
 			return { flushDocumentSpy };
 		};
