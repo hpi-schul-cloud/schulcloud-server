@@ -225,17 +225,25 @@ export class LessonCopyService {
 				copiedContentStatus.push(embeddedTaskStatus);
 			}
 			if (element.component === ComponentType.NEXBOARD && nexboardEnabled) {
-				// eslint-disable-next-line no-await-in-loop
-				const nexboardContent = await this.copyNexboard(element, params);
-				const nexboardStatus = {
+				let nexboardStatus = {
 					title: element.title,
 					type: CopyElementType.LESSON_CONTENT_NEXBOARD,
 					status: CopyStatusEnum.PARTIAL,
 				};
-				if (nexboardContent) {
-					copiedContent.push(nexboardContent);
-				} else {
-					nexboardStatus.status = CopyStatusEnum.FAIL;
+				if (!copyNexboardEnabled) {
+					nexboardStatus.status = CopyStatusEnum.NOT_DOING;
+				}
+				if (nexboardStatus.status === CopyStatusEnum.PARTIAL) {
+					try {
+						const nexboardContent = await this.copyNexboard(element, params);
+						if (nexboardContent) {
+							copiedContent.push(nexboardContent);
+						} else {
+							nexboardStatus.status = CopyStatusEnum.NOT_DOING;
+						}
+					} catch (error) {
+						nexboardStatus.status = CopyStatusEnum.NOT_DOING;
+					}
 				}
 				copiedContentStatus.push(nexboardStatus);
 			}
