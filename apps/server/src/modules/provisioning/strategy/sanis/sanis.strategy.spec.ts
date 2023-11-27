@@ -1,4 +1,5 @@
-export * from '@shared/domain/entity';
+// export * from '@shared/domain/entity';
+export * from '@shared/domain/entity/all-entities';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { GroupTypes } from '@modules/group';
