@@ -1,6 +1,5 @@
 import { Entity, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
-
 export interface RegistrationPinEntityProps {
 	id?: EntityId;
 	email: string;
