@@ -1,41 +1,19 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
 import { Request } from 'express';
-import request from 'supertest';
 import { AuthGuard } from '@nestjs/passport';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { cleanupCollections } from '@shared/testing';
+import { TestXApiKeyClient, cleanupCollections } from '@shared/testing';
 import { AdminApiServerTestModule } from '../../../server/admin-api.server.module';
-import { DeletionRequestLogResponse } from '../dto';
 import { deletionRequestEntityFactory } from '../../entity/testing';
+import { DeletionRequestLogResponse } from '../dto';
 
 const baseRouteName = '/deletionRequests';
-
-class API {
-	app: INestApplication;
-
-	constructor(app: INestApplication) {
-		this.app = app;
-	}
-
-	async get(deletionRequestId: string) {
-		const response = await request(this.app.getHttpServer())
-			.get(`${baseRouteName}/${deletionRequestId}`)
-			.set('Accept', 'application/json');
-
-		return {
-			result: response.body as DeletionRequestLogResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-}
 
 describe(`deletionRequest find (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let api: API;
+	let testXApiKeyClient: TestXApiKeyClient;
 	const API_KEY = '1ab2c3d4e5f61ab2c3d4e5f6';
 
 	beforeAll(async () => {
@@ -55,7 +33,7 @@ describe(`deletionRequest find (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		api = new API(app);
+		testXApiKeyClient = new TestXApiKeyClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -76,7 +54,7 @@ describe(`deletionRequest find (api)`, () => {
 		it('should return status 202', async () => {
 			const { deletionRequest } = await setup();
 
-			const response = await api.get(deletionRequest.id);
+			const response = await testXApiKeyClient.get(deletionRequest.id);
 
 			expect(response.status).toEqual(200);
 		});
@@ -84,7 +62,8 @@ describe(`deletionRequest find (api)`, () => {
 		it('should return the found deletionRequest', async () => {
 			const { deletionRequest } = await setup();
 
-			const { result } = await api.get(deletionRequest.id);
+			const response = await testXApiKeyClient.get(deletionRequest.id);
+			const result = response.body as DeletionRequestLogResponse;
 
 			expect(result.targetRef.id).toEqual(deletionRequest.targetRefId);
 		});

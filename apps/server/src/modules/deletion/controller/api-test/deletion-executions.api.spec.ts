@@ -1,37 +1,15 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
 import { Request } from 'express';
-import request from 'supertest';
 import { AuthGuard } from '@nestjs/passport';
+import { TestXApiKeyClient } from '@shared/testing';
 import { AdminApiServerTestModule } from '../../../server/admin-api.server.module';
-import { DeletionExecutionParams } from '../dto';
 
 const baseRouteName = '/deletionExecutions';
 
-class API {
-	app: INestApplication;
-
-	constructor(app: INestApplication) {
-		this.app = app;
-	}
-
-	async post(query?: DeletionExecutionParams) {
-		const response = await request(this.app.getHttpServer())
-			.post(`${baseRouteName}`)
-			.set('Accept', 'application/json')
-			.query(query || {});
-
-		return {
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-}
-
 describe(`deletionExecution (api)`, () => {
 	let app: INestApplication;
-	let api: API;
+	let testXApiKeyClient: TestXApiKeyClient;
 	const API_KEY = '1ab2c3d4e5f61ab2c3d4e5f6';
 
 	beforeAll(async () => {
@@ -50,7 +28,7 @@ describe(`deletionExecution (api)`, () => {
 
 		app = module.createNestApplication();
 		await app.init();
-		api = new API(app);
+		testXApiKeyClient = new TestXApiKeyClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -59,7 +37,7 @@ describe(`deletionExecution (api)`, () => {
 
 	describe('when execute deletionRequests with default limit', () => {
 		it('should return status 204', async () => {
-			const response = await api.post();
+			const response = await testXApiKeyClient.post();
 
 			expect(response.status).toEqual(204);
 		});
