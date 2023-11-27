@@ -28,6 +28,7 @@ import {
 	ContextExternalToolConfigurationTemplateResponse,
 	SchoolExternalToolConfigurationTemplateListResponse,
 	SchoolExternalToolConfigurationTemplateResponse,
+	ToolContextTypesList,
 } from '../dto';
 
 describe('ToolConfigurationController (API)', () => {
@@ -728,15 +729,20 @@ describe('ToolConfigurationController (API)', () => {
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient };
+				const contextTypeList: ToolContextTypesList = new ToolContextTypesList([
+					ToolContextType.COURSE,
+					ToolContextType.BOARD_ELEMENT,
+				]);
+
+				return { loggedInClient, contextTypeList };
 			};
 
 			it('should return all context types', async () => {
-				const { loggedInClient } = await setup();
+				const { loggedInClient, contextTypeList } = await setup();
 
 				const response = await loggedInClient.get('context-types');
 
-				expect(response.body).toEqual({ data: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT] });
+				expect(response.body).toEqual(contextTypeList);
 			});
 		});
 	});
