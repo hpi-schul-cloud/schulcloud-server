@@ -19,7 +19,12 @@ import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { LaunchRequestMethod } from '../../types';
 import { ToolLaunchRequestResponse, ToolLaunchParams } from '../dto';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
-import { ExternalToolEntity } from '../../../external-tool/entity';
+import {
+	CustomParameterLocation,
+	CustomParameterScope,
+	CustomParameterType,
+	ExternalToolEntity,
+} from '../../../external-tool/entity';
 import { ToolConfigType } from '../../../common/enum';
 
 describe('ToolLaunchController (API)', () => {
@@ -64,6 +69,24 @@ describe('ToolLaunchController (API)', () => {
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
 					version: 0,
+					parameters: [
+						{
+							name: 'schoolMockParameter',
+							displayName: 'MockParameter',
+							scope: CustomParameterScope.SCHOOL,
+							type: CustomParameterType.STRING,
+							location: CustomParameterLocation.PATH,
+							isOptional: false,
+						},
+						{
+							name: 'contextMockParameter',
+							displayName: 'MockParameter',
+							scope: CustomParameterScope.CONTEXT,
+							type: CustomParameterType.STRING,
+							location: CustomParameterLocation.PATH,
+							isOptional: false,
+						},
+					],
 				});
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					tool: externalToolEntity,

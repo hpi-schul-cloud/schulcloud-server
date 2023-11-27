@@ -268,6 +268,9 @@ describe('ExternalToolConfigurationUc', () => {
 				externalToolConfigurationService.filterForAvailableExternalTools.mockReturnValue([
 					{ externalTool: usedTool, schoolExternalTool: usedSchoolExternalTool },
 				]);
+				externalToolConfigurationService.filterForContextRestrictions.mockReturnValue([
+					{ externalTool: usedTool, schoolExternalTool: usedSchoolExternalTool },
+				]);
 
 				return {
 					toolIds,
@@ -368,6 +371,7 @@ describe('ExternalToolConfigurationUc', () => {
 					unusedSchoolExternalTool,
 				]);
 				externalToolConfigurationService.filterForAvailableExternalTools.mockReturnValue([]);
+				externalToolConfigurationService.filterForContextRestrictions.mockReturnValue([]);
 
 				return {};
 			};
@@ -407,6 +411,9 @@ describe('ExternalToolConfigurationUc', () => {
 					usedSchoolExternalTool,
 				]);
 				externalToolConfigurationService.filterForAvailableExternalTools.mockReturnValue([
+					{ externalTool: usedTool, schoolExternalTool: usedSchoolExternalTool },
+				]);
+				externalToolConfigurationService.filterForContextRestrictions.mockReturnValue([
 					{ externalTool: usedTool, schoolExternalTool: usedSchoolExternalTool },
 				]);
 
