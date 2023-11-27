@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-api-server-svc
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: admin-api-server
+spec:
+  type: ClusterIP
+  ports:
+    # port for http managing drawing data
+    - port: 4030
+      targetPort: 4030
+      protocol: TCP
+      name: admin-api-server
+  selector:
+    app: admin-api-server

@@ -142,3 +142,17 @@
     when:
      - KEDA_ENABLED is defined and KEDA_ENABLED|bool
      - SCALED_PREVIEW_GENERATOR_ENABLED is defined and SCALED_PREVIEW_GENERATOR_ENABLED|bool
+
+
+  - name: AdminApiServerDeployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-deployment.yml.j2
+
+  - name: AdminApiServerService
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-svc.yml.j2
+
