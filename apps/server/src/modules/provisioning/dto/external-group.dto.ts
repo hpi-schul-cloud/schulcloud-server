@@ -6,7 +6,9 @@ export class ExternalGroupDto {
 
 	name: string;
 
-	users: ExternalGroupUserDto[];
+	user: ExternalGroupUserDto;
+
+	otherUsers?: ExternalGroupUserDto[];
 
 	from: Date;
 
@@ -14,15 +16,13 @@ export class ExternalGroupDto {
 
 	type: GroupTypes;
 
-	externalOrganizationId?: string;
-
 	constructor(props: ExternalGroupDto) {
 		this.externalId = props.externalId;
 		this.name = props.name;
-		this.users = props.users;
+		this.user = props.user;
+		this.otherUsers = props.otherUsers;
 		this.from = props.from;
 		this.until = props.until;
 		this.type = props.type;
-		this.externalOrganizationId = props.externalOrganizationId;
 	}
 }

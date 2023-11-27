@@ -1,11 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, RoleName, UserDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { legacySchoolDoFactory, userDoFactory } from '@shared/testing';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { externalGroupDtoFactory } from '@shared/testing/factory/external-group-dto.factory';
+import { externalSchoolDtoFactory } from '@shared/testing/factory/external-school-dto.factory';
 import {
 	ExternalSchoolDto,
 	ExternalUserDto,
@@ -181,6 +182,7 @@ describe('OidcStrategy', () => {
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
 					}),
+					externalSchool: externalSchoolDtoFactory.build(),
 					externalUser: new ExternalUserDto({
 						externalId: externalUserId,
 					}),
@@ -217,10 +219,12 @@ describe('OidcStrategy', () => {
 
 				expect(oidcProvisioningService.provisionExternalGroup).toHaveBeenCalledWith(
 					oauthData.externalGroups?.[0],
+					oauthData.externalSchool,
 					oauthData.system.systemId
 				);
 				expect(oidcProvisioningService.provisionExternalGroup).toHaveBeenCalledWith(
 					oauthData.externalGroups?.[1],
+					oauthData.externalSchool,
 					oauthData.system.systemId
 				);
 			});

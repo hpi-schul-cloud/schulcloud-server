@@ -75,34 +75,39 @@ export class SanisResponseMapper {
 		}
 
 		const mapped: ExternalGroupDto[] = groups
-			.map((group): ExternalGroupDto | null => {
+			.map((group: SanisGruppenResponse): ExternalGroupDto | null => {
 				const groupType: GroupTypes | undefined = GroupTypeMapping[group.gruppe.typ];
 
 				if (!groupType) {
 					return null;
 				}
 
-				const sanisGroupUsers: SanisSonstigeGruppenzugehoerigeResponse[] = [
-					{
-						ktid: source.personenkontexte[0].id,
-						rollen: group.gruppenzugehoerigkeit.rollen,
-					},
-				].filter((sanisGroupUser) => sanisGroupUser.ktid && sanisGroupUser.rollen);
+				const user: ExternalGroupUserDto | null = this.mapToExternalGroupUser({
+					ktid: source.personenkontexte[0].id,
+					rollen: group.gruppenzugehoerigkeit.rollen,
+				});
 
-				const gruppenzugehoerigkeiten: ExternalGroupUserDto[] = sanisGroupUsers
-					.map((relation): ExternalGroupUserDto | null => this.mapToExternalGroupUser(relation))
-					.filter((user): user is ExternalGroupUserDto => user !== null);
+				if (!user) {
+					return null;
+				}
 
-				const externalOrganizationId = source.personenkontexte[0].organisation?.id;
+				let otherUsers: ExternalGroupUserDto[] | undefined;
+				if (group.sonstige_gruppenzugehoerige) {
+					otherUsers = group.sonstige_gruppenzugehoerige
+						.map((relation: SanisSonstigeGruppenzugehoerigeResponse): ExternalGroupUserDto | null =>
+							this.mapToExternalGroupUser(relation)
+						)
+						.filter((otherUser: ExternalGroupUserDto | null): otherUser is ExternalGroupUserDto => otherUser !== null);
+				}
 
 				return new ExternalGroupDto({
 					name: group.gruppe.bezeichnung,
 					type: groupType,
-					externalOrganizationId,
 					from: group.gruppe.laufzeit?.von,
 					until: group.gruppe.laufzeit?.bis,
 					externalId: group.gruppe.id,
-					users: gruppenzugehoerigkeiten,
+					user,
+					otherUsers,
 				});
 			})
 			.filter((group): group is ExternalGroupDto => group !== null);
@@ -111,7 +116,12 @@ export class SanisResponseMapper {
 	}
 
 	private mapToExternalGroupUser(relation: SanisSonstigeGruppenzugehoerigeResponse): ExternalGroupUserDto | null {
-		const userRole = GroupRoleMapping[relation.rollen[0]];
+		if (!relation.rollen?.length) {
+			this.logger.info(new GroupRoleUnknownLoggable(relation));
+			return null;
+		}
+
+		const userRole: RoleName | undefined = GroupRoleMapping[relation.rollen[0]];
 
 		if (!userRole) {
 			this.logger.info(new GroupRoleUnknownLoggable(relation));

@@ -129,35 +129,33 @@ export class OidcProvisioningService {
 		return savedUser;
 	}
 
-	async provisionExternalGroup(externalGroup: ExternalGroupDto, systemId: EntityId): Promise<void> {
-		const existingGroup: Group | null = await this.groupService.findByExternalSource(
-			externalGroup.externalId,
-			systemId
-		);
-
+	async provisionExternalGroup(
+		externalGroup: ExternalGroupDto,
+		externalSchool: ExternalSchoolDto | undefined,
+		systemId: EntityId
+	): Promise<void> {
 		let organizationId: string | undefined;
-		if (externalGroup.externalOrganizationId) {
+		if (externalSchool) {
 			const existingSchool: LegacySchoolDo | null = await this.schoolService.getSchoolByExternalId(
-				externalGroup.externalOrganizationId,
+				externalSchool.externalId,
 				systemId
 			);
 
 			if (!existingSchool || !existingSchool.id) {
-				this.logger.info(new SchoolForGroupNotFoundLoggable(externalGroup));
+				this.logger.info(new SchoolForGroupNotFoundLoggable(externalGroup, externalSchool));
 				return;
 			}
 
 			organizationId = existingSchool.id;
 		}
 
-		const users: GroupUser[] = await this.getFilteredGroupUsers(externalGroup, systemId);
-
-		if (!users.length) {
-			return;
-		}
+		const existingGroup: Group | null = await this.groupService.findByExternalSource(
+			externalGroup.externalId,
+			systemId
+		);
 
 		const group: Group = new Group({
-			id: existingGroup ? existingGroup.id : new ObjectId().toHexString(),
+			id: existingGroup?.id ?? new ObjectId().toHexString(),
 			name: externalGroup.name,
 			externalSource: new ExternalSource({
 				externalId: externalGroup.externalId,
@@ -167,31 +165,36 @@ export class OidcProvisioningService {
 			organizationId,
 			validFrom: externalGroup.from,
 			validUntil: externalGroup.until,
-			users: existingGroup ? existingGroup.users : [],
+			users: existingGroup?.users ?? [],
 		});
-		users.forEach((user: GroupUser) => group.addUser(user));
+
+		if (externalGroup.otherUsers !== undefined) {
+			const otherUsers: GroupUser[] = await this.getFilteredGroupUsers(externalGroup, systemId);
+
+			group.users = otherUsers;
+		}
+
+		const self: GroupUser | null = await this.getGroupUser(externalGroup.user, systemId);
+
+		if (!self) {
+			throw new NotFoundLoggableException(UserDO.name, 'externalId', externalGroup.user.externalUserId);
+		}
+
+		group.addUser(self);
 
 		await this.groupService.save(group);
 	}
 
 	private async getFilteredGroupUsers(externalGroup: ExternalGroupDto, systemId: string): Promise<GroupUser[]> {
+		if (!externalGroup.otherUsers) {
+			return [];
+		}
+
 		const users: (GroupUser | null)[] = await Promise.all(
-			externalGroup.users.map(async (externalGroupUser: ExternalGroupUserDto): Promise<GroupUser | null> => {
-				const user: UserDO | null = await this.userService.findByExternalId(externalGroupUser.externalUserId, systemId);
-				const roles: RoleDto[] = await this.roleService.findByNames([externalGroupUser.roleName]);
-
-				if (!user?.id || roles.length !== 1 || !roles[0].id) {
-					this.logger.info(new UserForGroupNotFoundLoggable(externalGroupUser));
-					return null;
-				}
-
-				const groupUser: GroupUser = new GroupUser({
-					userId: user.id,
-					roleId: roles[0].id,
-				});
-
-				return groupUser;
-			})
+			externalGroup.otherUsers.map(
+				async (externalGroupUser: ExternalGroupUserDto): Promise<GroupUser | null> =>
+					this.getGroupUser(externalGroupUser, systemId)
+			)
 		);
 
 		const filteredUsers: GroupUser[] = users.filter((groupUser): groupUser is GroupUser => groupUser !== null);
@@ -199,8 +202,25 @@ export class OidcProvisioningService {
 		return filteredUsers;
 	}
 
+	private async getGroupUser(externalGroupUser: ExternalGroupUserDto, systemId: EntityId): Promise<GroupUser | null> {
+		const user: UserDO | null = await this.userService.findByExternalId(externalGroupUser.externalUserId, systemId);
+		const roles: RoleDto[] = await this.roleService.findByNames([externalGroupUser.roleName]);
+
+		if (!user?.id || roles.length !== 1 || !roles[0].id) {
+			this.logger.info(new UserForGroupNotFoundLoggable(externalGroupUser));
+			return null;
+		}
+
+		const groupUser: GroupUser = new GroupUser({
+			userId: user.id,
+			roleId: roles[0].id,
+		});
+
+		return groupUser;
+	}
+
 	async removeExternalGroupsAndAffiliation(
-		externalUserId: EntityId,
+		externalUserId: string,
 		externalGroups: ExternalGroupDto[],
 		systemId: EntityId
 	): Promise<void> {
