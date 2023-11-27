@@ -40,11 +40,11 @@ export class ExternalToolMetadataService {
 			);
 		}
 
-		const externaltoolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
+		const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
 			schoolExternalToolCount: schoolExternalTools.length,
 			contextExternalToolCountPerContext: contextExternalToolCount,
 		});
 
-		return externaltoolMetadata;
+		return externalToolMetadata;
 	}
 }
