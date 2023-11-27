@@ -6,16 +6,7 @@ export class SystemResponseMapper {
 		const systemProps = system.getProps();
 
 		const res = new SystemResponse({
-			id: system.id,
-			type: systemProps.type,
-			url: systemProps.url,
-			alias: systemProps.alias,
-			displayName: systemProps.displayName,
-			oauthConfig: systemProps.oauthConfig,
-			oidcConfig: systemProps.oidcConfig,
-			ldapConfig: systemProps.ldapConfig,
-			provisioningStrategy: systemProps.provisioningStrategy,
-			provisioningUrl: systemProps.provisioningUrl,
+			...systemProps,
 		});
 
 		return res;

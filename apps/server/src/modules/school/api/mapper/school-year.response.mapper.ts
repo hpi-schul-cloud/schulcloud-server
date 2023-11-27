@@ -6,10 +6,7 @@ export class SchoolYearResponseMapper {
 		const schoolYearProps = schoolYear.getProps();
 
 		const res = new SchoolYearResponse({
-			id: schoolYear.id,
-			name: schoolYearProps.name,
-			startDate: schoolYearProps.startDate,
-			endDate: schoolYearProps.endDate,
+			...schoolYearProps,
 		});
 
 		return res;
