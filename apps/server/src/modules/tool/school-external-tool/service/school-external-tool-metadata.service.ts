@@ -28,10 +28,10 @@ export class SchoolExternalToolMetadataService {
 			})
 		);
 
-		const schoolExternaltoolMetadata: SchoolExternalToolMetadata = new SchoolExternalToolMetadata({
+		const schoolExternalToolMetadata: SchoolExternalToolMetadata = new SchoolExternalToolMetadata({
 			contextExternalToolCountPerContext: contextExternalToolCount,
 		});
 
-		return schoolExternaltoolMetadata;
+		return schoolExternalToolMetadata;
 	}
 }
