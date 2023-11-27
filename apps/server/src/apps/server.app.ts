@@ -19,8 +19,10 @@ import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { LegacyLogger, Logger } from '@src/core/logger';
 import express from 'express';
 import { join } from 'path';
+
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
+
 import { AppStartLoggable } from './helpers/app-start-loggable';
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
