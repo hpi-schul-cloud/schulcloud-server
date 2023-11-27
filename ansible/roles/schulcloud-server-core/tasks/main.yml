@@ -143,19 +143,19 @@
      - KEDA_ENABLED is defined and KEDA_ENABLED|bool
      - SCALED_PREVIEW_GENERATOR_ENABLED is defined and SCALED_PREVIEW_GENERATOR_ENABLED|bool
 
-  - name: TlDrawServerDeployment
+  - name: TlDraw server deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-deployment.yml.j2
 
-  - name: TlDrawServerService
+  - name: TlDraw server service
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-server-svc.yml.j2
 
-  - name: TldrawIngress
+  - name: Tldraw ingress
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
