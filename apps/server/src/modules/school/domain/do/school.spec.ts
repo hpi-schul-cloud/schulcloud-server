@@ -1,5 +1,5 @@
 import { schoolFactory } from '../testing';
-import { SchoolFeature } from '../type';
+import { SchoolFeature, SchoolPurpose } from '../type';
 
 describe('School', () => {
 	describe('addFeature', () => {
@@ -71,6 +71,51 @@ describe('School', () => {
 			const school = schoolFactory.build();
 
 			const result = school.isExternal();
+
+			expect(result).toBe(false);
+		});
+	});
+
+	describe('isEligibleForExternalInvite', () => {
+		it('should return true if school has an eligible purpose and is not the own school', () => {
+			const school = schoolFactory.build({
+				id: 'test',
+			});
+
+			const result = school.isEligibleForExternalInvite('other school id');
+
+			expect(result).toBe(true);
+		});
+
+		it('should return false if school has purpose "expert"', () => {
+			const school = schoolFactory.build({
+				purpose: SchoolPurpose.EXPERT,
+				id: 'test',
+			});
+
+			const result = school.isEligibleForExternalInvite('other school id');
+
+			expect(result).toBe(false);
+		});
+
+		it('should return false if school has purpose "tombstone"', () => {
+			const school = schoolFactory.build({
+				purpose: SchoolPurpose.TOMBSTONE,
+				id: 'test',
+			});
+
+			const result = school.isEligibleForExternalInvite('other school id');
+
+			expect(result).toBe(false);
+		});
+
+		it('should return false if school is the own school', () => {
+			const testId = 'test';
+			const school = schoolFactory.build({
+				id: testId,
+			});
+
+			const result = school.isEligibleForExternalInvite(testId);
 
 			expect(result).toBe(false);
 		});

@@ -1,3 +1,4 @@
+import { EntityId } from '@shared/domain';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { County, FileStorageType, SchoolFeature, SchoolPermissions, SchoolPurpose } from '../type';
 import { FederalState } from './federal-state';
@@ -21,6 +22,17 @@ export class School extends DomainObject<SchoolProps> {
 
 	public isExternal(): boolean {
 		const result = !!this.props.externalId;
+
+		return result;
+	}
+
+	public isEligibleForExternalInvite(ownSchoolId: EntityId): boolean {
+		const hasEligiblePurpose =
+			this.props.purpose !== SchoolPurpose.EXPERT && this.props.purpose !== SchoolPurpose.TOMBSTONE;
+
+		const isNotOwnSchool = this.props.id !== ownSchoolId;
+
+		const result = hasEligiblePurpose && isNotOwnSchool;
 
 		return result;
 	}

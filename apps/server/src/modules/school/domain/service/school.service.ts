@@ -31,16 +31,16 @@ export class SchoolService {
 		return schools;
 	}
 
-	public async getAllSchoolsExceptOwnSchool(
+	public async getSchoolsForExternalInvite(
 		query: SchoolQuery,
 		ownSchoolId: EntityId,
 		options?: IFindOptions<SchoolProps>
 	): Promise<School[]> {
 		const schools = await this.getAllSchools(query, options);
 
-		const schoolsWithoutOwnSchool = schools.filter((school) => school.id !== ownSchoolId);
+		const schoolsForExternalInvite = schools.filter((school) => school.isEligibleForExternalInvite(ownSchoolId));
 
-		return schoolsWithoutOwnSchool;
+		return schoolsForExternalInvite;
 	}
 
 	private setStudentTeamCreationFeature(school: School): School {

@@ -42,7 +42,7 @@ export class SchoolUc {
 			},
 		};
 
-		const schools = await this.schoolService.getAllSchoolsExceptOwnSchool(query, ownSchoolId, findOptions);
+		const schools = await this.schoolService.getSchoolsForExternalInvite(query, ownSchoolId, findOptions);
 
 		const dtos = SchoolResponseMapper.mapToListForExternalInviteResponses(schools);
 

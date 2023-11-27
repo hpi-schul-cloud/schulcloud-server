@@ -6,6 +6,7 @@ import { ObjectId } from 'bson';
 import { schoolFactory } from '../testing';
 import { SchoolRepo } from '../interface';
 import { SchoolService } from './school.service';
+import { SchoolPurpose } from '../type';
 
 describe('SchoolService', () => {
 	let service: SchoolService;
@@ -122,13 +123,14 @@ describe('SchoolService', () => {
 		});
 	});
 
-	describe('getAllSchoolsExceptOwnSchool', () => {
-		it('should return all schools except own school', async () => {
+	describe('getSchoolsForExternalInvite', () => {
+		it('should return all schools for external invite', async () => {
 			const ownSchool = schoolFactory.build();
 			const foreignSchools = schoolFactory.buildList(3);
-			schoolRepo.getAllSchools.mockResolvedValueOnce([ownSchool, ...foreignSchools]);
+			const foreignExpertSchool = schoolFactory.build({ purpose: SchoolPurpose.EXPERT });
+			schoolRepo.getAllSchools.mockResolvedValueOnce([ownSchool, ...foreignSchools, foreignExpertSchool]);
 
-			const result = await service.getAllSchoolsExceptOwnSchool({}, ownSchool.id);
+			const result = await service.getSchoolsForExternalInvite({}, ownSchool.id);
 
 			expect(result).toEqual(foreignSchools);
 		});

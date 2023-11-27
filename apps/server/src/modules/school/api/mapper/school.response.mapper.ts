@@ -39,7 +39,6 @@ export class SchoolResponseMapper {
 		const dto = new SchoolForExternalInviteResponse({
 			id: school.id,
 			name: schoolProps.name,
-			purpose: schoolProps.purpose,
 		});
 
 		return dto;
