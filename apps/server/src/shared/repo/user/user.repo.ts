@@ -175,7 +175,6 @@ export class UserRepo extends BaseRepo<User> {
 		const parentsEmails = user.parents?.map((parent) => parent.email) ?? [];
 
 		return parentsEmails;
-
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {
