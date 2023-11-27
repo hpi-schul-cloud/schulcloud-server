@@ -5,7 +5,6 @@ export * from './sanis-group-type';
 export * from './sanis-name-response';
 export * from './sanis-gruppe-response';
 export * from './sanis-gruppen-response';
-export * from './sanis-laufzeit-response';
 export * from './sanis-organisation-response';
 export * from './sanis-personenkontext-response';
 export * from './sanis-gruppenzugehoerigkeit-response';

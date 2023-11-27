@@ -1,7 +1,7 @@
 import { SanisGroupRole } from './sanis-group-role';
 
 export interface SanisSonstigeGruppenzugehoerigeResponse {
-	ktid: string;
+	ktid?: string;
 
-	rollen: SanisGroupRole[];
+	rollen?: SanisGroupRole[];
 }

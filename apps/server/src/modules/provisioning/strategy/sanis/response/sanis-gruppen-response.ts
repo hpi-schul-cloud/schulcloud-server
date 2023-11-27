@@ -3,9 +3,9 @@ import { SanisGruppenzugehoerigkeitResponse } from './sanis-gruppenzugehoerigkei
 import { SanisSonstigeGruppenzugehoerigeResponse } from './sanis-sonstige-gruppenzugehoerige-response';
 
 export interface SanisGruppenResponse {
-	gruppe: SanisGruppeResponse;
+	gruppe?: SanisGruppeResponse;
 
-	gruppenzugehoerigkeit: SanisGruppenzugehoerigkeitResponse;
+	gruppenzugehoerigkeit?: SanisGruppenzugehoerigkeitResponse;
 
 	sonstige_gruppenzugehoerige?: SanisSonstigeGruppenzugehoerigeResponse[];
 }

@@ -10,9 +10,9 @@ export class ExternalGroupDto {
 
 	otherUsers?: ExternalGroupUserDto[];
 
-	from: Date;
+	from?: Date;
 
-	until: Date;
+	until?: Date;
 
 	type: GroupTypes;
 

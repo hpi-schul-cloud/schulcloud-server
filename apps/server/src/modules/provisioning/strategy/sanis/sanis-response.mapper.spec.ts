@@ -72,11 +72,6 @@ describe('SanisResponseMapper', () => {
 								id: new UUID().toString(),
 								bezeichnung: 'bezeichnung',
 								typ: SanisGroupType.CLASS,
-								laufzeit: {
-									von: new Date(2023, 1, 8),
-									bis: new Date(2024, 7, 31),
-								},
-								orgid: 'orgid',
 							},
 							gruppenzugehoerigkeit: {
 								rollen: [SanisGroupRole.TEACHER],
@@ -155,6 +150,25 @@ describe('SanisResponseMapper', () => {
 			});
 		});
 
+		describe('when group data set does not have the group info', () => {
+			const setup = () => {
+				const { sanisResponse } = setupSanisResponse();
+				sanisResponse.personenkontexte[0].gruppen![0].gruppe = undefined;
+
+				return {
+					sanisResponse,
+				};
+			};
+
+			it('should not map the group', () => {
+				const { sanisResponse } = setup();
+
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
+
+				expect(result).toHaveLength(0);
+			});
+		});
+
 		describe('when group type is given', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
@@ -176,18 +190,16 @@ describe('SanisResponseMapper', () => {
 				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
 
 				expect(result?.[0]).toEqual<ExternalGroupDto>({
-					name: group.gruppe.bezeichnung,
+					name: group.gruppe!.bezeichnung!,
 					type: GroupTypes.CLASS,
-					from: group.gruppe.laufzeit.von,
-					until: group.gruppe.laufzeit.bis,
-					externalId: group.gruppe.id,
+					externalId: group.gruppe!.id!,
 					user: {
 						externalUserId: personenkontext.id,
 						roleName: RoleName.TEACHER,
 					},
 					otherUsers: [
 						{
-							externalUserId: otherParticipant.ktid,
+							externalUserId: otherParticipant.ktid!,
 							roleName: RoleName.STUDENT,
 						},
 					],
@@ -198,7 +210,7 @@ describe('SanisResponseMapper', () => {
 		describe('when no group type is provided', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SanisGroupType.OTHER;
+				sanisResponse.personenkontexte[0].gruppen![0]!.gruppe!.typ = SanisGroupType.OTHER;
 
 				return {
 					sanisResponse,
@@ -217,7 +229,7 @@ describe('SanisResponseMapper', () => {
 		describe('when the group role mapping for the user is missing', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit.rollen = [SanisGroupRole.SCHOOL_SUPPORT];
+				sanisResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit!.rollen = [SanisGroupRole.SCHOOL_SUPPORT];
 
 				return {
 					sanisResponse,
@@ -236,7 +248,7 @@ describe('SanisResponseMapper', () => {
 		describe('when the user has no role in the group', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit.rollen = [];
+				sanisResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit!.rollen = [];
 
 				return {
 					sanisResponse,
