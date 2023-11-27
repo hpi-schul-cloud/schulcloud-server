@@ -1,4 +1,5 @@
 import { Embeddable, Embedded, Entity, Property } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface IFederalStateProperties {
@@ -13,10 +14,14 @@ export interface IFederalStateProperties {
 @Embeddable()
 export class CountyEmbeddable {
 	constructor(county: CountyEmbeddable) {
+		this._id = county._id;
 		this.name = county.name;
 		this.countyId = county.countyId;
 		this.antaresKey = county.antaresKey;
 	}
+
+	@Property()
+	_id: ObjectId;
 
 	@Property()
 	name: string;

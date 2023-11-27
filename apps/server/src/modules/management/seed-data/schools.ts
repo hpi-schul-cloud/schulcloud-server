@@ -3,6 +3,7 @@ import { FederalStateEntity, ISchoolProperties, SchoolRoles, SchoolYearEntity, S
 import { federalStateFactory, schoolFactory } from '@shared/testing';
 import { SchoolFeature, SchoolPurpose } from '@src/modules/school/domain';
 import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
+import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
 import { EFederalState } from './federalstates';
 import { SeedSchoolYearEnum } from './schoolyears';
@@ -12,7 +13,7 @@ type SeedSchoolProperties = Omit<ISchoolProperties, 'systems' | 'federalState' |
 	updatedAt?: string;
 	createdAt?: string;
 	county?: {
-		id: string;
+		_id: ObjectId;
 		countyId: number;
 		name: string;
 		antaresKey: string;
@@ -40,7 +41,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'Demo Schule',
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: '5fa55eb53f472a2d986c8813',
+			_id: new ObjectId('5fa55eb53f472a2d986c8813'),
 			countyId: 12052,
 			name: 'Cottbus',
 			antaresKey: 'CB',
@@ -79,7 +80,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'Paul-Gerhardt-Gymnasium',
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: '5fa55eb53f472a2d986c8812',
+			_id: new ObjectId('5fa55eb53f472a2d986c8812'),
 			countyId: 12051,
 			name: 'Brandenburg an der Havel',
 			antaresKey: 'BRB',
@@ -108,7 +109,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'Expertenschule',
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: '5fa55eb53f472a2d986c8813',
+			_id: new ObjectId('5fa55eb53f472a2d986c8813'),
 			countyId: 12052,
 			name: 'Cottbus',
 			antaresKey: 'CB',
@@ -126,7 +127,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'Felix Mendelssohn-Gymnasium',
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: '5fa55eb53f472a2d986c8813',
+			_id: new ObjectId('5fa55eb53f472a2d986c8813'),
 			countyId: 12052,
 			name: 'Cottbus',
 			antaresKey: 'CB',
@@ -155,7 +156,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'Ludwig van Beethoven-Liceum',
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: '5fa55eb53f472a2d986c8813',
+			_id: new ObjectId('5fa55eb53f472a2d986c8813'),
 			countyId: 12052,
 			name: 'Cottbus',
 			antaresKey: 'CB',
@@ -210,7 +211,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'school in Ni',
 		federalState: EFederalState.NIEDERSACHSEN,
 		county: {
-			id: '5fa55eb53f472a2d986c8812',
+			_id: new ObjectId('5fa55eb53f472a2d986c8812'),
 			countyId: 3256,
 			name: 'Nienburg/Weser',
 			antaresKey: 'NI',
@@ -242,7 +243,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'OIDC-Mock-School',
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: '5fa55eb53f472a2d986c8812',
+			_id: new ObjectId('5fa55eb53f472a2d986c8812'),
 			countyId: 12051,
 			name: 'Brandenburg an der Havel',
 			antaresKey: 'BRB',

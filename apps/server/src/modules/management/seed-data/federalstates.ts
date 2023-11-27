@@ -1,10 +1,11 @@
 import { CountyEmbeddable, IFederalStateProperties } from '@shared/domain/entity/federal-state.entity';
 import { federalStateFactory } from '@shared/testing/factory/federal-state.factory';
+import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
 
 type SeedFederalStateProperties = Omit<IFederalStateProperties, 'counties' | 'createdAt' | 'updatedAt'> & {
 	id: string;
-	counties?: (CountyEmbeddable & { id: string })[];
+	counties?: CountyEmbeddable[];
 	createdAt?: string;
 	updatedAt?: string;
 };
@@ -41,19 +42,19 @@ const seedFederalStates: SeedFederalStateProperties[] = [
 				antaresKey: 'S',
 				countyId: 8111,
 				name: 'Stuttgart',
-				id: '5fa55eb53f472a2d986c87ba',
+				_id: new ObjectId('5fa55eb53f472a2d986c87ba'),
 			},
 			{
 				antaresKey: 'BB',
 				countyId: 8115,
 				name: 'Böblingen',
-				id: '5fa55eb53f472a2d986c87bb',
+				_id: new ObjectId('5fa55eb53f472a2d986c87bb'),
 			},
 			{
 				antaresKey: 'ES',
 				countyId: 8116,
 				name: 'Esslingen',
-				id: '5fa55eb53f472a2d986c87bc',
+				_id: new ObjectId('5fa55eb53f472a2d986c87bc'),
 			},
 		],
 	},
@@ -65,13 +66,13 @@ const seedFederalStates: SeedFederalStateProperties[] = [
 		counties: [
 			{
 				antaresKey: 'BRB',
-				id: '5fa55eb53f472a2d986c8812',
+				_id: new ObjectId('5fa55eb53f472a2d986c8812'),
 				countyId: 12051,
 				name: 'Brandenburg an der Havel',
 			},
 			{
 				antaresKey: 'CB',
-				id: '5fa55eb53f472a2d986c8813',
+				_id: new ObjectId('5fa55eb53f472a2d986c8813'),
 				countyId: 12052,
 				name: 'Cottbus',
 			},
@@ -95,13 +96,13 @@ const seedFederalStates: SeedFederalStateProperties[] = [
 				antaresKey: 'BRB',
 				countyId: 12051,
 				name: 'Brandenburg an der Havel',
-				id: '5fa55eb53f472a2d986c8812',
+				_id: new ObjectId('5fa55eb53f472a2d986c8812'),
 			},
 			{
 				antaresKey: 'CB',
 				countyId: 12052,
 				name: 'Cottbus',
-				id: '5fa55eb53f472a2d986c8813',
+				_id: new ObjectId('5fa55eb53f472a2d986c8813'),
 			},
 		],
 	},
@@ -144,7 +145,7 @@ const seedFederalStates: SeedFederalStateProperties[] = [
 				antaresKey: 'NI',
 				countyId: 3256,
 				name: 'Nienburg/Weser',
-				id: '5fa55eb53f472a2d986c8812',
+				_id: new ObjectId('5fa55eb53f472a2d986c8812'),
 			},
 		],
 	},
@@ -213,6 +214,7 @@ export function generateFederalStates() {
 			federalState.counties?.map(
 				(county) =>
 					new CountyEmbeddable({
+						_id: county._id,
 						antaresKey: county.antaresKey,
 						name: county.name,
 						countyId: county.countyId,

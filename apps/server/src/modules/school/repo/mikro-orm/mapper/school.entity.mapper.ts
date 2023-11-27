@@ -1,5 +1,6 @@
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { School, SchoolFeature } from '../../../domain';
+import { CountyEmbeddableMapper } from './county.embeddable.mapper';
 import { FederalStateEntityMapper } from './federal-state.entity.mapper';
 import { SchoolYearEntityMapper } from './school-year.entity.mapper';
 import { SystemEntityMapper } from './system.entity.mapper';
@@ -10,6 +11,7 @@ export class SchoolEntityMapper {
 		const federalState = FederalStateEntityMapper.mapToDo(entity.federalState);
 		const features = this.mapFeatures(entity);
 		const systems = entity.systems?.getItems().map((system) => SystemEntityMapper.mapToDo(system));
+		const county = entity.county && CountyEmbeddableMapper.mapToDomainType(entity.county);
 
 		const school = new School({
 			id: entity.id,
@@ -22,7 +24,6 @@ export class SchoolEntityMapper {
 			inMaintenanceSince: entity.inMaintenanceSince,
 			inUserMigration: entity.inUserMigration,
 			purpose: entity.purpose,
-			county: entity.county,
 			logo_dataUrl: entity.logo_dataUrl,
 			logo_name: entity.logo_name,
 			fileStorageType: entity.fileStorageType,
@@ -33,6 +34,7 @@ export class SchoolEntityMapper {
 			federalState,
 			features,
 			systems,
+			county,
 		});
 
 		return school;

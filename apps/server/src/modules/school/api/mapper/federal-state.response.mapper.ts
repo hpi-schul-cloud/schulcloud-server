@@ -24,7 +24,9 @@ export class FederalStateResponseMapper {
 	}
 
 	private static mapToCountyResponse(county: County): CountyResponse {
+		// TODO: Simplify this by destructuring the county.
 		const res = new CountyResponse({
+			id: county.id,
 			name: county.name,
 			countyId: county.countyId,
 			antaresKey: county.antaresKey,
