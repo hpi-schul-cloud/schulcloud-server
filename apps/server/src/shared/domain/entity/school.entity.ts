@@ -1,11 +1,19 @@
-import { Embeddable, Embedded, Entity, Index, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
+import {
+	Collection,
+	Embeddable,
+	Embedded,
+	Entity,
+	Index,
+	ManyToMany,
+	ManyToOne,
+	OneToOne,
+	Property,
+} from '@mikro-orm/core';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
-import { ObjectId } from 'bson';
-import { EntityId } from '../types';
 import { BaseEntity } from './base.entity';
-import { FederalStateEntity } from './federal-state.entity';
 import { SchoolYearEntity } from './schoolyear.entity';
 import { SystemEntity } from './system.entity';
+import { FederalStateEntity } from './federal-state.entity';
 
 export enum SchoolFeatures {
 	ROCKET_CHAT = 'rocketChat',
@@ -52,7 +60,7 @@ export class SchoolRoles {
 }
 
 @Entity({ tableName: 'schools' })
-@Index({ properties: ['externalId', '_systems'] })
+@Index({ properties: ['externalId', 'systems'] })
 export class SchoolEntity extends BaseEntity {
 	@Property({ nullable: true })
 	features?: SchoolFeatures[];
@@ -75,19 +83,8 @@ export class SchoolEntity extends BaseEntity {
 	@Property({ nullable: true })
 	officialSchoolNumber?: string;
 
-	@Property({ fieldName: 'systems' })
-	_systems: ObjectId[] = [];
-
-	get systems() {
-		return this._systems.map((s) => s.toHexString());
-	}
-
-	set systems(systemIds: EntityId[]) {
-		this._systems = systemIds.map((sid) => new ObjectId(sid));
-	}
-
-	// @ManyToMany(() => SystemEntity, undefined, { fieldName: 'systems' })
-	// systems = new Collection<SystemEntity>(this);
+	@ManyToMany(() => SystemEntity, undefined, { fieldName: 'systems' })
+	systems = new Collection<SystemEntity>(this);
 
 	@Embedded(() => SchoolRoles, { object: true, nullable: true, prefix: false })
 	permissions?: SchoolRoles;
@@ -126,7 +123,7 @@ export class SchoolEntity extends BaseEntity {
 			this.officialSchoolNumber = props.officialSchoolNumber;
 		}
 		if (props.systems) {
-			this.systems = props.systems.map((s) => s.id);
+			this.systems.set(props.systems);
 		}
 		if (props.features) {
 			this.features = props.features;

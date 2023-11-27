@@ -7,7 +7,6 @@ import {
 	ISchoolProperties,
 	LegacySchoolDo,
 	SchoolEntity,
-	SchoolFeatures,
 	SchoolRolePermission,
 	SchoolRoles,
 	SchoolYearEntity,
@@ -79,21 +78,6 @@ describe('LegacySchoolRepo', () => {
 				expect(result).toMatchObject(expected);
 				expect(result.id).toBeDefined();
 			});
-
-			it('should successfully save school after adding a system', async () => {
-				const system: SystemEntity = systemFactory.buildWithId();
-				const schoolEntity: SchoolEntity = schoolFactory.build({ externalId: 'externalId' });
-				schoolEntity.systems = [system.id];
-
-				await em.persistAndFlush(schoolEntity);
-				em.clear();
-
-				const school = await repo.findById(schoolEntity.id);
-
-				school.features = [SchoolFeatures.NEXTCLOUD];
-
-				await expect(repo.save(school)).resolves.not.toThrow();
-			});
 		});
 	});
 
@@ -132,13 +116,13 @@ describe('LegacySchoolRepo', () => {
 		it('should find school by external ID', async () => {
 			const system: SystemEntity = systemFactory.buildWithId();
 			const schoolEntity: SchoolEntity = schoolFactory.build({ externalId: 'externalId' });
-			schoolEntity.systems = [system.id];
+			schoolEntity.systems.add(system);
 
-			await em.persistAndFlush([system, schoolEntity]);
+			await em.persistAndFlush(schoolEntity);
 
 			const result: LegacySchoolDo | null = await repo.findByExternalId(
 				schoolEntity.externalId as string,
-				schoolEntity.systems[0]
+				schoolEntity.systems[0].id
 			);
 
 			expect(result?.externalId).toEqual(schoolEntity.externalId);
