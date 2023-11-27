@@ -192,8 +192,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="5"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-metadata.mapper.ts:5</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="6"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-metadata.mapper.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -249,14 +249,17 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ExternalToolMetadataResponse } from &#x27;../controller/dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ContextExternalToolCountPerContextResponse } from &#x27;../../common/controller/dto&#x27;;
+import { ExternalToolMetadataResponse } from &#x27;../controller/dto&#x27;;
 import { ExternalToolMetadata } from &#x27;../domain&#x27;;
 
 export class ExternalToolMetadataMapper {
 	static mapToExternalToolMetadataResponse(externalToolMetadata: ExternalToolMetadata): ExternalToolMetadataResponse {
 		const externalToolMetadataResponse: ExternalToolMetadataResponse &#x3D; new ExternalToolMetadataResponse({
 			schoolExternalToolCount: externalToolMetadata.schoolExternalToolCount,
-			contextExternalToolCountPerContext: externalToolMetadata.contextExternalToolCountPerContext,
+			contextExternalToolCountPerContext: new ContextExternalToolCountPerContextResponse(
+				externalToolMetadata.contextExternalToolCountPerContext
+			),
 		});
 
 		return externalToolMetadataResponse;

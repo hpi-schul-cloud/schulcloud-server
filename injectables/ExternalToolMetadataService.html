@@ -303,10 +303,10 @@
 import { EntityId } from &#x27;@shared/domain&#x27;;
 import { ContextExternalToolRepo, SchoolExternalToolRepo } from &#x27;@shared/repo&#x27;;
 import { ToolContextType } from &#x27;../../common/enum&#x27;;
+import { ToolContextMapper } from &#x27;../../common/mapper/tool-context.mapper&#x27;;
 import { ContextExternalToolType } from &#x27;../../context-external-tool/entity&#x27;;
 import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
 import { ExternalToolMetadata } from &#x27;../domain&#x27;;
-import { ToolContextMapper } from &#x27;../../common/mapper/tool-context.mapper&#x27;;
 
 @Injectable()
 export class ExternalToolMetadataService {
@@ -341,12 +341,12 @@ export class ExternalToolMetadataService {
 			);
 		}
 
-		const externaltoolMetadata: ExternalToolMetadata &#x3D; new ExternalToolMetadata({
+		const externalToolMetadata: ExternalToolMetadata &#x3D; new ExternalToolMetadata({
 			schoolExternalToolCount: schoolExternalTools.length,
 			contextExternalToolCountPerContext: contextExternalToolCount,
 		});
 
-		return externaltoolMetadata;
+		return externalToolMetadata;
 	}
 }
 </code></pre>

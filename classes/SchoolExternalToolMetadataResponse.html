@@ -174,7 +174,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/dto/school-external-tool-metadata.response.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/dto/school-external-tool-metadata.response.ts:6</a></div>
                             </td>
                         </tr>
 
@@ -231,7 +231,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#ContextExternalToolType" target="_self" >Record&lt;ContextExternalToolType | number&gt;</a></code>
+                        <i>Type : </i>        <code><a href="../classes/ContextExternalToolCountPerContextResponse.html" target="_self" >ContextExternalToolCountPerContextResponse</a></code>
 
                     </td>
                 </tr>
@@ -240,13 +240,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({type: &#x27;object&#x27;, properties: undefined})<br />
+                            @ApiProperty()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/dto/school-external-tool-metadata.response.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/dto/school-external-tool-metadata.response.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -266,16 +266,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
-import { ContextExternalToolType } from &#x27;../../../context-external-tool/entity&#x27;;
+import { ContextExternalToolCountPerContextResponse } from &#x27;../../../common/controller/dto&#x27;;
 
 export class SchoolExternalToolMetadataResponse {
-	@ApiProperty({
-		type: &#x27;object&#x27;,
-		properties: Object.fromEntries(
-			Object.values(ContextExternalToolType).map((key: ContextExternalToolType) &#x3D;&gt; [key, { type: &#x27;number&#x27; }])
-		),
-	})
-	contextExternalToolCountPerContext: Record&lt;ContextExternalToolType, number&gt;;
+	@ApiProperty()
+	contextExternalToolCountPerContext: ContextExternalToolCountPerContextResponse;
 
 	constructor(schoolExternalToolMetadataResponse: SchoolExternalToolMetadataResponse) {
 		this.contextExternalToolCountPerContext &#x3D; schoolExternalToolMetadataResponse.contextExternalToolCountPerContext;
