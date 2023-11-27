@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: admin-api-server-svc
+  name: admin-api-serv-svc
   namespace: {{ NAMESPACE }}
   labels:
-    app: admin-api-server
+    app: admin-api-serv
 spec:
   type: ClusterIP
   ports:
@@ -12,6 +12,6 @@ spec:
     - port: 4030
       targetPort: 4030
       protocol: TCP
-      name: admin-api-server
+      name: admin-api-serv
   selector:
-    app: admin-api-server
+    app: admin-api-serv
