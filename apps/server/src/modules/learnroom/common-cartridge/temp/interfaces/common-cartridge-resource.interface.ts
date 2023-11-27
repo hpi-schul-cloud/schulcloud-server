@@ -20,5 +20,5 @@ export interface CommonCartridgeResource {
 	 * This method is used to build the imsmanifest.xml file.
 	 * @returns The XML representation of the resource if the resource can be inlined otherwise undefined.
 	 */
-	getManifestXmlObject(): Record<string, unknown> | undefined;
+	getManifestXml(): Record<string, unknown> | undefined;
 }

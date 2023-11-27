@@ -6,5 +6,5 @@ export interface CommonCartridgeElement {
 	 * Returns the XML representation of the element.
 	 * This method is used to build the imsmanifest.xml file.
 	 */
-	getManifestXmlObject(): Record<string, unknown>;
+	getManifestXml(): Record<string, unknown>;
 }

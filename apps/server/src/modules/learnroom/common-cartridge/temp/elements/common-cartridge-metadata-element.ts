@@ -10,7 +10,7 @@ type CommonCartridgeMetadataElementProps = {
 export class CommonCartridgeMetadataElement implements CommonCartridgeElement {
 	constructor(private readonly props: CommonCartridgeMetadataElementProps) {}
 
-	getManifestXmlObject(): Record<string, unknown> {
+	getManifestXml(): Record<string, unknown> {
 		return {
 			schema: 'IMS Common Cartridge',
 			schemaversion: this.props.version,
