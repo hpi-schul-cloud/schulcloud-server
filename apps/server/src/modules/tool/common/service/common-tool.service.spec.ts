@@ -50,7 +50,7 @@ describe('CommonToolService', () => {
 					contextExternalTool
 				);
 
-				expect(result).toStrictEqual(
+				expect(result).toEqual(
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: false,
 						isOutdatedOnScopeSchool: false,
@@ -81,7 +81,7 @@ describe('CommonToolService', () => {
 					contextExternalTool
 				);
 
-				expect(result).toStrictEqual(
+				expect(result).toEqual(
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: false,
 						isOutdatedOnScopeSchool: true,
@@ -112,7 +112,7 @@ describe('CommonToolService', () => {
 					contextExternalTool
 				);
 
-				expect(result).toStrictEqual(
+				expect(result).toEqual(
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: true,
 						isOutdatedOnScopeSchool: false,
@@ -143,7 +143,7 @@ describe('CommonToolService', () => {
 					contextExternalTool
 				);
 
-				expect(result).toStrictEqual(
+				expect(result).toEqual(
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: true,
 						isOutdatedOnScopeSchool: false,
@@ -174,7 +174,7 @@ describe('CommonToolService', () => {
 					contextExternalTool
 				);
 
-				expect(result).toStrictEqual(
+				expect(result).toEqual(
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: false,
 						isOutdatedOnScopeSchool: false,
@@ -205,7 +205,7 @@ describe('CommonToolService', () => {
 					contextExternalTool
 				);
 
-				expect(result).toStrictEqual(
+				expect(result).toEqual(
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: false,
 						isOutdatedOnScopeSchool: false,
@@ -236,7 +236,7 @@ describe('CommonToolService', () => {
 					contextExternalTool
 				);
 
-				expect(result).toStrictEqual(
+				expect(result).toEqual(
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: false,
 						isOutdatedOnScopeSchool: false,

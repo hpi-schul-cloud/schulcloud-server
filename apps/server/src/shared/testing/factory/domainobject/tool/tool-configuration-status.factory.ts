@@ -1,14 +1,10 @@
 import { ToolConfigurationStatus } from '@modules/tool/common/domain';
+import { Factory } from 'fishery';
 
-import { DoBaseFactory } from '../do-base.factory';
-
-export const toolConfigurationStatusFactory = DoBaseFactory.define<ToolConfigurationStatus, ToolConfigurationStatus>(
-	ToolConfigurationStatus,
-	() => {
-		return {
-			isDisabled: false,
-			isOutdatedOnScopeContext: false,
-			isOutdatedOnScopeSchool: false,
-		};
-	}
-);
+export const toolConfigurationStatusFactory = Factory.define<ToolConfigurationStatus>(() => {
+	return {
+		isDisabled: false,
+		isOutdatedOnScopeContext: false,
+		isOutdatedOnScopeSchool: false,
+	};
+});

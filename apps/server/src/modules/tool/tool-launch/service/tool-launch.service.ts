@@ -97,7 +97,12 @@ export class ToolLaunchService {
 		);
 
 		if (status.isOutdatedOnScopeSchool || status.isOutdatedOnScopeContext) {
-			throw new ToolStatusOutdatedLoggableException(userId, contextExternalTool.id ?? '');
+			throw new ToolStatusOutdatedLoggableException(
+				userId,
+				contextExternalTool.id ?? '',
+				status.isOutdatedOnScopeSchool,
+				status.isOutdatedOnScopeContext
+			);
 		}
 	}
 }

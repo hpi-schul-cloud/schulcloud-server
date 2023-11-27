@@ -161,7 +161,6 @@ describe('ToolReferenceController (API)', () => {
 							contextToolId: contextExternalToolEntity.id,
 							displayName: contextExternalToolEntity.displayName as string,
 							status: toolConfigurationStatusResponseFactory.build({
-								isDisabled: false,
 								isOutdatedOnScopeSchool: false,
 								isOutdatedOnScopeContext: false,
 							}),

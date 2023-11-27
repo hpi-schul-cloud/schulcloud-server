@@ -141,7 +141,6 @@ describe('ToolSchoolController (API)', () => {
 				schoolId: postParams.schoolId,
 				toolId: postParams.toolId,
 				status: toolConfigurationStatusResponseFactory.build({
-					isDisabled: false,
 					isOutdatedOnScopeSchool: false,
 					isOutdatedOnScopeContext: false,
 				}),
@@ -477,7 +476,6 @@ describe('ToolSchoolController (API)', () => {
 				schoolId: postParamsUpdate.schoolId,
 				toolId: postParamsUpdate.toolId,
 				status: toolConfigurationStatusResponseFactory.build({
-					isDisabled: false,
 					isOutdatedOnScopeSchool: false,
 					isOutdatedOnScopeContext: false,
 				}),

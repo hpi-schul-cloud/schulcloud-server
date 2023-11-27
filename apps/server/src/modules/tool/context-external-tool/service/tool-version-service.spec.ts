@@ -297,7 +297,6 @@ describe('ToolVersionService', () => {
 
 				expect(status).toEqual(
 					toolConfigurationStatusFactory.build({
-						isDisabled: false,
 						isOutdatedOnScopeContext: true,
 						isOutdatedOnScopeSchool: true,
 					})

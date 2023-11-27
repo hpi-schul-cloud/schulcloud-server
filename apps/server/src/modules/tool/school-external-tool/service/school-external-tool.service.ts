@@ -57,33 +57,29 @@ export class SchoolExternalToolService {
 		tool: SchoolExternalTool,
 		externalTool: ExternalTool
 	): Promise<ToolConfigurationStatus> {
-		const configurationStatus: ToolConfigurationStatus = new ToolConfigurationStatus({
+		const toolConfigStatus: ToolConfigurationStatus = new ToolConfigurationStatus({
 			isDisabled: false,
 			isOutdatedOnScopeContext: false,
 			isOutdatedOnScopeSchool: true,
-		});
-
-		const latestConfigurationStatus: ToolConfigurationStatus = new ToolConfigurationStatus({
-			isDisabled: false,
-			isOutdatedOnScopeContext: false,
-			isOutdatedOnScopeSchool: false,
 		});
 
 		if (this.toolFeatures.toolStatusWithoutVersions) {
 			try {
 				await this.schoolExternalToolValidationService.validate(tool);
 
-				return latestConfigurationStatus;
+				return ToolConfigurationStatus.prototype;
 			} catch (err) {
-				return configurationStatus;
+				return toolConfigStatus;
 			}
 		}
 
 		if (externalTool.version <= tool.toolVersion) {
-			return latestConfigurationStatus;
+			toolConfigStatus.isOutdatedOnScopeSchool = false;
+			toolConfigStatus.isOutdatedOnScopeContext = false;
+			return toolConfigStatus;
 		}
 
-		return configurationStatus;
+		return toolConfigStatus;
 	}
 
 	async deleteSchoolExternalToolById(schoolExternalToolId: EntityId): Promise<void> {

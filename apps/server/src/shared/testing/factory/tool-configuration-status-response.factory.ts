@@ -1,10 +1,7 @@
 import { ToolConfigurationStatusResponse } from '@modules/tool/context-external-tool/controller/dto';
-import { DoBaseFactory } from './domainobject';
+import { Factory } from 'fishery';
 
-export const toolConfigurationStatusResponseFactory = DoBaseFactory.define<
-	ToolConfigurationStatusResponse,
-	ToolConfigurationStatusResponse
->(ToolConfigurationStatusResponse, () => {
+export const toolConfigurationStatusResponseFactory = Factory.define<ToolConfigurationStatusResponse>(() => {
 	return {
 		isDisabled: false,
 		isOutdatedOnScopeContext: false,
