@@ -4,11 +4,11 @@ metadata:
   name: admin-api-deployment
   namespace: {{ NAMESPACE }}
   labels:
-    app: admin-api-serv
+    app: api-admin
     app.kubernetes.io/part-of: schulcloud-verbund
     app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-    app.kubernetes.io/name: admin-api-serv
-    app.kubernetes.io/component: admin-api
+    app.kubernetes.io/name: api-admin
+    app.kubernetes.io/component: server
     app.kubernetes.io/managed-by: ansible
     git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
@@ -23,11 +23,18 @@ spec:
   paused: false
   selector:
     matchLabels:
-      app: admin-api-serv
+      app: api-admin
   template:
     metadata:
       labels:
-        app: admin-api-serv
+        app: api-admin
+        app.kubernetes.io/part-of: schulcloud-verbund
+        app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        app.kubernetes.io/name: api-admin
+        app.kubernetes.io/component: server
+        app.kubernetes.io/managed-by: ansible
+        git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+        git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
     spec:
       securityContext:
         runAsUser: 1000
@@ -35,12 +42,12 @@ spec:
         fsGroup: 1000
         runAsNonRoot: true
       containers:
-      - name: admin-api
+      - name: api-admin
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 4030
-          name: admin-api-serv
+          name: admin
           protocol: TCP
         envFrom:
         - configMapRef:

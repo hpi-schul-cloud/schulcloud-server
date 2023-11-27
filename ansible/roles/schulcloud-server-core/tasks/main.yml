@@ -144,13 +144,13 @@
      - SCALED_PREVIEW_GENERATOR_ENABLED is defined and SCALED_PREVIEW_GENERATOR_ENABLED|bool
 
 
-  - name: AdminApiServerDeployment
+  - name: admin api server deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: admin-api-server-deployment.yml.j2
 
-  - name: AdminApiServerService
+  - name: admin api server service
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
