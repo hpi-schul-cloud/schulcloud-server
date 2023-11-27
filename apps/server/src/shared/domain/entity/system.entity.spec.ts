@@ -1,6 +1,5 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { setupEntities } from '@shared/testing';
-import { systemFactory } from '@shared/testing/factory/system.factory';
+import { setupEntities, systemEntityFactory } from '@shared/testing';
 import { SystemEntity } from './system.entity';
 
 describe('System Entity', () => {
@@ -16,13 +15,13 @@ describe('System Entity', () => {
 		});
 
 		it('should create a system by passing required properties', () => {
-			const system = systemFactory.build();
+			const system = systemEntityFactory.build();
 
 			expect(system instanceof SystemEntity).toEqual(true);
 		});
 
 		it('should create a system by passing required and optional properties', () => {
-			const system = systemFactory
+			const system = systemEntityFactory
 				.withOauthConfig()
 				.build({ url: 'SAMPLE_URL', alias: 'SAMPLE_ALIAS', displayName: 'SAMPLE_NAME' });
 
@@ -39,16 +38,16 @@ describe('System Entity', () => {
 						clientId: '12345',
 						clientSecret: 'mocksecret',
 						idpHint: 'mock-oauth-idpHint',
-						tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+						tokenEndpoint: 'https://mock.de/mock/auth/public/mockToken',
 						grantType: 'authorization_code',
-						redirectUri: 'http://mockhost:3030/api/v3/sso/oauth/',
+						redirectUri: 'https://mockhost:3030/api/v3/sso/oauth/',
 						scope: 'openid uuid',
 						responseType: 'code',
-						authEndpoint: 'http://mock.de/auth',
+						authEndpoint: 'https://mock.de/auth',
 						provider: 'mock_type',
-						logoutEndpoint: 'http://mock.de/logout',
+						logoutEndpoint: 'https://mock.de/logout',
 						issuer: 'mock_issuer',
-						jwksEndpoint: 'http://mock.de/jwks',
+						jwksEndpoint: 'https://mock.de/jwks',
 					},
 				})
 			);
