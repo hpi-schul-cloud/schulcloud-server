@@ -2,7 +2,7 @@ import { Controller, Delete, ExecutionContext, Get, Headers, HttpStatus, INestAp
 import { Test } from '@nestjs/testing';
 import { ObjectId } from 'bson';
 import { AuthGuard } from '@nestjs/passport';
-import { TestApiClient } from './test-api-client';
+import { TestXApiKeyClient } from './test-xApiKey-client';
 
 @Controller('')
 class TestController {
@@ -22,7 +22,7 @@ class TestController {
 	}
 }
 
-describe(TestApiClient.name, () => {
+describe(TestXApiKeyClient.name, () => {
 	describe('when test request instance exists', () => {
 		let app: INestApplication;
 		const API_KEY = '1ab2c3d4e5f61ab2c3d4e5f6';
@@ -51,17 +51,17 @@ describe(TestApiClient.name, () => {
 		});
 
 		const setup = () => {
-			const testApiClient = new TestApiClient(app, '');
+			const testXApiKeyClient = new TestXApiKeyClient(app, '');
 			const id = new ObjectId().toHexString();
 
-			return { testApiClient, id };
+			return { testXApiKeyClient, id };
 		};
 
 		describe('get', () => {
 			it('should resolve requests', async () => {
-				const { testApiClient, id } = setup();
+				const { testXApiKeyClient, id } = setup();
 
-				const result = await testApiClient.get(id);
+				const result = await testXApiKeyClient.get(id);
 
 				expect(result.statusCode).toEqual(HttpStatus.OK);
 				expect(result.body).toEqual(expect.objectContaining({ method: 'get' }));
@@ -70,9 +70,9 @@ describe(TestApiClient.name, () => {
 
 		describe('post', () => {
 			it('should resolve requests', async () => {
-				const { testApiClient } = setup();
+				const { testXApiKeyClient } = setup();
 
-				const result = await testApiClient.post();
+				const result = await testXApiKeyClient.post();
 
 				expect(result.statusCode).toEqual(HttpStatus.CREATED);
 				expect(result.body).toEqual(expect.objectContaining({ method: 'post' }));
@@ -81,9 +81,9 @@ describe(TestApiClient.name, () => {
 
 		describe('delete', () => {
 			it('should resolve requests', async () => {
-				const { testApiClient, id } = setup();
+				const { testXApiKeyClient, id } = setup();
 
-				const result = await testApiClient.delete(id);
+				const result = await testXApiKeyClient.delete(id);
 
 				expect(result.statusCode).toEqual(HttpStatus.OK);
 				expect(result.body).toEqual(expect.objectContaining({ method: 'delete' }));
