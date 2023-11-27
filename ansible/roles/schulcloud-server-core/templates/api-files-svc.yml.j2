@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-files-svc
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-files
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ PORT_FILE_SERVICE }}
+      targetPort: 4444
+      protocol: TCP
+      name: api-files
+  selector:
+    app: api-files

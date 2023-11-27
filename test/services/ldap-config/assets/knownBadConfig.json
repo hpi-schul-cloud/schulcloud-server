@@ -1,0 +1,15 @@
+{
+    "DESCRIPTION": "rootPath missing, providerOptions.userPathAdditions missing, etc.",
+    "url": "ldaps://local.host:636",
+    "searchUser" : "cn=ldapadmin,dc=schul-cloud,dc=org",
+    "searchUserPassword" : "*********",
+    "providerOptions" : {
+        "userPathAdditions" : "ou=users",
+        "classPathAdditions" : "ou=classes,ou=groups",
+        "roleType" : "group",
+        "classAttributeNameMapping" : {
+            "description" : "description",
+            "uniqueMember" : "member"
+        }
+    }
+}

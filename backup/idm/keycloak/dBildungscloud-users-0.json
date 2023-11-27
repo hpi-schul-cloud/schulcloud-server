@@ -1,0 +1,26 @@
+{
+  "realm": "dBildungscloud",
+  "users": [ {
+    "id": "0c2fdc44-a443-11ec-aab5-97ab9632b3d0",
+    "createdTimestamp": 1647336841587,
+    "username": "dbildungscloud",
+    "enabled": true,
+    "totp": false,
+    "emailVerified": false,
+    "credentials": [ {
+      "id": "0c2fdc45-a443-11ec-aab5-97ab9632b3d0",
+      "type": "password",
+      "createdDate": 1647336841587,
+      "secretData": "{\"value\":\"xBUgVdY9dbNQXpAhLx4XwCldoj6IHvIq1wjiVOK6oss1muWtMuC/FIWTUZGlImPC4qLrLFLlFC23V5SliDtLrg==\",\"salt\":\"tTvCXSbJj9K/TcQC57coZQ==\",\"additionalParameters\":{}}",
+      "credentialData": "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes": [ ],
+    "requiredActions": [ ],
+    "realmRoles": [ "default-roles-dbildungscloud" ],
+    "clientRoles": {
+      "realm-management": [ "realm-admin" ]
+    },
+    "notBefore": 0,
+    "groups": []
+  } ]
+}

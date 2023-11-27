@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: api-init-job
+  labels:
+    app: api
+spec:
+  template:
+    spec:
+      containers:
+      - name: api-init
+        image: schulcloud/infra-tools:latest
+        envFrom:
+        - configMapRef:
+            name: api-configmap
+        - secretRef:
+            name: api-secret
+        env:
+        - name: K8S_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        volumeMounts:
+        - name: script
+          mountPath: /update.sh
+          subPath: update.sh
+        command: ['/bin/sh','-c']
+        args: ['cp /update.sh /update.run.sh && chmod +x /update.run.sh &&./update.run.sh']
+        resources:
+          limits:
+            cpu: "3000m"
+            memory: "1Gi"
+          requests:
+            cpu: "100m"
+            memory: "150Mi"
+      volumes:
+      - name: script
+        configMap:
+          name: api-init-file
+          items:
+          - key: update.sh
+            path: update.sh
+      restartPolicy: Never
+  backoffLimit: 4

@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "datasourceRunsCreate",
+  "required": [
+    "datasourceId"
+  ],
+  "properties": {
+    "datasourceId": {
+      "type": "string",
+      "pattern": "[a-f0-9]{24}"
+    },
+    "dryrun": {
+      "type": "boolean"
+    },
+    "data": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,16 @@
+---
+name: Clean Deployment
+
+on: delete
+
+jobs:
+  clean:
+    permissions:
+      contents: read
+    uses: hpi-schul-cloud/dof_app_deploy/.github/workflows/clean_workflow.yml@main
+    with:
+      branch: ${{ github.event.ref }}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      DEV_KUBE_CONFIG: ${{ secrets.DEV_KUBE_CONFIG }}
+      BINGO_REPO_TOKEN: ${{ secrets.BINGO_REPO_TOKEN }}

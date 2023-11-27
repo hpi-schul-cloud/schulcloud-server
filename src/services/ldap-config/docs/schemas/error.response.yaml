@@ -1,0 +1,18 @@
+type: object
+description: result on error for create and verify
+properties:
+  ok:
+    type: boolean
+    required: true
+  error:
+    type: array
+    required: false
+    items:
+      type: object
+      properties:
+        message:
+          type: string
+          required: true
+        type:
+          type: string
+          required: true

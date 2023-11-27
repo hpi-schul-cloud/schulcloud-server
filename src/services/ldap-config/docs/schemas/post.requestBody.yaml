@@ -1,0 +1,93 @@
+type: object
+description: validate request body from post requests
+required:
+  - url
+  - rootPath
+  - searchUser
+  - providerOptions
+  - searchUserPassword
+additionalProperties: false
+properties:
+  searchUserPassword:
+    type: string
+  url:
+    allOf:
+      - $ref: '../openapi.yaml#/components/schemas/ldapUrl'
+  rootPath:
+    allOf:
+      - $ref: '../openapi.yaml#/components/schemas/dn'
+  searchUser:
+    allOf:
+      - $ref: '../openapi.yaml#/components/schemas/dn'
+  provider:
+    type: string
+  providerOptions:
+    type: object
+    description: attributes to select data
+    additionalProperties: false
+    required:
+      - roleType
+      - userAttributeNameMapping
+      - roleAttributeNameMapping
+    properties:
+      userPathAdditions:
+        oneOf:
+          - $ref: '../openapi.yaml#/components/schemas/dn'
+          - $ref: '../openapi.yaml#/components/schemas/emptyString'
+      classPathAdditions:
+        oneOf:
+          - $ref: '../openapi.yaml#/components/schemas/dn'
+          - $ref: '../openapi.yaml#/components/schemas/emptyString'
+      roleType:
+        type: string
+      userAttributeNameMapping:
+        type: object
+        required:
+          - givenName
+          - sn
+          - uuid
+          - uid
+          - mail
+          - role
+        additionalProperties: false
+        properties:
+          givenName:
+            type: string
+          sn:
+            type: string
+          dn:
+            type: string
+          uuid:
+            type: string
+          uid:
+            type: string
+          mail:
+            type: string
+          role:
+            type: string
+      roleAttributeNameMapping:
+        type: object
+        required:
+          - roleStudent
+          - roleTeacher
+          - roleAdmin
+        additionalProperties: false
+        properties:
+          roleStudent:
+            type: string
+          roleTeacher:
+            type: string
+          roleAdmin:
+            type: string
+          roleNoSc:
+            type: string
+      classAttributeNameMapping:
+        type: object
+        additionalProperties: false
+        properties:
+          description:
+            type: string
+          dn:
+            type: string
+          uniqueMember:
+            type: string

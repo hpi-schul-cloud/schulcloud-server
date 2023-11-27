@@ -1,0 +1,13 @@
+{
+	"$schema": "./default.schema.json",
+	"host": "localhost",
+	"port": "PORT",
+	"mongodb": "MONGO_URI",
+	"public": "../public/",
+	"services": {
+		"calendar": "CALENDAR_URI",
+		"content": "CONTENT_URI",
+		"hydra": "HYDRA_URI",
+		"web": "HOST"
+	}
+}

@@ -1,0 +1,68 @@
+[
+	{
+		"title": "NestJS Application",
+		"file": "../README.md",
+		"children": [
+			{
+				"title": "Software Architecture",
+				"file": "architecture.md"
+			},
+			{
+				"title": "File Structure",
+				"file": "file-structure.md"
+			},
+			{
+				"title": "API Design",
+				"file": "api-design.md"
+			},
+			{
+				"title": "Logging",
+				"file": "logging.md"
+			},
+			{
+				"title": "Exception Handling",
+				"file": "exception-handling.md"
+			},
+			{
+				"title": "Domain Object Validation",
+				"file": "domain-object-validation.md"
+			},
+			{
+				"title": "Testing",
+				"file": "testing.md"
+			},
+			{
+				"title": "VSCode",
+				"file": "vs-code.md"
+			},
+			{
+				"title": "Git",
+				"file": "git.md"
+			},
+			{
+				"title": "Keycloak",
+				"file": "keycloak.md"
+			},
+			{
+				"title": "Rocket.Chat",
+				"file": "rocket-chat.md"
+			},
+			{
+				"title": "Configuration",
+				"file": "../../../README.md"
+			},
+			{
+				"title": "Authorisation",
+				"file": "../src/modules/authorization/README.md"
+			},
+			{
+				"title": "Code Style",
+				"file": "code-style.md"
+			},
+			{
+				"title": "S3ClientModule",
+				"file": "../src/infra/s3-client/README.md"
+			}
+		]
+	}
+]

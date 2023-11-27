@@ -1,0 +1,43 @@
+#jinja2: trim_blocks: "True", lstrip_blocks: "True"
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-configmap
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api
+data:
+  # general
+  NODE_ENV: "production"
+  NODE_OPTIONS: "--max-old-space-size=2048"
+  SC_TITLE: "{{ SC_TITLE }}"
+  SC_THEME: "{{ SC_THEME }}"
+  SC_DOMAIN: "{{ DOMAIN }}"
+  SHLVL: "1"
+  #  Prints slow requests above 4 s in log
+  #  LEAD_TIME: "4000"
+  PORT: "{{ PORT_SERVER }}"
+  TZ: "Europe/Berlin"
+{% for name, data in configuration_all.items() %}
+  {% if data.server is defined and data.server == true %}
+    {% if data.config_name is defined and data.config_name in hostvars[inventory_hostname] %}
+      {% if data.var_name is defined %}
+  {{ data.var_name }}: "{{ hostvars[inventory_hostname][data.config_name] }}"
+      {% else %}
+  {{ name }}: "{{ hostvars[inventory_hostname][data.config_name] }}"
+      {% endif %}
+    {% elif name in hostvars[inventory_hostname] %}
+      {% if data.var_name is defined %}
+  {{ data.var_name }}: "{{ hostvars[inventory_hostname][name] }}"
+      {% else %}
+  {{ name }}: "{{ hostvars[inventory_hostname][name] }}"
+      {% endif %}
+    {% elif data.value is defined %}
+      {% if data.var_name is defined %}
+  {{ data.var_name }}: "{{ data.value }}"
+      {% else %}
+  {{ name }}: "{{ data.value }}"
+      {% endif %}
+    {% endif %}
+  {% endif %}
+{% endfor %}

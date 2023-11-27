@@ -1,0 +1,109 @@
+name: Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  MONGODB_VERSION: 4.4
+  NODE_VERSION: '18'
+jobs:
+  feathers_tests_cov:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-version: ${{ env.MONGODB_VERSION }}
+      - name: environment setup
+        run: |
+          sh scripts/unitTestFeathers.sh
+      - name: npm ci
+        run: npm ci --prefer-offline --no-audit
+      - name: feathers:Test - test with coverage
+        run: npm run feathers:test
+  nest_tests_cov:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        shard: [1, 2, 3, 4]
+    services:
+      rabbitmq:
+        image: rabbitmq:3
+        ports:
+          - 5672:5672
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-version: ${{ env.MONGODB_VERSION }}
+      - name: npm ci
+        run: npm ci --prefer-offline --no-audit
+      - name: nest:test:cov - test all with coverage
+        timeout-minutes: 25
+        run: export RUN_WITHOUT_JEST_COVERAGE='true' && export NODE_OPTIONS='--max_old_space_size=4096' && ./node_modules/.bin/jest --shard=${{ matrix.shard }}/${{ strategy.job-total }} --coverage --force-exit
+      - name: save-coverage
+        run: mv coverage/lcov.info coverage/${{matrix.shard}}.info
+      - name: "upload-artifacts"
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-artifacts
+          path: coverage/
+  sonarcloud:
+      name: SonarCloud coverage
+      runs-on: ubuntu-latest
+      needs: [nest_tests_cov]
+      steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v3
+        with:
+          name: coverage-artifacts
+          path: coverage
+      - name: Merge Code Coverage
+        run: |
+          sudo apt-get install -y lcov
+          find coverage -name *.info -exec echo -a {} \; | xargs lcov -o merged-lcov.info
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: SonarCloud upload coverage
+        uses: SonarSource/sonarcloud-github-action@v2.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+  nest_lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: npm ci
+        run: npm ci --prefer-offline --no-audit
+      - name: nest:lint
+        run: npm run nest:lint

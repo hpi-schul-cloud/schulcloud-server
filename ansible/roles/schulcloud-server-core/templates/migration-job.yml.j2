@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: api-migration-job
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-migration
+spec:
+  template:
+    metadata:
+      labels:
+        app: api-migration
+    spec:
+      containers:
+      - name: api-migration-job
+        image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: api-configmap
+        - secretRef:
+            name: api-secret
+        command: ['/bin/sh','-c']
+        args: ['npm run ensureIndexes && npm run migration-sync && npm run migration-prune && npm run migration up']
+        resources:
+          limits:
+            cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
+            memory: {{ API_MEMORY_LIMITS|default("2Gi", true) }}
+          requests:
+            cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
+            memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
+      restartPolicy: Never
+  backoffLimit: 3

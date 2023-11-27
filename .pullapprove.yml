@@ -1,0 +1,18 @@
+version: 3
+
+pullapprove_conditions:
+  - condition: "'WIP' not in labels"
+    unmet_status: pending
+    explanation: 'Work in progress'
+  - condition: "'- [ ]' not in body"
+    unmet_status: failure
+    explanation: 'Please finish all the required checklist tasks'
+
+notifications:
+  - when: pull_request.opened
+    comment: |
+      Hey @{{ author }}, thanks for the PR! The review will start once
+      the tests, CI checks and PR requirements (see checklist in your PR) have passed.
+  - when: pullapprove.approved
+    comment: The review is completed. @{{ author }}, please follow further instructions from
+      our Review-Guidelines https://docs.dbildungscloud.de/display/SCDOK/Review-Guidelines

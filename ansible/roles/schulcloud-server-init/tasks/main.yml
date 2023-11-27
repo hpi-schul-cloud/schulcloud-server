@@ -1,0 +1,78 @@
+
+  - name: Init Configmap File
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: configmap_file_init.yml.j2
+    when: WITH_SCHULCLOUD_INIT
+
+  - name: Remove Init Configmap File
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      state: absent
+      api_version: v1
+      kind: ConfigMap
+      name: api-init-file
+    when: not WITH_SCHULCLOUD_INIT
+
+  - name: Management Deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: management-deployment.yml.j2
+    when: WITH_SCHULCLOUD_INIT
+
+  - name: Remove management Deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      state: absent
+      api_version: apps/v1
+      kind: Deployment
+      name: management-deployment
+    when: not WITH_SCHULCLOUD_INIT
+
+  - name: Management Service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: management-svc.yml.j2
+    when: WITH_SCHULCLOUD_INIT
+
+  - name: Remove management Service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      state: absent
+      api_version: v1
+      kind: Service
+      name: mgmt-svc
+    when: not WITH_SCHULCLOUD_INIT
+
+  - name: Check Init Job
+    kubernetes.core.k8s_info:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      kind: Job
+      api_version: batch/v1
+      name: api-init-job
+    register: init_job_exists
+    ignore_errors: yes
+
+  - name: Init Job
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: job_init.yml.j2
+    when: WITH_SCHULCLOUD_INIT and init_job_exists.resources|length == 0
+
+  - name: Remove Init Job
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      state: absent
+      api_version: batch/v1
+      kind: Job
+      name: api-init-job
+    when: not WITH_SCHULCLOUD_INIT

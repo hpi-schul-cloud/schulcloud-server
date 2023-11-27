@@ -1,0 +1,45 @@
+{
+	"$schema": "./default.schema.json",
+	"host": "localhost",
+	"port": 3030,
+	"public": "../public/",
+	"services": {
+		"calendar": "http://localhost:3000",
+		"content": "https://content.schul-cloud.org",
+		"hydra": "http://localhost:9001",
+		"web": "http://localhost:3100"
+	},
+	"I18N": {
+		"AVAILABLE_LANGUAGES": "de,en,es,uk",
+		"DEFAULT_LANGUAGE": "de",
+		"DEFAULT_TIMEZONE": "Europe/Berlin",
+		"FALLBACK_LANGUAGE": "de"
+	},
+	"HOST": "http://localhost:3100",
+	"PUBLIC_BACKEND_URL": "http://localhost:3030/api",
+	"FORCE_SEND_EMAIL": false,
+	"BLOCK_DISPOSABLE_EMAIL_DOMAINS": true,
+	"STUDENT_TEAM_CREATION": "opt-out",
+	"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS": 7200,
+	"COOKIE": {
+		"SAME_SITE": "none",
+		"HTTP_ONLY": false,
+		"HOST_ONLY": true,
+		"SECURE": true,
+		"EXPIRES_SECONDS": 2592000000
+	},
+	"SESSION": {
+		"SAME_SITE": "lax",
+		"SECURE": false,
+		"HTTP_ONLY": true,
+		"EXPIRES_SECONDS": 2592000000,
+		"SECRET": "devSecret"
+	},
+	"TSP_SCHOOL_SYNCER": {
+		"SCHOOL_LIMIT": 10,
+		"STUDENTS_TEACHERS_CLASSES_LIMIT": 150
+	},
+	"CTL_TOOLS": {
+		"EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES": 300000
+	}
+}

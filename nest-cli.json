@@ -1,0 +1,112 @@
+{
+	"collection": "@nestjs/schematics",
+	"sourceRoot": "apps/server",
+	"monorepo": true,
+	"root": "apps/server",
+	"compilerOptions": {
+		"webpack": false,
+		"tsConfigPath": "apps/server/tsconfig.app.json",
+		"plugins": [
+			{
+				"name": "@nestjs/swagger",
+				"options": {
+					"classValidatorShim": true,
+					"introspectComments": true
+				}
+			}
+		],
+		"assets": ["static-assets/*"]
+	},
+	"projects": {
+		"server": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/server.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
+		"management": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/management.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
+		"console": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "console/console",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
+		"deletion-console": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/deletion-console.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
+		"files-storage": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/files-storage.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
+		"files-storage-amqp": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/files-storage-consumer.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
+		"preview-generator-amqp": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/preview-generator-consumer.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
+		"fwu-learning-contents": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/fwu-learning-contents.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
+		"h5p-editor": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/h5p-editor.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
+		"h5p-library-management": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/h5p-library-management.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+			        "tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		}
+	}
+}
