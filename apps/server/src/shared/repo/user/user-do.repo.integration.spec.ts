@@ -23,7 +23,7 @@ import {
 	cleanupCollections,
 	roleFactory,
 	schoolFactory,
-	systemFactory,
+	systemEntityFactory,
 	userDoFactory,
 	userFactory,
 } from '@shared/testing';
@@ -146,7 +146,7 @@ describe('UserRepo', () => {
 		let user: User;
 
 		beforeEach(async () => {
-			system = systemFactory.buildWithId();
+			system = systemEntityFactory.buildWithId();
 			school = schoolFactory.buildWithId();
 			school.systems.add(system);
 			user = userFactory.buildWithId({ externalId, school });
@@ -190,7 +190,7 @@ describe('UserRepo', () => {
 		let user: User;
 
 		beforeEach(async () => {
-			system = systemFactory.buildWithId();
+			system = systemEntityFactory.buildWithId();
 			school = schoolFactory.buildWithId();
 			school.systems.add(system);
 			user = userFactory.buildWithId({ externalId, school });

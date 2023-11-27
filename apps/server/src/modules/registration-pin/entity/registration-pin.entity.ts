@@ -29,7 +29,7 @@ export class RegistrationPinEntity extends BaseEntityWithTimestamps {
 
 	constructor(props: RegistrationPinEntityProps) {
 		super();
-		if (props.id !== null) {
+		if (props.id !== undefined) {
 			this.id = props.id;
 		}
 		this.email = props.email;
