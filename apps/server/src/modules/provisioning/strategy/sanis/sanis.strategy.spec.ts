@@ -1,5 +1,6 @@
-// export * from '@shared/domain/entity';
+/* eslint-disable import/first */
 export * from '@shared/domain/entity/all-entities';
+// export * from '@shared/domain/entity';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { GroupTypes } from '@modules/group';
