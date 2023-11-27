@@ -2,7 +2,7 @@ import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Course, Permission, SchoolEntity, User } from '@shared/domain';
+import { AccountEntity, Course, Permission, SchoolEntity, User } from '@shared/domain';
 import {
 	accountFactory,
 	contextExternalToolEntityFactory,
@@ -221,7 +221,7 @@ describe('ToolConfigurationController (API)', () => {
 				const school: SchoolEntity = schoolFactory.buildWithId();
 
 				const user: User = userFactory.buildWithId({ school, roles: [] });
-				const account: Account = accountFactory.buildWithId({ userId: user.id });
+				const account: AccountEntity = accountFactory.buildWithId({ userId: user.id });
 
 				const course: Course = courseFactory.buildWithId({ teachers: [user], school });
 

@@ -12,7 +12,7 @@ import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams 
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
-import { FileRecordMapper, FilesStorageMapper } from '../mapper';
+import { FileRecordMapper, FilesStorageMapper } from '../repo/mapper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 

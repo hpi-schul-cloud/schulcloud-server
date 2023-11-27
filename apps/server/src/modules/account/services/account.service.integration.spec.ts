@@ -3,7 +3,7 @@ import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-ad
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, IdmAccount } from '@shared/domain';
+import { AccountEntity, IdmAccount } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { IdentityManagementModule } from '@infra/identity-management';
 import { IdentityManagementService } from '@infra/identity-management/identity-management.service';
@@ -13,7 +13,7 @@ import { accountFactory, cleanupCollections } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { v1 } from 'uuid';
 import { LegacyLogger } from '../../../core/logger';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
+import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../repo/mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
@@ -150,7 +150,7 @@ describe('AccountService Integration', () => {
 	const compareDbAccount = async (dbId: string, createdAccount: AccountDto): Promise<void> => {
 		const foundDbAccount = await accountRepo.findById(dbId);
 		expect(foundDbAccount).toEqual(
-			expect.objectContaining<Partial<Account>>({
+			expect.objectContaining<Partial<AccountEntity>>({
 				username: createdAccount.username,
 				userId: new ObjectId(createdAccount.userId),
 				systemId: new ObjectId(createdAccount.systemId),
@@ -205,7 +205,7 @@ describe('AccountService Integration', () => {
 		);
 		const foundDbAccount = await accountRepo.findById(dbId);
 		expect(foundDbAccount).toEqual(
-			expect.objectContaining<Partial<Account>>({
+			expect.objectContaining<Partial<AccountEntity>>({
 				username: newUserName,
 			})
 		);

@@ -8,7 +8,7 @@ import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createPreviewDirectoryPath, getPreviewName } from '../helper';
 import { GetFileResponse, PreviewFileParams } from '../interface';
-import { FileResponseBuilder, PreviewBuilder } from '../mapper';
+import { FileResponseBuilder, PreviewBuilder } from '../repo/mapper';
 
 @Injectable()
 export class PreviewService {

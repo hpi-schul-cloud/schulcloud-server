@@ -7,7 +7,7 @@ import { IdentityManagementOauthService, IdentityManagementService } from '@infr
 import { NotImplementedException } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { ConfigModule } from '@nestjs/config';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
+import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../repo/mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AccountDto, AccountSaveDto } from './dto';

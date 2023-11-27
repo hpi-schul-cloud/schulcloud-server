@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import {
-	Account,
+	AccountEntity,
 	Counted,
 	EntityId,
 	Permission,
@@ -30,7 +30,7 @@ import {
 	AccountSearchQueryParams,
 	AccountSearchType,
 } from '../controller/dto';
-import { AccountEntityToDtoMapper, AccountResponseMapper } from '../mapper';
+import { AccountEntityToDtoMapper, AccountResponseMapper } from '../repo/mapper';
 import { AccountValidationService } from '../services/account.validation.service';
 import { AccountUc } from './account.uc';
 
@@ -65,26 +65,26 @@ describe('AccountUc', () => {
 	let mockStudentUserWithoutAccount: User;
 	let mockOtherStudentSchoolPermissionUser: User;
 
-	let mockSuperheroAccount: Account;
-	let mockTeacherAccount: Account;
-	let mockOtherTeacherAccount: Account;
-	let mockTeacherNoUserPermissionAccount: Account;
-	let mockTeacherNoUserNoSchoolPermissionAccount: Account;
-	let mockAdminAccount: Account;
-	let mockStudentAccount: Account;
-	let mockStudentSchoolPermissionAccount: Account;
-	let mockDifferentSchoolAdminAccount: Account;
-	let mockDifferentSchoolTeacherAccount: Account;
-	let mockDifferentSchoolStudentAccount: Account;
-	let mockUnknownRoleUserAccount: Account;
-	let mockExternalUserAccount: Account;
-	let mockAccountWithoutRole: Account;
-	let mockAccountWithoutUser: Account;
-	let mockAccountWithSystemId: Account;
-	let mockAccountWithLastFailedLogin: Account;
-	let mockAccountWithOldLastFailedLogin: Account;
-	let mockAccountWithNoLastFailedLogin: Account;
-	let mockAccounts: Account[];
+	let mockSuperheroAccount: AccountEntity;
+	let mockTeacherAccount: AccountEntity;
+	let mockOtherTeacherAccount: AccountEntity;
+	let mockTeacherNoUserPermissionAccount: AccountEntity;
+	let mockTeacherNoUserNoSchoolPermissionAccount: AccountEntity;
+	let mockAdminAccount: AccountEntity;
+	let mockStudentAccount: AccountEntity;
+	let mockStudentSchoolPermissionAccount: AccountEntity;
+	let mockDifferentSchoolAdminAccount: AccountEntity;
+	let mockDifferentSchoolTeacherAccount: AccountEntity;
+	let mockDifferentSchoolStudentAccount: AccountEntity;
+	let mockUnknownRoleUserAccount: AccountEntity;
+	let mockExternalUserAccount: AccountEntity;
+	let mockAccountWithoutRole: AccountEntity;
+	let mockAccountWithoutUser: AccountEntity;
+	let mockAccountWithSystemId: AccountEntity;
+	let mockAccountWithLastFailedLogin: AccountEntity;
+	let mockAccountWithOldLastFailedLogin: AccountEntity;
+	let mockAccountWithNoLastFailedLogin: AccountEntity;
+	let mockAccounts: AccountEntity[];
 	let mockUsers: User[];
 
 	const defaultPassword = 'DummyPasswd!1';
@@ -135,7 +135,7 @@ describe('AccountUc', () => {
 							if (account) {
 								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(account));
 							}
-							throw new EntityNotFoundError(Account.name);
+							throw new EntityNotFoundError(AccountEntity.name);
 						},
 						create: (): Promise<void> => Promise.resolve(),
 						findByUserId: (userId: EntityId): Promise<AccountDto | null> => {
@@ -155,7 +155,7 @@ describe('AccountUc', () => {
 							if (userId === 'accountWithoutUser') {
 								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
 							}
-							throw new EntityNotFoundError(Account.name);
+							throw new EntityNotFoundError(AccountEntity.name);
 						},
 						findById: (accountId: EntityId): Promise<AccountDto> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
@@ -163,7 +163,7 @@ describe('AccountUc', () => {
 							if (account) {
 								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(account));
 							}
-							throw new EntityNotFoundError(Account.name);
+							throw new EntityNotFoundError(AccountEntity.name);
 						},
 						findByUsernameAndSystemId: (username: string, systemId: EntityId | ObjectId): Promise<AccountDto> => {
 							const account = mockAccounts.find(
@@ -172,7 +172,7 @@ describe('AccountUc', () => {
 							if (account) {
 								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(account));
 							}
-							throw new EntityNotFoundError(Account.name);
+							throw new EntityNotFoundError(AccountEntity.name);
 						},
 						searchByUsernameExactMatch: (username: string): Promise<Counted<AccountDto[]>> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.username === username);

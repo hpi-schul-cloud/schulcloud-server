@@ -1,4 +1,4 @@
-import { Account } from '@shared/domain';
+import { AccountEntity } from '@shared/domain';
 import { AccountDto } from '@modules/account/services/dto/account.dto';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountResponseMapper } from '.';
@@ -6,7 +6,7 @@ import { AccountResponseMapper } from '.';
 describe('AccountResponseMapper', () => {
 	describe('mapToResponseFromEntity', () => {
 		it('should map all fields', () => {
-			const testEntity: Account = {
+			const testEntity: AccountEntity = {
 				_id: new ObjectId(),
 				id: new ObjectId().toString(),
 				userId: new ObjectId(),
@@ -25,7 +25,7 @@ describe('AccountResponseMapper', () => {
 		});
 
 		it('should ignore missing userId', () => {
-			const testEntity: Account = {
+			const testEntity: AccountEntity = {
 				_id: new ObjectId(),
 				id: new ObjectId().toString(),
 				userId: undefined,

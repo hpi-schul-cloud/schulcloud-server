@@ -5,7 +5,7 @@ import { PermissionService } from '@shared/domain';
 import { LegacySystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger/logger.module';
 import { ServerConfig } from '../server/server.config';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb, AccountIdmToDtoMapperIdm } from './mapper';
+import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb, AccountIdmToDtoMapperIdm } from './repo/mapper';
 import { AccountRepo } from './repo/account.repo';
 import { AccountServiceDb } from './services/account-db.service';
 import { AccountServiceIdm } from './services/account-idm.service';

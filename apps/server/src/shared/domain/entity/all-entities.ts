@@ -5,7 +5,7 @@ import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { Account } from './account.entity';
+import { AccountEntity } from './account.entity';
 import {
 	BoardNode,
 	CardNode,
@@ -48,7 +48,7 @@ import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
 
 export const ALL_ENTITIES = [
-	Account,
+	AccountEntity,
 	Board,
 	BoardElement,
 	BoardNode,

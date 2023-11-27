@@ -1,10 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountEntity, EntityId, User } from '@shared/domain';
 import { ICurrentUser } from '@modules/authentication';
-import { Account, EntityId, User } from '@shared/domain';
 
 export const mapUserToCurrentUser = (
 	user: User,
-	account?: Account,
+	account?: AccountEntity,
 	systemId?: EntityId,
 	impersonated?: boolean
 ): ICurrentUser => {

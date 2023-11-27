@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Permission, SchoolEntity, User } from '@shared/domain';
+import { AccountEntity, Permission, SchoolEntity, User } from '@shared/domain';
 import {
 	accountFactory,
 	contextExternalToolEntityFactory,
@@ -65,7 +65,7 @@ describe('ToolSchoolController (API)', () => {
 			]);
 
 			const userWithMissingPermission: User = userFactory.buildWithId({ school });
-			const accountWithMissingPermission: Account = accountFactory.buildWithId({
+			const accountWithMissingPermission: AccountEntity = accountFactory.buildWithId({
 				userId: userWithMissingPermission.id,
 			});
 
@@ -165,7 +165,7 @@ describe('ToolSchoolController (API)', () => {
 			]);
 
 			const userWithMissingPermission: User = userFactory.buildWithId({ school });
-			const accountWithMissingPermission: Account = accountFactory.buildWithId({
+			const accountWithMissingPermission: AccountEntity = accountFactory.buildWithId({
 				userId: userWithMissingPermission.id,
 			});
 
@@ -230,7 +230,7 @@ describe('ToolSchoolController (API)', () => {
 			]);
 
 			const userWithMissingPermission: User = userFactory.buildWithId({ school });
-			const accountWithMissingPermission: Account = accountFactory.buildWithId({
+			const accountWithMissingPermission: AccountEntity = accountFactory.buildWithId({
 				userId: userWithMissingPermission.id,
 			});
 
@@ -321,7 +321,7 @@ describe('ToolSchoolController (API)', () => {
 			]);
 
 			const userWithMissingPermission: User = userFactory.buildWithId({ school });
-			const accountWithMissingPermission: Account = accountFactory.buildWithId({
+			const accountWithMissingPermission: AccountEntity = accountFactory.buildWithId({
 				userId: userWithMissingPermission.id,
 			});
 
@@ -401,7 +401,7 @@ describe('ToolSchoolController (API)', () => {
 				Permission.SCHOOL_TOOL_ADMIN,
 			]);
 			const userWithMissingPermission: User = userFactory.buildWithId({ school });
-			const accountWithMissingPermission: Account = accountFactory.buildWithId({
+			const accountWithMissingPermission: AccountEntity = accountFactory.buildWithId({
 				userId: userWithMissingPermission.id,
 			});
 

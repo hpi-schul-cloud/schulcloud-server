@@ -18,7 +18,7 @@ import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
-import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
+import { FileDtoBuilder, FilesStorageMapper } from '../repo/mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
 import { FilesStorageUC } from './files-storage.uc';

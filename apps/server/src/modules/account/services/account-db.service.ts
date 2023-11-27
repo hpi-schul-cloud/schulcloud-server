@@ -2,9 +2,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
 import { EntityNotFoundError } from '@shared/common';
-import { Account, Counted, EntityId } from '@shared/domain';
+import { AccountEntity, Counted, EntityId } from '@shared/domain';
 import { AccountRepo } from '../repo/account.repo';
-import { AccountEntityToDtoMapper } from '../mapper';
+import { AccountEntityToDtoMapper } from '../repo/mapper';
 import { AccountDto, AccountSaveDto } from './dto';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountLookupService } from './account-lookup.service';
@@ -45,7 +45,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
-		let account: Account;
+		let account: AccountEntity;
 		if (accountDto.id) {
 			const internalId = await this.getInternalId(accountDto.id);
 			account = await this.accountRepo.findById(internalId);
@@ -63,7 +63,7 @@ export class AccountServiceDb extends AbstractAccountService {
 
 			await this.accountRepo.save(account);
 		} else {
-			account = new Account({
+			account = new AccountEntity({
 				userId: new ObjectId(accountDto.userId),
 				systemId: accountDto.systemId ? new ObjectId(accountDto.systemId) : undefined,
 				username: accountDto.username,
@@ -128,7 +128,8 @@ export class AccountServiceDb extends AbstractAccountService {
 		if (!account.password) {
 			return Promise.resolve(false);
 		}
-		return bcrypt.compare(comparePassword, account.password);
+		const result = bcrypt.compare(comparePassword, account.password);
+		return result;
 	}
 
 	private async getInternalId(id: EntityId | ObjectId): Promise<ObjectId> {

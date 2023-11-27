@@ -13,7 +13,7 @@ import { FileRecord } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { TestHelper } from '../helper/test-helper';
 import { PreviewOutputMimeTypes } from '../interface';
-import { FilesStorageMapper } from '../mapper';
+import { FilesStorageMapper } from '../repo/mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
 import { FilesStorageUC } from './files-storage.uc';

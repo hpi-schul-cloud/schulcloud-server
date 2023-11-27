@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdentityManagementOauthService } from '@infra/identity-management';
-import { AccountEntityToDtoMapper } from '@modules/account/mapper';
+import { AccountEntityToDtoMapper } from '@src/modules/account/repo/mapper';
 import { AccountDto } from '@modules/account/services/dto';
 import { ServerConfig } from '@modules/server';
 import { UnauthorizedException } from '@nestjs/common';

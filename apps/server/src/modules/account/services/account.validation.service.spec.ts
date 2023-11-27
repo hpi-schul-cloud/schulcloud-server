@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { Account, EntityId, Permission, Role, RoleName, User } from '@shared/domain';
+import { AccountEntity, Counted, EntityId, Permission, Role, RoleName, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
@@ -12,25 +12,25 @@ describe('AccountValidationService', () => {
 	let accountValidationService: AccountValidationService;
 
 	let mockTeacherUser: User;
-	let mockTeacherAccount: Account;
+	let mockTeacherAccount: AccountEntity;
 
 	let mockStudentUser: User;
-	let mockStudentAccount: Account;
+	let mockStudentAccount: AccountEntity;
 
 	let mockOtherTeacherUser: User;
-	let mockOtherTeacherAccount: Account;
+	let mockOtherTeacherAccount: AccountEntity;
 
 	let mockAdminUser: User;
 
 	let mockExternalUser: User;
-	let mockExternalUserAccount: Account;
+	let mockExternalUserAccount: AccountEntity;
 	let mockOtherExternalUser: User;
-	let mockOtherExternalUserAccount: Account;
+	let mockOtherExternalUserAccount: AccountEntity;
 
-	let oprhanAccount: Account;
+	let oprhanAccount: AccountEntity;
 
 	let mockUsers: User[];
-	let mockAccounts: Account[];
+	let mockAccounts: AccountEntity[];
 
 	afterAll(async () => {
 		await module.close();
@@ -43,17 +43,17 @@ describe('AccountValidationService', () => {
 				{
 					provide: AccountRepo,
 					useValue: {
-						findById: jest.fn().mockImplementation((accountId: EntityId): Promise<Account> => {
+						findById: jest.fn().mockImplementation((accountId: EntityId): Promise<AccountEntity> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
 
 							if (account) {
 								return Promise.resolve(account);
 							}
-							throw new EntityNotFoundError(Account.name);
+							throw new EntityNotFoundError(AccountEntity.name);
 						}),
 						searchByUsernameExactMatch: jest
 							.fn()
-							.mockImplementation((username: string): Promise<[Account[], number]> => {
+							.mockImplementation((username: string): Promise<Counted<AccountEntity[]>> => {
 								const account = mockAccounts.find((tempAccount) => tempAccount.username === username);
 
 								if (account) {
@@ -67,7 +67,7 @@ describe('AccountValidationService', () => {
 								}
 								return Promise.resolve([[], 0]);
 							}),
-						findByUserId: (userId: EntityId): Promise<Account | null> => {
+						findByUserId: (userId: EntityId): Promise<AccountEntity | null> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.userId?.toString() === userId);
 							if (account) {
 								return Promise.resolve(account);

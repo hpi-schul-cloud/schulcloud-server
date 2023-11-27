@@ -1,4 +1,4 @@
-import { Account } from '@shared/domain';
+import { AccountEntity } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { AccountEntityToDtoMapper } from './account-entity-to-dto.mapper';
 
@@ -15,7 +15,7 @@ describe('AccountEntityToDtoMapper', () => {
 
 	describe('mapToDto', () => {
 		it('should map all fields', () => {
-			const testEntity: Account = {
+			const testEntity: AccountEntity = {
 				_id: new ObjectId(),
 				id: 'id',
 				createdAt: new Date(),
@@ -47,7 +47,7 @@ describe('AccountEntityToDtoMapper', () => {
 		});
 
 		it('should ignore missing ids', () => {
-			const testEntity: Account = {
+			const testEntity: AccountEntity = {
 				_id: new ObjectId(),
 				id: 'id',
 				username: 'username',
@@ -63,14 +63,14 @@ describe('AccountEntityToDtoMapper', () => {
 
 	describe('mapSearchResult', () => {
 		it('should use actual date if date is', () => {
-			const testEntity1: Account = {
+			const testEntity1: AccountEntity = {
 				_id: new ObjectId(),
 				id: '1',
 				username: '1',
 				createdAt: new Date(),
 				updatedAt: new Date(),
 			};
-			const testEntity2: Account = {
+			const testEntity2: AccountEntity = {
 				_id: new ObjectId(),
 				id: '2',
 				username: '2',
@@ -90,14 +90,14 @@ describe('AccountEntityToDtoMapper', () => {
 
 	describe('mapAccountsToDto', () => {
 		it('should use actual date if date is', () => {
-			const testEntity1: Account = {
+			const testEntity1: AccountEntity = {
 				_id: new ObjectId(),
 				username: '1',
 				id: '1',
 				createdAt: new Date(),
 				updatedAt: new Date(),
 			};
-			const testEntity2: Account = {
+			const testEntity2: AccountEntity = {
 				_id: new ObjectId(),
 				username: '2',
 				id: '2',

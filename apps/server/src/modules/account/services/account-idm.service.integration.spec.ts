@@ -8,7 +8,7 @@ import { KeycloakAdministrationService } from '@infra/identity-management/keyclo
 import { AccountSaveDto } from '@modules/account/services/dto';
 import { LoggerModule } from '@src/core/logger';
 import { IdentityManagementModule, IdentityManagementService } from '@infra/identity-management';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
+import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../repo/mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountLookupService } from './account-lookup.service';

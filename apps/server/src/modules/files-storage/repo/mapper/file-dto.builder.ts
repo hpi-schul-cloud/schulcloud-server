@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios';
 import { FileInfo } from 'busboy';
 import { Readable } from 'stream';
-import { FileDto } from '../dto/file.dto';
+import { FileDto } from '../../dto/file.dto';
 
 export class FileDtoBuilder {
 	public static build(name: string, data: Readable, mimeType: string): FileDto {

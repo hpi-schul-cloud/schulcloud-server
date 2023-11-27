@@ -14,7 +14,7 @@ import { createPath, createPreviewDirectoryPath, createPreviewFilePath, createPr
 import { TestHelper } from '../helper/test-helper';
 import { PreviewWidth } from '../interface';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
-import { FileResponseBuilder } from '../mapper';
+import { FileResponseBuilder } from '../repo/mapper';
 import { FilesStorageService } from './files-storage.service';
 import { PreviewService } from './preview.service';
 

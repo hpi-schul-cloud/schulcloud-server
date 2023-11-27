@@ -1,7 +1,7 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, User } from '@shared/domain';
+import { AccountEntity, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { accountFactory, cleanupCollections, userFactory } from '@shared/testing';
 import { AccountRepo } from './account.repo';
@@ -10,7 +10,7 @@ describe('account repo', () => {
 	let module: TestingModule;
 	let em: EntityManager;
 	let repo: AccountRepo;
-	let mockAccounts: Account[];
+	let mockAccounts: AccountEntity[];
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -40,7 +40,7 @@ describe('account repo', () => {
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(Account);
+		expect(repo.entityName).toBe(AccountEntity);
 	});
 
 	describe('findByUserId', () => {

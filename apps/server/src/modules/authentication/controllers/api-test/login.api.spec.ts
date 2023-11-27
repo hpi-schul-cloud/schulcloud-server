@@ -1,10 +1,10 @@
 import { EntityManager } from '@mikro-orm/core';
-import { SSOErrorCode } from '@modules/oauth/loggable';
-import { OauthTokenResponse } from '@modules/oauth/service/dto';
+import { SSOErrorCode } from '@src/modules/oauth/loggable';
+import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server/server.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, RoleName, SchoolEntity, SystemEntity, User } from '@shared/domain';
+import { AccountEntity, RoleName, SchoolEntity, SystemEntity, User } from '@shared/domain';
 import { accountFactory, roleFactory, schoolFactory, systemEntityFactory, userFactory } from '@shared/testing';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -91,7 +91,7 @@ describe('Login Controller (api)', () => {
 	});
 
 	describe('loginLocal', () => {
-		let account: Account;
+		let account: AccountEntity;
 		let user: User;
 
 		beforeAll(async () => {
@@ -155,7 +155,7 @@ describe('Login Controller (api)', () => {
 
 				const user: User = userFactory.buildWithId({ school, roles: [studentRoles], ldapDn: mockUserLdapDN });
 
-				const account: Account = accountFactory.buildWithId({
+				const account: AccountEntity = accountFactory.buildWithId({
 					userId: user.id,
 					username: `${schoolExternalId}/${ldapAccountUserName}`.toLowerCase(),
 					systemId: system.id,
@@ -206,7 +206,7 @@ describe('Login Controller (api)', () => {
 
 				const user: User = userFactory.buildWithId({ school, roles: [studentRoles], ldapDn: mockUserLdapDN });
 
-				const account: Account = accountFactory.buildWithId({
+				const account: AccountEntity = accountFactory.buildWithId({
 					userId: user.id,
 					username: `${schoolExternalId}/${ldapAccountUserName}`.toLowerCase(),
 					systemId: system.id,
@@ -248,7 +248,7 @@ describe('Login Controller (api)', () => {
 
 				const user: User = userFactory.buildWithId({ school, roles: [studentRole], ldapDn: mockUserLdapDN });
 
-				const account: Account = accountFactory.buildWithId({
+				const account: AccountEntity = accountFactory.buildWithId({
 					userId: user.id,
 					username: `${officialSchoolNumber}/${ldapAccountUserName}`.toLowerCase(),
 					systemId: system.id,

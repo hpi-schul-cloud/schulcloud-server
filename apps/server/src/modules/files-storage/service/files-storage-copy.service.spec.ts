@@ -10,7 +10,7 @@ import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createCopyFiles } from '../helper';
-import { CopyFileResponseBuilder } from '../mapper';
+import { CopyFileResponseBuilder } from '../repo/mapper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 

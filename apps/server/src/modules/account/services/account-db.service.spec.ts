@@ -1,25 +1,25 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { IdentityManagementService } from '@infra/identity-management/identity-management.service';
+import { IdentityManagementService } from '@src/infra/identity-management';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountEntityToDtoMapper } from '@modules/account/mapper';
-import { AccountDto } from '@modules/account/services/dto';
 import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { Account, EntityId, Permission, Role, RoleName, SchoolEntity, User } from '@shared/domain';
+import { AccountEntity, Counted, EntityId, Permission, Role, RoleName, SchoolEntity, User } from '@shared/domain';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import bcrypt from 'bcryptjs';
 import { LegacyLogger } from '../../../core/logger';
+import { AccountEntityToDtoMapper } from '../repo/mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
+import { AccountDto } from './dto';
 
 describe('AccountDbService', () => {
 	let module: TestingModule;
 	let accountService: AbstractAccountService;
-	let mockAccounts: Account[];
+	let mockAccounts: AccountEntity[];
 	let accountRepo: AccountRepo;
 	let accountLookupServiceMock: DeepMocked<AccountLookupService>;
 
@@ -31,10 +31,10 @@ describe('AccountDbService', () => {
 	let mockStudentUser: User;
 	let mockUserWithoutAccount: User;
 
-	let mockTeacherAccount: Account;
-	let mockStudentAccount: Account;
+	let mockTeacherAccount: AccountEntity;
+	let mockStudentAccount: AccountEntity;
 
-	let mockAccountWithSystemId: Account;
+	let mockAccountWithSystemId: AccountEntity;
 
 	afterAll(async () => {
 		await module.close();
@@ -48,7 +48,7 @@ describe('AccountDbService', () => {
 				{
 					provide: AccountRepo,
 					useValue: {
-						save: jest.fn().mockImplementation((account: Account): Promise<void> => {
+						save: jest.fn().mockImplementation((account: AccountEntity): Promise<void> => {
 							if (account.username === 'fail@to.update') {
 								return Promise.reject();
 							}
@@ -60,28 +60,31 @@ describe('AccountDbService', () => {
 							return Promise.resolve();
 						}),
 						deleteById: jest.fn().mockImplementation((): Promise<void> => Promise.resolve()),
-						findMultipleByUserId: (userIds: EntityId[]): Promise<Account[]> => {
+						findMultipleByUserId: (userIds: EntityId[]): Promise<AccountEntity[]> => {
 							const accounts = mockAccounts.filter((tempAccount) =>
 								userIds.find((userId) => tempAccount.userId?.toString() === userId)
 							);
 							return Promise.resolve(accounts);
 						},
-						findByUserId: (userId: EntityId): Promise<Account | null> => {
+						findByUserId: (userId: EntityId): Promise<AccountEntity | null> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.userId?.toString() === userId);
 							if (account) {
 								return Promise.resolve(account);
 							}
 							return Promise.resolve(null);
 						},
-						findByUserIdOrFail: (userId: EntityId): Promise<Account> => {
+						findByUserIdOrFail: (userId: EntityId): Promise<AccountEntity> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.userId?.toString() === userId);
 
 							if (account) {
 								return Promise.resolve(account);
 							}
-							throw new EntityNotFoundError(Account.name);
+							throw new EntityNotFoundError(AccountEntity.name);
 						},
-						findByUsernameAndSystemId: (username: string, systemId: EntityId | ObjectId): Promise<Account | null> => {
+						findByUsernameAndSystemId: (
+							username: string,
+							systemId: EntityId | ObjectId
+						): Promise<AccountEntity | null> => {
 							const account = mockAccounts.find(
 								(tempAccount) => tempAccount.username === username && tempAccount.systemId === systemId
 							);
@@ -91,24 +94,24 @@ describe('AccountDbService', () => {
 							return Promise.resolve(null);
 						},
 
-						findById: jest.fn().mockImplementation((accountId: EntityId | ObjectId): Promise<Account> => {
+						findById: jest.fn().mockImplementation((accountId: EntityId | ObjectId): Promise<AccountEntity> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId.toString());
 
 							if (account) {
 								return Promise.resolve(account);
 							}
-							throw new EntityNotFoundError(Account.name);
+							throw new EntityNotFoundError(AccountEntity.name);
 						}),
 						searchByUsernameExactMatch: jest
 							.fn()
-							.mockImplementation((): Promise<[Account[], number]> => Promise.resolve([[mockTeacherAccount], 1])),
+							.mockImplementation((): Promise<Counted<AccountEntity[]>> => Promise.resolve([[mockTeacherAccount], 1])),
 						searchByUsernamePartialMatch: jest
 							.fn()
 							.mockImplementation(
-								(): Promise<[Account[], number]> => Promise.resolve([mockAccounts, mockAccounts.length])
+								(): Promise<Counted<AccountEntity[]>> => Promise.resolve([mockAccounts, mockAccounts.length])
 							),
 						deleteByUserId: jest.fn().mockImplementation((): Promise<void> => Promise.resolve()),
-						findMany: jest.fn().mockImplementation((): Promise<Account[]> => Promise.resolve(mockAccounts)),
+						findMany: jest.fn().mockImplementation((): Promise<AccountEntity[]> => Promise.resolve(mockAccounts)),
 					},
 				},
 				{

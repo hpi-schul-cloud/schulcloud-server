@@ -12,7 +12,7 @@ import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createPath } from '../helper';
-import { FileResponseBuilder } from '../mapper';
+import { FileResponseBuilder } from '../repo/mapper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 

@@ -1,4 +1,4 @@
-import { Account, EntityId, Permission, SchoolEntity, User } from '@shared/domain';
+import { AccountEntity, EntityId, Permission, SchoolEntity, User } from '@shared/domain';
 import { ObjectId } from 'bson';
 import _ from 'lodash';
 import { accountFactory } from './account.factory';
@@ -25,7 +25,7 @@ export class UserAndAccountTestFactory {
 		return userParams;
 	}
 
-	private static buildAccount(user: User, params: UserAndAccountParams = {}): Account {
+	private static buildAccount(user: User, params: UserAndAccountParams = {}): AccountEntity {
 		const accountParams = _.pick(params, 'username', 'systemId');
 		const account = accountFactory.withUser(user).build(accountParams);
 		return account;
@@ -35,7 +35,7 @@ export class UserAndAccountTestFactory {
 		params: UserAndAccountParams = {},
 		additionalPermissions: Permission[] = []
 	): {
-		studentAccount: Account;
+		studentAccount: AccountEntity;
 		studentUser: User;
 	} {
 		const user = userFactory
@@ -49,7 +49,7 @@ export class UserAndAccountTestFactory {
 	public static buildTeacher(
 		params: UserAndAccountParams = {},
 		additionalPermissions: Permission[] = []
-	): { teacherAccount: Account; teacherUser: User } {
+	): { teacherAccount: AccountEntity; teacherUser: User } {
 		const user = userFactory
 			.asTeacher(additionalPermissions)
 			.buildWithId(UserAndAccountTestFactory.getUserParams(params));
@@ -61,7 +61,7 @@ export class UserAndAccountTestFactory {
 	public static buildAdmin(
 		params: UserAndAccountParams = {},
 		additionalPermissions: Permission[] = []
-	): { adminAccount: Account; adminUser: User } {
+	): { adminAccount: AccountEntity; adminUser: User } {
 		const user = userFactory
 			.asAdmin(additionalPermissions)
 			.buildWithId(UserAndAccountTestFactory.getUserParams(params));

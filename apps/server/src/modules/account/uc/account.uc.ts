@@ -8,7 +8,16 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
-import { Account, EntityId, Permission, PermissionService, Role, RoleName, SchoolEntity, User } from '@shared/domain';
+import {
+	AccountEntity,
+	EntityId,
+	Permission,
+	PermissionService,
+	Role,
+	RoleName,
+	SchoolEntity,
+	User,
+} from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 
 import { ICurrentUser } from '@modules/authentication';
@@ -24,7 +33,7 @@ import {
 	AccountSearchType,
 	PatchMyAccountParams,
 } from '../controller/dto';
-import { AccountResponseMapper } from '../mapper';
+import { AccountResponseMapper } from '../repo/mapper';
 import { AccountValidationService } from '../services/account.validation.service';
 import { AccountSaveDto } from '../services/dto';
 
@@ -159,7 +168,7 @@ export class AccountUc {
 			try {
 				await this.accountService.save(targetAccount);
 			} catch (err) {
-				throw new EntityNotFoundError(Account.name);
+				throw new EntityNotFoundError(AccountEntity.name);
 			}
 		}
 		return AccountResponseMapper.mapToResponse(targetAccount);
@@ -244,7 +253,7 @@ export class AccountUc {
 			try {
 				await this.accountService.save(account);
 			} catch (err) {
-				throw new EntityNotFoundError(Account.name);
+				throw new EntityNotFoundError(AccountEntity.name);
 			}
 		}
 	}
@@ -290,7 +299,7 @@ export class AccountUc {
 			account.password = password;
 			await this.accountService.save(account);
 		} catch (err) {
-			throw new EntityNotFoundError(Account.name);
+			throw new EntityNotFoundError(AccountEntity.name);
 		}
 		try {
 			user.forcePasswordChange = false;

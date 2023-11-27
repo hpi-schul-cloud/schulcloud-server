@@ -1,7 +1,8 @@
 import { EntityManager } from '@mikro-orm/core';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Permission, RoleName, User } from '@shared/domain';
+import { AccountEntity, Permission, RoleName, User } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { accountFactory, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import {
 	AccountByIdBodyParams,
@@ -10,7 +11,6 @@ import {
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
 } from '@src/modules/account/controller/dto';
-import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
@@ -22,10 +22,10 @@ describe('Account Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 
-	let adminAccount: Account;
-	let teacherAccount: Account;
-	let studentAccount: Account;
-	let superheroAccount: Account;
+	let adminAccount: AccountEntity;
+	let teacherAccount: AccountEntity;
+	let studentAccount: AccountEntity;
+	let superheroAccount: AccountEntity;
 
 	let adminUser: User;
 	let teacherUser: User;
@@ -53,7 +53,7 @@ describe('Account Controller (API)', () => {
 		studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
 		superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
 
-		const mapUserToAccount = (user: User): Account =>
+		const mapUserToAccount = (user: User): AccountEntity =>
 			accountFactory.buildWithId({
 				userId: user.id,
 				username: user.email,
@@ -111,7 +111,7 @@ describe('Account Controller (API)', () => {
 				.send(params)
 				.expect(200);
 
-			const updatedAccount = await em.findOneOrFail(Account, studentAccount.id);
+			const updatedAccount = await em.findOneOrFail(AccountEntity, studentAccount.id);
 			expect(updatedAccount.password).not.toEqual(defaultPasswordHash);
 		});
 		it('should reject if new password is weak', async () => {
@@ -139,7 +139,7 @@ describe('Account Controller (API)', () => {
 				.patch(`${basePath}/me`)
 				.send(params)
 				.expect(200);
-			const updatedAccount = await em.findOneOrFail(Account, studentAccount.id);
+			const updatedAccount = await em.findOneOrFail(AccountEntity, studentAccount.id);
 			expect(updatedAccount.username).toEqual(newEmailValue);
 		});
 

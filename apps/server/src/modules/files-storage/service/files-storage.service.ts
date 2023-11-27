@@ -36,7 +36,7 @@ import {
 	unmarkForDelete,
 } from '../helper';
 import { GetFileResponse } from '../interface';
-import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../mapper';
+import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../repo/mapper';
 import { FileRecordRepo } from '../repo';
 
 @Injectable()

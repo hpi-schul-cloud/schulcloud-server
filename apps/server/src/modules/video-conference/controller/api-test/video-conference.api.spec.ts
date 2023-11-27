@@ -2,7 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-	Account,
+	AccountEntity,
 	Course,
 	Permission,
 	Role,
@@ -579,7 +579,7 @@ describe('VideoConferenceController (API)', () => {
 					});
 
 					const expertUser: User = userFactory.buildWithId({ school, roles: [expertRole] });
-					const expertAccount: Account = accountFactory.buildWithId({ userId: expertUser.id });
+					const expertAccount: AccountEntity = accountFactory.buildWithId({ userId: expertUser.id });
 
 					const course: Course = courseFactory.buildWithId({ school, students: [expertUser] });
 					const videoConference: VideoConference = videoConferenceFactory.buildWithId({

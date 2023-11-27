@@ -4,7 +4,7 @@ import { EntityNotFoundError } from '@shared/common';
 import { Counted, EntityId, IdmAccount, IdmAccountUpdate } from '@shared/domain';
 import { IdentityManagementService, IdentityManagementOauthService } from '@infra/identity-management';
 import { LegacyLogger } from '@src/core/logger';
-import { AccountIdmToDtoMapper } from '../mapper';
+import { AccountIdmToDtoMapper } from '../repo/mapper';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
 import { AccountLookupService } from './account-lookup.service';

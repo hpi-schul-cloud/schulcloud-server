@@ -12,7 +12,7 @@ import { SingleFileParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { GetFileResponse } from '../interface';
-import { FilesStorageMapper } from '../mapper';
+import { FilesStorageMapper } from '../repo/mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
 import { FilesStorageUC } from './files-storage.uc';

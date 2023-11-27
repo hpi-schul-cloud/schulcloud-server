@@ -1,8 +1,8 @@
-import { Account, Counted } from '@shared/domain';
-import { AccountDto } from '../services/dto/account.dto';
+import { AccountEntity, Counted } from '@shared/domain';
+import { AccountDto } from '../../services/dto/account.dto';
 
 export class AccountEntityToDtoMapper {
-	static mapToDto(account: Account): AccountDto {
+	static mapToDto(account: AccountEntity): AccountDto {
 		return new AccountDto({
 			id: account.id,
 			createdAt: account.createdAt,
@@ -19,13 +19,13 @@ export class AccountEntityToDtoMapper {
 		});
 	}
 
-	static mapSearchResult(accountEntities: [Account[], number]): Counted<AccountDto[]> {
+	static mapSearchResult(accountEntities: Counted<AccountEntity[]>): Counted<AccountDto[]> {
 		const foundAccounts = accountEntities[0];
 		const accountDtos: AccountDto[] = AccountEntityToDtoMapper.mapAccountsToDto(foundAccounts);
 		return [accountDtos, accountEntities[1]];
 	}
 
-	static mapAccountsToDto(accounts: Account[]): AccountDto[] {
+	static mapAccountsToDto(accounts: AccountEntity[]): AccountDto[] {
 		return accounts.map((accountEntity) => AccountEntityToDtoMapper.mapToDto(accountEntity));
 	}
 }

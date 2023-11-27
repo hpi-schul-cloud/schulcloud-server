@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account } from '@shared/domain';
+import { AccountEntity } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { LoggerModule } from '@src/core/logger';
@@ -19,13 +19,13 @@ describe('KeycloakConfigurationService Integration', () => {
 	let keycloakAdministrationService: KeycloakAdministrationService;
 	let isKeycloakAvailable = false;
 
-	let dbOnlyAccounts: Account[];
-	let dbAndIdmAccounts: Account[];
-	let allAccounts: Account[];
+	let dbOnlyAccounts: AccountEntity[];
+	let dbAndIdmAccounts: AccountEntity[];
+	let allAccounts: AccountEntity[];
 
 	const testRealm = `test-realm-${v1().toString()}`;
 
-	const createAccountInIdm = async (account: Account): Promise<string> => {
+	const createAccountInIdm = async (account: AccountEntity): Promise<string> => {
 		const { id } = await keycloak.users.create({
 			username: account.username,
 			firstName: undefined,

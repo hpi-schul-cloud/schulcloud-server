@@ -12,7 +12,7 @@ import { Action } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
-import { CopyFileResponseBuilder } from '../mapper';
+import { CopyFileResponseBuilder } from '../repo/mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
 import { FilesStorageUC } from './files-storage.uc';
