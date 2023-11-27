@@ -1,14 +1,16 @@
 import { ConfigService } from '@nestjs/config';
-import { TldrawConfig } from '@modules/tldraw/config';
 import * as promise from 'lib0/promise';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
 import { Injectable } from '@nestjs/common';
-import { TldrawRepo } from '@modules/tldraw/repo/tldraw.repo';
-import { TldrawDrawing } from '@modules/tldraw/entities';
+import { LegacyLogger } from '@src/core/logger';
 import { Buffer } from 'buffer';
 import * as binary from 'lib0/binary';
 import * as encoding from 'lib0/encoding';
-import { LegacyLogger } from '@src/core/logger';
+import { BulkWriteResult } from 'mongodb';
+import { TldrawDrawing } from '../entities';
+import { TldrawRepo } from './tldraw.repo';
+import { TldrawConfig } from '../config';
+import { YTransaction } from '../types';
 
 @Injectable()
 export class YMongodb {
@@ -16,34 +18,37 @@ export class YMongodb {
 
 	private readonly flushSize: number;
 
-	private tr = { string: Promise<never> };
+	private readonly _transact: <T extends Promise<YTransaction>>(docName: string, fn: () => T) => T;
 
-	private readonly _transact;
+	// scope the queue of the transaction to each docName
+	// this should allow concurrency for different rooms
+	private tr: { docName?: Promise<YTransaction> } = {};
 
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly repo: TldrawRepo,
 		private readonly logger: LegacyLogger
 	) {
+		this.logger.setContext(YMongodb.name);
+
 		this.flushSize = this.configService.get<number>('TLDRAW_DB_FLUSH_SIZE') ?? 400;
 
-		this._transact = <T>(docName: string, f: (TldrawRepo) => Promise<T>) => {
+		// execute a transaction on a database
+		// this will ensure that other processes are currently not writing
+		this._transact = <T extends Promise<YTransaction>>(docName: string, fn: () => T): T => {
 			if (!this.tr[docName]) {
 				this.tr[docName] = promise.resolve();
 			}
 
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const currTr = this.tr[docName];
-			let nextTr = null;
+			const currTr = this.tr[docName] as T;
+			let nextTr: Promise<YTransaction | null> = promise.resolve(null);
 
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			nextTr = (async () => {
 				await currTr;
 
-				let res;
+				let res: YTransaction | null;
 				try {
-					res = await f(this.repo);
+					res = await fn();
 				} catch (err) {
 					this.logger.error('Error during saving transaction', err);
 				}
@@ -53,18 +58,16 @@ export class YMongodb {
 					delete this.tr[docName];
 				}
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 				return res;
 			})();
 
 			this.tr[docName] = nextTr;
 
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			return this.tr[docName];
+			return this.tr[docName] as T;
 		};
 	}
 
-	async createIndex(): Promise<void> {
+	public async createIndex(): Promise<void> {
 		const collection = this.repo.getCollection();
 		await collection.createIndex({
 			version: 1,
@@ -73,20 +76,15 @@ export class YMongodb {
 			clock: 1,
 			part: 1,
 		});
-		await this.repo.syncIndexes();
 	}
 
-	getYDoc(docName: string): Promise<Doc> {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
+	public getYDoc(docName: string): Promise<Doc> {
 		return this._transact(docName, async (): Promise<Doc> => {
 			const updates = await this.getMongoUpdates(docName);
 			const ydoc = new Doc();
 			ydoc.transact(() => {
-				for (let i = 0; i < updates.length; i++) {
+				for (let i = 0; i < updates.length; i += 1) {
 					applyUpdate(ydoc, updates[i]);
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					updates[i] = null;
 				}
 			});
 			if (updates.length > this.flushSize) {
@@ -96,13 +94,11 @@ export class YMongodb {
 		});
 	}
 
-	storeUpdateTransactional(docName: string, update: Uint8Array): Promise<number> {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-call
+	public storeUpdateTransactional(docName: string, update: Uint8Array): Promise<number> {
 		return this._transact(docName, () => this.storeUpdate(docName, update));
 	}
 
-	flushDocumentTransactional(docName: string) {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-call
+	public flushDocumentTransactional(docName: string): Promise<void> {
 		return this._transact(docName, async () => {
 			const updates = await this.getMongoUpdates(docName);
 			const { update, sv } = this.mergeUpdates(updates);
@@ -110,7 +106,7 @@ export class YMongodb {
 		});
 	}
 
-	private async clearUpdatesRange(docName: string, from: number, to: number) {
+	private async clearUpdatesRange(docName: string, from: number, to: number): Promise<BulkWriteResult> {
 		return this.repo.del({
 			docName,
 			clock: {
@@ -120,20 +116,18 @@ export class YMongodb {
 		});
 	}
 
-	private getMongoBulkData(query: object, opts: object) {
+	private getMongoBulkData(query: object, opts: object): Promise<TldrawDrawing[]> {
 		return this.repo.readAsCursor(query, opts);
 	}
 
-	private mergeDocsTogether(doc: TldrawDrawing, docs: TldrawDrawing[], docIndex: number) {
+	private mergeDocsTogether(doc: TldrawDrawing, docs: TldrawDrawing[], docIndex: number): Buffer[] {
 		const parts = [Buffer.from(doc.value.buffer)];
 		let currentPartId: number | undefined = doc.part;
-		for (let i = docIndex + 1; i < docs.length; i++) {
+		for (let i = docIndex + 1; i < docs.length; i += 1) {
 			const part = docs[i];
 			if (part.clock === doc.clock) {
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				if (currentPartId !== part.part - 1) {
-					throw new Error('Couldnt merge updates together because a part is missing!');
+				if (part.part === undefined || currentPartId !== part.part - 1) {
+					throw new Error('Could not merge updates together because a part is missing');
 				}
 				parts.push(Buffer.from(part.value.buffer));
 				currentPartId = part.part;
@@ -148,14 +142,14 @@ export class YMongodb {
 	/**
 	 * Convert the mongo document array to an array of values (as buffers)
 	 */
-	private convertMongoUpdates(docs: TldrawDrawing[]) {
+	private convertMongoUpdates(docs: TldrawDrawing[]): Buffer[] {
 		if (!Array.isArray(docs) || !docs.length) return [];
 
 		const updates: Buffer[] = [];
-		for (let i = 0; i < docs.length; i++) {
+		for (let i = 0; i < docs.length; i += 1) {
 			const doc = docs[i];
 			if (!doc.part) {
-				updates.push(doc.value);
+				updates.push(Buffer.from(doc.value.buffer));
 			} else if (doc.part === 1) {
 				// merge the docs together that got split because of mongodb size limits
 				const parts = this.mergeDocsTogether(doc, docs, i);
@@ -168,12 +162,12 @@ export class YMongodb {
 	/**
 	 * Get all document updates for a specific document.
 	 */
-	private async getMongoUpdates(docName: string, opts = {}) {
+	private async getMongoUpdates(docName: string, opts = {}): Promise<Buffer[]> {
 		const docs = await this.getMongoBulkData(this.createDocumentUpdateKey(docName), opts);
 		return this.convertMongoUpdates(docs);
 	}
 
-	private getCurrentUpdateClock(docName: string) {
+	private async getCurrentUpdateClock(docName: string): Promise<number> {
 		return this.getMongoBulkData(
 			{
 				...this.createDocumentUpdateKey(docName, 0),
@@ -184,14 +178,14 @@ export class YMongodb {
 			},
 			{ reverse: true, limit: 1 }
 		).then((updates) => {
-			if (updates.length === 0) {
+			if (updates.length === 0 || updates[0].clock == null) {
 				return -1;
 			}
 			return updates[0].clock;
 		});
 	}
 
-	private async writeStateVector(docName: string, sv: Uint8Array, clock: number) {
+	private async writeStateVector(docName: string, sv: Uint8Array, clock: number): Promise<void> {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, clock);
 		encoding.writeVarUint8Array(encoder, sv);
@@ -200,9 +194,7 @@ export class YMongodb {
 		});
 	}
 
-	private async storeUpdate(docName: string, update: Uint8Array) {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
+	private async storeUpdate(docName: string, update: Uint8Array): Promise<number> {
 		const clock: number = await this.getCurrentUpdateClock(docName);
 		if (clock === -1) {
 			// make sure that a state vector is always written, so we can search for available documents
@@ -221,8 +213,8 @@ export class YMongodb {
 		} else {
 			const totalChunks = Math.ceil(value.length / this.MAX_DOCUMENT_SIZE);
 
-			const putPromises: Promise<any>[] = [];
-			for (let i = 0; i < totalChunks; i++) {
+			const putPromises: Promise<TldrawDrawing | null>[] = [];
+			for (let i = 0; i < totalChunks; i += 1) {
 				const start = i * this.MAX_DOCUMENT_SIZE;
 				const end = Math.min(start + this.MAX_DOCUMENT_SIZE, value.length);
 				const chunk = value.subarray(start, end);
@@ -242,7 +234,7 @@ export class YMongodb {
 	 * For now this is a helper method that creates a Y.Doc and then re-encodes a document update.
 	 * In the future this will be handled by Yjs without creating a Y.Doc (constant memory consumption).
 	 */
-	private mergeUpdates(updates: Array<Uint8Array>) {
+	private mergeUpdates(updates: Array<Uint8Array>): { update: Uint8Array; sv: Uint8Array } {
 		const ydoc = new Doc();
 		ydoc.transact(() => {
 			for (const element of updates) {
@@ -255,7 +247,7 @@ export class YMongodb {
 	/**
 	 * Merge all MongoDB documents of the same yjs document together.
 	 */
-	private async flushDocument(docName: string, stateAsUpdate: Uint8Array, stateVector: Uint8Array) {
+	private async flushDocument(docName: string, stateAsUpdate: Uint8Array, stateVector: Uint8Array): Promise<number> {
 		const clock = await this.storeUpdate(docName, stateAsUpdate);
 		await this.writeStateVector(docName, stateVector, clock);
 		await this.clearUpdatesRange(docName, 0, clock);
@@ -265,7 +257,10 @@ export class YMongodb {
 	/**
 	 * Create a unique key for a update message.
 	 */
-	private createDocumentUpdateKey(docName: string, clock?: number) {
+	private createDocumentUpdateKey(
+		docName: string,
+		clock?: number
+	): { version: string; action: string; docName: string; clock?: number } {
 		if (clock !== undefined) {
 			return {
 				version: 'v1',
@@ -281,7 +276,7 @@ export class YMongodb {
 		};
 	}
 
-	private createDocumentStateVectorKey(docName: string) {
+	private createDocumentStateVectorKey(docName: string): { docName: string; version: string } {
 		return {
 			docName,
 			version: 'v1_sv',

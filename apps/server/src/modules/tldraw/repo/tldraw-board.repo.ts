@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
-import { YMongodb } from '@modules/tldraw/repo/y-mongodb';
 import { LegacyLogger } from '@src/core/logger';
+import { YMongodb } from './y-mongodb';
 import { calculateDiff } from '../utils';
 import { WsSharedDocDo } from '../types';
 

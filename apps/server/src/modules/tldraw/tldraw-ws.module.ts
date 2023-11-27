@@ -4,11 +4,12 @@ import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME, TLDRAW_DB_URL } fr
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { TldrawDrawing } from '@modules/tldraw/entities';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
+import { TldrawDrawing } from './entities';
 import { TldrawBoardRepo, YMongodb } from './repo';
 import { TldrawWsService } from './service';
 import { TldrawWs } from './controller';
+import { TldrawRepo } from './repo';
 import { config } from './config';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
@@ -30,6 +31,6 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 	],
-	providers: [TldrawWs, TldrawWsService, TldrawBoardRepo, YMongodb],
+	providers: [TldrawWs, TldrawWsService, TldrawBoardRepo, TldrawRepo, YMongodb],
 })
 export class TldrawWsModule {}
