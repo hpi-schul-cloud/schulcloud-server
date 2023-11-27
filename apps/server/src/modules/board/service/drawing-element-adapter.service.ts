@@ -12,7 +12,7 @@ export class DrawingElementAdapterService {
 
 	async deleteDrawingBinData(docName: string): Promise<void> {
 		await firstValueFrom(
-			this.httpService.delete(`${Configuration.get('TLDRAW_URI') as string}/tldraw-document/${docName}`, {
+			this.httpService.delete(`${Configuration.get('TLDRAW_URI') as string}/api/v3/tldraw-document/${docName}`, {
 				headers: {
 					Accept: 'Application/json',
 				},
