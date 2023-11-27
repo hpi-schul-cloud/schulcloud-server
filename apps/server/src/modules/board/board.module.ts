@@ -6,7 +6,7 @@ import { ContentElementFactory } from '@shared/domain';
 import { ConsoleWriterModule } from '@infra/console';
 import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { DrawingElementAdapterService } from '@modules/board/service/drawing-element-adapter.service';
+import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
 import { HttpModule } from '@nestjs/axios';
 import { BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor } from './repo';
 import {

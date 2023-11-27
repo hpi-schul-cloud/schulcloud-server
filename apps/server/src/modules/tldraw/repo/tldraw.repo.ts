@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { TldrawDrawing } from '@src/modules/tldraw/entities';
+import { TldrawDrawing } from '../entities';
 
 @Injectable()
 export class TldrawRepo {

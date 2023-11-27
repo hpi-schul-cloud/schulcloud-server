@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import { ConfigService } from '@nestjs/config';
-import { TldrawConfig } from '@src/modules/tldraw/config';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
+import { TldrawConfig } from '../config';
 import { calculateDiff } from '../utils';
-import { WsSharedDocDo } from '../types';
+import { WsSharedDocDo } from '../domain';
 
 @Injectable()
 export class TldrawBoardRepo {

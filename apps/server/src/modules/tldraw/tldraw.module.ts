@@ -4,11 +4,11 @@ import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME, TLDRAW_DB_URL } fr
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { TldrawDrawing } from '@src/modules/tldraw/entities';
-import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
+import { AuthenticationModule } from '@modules/authentication/authentication.module';
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { AuthorizationModule } from '@modules/authorization';
+import { TldrawDrawing } from './entities';
 import { config } from './config';
 import { TldrawService } from './service/tldraw.service';
 import { TldrawBoardRepo } from './repo';

@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
-import { TldrawModule, TldrawWsModule } from '@src/modules/tldraw';
+import { TldrawModule, TldrawWsModule } from '@modules/tldraw';
 import { LegacyLogger, Logger } from '@src/core/logger';
 import * as WebSocket from 'ws';
 import { WsAdapter } from '@nestjs/platform-ws';

@@ -1,4 +1,4 @@
-import { WsSharedDocDo } from '@src/modules/tldraw/domain/ws-shared-doc.do';
+import { WsSharedDocDo } from '@modules/tldraw/domain/ws-shared-doc.do';
 import WebSocket from 'ws';
 
 export class TldrawWsFactory {

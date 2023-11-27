@@ -1,9 +1,6 @@
 import { ContentElementType } from '@shared/domain';
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
-import {
-	DrawingElementContent,
-	DrawingElementResponse,
-} from '@src/modules/board/controller/dto/element/drawing-element.response';
+import { DrawingElementContent, DrawingElementResponse } from '../dto/element/drawing-element.response';
 import { TimestampsResponse } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
 

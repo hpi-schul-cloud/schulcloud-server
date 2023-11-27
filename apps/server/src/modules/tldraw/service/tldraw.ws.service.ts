@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TldrawConfig } from '@src/modules/tldraw/config';
-import { Persitence, WSConnectionState, WSMessageType, WsSharedDocDo } from '@src/modules/tldraw/types';
 import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
 import { encoding, decoding, map } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
-import { TldrawBoardRepo } from '@src/modules/tldraw/repo';
+import { TldrawConfig } from '../config';
+import { Persitence, WSConnectionState, WSMessageType } from '../types';
+import { WsSharedDocDo } from '../domain';
+import { TldrawBoardRepo } from '../repo';
 
 @Injectable()
 export class TldrawWsService {
