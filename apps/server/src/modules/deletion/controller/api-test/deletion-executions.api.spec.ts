@@ -37,7 +37,7 @@ describe(`deletionExecution (api)`, () => {
 
 	describe('when execute deletionRequests with default limit', () => {
 		it('should return status 204', async () => {
-			const response = await testXApiKeyClient.post();
+			const response = await testXApiKeyClient.post('');
 
 			expect(response.status).toEqual(204);
 		});

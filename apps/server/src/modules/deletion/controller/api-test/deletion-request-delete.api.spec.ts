@@ -54,7 +54,7 @@ describe(`deletionRequest delete (api)`, () => {
 		it('should return status 204', async () => {
 			const { deletionRequest } = await setup();
 
-			const response = await testXApiKeyClient.delete(deletionRequest.id);
+			const response = await testXApiKeyClient.delete(`${deletionRequest.id}`);
 
 			expect(response.status).toEqual(204);
 		});
@@ -62,7 +62,7 @@ describe(`deletionRequest delete (api)`, () => {
 		it('should actually delete deletionRequest', async () => {
 			const { deletionRequest } = await setup();
 
-			await testXApiKeyClient.delete(deletionRequest.id);
+			await testXApiKeyClient.delete(`${deletionRequest.id}`);
 
 			await expect(em.findOneOrFail(DeletionRequestEntity, deletionRequest.id)).rejects.toThrow();
 		});
