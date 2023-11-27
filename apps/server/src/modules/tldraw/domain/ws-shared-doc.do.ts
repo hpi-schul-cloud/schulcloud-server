@@ -2,8 +2,8 @@ import { Doc } from 'yjs';
 import WebSocket from 'ws';
 import { Awareness, encodeAwarenessUpdate } from 'y-protocols/awareness';
 import { encoding } from 'lib0';
+import { TldrawWsService } from '@modules/tldraw/service';
 import { WSMessageType } from '../types/connection-enum';
-import { TldrawWsService } from '../service';
 
 export class WsSharedDocDo extends Doc {
 	public name: string;

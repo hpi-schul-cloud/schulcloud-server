@@ -4,9 +4,9 @@ import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
 import { encoding, decoding, map } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
-import { TldrawConfig } from '../config';
 import { Persitence, WSConnectionState, WSMessageType } from '../types';
-import { WsSharedDocDo } from '../domain';
+import { TldrawConfig } from '../config';
+import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
 import { TldrawBoardRepo } from '../repo';
 
 @Injectable()

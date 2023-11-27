@@ -10,7 +10,7 @@ import * as SyncProtocols from 'y-protocols/sync';
 import * as AwarenessProtocol from 'y-protocols/awareness';
 import { encoding } from 'lib0';
 import { TldrawWsFactory } from '@shared/testing/factory/tldraw.ws.factory';
-import { WsSharedDocDo } from '../domain';
+import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
 import { config } from '../config';
 import { TldrawBoardRepo } from '../repo';
 import { TldrawWs } from '../controller';

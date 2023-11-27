@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
 import { TldrawConfig } from '../config';
 import { calculateDiff } from '../utils';
-import { WsSharedDocDo } from '../domain';
+import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
 
 @Injectable()
 export class TldrawBoardRepo {
