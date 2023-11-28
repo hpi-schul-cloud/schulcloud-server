@@ -1,9 +1,9 @@
-import { Builder } from 'xml2js';
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
+import { CCResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
+import { buildXmlString } from '../utils';
 
-export type ICommonCartridgeWebLinkResourceProps = {
-	type: CommonCartridgeResourceType.WEB_LINK_V_1_1 | CommonCartridgeResourceType.WEB_LINK_V_1_3;
+export type CommonCartridgeWebLinkResourceProps = {
+	type: CCResourceType.WEB_LINK;
 	version: CommonCartridgeVersion;
 	identifier: string;
 	href: string;
@@ -11,8 +11,8 @@ export type ICommonCartridgeWebLinkResourceProps = {
 	url: string;
 };
 
-export class CommonCartridgeWebLinkResourceElement implements CommonCartridgeResource {
-	constructor(private readonly props: ICommonCartridgeWebLinkResourceProps, private readonly xmlBuilder: Builder) {}
+export class CommonCartridgeWebLinkResource implements CommonCartridgeResource {
+	constructor(private readonly props: CommonCartridgeWebLinkResourceProps) {}
 
 	canInline(): boolean {
 		return false;
@@ -36,7 +36,7 @@ export class CommonCartridgeWebLinkResourceElement implements CommonCartridgeRes
 		};
 		switch (this.props.version) {
 			case CommonCartridgeVersion.V_1_3:
-				return this.xmlBuilder.buildObject({
+				return buildXmlString({
 					webLink: {
 						...commonTags,
 						$: {
@@ -48,7 +48,7 @@ export class CommonCartridgeWebLinkResourceElement implements CommonCartridgeRes
 					},
 				});
 			default:
-				return this.xmlBuilder.buildObject({
+				return buildXmlString({
 					webLink: {
 						...commonTags,
 						$: {

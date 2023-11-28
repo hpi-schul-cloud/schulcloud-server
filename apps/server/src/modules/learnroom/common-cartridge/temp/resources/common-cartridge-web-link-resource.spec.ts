@@ -1,22 +1,20 @@
-import { Builder } from 'xml2js';
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
+import { CCResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import {
-	CommonCartridgeWebLinkResourceElement,
-	ICommonCartridgeWebLinkResourceProps,
+	CommonCartridgeWebLinkResource,
+	CommonCartridgeWebLinkResourceProps,
 } from './common-cartridge-web-link-resource';
 
 describe('CommonCartridgeWebLinkResourceElement', () => {
-	const xmlBuilder = new Builder();
-	const propsOfV3: ICommonCartridgeWebLinkResourceProps = {
-		type: CommonCartridgeResourceType.WEB_LINK_V_1_3,
+	const propsOfV3: CommonCartridgeWebLinkResourceProps = {
+		type: CCResourceType.WEB_LINK,
 		version: CommonCartridgeVersion.V_1_3,
 		identifier: 'web-link-v3',
 		href: 'https://example.com/linkv3',
 		title: 'Web Link v3',
 		url: 'https://example.com/linkv3',
 	};
-	const propsOfV1: ICommonCartridgeWebLinkResourceProps = {
-		type: CommonCartridgeResourceType.WEB_LINK_V_1_1,
+	const propsOfV1: CommonCartridgeWebLinkResourceProps = {
+		type: CCResourceType.WEB_LINK,
 		version: CommonCartridgeVersion.V_1_1,
 		identifier: 'web-link-v1',
 		href: 'https://example.com/link1',
@@ -26,7 +24,7 @@ describe('CommonCartridgeWebLinkResourceElement', () => {
 
 	describe('CommonCartridgeWebLinkResourceElement of version 3', () => {
 		it('should return XML content of common cartridge version 3', () => {
-			const webLinkResource = new CommonCartridgeWebLinkResourceElement(propsOfV3, xmlBuilder);
+			const webLinkResource = new CommonCartridgeWebLinkResource(propsOfV3);
 			const content = webLinkResource.getFileContent();
 			const transformed = webLinkResource.getManifestXml();
 
@@ -51,7 +49,7 @@ describe('CommonCartridgeWebLinkResourceElement', () => {
 
 	describe('CommonCartridgeWebLinkResourceElement of version 1', () => {
 		it('should return XML content of common cartridge version 1', () => {
-			const webLinkResource = new CommonCartridgeWebLinkResourceElement(propsOfV1, xmlBuilder);
+			const webLinkResource = new CommonCartridgeWebLinkResource(propsOfV1);
 			const content = webLinkResource.getFileContent();
 			const transformed = webLinkResource.getManifestXml();
 

@@ -1,12 +1,8 @@
-import {
-	CommonCartridgeIntendedUseType,
-	CommonCartridgeResourceType,
-	CommonCartridgeVersion,
-} from '../common-cartridge.enums';
+import { CCResourceType, CommonCartridgeIntendedUseType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
 
-export type ICommonCartridgeWebContentResourceProps = {
-	type: CommonCartridgeResourceType.WEB_CONTENT;
+export type CommonCartridgeWebContentResourceProps = {
+	type: CCResourceType.WEB_CONTENT;
 	version: CommonCartridgeVersion;
 	identifier: string;
 	href: string;
@@ -16,7 +12,7 @@ export type ICommonCartridgeWebContentResourceProps = {
 };
 
 export class CommonCartridgeWebContentResource implements CommonCartridgeResource {
-	constructor(private readonly props: ICommonCartridgeWebContentResourceProps) {}
+	constructor(private readonly props: CommonCartridgeWebContentResourceProps) {}
 
 	canInline(): boolean {
 		return false;

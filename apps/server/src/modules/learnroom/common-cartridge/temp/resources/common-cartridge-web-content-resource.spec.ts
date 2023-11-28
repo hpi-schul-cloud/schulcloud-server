@@ -1,12 +1,12 @@
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
+import { CCResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import {
 	CommonCartridgeWebContentResource,
-	ICommonCartridgeWebContentResourceProps,
+	CommonCartridgeWebContentResourceProps,
 } from './common-cartridge-web-content-resource';
 
 describe('CommonCartridgeWebContentResource', () => {
-	const props: ICommonCartridgeWebContentResourceProps = {
-		type: CommonCartridgeResourceType.WEB_CONTENT,
+	const props: CommonCartridgeWebContentResourceProps = {
+		type: CCResourceType.WEB_CONTENT,
 		version: CommonCartridgeVersion.V_1_3,
 		identifier: 'web-link',
 		href: 'https://example.com/link',

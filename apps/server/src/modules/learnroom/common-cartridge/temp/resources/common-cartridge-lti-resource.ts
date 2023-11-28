@@ -1,9 +1,9 @@
-import { Builder } from 'xml2js';
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
+import { CCResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
+import { buildXmlString } from '../utils';
 
-export type ICommonCartridgeLtiResourceProps = {
-	type: CommonCartridgeResourceType.LTI;
+export type CommonCartridgeLtiResourceProps = {
+	type: CCResourceType.LTI;
 	version: CommonCartridgeVersion;
 	identifier: string;
 	href: string;
@@ -13,7 +13,7 @@ export type ICommonCartridgeLtiResourceProps = {
 };
 
 export class CommonCartridgeLtiResource implements CommonCartridgeResource {
-	constructor(private readonly props: ICommonCartridgeLtiResourceProps, private readonly xmlBuilder: Builder) {}
+	constructor(private readonly props: CommonCartridgeLtiResourceProps) {}
 
 	canInline(): boolean {
 		return false;
@@ -79,7 +79,7 @@ export class CommonCartridgeLtiResource implements CommonCartridgeResource {
 				break;
 		}
 
-		return this.xmlBuilder.buildObject(commonObject);
+		return buildXmlString(commonObject);
 	}
 
 	getManifestXml(): Record<string, unknown> {

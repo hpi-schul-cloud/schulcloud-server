@@ -1,7 +1,14 @@
 import { ObjectId } from 'bson';
+import { Builder } from 'xml2js';
 import { CommonCartridgeVersion } from './common-cartridge.enums';
 import { CommonCartridgeElement } from './interfaces/common-cartridge-element.interface';
 import { CommonCartridgeResource } from './interfaces/common-cartridge-resource.interface';
+
+const xmlBuilder = new Builder();
+
+export function buildXmlString(obj: unknown): string {
+	return xmlBuilder.buildObject(obj);
+}
 
 export function createIdentifier(id?: string | ObjectId): string {
 	id = id ?? new ObjectId();
