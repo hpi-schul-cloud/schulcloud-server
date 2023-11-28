@@ -764,13 +764,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/DeletionConsoleModule.html" data-type="entity-link" >DeletionConsoleModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-DeletionConsoleModule-05c88f88c8569d90c91b9e80e6ce1984646f406f46a02fff968aea357b52885c2d9bca00bf9728c001b126d24dbe1a475b64f92a8749f3a6e417510aad4966ac"' : 'data-bs-target="#xs-injectables-links-module-DeletionConsoleModule-05c88f88c8569d90c91b9e80e6ce1984646f406f46a02fff968aea357b52885c2d9bca00bf9728c001b126d24dbe1a475b64f92a8749f3a6e417510aad4966ac"' }>
+                                        'data-bs-target="#injectables-links-module-DeletionConsoleModule-ec7c3fbb8dcdb0309226789406e370424312dcdb465c8e8640af85fbd9d8757f8c5d68f607fc633d2ed4d03d88da689260e52f2ed1697b2650cf1eabbb8c6a76"' : 'data-bs-target="#xs-injectables-links-module-DeletionConsoleModule-ec7c3fbb8dcdb0309226789406e370424312dcdb465c8e8640af85fbd9d8757f8c5d68f607fc633d2ed4d03d88da689260e52f2ed1697b2650cf1eabbb8c6a76"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-DeletionConsoleModule-05c88f88c8569d90c91b9e80e6ce1984646f406f46a02fff968aea357b52885c2d9bca00bf9728c001b126d24dbe1a475b64f92a8749f3a6e417510aad4966ac"' :
-                                        'id="xs-injectables-links-module-DeletionConsoleModule-05c88f88c8569d90c91b9e80e6ce1984646f406f46a02fff968aea357b52885c2d9bca00bf9728c001b126d24dbe1a475b64f92a8749f3a6e417510aad4966ac"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-DeletionConsoleModule-ec7c3fbb8dcdb0309226789406e370424312dcdb465c8e8640af85fbd9d8757f8c5d68f607fc633d2ed4d03d88da689260e52f2ed1697b2650cf1eabbb8c6a76"' :
+                                        'id="xs-injectables-links-module-DeletionConsoleModule-ec7c3fbb8dcdb0309226789406e370424312dcdb465c8e8640af85fbd9d8757f8c5d68f607fc633d2ed4d03d88da689260e52f2ed1697b2650cf1eabbb8c6a76"' }>
                                         <li class="link">
                                             <a href="injectables/BatchDeletionService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BatchDeletionService</a>
                                         </li>
@@ -779,6 +779,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/DeletionClient.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >DeletionClient</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/DeletionExecutionUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >DeletionExecutionUc</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -3513,6 +3516,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/DeleteFilesConsole.html" data-type="entity-link" >DeleteFilesConsole</a>
                             </li>
                             <li class="link">
+                                <a href="classes/DeletionExecutionConsole.html" data-type="entity-link" >DeletionExecutionConsole</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/DeletionExecutionTriggerResultBuilder.html" data-type="entity-link" >DeletionExecutionTriggerResultBuilder</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/DeletionLog.html" data-type="entity-link" >DeletionLog</a>
                             </li>
                             <li class="link">
@@ -4851,6 +4860,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/TooManyPseudonymsLoggableException.html" data-type="entity-link" >TooManyPseudonymsLoggableException</a>
                             </li>
                             <li class="link">
+                                <a href="classes/TriggerDeletionExecutionOptionsBuilder.html" data-type="entity-link" >TriggerDeletionExecutionOptionsBuilder</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/UnauthorizedLoggableException.html" data-type="entity-link" >UnauthorizedLoggableException</a>
                             </li>
                             <li class="link">
@@ -5246,6 +5258,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/DeletionClient.html" data-type="entity-link" >DeletionClient</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/DeletionExecutionUc.html" data-type="entity-link" >DeletionExecutionUc</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/DeletionLogRepo.html" data-type="entity-link" >DeletionLogRepo</a>
@@ -5960,6 +5975,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/DeletionClientConfig.html" data-type="entity-link" >DeletionClientConfig</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/DeletionExecutionTriggerResult.html" data-type="entity-link" >DeletionExecutionTriggerResult</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/DeletionLogEntityProps.html" data-type="entity-link" >DeletionLogEntityProps</a>
                             </li>
                             <li class="link">
@@ -6546,6 +6564,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/ToolVersion.html" data-type="entity-link" >ToolVersion</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/TriggerDeletionExecutionOptions.html" data-type="entity-link" >TriggerDeletionExecutionOptions</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/UrlHandler.html" data-type="entity-link" >UrlHandler</a>
