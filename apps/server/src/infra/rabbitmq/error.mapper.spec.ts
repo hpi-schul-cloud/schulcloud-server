@@ -1,4 +1,3 @@
-import { IError } from '@infra/rabbitmq';
 import {
 	BadRequestException,
 	ConflictException,
@@ -6,6 +5,7 @@ import {
 	InternalServerErrorException,
 } from '@nestjs/common';
 import _ from 'lodash';
+import { IError } from './rpc-message';
 import { ErrorMapper } from './error.mapper';
 
 describe('ErrorMapper', () => {

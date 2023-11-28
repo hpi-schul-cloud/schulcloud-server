@@ -1,7 +1,8 @@
 import { IContentMetadata } from '@lumieducation/h5p-server';
 import { ApiProperty } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller';
-import { EntityId, LanguageType } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
+import { LanguageType } from '@shared/domain/entity';
 import { IsEnum, IsMongoId, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 import { H5PContentParentType } from '../../entity';
 
