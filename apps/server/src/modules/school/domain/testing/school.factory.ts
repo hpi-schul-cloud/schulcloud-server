@@ -3,7 +3,6 @@ import { ObjectId } from 'bson';
 import { School, SchoolProps } from '../do';
 import { SchoolFeature } from '../type';
 import { federalStateFactory } from './federal-state.factory';
-import { schoolYearFactory } from './school-year.factory';
 
 export const schoolFactory = BaseFactory.define<School, SchoolProps>(School, ({ sequence }) => {
 	return {
@@ -11,7 +10,6 @@ export const schoolFactory = BaseFactory.define<School, SchoolProps>(School, ({ 
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		name: `school #${sequence}`,
-		currentYear: schoolYearFactory.build(),
 		federalState: federalStateFactory.build(),
 		features: new Set<SchoolFeature>(),
 	};

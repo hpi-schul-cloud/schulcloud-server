@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { SchoolYearResponse } from './school-year.response';
 
 export class YearsResponse {
@@ -13,15 +13,15 @@ export class YearsResponse {
 	@ApiProperty({ type: () => [SchoolYearResponse] })
 	schoolYears: SchoolYearResponse[];
 
-	@ApiPropertyOptional()
-	activeYear?: SchoolYearResponse;
+	@ApiProperty()
+	activeYear: SchoolYearResponse;
 
-	@ApiPropertyOptional()
-	defaultYear?: SchoolYearResponse;
+	@ApiProperty()
+	defaultYear: SchoolYearResponse;
 
-	@ApiPropertyOptional()
-	lastYear?: SchoolYearResponse;
+	@ApiProperty()
+	lastYear: SchoolYearResponse;
 
-	@ApiPropertyOptional()
-	nextYear?: SchoolYearResponse;
+	@ApiProperty()
+	nextYear: SchoolYearResponse;
 }

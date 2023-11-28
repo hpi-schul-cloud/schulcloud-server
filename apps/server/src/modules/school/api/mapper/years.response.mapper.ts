@@ -1,5 +1,6 @@
 import { School, SchoolYear } from '../../domain';
 import { SchoolYearResponse, YearsResponse } from '../dto/response';
+import { MissingYearsLoggableException } from '../error/missing-years.loggable-exception';
 import { SchoolYearResponseMapper } from './school-year.response.mapper';
 
 export class YearsResponseMapper {
@@ -9,7 +10,7 @@ export class YearsResponseMapper {
 		const activeYear = this.computeActiveYear(school, schoolYears);
 		const nextYear = this.computeNextYear(schoolYears, activeYear);
 		const lastYear = this.computeLastYear(schoolYears, activeYear);
-		const defaultYear = activeYear || nextYear;
+		const defaultYear = activeYear;
 
 		const years = {
 			schoolYears: schoolYearResponses,
@@ -22,7 +23,7 @@ export class YearsResponseMapper {
 		return years;
 	}
 
-	private static computeActiveYear(school: School, schoolYears: SchoolYear[]): SchoolYearResponse | undefined {
+	private static computeActiveYear(school: School, schoolYears: SchoolYear[]): SchoolYearResponse {
 		let activeYear = school.getProps().currentYear;
 
 		if (!activeYear) {
@@ -32,34 +33,40 @@ export class YearsResponseMapper {
 			);
 		}
 
-		const dto = activeYear && SchoolYearResponseMapper.mapToResponse(activeYear);
+		if (!activeYear) {
+			throw new MissingYearsLoggableException();
+		}
 
-		return dto;
+		const res = SchoolYearResponseMapper.mapToResponse(activeYear);
+
+		return res;
 	}
 
-	private static computeNextYear(
-		schoolYears: SchoolYear[],
-		activeYear?: SchoolYearResponse
-	): SchoolYearResponse | undefined {
+	private static computeNextYear(schoolYears: SchoolYear[], activeYear?: SchoolYearResponse): SchoolYearResponse {
 		const indexOfActiveYear = schoolYears.findIndex((schoolYear) => schoolYear.id === activeYear?.id);
 
 		const nextYear = schoolYears[indexOfActiveYear + 1];
 
-		const dto = nextYear && SchoolYearResponseMapper.mapToResponse(nextYear);
+		if (!nextYear) {
+			throw new MissingYearsLoggableException();
+		}
 
-		return dto;
+		const res = SchoolYearResponseMapper.mapToResponse(nextYear);
+
+		return res;
 	}
 
-	private static computeLastYear(
-		schoolYears: SchoolYear[],
-		activeYear?: SchoolYearResponse
-	): SchoolYearResponse | undefined {
+	private static computeLastYear(schoolYears: SchoolYear[], activeYear?: SchoolYearResponse): SchoolYearResponse {
 		const indexOfActiveYear = schoolYears.findIndex((schoolYear) => schoolYear.id === activeYear?.id);
 
 		const lastYear = schoolYears[indexOfActiveYear - 1];
 
-		const dto = lastYear && SchoolYearResponseMapper.mapToResponse(lastYear);
+		if (!lastYear) {
+			throw new MissingYearsLoggableException();
+		}
 
-		return dto;
+		const res = SchoolYearResponseMapper.mapToResponse(lastYear);
+
+		return res;
 	}
 }

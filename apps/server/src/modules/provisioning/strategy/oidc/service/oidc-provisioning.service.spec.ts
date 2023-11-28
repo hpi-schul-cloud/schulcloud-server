@@ -325,6 +325,7 @@ describe('OidcProvisioningService', () => {
 						officialSchoolNumber: 'existingOfficialSchoolNumber',
 						systems: [systemId],
 						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
 					});
 
 					schoolService.save.mockResolvedValue(savedSchoolDO);
@@ -377,6 +378,7 @@ describe('OidcProvisioningService', () => {
 						officialSchoolNumber: 'existingOfficialSchoolNumber',
 						systems: [systemId],
 						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
 					});
 
 					schoolService.save.mockResolvedValue(savedSchoolDO);
@@ -430,6 +432,7 @@ describe('OidcProvisioningService', () => {
 						officialSchoolNumber: 'existingOfficialSchoolNumber',
 						systems: [otherSystemId],
 						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
 					});
 
 					schoolService.save.mockResolvedValue(savedSchoolDO);
@@ -489,6 +492,7 @@ describe('OidcProvisioningService', () => {
 						officialSchoolNumber: 'existingOfficialSchoolNumber',
 						systems: [],
 						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
 					});
 
 					schoolService.save.mockResolvedValue(savedSchoolDO);

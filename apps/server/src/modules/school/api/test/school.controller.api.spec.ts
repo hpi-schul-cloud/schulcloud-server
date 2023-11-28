@@ -112,20 +112,23 @@ describe('School Controller (API)', () => {
 
 		describe('when user is in requested school', () => {
 			const setup = async () => {
-				const schoolYear = schoolYearFactory.build();
+				const schoolYears = schoolYearFactory.withStartYear(2002).buildList(3);
+				const currentYear = schoolYears[1];
 				const federalState = federalStateFactory.build();
-				const school = schoolFactory.build({ currentYear: schoolYear, federalState });
+				const school = schoolFactory.build({ currentYear, federalState });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 
-				await em.persistAndFlush([schoolYear, federalState, school, studentAccount, studentUser]);
+				await em.persistAndFlush([...schoolYears, federalState, school, studentAccount, studentUser]);
 				em.clear();
 
-				const currentYear = {
-					id: schoolYear.id,
-					name: schoolYear.name,
-					startDate: schoolYear.startDate.toISOString(),
-					endDate: schoolYear.endDate.toISOString(),
-				};
+				const schoolYearResponses = schoolYears.map((schoolYear) => {
+					return {
+						id: schoolYear.id,
+						name: schoolYear.name,
+						startDate: schoolYear.startDate.toISOString(),
+						endDate: schoolYear.endDate.toISOString(),
+					};
+				});
 
 				const expectedResponse = {
 					id: school.id,
@@ -140,11 +143,13 @@ describe('School Controller (API)', () => {
 					},
 					inMaintenance: false,
 					isExternal: false,
-					currentYear,
+					currentYear: schoolYearResponses[1],
 					years: {
-						schoolYears: [currentYear],
-						activeYear: currentYear,
-						defaultYear: currentYear,
+						schoolYears: schoolYearResponses,
+						activeYear: schoolYearResponses[1],
+						defaultYear: schoolYearResponses[1],
+						lastYear: schoolYearResponses[0],
+						nextYear: schoolYearResponses[2],
 					},
 					features: [],
 					systems: [],
