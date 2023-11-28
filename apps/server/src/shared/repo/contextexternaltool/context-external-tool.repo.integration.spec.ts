@@ -350,7 +350,7 @@ describe('ContextExternalToolRepo', () => {
 		});
 	});
 
-	describe('findById', () => {
+	describe('findByIdOrNull', () => {
 		describe('when a ContextExternalTool is found', () => {
 			const setup = async () => {
 				const schoolExternalTool = schoolExternalToolEntityFactory.buildWithId();
@@ -370,7 +370,7 @@ describe('ContextExternalToolRepo', () => {
 			it('should return correct results', async () => {
 				const { contextExternalTool, schoolExternalTool } = await setup();
 
-				const result = await repo.findById(contextExternalTool.id);
+				const result = await repo.findByIdOrNull(contextExternalTool.id);
 
 				expect(result).toEqual<ContextExternalToolProps>({
 					id: contextExternalTool.id,
@@ -391,6 +391,14 @@ describe('ContextExternalToolRepo', () => {
 					},
 					toolVersion: contextExternalTool.toolVersion,
 				});
+			});
+		});
+
+		describe('when no ContextExternalTool is found', () => {
+			it('should return correct results', async () => {
+				const result: ContextExternalTool | null = await repo.findByIdOrNull(new ObjectId().toHexString());
+
+				expect(result).toBeNull();
 			});
 		});
 	});
