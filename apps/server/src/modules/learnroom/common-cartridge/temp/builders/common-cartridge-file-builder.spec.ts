@@ -42,6 +42,18 @@ describe('CommonCartridgeFileBuilder', () => {
 				expect(manifest).toContain('<organizations>');
 				expect(manifest).toContain('</organizations>');
 			});
+
+			it('foobar', () => {
+				// const builder = new CommonCartridgeFileBuilder(CommonCartridgeVersion.V_1_1);
+				// const metadataBuilder = builder.withMetadata();
+				// metadataBuilder
+				// 	.setTitle('test-title')
+				// 	.setCopyrightOwners(['PS', 'SR'])
+				// 	.setCreationDate(new Date('2021-01-01'));
+				// const organization1Builder = builder.withOrganization();
+				// const organization2Builder = builder.withOrganization();
+				// organization1Builder.addOrganization()
+			});
 		});
 	});
 });

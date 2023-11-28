@@ -31,7 +31,7 @@ export class CommonCartridgeManifestResource implements CommonCartridgeResource 
 		return this.xmlBuilder.buildObject(this.getManifestXml());
 	}
 
-	getManifestXml(): Record<string, unknown> | undefined {
+	getManifestXml(): Record<string, unknown> {
 		return {
 			manifest: {
 				$: this.getXmlNamespacesByVersion(),

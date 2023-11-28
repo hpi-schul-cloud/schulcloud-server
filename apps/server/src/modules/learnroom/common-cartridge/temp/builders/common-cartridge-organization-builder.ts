@@ -1,35 +1,22 @@
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
-import { checkDefined } from '../utils';
+
+type CommonCartridgeOrganizationProps = {
+	version: CommonCartridgeVersion;
+	title: string;
+	identifier: string;
+};
 
 export class CommonCartridgeOrganizationBuilder {
-	private title?: string;
-
-	private identifier?: string;
-
 	private items: CommonCartridgeResource[] = [];
 
 	private children: CommonCartridgeElement[] = [];
 
-	constructor(private readonly version: CommonCartridgeVersion, private readonly parent?: CommonCartridgeElement) {}
+	constructor(private readonly props: CommonCartridgeOrganizationProps) {}
 
-	setIdentifier(identifier: string): CommonCartridgeOrganizationBuilder {
-		this.identifier = identifier;
-
-		return this;
-	}
-
-	setTitle(title: string): CommonCartridgeOrganizationBuilder {
-		this.title = title;
-
-		return this;
-	}
-
-	addOrganization(organization: CommonCartridgeElement): CommonCartridgeOrganizationBuilder {
-		this.items.push(organization);
-
-		return new CommonCartridgeOrganizationBuilder(this.version);
+	addOrganization(props: CommonCartridgeOrganizationProps): CommonCartridgeOrganizationBuilder {
+		return new CommonCartridgeOrganizationBuilder(props);
 	}
 
 	addOrganizationItem(item: CommonCartridgeResource): CommonCartridgeOrganizationBuilder {
