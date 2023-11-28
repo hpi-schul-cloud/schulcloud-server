@@ -7,6 +7,7 @@ import {
 	schoolExternalToolFactory,
 	setupEntities,
 } from '@shared/testing';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -16,10 +17,12 @@ import { ExternalTool } from '../domain';
 import { ContextExternalToolTemplateInfo } from '../uc';
 import { ExternalToolConfigurationService } from './external-tool-configuration.service';
 import { ToolContextTypesList } from '../controller/dto/response/tool-context-types-list';
+import { CommonToolService } from '../../common/service';
 
 describe('ExternalToolConfigurationService', () => {
 	let module: TestingModule;
 	let service: ExternalToolConfigurationService;
+	let commonToolservice: DeepMocked<CommonToolService>;
 
 	let toolFeatures: IToolFeatures;
 
@@ -35,11 +38,16 @@ describe('ExternalToolConfigurationService', () => {
 						contextConfigurationEnabled: false,
 					},
 				},
+				{
+					provide: CommonToolService,
+					useValue: createMock<CommonToolService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(ExternalToolConfigurationService);
 		toolFeatures = module.get(ToolFeatures);
+		commonToolservice = module.get(CommonToolService);
 	});
 
 	afterEach(() => {
@@ -196,6 +204,8 @@ describe('ExternalToolConfigurationService', () => {
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 
 				const availableTools: ContextExternalToolTemplateInfo[] = [{ externalTool, schoolExternalTool }];
+
+				commonToolservice.isContextRestricted.mockReturnValueOnce(false);
 
 				return {
 					contextType,

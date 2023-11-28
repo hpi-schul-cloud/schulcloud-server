@@ -45,7 +45,7 @@ export class ContextExternalToolUc {
 
 		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, context);
 
-		await this.contextExternalToolService.checkContextRestrictions(contextExternalTool, userId, context);
+		await this.contextExternalToolService.checkContextRestrictions(contextExternalTool);
 
 		await this.contextExternalToolValidationService.validate(contextExternalTool);
 

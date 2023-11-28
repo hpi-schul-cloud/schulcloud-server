@@ -8,10 +8,14 @@ import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ContextExternalToolTemplateInfo } from '../uc/dto';
 import { ToolContextTypesList } from '../controller/dto/response/tool-context-types-list';
+import { CommonToolService } from '../../common/service';
 
 @Injectable()
 export class ExternalToolConfigurationService {
-	constructor(@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures) {}
+	constructor(
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
+		private readonly commonTooLService: CommonToolService
+	) {}
 
 	public filterForAvailableTools(externalTools: Page<ExternalTool>, toolIdsInUse: EntityId[]): ExternalTool[] {
 		const visibleTools: ExternalTool[] = externalTools.data.filter((tool: ExternalTool): boolean => !tool.isHidden);
@@ -79,12 +83,9 @@ export class ExternalToolConfigurationService {
 		availableTools: ContextExternalToolTemplateInfo[],
 		contextType: ToolContextType
 	): ContextExternalToolTemplateInfo[] {
-		const availableToolsForContext: ContextExternalToolTemplateInfo[] = availableTools.filter((availableTool) => {
-			if (availableTool.externalTool.restrictToContexts && availableTool.externalTool.restrictToContexts[0]) {
-				return availableTool.externalTool.restrictToContexts.includes(contextType);
-			}
-			return true;
-		});
+		const availableToolsForContext: ContextExternalToolTemplateInfo[] = availableTools.filter(
+			(availableTool) => !this.commonTooLService.isContextRestricted(availableTool.externalTool, contextType)
+		);
 		return availableToolsForContext;
 	}
 

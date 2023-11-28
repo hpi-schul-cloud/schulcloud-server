@@ -1,21 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { ContextExternalToolRepo } from '@shared/repo';
-import { AuthorizationContext } from '@modules/authorization';
-import { ForbiddenLoggableException } from '@modules/authorization/domain/error';
 import { ContextExternalTool, ContextRef } from '../domain';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
+import { CommonToolService } from '../../common/service';
 
 @Injectable()
 export class ContextExternalToolService {
 	constructor(
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		private readonly externalToolService: ExternalToolService,
-		private readonly schoolExternalToolService: SchoolExternalToolService
+		private readonly schoolExternalToolService: SchoolExternalToolService,
+		private readonly commonToolService: CommonToolService
 	) {}
 
 	public async findContextExternalTools(query: ContextExternalToolQuery): Promise<ContextExternalTool[]> {
@@ -58,21 +59,15 @@ export class ContextExternalToolService {
 		return contextExternalTools;
 	}
 
-	public async checkContextRestrictions(
-		contextExternalTool: ContextExternalTool,
-		userId: EntityId,
-		context: AuthorizationContext
-	): Promise<void> {
+	public async checkContextRestrictions(contextExternalTool: ContextExternalTool): Promise<void> {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
 			contextExternalTool.schoolToolRef.schoolToolId
 		);
 
 		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
-		if (externalTool.restrictToContexts && externalTool.restrictToContexts[0]) {
-			if (!externalTool.restrictToContexts.includes(contextExternalTool.contextRef.type)) {
-				throw new ForbiddenLoggableException(userId, 'ContextExternalTool', context);
-			}
+		if (this.commonToolService.isContextRestricted(externalTool, contextExternalTool.contextRef.type)) {
+			throw new RestrictedContextMismatchLoggable(externalTool.name, contextExternalTool.contextRef.type);
 		}
 	}
 }
