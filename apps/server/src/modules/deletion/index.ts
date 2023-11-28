@@ -1,4 +1,4 @@
 export * from './deletion.module';
 export * from './services';
-export * from './client';
-export * from './console';
+export * from '../deletion-client';
+export * from '../deletion-console';

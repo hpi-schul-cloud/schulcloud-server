@@ -1,6 +1,6 @@
 import { Console, Command } from 'nestjs-console';
 import { ConsoleWriterService } from '@infra/console';
-import { BatchDeletionUc } from '../uc';
+import { BatchDeletionUc } from '../deletion/uc';
 import { PushDeletionRequestsOptions } from './interface';
 
 @Console({ command: 'queue', description: 'Console providing an access to the deletion queue.' })

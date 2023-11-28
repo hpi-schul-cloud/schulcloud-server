@@ -4,10 +4,10 @@ import { ConfigModule } from '@nestjs/config';
 import { ConsoleModule } from 'nestjs-console';
 import { ConsoleWriterModule } from '@infra/console';
 import { createConfigModuleOptions } from '@src/config';
-import { DeletionClient } from '../client';
-import { getDeletionClientConfig } from '../client/deletion-client.config';
-import { BatchDeletionService } from '../services';
-import { BatchDeletionUc, DeletionExecutionUc } from '../uc';
+import { DeletionClient } from '../deletion-client';
+import { getDeletionClientConfig } from '../deletion-client/deletion-client.config';
+import { BatchDeletionService } from '../deletion/services';
+import { BatchDeletionUc, DeletionExecutionUc } from '../deletion/uc';
 import { DeletionQueueConsole } from './deletion-queue.console';
 import { DeletionExecutionConsole } from './deletion-execution.console';
 
