@@ -145,31 +145,12 @@ describe('SanisResponseMapper', () => {
 			});
 		});
 
-		describe('when group data set does not have the group info', () => {
-			const setup = () => {
-				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen[0].gruppe = undefined;
-
-				return {
-					sanisResponse,
-				};
-			};
-
-			it('should not map the group', () => {
-				const { sanisResponse } = setup();
-
-				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
-
-				expect(result).toHaveLength(0);
-			});
-		});
-
 		describe('when group type is given', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
 				const personenkontext: SanisPersonenkontextResponse = sanisResponse.personenkontexte[0];
 				const group: SanisGruppenResponse = personenkontext.gruppen![0];
-				const otherParticipant: SanisSonstigeGruppenzugehoerigeResponse = group.sonstige_gruppenzugehoerige[0];
+				const otherParticipant: SanisSonstigeGruppenzugehoerigeResponse = group.sonstige_gruppenzugehoerige![0];
 
 				return {
 					sanisResponse,
@@ -262,7 +243,7 @@ describe('SanisResponseMapper', () => {
 		describe('when no other participants are provided', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0]!.sonstige_gruppenzugehoerige = undefined;
+				sanisResponse.personenkontexte[0].gruppen![0].sonstige_gruppenzugehoerige = undefined;
 
 				return {
 					sanisResponse,

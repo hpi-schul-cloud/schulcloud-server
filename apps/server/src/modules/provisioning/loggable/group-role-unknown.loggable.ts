@@ -1,5 +1,5 @@
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
-import { SanisSonstigeGruppenzugehoerigeResponse } from '../strategy';
+import { SanisSonstigeGruppenzugehoerigeResponse } from '../strategy/sanis/response';
 
 export class GroupRoleUnknownLoggable implements Loggable {
 	constructor(private readonly relation: SanisSonstigeGruppenzugehoerigeResponse) {}
