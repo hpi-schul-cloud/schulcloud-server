@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ContentElementType } from '@shared/domain';
 import { TimestampsResponse } from '../timestamps.response';
+import { ContentElementType } from '@shared/domain/domainobject';
 
 export class DrawingElementContent {
 	constructor({ description }: DrawingElementContent) {
