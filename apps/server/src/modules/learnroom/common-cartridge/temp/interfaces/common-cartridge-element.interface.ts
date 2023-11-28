@@ -3,8 +3,8 @@
  */
 export interface CommonCartridgeElement {
 	/**
-	 * Returns the XML representation of the element.
 	 * This method is used to build the imsmanifest.xml file.
+	 * @returns The XML object representation for the imsmanifest.xml file.
 	 */
-	getManifestXml(): Record<string, unknown>;
+	getManifestXml(): Record<string, unknown> | undefined;
 }

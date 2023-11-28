@@ -1,9 +1,9 @@
-import AdmZip from 'adm-zip';
+import { CommonCartridgeElement } from './common-cartridge-element.interface';
 
 /**
  * Every resource which should be added to the Common Cartridge archive must implement this interface.
  */
-export interface CommonCartridgeResource {
+export interface CommonCartridgeResource extends CommonCartridgeElement {
 	/**
 	 * In later Common Cartridge versions, resources can be inlined in the imsmanifest.xml file.
 	 * @returns true if the resource can be inlined, otherwise false.
@@ -11,14 +11,14 @@ export interface CommonCartridgeResource {
 	canInline(): boolean;
 
 	/**
-	 * Adds the resource to the Common Cartridge archive.
-	 * @param archive The archive to which the resource should be added.
+	 * This method is used to determine the path of the resource in the Common Cartridge archive.
+	 * @returns The path of the resource in the Common Cartridge archive.
 	 */
-	addToArchive(archive: AdmZip): void;
+	getFilePath(): string;
 
 	/**
-	 * This method is used to build the imsmanifest.xml file.
-	 * @returns The XML representation of the resource if the resource can be inlined otherwise undefined.
+	 * This method is used to get the content of the resource.
+	 * @returns The content of the resource.
 	 */
-	getManifestXml(): Record<string, unknown> | undefined;
+	getFileContent(): string;
 }
