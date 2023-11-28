@@ -1,11 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
-import { FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
+import { EntityData, FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import {
 	IFindOptions,
-	IUserProperties,
 	LanguageType,
 	Role,
 	RoleName,
@@ -64,36 +63,6 @@ describe('UserRepo', () => {
 
 	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(User);
-	});
-
-	describe('entityFactory', () => {
-		const props: IUserProperties = {
-			email: 'email@email.email',
-			firstName: 'firstName',
-			lastName: 'lastName',
-			school: schoolFactory.buildWithId(),
-			roles: [roleFactory.buildWithId()],
-		};
-
-		it('should return new entity of type User', () => {
-			const result: User = repo.entityFactory(props);
-
-			expect(result).toBeInstanceOf(User);
-		});
-
-		it('should return new entity with values from properties', () => {
-			const result: User = repo.entityFactory(props);
-
-			expect(result).toEqual(
-				expect.objectContaining({
-					email: props.email,
-					firstName: props.firstName,
-					lastName: props.lastName,
-					school: props.school,
-				})
-			);
-			expect(result.roles.getItems()).toEqual(props.roles);
-		});
 	});
 
 	describe('findById', () => {
@@ -303,9 +272,9 @@ describe('UserRepo', () => {
 					'testId'
 				);
 
-			const result: IUserProperties = repo.mapDOToEntityProperties(testDO);
+			const result: EntityData<User> = repo.mapDOToEntityProperties(testDO);
 
-			expect(result).toEqual<IUserProperties>({
+			expect(result).toEqual<EntityData<User>>({
 				email: testDO.email,
 				firstName: testDO.firstName,
 				lastName: testDO.lastName,

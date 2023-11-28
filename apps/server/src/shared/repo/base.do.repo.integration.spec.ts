@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Entity, EntityName, Property } from '@mikro-orm/core';
+import { Entity, EntityData, EntityName, Property } from '@mikro-orm/core';
 import { BaseDO, BaseEntityWithTimestamps } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { Injectable } from '@nestjs/common';
@@ -35,20 +35,16 @@ describe('BaseDORepo', () => {
 	}
 
 	@Injectable()
-	class TestRepo extends BaseDORepo<TestDO, TestEntity, ITestEntityProperties> {
+	class TestRepo extends BaseDORepo<TestDO, TestEntity> {
 		get entityName(): EntityName<TestEntity> {
 			return TestEntity;
-		}
-
-		entityFactory(props: ITestEntityProperties): TestEntity {
-			return new TestEntity(props);
 		}
 
 		mapEntityToDO(entity: TestEntity): TestDO {
 			return new TestDO({ id: entity.id, name: entity.name });
 		}
 
-		mapDOToEntityProperties(entityDO: TestDO): ITestEntityProperties {
+		mapDOToEntityProperties(entityDO: TestDO): EntityData<TestEntity> {
 			return {
 				name: entityDO.name,
 			};
@@ -91,24 +87,6 @@ describe('BaseDORepo', () => {
 	describe('entityName', () => {
 		it('should implement entityName getter', () => {
 			expect(repo.entityName).toBe(TestEntity);
-		});
-	});
-
-	describe('entityFactory', () => {
-		const props: ITestEntityProperties = {
-			name: 'name',
-		};
-
-		it('should return new entity of type TestEntity', () => {
-			const result: TestEntity = repo.entityFactory(props);
-
-			expect(result).toBeInstanceOf(TestEntity);
-		});
-
-		it('should return new entity with values from properties', () => {
-			const result: TestEntity = repo.entityFactory(props);
-
-			expect(result).toEqual(expect.objectContaining(props));
 		});
 	});
 

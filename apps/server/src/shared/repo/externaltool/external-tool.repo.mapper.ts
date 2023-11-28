@@ -7,10 +7,10 @@ import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
 	ExternalToolEntity,
-	IExternalToolProperties,
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
 } from '@modules/tool/external-tool/entity';
+import { EntityData } from '@mikro-orm/core';
 
 // TODO: maybe rename because of usage in external tool repo and school external tool repo
 export class ExternalToolRepoMapper {
@@ -74,7 +74,7 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapDOToEntityProperties(entityDO: ExternalTool): IExternalToolProperties {
+	static mapDOToEntityProperties(entityDO: ExternalTool): EntityData<ExternalToolEntity> {
 		let config: BasicToolConfigEntity | Oauth2ToolConfigEntity | Lti11ToolConfigEntity;
 		switch (entityDO.config.type) {
 			case ToolConfigType.BASIC:

@@ -1,4 +1,4 @@
-import { EntityName, QueryOrderMap } from '@mikro-orm/core';
+import { EntityData, EntityName, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { IFindOptions, IPagination, Page, SortOrder } from '@shared/domain';
@@ -7,21 +7,17 @@ import { LegacyLogger } from '@src/core/logger';
 import { ToolConfigType } from '@modules/tool/common/enum';
 import { ExternalToolSearchQuery } from '@modules/tool/common/interface';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { ExternalToolEntity, IExternalToolProperties } from '@modules/tool/external-tool/entity';
+import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { ExternalToolScope } from './external-tool.scope';
 
 @Injectable()
-export class ExternalToolRepo extends BaseDORepo<ExternalTool, ExternalToolEntity, IExternalToolProperties> {
+export class ExternalToolRepo extends BaseDORepo<ExternalTool, ExternalToolEntity> {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 
 	get entityName(): EntityName<ExternalToolEntity> {
 		return ExternalToolEntity;
-	}
-
-	entityFactory(props: IExternalToolProperties): ExternalToolEntity {
-		return new ExternalToolEntity(props);
 	}
 
 	async findByName(name: string): Promise<ExternalTool | null> {
@@ -87,7 +83,7 @@ export class ExternalToolRepo extends BaseDORepo<ExternalTool, ExternalToolEntit
 		return domainObject;
 	}
 
-	mapDOToEntityProperties(entityDO: ExternalTool): IExternalToolProperties {
+	mapDOToEntityProperties(entityDO: ExternalTool): EntityData<ExternalToolEntity> {
 		const entity = ExternalToolRepoMapper.mapDOToEntityProperties(entityDO);
 
 		return entity;

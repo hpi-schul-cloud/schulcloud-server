@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { IVideoConferenceProperties, VideoConferenceDO } from '@shared/domain';
+import { VideoConferenceDO } from '@shared/domain';
 import { TargetModels, VideoConference } from '@shared/domain/entity/video-conference.entity';
 import { VideoConferenceScope } from '@shared/domain/interface';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
-import { EntityName, Loaded } from '@mikro-orm/core';
+import { EntityData, EntityName, Loaded } from '@mikro-orm/core';
 
 const TargetModelsMapping = {
 	[VideoConferenceScope.EVENT]: TargetModels.EVENTS,
@@ -16,13 +16,9 @@ const VideoConferencingScopeMapping = {
 };
 
 @Injectable()
-export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConference, IVideoConferenceProperties> {
+export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConference> {
 	get entityName(): EntityName<VideoConference> {
 		return VideoConference;
-	}
-
-	entityFactory(props: IVideoConferenceProperties): VideoConference {
-		return new VideoConference(props);
 	}
 
 	async findByScopeAndScopeId(scopeId: string, videoConferenceScope: VideoConferenceScope): Promise<VideoConferenceDO> {
@@ -47,7 +43,7 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 		});
 	}
 
-	protected mapDOToEntityProperties(entityDO: VideoConferenceDO): IVideoConferenceProperties {
+	protected mapDOToEntityProperties(entityDO: VideoConferenceDO): EntityData<VideoConference> {
 		return {
 			target: entityDO.target,
 			targetModel: TargetModelsMapping[entityDO.targetModel],

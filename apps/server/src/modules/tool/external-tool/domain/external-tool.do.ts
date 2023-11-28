@@ -1,4 +1,5 @@
 import { BaseDO } from '@shared/domain/domainobject/base.do';
+import { InternalServerErrorException } from '@nestjs/common';
 import { ToolVersion } from '../../common/interface';
 import { Oauth2ToolConfig, BasicToolConfig, Lti11ToolConfig, ExternalToolConfig } from './config';
 import { CustomParameter } from '../../common/domain';
@@ -52,7 +53,15 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 		this.url = props.url;
 		this.logoUrl = props.logoUrl;
 		this.logo = props.logo;
-		this.config = props.config;
+		if (ExternalTool.isBasicConfig(props.config)) {
+			this.config = new BasicToolConfig(props.config);
+		} else if (ExternalTool.isOauth2Config(props.config)) {
+			this.config = new Oauth2ToolConfig(props.config);
+		} else if (ExternalTool.isLti11Config(props.config)) {
+			this.config = new Lti11ToolConfig(props.config);
+		} else {
+			throw new InternalServerErrorException(`Unknown tool config`);
+		}
 		this.parameters = props.parameters;
 		this.isHidden = props.isHidden;
 		this.openNewTab = props.openNewTab;
@@ -61,6 +70,10 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 
 	getVersion(): number {
 		return this.version;
+	}
+
+	static isBasicConfig(config: ExternalToolConfig): config is BasicToolConfig {
+		return ToolConfigType.BASIC === config.type;
 	}
 
 	static isOauth2Config(config: ExternalToolConfig): config is Oauth2ToolConfig {

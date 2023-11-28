@@ -72,6 +72,19 @@ describe('UserLoginMigrationRepo', () => {
 				expect(result).toMatchObject(expected);
 				expect(result.id).toBeDefined();
 			});
+
+			it('should be able to update a UserLoginMigration to the database', async () => {
+				const { domainObject } = await setup();
+
+				await repo.save(domainObject);
+				em.clear();
+
+				domainObject.mandatorySince = new Date();
+				await repo.save(domainObject);
+
+				const result = em.find(UserLoginMigrationEntity, { id: domainObject.id });
+				expect(result).toBeDefined();
+			});
 		});
 	});
 
