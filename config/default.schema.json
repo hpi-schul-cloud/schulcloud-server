@@ -1343,7 +1343,7 @@
 		},
 		"FEATURE_COLUMN_BOARD_LEARNSTORE_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables learnstore on the column board"
 		},
 		"CTL_TOOLS": {
