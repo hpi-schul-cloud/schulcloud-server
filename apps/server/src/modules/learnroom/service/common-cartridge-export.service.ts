@@ -59,6 +59,11 @@ export class CommonCartridgeExportService {
 					organizationBuilder.addResourceToOrganization(resourceProps);
 				}
 			});
+
+			const tasks = lesson.tasks.getItems();
+			tasks.forEach((task) => {
+				organizationBuilder.addResourceToOrganization(this.mapTaskToWebContentResource(task, version));
+			});
 		});
 	}
 
