@@ -1,9 +1,9 @@
-import { CCResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
+import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeLtiResource, CommonCartridgeLtiResourceProps } from './common-cartridge-lti-resource';
 
 describe('CommonCartridgeLtiResource', () => {
 	const propsVersion1: CommonCartridgeLtiResourceProps = {
-		type: CCResourceType.LTI,
+		type: CommonCartridgeResourceType.LTI,
 		version: CommonCartridgeVersion.V_1_1,
 		identifier: 'lti-identifier-version1',
 		href: 'lti-identifier-version1/lti.xml',
@@ -13,7 +13,7 @@ describe('CommonCartridgeLtiResource', () => {
 	};
 
 	const propsVersion3: CommonCartridgeLtiResourceProps = {
-		type: CCResourceType.LTI,
+		type: CommonCartridgeResourceType.LTI,
 		version: CommonCartridgeVersion.V_1_3,
 		identifier: 'lti-identifier-version3',
 		href: 'lti-identifier-version3/lti.xml',

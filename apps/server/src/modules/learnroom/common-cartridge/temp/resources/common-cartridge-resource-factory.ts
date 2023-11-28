@@ -1,4 +1,4 @@
-import { CCResourceType } from '../common-cartridge.enums';
+import { CommonCartridgeResourceType } from '../common-cartridge.enums';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
 import { CommonCartridgeLtiResource, CommonCartridgeLtiResourceProps } from './common-cartridge-lti-resource';
 import {
@@ -18,11 +18,11 @@ type CommonCartridgeResourceProps =
 export class CommonCartridgeResourceFactory {
 	static createResource(props: CommonCartridgeResourceProps): CommonCartridgeResource {
 		switch (props.type) {
-			case CCResourceType.LTI:
+			case CommonCartridgeResourceType.LTI:
 				return new CommonCartridgeLtiResource(props);
-			case CCResourceType.WEB_CONTENT:
+			case CommonCartridgeResourceType.WEB_CONTENT:
 				return new CommonCartridgeWebContentResource(props);
-			case CCResourceType.WEB_LINK:
+			case CommonCartridgeResourceType.WEB_LINK:
 				return new CommonCartridgeWebLinkResource(props);
 			default:
 				throw new Error(`Unknown Common Cartridge resource type`);

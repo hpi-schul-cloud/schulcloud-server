@@ -1,9 +1,9 @@
-import { CCResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
+import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
-import { buildXmlString } from '../utils';
+import { buildXmlString, createVersionNotSupportedError } from '../utils';
 
 export type CommonCartridgeWebLinkResourceProps = {
-	type: CCResourceType.WEB_LINK;
+	type: CommonCartridgeResourceType.WEB_LINK;
 	version: CommonCartridgeVersion;
 	identifier: string;
 	href: string;
@@ -24,7 +24,8 @@ export class CommonCartridgeWebLinkResource implements CommonCartridgeResource {
 	}
 
 	getFileContent(): string {
-		const commonTags = {
+		return buildXmlString({
+			$: this.getXmlNamespacesByVersion(),
 			title: this.props.title,
 			url: {
 				$: {
@@ -33,33 +34,7 @@ export class CommonCartridgeWebLinkResource implements CommonCartridgeResource {
 					windowFeatures: 'width=100, height=100',
 				},
 			},
-		};
-		switch (this.props.version) {
-			case CommonCartridgeVersion.V_1_3:
-				return buildXmlString({
-					webLink: {
-						...commonTags,
-						$: {
-							xmlns: 'http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3',
-							'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-							'xsi:schemaLocation':
-								'http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3 http://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_imswl_v1p3.xsd',
-						},
-					},
-				});
-			default:
-				return buildXmlString({
-					webLink: {
-						...commonTags,
-						$: {
-							xmlns: 'http://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1',
-							'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-							'xsi:schemaLocation':
-								'http://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1 https://www.imsglobal.org/sites/default/files/profile/cc/ccv1p1/ccv1p1_imswl_v1p1.xsd',
-						},
-					},
-				});
-		}
+		});
 	}
 
 	getManifestXml(): Record<string, unknown> {
@@ -74,5 +49,26 @@ export class CommonCartridgeWebLinkResource implements CommonCartridgeResource {
 				},
 			},
 		};
+	}
+
+	private getXmlNamespacesByVersion(): Record<string, string> {
+		switch (this.props.version) {
+			case CommonCartridgeVersion.V_1_1:
+				return {
+					xmlns: 'http://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1',
+					'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+					'xsi:schemaLocation':
+						'http://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1 https://www.imsglobal.org/sites/default/files/profile/cc/ccv1p1/ccv1p1_imswl_v1p1.xsd',
+				};
+			case CommonCartridgeVersion.V_1_3:
+				return {
+					xmlns: 'http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3',
+					'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+					'xsi:schemaLocation':
+						'http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3 http://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_imswl_v1p3.xsd',
+				};
+			default:
+				throw createVersionNotSupportedError(this.props.version);
+		}
 	}
 }

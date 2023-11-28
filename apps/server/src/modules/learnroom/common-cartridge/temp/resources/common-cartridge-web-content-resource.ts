@@ -1,8 +1,12 @@
-import { CCResourceType, CommonCartridgeIntendedUseType, CommonCartridgeVersion } from '../common-cartridge.enums';
+import {
+	CommonCartridgeResourceType,
+	CommonCartridgeIntendedUseType,
+	CommonCartridgeVersion,
+} from '../common-cartridge.enums';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
 
 export type CommonCartridgeWebContentResourceProps = {
-	type: CCResourceType.WEB_CONTENT;
+	type: CommonCartridgeResourceType.WEB_CONTENT;
 	version: CommonCartridgeVersion;
 	identifier: string;
 	href: string;

@@ -1,4 +1,4 @@
-import { CCResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
+import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import {
 	CommonCartridgeWebContentResource,
 	CommonCartridgeWebContentResourceProps,
@@ -6,7 +6,7 @@ import {
 
 describe('CommonCartridgeWebContentResource', () => {
 	const props: CommonCartridgeWebContentResourceProps = {
-		type: CCResourceType.WEB_CONTENT,
+		type: CommonCartridgeResourceType.WEB_CONTENT,
 		version: CommonCartridgeVersion.V_1_3,
 		identifier: 'web-link',
 		href: 'https://example.com/link',
