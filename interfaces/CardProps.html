@@ -247,7 +247,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DrawingElement } from &#x27;@shared/domain/domainobject/board/drawing-element.do&#x27;;
+import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
 import { ExternalToolElement } from &#x27;./external-tool-element.do&#x27;;
 import { FileElement } from &#x27;./file-element.do&#x27;;
 import { LinkElement } from &#x27;./link-element.do&#x27;;
@@ -275,6 +276,7 @@ export class Card extends BoardComposite&lt;CardProps&gt; {
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
 		const allowed &#x3D;
 			domainObject instanceof FileElement ||
+			domainObject instanceof DrawingElement ||
 			domainObject instanceof LinkElement ||
 			domainObject instanceof RichTextElement ||
 			domainObject instanceof SubmissionContainerElement ||

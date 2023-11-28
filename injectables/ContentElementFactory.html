@@ -147,6 +147,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                <a href="#buildDrawing" >buildDrawing</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#buildExternalTool" >buildExternalTool</a>
                             </li>
                             <li>
@@ -203,8 +207,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -254,6 +258,45 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="buildDrawing"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>buildDrawing</b></span>
+                        <a href="#buildDrawing"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildDrawing()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="85"
+                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:85</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="buildExternalTool"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -272,8 +315,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="93"
-                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:93</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="109"
+                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:109</a></div>
                         </td>
                     </tr>
 
@@ -311,8 +354,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="43"
-                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:43</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -350,8 +393,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -389,8 +432,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -428,8 +471,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="81"
-                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:81</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="97"
+                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:97</a></div>
                         </td>
                     </tr>
 
@@ -455,6 +498,7 @@
 import { InputFormat } from &#x27;@shared/domain/types&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
 import { ExternalToolElement } from &#x27;./external-tool-element.do&#x27;;
+import { DrawingElement } from &#x27;./drawing-element.do&#x27;;
 import { FileElement } from &#x27;./file-element.do&#x27;;
 import { LinkElement } from &#x27;./link-element.do&#x27;;
 import { RichTextElement } from &#x27;./rich-text-element.do&#x27;;
@@ -475,6 +519,9 @@ export class ContentElementFactory {
 				break;
 			case ContentElementType.RICH_TEXT:
 				element &#x3D; this.buildRichText();
+				break;
+			case ContentElementType.DRAWING:
+				element &#x3D; this.buildDrawing();
 				break;
 			case ContentElementType.SUBMISSION_CONTAINER:
 				element &#x3D; this.buildSubmissionContainer();
@@ -523,6 +570,18 @@ export class ContentElementFactory {
 			id: new ObjectId().toHexString(),
 			text: &#x27;&#x27;,
 			inputFormat: InputFormat.RICH_TEXT_CK5,
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+
+		return element;
+	}
+
+	private buildDrawing() {
+		const element &#x3D; new DrawingElement({
+			id: new ObjectId().toHexString(),
+			description: &#x27;&#x27;,
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),

@@ -451,6 +451,15 @@
                         <li>
                             <a href="#VideoConferenceStateResponse" title="apps/server/src/modules/video-conference/controller/dto/response/video-conference-state.response.ts" ><b>VideoConferenceStateResponse</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference-state.response.ts)</a>
                         </li>
+                        <li>
+                            <a href="#WsCloseCodeEnum" title="apps/server/src/modules/tldraw/types/ws-close-code-enum.ts" ><b>WsCloseCodeEnum</b>&nbsp;&nbsp;&nbsp;(apps/.../ws-close-code-enum.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#WSConnectionState" title="apps/server/src/modules/tldraw/types/connection-enum.ts" ><b>WSConnectionState</b>&nbsp;&nbsp;&nbsp;(apps/.../connection-enum.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#WSMessageType" title="apps/server/src/modules/tldraw/types/connection-enum.ts" ><b>WSMessageType</b>&nbsp;&nbsp;&nbsp;(apps/.../connection-enum.ts)</a>
+                        </li>
                     </ul>
                 </td>
             </tr>
@@ -870,6 +879,16 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>rich-text-element</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;DRAWING_ELEMENT
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>drawing-element</code>
                             </td>
                         </tr>
                         <tr>
@@ -1354,6 +1373,16 @@
                         </tr>
                         <tr>
                             <td class="col-md-4">
+                                &nbsp;DRAWING
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>drawing</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
                                 &nbsp;LINK
                             </td>
                         </tr>
@@ -1536,6 +1565,16 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>FILE_ELEMENT</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;DRAWING_ELEMENT
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>DRAWING_ELEMENT</code>
                             </td>
                         </tr>
                         <tr>
@@ -7885,6 +7924,82 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>FINISHED</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>apps/server/src/modules/tldraw/types/ws-close-code-enum.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="WsCloseCodeEnum"></a>
+                        <span class="name "><b>WsCloseCodeEnum</b><a href="#WsCloseCodeEnum"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;WS_CLIENT_BAD_REQUEST_CODE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>4400</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>apps/server/src/modules/tldraw/types/connection-enum.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="WSConnectionState"></a>
+                        <span class="name "><b>WSConnectionState</b><a href="#WSConnectionState"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;CONNECTING
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;OPEN
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>1</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="WSMessageType"></a>
+                        <span class="name "><b>WSMessageType</b><a href="#WSMessageType"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;SYNC
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;AWARENESS
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>1</code>
                             </td>
                         </tr>
             </tbody>

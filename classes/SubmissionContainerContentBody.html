@@ -204,7 +204,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="91" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:91</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="97" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:97</a></div>
                         </td>
                     </tr>
 
@@ -298,6 +298,12 @@ export class RichTextContentBody {
 	inputFormat!: InputFormat;
 }
 
+export class DrawingContentBody {
+	@IsString()
+	@ApiProperty()
+	description!: string;
+}
+
 export class RichTextElementContentBody extends ElementContentBody {
 	@ApiProperty({ type: ContentElementType.RICH_TEXT })
 	type!: ContentElementType.RICH_TEXT;
@@ -343,6 +349,7 @@ export class ExternalToolElementContentBody extends ElementContentBody {
 
 export type AnyElementContentBody &#x3D;
 	| FileContentBody
+	| DrawingContentBody
 	| LinkContentBody
 	| RichTextContentBody
 	| SubmissionContainerContentBody
