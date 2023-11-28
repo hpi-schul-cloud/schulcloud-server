@@ -361,7 +361,6 @@ describe('UserService', () => {
 		describe('when deleting by userId', () => {
 			const setup = () => {
 				const user1: User = userFactory.asStudent().buildWithId();
-				userFactory.asStudent().buildWithId();
 
 				userRepo.findById.mockResolvedValue(user1);
 				userRepo.deleteUser.mockResolvedValue(1);
@@ -379,6 +378,35 @@ describe('UserService', () => {
 				expect(userRepo.deleteUser).toHaveBeenCalledWith(user1.id);
 				expect(result).toEqual(1);
 			});
+		});
+	});
+
+	describe('getParentEmailsFromUser', () => {
+		const setup = () => {
+			const user: User = userFactory.asStudent().buildWithId();
+			const parentEmail = ['test@test.eu'];
+
+			userRepo.getParentEmailsFromUser.mockResolvedValue(parentEmail);
+
+			return {
+				user,
+				parentEmail,
+			};
+		};
+
+		it('should call userRepo.getParentEmailsFromUse', async () => {
+			const { user } = setup();
+
+			await service.getParentEmailsFromUser(user.id);
+
+			expect(userRepo.getParentEmailsFromUser).toBeCalledWith(user.id);
+		});
+
+		it('should return array with parent emails', async () => {
+			const { user, parentEmail } = setup();
+
+			const result = await service.getParentEmailsFromUser(user.id);
+			expect(result).toEqual(parentEmail);
 		});
 	});
 });
