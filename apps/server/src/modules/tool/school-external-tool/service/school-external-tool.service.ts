@@ -67,7 +67,9 @@ export class SchoolExternalToolService {
 			try {
 				await this.schoolExternalToolValidationService.validate(tool);
 
-				return ToolConfigurationStatus.prototype;
+				toolConfigStatus.isOutdatedOnScopeContext = false;
+				toolConfigStatus.isOutdatedOnScopeSchool = false;
+				return toolConfigStatus;
 			} catch (err) {
 				return toolConfigStatus;
 			}
