@@ -2031,6 +2031,26 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/RedisModule.html" data-type="entity-link" >RedisModule</a>
                             </li>
                             <li class="link">
+                                <a href="modules/RegistrationPinModule.html" data-type="entity-link" >RegistrationPinModule</a>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                        'data-bs-target="#injectables-links-module-RegistrationPinModule-d29963fa5c22d50f176275238f235c688bbef3f1425f046696c08ce5b04922d0036900d0270cf13687dde3e284c73206379760ee1125bd5464f24ee9a57e01cf"' : 'data-bs-target="#xs-injectables-links-module-RegistrationPinModule-d29963fa5c22d50f176275238f235c688bbef3f1425f046696c08ce5b04922d0036900d0270cf13687dde3e284c73206379760ee1125bd5464f24ee9a57e01cf"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-RegistrationPinModule-d29963fa5c22d50f176275238f235c688bbef3f1425f046696c08ce5b04922d0036900d0270cf13687dde3e284c73206379760ee1125bd5464f24ee9a57e01cf"' :
+                                        'id="xs-injectables-links-module-RegistrationPinModule-d29963fa5c22d50f176275238f235c688bbef3f1425f046696c08ce5b04922d0036900d0270cf13687dde3e284c73206379760ee1125bd5464f24ee9a57e01cf"' }>
+                                        <li class="link">
+                                            <a href="injectables/RegistrationPinRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >RegistrationPinRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/RegistrationPinService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >RegistrationPinService</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </li>
+                            <li class="link">
                                 <a href="modules/RocketChatModule.html" data-type="entity-link" >RocketChatModule</a>
                             </li>
                             <li class="link">
@@ -2908,6 +2928,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="entities/PseudonymEntity.html" data-type="entity-link" >PseudonymEntity</a>
+                                </li>
+                                <li class="link">
+                                    <a href="entities/RegistrationPinEntity.html" data-type="entity-link" >RegistrationPinEntity</a>
                                 </li>
                                 <li class="link">
                                     <a href="entities/RichTextElementNode.html" data-type="entity-link" >RichTextElementNode</a>
@@ -4336,6 +4359,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ReferencesService.html" data-type="entity-link" >ReferencesService</a>
                             </li>
                             <li class="link">
+                                <a href="classes/RegistrationPinEntity.html" data-type="entity-link" >RegistrationPinEntity</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/RenameBodyParams.html" data-type="entity-link" >RenameBodyParams</a>
                             </li>
                             <li class="link">
@@ -4942,6 +4968,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/UserParams.html" data-type="entity-link" >UserParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/UserParentsEntity.html" data-type="entity-link" >UserParentsEntity</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/UserScope.html" data-type="entity-link" >UserScope</a>
                             </li>
                             <li class="link">
@@ -5463,6 +5492,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/ReferenceLoader.html" data-type="entity-link" >ReferenceLoader</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/RegistrationPinRepo.html" data-type="entity-link" >RegistrationPinRepo</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/RegistrationPinService.html" data-type="entity-link" >RegistrationPinService</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/RequestLoggingInterceptor.html" data-type="entity-link" >RequestLoggingInterceptor</a>
@@ -6336,6 +6371,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/QueueDeletionRequestOutput.html" data-type="entity-link" >QueueDeletionRequestOutput</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/RegistrationPinEntityProps.html" data-type="entity-link" >RegistrationPinEntityProps</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/RejectRequestBody.html" data-type="entity-link" >RejectRequestBody</a>
                             </li>
                             <li class="link">
@@ -6541,6 +6579,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/UserParams.html" data-type="entity-link" >UserParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/UserParentsEntityProps.html" data-type="entity-link" >UserParentsEntityProps</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/UserProperties.html" data-type="entity-link" >UserProperties</a>

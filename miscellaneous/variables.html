@@ -698,6 +698,9 @@
                             <a href="#REDIS_CLIENT" title="apps/server/src/infra/redis/interface/redis.constants.ts" ><b>REDIS_CLIENT</b>&nbsp;&nbsp;&nbsp;(apps/.../redis.constants.ts)</a>
                         </li>
                         <li>
+                            <a href="#registrationPinEntityFactory" title="apps/server/src/modules/registration-pin/entity/testing/factory/registration-pin.entity.factory.ts" ><b>registrationPinEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../registration-pin.entity.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#richTextElementFactory" title="apps/server/src/shared/testing/factory/domainobject/board/rich-text-element.do.factory.ts" ><b>richTextElementFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../rich-text-element.do.factory.ts)</a>
                         </li>
                         <li>
@@ -1614,6 +1617,7 @@
 	UserLoginMigrationEntity,
 	VideoConference,
 	GroupEntity,
+	RegistrationPinEntity,
 ]</code>
                     </td>
                 </tr>
@@ -8544,6 +8548,42 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>Symbol(&#x27;INFRA:REDIS&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/registration-pin/entity/testing/factory/registration-pin.entity.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="registrationPinEntityFactory"></a>
+                    <span class="name">
+                        <span ><b>registrationPinEntityFactory</b></span>
+                        <a href="#registrationPinEntityFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;RegistrationPinEntity, RegistrationPinEntityProps&gt;(
+	RegistrationPinEntity,
+	({ sequence }) &#x3D;&gt; {
+		return {
+			id: new ObjectId().toHexString(),
+			email: &#x60;name-${sequence}@schul-cloud.org&#x60;,
+			pin: &#x60;123-${sequence}&#x60;,
+			verified: false,
+			importHash: &#x60;importHash-${sequence}&#x60;,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
+	}
+)</code>
                     </td>
                 </tr>
 

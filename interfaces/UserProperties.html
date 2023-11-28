@@ -223,6 +223,13 @@
                                 </li>
                                 <li>
                                             <span class="modifier">Optional</span>
+                                        <a href="#parents" 
+>
+                                            parents
+                                        </a>
+                                </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#preferences" 
 >
                                             preferences
@@ -665,6 +672,44 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
+                                        <a name="parents"></a>
+                                        <span class="name "><b>parents</b>
+                                            <a href="#parents">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>parents:         <code><a href="../interfaces/User.html" target="_self" >UserParentsEntity[]</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="../interfaces/User.html" target="_self" >UserParentsEntity[]</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
                                         <a name="preferences"></a>
                                         <span class="name "><b>preferences</b>
                                             <a href="#preferences">
@@ -808,11 +853,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from &#x27;@mikro-orm/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from &#x27;@mikro-orm/core&#x27;;
 import { EntityWithSchool } from &#x27;../interface&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 import { Role } from &#x27;./role.entity&#x27;;
 import { SchoolEntity } from &#x27;./school.entity&#x27;;
+import { UserParentsEntity } from &#x27;./user-parents.entity&#x27;;
 
 export enum LanguageType {
 	DE &#x3D; &#x27;de&#x27;,
@@ -837,6 +883,7 @@ export interface UserProperties {
 	outdatedSince?: Date;
 	previousExternalId?: string;
 	birthday?: Date;
+	parents?: UserParentsEntity[];
 }
 
 @Entity({ tableName: &#x27;users&#x27; })
@@ -910,6 +957,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	birthday?: Date;
 
+	@Embedded(() &#x3D;&gt; UserParentsEntity, { array: true, nullable: true })
+	parents?: UserParentsEntity[];
+
 	constructor(props: UserProperties) {
 		super();
 		this.firstName &#x3D; props.firstName;
@@ -927,6 +977,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.outdatedSince &#x3D; props.outdatedSince;
 		this.previousExternalId &#x3D; props.previousExternalId;
 		this.birthday &#x3D; props.birthday;
+		this.parents &#x3D; props.parents;
 	}
 
 	public resolvePermissions(): string[] {
