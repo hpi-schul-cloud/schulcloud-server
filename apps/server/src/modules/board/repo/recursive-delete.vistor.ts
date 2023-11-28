@@ -17,13 +17,16 @@ import {
 	SubmissionItem,
 } from '@shared/domain';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
+import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
 
 @Injectable()
 export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 	constructor(
 		private readonly em: EntityManager,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
-		private readonly contextExternalToolService: ContextExternalToolService
+		private readonly contextExternalToolService: ContextExternalToolService,
+		private readonly drawingElementAdapterService: DrawingElementAdapterService
 	) {}
 
 	async visitColumnBoardAsync(columnBoard: ColumnBoard): Promise<void> {
@@ -58,6 +61,13 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 	async visitRichTextElementAsync(richTextElement: RichTextElement): Promise<void> {
 		this.deleteNode(richTextElement);
 		await this.visitChildrenAsync(richTextElement);
+	}
+
+	async visitDrawingElementAsync(drawingElement: DrawingElement): Promise<void> {
+		await this.drawingElementAdapterService.deleteDrawingBinData(drawingElement.id);
+
+		this.deleteNode(drawingElement);
+		await this.visitChildrenAsync(drawingElement);
 	}
 
 	async visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void> {
