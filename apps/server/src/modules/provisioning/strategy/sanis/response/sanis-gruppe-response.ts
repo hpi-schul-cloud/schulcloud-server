@@ -1,9 +1,13 @@
+import { IsEnum, IsString } from 'class-validator';
 import { SanisGroupType } from './sanis-group-type';
 
-export interface SanisGruppeResponse {
-	id?: string;
+export class SanisGruppeResponse {
+	@IsString()
+	id!: string;
 
-	bezeichnung?: string;
+	@IsString()
+	bezeichnung!: string;
 
-	typ?: SanisGroupType;
+	@IsEnum(SanisGroupType)
+	typ!: SanisGroupType;
 }

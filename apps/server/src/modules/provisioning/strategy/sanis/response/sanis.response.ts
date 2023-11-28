@@ -1,10 +1,20 @@
+import { Type } from 'class-transformer';
+import { ArrayMinSize, IsArray, IsString, ValidateNested } from 'class-validator';
 import { SanisPersonResponse } from './sanis-person-response';
 import { SanisPersonenkontextResponse } from './sanis-personenkontext-response';
+import { SanisResponseValidationGroups } from './sanis-response-validation-groups';
 
-export interface SanisResponse {
-	pid: string;
+export class SanisResponse {
+	@IsString({ groups: [SanisResponseValidationGroups.USER] })
+	pid!: string;
 
-	person: SanisPersonResponse;
+	@ValidateNested({ groups: [SanisResponseValidationGroups.USER] })
+	@Type(() => SanisPersonResponse)
+	person!: SanisPersonResponse;
 
-	personenkontexte: SanisPersonenkontextResponse[];
+	@IsArray()
+	@ArrayMinSize(1)
+	@ValidateNested({ each: true })
+	@Type(() => SanisPersonenkontextResponse)
+	personenkontexte!: SanisPersonenkontextResponse[];
 }

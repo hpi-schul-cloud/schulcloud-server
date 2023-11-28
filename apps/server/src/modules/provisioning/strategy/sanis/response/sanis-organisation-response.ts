@@ -1,13 +1,19 @@
+import { Type } from 'class-transformer';
+import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { SanisAnschriftResponse } from './sanis-anschrift-response';
 
-export interface SanisOrganisationResponse {
-	id: string;
+export class SanisOrganisationResponse {
+	@IsString()
+	id!: string;
 
-	kennung: string;
+	@IsString()
+	kennung!: string;
 
-	name: string;
+	@IsString()
+	name!: string;
 
-	typ: string;
-
+	@IsOptional()
+	@ValidateNested()
+	@Type(() => SanisAnschriftResponse)
 	anschrift?: SanisAnschriftResponse;
 }

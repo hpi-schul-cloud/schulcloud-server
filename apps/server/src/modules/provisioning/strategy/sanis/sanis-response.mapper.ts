@@ -53,8 +53,8 @@ export class SanisResponseMapper {
 
 	mapToExternalUserDto(source: SanisResponse): ExternalUserDto {
 		const mapped = new ExternalUserDto({
-			firstName: source.person.name?.vorname,
-			lastName: source.person.name?.familienname,
+			firstName: source.person.name.vorname,
+			lastName: source.person.name.familienname,
 			roles: [this.mapSanisRoleToRoleName(source)],
 			externalId: source.pid,
 			birthday: source.person.geburt?.datum ? new Date(source.person.geburt?.datum) : undefined,
@@ -68,9 +68,9 @@ export class SanisResponseMapper {
 	}
 
 	public mapToExternalGroupDtos(source: SanisResponse): ExternalGroupDto[] | undefined {
-		const groups: SanisGruppenResponse[] | undefined = source.personenkontexte[0]?.gruppen;
+		const groups: SanisGruppenResponse[] | undefined = source.personenkontexte[0].gruppen;
 
-		if (!groups) {
+		if (groups === undefined) {
 			return undefined;
 		}
 
@@ -82,10 +82,6 @@ export class SanisResponseMapper {
 	}
 
 	private mapExternalGroup(source: SanisResponse, group: SanisGruppenResponse): ExternalGroupDto | null {
-		if (!group.gruppe?.typ || !group.gruppe.bezeichnung || !group.gruppe.id || !group.gruppenzugehoerigkeit) {
-			return null;
-		}
-
 		const groupType: GroupTypes | undefined = GroupTypeMapping[group.gruppe.typ];
 
 		if (!groupType) {
@@ -120,7 +116,7 @@ export class SanisResponseMapper {
 	}
 
 	private mapToExternalGroupUser(relation: SanisSonstigeGruppenzugehoerigeResponse): ExternalGroupUserDto | null {
-		if (!relation.rollen?.length || !relation.ktid) {
+		if (!relation.rollen.length) {
 			return null;
 		}
 

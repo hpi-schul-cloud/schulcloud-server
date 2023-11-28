@@ -1,11 +1,19 @@
+import { Type } from 'class-transformer';
+import { ValidateNested } from 'class-validator';
 import { SanisGruppeResponse } from './sanis-gruppe-response';
 import { SanisGruppenzugehoerigkeitResponse } from './sanis-gruppenzugehoerigkeit-response';
 import { SanisSonstigeGruppenzugehoerigeResponse } from './sanis-sonstige-gruppenzugehoerige-response';
 
-export interface SanisGruppenResponse {
-	gruppe?: SanisGruppeResponse;
+export class SanisGruppenResponse {
+	@ValidateNested()
+	@Type(() => SanisGruppeResponse)
+	gruppe!: SanisGruppeResponse;
 
-	gruppenzugehoerigkeit?: SanisGruppenzugehoerigkeitResponse;
+	@ValidateNested()
+	@Type(() => SanisGruppenzugehoerigkeitResponse)
+	gruppenzugehoerigkeit!: SanisGruppenzugehoerigkeitResponse;
 
-	sonstige_gruppenzugehoerige?: SanisSonstigeGruppenzugehoerigeResponse[];
+	@ValidateNested()
+	@Type(() => SanisGruppenzugehoerigkeitResponse)
+	sonstige_gruppenzugehoerige!: SanisSonstigeGruppenzugehoerigeResponse[];
 }

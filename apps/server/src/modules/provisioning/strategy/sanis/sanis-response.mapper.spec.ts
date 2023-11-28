@@ -48,9 +48,6 @@ describe('SanisResponseMapper', () => {
 				geburt: {
 					datum: '2023-11-17',
 				},
-				geschlecht: 'x',
-				lokalisierung: 'de-de',
-				vertrauensstufe: '',
 			},
 			personenkontexte: [
 				{
@@ -59,13 +56,11 @@ describe('SanisResponseMapper', () => {
 					organisation: {
 						id: new UUID(externalSchoolId).toString(),
 						name: 'schoolName',
-						typ: 'SCHULE',
 						kennung: 'NI_123456_NI_ashd3838',
 						anschrift: {
 							ort: 'Hannover',
 						},
 					},
-					personenstatus: '',
 					gruppen: [
 						{
 							gruppe: {
@@ -153,7 +148,7 @@ describe('SanisResponseMapper', () => {
 		describe('when group data set does not have the group info', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0].gruppe = undefined;
+				sanisResponse.personenkontexte[0].gruppen[0].gruppe = undefined;
 
 				return {
 					sanisResponse,
@@ -174,7 +169,7 @@ describe('SanisResponseMapper', () => {
 				const { sanisResponse } = setupSanisResponse();
 				const personenkontext: SanisPersonenkontextResponse = sanisResponse.personenkontexte[0];
 				const group: SanisGruppenResponse = personenkontext.gruppen![0];
-				const otherParticipant: SanisSonstigeGruppenzugehoerigeResponse = group.sonstige_gruppenzugehoerige![0];
+				const otherParticipant: SanisSonstigeGruppenzugehoerigeResponse = group.sonstige_gruppenzugehoerige[0];
 
 				return {
 					sanisResponse,
@@ -190,16 +185,16 @@ describe('SanisResponseMapper', () => {
 				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
 
 				expect(result?.[0]).toEqual<ExternalGroupDto>({
-					name: group.gruppe!.bezeichnung!,
+					name: group.gruppe.bezeichnung,
 					type: GroupTypes.CLASS,
-					externalId: group.gruppe!.id!,
+					externalId: group.gruppe.id,
 					user: {
 						externalUserId: personenkontext.id,
 						roleName: RoleName.TEACHER,
 					},
 					otherUsers: [
 						{
-							externalUserId: otherParticipant.ktid!,
+							externalUserId: otherParticipant.ktid,
 							roleName: RoleName.STUDENT,
 						},
 					],
@@ -210,7 +205,7 @@ describe('SanisResponseMapper', () => {
 		describe('when no group type is provided', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0]!.gruppe!.typ = SanisGroupType.OTHER;
+				sanisResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SanisGroupType.OTHER;
 
 				return {
 					sanisResponse,
@@ -229,7 +224,7 @@ describe('SanisResponseMapper', () => {
 		describe('when the group role mapping for the user is missing', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit!.rollen = [SanisGroupRole.SCHOOL_SUPPORT];
+				sanisResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit.rollen = [SanisGroupRole.SCHOOL_SUPPORT];
 
 				return {
 					sanisResponse,
@@ -248,7 +243,7 @@ describe('SanisResponseMapper', () => {
 		describe('when the user has no role in the group', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit!.rollen = [];
+				sanisResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit.rollen = [];
 
 				return {
 					sanisResponse,

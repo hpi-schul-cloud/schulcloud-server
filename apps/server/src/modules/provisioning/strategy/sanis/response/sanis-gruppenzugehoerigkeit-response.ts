@@ -1,5 +1,7 @@
+import { IsEnum } from 'class-validator';
 import { SanisGroupRole } from './sanis-group-role';
 
-export interface SanisGruppenzugehoerigkeitResponse {
-	rollen?: SanisGroupRole[];
+export class SanisGruppenzugehoerigkeitResponse {
+	@IsEnum(SanisGroupRole, { each: true })
+	rollen!: SanisGroupRole[];
 }

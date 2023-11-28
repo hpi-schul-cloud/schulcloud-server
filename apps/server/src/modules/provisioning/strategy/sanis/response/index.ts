@@ -11,3 +11,4 @@ export * from './sanis-gruppenzugehoerigkeit-response';
 export * from './sanis-person-response';
 export * from './sanis-sonstige-gruppenzugehoerige-response';
 export * from './sanis-anschrift-response';
+export * from './sanis-response-validation-groups';

@@ -446,9 +446,6 @@ describe('UserLoginMigrationController (API)', () => {
 							familienname: 'familienName',
 							vorname: 'vorname',
 						},
-						geschlecht: 'weiblich',
-						lokalisierung: 'not necessary',
-						vertrauensstufe: 'not necessary',
 					},
 					personenkontexte: [
 						{
@@ -458,9 +455,7 @@ describe('UserLoginMigrationController (API)', () => {
 								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713').toString(),
 								kennung: officialSchoolNumber,
 								name: 'schulName',
-								typ: 'not necessary',
 							},
-							personenstatus: 'not necessary',
 						},
 					],
 				});

@@ -1,13 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { GroupTypes } from '@modules/group/domain';
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { axiosResponseFactory, setupEntities } from '@shared/testing';
-import { GroupTypes } from '@modules/group';
+import { axiosResponseFactory } from '@shared/testing';
 import { UUID } from 'bson';
+// eslint-disable-next-line import/no-named-default
+import * as classValidator from 'class-validator';
 import { of } from 'rxjs';
 import {
 	ExternalGroupDto,
@@ -18,9 +21,18 @@ import {
 	ProvisioningSystemDto,
 } from '../../dto';
 import { OidcProvisioningService } from '../oidc/service/oidc-provisioning.service';
-import { SanisGroupRole, SanisGroupType, SanisGruppenResponse, SanisResponse, SanisRole } from './response';
+import {
+	SanisGroupRole,
+	SanisGroupType,
+	SanisGruppenResponse,
+	SanisResponse,
+	SanisResponseValidationGroups,
+	SanisRole,
+} from './response';
 import { SanisResponseMapper } from './sanis-response.mapper';
 import { SanisProvisioningStrategy } from './sanis.strategy';
+import ArgsType = jest.ArgsType;
+import SpyInstance = jest.SpyInstance;
 
 const createAxiosResponse = (data: SanisResponse) =>
 	axiosResponseFactory.build({
@@ -34,9 +46,12 @@ describe('SanisStrategy', () => {
 	let mapper: DeepMocked<SanisResponseMapper>;
 	let httpService: DeepMocked<HttpService>;
 
-	beforeAll(async () => {
-		await setupEntities();
+	let valdationFunction: SpyInstance<
+		ReturnType<typeof classValidator.validate>,
+		ArgsType<typeof classValidator.validate>
+	>;
 
+	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				SanisProvisioningStrategy,
@@ -58,6 +73,8 @@ describe('SanisStrategy', () => {
 		strategy = module.get(SanisProvisioningStrategy);
 		mapper = module.get(SanisResponseMapper);
 		httpService = module.get(HttpService);
+
+		valdationFunction = jest.spyOn(classValidator, 'validate');
 	});
 
 	afterEach(() => {
@@ -65,7 +82,7 @@ describe('SanisStrategy', () => {
 		Configuration.set('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED', 'true');
 	});
 
-	const setupSanisResponse = () => {
+	const setupSanisResponse = (): SanisResponse => {
 		return {
 			pid: 'aef1f4fd-c323-466e-962b-a84354c0e713',
 			person: {
@@ -73,9 +90,6 @@ describe('SanisStrategy', () => {
 					vorname: 'Hans',
 					familienname: 'Peter',
 				},
-				geschlecht: 'any',
-				lokalisierung: 'sn_ZW',
-				vertrauensstufe: '0',
 			},
 			personenkontexte: [
 				{
@@ -84,21 +98,14 @@ describe('SanisStrategy', () => {
 					organisation: {
 						id: new UUID('df66c8e6-cfac-40f7-b35b-0da5d8ee680e').toString(),
 						name: 'schoolName',
-						typ: 'SCHULE',
 						kennung: 'Kennung',
 					},
-					personenstatus: 'dead',
 					gruppen: [
 						{
 							gruppe: {
 								id: new UUID().toString(),
 								bezeichnung: 'bezeichnung',
 								typ: SanisGroupType.CLASS,
-								laufzeit: {
-									von: new Date(2023, 1, 8),
-									bis: new Date(2024, 7, 31),
-								},
-								orgid: 'orgid',
 							},
 							gruppenzugehoerigkeit: {
 								rollen: [SanisGroupRole.TEACHER],
@@ -153,15 +160,10 @@ describe('SanisStrategy', () => {
 						name: sanisGruppeResponse.gruppe.bezeichnung,
 						externalId: sanisGruppeResponse.gruppe.id,
 						type: GroupTypes.CLASS,
-						externalOrganizationId: sanisGruppeResponse.gruppe.orgid,
-						from: sanisGruppeResponse.gruppe.laufzeit.von,
-						until: sanisGruppeResponse.gruppe.laufzeit.bis,
-						users: [
-							{
-								externalUserId: sanisResponse.personenkontexte[0].id,
-								roleName: RoleName.TEACHER,
-							},
-						],
+						user: {
+							externalUserId: sanisResponse.personenkontexte[0].id,
+							roleName: RoleName.TEACHER,
+						},
 					}),
 				];
 
@@ -169,6 +171,7 @@ describe('SanisStrategy', () => {
 				mapper.mapToExternalUserDto.mockReturnValue(user);
 				mapper.mapToExternalSchoolDto.mockReturnValue(school);
 				mapper.mapToExternalGroupDtos.mockReturnValue(groups);
+				valdationFunction.mockResolvedValueOnce([]);
 
 				return {
 					input,
@@ -176,6 +179,7 @@ describe('SanisStrategy', () => {
 					user,
 					school,
 					groups,
+					sanisResponse,
 				};
 			};
 
@@ -205,6 +209,30 @@ describe('SanisStrategy', () => {
 						headers: expect.objectContaining({ 'Accept-Encoding': 'gzip' }),
 					})
 				);
+			});
+
+			it('should validate the response for user and school', async () => {
+				const { input, sanisResponse } = setup();
+
+				await strategy.getData(input);
+
+				expect(valdationFunction).toHaveBeenCalledWith(sanisResponse, {
+					always: true,
+					forbidUnknownValues: false,
+					groups: [SanisResponseValidationGroups.USER, SanisResponseValidationGroups.SCHOOL],
+				});
+			});
+
+			it('should validate the response for groups', async () => {
+				const { input, sanisResponse } = setup();
+
+				await strategy.getData(input);
+
+				expect(valdationFunction).toHaveBeenCalledWith(sanisResponse, {
+					always: true,
+					forbidUnknownValues: false,
+					groups: [SanisResponseValidationGroups.GROUPS],
+				});
 			});
 
 			it('should return the oauth data', async () => {
@@ -245,13 +273,26 @@ describe('SanisStrategy', () => {
 				httpService.get.mockReturnValue(of(createAxiosResponse(sanisResponse)));
 				mapper.mapToExternalUserDto.mockReturnValue(user);
 				mapper.mapToExternalSchoolDto.mockReturnValue(school);
+				valdationFunction.mockResolvedValueOnce([]);
 
 				Configuration.set('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED', 'false');
 
 				return {
 					input,
+					sanisResponse,
 				};
 			};
+
+			it('should not validate the response for groups', async () => {
+				const { input, sanisResponse } = setup();
+
+				await strategy.getData(input);
+
+				expect(valdationFunction).not.toHaveBeenCalledWith(
+					sanisResponse,
+					expect.objectContaining({ groups: [SanisResponseValidationGroups.GROUPS] })
+				);
+			});
 
 			it('should not call mapToExternalGroupDtos', async () => {
 				const { input } = setup();
@@ -287,15 +328,10 @@ describe('SanisStrategy', () => {
 						name: sanisGruppeResponse.gruppe.bezeichnung,
 						externalId: sanisGruppeResponse.gruppe.id,
 						type: GroupTypes.CLASS,
-						externalOrganizationId: sanisGruppeResponse.gruppe.orgid,
-						from: sanisGruppeResponse.gruppe.laufzeit.von,
-						until: sanisGruppeResponse.gruppe.laufzeit.bis,
-						users: [
-							{
-								externalUserId: sanisResponse.personenkontexte[0].id,
-								roleName: RoleName.TEACHER,
-							},
-						],
+						user: {
+							externalUserId: sanisResponse.personenkontexte[0].id,
+							roleName: RoleName.TEACHER,
+						},
 					}),
 				];
 
@@ -345,15 +381,10 @@ describe('SanisStrategy', () => {
 						name: sanisGruppeResponse.gruppe.bezeichnung,
 						externalId: sanisGruppeResponse.gruppe.id,
 						type: GroupTypes.CLASS,
-						externalOrganizationId: sanisGruppeResponse.gruppe.orgid,
-						from: sanisGruppeResponse.gruppe.laufzeit.von,
-						until: sanisGruppeResponse.gruppe.laufzeit.bis,
-						users: [
-							{
-								externalUserId: sanisResponse.personenkontexte[0].id,
-								roleName: RoleName.TEACHER,
-							},
-						],
+						user: {
+							externalUserId: sanisResponse.personenkontexte[0].id,
+							roleName: RoleName.TEACHER,
+						},
 					}),
 				];
 
@@ -361,6 +392,7 @@ describe('SanisStrategy', () => {
 				mapper.mapToExternalUserDto.mockReturnValue(user);
 				mapper.mapToExternalSchoolDto.mockReturnValue(school);
 				mapper.mapToExternalGroupDtos.mockReturnValue(groups);
+				valdationFunction.mockResolvedValueOnce([]);
 
 				return {
 					input,
@@ -373,6 +405,40 @@ describe('SanisStrategy', () => {
 				const result: OauthDataDto = await strategy.getData(input);
 
 				expect(result.externalUser.roles).toEqual(expect.arrayContaining([RoleName.ADMINISTRATOR, RoleName.TEACHER]));
+			});
+		});
+
+		describe('when the validation of the response fails', () => {
+			const setup = () => {
+				const provisioningUrl = 'sanisProvisioningUrl';
+				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'systemId',
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningUrl,
+					}),
+					idToken: 'sanisIdToken',
+					accessToken: 'sanisAccessToken',
+				});
+				const sanisResponse: SanisResponse = setupSanisResponse();
+				const validationError: classValidator.ValidationError = new classValidator.ValidationError();
+
+				httpService.get.mockReturnValue(of(createAxiosResponse(sanisResponse)));
+				valdationFunction.mockResolvedValueOnce([validationError]);
+
+				return {
+					input,
+					provisioningUrl,
+					sanisResponse,
+				};
+			};
+
+			it('should throw a validation error', async () => {
+				const { input } = setup();
+
+				await strategy.getData(input);
+
+				await expect(strategy.getData(input)).rejects.toThrow(ValidationErrorLoggableException);
 			});
 		});
 	});

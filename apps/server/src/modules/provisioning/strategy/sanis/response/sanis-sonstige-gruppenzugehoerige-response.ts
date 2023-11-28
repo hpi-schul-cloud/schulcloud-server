@@ -1,7 +1,10 @@
+import { IsEnum, IsString } from 'class-validator';
 import { SanisGroupRole } from './sanis-group-role';
 
-export interface SanisSonstigeGruppenzugehoerigeResponse {
-	ktid?: string;
+export class SanisSonstigeGruppenzugehoerigeResponse {
+	@IsString()
+	ktid!: string;
 
-	rollen?: SanisGroupRole[];
+	@IsEnum(SanisGroupRole, { each: true })
+	rollen!: SanisGroupRole[];
 }
