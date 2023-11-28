@@ -23,7 +23,7 @@ export function checkCommonCartridgeVersion(version: CommonCartridgeVersion): vo
 	throw createVersionNotSupportedError(version);
 }
 
-export function checkForNullOrUndefined<T>(value: T | undefined | null, name: string): T | never {
+export function checkDefined<T>(value: T | undefined | null, name: string): T | never {
 	if (value) {
 		return value;
 	}

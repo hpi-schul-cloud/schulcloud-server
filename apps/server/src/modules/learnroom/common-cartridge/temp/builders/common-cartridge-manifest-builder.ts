@@ -2,9 +2,11 @@ import { CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
 import { CommonCartridgeManifestResource } from '../resources/common-cartridge-manifest-resource';
-import { checkForNullOrUndefined } from '../utils';
+import { checkDefined } from '../utils';
 
 export class CommonCartridgeManifestBuilder {
+	private identifier?: string;
+
 	private metadata?: CommonCartridgeElement;
 
 	private organizations?: CommonCartridgeElement[];
@@ -12,6 +14,12 @@ export class CommonCartridgeManifestBuilder {
 	private resources?: CommonCartridgeResource[];
 
 	constructor(private readonly version: CommonCartridgeVersion) {}
+
+	setIdentifier(identifier: string): CommonCartridgeManifestBuilder {
+		this.identifier = identifier;
+
+		return this;
+	}
 
 	setMetadata(metadata: CommonCartridgeElement): CommonCartridgeManifestBuilder {
 		this.metadata = metadata;
@@ -32,12 +40,14 @@ export class CommonCartridgeManifestBuilder {
 	}
 
 	build(): CommonCartridgeResource {
-		const metadata = checkForNullOrUndefined(this.metadata, 'Metadata');
-		const organizations = checkForNullOrUndefined(this.organizations, 'Organizations');
-		const resources = checkForNullOrUndefined(this.resources, 'Resources');
+		const identifier = checkDefined(this.identifier, 'Identifier');
+		const metadata = checkDefined(this.metadata, 'Metadata');
+		const organizations = checkDefined(this.organizations, 'Organizations');
+		const resources = checkDefined(this.resources, 'Resources');
 
 		return new CommonCartridgeManifestResource({
 			version: this.version,
+			identifier,
 			metadata,
 			organizations,
 			resources,
