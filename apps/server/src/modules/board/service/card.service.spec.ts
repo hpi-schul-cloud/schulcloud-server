@@ -8,6 +8,7 @@ import {
 	columnFactory,
 	richTextElementFactory,
 } from '@shared/testing/factory/domainobject';
+import { CourseRepo, PermissionContextRepo } from '@shared/repo';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { CardService } from './card.service';
@@ -35,6 +36,14 @@ describe(CardService.name, () => {
 				{
 					provide: ContentElementService,
 					useValue: createMock<ContentElementService>(),
+				},
+				{
+					provide: PermissionContextRepo,
+					useValue: createMock<PermissionContextRepo>(),
+				},
+				{
+					provide: CourseRepo,
+					useValue: createMock<CourseRepo>(),
 				},
 			],
 		}).compile();
@@ -123,12 +132,13 @@ describe(CardService.name, () => {
 				const createCardBodyParams = {
 					requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
 				};
-
-				return { column, columnId, createCardBodyParams };
+				const spy = jest.spyOn(service as any, 'createBoardPermissionCtx').mockReturnValue(undefined);
+				
+				return { column, columnId, createCardBodyParams, spy };
 			};
 
 			it('should save a list of cards using the boardDo repo', async () => {
-				const { column } = setup();
+				const { column, spy } = setup();
 
 				await service.create(column);
 
@@ -143,9 +153,11 @@ describe(CardService.name, () => {
 					],
 					column
 				);
+
+				spy.mockRestore();
 			});
 			it('contentElementService.create should be called with given parameters', async () => {
-				const { column, createCardBodyParams } = setup();
+				const { column, createCardBodyParams, spy } = setup();
 
 				const { requiredEmptyElements } = createCardBodyParams;
 
@@ -158,6 +170,8 @@ describe(CardService.name, () => {
 					expect.anything(),
 					ContentElementType.RICH_TEXT
 				);
+
+				spy.mockRestore();
 			});
 		});
 	});
