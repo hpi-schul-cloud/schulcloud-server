@@ -1,4 +1,3 @@
-
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { ContentElementType } from '@shared/domain/domainobject';
 import { DrawingElementContent, DrawingElementResponse } from '../dto/element/drawing-element.response';
