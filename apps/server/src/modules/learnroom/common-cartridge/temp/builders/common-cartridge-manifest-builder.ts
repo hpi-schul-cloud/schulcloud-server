@@ -1,7 +1,7 @@
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
-import { CommonCartridgeManifestElement } from '../elements/common-cartridge-manifest-element';
 import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
+import { CommonCartridgeManifestResource } from '../resources/common-cartridge-manifest-resource';
 import { checkForNullOrUndefined } from '../utils';
 
 export class CommonCartridgeManifestBuilder {
@@ -36,7 +36,7 @@ export class CommonCartridgeManifestBuilder {
 		const organizations = checkForNullOrUndefined(this.organizations, 'Organizations');
 		const resources = checkForNullOrUndefined(this.resources, 'Resources');
 
-		return new CommonCartridgeManifestElement({
+		return new CommonCartridgeManifestResource({
 			version: this.version,
 			metadata,
 			organizations,

@@ -13,14 +13,18 @@ const DEFAULT_OPTIONS: CommonCartridgeFileBuilderOptions = {
 };
 
 export class CommonCartridgeFileBuilder {
-	private readonly archive = new AdmZip();
+	private readonly archive: AdmZip;
 
-	private readonly metadataBuilder = new CommonCartridgeMetadataBuilder();
+	private readonly metadataBuilder: CommonCartridgeMetadataBuilder;
 
-	private readonly organizationBuilders = new Array<CommonCartridgeOrganizationBuilder>();
+	private readonly organizationBuilders: CommonCartridgeOrganizationBuilder[];
 
 	constructor(private readonly options: CommonCartridgeFileBuilderOptions) {
 		Object.assign(this.options, DEFAULT_OPTIONS, options);
+
+		this.archive = new AdmZip();
+		this.metadataBuilder = new CommonCartridgeMetadataBuilder(this.options.version);
+		this.organizationBuilders = [];
 	}
 
 	withMetadata(): CommonCartridgeMetadataBuilder {

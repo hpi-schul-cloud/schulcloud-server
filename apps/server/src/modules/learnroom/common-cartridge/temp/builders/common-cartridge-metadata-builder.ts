@@ -3,19 +3,13 @@ import { CommonCartridgeMetadataElement } from '../elements/common-cartridge-met
 import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
 
 export class CommonCartridgeMetadataBuilder {
-	private version = CommonCartridgeVersion.V_1_1;
-
 	private title = '';
 
 	private copyrightOwners: string[] = [];
 
 	private creationDate: Date = new Date();
 
-	setVersion(version: CommonCartridgeVersion): CommonCartridgeMetadataBuilder {
-		this.version = version;
-
-		return this;
-	}
+	constructor(private readonly version: CommonCartridgeVersion) {}
 
 	setTitle(title: string): CommonCartridgeMetadataBuilder {
 		this.title = title;
