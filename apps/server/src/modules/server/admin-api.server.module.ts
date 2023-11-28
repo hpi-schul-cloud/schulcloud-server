@@ -10,7 +10,6 @@ import { FileEntity } from '@modules/files/entity';
 import { FileRecord } from '@modules/files-storage/entity';
 import { defaultMikroOrmOptions } from './server.module';
 import { serverConfig } from './server.config';
-import { AdminApiServerController } from './controller';
 import { DeletionApiModule } from '../deletion/deletion-api.module';
 
 const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConfig)), DeletionApiModule];
@@ -30,7 +29,6 @@ const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConf
 		}),
 		LoggerModule,
 	],
-	controllers: [AdminApiServerController],
 })
 export class AdminApiServerModule {}
 
@@ -41,7 +39,6 @@ export class AdminApiServerModule {}
 		RabbitMQWrapperTestModule,
 		LoggerModule,
 	],
-	controllers: [AdminApiServerController],
 })
 export class AdminApiServerTestModule {
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
@@ -52,7 +49,6 @@ export class AdminApiServerTestModule {
 				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options }),
 				RabbitMQWrapperTestModule,
 			],
-			controllers: [AdminApiServerController],
 		};
 	}
 }

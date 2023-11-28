@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { TestXApiKeyClient } from '@shared/testing';
-import { AdminApiServerTestModule } from '../../../server/admin-api.server.module';
+import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
 
 const baseRouteName = '/deletionExecutions';
 
@@ -35,11 +35,13 @@ describe(`deletionExecution (api)`, () => {
 		await app.close();
 	});
 
-	describe('when execute deletionRequests with default limit', () => {
-		it('should return status 204', async () => {
-			const response = await testXApiKeyClient.post('');
+	describe('executeDeletions', () => {
+		describe('when execute deletionRequests with default limit', () => {
+			it('should return status 204', async () => {
+				const response = await testXApiKeyClient.post('');
 
-			expect(response.status).toEqual(204);
+				expect(response.status).toEqual(204);
+			});
 		});
 	});
 });

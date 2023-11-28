@@ -1,4 +1,5 @@
-import { DeletionDomainModel } from '../../domain/types';
+import { ObjectId } from 'bson';
+import { DeletionDomainModel } from '../domain/types';
 import { DeletionRequestBodyPropsBuilder } from './deletion-request-body-props.builder';
 
 describe(DeletionRequestBodyPropsBuilder.name, () => {
@@ -6,11 +7,14 @@ describe(DeletionRequestBodyPropsBuilder.name, () => {
 		jest.clearAllMocks();
 	});
 	describe('when create deletionRequestBodyParams', () => {
-		it('should build deletionRequestBodyParams with all attributes', () => {
-			// Arrange
+		const setup = () => {
 			const domain = DeletionDomainModel.PSEUDONYMS;
-			const refId = '653e4833cc39e5907a1e18d2';
+			const refId = new ObjectId().toHexString();
 			const deleteInMinutes = 1000;
+			return { domain, refId, deleteInMinutes };
+		};
+		it('should build deletionRequestBodyParams with all attributes', () => {
+			const { domain, refId, deleteInMinutes } = setup();
 
 			const result = DeletionRequestBodyPropsBuilder.build(domain, refId, deleteInMinutes);
 

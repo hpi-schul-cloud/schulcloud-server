@@ -1,5 +1,6 @@
+import { ObjectId } from 'bson';
 import { DeletionDomainModel } from '../../domain/types';
-import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder } from '../../uc/builder';
+import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder } from '../../builder';
 import { DeletionRequestLogResponse } from './index';
 
 describe(DeletionRequestLogResponse.name, () => {
@@ -7,7 +8,7 @@ describe(DeletionRequestLogResponse.name, () => {
 		describe('when passed properties', () => {
 			const setup = () => {
 				const targetRefDomain = DeletionDomainModel.PSEUDONYMS;
-				const targetRefId = '653e4833cc39e5907a1e18d2';
+				const targetRefId = new ObjectId().toHexString();
 				const targetRef = DeletionTargetRefBuilder.build(targetRefDomain, targetRefId);
 				const deletionPlannedAt = new Date();
 				const modifiedCount = 0;

@@ -16,8 +16,8 @@ import { DeletionDomainModel, DeletionOperationModel, DeletionStatusModel } from
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequest } from '../domain/deletion-request.do';
 import { DeletionLog } from '../domain/deletion-log.do';
-import { DeletionLogStatistic } from './interface/interfaces';
-import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from './builder';
+import { DeletionLogStatistic } from '../interface/interfaces';
+import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 
 @Injectable()

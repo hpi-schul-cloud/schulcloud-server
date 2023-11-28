@@ -12,6 +12,7 @@ import { UserService } from '@modules/user';
 import { RocketChatService } from '@modules/rocketchat';
 import { RocketChatUser, RocketChatUserService, rocketChatUserFactory } from '@modules/rocketchat-user';
 import { LegacyLogger } from '@src/core/logger';
+import { ObjectId } from 'bson';
 import { DeletionDomainModel, DeletionStatusModel } from '../domain/types';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
@@ -19,7 +20,7 @@ import { DeletionRequestUc } from './deletion-request.uc';
 import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
 import { deletionLogFactory } from '../domain/testing';
 import { DeletionRequestBodyProps } from '../controller/dto';
-import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder, DeletionLogStatisticBuilder } from './builder';
+import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder, DeletionLogStatisticBuilder } from '../builder';
 
 describe(DeletionRequestUc.name, () => {
 	let module: TestingModule;
@@ -128,7 +129,7 @@ describe(DeletionRequestUc.name, () => {
 				const deletionRequestToCreate: DeletionRequestBodyProps = {
 					targetRef: {
 						domain: DeletionDomainModel.USER,
-						id: '653e4833cc39e5907a1e18d2',
+						id: new ObjectId().toHexString(),
 					},
 					deleteInMinutes: 1440,
 				};

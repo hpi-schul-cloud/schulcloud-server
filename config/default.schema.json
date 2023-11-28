@@ -1325,11 +1325,6 @@
 					"default": "",
 					"description": "Allowed Admin API keys (for accessing the Admin API)."
 				}
-			},
-			"default": {
-				"ENABLED": true,
-				"PORT": 4030,
-				"ALLOWED_API_KEYS": ""
 			}
 		},
 		"FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED": {

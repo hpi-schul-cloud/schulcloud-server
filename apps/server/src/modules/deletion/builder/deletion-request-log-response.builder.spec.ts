@@ -1,4 +1,4 @@
-import { DeletionDomainModel } from '../../domain/types';
+import { DeletionDomainModel } from '../domain/types';
 import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from './index';
 
 describe(DeletionRequestLogResponseBuilder.name, () => {

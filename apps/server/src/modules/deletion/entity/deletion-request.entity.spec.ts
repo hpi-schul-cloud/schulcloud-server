@@ -1,7 +1,7 @@
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DeletionRequestEntity } from '@src/modules/deletion/entity/deletion-request.entity';
 import { DeletionDomainModel, DeletionStatusModel } from '../domain/types';
+import { DeletionRequestEntity } from '.';
 
 describe(DeletionRequestEntity.name, () => {
 	beforeAll(async () => {

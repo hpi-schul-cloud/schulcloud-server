@@ -6,7 +6,7 @@ import type { CommonCartridgeConfig } from '@modules/learnroom/common-cartridge'
 import type { UserConfig } from '@modules/user';
 import type { CoreModuleConfig } from '@src/core';
 import { MailConfig } from '@src/infra/mail/interfaces/mail-config';
-import { XApiKeyConfig } from '../authentication/config/x-api-key.config';
+import { XApiKeyConfig } from '@modules/authentication';
 
 export enum NodeEnvType {
 	TEST = 'test',

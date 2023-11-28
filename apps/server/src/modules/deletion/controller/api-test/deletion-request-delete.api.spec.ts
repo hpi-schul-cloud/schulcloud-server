@@ -4,7 +4,7 @@ import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { TestXApiKeyClient, cleanupCollections } from '@shared/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { AdminApiServerTestModule } from '../../../server/admin-api.server.module';
+import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
 import { deletionRequestEntityFactory } from '../../entity/testing';
 import { DeletionRequestEntity } from '../../entity';
 
@@ -40,31 +40,33 @@ describe(`deletionRequest delete (api)`, () => {
 		await app.close();
 	});
 
-	const setup = async () => {
-		await cleanupCollections(em);
-		const deletionRequest = deletionRequestEntityFactory.build();
+	describe('cancelDeletionRequest', () => {
+		describe('when deletiong deletionRequest', () => {
+			const setup = async () => {
+				await cleanupCollections(em);
+				const deletionRequest = deletionRequestEntityFactory.build();
 
-		await em.persistAndFlush(deletionRequest);
-		em.clear();
+				await em.persistAndFlush(deletionRequest);
+				em.clear();
 
-		return { deletionRequest };
-	};
+				return { deletionRequest };
+			};
 
-	describe('when deletiong deletionRequest', () => {
-		it('should return status 204', async () => {
-			const { deletionRequest } = await setup();
+			it('should return status 204', async () => {
+				const { deletionRequest } = await setup();
 
-			const response = await testXApiKeyClient.delete(`${deletionRequest.id}`);
+				const response = await testXApiKeyClient.delete(`${deletionRequest.id}`);
 
-			expect(response.status).toEqual(204);
-		});
+				expect(response.status).toEqual(204);
+			});
 
-		it('should actually delete deletionRequest', async () => {
-			const { deletionRequest } = await setup();
+			it('should actually delete deletionRequest', async () => {
+				const { deletionRequest } = await setup();
 
-			await testXApiKeyClient.delete(`${deletionRequest.id}`);
+				await testXApiKeyClient.delete(`${deletionRequest.id}`);
 
-			await expect(em.findOneOrFail(DeletionRequestEntity, deletionRequest.id)).rejects.toThrow();
+				await expect(em.findOneOrFail(DeletionRequestEntity, deletionRequest.id)).rejects.toThrow();
+			});
 		});
 	});
 });

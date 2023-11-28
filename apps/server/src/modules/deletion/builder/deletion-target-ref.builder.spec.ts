@@ -1,4 +1,4 @@
-import { DeletionDomainModel } from '../../domain/types';
+import { DeletionDomainModel } from '../domain/types';
 import { DeletionTargetRefBuilder } from './index';
 
 describe(DeletionTargetRefBuilder.name, () => {

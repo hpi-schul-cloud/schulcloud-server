@@ -1,5 +1,4 @@
 /* istanbul ignore file */
-/* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
 import { LegacyLogger, Logger } from '@src/core/logger';

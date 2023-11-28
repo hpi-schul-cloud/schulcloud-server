@@ -1,7 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNumber, IsOptional, Min } from 'class-validator';
-import { DeletionTargetRef } from '../../uc/interface';
+import { DeletionTargetRef } from '../../interface';
 
+const MINUTES_OF_30_DAYS = 30 * 24 * 60;
 export class DeletionRequestBodyProps {
 	@ApiProperty({
 		required: true,
@@ -16,5 +17,5 @@ export class DeletionRequestBodyProps {
 		required: true,
 		nullable: false,
 	})
-	deleteInMinutes?: number = 43200;
+	deleteInMinutes?: number = MINUTES_OF_30_DAYS;
 }

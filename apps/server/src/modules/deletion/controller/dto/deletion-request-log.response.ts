@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
-import { DeletionLogStatistic, DeletionTargetRef } from '../../uc/interface';
+import { DeletionLogStatistic, DeletionTargetRef } from '../../interface';
 
 export class DeletionRequestLogResponse {
 	@ApiProperty()

@@ -1,4 +1,4 @@
-import { DeletionRequestLogResponse } from '../../controller/dto';
+import { DeletionRequestLogResponse } from '../controller/dto';
 import { DeletionLogStatistic, DeletionTargetRef } from '../interface';
 
 export class DeletionRequestLogResponseBuilder {

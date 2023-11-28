@@ -35,25 +35,29 @@ describe('XApiKeyStrategy', () => {
 	});
 
 	describe('validate', () => {
-		const setup = () => {
-			const CORRECT_API_KEY = '1ab2c3d4e5f61ab2c3d4e5f6';
-			const INVALID_API_KEY = '1ab2c3d4e5f61ab2c3d4e5f6778173';
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const done = jest.fn((error: Error | null, data: boolean | null) => {});
-
-			return { CORRECT_API_KEY, INVALID_API_KEY, done };
-		};
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const done = jest.fn((error: Error | null, data: boolean | null) => {});
 		describe('when a valid api key is provided', () => {
+			const setup = () => {
+				const CORRECT_API_KEY = '1ab2c3d4e5f61ab2c3d4e5f6';
+
+				return { CORRECT_API_KEY, done };
+			};
 			it('should do nothing', () => {
-				const { CORRECT_API_KEY, done } = setup();
+				const { CORRECT_API_KEY } = setup();
 				strategy.validate(CORRECT_API_KEY, done);
 				expect(done).toBeCalledWith(null, true);
 			});
 		});
 
 		describe('when a invalid api key is provided', () => {
+			const setup = () => {
+				const INVALID_API_KEY = '1ab2c3d4e5f61ab2c3d4e5f6778173';
+
+				return { INVALID_API_KEY, done };
+			};
 			it('should throw error', () => {
-				const { INVALID_API_KEY, done } = setup();
+				const { INVALID_API_KEY } = setup();
 				strategy.validate(INVALID_API_KEY, done);
 				expect(done).toBeCalledWith(new UnauthorizedException(), null);
 			});

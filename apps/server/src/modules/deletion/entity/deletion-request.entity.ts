@@ -3,6 +3,7 @@ import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain';
 import { DeletionDomainModel, DeletionStatusModel } from '../domain/types';
 
+const SECONDS_OF_90_DAYS = 90 * 24 * 60 * 60;
 export interface DeletionRequestEntityProps {
 	id?: EntityId;
 	targetRefDomain: DeletionDomainModel;
@@ -17,7 +18,7 @@ export interface DeletionRequestEntityProps {
 @Unique({ properties: ['targetRefId', 'targetRefDomain'] })
 export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 	@Property()
-	@Index({ options: { expireAfterSeconds: 7776000 } })
+	@Index({ options: { expireAfterSeconds: SECONDS_OF_90_DAYS } })
 	deleteAfter: Date;
 
 	@Property()
