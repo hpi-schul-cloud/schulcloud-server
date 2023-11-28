@@ -15,3 +15,4 @@ export * from './team.rule';
 export * from './user-login-migration.rule';
 export * from './user.rule';
 export * from './group.rule';
+export { SystemRule } from './system.rule';
