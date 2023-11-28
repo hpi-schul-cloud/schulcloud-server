@@ -157,12 +157,19 @@ class Service extends AdapterBase {
 	}
 
 	_get(id, params = {}) {
-		const { query, filters } = this.filterQuery(params);
+		let { query } = this.filterQuery(params);
+		const { filters } = this.filterQuery(params);
 
-		query.$and = (query.$and || []).concat([{ [this.id]: id }]);
+		// backward compatibility
+		if (query.$and) {
+			query.$and = query.$and.concat([{ [this.id]: id }]);
+		} else {
+			query = { [this.id]: id };
+		}
 
 		const discriminator = query[this.discriminatorKey] || this.discriminatorKey;
 		const model = this.discriminators[discriminator] || this.Model;
+
 		let modelQuery = model.findOne(query);
 
 		// Handle $populate
