@@ -2,12 +2,12 @@ import {
 	ContentMetadata,
 	H5PContent,
 	H5PContentParentType,
-	IH5PContentProperties,
+	H5PContentProperties,
 } from '@src/modules/h5p-editor/entity';
 import { ObjectID } from 'bson';
 import { BaseFactory } from './base.factory';
 
-class H5PContentFactory extends BaseFactory<H5PContent, IH5PContentProperties> {}
+class H5PContentFactory extends BaseFactory<H5PContent, H5PContentProperties> {}
 
 export const h5pContentFactory = H5PContentFactory.define(H5PContent, ({ sequence }) => {
 	return {

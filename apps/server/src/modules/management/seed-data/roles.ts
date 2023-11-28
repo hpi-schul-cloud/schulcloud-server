@@ -1,10 +1,10 @@
 // All user accounts are organized by school in a single array
 
-import { IRoleProperties, Permission, Role, RoleName } from '@shared/domain';
+import { Permission, Role, RoleName, RoleProperties } from '@shared/domain';
 import { roleFactory } from '@shared/testing';
 import { DeepPartial } from 'fishery';
 
-type SeedRoleProperties = Omit<IRoleProperties, 'roles'> & {
+type SeedRoleProperties = Omit<RoleProperties, 'roles'> & {
 	id: string;
 	createdAt: string;
 	updatedAt: string;
@@ -443,7 +443,7 @@ export function generateRole(localRoleSeedData?: { [key: string | RoleName]: See
 		if (subRoles.some((r) => !r)) {
 			throw new Error(`Role ${roleName} depends on non existing role`);
 		}
-		const params: DeepPartial<IRoleProperties> = {
+		const params: DeepPartial<RoleProperties> = {
 			name: partial.name,
 			permissions: partial.permissions,
 			roles: subRoles,

@@ -17,7 +17,7 @@ import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { SchoolYearEntity } from './schoolyear.entity';
 import { SystemEntity } from './system.entity';
 
-export interface ISchoolProperties {
+export interface SchoolProperties {
 	_id?: string;
 	externalId?: string;
 	inMaintenanceSince?: Date;
@@ -130,7 +130,7 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	timezone?: string;
 
-	constructor(props: ISchoolProperties) {
+	constructor(props: SchoolProperties) {
 		super();
 		this.externalId = props.externalId;
 		this.previousExternalId = props.previousExternalId;

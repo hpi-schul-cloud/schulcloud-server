@@ -1,11 +1,14 @@
+import { SanisGeburtResponse } from './sanis-geburt-response';
 import { SanisNameResponse } from './sanis-name-response';
 
 export interface SanisPersonResponse {
-	name: SanisNameResponse;
+	name?: SanisNameResponse;
 
-	geschlecht: string;
+	geburt?: SanisGeburtResponse;
 
-	lokalisierung: string;
+	geschlecht?: string;
 
-	vertrauensstufe: string;
+	lokalisierung?: string;
+
+	vertrauensstufe?: string;
 }

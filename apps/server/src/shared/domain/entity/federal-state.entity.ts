@@ -2,7 +2,7 @@ import { Embeddable, Embedded, Entity, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from './base.entity';
 
-export interface IFederalStateProperties {
+export interface FederalStateProperties {
 	name: string;
 	abbreviation: string;
 	logoUrl: string;
@@ -47,7 +47,7 @@ export class FederalStateEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => CountyEmbeddable, { array: true, nullable: true })
 	counties?: CountyEmbeddable[];
 
-	constructor(props: IFederalStateProperties) {
+	constructor(props: FederalStateProperties) {
 		super();
 		this.name = props.name;
 		this.abbreviation = props.abbreviation;

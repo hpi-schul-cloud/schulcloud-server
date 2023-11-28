@@ -6,16 +6,17 @@ import {
 	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
+	GroupRule,
 	LegacySchoolRule,
 	LessonRule,
 	SchoolExternalToolRule,
 	SchoolRule,
 	SubmissionRule,
+	SystemRule,
 	TaskRule,
 	TeamRule,
 	UserLoginMigrationRule,
 	UserRule,
-	GroupRule,
 } from '../rules';
 import type { AuthorizationContext, Rule } from '../type';
 
@@ -37,7 +38,8 @@ export class RuleManager {
 		private readonly contextExternalToolRule: ContextExternalToolRule,
 		private readonly userLoginMigrationRule: UserLoginMigrationRule,
 		private readonly schoolRule: SchoolRule,
-		private readonly groupRule: GroupRule
+		private readonly groupRule: GroupRule,
+		private readonly systemRule: SystemRule
 	) {
 		this.rules = [
 			this.courseRule,
@@ -54,6 +56,7 @@ export class RuleManager {
 			this.userLoginMigrationRule,
 			this.schoolRule,
 			this.groupRule,
+			this.systemRule,
 		];
 	}
 

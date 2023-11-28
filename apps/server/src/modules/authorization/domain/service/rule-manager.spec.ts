@@ -8,16 +8,17 @@ import {
 	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
+	GroupRule,
+	LegacySchoolRule,
 	LessonRule,
 	SchoolExternalToolRule,
-	LegacySchoolRule,
+	SchoolRule,
 	SubmissionRule,
+	SystemRule,
 	TaskRule,
 	TeamRule,
-	UserRule,
 	UserLoginMigrationRule,
-	SchoolRule,
-	GroupRule,
+	UserRule,
 } from '../rules';
 import { RuleManager } from './rule-manager';
 
@@ -37,6 +38,7 @@ describe('RuleManager', () => {
 	let userLoginMigrationRule: DeepMocked<UserLoginMigrationRule>;
 	let schoolRule: DeepMocked<SchoolRule>;
 	let groupRule: DeepMocked<GroupRule>;
+	let systemRule: DeepMocked<SystemRule>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -58,6 +60,7 @@ describe('RuleManager', () => {
 				{ provide: ContextExternalToolRule, useValue: createMock<ContextExternalToolRule>() },
 				{ provide: UserLoginMigrationRule, useValue: createMock<UserLoginMigrationRule>() },
 				{ provide: SchoolRule, useValue: createMock<SchoolRule>() },
+				{ provide: SystemRule, useValue: createMock<SystemRule>() },
 			],
 		}).compile();
 
@@ -76,6 +79,7 @@ describe('RuleManager', () => {
 		userLoginMigrationRule = await module.get(UserLoginMigrationRule);
 		schoolRule = await module.get(SchoolRule);
 		groupRule = await module.get(GroupRule);
+		systemRule = await module.get(SystemRule);
 	});
 
 	afterEach(() => {
@@ -108,6 +112,7 @@ describe('RuleManager', () => {
 				userLoginMigrationRule.isApplicable.mockReturnValueOnce(false);
 				schoolRule.isApplicable.mockReturnValueOnce(false);
 				groupRule.isApplicable.mockReturnValueOnce(false);
+				systemRule.isApplicable.mockReturnValueOnce(false);
 
 				return { user, object, context };
 			};
@@ -131,6 +136,7 @@ describe('RuleManager', () => {
 				expect(userLoginMigrationRule.isApplicable).toBeCalled();
 				expect(schoolRule.isApplicable).toBeCalled();
 				expect(groupRule.isApplicable).toBeCalled();
+				expect(systemRule.isApplicable).toBeCalled();
 			});
 
 			it('should return CourseRule', () => {
@@ -162,6 +168,7 @@ describe('RuleManager', () => {
 				userLoginMigrationRule.isApplicable.mockReturnValueOnce(false);
 				schoolRule.isApplicable.mockReturnValueOnce(false);
 				groupRule.isApplicable.mockReturnValueOnce(false);
+				systemRule.isApplicable.mockReturnValueOnce(false);
 
 				return { user, object, context };
 			};
@@ -193,6 +200,7 @@ describe('RuleManager', () => {
 				userLoginMigrationRule.isApplicable.mockReturnValueOnce(false);
 				schoolRule.isApplicable.mockReturnValueOnce(false);
 				groupRule.isApplicable.mockReturnValueOnce(false);
+				systemRule.isApplicable.mockReturnValueOnce(false);
 
 				return { user, object, context };
 			};

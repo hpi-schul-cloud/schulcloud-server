@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { SchoolFeature } from '@modules/school/domain';
-import { SystemDto, SystemService } from '@modules/system';
+import { LegacySystemService, SystemDto } from '@modules/system';
 import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId, LegacySchoolDo, SystemTypeEnum, UserDO, UserLoginMigrationDO } from '@shared/domain';
@@ -17,7 +17,7 @@ export class UserLoginMigrationService {
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo,
 		private readonly schoolService: LegacySchoolService,
-		private readonly systemService: SystemService
+		private readonly systemService: LegacySystemService
 	) {}
 
 	public async startMigration(schoolId: string): Promise<UserLoginMigrationDO> {

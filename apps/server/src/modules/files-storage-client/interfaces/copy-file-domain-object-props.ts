@@ -1,6 +1,6 @@
 import { EntityId } from '@shared/domain';
 
-export interface ICopyFileDomainObjectProps {
+export interface CopyFileDomainObjectProps {
 	id?: EntityId | undefined;
 	sourceId: EntityId;
 	name: string;

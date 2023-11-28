@@ -93,6 +93,7 @@ export class OidcProvisioningService {
 			user.email = externalUser.email ?? existingUser.email;
 			user.roles = roleRefs ?? existingUser.roles;
 			user.schoolId = schoolId ?? existingUser.schoolId;
+			user.birthday = externalUser.birthday ?? existingUser.birthday;
 		} else {
 			createNewAccount = true;
 
@@ -109,6 +110,7 @@ export class OidcProvisioningService {
 				email: externalUser.email ?? '',
 				roles: roleRefs ?? [],
 				schoolId,
+				birthday: externalUser.birthday,
 			});
 		}
 

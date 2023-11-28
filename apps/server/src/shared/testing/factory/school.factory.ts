@@ -1,9 +1,9 @@
-import { ISchoolProperties, SchoolEntity } from '@shared/domain';
+import { SchoolEntity, SchoolProperties } from '@shared/domain';
 import { BaseFactory } from './base.factory';
-import { schoolYearFactory } from './schoolyear.factory';
 import { federalStateFactory } from './federal-state.factory';
+import { schoolYearFactory } from './schoolyear.factory';
 
-export const schoolFactory = BaseFactory.define<SchoolEntity, ISchoolProperties>(SchoolEntity, ({ sequence }) => {
+export const schoolFactory = BaseFactory.define<SchoolEntity, SchoolProperties>(SchoolEntity, ({ sequence }) => {
 	return {
 		name: `school #${sequence}`,
 		currentYear: schoolYearFactory.build(),

@@ -1,38 +1,38 @@
 import { DeepPartial } from 'fishery';
 
-import { Course, ICourseProperties } from '@shared/domain';
+import { Course, CourseProperties } from '@shared/domain';
 
-import { schoolFactory } from './school.factory';
 import { BaseFactory } from './base.factory';
+import { schoolFactory } from './school.factory';
 import { userFactory } from './user.factory';
 
 const oneDay = 24 * 60 * 60 * 1000;
 
-class CourseFactory extends BaseFactory<Course, ICourseProperties> {
+class CourseFactory extends BaseFactory<Course, CourseProperties> {
 	isFinished(): this {
 		const untilDate = new Date(Date.now() - oneDay);
-		const params: DeepPartial<ICourseProperties> = { untilDate };
+		const params: DeepPartial<CourseProperties> = { untilDate };
 
 		return this.params(params);
 	}
 
 	isOpen(): this {
 		const untilDate = new Date(Date.now() + oneDay);
-		const params: DeepPartial<ICourseProperties> = { untilDate };
+		const params: DeepPartial<CourseProperties> = { untilDate };
 
 		return this.params(params);
 	}
 
 	studentsWithId(numberOfStudents: number): this {
 		const students = userFactory.buildListWithId(numberOfStudents);
-		const params: DeepPartial<ICourseProperties> = { students };
+		const params: DeepPartial<CourseProperties> = { students };
 
 		return this.params(params);
 	}
 
 	teachersWithId(numberOfTeachers: number): this {
 		const teachers = userFactory.buildListWithId(numberOfTeachers);
-		const params: DeepPartial<ICourseProperties> = { teachers };
+		const params: DeepPartial<CourseProperties> = { teachers };
 
 		return this.params(params);
 	}

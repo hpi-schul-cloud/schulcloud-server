@@ -1,11 +1,12 @@
 import { createMock } from '@golevelup/ts-jest';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { UserQuery } from '@modules/user/service/user-query.type';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import {
 	IFindOptions,
-	IUserProperties,
 	LanguageType,
 	Role,
 	RoleName,
@@ -13,21 +14,20 @@ import {
 	SortOrder,
 	SystemEntity,
 	User,
+	UserProperties,
 } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import {
 	cleanupCollections,
 	roleFactory,
 	schoolFactory,
-	systemFactory,
+	systemEntityFactory,
 	userDoFactory,
 	userFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { UserQuery } from '@modules/user/service/user-query.type';
 
 describe('UserRepo', () => {
 	let module: TestingModule;
@@ -67,7 +67,7 @@ describe('UserRepo', () => {
 	});
 
 	describe('entityFactory', () => {
-		const props: IUserProperties = {
+		const props: UserProperties = {
 			email: 'email@email.email',
 			firstName: 'firstName',
 			lastName: 'lastName',
@@ -146,7 +146,7 @@ describe('UserRepo', () => {
 		let user: User;
 
 		beforeEach(async () => {
-			system = systemFactory.buildWithId();
+			system = systemEntityFactory.buildWithId();
 			school = schoolFactory.buildWithId();
 			school.systems.add(system);
 			user = userFactory.buildWithId({ externalId, school });
@@ -190,7 +190,7 @@ describe('UserRepo', () => {
 		let user: User;
 
 		beforeEach(async () => {
-			system = systemFactory.buildWithId();
+			system = systemEntityFactory.buildWithId();
 			school = schoolFactory.buildWithId();
 			school.systems.add(system);
 			user = userFactory.buildWithId({ externalId, school });
@@ -234,6 +234,7 @@ describe('UserRepo', () => {
 					language: LanguageType.DE,
 					forcePasswordChange: false,
 					preferences: { firstLogin: true },
+					birthday: new Date(),
 				},
 				id.toHexString()
 			);
@@ -276,6 +277,7 @@ describe('UserRepo', () => {
 					outdatedSince: testEntity.outdatedSince,
 					lastLoginSystemChange: testEntity.lastLoginSystemChange,
 					previousExternalId: testEntity.previousExternalId,
+					birthday: testEntity.birthday,
 				})
 			);
 		});
@@ -299,13 +301,14 @@ describe('UserRepo', () => {
 						outdatedSince: new Date(),
 						lastLoginSystemChange: new Date(),
 						previousExternalId: 'someId',
+						birthday: new Date(),
 					},
 					'testId'
 				);
 
-			const result: IUserProperties = repo.mapDOToEntityProperties(testDO);
+			const result: UserProperties = repo.mapDOToEntityProperties(testDO);
 
-			expect(result).toEqual<IUserProperties>({
+			expect(result).toEqual<UserProperties>({
 				email: testDO.email,
 				firstName: testDO.firstName,
 				lastName: testDO.lastName,
@@ -321,6 +324,7 @@ describe('UserRepo', () => {
 				outdatedSince: testDO.outdatedSince,
 				lastLoginSystemChange: testDO.lastLoginSystemChange,
 				previousExternalId: testDO.previousExternalId,
+				birthday: testDO.birthday,
 			});
 		});
 	});

@@ -1,54 +1,40 @@
-import { EntityManager } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { OauthConfig, SystemEntity } from '@shared/domain';
-import { cleanupCollections, systemFactory } from '@shared/testing';
-import { ICurrentUser } from '@modules/authentication';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
-import { Request } from 'express';
-import request, { Response } from 'supertest';
-import { PublicSystemListResponse } from '../dto/public-system-list.response';
-import { PublicSystemResponse } from '../dto/public-system-response';
+import { HttpStatus, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { OauthConfigEntity, SchoolEntity, SystemEntity } from '@shared/domain';
+import { schoolFactory, systemEntityFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { Response } from 'supertest';
+import { PublicSystemListResponse, PublicSystemResponse } from '../dto';
+
+const baseRouteName = '/systems';
 
 describe('System (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
-		const moduleRef: TestingModule = await Test.createTestingModule({
+		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
 
-		app = moduleRef.createNestApplication();
+		app = module.createNestApplication();
 		await app.init();
-		em = app.get(EntityManager);
+		em = module.get(EntityManager);
+		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
 
-	afterEach(async () => {
-		await cleanupCollections(em);
-	});
-
 	describe('[GET] systems/public', () => {
 		describe('when the endpoint is called', () => {
 			const setup = async () => {
-				const system1: SystemEntity = systemFactory.buildWithId();
-				const system2: SystemEntity = systemFactory.withOauthConfig().buildWithId();
-				const system2OauthConfig: OauthConfig = system2.oauthConfig as OauthConfig;
+				const system1: SystemEntity = systemEntityFactory.buildWithId();
+				const system2: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId();
+				const system2OauthConfig: OauthConfigEntity = system2.oauthConfig as OauthConfigEntity;
 
 				await em.persistAndFlush([system1, system2]);
 				em.clear();
@@ -59,7 +45,7 @@ describe('System (API)', () => {
 			it('should return a list of all systems', async () => {
 				const { system1, system2, system2OauthConfig } = await setup();
 
-				const response: Response = await request(app.getHttpServer()).get(`/systems/public`).expect(200);
+				const response: Response = await testApiClient.get(`/public`).expect(200);
 
 				expect(response.body).toEqual<PublicSystemListResponse>({
 					data: [
@@ -98,8 +84,8 @@ describe('System (API)', () => {
 	describe('[GET] systems/public/:systemId', () => {
 		describe('when the endpoint is called with a known systemId', () => {
 			const setup = async () => {
-				const system1: SystemEntity = systemFactory.buildWithId();
-				const system2: SystemEntity = systemFactory.buildWithId();
+				const system1: SystemEntity = systemEntityFactory.buildWithId();
+				const system2: SystemEntity = systemEntityFactory.buildWithId();
 
 				await em.persistAndFlush([system1, system2]);
 				em.clear();
@@ -110,7 +96,7 @@ describe('System (API)', () => {
 			it('should return the system', async () => {
 				const { system1 } = await setup();
 
-				const response: Response = await request(app.getHttpServer()).get(`/systems/public/${system1.id}`).expect(200);
+				const response: Response = await testApiClient.get(`/public/${system1.id}`).expect(200);
 
 				expect(response.body).toEqual<PublicSystemResponse>({
 					id: system1.id,
@@ -118,6 +104,43 @@ describe('System (API)', () => {
 					alias: system1.alias,
 					displayName: system1.displayName,
 				});
+			});
+		});
+	});
+
+	describe('[DELETE] systems/:systemId', () => {
+		describe('when the endpoint is called with a known systemId', () => {
+			const setup = async () => {
+				const system: SystemEntity = systemEntityFactory.withLdapConfig({ provider: 'general' }).buildWithId();
+				const school: SchoolEntity = schoolFactory.build({ systems: [system] });
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+
+				await em.persistAndFlush([system, adminAccount, adminUser, school]);
+				em.clear();
+
+				const adminClient = await testApiClient.login(adminAccount);
+
+				return {
+					system,
+					adminClient,
+				};
+			};
+
+			it('should delete the system', async () => {
+				const { system, adminClient } = await setup();
+
+				const response = await adminClient.delete(system.id);
+
+				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
+				expect(await em.findOne(SystemEntity, { id: system.id })).toBeNull();
+			});
+		});
+
+		describe('when not authenticated', () => {
+			it('should return unauthorized', async () => {
+				const response = await testApiClient.delete(new ObjectId().toHexString());
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
 	});

@@ -8,17 +8,17 @@ interface ITask {
 	dueDate?: Date;
 }
 
-export interface ITaskUpdate extends ITask {
+export interface TaskUpdate extends ITask {
 	courseId?: string;
 	lessonId?: string;
 }
 
-export interface ITaskCreate extends ITask {
+export interface TaskCreate extends ITask {
 	courseId?: string;
 	lessonId?: string;
 }
 
-export interface ITaskProperties extends ITask {
+export interface TaskProperties extends ITask {
 	course?: Course;
 	lesson?: LessonEntity;
 	creator: User;
@@ -30,7 +30,7 @@ export interface ITaskProperties extends ITask {
 	teamSubmissions?: boolean;
 }
 
-export interface ITaskStatus {
+export interface TaskStatus {
 	submitted: number;
 	maxSubmissions: number;
 	graded: number;

@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/learnroom/service';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { SchoolFeature } from '@modules/school/domain';
 import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
@@ -17,17 +17,17 @@ import {
 	VideoConferenceDO,
 	VideoConferenceScope,
 } from '@shared/domain';
-import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { courseFactory, roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
+import { SchoolFeature } from '@src/modules/school/domain';
 import { ObjectId } from 'bson';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
 import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
-import { IScopeInfo, ScopeRef, VideoConferenceState } from '../uc/dto';
+import { ScopeInfo, ScopeRef, VideoConferenceState } from '../uc/dto';
 import { VideoConferenceService } from './video-conference.service';
 
 describe('VideoConferenceService', () => {
@@ -561,7 +561,7 @@ describe('VideoConferenceService', () => {
 				course.id = scopeId;
 				courseService.findById.mockResolvedValue(course);
 
-				const result: IScopeInfo = await service.getScopeInfo(userId, scopeId, conferenceScope);
+				const result: ScopeInfo = await service.getScopeInfo(userId, scopeId, conferenceScope);
 
 				expect(result).toEqual({
 					scopeId,
@@ -580,7 +580,7 @@ describe('VideoConferenceService', () => {
 				const event: CalendarEventDto = { title: 'Event', teamId };
 				calendarService.findEvent.mockResolvedValue(event);
 
-				const result: IScopeInfo = await service.getScopeInfo(userId, scopeId, VideoConferenceScope.EVENT);
+				const result: ScopeInfo = await service.getScopeInfo(userId, scopeId, VideoConferenceScope.EVENT);
 
 				expect(result).toEqual({
 					scopeId: teamId,

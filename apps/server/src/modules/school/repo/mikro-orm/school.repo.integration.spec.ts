@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
-import { cleanupCollections, federalStateFactory, schoolFactory, systemFactory } from '@shared/testing';
+import { cleanupCollections, federalStateFactory, schoolFactory, systemEntityFactory } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
 import { SchoolFeature, SCHOOL_REPO } from '../../domain';
 import { SchoolEntityMapper } from './mapper';
@@ -144,7 +144,7 @@ describe('SchoolMikroOrmRepo', () => {
 
 		describe('when entity is found', () => {
 			const setup = async () => {
-				const systems = systemFactory.buildList(2);
+				const systems = systemEntityFactory.buildList(2);
 				const schoolId = new ObjectId().toHexString();
 				const entity = schoolFactory.buildWithId({ systems }, schoolId);
 				await em.persistAndFlush([entity]);

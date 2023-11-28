@@ -1,8 +1,8 @@
-import { CountyEmbeddable, FederalStateEntity, IFederalStateProperties } from '@shared/domain';
+import { CountyEmbeddable, FederalStateEntity, FederalStateProperties } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BaseFactory } from './base.factory';
 
-export const federalStateFactory = BaseFactory.define<FederalStateEntity, IFederalStateProperties>(
+export const federalStateFactory = BaseFactory.define<FederalStateEntity, FederalStateProperties>(
 	FederalStateEntity,
 	() => {
 		return {

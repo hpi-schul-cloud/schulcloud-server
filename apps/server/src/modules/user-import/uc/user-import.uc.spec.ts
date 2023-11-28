@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account/services/account.service';
 import { AuthorizationService } from '@modules/authorization';
@@ -19,10 +20,9 @@ import {
 	SystemEntity,
 	User,
 } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
-import { systemFactory } from '@shared/testing/factory/system.factory';
+import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';
 import { LoggerModule } from '@src/core/logger';
 import {
 	LdapAlreadyPersistedException,
@@ -38,7 +38,7 @@ describe('[ImportUserModule]', () => {
 		let accountService: DeepMocked<AccountService>;
 		let importUserRepo: DeepMocked<ImportUserRepo>;
 		let schoolService: DeepMocked<LegacySchoolService>;
-		let systemRepo: DeepMocked<SystemRepo>;
+		let systemRepo: DeepMocked<LegacySystemRepo>;
 		let userRepo: DeepMocked<UserRepo>;
 		let authorizationService: DeepMocked<AuthorizationService>;
 		let configurationSpy: jest.SpyInstance;
@@ -65,8 +65,8 @@ describe('[ImportUserModule]', () => {
 						useValue: createMock<LegacySchoolService>(),
 					},
 					{
-						provide: SystemRepo,
-						useValue: createMock<SystemRepo>(),
+						provide: LegacySystemRepo,
+						useValue: createMock<LegacySystemRepo>(),
 					},
 					{
 						provide: UserRepo,
@@ -82,7 +82,7 @@ describe('[ImportUserModule]', () => {
 			accountService = module.get(AccountService);
 			importUserRepo = module.get(ImportUserRepo);
 			schoolService = module.get(LegacySchoolService);
-			systemRepo = module.get(SystemRepo);
+			systemRepo = module.get(LegacySystemRepo);
 			userRepo = module.get(UserRepo);
 			authorizationService = module.get(AuthorizationService);
 		});
@@ -472,7 +472,7 @@ describe('[ImportUserModule]', () => {
 			let userRepoFlushSpy: jest.SpyInstance;
 			let accountServiceFindByUserIdSpy: jest.SpyInstance;
 			beforeEach(() => {
-				system = systemFactory.buildWithId();
+				system = systemEntityFactory.buildWithId();
 				school = schoolFactory.buildWithId({ systems: [system] });
 				school.externalId = 'foo';
 				school.inMaintenanceSince = new Date();
@@ -605,7 +605,7 @@ describe('[ImportUserModule]', () => {
 			const currentDate = new Date('2022-03-10T00:00:00.000Z');
 			let dateSpy: jest.SpyInstance;
 			beforeEach(() => {
-				system = systemFactory.buildWithId({ ldapConfig: {} });
+				system = systemEntityFactory.buildWithId({ ldapConfig: {} });
 				school = schoolFactory.buildWithId();
 				school.officialSchoolNumber = 'foo';
 				currentUser = userFactory.buildWithId({ school });

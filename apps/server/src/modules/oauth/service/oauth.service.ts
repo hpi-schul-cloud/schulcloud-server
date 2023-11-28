@@ -1,13 +1,13 @@
-import { DefaultEncryptionService, IEncryptionService } from '@infra/encryption';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
-import { SystemService } from '@modules/system';
+import { LegacySystemService } from '@modules/system';
 import { SystemDto } from '@modules/system/service';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { EntityId, LegacySchoolDo, OauthConfig, UserDO } from '@shared/domain';
+import { EntityId, LegacySchoolDo, OauthConfigEntity, UserDO } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { SchoolFeature } from '@src/modules/school/domain';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -22,10 +22,10 @@ export class OAuthService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly oauthAdapterService: OauthAdapterService,
-		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
 		private readonly logger: LegacyLogger,
 		private readonly provisioningService: ProvisioningService,
-		private readonly systemService: SystemService,
+		private readonly systemService: LegacySystemService,
 		private readonly migrationCheckService: MigrationCheckService,
 		private readonly schoolService: LegacySchoolService
 	) {
@@ -119,7 +119,7 @@ export class OAuthService {
 		return !!school.features?.includes(SchoolFeature.OAUTH_PROVISIONING_ENABLED);
 	}
 
-	async requestToken(code: string, oauthConfig: OauthConfig, redirectUri: string): Promise<OAuthTokenDto> {
+	async requestToken(code: string, oauthConfig: OauthConfigEntity, redirectUri: string): Promise<OAuthTokenDto> {
 		const payload: AuthenticationCodeGrantTokenRequest = this.buildTokenRequestPayload(code, oauthConfig, redirectUri);
 
 		const responseToken: OauthTokenResponse = await this.oauthAdapterService.sendAuthenticationCodeTokenRequest(
@@ -131,7 +131,7 @@ export class OAuthService {
 		return tokenDto;
 	}
 
-	async validateToken(idToken: string, oauthConfig: OauthConfig): Promise<JwtPayload> {
+	async validateToken(idToken: string, oauthConfig: OauthConfigEntity): Promise<JwtPayload> {
 		const publicKey: string = await this.oauthAdapterService.getPublicKey(oauthConfig.jwksEndpoint);
 		const decodedJWT: string | JwtPayload = jwt.verify(idToken, publicKey, {
 			algorithms: ['RS256'],
@@ -148,7 +148,7 @@ export class OAuthService {
 
 	private buildTokenRequestPayload(
 		code: string,
-		oauthConfig: OauthConfig,
+		oauthConfig: OauthConfigEntity,
 		redirectUri: string
 	): AuthenticationCodeGrantTokenRequest {
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);

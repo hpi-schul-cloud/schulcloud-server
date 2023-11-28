@@ -8,4 +8,5 @@ export enum PreviewInputMimeTypes {
 	IMAGE_HEIF = 'image/heif',
 	IMAGE_TIFF = 'image/tiff',
 	IMAGE_WEBP = 'image/webp',
+	APPLICATION_PDF = 'application/pdf',
 }
