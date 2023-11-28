@@ -8,25 +8,25 @@ export class CommonCartridgeOrganizationBuilder {
 
 	private items: CommonCartridgeElement[] = [];
 
-	public setIdentifier(identifier: string): CommonCartridgeOrganizationBuilder {
+	setIdentifier(identifier: string): CommonCartridgeOrganizationBuilder {
 		this.identifier = identifier;
 
 		return this;
 	}
 
-	public setTitle(title: string): CommonCartridgeOrganizationBuilder {
+	setTitle(title: string): CommonCartridgeOrganizationBuilder {
 		this.title = title;
 
 		return this;
 	}
 
-	public addItem(item: CommonCartridgeElement): CommonCartridgeOrganizationBuilder {
+	addItem(item: CommonCartridgeElement): CommonCartridgeOrganizationBuilder {
 		this.items.push(item);
 
 		return this;
 	}
 
-	public build(): CommonCartridgeElement & CommonCartridgeResource {
+	build(): CommonCartridgeResource {
 		throw new Error('Method not implemented.');
 	}
 }

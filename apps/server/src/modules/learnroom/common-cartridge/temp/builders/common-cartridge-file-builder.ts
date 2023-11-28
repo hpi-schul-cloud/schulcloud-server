@@ -1,42 +1,33 @@
 import AdmZip from 'adm-zip';
-import { Builder } from 'xml2js';
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
-import { CommonCartridgeManifestElement } from '../elements/common-cartridge-manifest-element';
 import { CommonCartridgeMetadataBuilder } from './common-cartridge-metadata-builder';
 import { CommonCartridgeOrganizationBuilder } from './common-cartridge-organization-builder';
+import { CommonCartridgeManifestBuilder } from './common-cartridge-manifest-builder';
 
 type CommonCartridgeFileBuilderOptions = {
 	version: CommonCartridgeVersion;
-	title: string;
-	copyrightOwners?: string[];
-	creationDate?: Date;
 };
 
 const DEFAULT_OPTIONS: CommonCartridgeFileBuilderOptions = {
 	version: CommonCartridgeVersion.V_1_1,
-	title: '',
-	copyrightOwners: [],
-	creationDate: new Date(),
 };
 
 export class CommonCartridgeFileBuilder {
 	private readonly archive = new AdmZip();
 
-	private readonly xmlBuilder = new Builder();
-
 	private readonly metadataBuilder = new CommonCartridgeMetadataBuilder();
 
 	private readonly organizationBuilders = new Array<CommonCartridgeOrganizationBuilder>();
 
-	public constructor(private readonly options: CommonCartridgeFileBuilderOptions) {
+	constructor(private readonly options: CommonCartridgeFileBuilderOptions) {
 		Object.assign(this.options, DEFAULT_OPTIONS, options);
 	}
 
-	public withMetadata(): CommonCartridgeMetadataBuilder {
+	withMetadata(): CommonCartridgeMetadataBuilder {
 		return this.metadataBuilder;
 	}
 
-	public withOrganization(): CommonCartridgeOrganizationBuilder {
+	withOrganization(): CommonCartridgeOrganizationBuilder {
 		const builder = new CommonCartridgeOrganizationBuilder();
 
 		this.organizationBuilders.push(builder);
@@ -44,19 +35,22 @@ export class CommonCartridgeFileBuilder {
 		return builder;
 	}
 
-	public build(): Promise<Buffer> {
+	build(): Promise<Buffer> {
 		const metadata = this.metadataBuilder.build();
 		const organizations = this.organizationBuilders.map((builder) => builder.build());
-		const manifest = this.xmlBuilder.buildObject(new CommonCartridgeManifestElement({}).getManifestXml());
+		const manifest = new CommonCartridgeManifestBuilder(this.options.version)
+			.setMetadata(metadata)
+			.setOrganizations(organizations)
+			.build();
 
 		for (const organization of organizations) {
 			if (!organization.canInline()) {
-				organization.addToArchive(this.archive);
+				this.archive.addFile(organization.getFilePath(), Buffer.from(organization.getFileContent()));
 			}
 		}
 
-		this.archive.addFile('imsmanifest.xml', Buffer.from(manifest));
+		this.archive.addFile(manifest.getFilePath(), Buffer.from(manifest.getFileContent()));
 
-		return Promise.resolve(this.archive.toBuffer());
+		return this.archive.toBufferPromise();
 	}
 }

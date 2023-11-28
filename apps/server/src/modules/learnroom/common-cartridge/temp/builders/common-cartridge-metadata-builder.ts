@@ -11,31 +11,31 @@ export class CommonCartridgeMetadataBuilder {
 
 	private creationDate: Date = new Date();
 
-	public setVersion(version: CommonCartridgeVersion): CommonCartridgeMetadataBuilder {
+	setVersion(version: CommonCartridgeVersion): CommonCartridgeMetadataBuilder {
 		this.version = version;
 
 		return this;
 	}
 
-	public setTitle(title: string): CommonCartridgeMetadataBuilder {
+	setTitle(title: string): CommonCartridgeMetadataBuilder {
 		this.title = title;
 
 		return this;
 	}
 
-	public setCopyrightOwners(copyrightOwners: string[]): CommonCartridgeMetadataBuilder {
+	setCopyrightOwners(copyrightOwners: string[]): CommonCartridgeMetadataBuilder {
 		this.copyrightOwners = copyrightOwners;
 
 		return this;
 	}
 
-	public setCreationDate(creationDate: Date): CommonCartridgeMetadataBuilder {
+	setCreationDate(creationDate: Date): CommonCartridgeMetadataBuilder {
 		this.creationDate = creationDate;
 
 		return this;
 	}
 
-	public build(): CommonCartridgeElement {
+	build(): CommonCartridgeElement {
 		return new CommonCartridgeMetadataElement({
 			version: this.version,
 			title: this.title,
