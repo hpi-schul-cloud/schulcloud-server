@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { setupEntities } from '@shared/testing';
+import { setupEntities, userDoFactory } from '@shared/testing';
 import { AccountService } from '@modules/account';
 import { ClassService } from '@modules/class';
 import { CourseGroupService, CourseService } from '@modules/learnroom';
@@ -13,6 +13,7 @@ import { RocketChatService } from '@modules/rocketchat';
 import { RocketChatUser, RocketChatUserService, rocketChatUserFactory } from '@modules/rocketchat-user';
 import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from 'bson';
+import { RegistrationPinService } from '@modules/registration-pin';
 import { DeletionDomainModel, DeletionStatusModel } from '../domain/types';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
@@ -38,6 +39,7 @@ describe(DeletionRequestUc.name, () => {
 	let userService: DeepMocked<UserService>;
 	let rocketChatUserService: DeepMocked<RocketChatUserService>;
 	let rocketChatService: DeepMocked<RocketChatService>;
+	let registrationPinService: DeepMocked<RegistrationPinService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -99,6 +101,10 @@ describe(DeletionRequestUc.name, () => {
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
+				{
+					provide: RegistrationPinService,
+					useValue: createMock<RegistrationPinService>(),
+				},
 			],
 		}).compile();
 
@@ -116,6 +122,7 @@ describe(DeletionRequestUc.name, () => {
 		userService = module.get(UserService);
 		rocketChatUserService = module.get(RocketChatUserService);
 		rocketChatService = module.get(RocketChatService);
+		registrationPinService = module.get(RegistrationPinService);
 		await setupEntities();
 	});
 
@@ -175,10 +182,13 @@ describe(DeletionRequestUc.name, () => {
 		describe('when executing deletionRequests', () => {
 			const setup = () => {
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
+				const user = userDoFactory.buildWithId();
 				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build({
 					userId: deletionRequestToExecute.targetRefId,
 				});
+				const parentEmail = 'parent@parent.eu';
 
+				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(2);
 				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
 				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(2);
 				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(2);
@@ -193,6 +203,8 @@ describe(DeletionRequestUc.name, () => {
 				return {
 					deletionRequestToExecute,
 					rocketChatUser,
+					user,
+					parentEmail,
 				};
 			};
 
@@ -220,6 +232,29 @@ describe(DeletionRequestUc.name, () => {
 				await uc.executeDeletionRequests();
 
 				expect(accountService.deleteByUserId).toHaveBeenCalled();
+			});
+
+			it('should call registrationPinService.deleteRegistrationPinByEmail to delete user data in registrationPin module', async () => {
+				const { deletionRequestToExecute } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+
+				await uc.executeDeletionRequests();
+
+				expect(registrationPinService.deleteRegistrationPinByEmail).toHaveBeenCalled();
+			});
+
+			it('should call userService.getParentEmailsFromUser to get parentEmails', async () => {
+				const { deletionRequestToExecute, user, parentEmail } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+				userService.findById.mockResolvedValueOnce(user);
+				userService.getParentEmailsFromUser.mockRejectedValue([parentEmail]);
+				registrationPinService.deleteRegistrationPinByEmail.mockRejectedValueOnce(2);
+
+				await uc.executeDeletionRequests();
+
+				expect(userService.getParentEmailsFromUser).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call classService.deleteUserDataFromClasses to delete user data in class module', async () => {

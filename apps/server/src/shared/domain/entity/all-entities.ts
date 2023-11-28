@@ -7,12 +7,14 @@ import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { DeletionLogEntity, DeletionRequestEntity } from '@src/modules/deletion/entity';
 import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
+import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { Account } from './account.entity';
 import {
 	BoardNode,
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	DrawingElementNode,
 	ExternalToolElementNodeEntity,
 	FileElementNode,
 	LinkElementNode,
@@ -65,6 +67,7 @@ export const ALL_ENTITIES = [
 	FileElementNode,
 	LinkElementNode,
 	RichTextElementNode,
+	DrawingElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 	ExternalToolElementNodeEntity,
@@ -105,4 +108,5 @@ export const ALL_ENTITIES = [
 	UserLoginMigrationEntity,
 	VideoConference,
 	GroupEntity,
+	RegistrationPinEntity,
 ];

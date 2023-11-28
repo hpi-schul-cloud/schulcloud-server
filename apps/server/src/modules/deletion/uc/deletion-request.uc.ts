@@ -11,6 +11,7 @@ import { AccountService } from '@modules/account/services';
 import { RocketChatUserService } from '@modules/rocketchat-user';
 import { RocketChatService } from '@modules/rocketchat';
 import { LegacyLogger } from '@src/core/logger';
+import { RegistrationPinService } from '@modules/registration-pin';
 import { DeletionRequestService } from '../services/deletion-request.service';
 import { DeletionDomainModel, DeletionOperationModel, DeletionStatusModel } from '../domain/types';
 import { DeletionLogService } from '../services/deletion-log.service';
@@ -36,14 +37,14 @@ export class DeletionRequestUc {
 		private readonly userService: UserService,
 		private readonly rocketChatUserService: RocketChatUserService,
 		private readonly rocketChatService: RocketChatService,
-		private readonly logger: LegacyLogger
+		private readonly logger: LegacyLogger,
+		private readonly registrationPinService: RegistrationPinService
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
 	}
 
 	async createDeletionRequest(deletionRequest: DeletionRequestBodyProps): Promise<DeletionRequestResponse> {
 		this.logger.debug({ action: 'createDeletionRequest', deletionRequest });
-
 		const result = await this.deletionRequestService.createDeletionRequest(
 			deletionRequest.targetRef.id,
 			deletionRequest.targetRef.domain,
@@ -105,6 +106,7 @@ export class DeletionRequestUc {
 				this.removeUserFromTeams(deletionRequest),
 				this.removeUser(deletionRequest),
 				this.removeUserFromRocketChat(deletionRequest),
+				this.removeUserRegistrationPin(deletionRequest),
 			]);
 			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
 		} catch (error) {
@@ -136,6 +138,25 @@ export class DeletionRequestUc {
 
 		await this.accountService.deleteByUserId(deletionRequest.targetRefId);
 		await this.logDeletion(deletionRequest, DeletionDomainModel.ACCOUNT, DeletionOperationModel.DELETE, 0, 1);
+	}
+
+	private async removeUserRegistrationPin(deletionRequest: DeletionRequest) {
+		const userToDeletion = await this.userService.findById(deletionRequest.targetRefId);
+		const parentEmails = await this.userService.getParentEmailsFromUser(deletionRequest.targetRefId);
+		const emailsToDeletion: string[] = [userToDeletion.email, ...parentEmails];
+
+		const result = await Promise.all(
+			emailsToDeletion.map((email) => this.registrationPinService.deleteRegistrationPinByEmail(email))
+		);
+		const deletedRegistrationPin = result.filter((res) => res !== 0).length;
+
+		await this.logDeletion(
+			deletionRequest,
+			DeletionDomainModel.REGISTRATIONPIN,
+			DeletionOperationModel.DELETE,
+			0,
+			deletedRegistrationPin
+		);
 	}
 
 	private async removeUserFromClasses(deletionRequest: DeletionRequest) {
