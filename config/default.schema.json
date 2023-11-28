@@ -379,12 +379,7 @@
 		"H5P_Library": {
 			"type": "object",
 			"description": "Properties of the H5P server microservice",
-			"required": [
-				"S3_ENDPOINT",
-				"S3_BUCKET_LIBRARIES",
-				"S3_ACCESS_KEY_ID",
-				"S3_SECRET_ACCESS_KEY"
-			],
+			"required": ["S3_ENDPOINT", "S3_BUCKET_LIBRARIES", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"],
 			"default": {},
 			"properties": {
 				"S3_ENDPOINT": {
@@ -1312,19 +1307,21 @@
 			"properties": {
 				"ENABLED": {
 					"type": "boolean",
-					"default": true,
 					"description": "Flag to turn on/off the Admin API."
 				},
 				"PORT": {
 					"type": "number",
-					"default": 4030,
 					"description": "Port of the exposed Admin API server."
 				},
 				"ALLOWED_API_KEYS": {
 					"type": "string",
-					"default": "",
 					"description": "Allowed Admin API keys (for accessing the Admin API)."
 				}
+			},
+			"default": {
+				"ENABLED": true,
+				"PORT": 4030,
+				"ALLOWED_API_KEYS": ""
 			}
 		},
 		"FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED": {
