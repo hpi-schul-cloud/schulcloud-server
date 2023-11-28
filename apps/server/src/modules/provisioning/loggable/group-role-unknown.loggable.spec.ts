@@ -1,26 +1,7 @@
-import { SanisGroupRole, SanisSonstigeGruppenzugehoerigeResponse } from '../strategy/sanis/response';
+import { SanisGroupRole, SanisSonstigeGruppenzugehoerigeResponse } from '../strategy';
 import { GroupRoleUnknownLoggable } from './group-role-unknown.loggable';
 
 describe('GroupRoleUnknownLoggable', () => {
-	describe('constructor', () => {
-		const setup = () => {
-			const sanisSonstigeGruppenzugehoerigeResponse: SanisSonstigeGruppenzugehoerigeResponse = {
-				ktid: 'ktid',
-				rollen: [SanisGroupRole.TEACHER],
-			};
-
-			return { sanisSonstigeGruppenzugehoerigeResponse };
-		};
-
-		it('should create an instance of UserForGroupNotFoundLoggable', () => {
-			const { sanisSonstigeGruppenzugehoerigeResponse } = setup();
-
-			const loggable = new GroupRoleUnknownLoggable(sanisSonstigeGruppenzugehoerigeResponse);
-
-			expect(loggable).toBeInstanceOf(GroupRoleUnknownLoggable);
-		});
-	});
-
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const sanisSonstigeGruppenzugehoerigeResponse: SanisSonstigeGruppenzugehoerigeResponse = {
