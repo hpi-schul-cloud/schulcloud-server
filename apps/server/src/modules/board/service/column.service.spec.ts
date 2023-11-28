@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Column } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
+import { CourseRepo, PermissionContextRepo } from '@shared/repo';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ColumnService } from './column.service';
@@ -24,6 +25,14 @@ describe(ColumnService.name, () => {
 				{
 					provide: BoardDoService,
 					useValue: createMock<BoardDoService>(),
+				},
+				{
+					provide: PermissionContextRepo,
+					useValue: createMock<PermissionContextRepo>(),
+				},
+				{
+					provide: CourseRepo,
+					useValue: createMock<CourseRepo>(),
 				},
 			],
 		}).compile();
@@ -70,12 +79,13 @@ describe(ColumnService.name, () => {
 			const setup = () => {
 				const board = columnBoardFactory.build();
 				const boardId = board.id;
+				const spy = jest.spyOn(service as any, 'createBoardPermissionCtx').mockReturnValue(undefined);
 
-				return { board, boardId };
+				return { board, boardId, spy };
 			};
 
 			it('should save a list of columns using the repo', async () => {
-				const { board } = setup();
+				const { board, spy } = setup();
 
 				await service.create(board);
 
@@ -91,6 +101,8 @@ describe(ColumnService.name, () => {
 					],
 					board
 				);
+
+				spy.mockRestore();
 			});
 		});
 	});

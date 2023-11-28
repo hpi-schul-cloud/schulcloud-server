@@ -17,6 +17,7 @@ import {
 	richTextElementFactory,
 	submissionContainerElementFactory,
 } from '@shared/testing/factory/domainobject';
+import { CourseRepo, PermissionContextRepo } from '@shared/repo';
 import {
 	FileContentBody,
 	LinkContentBody,
@@ -49,6 +50,14 @@ describe(ContentElementService.name, () => {
 				{
 					provide: ContentElementFactory,
 					useValue: createMock<ContentElementFactory>(),
+				},
+				{
+					provide: PermissionContextRepo,
+					useValue: createMock<PermissionContextRepo>(),
+				},
+				{
+					provide: CourseRepo,
+					useValue: createMock<CourseRepo>(),
 				},
 			],
 		}).compile();
@@ -161,33 +170,40 @@ describe(ContentElementService.name, () => {
 				const richTextElement = richTextElementFactory.build();
 
 				contentElementFactory.build.mockReturnValue(richTextElement);
+				const spy = jest.spyOn(service as any, 'pocCreateElementPermissionCtx').mockReturnValue(undefined);
 
-				return { card, cardId, richTextElement };
+				return { card, cardId, richTextElement, spy };
 			};
 
 			it('should call getElement method of ContentElementProvider', async () => {
-				const { card } = setup();
+				const { card, spy } = setup();
 
 				await service.create(card, ContentElementType.RICH_TEXT);
 
 				expect(contentElementFactory.build).toHaveBeenCalledWith(ContentElementType.RICH_TEXT);
+
+				spy.mockRestore();
 			});
 
 			it('should call addChild method of parent element', async () => {
-				const { card, richTextElement } = setup();
+				const { card, richTextElement, spy: spyPocCreateElementPermissionCtx } = setup();
 				const spy = jest.spyOn(card, 'addChild');
 
 				await service.create(card, ContentElementType.RICH_TEXT);
 
 				expect(spy).toHaveBeenCalledWith(richTextElement);
+
+				spyPocCreateElementPermissionCtx.mockRestore();
 			});
 
 			it('should call save method of boardDo repo', async () => {
-				const { card, richTextElement } = setup();
+				const { card, richTextElement, spy } = setup();
 
 				await service.create(card, ContentElementType.RICH_TEXT);
 
 				expect(boardDoRepo.save).toHaveBeenCalledWith([richTextElement], card);
+
+				spy.mockRestore();
 			});
 		});
 	});

@@ -9,6 +9,7 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing/factory/domainobject';
+import { CourseRepo, PermissionContextRepo } from '@shared/repo';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { SubmissionItemService } from './submission-item.service';
@@ -29,6 +30,14 @@ describe(SubmissionItemService.name, () => {
 				{
 					provide: BoardDoService,
 					useValue: createMock<BoardDoRepo>(),
+				},
+				{
+					provide: PermissionContextRepo,
+					useValue: createMock<PermissionContextRepo>(),
+				},
+				{
+					provide: CourseRepo,
+					useValue: createMock<CourseRepo>(),
 				},
 			],
 		}).compile();
@@ -52,14 +61,17 @@ describe(SubmissionItemService.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const submissionContainer = submissionContainerElementFactory.build();
+				const spy = jest.spyOn(service as any, 'pocCreateSubmissionItemPermissionCtx').mockReturnValue(undefined);
 
-				return { submissionContainer, user };
+				return { submissionContainer, user, spy };
 			};
 
 			it('should return an instance of SubmissionItem', async () => {
-				const { submissionContainer, user } = setup();
+				const { submissionContainer, user, spy } = setup();
 				const result = await service.create(user.id, submissionContainer, { completed: true });
 				expect(result).toBeInstanceOf(SubmissionItem);
+
+				spy.mockRestore();
 			});
 		});
 	});
