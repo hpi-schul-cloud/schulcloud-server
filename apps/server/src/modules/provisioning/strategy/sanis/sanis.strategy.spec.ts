@@ -46,7 +46,7 @@ describe('SanisStrategy', () => {
 	let mapper: DeepMocked<SanisResponseMapper>;
 	let httpService: DeepMocked<HttpService>;
 
-	let valdationFunction: SpyInstance<
+	let validationFunction: SpyInstance<
 		ReturnType<typeof classValidator.validate>,
 		ArgsType<typeof classValidator.validate>
 	>;
@@ -74,7 +74,7 @@ describe('SanisStrategy', () => {
 		mapper = module.get(SanisResponseMapper);
 		httpService = module.get(HttpService);
 
-		valdationFunction = jest.spyOn(classValidator, 'validate');
+		validationFunction = jest.spyOn(classValidator, 'validate');
 	});
 
 	afterEach(() => {
@@ -171,7 +171,8 @@ describe('SanisStrategy', () => {
 				mapper.mapToExternalUserDto.mockReturnValue(user);
 				mapper.mapToExternalSchoolDto.mockReturnValue(school);
 				mapper.mapToExternalGroupDtos.mockReturnValue(groups);
-				valdationFunction.mockResolvedValueOnce([]);
+				validationFunction.mockResolvedValueOnce([]);
+				validationFunction.mockResolvedValueOnce([]);
 
 				return {
 					input,
@@ -216,7 +217,7 @@ describe('SanisStrategy', () => {
 
 				await strategy.getData(input);
 
-				expect(valdationFunction).toHaveBeenCalledWith(sanisResponse, {
+				expect(validationFunction).toHaveBeenCalledWith(sanisResponse, {
 					always: true,
 					forbidUnknownValues: false,
 					groups: [SanisResponseValidationGroups.USER, SanisResponseValidationGroups.SCHOOL],
@@ -228,7 +229,7 @@ describe('SanisStrategy', () => {
 
 				await strategy.getData(input);
 
-				expect(valdationFunction).toHaveBeenCalledWith(sanisResponse, {
+				expect(validationFunction).toHaveBeenCalledWith(sanisResponse, {
 					always: true,
 					forbidUnknownValues: false,
 					groups: [SanisResponseValidationGroups.GROUPS],
@@ -273,7 +274,7 @@ describe('SanisStrategy', () => {
 				httpService.get.mockReturnValue(of(createAxiosResponse(sanisResponse)));
 				mapper.mapToExternalUserDto.mockReturnValue(user);
 				mapper.mapToExternalSchoolDto.mockReturnValue(school);
-				valdationFunction.mockResolvedValueOnce([]);
+				validationFunction.mockResolvedValueOnce([]);
 
 				Configuration.set('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED', 'false');
 
@@ -288,7 +289,7 @@ describe('SanisStrategy', () => {
 
 				await strategy.getData(input);
 
-				expect(valdationFunction).not.toHaveBeenCalledWith(
+				expect(validationFunction).not.toHaveBeenCalledWith(
 					sanisResponse,
 					expect.objectContaining({ groups: [SanisResponseValidationGroups.GROUPS] })
 				);
@@ -392,7 +393,8 @@ describe('SanisStrategy', () => {
 				mapper.mapToExternalUserDto.mockReturnValue(user);
 				mapper.mapToExternalSchoolDto.mockReturnValue(school);
 				mapper.mapToExternalGroupDtos.mockReturnValue(groups);
-				valdationFunction.mockResolvedValueOnce([]);
+				validationFunction.mockResolvedValueOnce([]);
+				validationFunction.mockResolvedValueOnce([]);
 
 				return {
 					input,
@@ -424,7 +426,7 @@ describe('SanisStrategy', () => {
 				const validationError: classValidator.ValidationError = new classValidator.ValidationError();
 
 				httpService.get.mockReturnValue(of(createAxiosResponse(sanisResponse)));
-				valdationFunction.mockResolvedValueOnce([validationError]);
+				validationFunction.mockResolvedValueOnce([validationError]);
 
 				return {
 					input,
@@ -435,8 +437,6 @@ describe('SanisStrategy', () => {
 
 			it('should throw a validation error', async () => {
 				const { input } = setup();
-
-				await strategy.getData(input);
 
 				await expect(strategy.getData(input)).rejects.toThrow(ValidationErrorLoggableException);
 			});

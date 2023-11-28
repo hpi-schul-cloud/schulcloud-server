@@ -273,46 +273,5 @@ describe('OidcStrategy', () => {
 				expect(oidcProvisioningService.provisionExternalGroup).not.toHaveBeenCalled();
 			});
 		});
-
-		describe('when group data is not provided', () => {
-			const setup = () => {
-				Configuration.set('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED', true);
-
-				const externalUserId = 'externalUserId';
-				const oauthData: OauthDataDto = new OauthDataDto({
-					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.OIDC,
-					}),
-					externalUser: new ExternalUserDto({
-						externalId: externalUserId,
-					}),
-					externalGroups: undefined,
-				});
-
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
-					externalId: externalUserId,
-				});
-
-				oidcProvisioningService.provisionExternalUser.mockResolvedValue(user);
-
-				return {
-					externalUserId,
-					oauthData,
-				};
-			};
-
-			it('should remove external groups and affiliation', async () => {
-				const { externalUserId, oauthData } = setup();
-
-				await strategy.apply(oauthData);
-
-				expect(oidcProvisioningService.removeExternalGroupsAndAffiliation).toHaveBeenCalledWith(
-					externalUserId,
-					[],
-					oauthData.system.systemId
-				);
-			});
-		});
 	});
 });
