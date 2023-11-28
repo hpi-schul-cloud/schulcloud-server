@@ -2,6 +2,7 @@ import { Injectable, NotImplementedException } from '@nestjs/common';
 import { InputFormat } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { ExternalToolElement } from './external-tool-element.do';
+import { DrawingElement } from './drawing-element.do';
 import { FileElement } from './file-element.do';
 import { LinkElement } from './link-element.do';
 import { RichTextElement } from './rich-text-element.do';
@@ -22,6 +23,9 @@ export class ContentElementFactory {
 				break;
 			case ContentElementType.RICH_TEXT:
 				element = this.buildRichText();
+				break;
+			case ContentElementType.DRAWING:
+				element = this.buildDrawing();
 				break;
 			case ContentElementType.SUBMISSION_CONTAINER:
 				element = this.buildSubmissionContainer();
@@ -70,6 +74,18 @@ export class ContentElementFactory {
 			id: new ObjectId().toHexString(),
 			text: '',
 			inputFormat: InputFormat.RICH_TEXT_CK5,
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+
+		return element;
+	}
+
+	private buildDrawing() {
+		const element = new DrawingElement({
+			id: new ObjectId().toHexString(),
+			description: '',
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
