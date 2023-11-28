@@ -7,7 +7,6 @@ import { ConfigModule } from '@nestjs/config';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infra/database';
 import { FileEntity } from '@modules/files/entity';
-import { FileRecord } from '@modules/files-storage/entity';
 import { defaultMikroOrmOptions } from './server.module';
 import { serverConfig } from './server.config';
 import { DeletionApiModule } from '../deletion/deletion-api.module';
