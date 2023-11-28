@@ -1,5 +1,5 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
-import { OauthConfigDto } from '@modules/system/service';
+import { OauthConfigDto } from '@modules/system/service/dto';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

@@ -21,7 +21,7 @@ import {
 	SystemEntity,
 	User,
 } from '@shared/domain';
-import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { AccountSaveDto } from '../../account/services/dto';
 import {
@@ -50,7 +50,7 @@ export class UserImportUc {
 		private readonly importUserRepo: ImportUserRepo,
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: LegacySchoolService,
-		private readonly systemRepo: SystemRepo,
+		private readonly systemRepo: LegacySystemRepo,
 		private readonly userRepo: UserRepo,
 		private readonly logger: Logger
 	) {

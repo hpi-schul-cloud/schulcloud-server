@@ -6,16 +6,16 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { ProvisioningService } from '@modules/provisioning';
 import { OauthConfigDto } from '@modules/system/service';
 import { SystemDto } from '@modules/system/service/dto/system.dto';
-import { SystemService } from '@modules/system/service/system.service';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, OauthConfig, SchoolFeatures, SystemEntity, UserDO } from '@shared/domain';
+import { LegacySchoolDo, OauthConfigEntity, SchoolFeatures, SystemEntity, UserDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { legacySchoolDoFactory, setupEntities, systemFactory, userDoFactory } from '@shared/testing';
+import { legacySchoolDoFactory, setupEntities, systemEntityFactory, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { LegacySystemService } from '../../system/service/legacy-system.service';
 import { OAuthTokenDto } from '../interface';
 import { OAuthSSOError, UserNotFoundAfterProvisioningLoggableException } from '../loggable';
 import { OauthTokenResponse } from './dto';
@@ -44,13 +44,13 @@ describe('OAuthService', () => {
 	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let userService: DeepMocked<UserService>;
-	let systemService: DeepMocked<SystemService>;
+	let systemService: DeepMocked<LegacySystemService>;
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
 	let migrationCheckService: DeepMocked<MigrationCheckService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
 
 	let testSystem: SystemEntity;
-	let testOauthConfig: OauthConfig;
+	let testOauthConfig: OauthConfigEntity;
 
 	const hostUri = 'https://mock.de';
 
@@ -81,8 +81,8 @@ describe('OAuthService', () => {
 					useValue: createMock<ProvisioningService>(),
 				},
 				{
-					provide: SystemService,
-					useValue: createMock<SystemService>(),
+					provide: LegacySystemService,
+					useValue: createMock<LegacySystemService>(),
 				},
 				{
 					provide: OauthAdapterService,
@@ -99,7 +99,7 @@ describe('OAuthService', () => {
 		oAuthEncryptionService = module.get(DefaultEncryptionService);
 		provisioningService = module.get(ProvisioningService);
 		userService = module.get(UserService);
-		systemService = module.get(SystemService);
+		systemService = module.get(LegacySystemService);
 		oauthAdapterService = module.get(OauthAdapterService);
 		migrationCheckService = module.get(MigrationCheckService);
 		schoolService = module.get(LegacySchoolService);
@@ -124,8 +124,8 @@ describe('OAuthService', () => {
 			}
 		});
 
-		testSystem = systemFactory.withOauthConfig().buildWithId();
-		testOauthConfig = testSystem.oauthConfig as OauthConfig;
+		testSystem = systemEntityFactory.withOauthConfig().buildWithId();
+		testOauthConfig = testSystem.oauthConfig as OauthConfigEntity;
 	});
 
 	describe('requestToken', () => {

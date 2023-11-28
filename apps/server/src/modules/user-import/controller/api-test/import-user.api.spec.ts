@@ -39,7 +39,7 @@ import {
 	mapUserToCurrentUser,
 	roleFactory,
 	schoolFactory,
-	systemFactory,
+	systemEntityFactory,
 	userFactory,
 } from '@shared/testing';
 import { Request } from 'express';
@@ -51,7 +51,7 @@ describe('ImportUser Controller (API)', () => {
 	let currentUser: ICurrentUser;
 
 	const authenticatedUser = async (permissions: Permission[] = [], features: SchoolFeatures[] = []) => {
-		const system = systemFactory.buildWithId(); // TODO no id?
+		const system = systemEntityFactory.buildWithId(); // TODO no id?
 		const school = schoolFactory.build({ officialSchoolNumber: 'foo', features });
 		const roles = [roleFactory.build({ name: RoleName.ADMINISTRATOR, permissions })];
 		await em.persistAndFlush([school, system, ...roles]);

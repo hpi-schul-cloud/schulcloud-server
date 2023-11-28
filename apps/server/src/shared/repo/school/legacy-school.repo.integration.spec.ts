@@ -18,7 +18,7 @@ import {
 	legacySchoolDoFactory,
 	schoolFactory,
 	schoolYearFactory,
-	systemFactory,
+	systemEntityFactory,
 	userLoginMigrationFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
@@ -114,7 +114,7 @@ describe('LegacySchoolRepo', () => {
 
 	describe('findByExternalId', () => {
 		it('should find school by external ID', async () => {
-			const system: SystemEntity = systemFactory.buildWithId();
+			const system: SystemEntity = systemEntityFactory.buildWithId();
 			const schoolEntity: SchoolEntity = schoolFactory.build({ externalId: 'externalId' });
 			schoolEntity.systems.add(system);
 
@@ -182,7 +182,7 @@ describe('LegacySchoolRepo', () => {
 
 	describe('mapEntityToDO is called', () => {
 		it('should map school entity to school domain object', () => {
-			const system: SystemEntity = systemFactory.buildWithId();
+			const system: SystemEntity = systemEntityFactory.buildWithId();
 			const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
 			const schoolEntity: SchoolEntity = schoolFactory.buildWithId({ systems: [system], features: [], schoolYear });
 			const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.build({ school: schoolEntity });
@@ -219,8 +219,8 @@ describe('LegacySchoolRepo', () => {
 
 	describe('mapDOToEntityProperties is called', () => {
 		const setup = async () => {
-			const system1: SystemEntity = systemFactory.buildWithId();
-			const system2: SystemEntity = systemFactory.buildWithId();
+			const system1: SystemEntity = systemEntityFactory.buildWithId();
+			const system2: SystemEntity = systemEntityFactory.buildWithId();
 
 			const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId();
 

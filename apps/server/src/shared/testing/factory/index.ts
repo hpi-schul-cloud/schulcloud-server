@@ -29,7 +29,7 @@ export * from './schoolyear.factory';
 export * from './share-token.do.factory';
 export * from './storageprovider.factory';
 export * from './submission.factory';
-export * from './system.factory';
+export * from './systemEntityFactory';
 export * from './task.factory';
 export * from './team.factory';
 export * from './teamuser.factory';

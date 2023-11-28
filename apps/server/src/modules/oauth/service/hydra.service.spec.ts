@@ -1,18 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { HttpService } from '@nestjs/axios';
-import { InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { LtiPrivacyPermission, LtiRoleType, OauthConfig } from '@shared/domain';
-import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
-import { LtiToolRepo } from '@shared/repo';
-import { axiosResponseFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CookiesDto } from '@modules/oauth/service/dto/cookies.dto';
 import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
 import { HydraSsoService } from '@modules/oauth/service/hydra.service';
+import { HttpService } from '@nestjs/axios';
+import { InternalServerErrorException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { LtiPrivacyPermission, LtiRoleType, OauthConfigEntity } from '@shared/domain';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { LtiToolRepo } from '@shared/repo';
+import { axiosResponseFactory } from '@shared/testing';
+import { LegacyLogger } from '@src/core/logger';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
@@ -47,7 +47,7 @@ describe('HydraService', () => {
 	const scopes = 'openid uuid';
 	const apiHost = 'localhost';
 
-	const oauthConfig: OauthConfig = new OauthConfig({
+	const oauthConfig: OauthConfigEntity = new OauthConfigEntity({
 		clientId: '12345',
 		clientSecret: 'mocksecret',
 		tokenEndpoint: `${hydraUri}/oauth2/token`,
@@ -242,7 +242,7 @@ describe('HydraService', () => {
 			ltiToolRepo.findByOauthClientId.mockResolvedValue(ltiToolDoMock);
 
 			// Act
-			const result: OauthConfig = await service.generateConfig(oauthConfig.clientId);
+			const result: OauthConfigEntity = await service.generateConfig(oauthConfig.clientId);
 
 			// Assert
 			expect(result).toEqual(oauthConfig);

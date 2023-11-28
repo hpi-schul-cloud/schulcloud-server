@@ -4,24 +4,24 @@ import { Class } from '@modules/class/domain';
 import { LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
-import { SystemDto, SystemService } from '@modules/system';
+import { LegacySystemService, SystemDto } from '@modules/system';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { EntityId, LegacySchoolDo, Page, Permission, SchoolYearEntity, SortOrder, User, UserDO } from '@shared/domain';
+import { SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupUser } from '../domain';
+import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { SortHelper } from '../util';
 import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from './dto';
 import { GroupUcMapper } from './mapper/group-uc.mapper';
-import { SchoolYearQueryType } from '../controller/dto/interface';
-import { UnknownQueryTypeLoggableException } from '../loggable';
 
 @Injectable()
 export class GroupUc {
 	constructor(
 		private readonly groupService: GroupService,
 		private readonly classService: ClassService,
-		private readonly systemService: SystemService,
+		private readonly systemService: LegacySystemService,
 		private readonly userService: UserService,
 		private readonly roleService: RoleService,
 		private readonly schoolService: LegacySchoolService,
