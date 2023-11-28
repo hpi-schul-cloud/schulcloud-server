@@ -8,9 +8,16 @@ import { PreviewGeneratorService } from './preview-generator.service';
 
 const streamMock = jest.fn();
 const resizeMock = jest.fn();
+const coalesceMock = jest.fn();
 const selectFrameMock = jest.fn();
 const imageMagickMock = () => {
-	return { stream: streamMock, resize: resizeMock, selectFrame: selectFrameMock, data: Readable.from('text') };
+	return {
+		stream: streamMock,
+		resize: resizeMock,
+		selectFrame: selectFrameMock,
+		coalesce: coalesceMock,
+		data: Readable.from('text'),
+	};
 };
 jest.mock('gm', () => {
 	return {
@@ -165,12 +172,46 @@ describe('PreviewGeneratorService', () => {
 						return { params, originFile, expectedFileData };
 					};
 
-					it('should call imagemagicks resize method', async () => {
+					it('should call imagemagicks selectFrameMock method', async () => {
 						const { params } = setup();
 
 						await service.generatePreview(params);
 
 						expect(selectFrameMock).toHaveBeenCalledWith(0);
+						expect(resizeMock).toHaveBeenCalledTimes(1);
+					});
+				});
+
+				describe('WHEN mime type is gif', () => {
+					const setup = (width = 500) => {
+						const params = {
+							originFilePath: 'file/test.gif',
+							previewFilePath: 'preview/text.webp',
+							previewOptions: {
+								format: 'webp',
+								width,
+							},
+						};
+						const originFile = createFile(undefined, 'image/gif');
+						s3ClientAdapter.get.mockResolvedValueOnce(originFile);
+
+						const data = Readable.from('text');
+						streamMock.mockReturnValueOnce(data);
+
+						const expectedFileData = {
+							data,
+							mimeType: params.previewOptions.format,
+						};
+
+						return { params, originFile, expectedFileData };
+					};
+
+					it('should call imagemagicks coalesce method', async () => {
+						const { params } = setup();
+
+						await service.generatePreview(params);
+
+						expect(coalesceMock).toHaveBeenCalledTimes(1);
 						expect(resizeMock).toHaveBeenCalledTimes(1);
 					});
 				});
