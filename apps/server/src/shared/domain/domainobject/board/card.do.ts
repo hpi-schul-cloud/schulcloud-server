@@ -1,3 +1,4 @@
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
@@ -26,6 +27,7 @@ export class Card extends BoardComposite<CardProps> {
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
 		const allowed =
 			domainObject instanceof FileElement ||
+			domainObject instanceof DrawingElement ||
 			domainObject instanceof LinkElement ||
 			domainObject instanceof RichTextElement ||
 			domainObject instanceof SubmissionContainerElement ||
