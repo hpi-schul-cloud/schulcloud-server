@@ -65,14 +65,15 @@ describe('YearsResponseMapper', () => {
 				});
 			});
 
-			describe('when current date is before the second to first school year', () => {
+			describe('when there is no active year', () => {
 				const setup = () => {
 					jest.setSystemTime(new Date('2020-10-23'));
 
-					const schoolYears = schoolYearFactory.withStartYear(2020).buildList(3);
+					const lastYear = schoolYearFactory.withStartYear(2019).build();
+					const nextYear = schoolYearFactory.withStartYear(2021).build();
 					const school = schoolFactory.build();
 
-					return { school, schoolYears };
+					return { school, schoolYears: [lastYear, nextYear] };
 				};
 
 				it('should throw error', () => {
@@ -82,14 +83,33 @@ describe('YearsResponseMapper', () => {
 				});
 			});
 
-			describe('when current date is after the second to last school year', () => {
+			describe('when there is no last year', () => {
 				const setup = () => {
 					jest.setSystemTime(new Date('2020-10-23'));
 
-					const schoolYears = schoolYearFactory.withStartYear(2018).buildList(3);
+					const currentYear = schoolYearFactory.withStartYear(2020).build();
+					const nextYear = schoolYearFactory.withStartYear(2021).build();
 					const school = schoolFactory.build();
 
-					return { school, schoolYears };
+					return { school, schoolYears: [currentYear, nextYear] };
+				};
+
+				it('should throw error', () => {
+					const { school, schoolYears } = setup();
+
+					expect(() => YearsResponseMapper.mapToResponse(school, schoolYears)).toThrow(MissingYearsLoggableException);
+				});
+			});
+
+			describe('when there is no next year', () => {
+				const setup = () => {
+					jest.setSystemTime(new Date('2020-10-23'));
+
+					const currentYear = schoolYearFactory.withStartYear(2020).build();
+					const lastYear = schoolYearFactory.withStartYear(2019).build();
+					const school = schoolFactory.build();
+
+					return { school, schoolYears: [currentYear, lastYear] };
 				};
 
 				it('should throw error', () => {
