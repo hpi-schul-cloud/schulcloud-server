@@ -1,5 +1,5 @@
+import { BatchDeletionSummaryBuilder } from '.';
 import { BatchDeletionSummary, BatchDeletionSummaryOverallStatus } from '../interface';
-import { BatchDeletionSummaryBuilder } from './batch-deletion-summary.builder';
 
 describe(BatchDeletionSummaryBuilder.name, () => {
 	describe(BatchDeletionSummaryBuilder.build.name, () => {

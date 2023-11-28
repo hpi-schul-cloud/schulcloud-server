@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DeletionClient } from '../../deletion-client';
+import { DeletionClient } from '../../deletion-console/deletion-client';
 
 @Injectable()
 export class DeletionExecutionUc {

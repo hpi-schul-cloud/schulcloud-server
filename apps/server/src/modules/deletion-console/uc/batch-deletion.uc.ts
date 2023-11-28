@@ -5,8 +5,8 @@ import {
 	BatchDeletionService,
 	QueueDeletionRequestInput,
 	QueueDeletionRequestInputBuilder,
-} from '../services';
-import { BatchDeletionSummary, BatchDeletionSummaryOverallStatus } from './interface';
+} from '../../deletion/services';
+import { BatchDeletionSummary, BatchDeletionSummaryOverallStatus } from '../../deletion/uc/interface';
 
 @Injectable()
 export class BatchDeletionUc {

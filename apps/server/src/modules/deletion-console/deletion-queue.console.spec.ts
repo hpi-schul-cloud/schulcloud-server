@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@infra/console';
 import { createMock } from '@golevelup/ts-jest';
-import { BatchDeletionUc } from '../deletion/uc';
 import { DeletionQueueConsole } from './deletion-queue.console';
 import { PushDeleteRequestsOptionsBuilder } from './builder';
+import { BatchDeletionUc } from './uc';
 
 describe(DeletionQueueConsole.name, () => {
 	let module: TestingModule;

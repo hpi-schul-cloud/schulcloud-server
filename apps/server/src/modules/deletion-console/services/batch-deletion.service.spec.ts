@@ -1,7 +1,7 @@
 import { ObjectId } from 'bson';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { DeletionClient, DeletionRequestOutput, DeletionRequestOutputBuilder } from '../../deletion-client';
+import { DeletionClient, DeletionRequestOutput, DeletionRequestOutputBuilder } from '../deletion-client';
 import { QueueDeletionRequestInputBuilder, QueueDeletionRequestOutputBuilder } from './builder';
 import { BatchDeletionService } from './batch-deletion.service';
 

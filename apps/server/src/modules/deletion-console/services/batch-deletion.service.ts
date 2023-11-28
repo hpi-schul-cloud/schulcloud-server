@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { QueueDeletionRequestOutputBuilder } from './builder';
-import { DeletionClient, DeletionRequestInputBuilder } from '../../deletion-client';
+import { DeletionClient, DeletionRequestInputBuilder } from '../deletion-client';
 import { QueueDeletionRequestInput, QueueDeletionRequestOutput } from './interface';
 
 @Injectable()

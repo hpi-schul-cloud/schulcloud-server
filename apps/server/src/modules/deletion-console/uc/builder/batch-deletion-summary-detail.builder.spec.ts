@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BatchDeletionSummaryDetail } from '..';
-import { QueueDeletionRequestInput, QueueDeletionRequestOutput } from '../../services';
-import { BatchDeletionSummaryDetailBuilder } from './batch-deletion-summary-detail.builder';
+import { BatchDeletionSummaryDetailBuilder } from '.';
+import { QueueDeletionRequestInput, QueueDeletionRequestOutput } from '../../services/interface';
+import { BatchDeletionSummaryDetail } from '../interface';
 
 describe(BatchDeletionSummaryDetailBuilder.name, () => {
 	describe(BatchDeletionSummaryDetailBuilder.build.name, () => {

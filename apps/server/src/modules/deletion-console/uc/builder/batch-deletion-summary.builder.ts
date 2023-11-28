@@ -1,4 +1,4 @@
-import { BatchDeletionSummary, BatchDeletionSummaryOverallStatus } from '../interface';
+import { BatchDeletionSummaryOverallStatus, BatchDeletionSummary } from '../interface';
 
 export class BatchDeletionSummaryBuilder {
 	static build(executionTimeMilliseconds: number): BatchDeletionSummary {

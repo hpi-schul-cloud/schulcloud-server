@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Console, Command } from 'nestjs-console';
 import { ConsoleWriterService } from '@infra/console';
-import { BatchDeletionUc } from '../deletion/uc';
 import { PushDeletionRequestsOptions } from './interface';
+import { BatchDeletionUc } from './uc';
 
 @Console({ command: 'queue', description: 'Console providing an access to the deletion queue.' })
 export class DeletionQueueConsole {
