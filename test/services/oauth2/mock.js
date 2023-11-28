@@ -2,8 +2,6 @@ const assert = require('assert');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 
-const { Configuration } = require('@hpi-schul-cloud/commons');
-
 // proxyserver
 const oauth2Server = require('./oauth2MockServer');
 const oauth2 = require('../../../src/services/oauth2');
@@ -16,7 +14,7 @@ chai.use(chaiHttp);
 
 const { expect } = chai;
 
-describe.skip('oauth2 service mock', function oauthTest() {
+describe('oauth2 service mock', function oauthTest() {
 	let app;
 	let baseUrlService;
 	let clientsService;
@@ -60,10 +58,10 @@ describe.skip('oauth2 service mock', function oauthTest() {
 		introspectService = app.service('oauth2/introspect');
 		consentService = app.service('oauth2/auth/sessions/consent');
 
-		beforeHydraUri = Configuration.get('HYDRA_URI');
+		beforeHydraUri = app.settings.services.hydra;
 
 		const o2mock = await oauth2Server({});
-		Configuration.set('HYDRA_URI', o2mock.url);
+		app.settings.services.hydra = o2mock.url;
 
 		app.unuse('oauth2/baseUrl');
 		app.unuse('oauth2/clients');
@@ -80,7 +78,7 @@ describe.skip('oauth2 service mock', function oauthTest() {
 
 	after(async () => {
 		// sets uri back to original uri
-		Configuration.set('HYDRA_URI', beforeHydraUri);
+		app.settings.services.hydra = beforeHydraUri;
 		await server.close();
 		await closeNestServices(nestServices);
 	});
