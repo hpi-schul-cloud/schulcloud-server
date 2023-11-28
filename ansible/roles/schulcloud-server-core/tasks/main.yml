@@ -37,6 +37,13 @@
       template: onepassword.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
 
+  - name: Admin API client secret (from 1Password)
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: onepassword-admin-api-client.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+
   - name: remove old migration Job
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -107,6 +114,12 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-delete-s3-files-cronjob.yml.j2
+
+  - name: Data deletion trigger CronJob
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: data-deletion-trigger-cronjob.yml.j2
 
   - name: AMQPFileStorageDeployment
     kubernetes.core.k8s:

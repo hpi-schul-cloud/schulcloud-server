@@ -1,8 +1,9 @@
-import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
+import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 import { EntityWithSchool } from '../interface';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { Role } from './role.entity';
 import { SchoolEntity } from './school.entity';
+import { UserParentsEntity } from './user-parents.entity';
 
 export enum LanguageType {
 	DE = 'de',
@@ -27,6 +28,7 @@ export interface UserProperties {
 	outdatedSince?: Date;
 	previousExternalId?: string;
 	birthday?: Date;
+	parents?: UserParentsEntity[];
 }
 
 @Entity({ tableName: 'users' })
@@ -100,6 +102,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	birthday?: Date;
 
+	@Embedded(() => UserParentsEntity, { array: true, nullable: true })
+	parents?: UserParentsEntity[];
+
 	constructor(props: UserProperties) {
 		super();
 		this.firstName = props.firstName;
@@ -117,6 +122,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.outdatedSince = props.outdatedSince;
 		this.previousExternalId = props.previousExternalId;
 		this.birthday = props.birthday;
+		this.parents = props.parents;
 	}
 
 	public resolvePermissions(): string[] {
