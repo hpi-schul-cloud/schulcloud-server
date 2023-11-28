@@ -133,7 +133,7 @@ describe(CardService.name, () => {
 					requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
 				};
 				const spy = jest.spyOn(service as any, 'createBoardPermissionCtx').mockReturnValue(undefined);
-				
+
 				return { column, columnId, createCardBodyParams, spy };
 			};
 

@@ -15,6 +15,7 @@ import {
 import { columnBoardNodeFactory, setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { ObjectId } from 'bson';
+import { CourseRepo, PermissionContextRepo } from '@shared/repo';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ColumnBoardService } from './column-board.service';
@@ -42,6 +43,14 @@ describe(ColumnBoardService.name, () => {
 				{
 					provide: ContentElementFactory,
 					useValue: createMock<ContentElementFactory>(),
+				},
+				{
+					provide: PermissionContextRepo,
+					useValue: createMock<PermissionContextRepo>(),
+				},
+				{
+					provide: CourseRepo,
+					useValue: createMock<CourseRepo>(),
 				},
 			],
 		}).compile();
@@ -72,7 +81,21 @@ describe(ColumnBoardService.name, () => {
 			type: BoardExternalReferenceType.Course,
 		};
 
-		return { board, boardId, column, externalReference };
+		const spyPocMigrateBoardToPermissionContext = jest
+			.spyOn(service as any, 'pocMigrateBoardToPermissionContext')
+			.mockResolvedValue(undefined);
+		const spyPocCreateColumnBoardToPermissionContext = jest
+			.spyOn(service as any, 'pocCreateColumnBoardToPermissionContext')
+			.mockResolvedValue(undefined);
+
+		return {
+			board,
+			boardId,
+			column,
+			externalReference,
+			spyPocMigrateBoardToPermissionContext,
+			spyPocCreateColumnBoardToPermissionContext,
+		};
 	};
 
 	describe('findById', () => {
