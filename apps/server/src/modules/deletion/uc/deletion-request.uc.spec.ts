@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { setupEntities } from '@shared/testing';
+import { setupEntities, userDoFactory } from '@shared/testing';
 import { AccountService } from '@modules/account/services';
 import { ClassService } from '@modules/class';
 import { CourseGroupService, CourseService } from '@modules/learnroom/service';
@@ -175,9 +175,11 @@ describe(DeletionRequestUc.name, () => {
 			const setup = () => {
 				jest.clearAllMocks();
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
+				const user = userDoFactory.buildWithId();
 				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build({
 					userId: deletionRequestToExecute.targetRefId,
 				});
+				const parentEmail = 'parent@parent.eu';
 
 				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(2);
 				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
@@ -194,6 +196,8 @@ describe(DeletionRequestUc.name, () => {
 				return {
 					deletionRequestToExecute,
 					rocketChatUser,
+					user,
+					parentEmail,
 				};
 			};
 
@@ -231,6 +235,19 @@ describe(DeletionRequestUc.name, () => {
 				await uc.executeDeletionRequests();
 
 				expect(registrationPinService.deleteRegistrationPinByEmail).toHaveBeenCalled();
+			});
+
+			it('should call userService.getParentEmailsFromUser to get parentEmails', async () => {
+				const { deletionRequestToExecute, user, parentEmail } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+				userService.findById.mockResolvedValueOnce(user);
+				userService.getParentEmailsFromUser.mockRejectedValue([parentEmail]);
+				registrationPinService.deleteRegistrationPinByEmail.mockRejectedValueOnce(2);
+
+				await uc.executeDeletionRequests();
+
+				expect(userService.getParentEmailsFromUser).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call classService.deleteUserDataFromClasses to delete user data in class module', async () => {
@@ -364,7 +381,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(10);
+				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(9);
 			});
 		});
 
