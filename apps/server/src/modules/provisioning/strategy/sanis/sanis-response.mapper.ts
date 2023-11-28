@@ -70,7 +70,7 @@ export class SanisResponseMapper {
 	public mapToExternalGroupDtos(source: SanisResponse): ExternalGroupDto[] | undefined {
 		const groups: SanisGruppenResponse[] | undefined = source.personenkontexte[0].gruppen;
 
-		if (groups === undefined) {
+		if (!groups) {
 			return undefined;
 		}
 

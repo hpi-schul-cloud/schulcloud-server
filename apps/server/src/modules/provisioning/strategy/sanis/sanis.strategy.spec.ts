@@ -9,7 +9,6 @@ import { RoleName } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { axiosResponseFactory } from '@shared/testing';
 import { UUID } from 'bson';
-// eslint-disable-next-line import/no-named-default
 import * as classValidator from 'class-validator';
 import { of } from 'rxjs';
 import {

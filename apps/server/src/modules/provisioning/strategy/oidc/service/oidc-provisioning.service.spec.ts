@@ -14,6 +14,7 @@ import { ExternalSource, LegacySchoolDo, RoleName, RoleReference, SchoolFeatures
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import {
 	externalGroupDtoFactory,
+	externalSchoolDtoFactory,
 	federalStateFactory,
 	groupFactory,
 	legacySchoolDoFactory,
@@ -22,7 +23,6 @@ import {
 	schoolYearFactory,
 	userDoFactory,
 } from '@shared/testing';
-import { externalSchoolDtoFactory } from '@shared/testing/factory/external-school-dto.factory';
 import { Logger } from '@src/core/logger';
 import CryptoJS from 'crypto-js';
 import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';

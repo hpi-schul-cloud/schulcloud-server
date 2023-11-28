@@ -24,13 +24,13 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 		);
 
 		if (Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED')) {
-			if (data.externalGroups) {
-				await this.oidcProvisioningService.removeExternalGroupsAndAffiliation(
-					data.externalUser.externalId,
-					data.externalGroups,
-					data.system.systemId
-				);
+			await this.oidcProvisioningService.removeExternalGroupsAndAffiliation(
+				data.externalUser.externalId,
+				data.externalGroups ?? [],
+				data.system.systemId
+			);
 
+			if (data.externalGroups) {
 				await Promise.all(
 					data.externalGroups.map((externalGroup) =>
 						this.oidcProvisioningService.provisionExternalGroup(
