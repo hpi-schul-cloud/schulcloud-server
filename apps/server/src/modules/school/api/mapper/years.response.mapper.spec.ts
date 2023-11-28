@@ -16,7 +16,6 @@ describe('YearsResponseMapper', () => {
 		const expected = {
 			schoolYears: [lastYearResponse, currentYearResponse, nextYearResponse],
 			activeYear: currentYearResponse,
-			defaultYear: currentYearResponse,
 			lastYear: lastYearResponse,
 			nextYear: nextYearResponse,
 		};

@@ -10,14 +10,12 @@ export class YearsResponseMapper {
 		const activeYear = this.computeActiveYear(school, schoolYears);
 		const nextYear = this.computeNextYear(schoolYears, activeYear);
 		const lastYear = this.computeLastYear(schoolYears, activeYear);
-		const defaultYear = activeYear;
 
 		const years = {
 			schoolYears: schoolYearResponses,
 			activeYear,
 			nextYear,
 			lastYear,
-			defaultYear,
 		};
 
 		return years;

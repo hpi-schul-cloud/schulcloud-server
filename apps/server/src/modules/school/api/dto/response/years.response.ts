@@ -4,7 +4,6 @@ import { SchoolYearResponse } from './school-year.response';
 export class YearsResponse {
 	constructor(props: YearsResponse) {
 		this.schoolYears = props.schoolYears;
-		this.defaultYear = props.defaultYear;
 		this.activeYear = props.activeYear;
 		this.lastYear = props.lastYear;
 		this.nextYear = props.nextYear;
@@ -15,9 +14,6 @@ export class YearsResponse {
 
 	@ApiProperty()
 	activeYear: SchoolYearResponse;
-
-	@ApiProperty()
-	defaultYear: SchoolYearResponse;
 
 	@ApiProperty()
 	lastYear: SchoolYearResponse;

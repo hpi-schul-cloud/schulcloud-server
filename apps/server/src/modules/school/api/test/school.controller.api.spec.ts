@@ -147,7 +147,6 @@ describe('School Controller (API)', () => {
 					years: {
 						schoolYears: schoolYearResponses,
 						activeYear: schoolYearResponses[1],
-						defaultYear: schoolYearResponses[1],
 						lastYear: schoolYearResponses[0],
 						nextYear: schoolYearResponses[2],
 					},
