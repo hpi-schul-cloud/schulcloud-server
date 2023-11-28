@@ -7,7 +7,7 @@ export class MissingYearsLoggableException extends InternalServerErrorException 
 	}
 
 	getLogMessage(): ErrorLogMessage {
-		const message: ErrorLogMessage = {
+		const message = {
 			type: 'INTERNAL_SERVER_ERROR',
 			stack: this.stack,
 		};
