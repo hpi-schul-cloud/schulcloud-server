@@ -4,10 +4,10 @@ import { LdapConfig, OauthConfig, OidcConfig } from '../../../domain';
 
 export class SystemResponse {
 	@ApiProperty()
-	id: string;
+	id!: string;
 
 	@ApiProperty()
-	type: string;
+	type!: string;
 
 	@ApiPropertyOptional()
 	url?: string;
@@ -34,17 +34,4 @@ export class SystemResponse {
 
 	@ApiPropertyOptional()
 	provisioningUrl?: string;
-
-	constructor(props: SystemResponse) {
-		this.id = props.id;
-		this.type = props.type;
-		this.url = props.url;
-		this.alias = props.alias;
-		this.displayName = props.displayName;
-		this.oauthConfig = props.oauthConfig;
-		this.oidcConfig = props.oidcConfig;
-		this.ldapConfig = props.ldapConfig;
-		this.provisioningStrategy = props.provisioningStrategy;
-		this.provisioningUrl = props.provisioningUrl;
-	}
 }

@@ -1,19 +1,16 @@
 import { School } from '../../domain';
 import { SchoolForExternalInviteResponse, SchoolResponse, YearsResponse } from '../dto/response';
-import { FederalStateResponseMapper } from './federal-state.response.mapper';
-import { SchoolYearResponseMapper } from './school-year.response.mapper';
-import { SystemResponseMapper } from './system.response.mapper';
 
 export class SchoolResponseMapper {
 	public static mapToResponse(school: School, years: YearsResponse): SchoolResponse {
 		const schoolProps = school.getProps();
 
-		const federalState = FederalStateResponseMapper.mapToResponse(schoolProps.federalState);
-		const currentYear = schoolProps.currentYear && SchoolYearResponseMapper.mapToResponse(schoolProps.currentYear);
+		const federalState = schoolProps.federalState.getProps();
+		const currentYear = schoolProps.currentYear?.getProps();
 		const features = schoolProps.features && Array.from(schoolProps.features);
-		const systems = schoolProps.systems?.map((system) => SystemResponseMapper.mapToResponse(system));
+		const systems = schoolProps.systems?.map((system) => system.getProps());
 
-		const dto = new SchoolResponse({
+		const res = {
 			...schoolProps,
 			currentYear,
 			federalState,
@@ -22,9 +19,9 @@ export class SchoolResponseMapper {
 			inMaintenance: school.isInMaintenance(),
 			isExternal: school.isExternal(),
 			years,
-		});
+		};
 
-		return dto;
+		return res;
 	}
 
 	public static mapToListForExternalInviteResponses(schools: School[]): SchoolForExternalInviteResponse[] {
@@ -36,11 +33,11 @@ export class SchoolResponseMapper {
 	private static mapToExternalInviteResponse(school: School): SchoolForExternalInviteResponse {
 		const schoolProps = school.getProps();
 
-		const dto = new SchoolForExternalInviteResponse({
+		const res = {
 			id: school.id,
 			name: schoolProps.name,
-		});
+		};
 
-		return dto;
+		return res;
 	}
 }

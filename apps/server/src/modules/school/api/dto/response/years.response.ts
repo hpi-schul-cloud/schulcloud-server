@@ -3,21 +3,14 @@ import { SchoolYearResponse } from './school-year.response';
 
 export class YearsResponse {
 	@ApiProperty({ type: () => [SchoolYearResponse] })
-	schoolYears: SchoolYearResponse[];
+	schoolYears!: SchoolYearResponse[];
 
 	@ApiProperty()
-	activeYear: SchoolYearResponse;
+	activeYear!: SchoolYearResponse;
 
 	@ApiProperty()
-	lastYear: SchoolYearResponse;
+	lastYear!: SchoolYearResponse;
 
 	@ApiProperty()
-	nextYear: SchoolYearResponse;
-
-	constructor(props: YearsResponse) {
-		this.schoolYears = props.schoolYears;
-		this.activeYear = props.activeYear;
-		this.lastYear = props.lastYear;
-		this.nextYear = props.nextYear;
-	}
+	nextYear!: SchoolYearResponse;
 }

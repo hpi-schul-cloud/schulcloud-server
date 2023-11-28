@@ -8,6 +8,4 @@ export interface FederalStateProps extends AuthorizableObject {
 	abbreviation: string;
 	logoUrl: string;
 	counties?: County[];
-	createdAt: Date;
-	updatedAt: Date;
 }

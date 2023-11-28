@@ -1,7 +1,6 @@
 import { SchoolYear } from '../../domain';
 import { schoolFactory, schoolYearFactory } from '../../domain/testing';
 import { MissingYearsLoggableException } from '../error/missing-years.loggable-exception';
-import { SchoolYearResponseMapper } from './school-year.response.mapper';
 import { YearsResponseMapper } from './years.response.mapper';
 
 describe('YearsResponseMapper', () => {
@@ -10,9 +9,9 @@ describe('YearsResponseMapper', () => {
 	});
 
 	const mapToExpected = (schoolYears: SchoolYear[]) => {
-		const currentYearResponse = SchoolYearResponseMapper.mapToResponse(schoolYears[1]);
-		const lastYearResponse = SchoolYearResponseMapper.mapToResponse(schoolYears[0]);
-		const nextYearResponse = SchoolYearResponseMapper.mapToResponse(schoolYears[2]);
+		const currentYearResponse = schoolYears[1].getProps();
+		const lastYearResponse = schoolYears[0].getProps();
+		const nextYearResponse = schoolYears[2].getProps();
 		const expected = {
 			schoolYears: [lastYearResponse, currentYearResponse, nextYearResponse],
 			activeYear: currentYearResponse,

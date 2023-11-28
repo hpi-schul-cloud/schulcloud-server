@@ -1,24 +1,23 @@
 import { School, SchoolYear } from '../../domain';
 import { SchoolYearResponse, YearsResponse } from '../dto/response';
 import { MissingYearsLoggableException } from '../error/missing-years.loggable-exception';
-import { SchoolYearResponseMapper } from './school-year.response.mapper';
 
 export class YearsResponseMapper {
 	public static mapToResponse(school: School, schoolYears: SchoolYear[]): YearsResponse {
-		const schoolYearResponses = SchoolYearResponseMapper.mapToResponses(schoolYears);
+		const schoolYearResponses = schoolYears.map((schoolYear) => schoolYear.getProps());
 
 		const activeYear = this.computeActiveYear(school, schoolYears);
 		const nextYear = this.computeNextYear(schoolYears, activeYear);
 		const lastYear = this.computeLastYear(schoolYears, activeYear);
 
-		const years = {
+		const res = {
 			schoolYears: schoolYearResponses,
 			activeYear,
 			nextYear,
 			lastYear,
 		};
 
-		return years;
+		return res;
 	}
 
 	private static computeActiveYear(school: School, schoolYears: SchoolYear[]): SchoolYearResponse {
@@ -35,7 +34,7 @@ export class YearsResponseMapper {
 			throw new MissingYearsLoggableException();
 		}
 
-		const res = SchoolYearResponseMapper.mapToResponse(activeYear);
+		const res = activeYear.getProps();
 
 		return res;
 	}
@@ -49,7 +48,7 @@ export class YearsResponseMapper {
 			throw new MissingYearsLoggableException();
 		}
 
-		const res = SchoolYearResponseMapper.mapToResponse(nextYear);
+		const res = nextYear.getProps();
 
 		return res;
 	}
@@ -63,7 +62,7 @@ export class YearsResponseMapper {
 			throw new MissingYearsLoggableException();
 		}
 
-		const res = SchoolYearResponseMapper.mapToResponse(lastYear);
+		const res = lastYear.getProps();
 
 		return res;
 	}
