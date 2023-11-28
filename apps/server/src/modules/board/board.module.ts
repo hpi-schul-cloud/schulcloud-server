@@ -6,6 +6,8 @@ import { Module } from '@nestjs/common';
 import { ContentElementFactory } from '@shared/domain/domainobject';
 import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
+import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
+import { HttpModule } from '@nestjs/axios';
 import { BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor } from './repo';
 import {
 	BoardDoAuthorizableService,
@@ -20,7 +22,14 @@ import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './serv
 import { ColumnBoardCopyService } from './service/column-board-copy.service';
 
 @Module({
-	imports: [ConsoleWriterModule, FilesStorageClientModule, LoggerModule, UserModule, ContextExternalToolModule],
+	imports: [
+		ConsoleWriterModule,
+		FilesStorageClientModule,
+		LoggerModule,
+		UserModule,
+		ContextExternalToolModule,
+		HttpModule,
+	],
 	providers: [
 		BoardDoAuthorizableService,
 		BoardDoRepo,
@@ -37,6 +46,7 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		BoardDoCopyService,
 		ColumnBoardCopyService,
 		SchoolSpecificFileCopyServiceFactory,
+		DrawingElementAdapterService,
 	],
 	exports: [
 		BoardDoAuthorizableService,

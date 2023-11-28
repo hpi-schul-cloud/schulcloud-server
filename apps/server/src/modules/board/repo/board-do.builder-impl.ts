@@ -11,20 +11,22 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
-import type {
-	BoardDoBuilder,
-	BoardNode,
-	CardNode,
-	ColumnBoardNode,
-	ColumnNode,
-	ExternalToolElementNodeEntity,
-	FileElementNode,
-	LinkElementNode,
-	RichTextElementNode,
-	SubmissionContainerElementNode,
-	SubmissionItemNode,
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
+import {
+	BoardNodeType,
+	type BoardDoBuilder,
+	type BoardNode,
+	type CardNode,
+	type ColumnBoardNode,
+	type ColumnNode,
+	type ExternalToolElementNodeEntity,
+	type FileElementNode,
+	type LinkElementNode,
+	type RichTextElementNode,
+	type SubmissionContainerElementNode,
+	type SubmissionItemNode,
 } from '@shared/domain/entity';
-import { BoardNodeType } from '@shared/domain/entity';
+import { DrawingElementNode } from '@shared/domain/entity/boardnode/drawing-element-node.entity';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};
@@ -77,6 +79,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			BoardNodeType.FILE_ELEMENT,
 			BoardNodeType.LINK_ELEMENT,
 			BoardNodeType.RICH_TEXT_ELEMENT,
+			BoardNodeType.DRAWING_ELEMENT,
 			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
 			BoardNodeType.EXTERNAL_TOOL,
 		]);
@@ -132,6 +135,19 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			id: boardNode.id,
 			text: boardNode.text,
 			inputFormat: boardNode.inputFormat,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+		});
+		return element;
+	}
+
+	public buildDrawingElement(boardNode: DrawingElementNode): DrawingElement {
+		this.ensureLeafNode(boardNode);
+
+		const element = new DrawingElement({
+			id: boardNode.id,
+			description: boardNode.description,
 			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,

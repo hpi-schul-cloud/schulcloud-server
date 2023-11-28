@@ -4,6 +4,7 @@ import { FilesService } from '@modules/files/service';
 import { CourseGroupService, CourseService } from '@modules/learnroom/service';
 import { LessonService } from '@modules/lesson/service';
 import { PseudonymService } from '@modules/pseudonym';
+import { RegistrationPinService } from '@modules/registration-pin';
 import { RocketChatService } from '@modules/rocketchat';
 import { RocketChatUserService } from '@modules/rocketchat-user';
 import { TeamService } from '@modules/teams';
@@ -13,10 +14,12 @@ import { EntityId } from '@shared/domain/types';
 import { DeletionLog } from '../domain/deletion-log.do';
 import { DeletionRequest } from '../domain/deletion-request.do';
 import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
-import { DeletionOperationModel } from '../domain/types/deletion-operation-model.enum';
-import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services/deletion-request.service';
+
+import { DeletionOperationModel } from '../domain/types/deletion-operation-model.enum';
+import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
+
 import { DeletionLogStatisticBuilder } from './builder/deletion-log-statistic.builder';
 import { DeletionRequestLogBuilder } from './builder/deletion-request-log.builder';
 import { DeletionTargetRefBuilder } from './builder/deletion-target-ref.builder';
@@ -42,7 +45,8 @@ export class DeletionRequestUc {
 		private readonly teamService: TeamService,
 		private readonly userService: UserService,
 		private readonly rocketChatUserService: RocketChatUserService,
-		private readonly rocketChatService: RocketChatService
+		private readonly rocketChatService: RocketChatService,
+		private readonly registrationPinService: RegistrationPinService
 	) {}
 
 	async createDeletionRequest(deletionRequest: DeletionRequestProps): Promise<DeletionRequestCreateAnswer> {
@@ -101,6 +105,7 @@ export class DeletionRequestUc {
 				this.removeUserFromTeams(deletionRequest),
 				this.removeUser(deletionRequest),
 				this.removeUserFromRocketChat(deletionRequest),
+				this.removeUserRegistrationPin(deletionRequest),
 			]);
 			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
 		} catch (error) {
@@ -129,6 +134,25 @@ export class DeletionRequestUc {
 	private async removeAccount(deletionRequest: DeletionRequest) {
 		await this.accountService.deleteByUserId(deletionRequest.targetRefId);
 		await this.logDeletion(deletionRequest, DeletionDomainModel.ACCOUNT, DeletionOperationModel.DELETE, 0, 1);
+	}
+
+	private async removeUserRegistrationPin(deletionRequest: DeletionRequest) {
+		const userToDeletion = await this.userService.findById(deletionRequest.targetRefId);
+		const parentEmails = await this.userService.getParentEmailsFromUser(deletionRequest.targetRefId);
+		const emailsToDeletion: string[] = [userToDeletion.email, ...parentEmails];
+
+		const result = await Promise.all(
+			emailsToDeletion.map((email) => this.registrationPinService.deleteRegistrationPinByEmail(email))
+		);
+		const deletedRegistrationPin = result.filter((res) => res !== 0).length;
+
+		await this.logDeletion(
+			deletionRequest,
+			DeletionDomainModel.REGISTRATIONPIN,
+			DeletionOperationModel.DELETE,
+			0,
+			deletedRegistrationPin
+		);
 	}
 
 	private async removeUserFromClasses(deletionRequest: DeletionRequest) {
