@@ -10,7 +10,7 @@ import {
 	UserBoardRoles,
 	UserRoleEnum,
 } from '@shared/domain';
-import { CourseRepo, PermissionContextRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo';
 import { AuthorizationLoaderService } from '@modules/authorization';
 import { BoardDoRepo } from '../repo';
 
@@ -18,8 +18,7 @@ import { BoardDoRepo } from '../repo';
 export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 	constructor(
 		@Inject(forwardRef(() => BoardDoRepo)) private readonly boardDoRepo: BoardDoRepo,
-		private readonly courseRepo: CourseRepo,
-		private readonly permissionCtxRepo: PermissionContextRepo
+		private readonly courseRepo: CourseRepo
 	) {}
 
 	async findById(id: EntityId): Promise<BoardDoAuthorizable> {
