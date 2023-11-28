@@ -2,7 +2,8 @@ const { Forbidden } = require('../../../errors');
 
 module.exports = async (context) => {
 	const currentSystem = await context.app.service('systems').get(context.id);
-	if (currentSystem.type === 'ldap' && currentSystem.ldapConfig && currentSystem.ldapConfig.provider === 'iserv-idm') {
+
+	if (!context.app.service('nest-system-rule').canEdit(currentSystem)) {
 		throw new Forbidden('Not allowed to change this system');
 	}
 

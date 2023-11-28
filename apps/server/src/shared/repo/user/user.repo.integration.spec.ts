@@ -3,8 +3,15 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MatchCreator, SortOrder, SystemEntity, User } from '@shared/domain';
-import { cleanupCollections, importUserFactory, roleFactory, schoolFactory, userFactory } from '@shared/testing';
-import { systemFactory } from '@shared/testing/factory/system.factory';
+import {
+	cleanupCollections,
+	importUserFactory,
+	roleFactory,
+	schoolFactory,
+	systemEntityFactory,
+	userFactory,
+} from '@shared/testing';
+import { UserParentsEntityProps } from '@shared/domain/entity/user-parents.entity';
 import { UserRepo } from './user.repo';
 
 describe('user repo', () => {
@@ -64,6 +71,7 @@ describe('user repo', () => {
 					'externalId',
 					'forcePasswordChange',
 					'importHash',
+					'parents',
 					'preferences',
 					'language',
 					'deletedAt',
@@ -124,7 +132,7 @@ describe('user repo', () => {
 		let userA: User;
 		let userB: User;
 		beforeEach(async () => {
-			sys = systemFactory.build();
+			sys = systemEntityFactory.build();
 			await em.persistAndFlush([sys]);
 			const school = schoolFactory.build({ systems: [sys] });
 			// const school = schoolFactory.withSystem().build();
@@ -154,6 +162,7 @@ describe('user repo', () => {
 					'externalId',
 					'forcePasswordChange',
 					'importHash',
+					'parents',
 					'preferences',
 					'language',
 					'deletedAt',
@@ -440,6 +449,38 @@ describe('user repo', () => {
 				email: user3.email,
 				roles: user3.roles,
 				school: user3.school,
+			});
+		});
+	});
+
+	describe('getParentEmailsFromUser', () => {
+		const setup = async () => {
+			const parentOfUser: UserParentsEntityProps = {
+				firstName: 'firstName',
+				lastName: 'lastName',
+				email: 'test@test.eu',
+			};
+			const user = userFactory.asStudent().buildWithId({
+				parents: [parentOfUser],
+			});
+
+			const expectedParentEmail = [parentOfUser.email];
+
+			await em.persistAndFlush(user);
+			em.clear();
+
+			return {
+				user,
+				expectedParentEmail,
+			};
+		};
+
+		describe('when searching user parent email', () => {
+			it('should return array witn parent email', async () => {
+				const { user, expectedParentEmail } = await setup();
+				const result = await repo.getParentEmailsFromUser(user.id);
+
+				expect(result).toEqual(expectedParentEmail);
 			});
 		});
 	});

@@ -7,8 +7,9 @@ import { createConfigModuleOptions } from '@src/config';
 import { DeletionClient } from '../client';
 import { getDeletionClientConfig } from '../client/deletion-client.config';
 import { BatchDeletionService } from '../services';
-import { BatchDeletionUc } from '../uc';
+import { BatchDeletionUc, DeletionExecutionUc } from '../uc';
 import { DeletionQueueConsole } from './deletion-queue.console';
+import { DeletionExecutionConsole } from './deletion-execution.console';
 
 @Module({
 	imports: [
@@ -17,6 +18,13 @@ import { DeletionQueueConsole } from './deletion-queue.console';
 		HttpModule,
 		ConfigModule.forRoot(createConfigModuleOptions(getDeletionClientConfig)),
 	],
-	providers: [DeletionClient, BatchDeletionService, BatchDeletionUc, DeletionQueueConsole],
+	providers: [
+		DeletionClient,
+		BatchDeletionService,
+		BatchDeletionUc,
+		DeletionExecutionUc,
+		DeletionQueueConsole,
+		DeletionExecutionConsole,
+	],
 })
 export class DeletionConsoleModule {}
