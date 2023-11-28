@@ -13,13 +13,12 @@ export class SubmissionItemResponseMapper {
 		return SubmissionItemResponseMapper.instance;
 	}
 
-	public mapToResponse(submissionItems: SubmissionItem[], users: UserBoardRoles[]): SubmissionsResponse {
+	public mapToResponse(submissionItems: SubmissionItem[], users: UserDataResponse[]): SubmissionsResponse {
 		const submissionItemsResponse: SubmissionItemResponse[] = submissionItems.map((item) =>
 			this.mapSubmissionItemToResponse(item)
 		);
-		const usersResponse: UserDataResponse[] = users.map((user) => this.mapUsersToResponse(user));
 
-		const response = new SubmissionsResponse(submissionItemsResponse, usersResponse);
+		const response = new SubmissionsResponse(submissionItemsResponse, users);
 
 		return response;
 	}

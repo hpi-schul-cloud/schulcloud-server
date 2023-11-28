@@ -17,12 +17,11 @@ import {
 	PermissionCrud,
 	RichTextElement,
 	SubmissionItem,
-	UserBoardRoles,
-	UserRoleEnum,
 } from '@shared/domain';
 import { AuthorizationService, Action, PermissionContextService } from '@modules/authorization';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { BaseUc } from './base.uc';
+import { UserDataResponse } from '../controller/dto';
 
 @Injectable()
 export class SubmissionItemUc extends BaseUc {
@@ -53,7 +52,7 @@ export class SubmissionItemUc extends BaseUc {
 	async findSubmissionItems(
 		userId: EntityId,
 		submissionContainerId: EntityId
-	): Promise<{ submissionItems: SubmissionItem[]; users: UserBoardRoles[] }> {
+	): Promise<{ submissionItems: SubmissionItem[]; users: UserDataResponse[] }> {
 		const submissionContainerElement = await this.elementService.findById(submissionContainerId);
 
 		if (!isSubmissionContainerElement(submissionContainerElement)) {
@@ -63,17 +62,27 @@ export class SubmissionItemUc extends BaseUc {
 		await this.checkPermission(userId, submissionContainerElement, Action.read);
 
 		let submissionItems = submissionContainerElement.children.filter(isSubmissionItem);
-		// submissionItems = await this.filterByReadPermission(userId, submissionItems);
+		submissionItems = await this.filterByReadPermission(userId, submissionItems);
 
-		const boardAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainerElement);
-		let users = boardAuthorizable.users.filter((user) => user.userRoleEnum === UserRoleEnum.STUDENT);
+		const students = await this.submissionItemService.findStudents(submissionContainerElement);
 
-		// NOTE: boardAuthorizable can be skipped
-		const isAuthorizedStudent = await this.isAuthorizedStudent(userId, submissionContainerElement);
-		if (isAuthorizedStudent) {
-			submissionItems = submissionItems.filter((item) => item.userId === userId);
-			users = [];
-		}
+		const users: UserDataResponse[] = students.map((student) => {
+			return {
+				userId: student.id,
+				firstName: student.firstName,
+				lastName: student.lastName,
+			};
+		});
+
+		// const boardAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainerElement);
+		// let users = boardAuthorizable.users.filter((user) => user.userRoleEnum === UserRoleEnum.STUDENT);
+
+		// // NOTE: boardAuthorizable can be skipped
+		// const isAuthorizedStudent = await this.isAuthorizedStudent(userId, submissionContainerElement);
+		// if (isAuthorizedStudent) {
+		// 	submissionItems = submissionItems.filter((item) => item.userId === userId);
+		// 	users = [];
+		// }
 
 		return { submissionItems, users };
 	}

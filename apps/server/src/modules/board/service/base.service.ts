@@ -10,6 +10,7 @@ import {
 	PermissionCrud,
 	SubmissionContainerElement,
 	SubmissionItem,
+	User,
 	UserDelta,
 	isCard,
 	isColumn,
@@ -52,6 +53,21 @@ export abstract class BaseService {
 		await this.permissionCtxRepo.save(permissionCtxEntity);
 
 		return permissionCtxEntity;
+	}
+
+	protected async findCourseMembers(
+		boardDo: AnyBoardDo
+	): Promise<{ students: User[]; teachers: User[]; substituteTeachers: User[] }> {
+		const rootId = (await this.boardDoRepo.getAncestorIds(boardDo))[0];
+
+		const columnBoard = await this.boardDoRepo.findByClassAndId(ColumnBoard, rootId);
+		const course = await this.courseRepo.findById(columnBoard.context.id);
+
+		return {
+			students: course.students.getItems(),
+			teachers: course.teachers.getItems(),
+			substituteTeachers: course.substitutionTeachers.getItems(),
+		};
 	}
 
 	protected async pocCreateSubmissionItemPermissionCtx(
