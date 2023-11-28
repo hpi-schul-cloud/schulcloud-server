@@ -62,7 +62,7 @@ describe(RocketChatUserService.name, () => {
 		});
 	});
 
-	describe('deleteUserDataFromClasses', () => {
+	describe('delete RocketChatUser', () => {
 		describe('when deleting rocketChatUser', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
