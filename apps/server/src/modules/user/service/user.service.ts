@@ -120,4 +120,10 @@ export class UserService {
 
 		return deletedUserNumber;
 	}
+
+	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
+		const parentEmails = this.userRepo.getParentEmailsFromUser(userId);
+
+		return parentEmails;
+	}
 }

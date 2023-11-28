@@ -25,6 +25,8 @@ import {
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { LinkElementNode } from '@shared/domain/entity/boardnode/link-element-node.entity';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
+import { DrawingElementNode } from '@shared/domain/entity/boardnode/drawing-element-node.entity';
 import { BoardNodeRepo } from './board-node.repo';
 
 type ParentData = {
@@ -134,6 +136,19 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		});
 
 		this.saveRecursive(boardNode, richTextElement);
+	}
+
+	visitDrawingElement(drawingElement: DrawingElement): void {
+		const parentData = this.parentsMap.get(drawingElement.id);
+
+		const boardNode = new DrawingElementNode({
+			id: drawingElement.id,
+			description: drawingElement.description ?? '',
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.saveRecursive(boardNode, drawingElement);
 	}
 
 	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {
