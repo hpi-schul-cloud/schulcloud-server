@@ -186,7 +186,7 @@ export class OidcProvisioningService {
 	}
 
 	private async getFilteredGroupUsers(externalGroup: ExternalGroupDto, systemId: string): Promise<GroupUser[]> {
-		if (!externalGroup.otherUsers) {
+		if (!externalGroup.otherUsers?.length) {
 			return [];
 		}
 

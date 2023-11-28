@@ -90,6 +90,9 @@ describe('SanisStrategy', () => {
 					vorname: 'Hans',
 					familienname: 'Peter',
 				},
+				geburt: {
+					datum: '2023-11-17',
+				},
 			},
 			personenkontexte: [
 				{
@@ -99,6 +102,9 @@ describe('SanisStrategy', () => {
 						id: new UUID('df66c8e6-cfac-40f7-b35b-0da5d8ee680e').toString(),
 						name: 'schoolName',
 						kennung: 'Kennung',
+						anschrift: {
+							ort: 'Hannover',
+						},
 					},
 					gruppen: [
 						{

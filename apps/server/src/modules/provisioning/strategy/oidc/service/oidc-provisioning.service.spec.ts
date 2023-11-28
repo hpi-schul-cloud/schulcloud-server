@@ -487,7 +487,7 @@ describe('OidcProvisioningService', () => {
 						externalId: 'externalId',
 						name: 'existingName',
 						officialSchoolNumber: 'existingOfficialSchoolNumber',
-						systems: [],
+						systems: undefined,
 						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 					});
 
@@ -882,7 +882,7 @@ describe('OidcProvisioningService', () => {
 			});
 		});
 
-		describe('when provisioning an existing group with no other group members', () => {
+		describe('when provisioning an existing group with empty other group members', () => {
 			const setup = () => {
 				const student: UserDO = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
