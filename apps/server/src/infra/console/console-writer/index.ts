@@ -1,2 +1,2 @@
-export * from './console-writer.service';
-export * from './console-writer.module';
+export { ConsoleWriterService } from './console-writer.service';
+export { ConsoleWriterModule } from './console-writer.module';

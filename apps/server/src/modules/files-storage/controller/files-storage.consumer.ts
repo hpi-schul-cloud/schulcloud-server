@@ -1,6 +1,5 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
-import { CopyFileDO, FileDO, FilesStorageEvents, FilesStorageExchange } from '@infra/rabbitmq';
-import { RpcMessage } from '@infra/rabbitmq/rpc-message';
+import { CopyFileDO, FileDO, FilesStorageEvents, FilesStorageExchange, RpcMessage } from '@infra/rabbitmq';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';

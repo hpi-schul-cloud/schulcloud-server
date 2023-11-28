@@ -1,7 +1,8 @@
 import { IInstalledLibrary, ILibraryName } from '@lumieducation/h5p-server';
 import { IFileStats, ILibraryMetadata, IPath } from '@lumieducation/h5p-server/build/src/types';
 import { Entity, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps } from '@shared/domain';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 
 export class Path implements IPath {
 	@Property()

@@ -5,7 +5,7 @@ import { ConsoleWriterService } from '@infra/console';
 import { DatabaseManagementModule, DatabaseManagementService } from '@infra/database';
 import { EncryptionModule } from '@infra/encryption';
 import { FileSystemModule } from '@infra/file-system';
-import { KeycloakConfigurationModule } from '@infra/identity-management/keycloak-configuration/keycloak-configuration.module';
+import { KeycloakConfigurationModule } from '@infra/identity-management';
 import { createConfigModuleOptions } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { serverConfig } from '@modules/server';

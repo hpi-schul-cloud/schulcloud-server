@@ -1,9 +1,120 @@
 import { MikroORM } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleAsyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
-import { ALL_ENTITIES } from '@shared/domain';
 import _ from 'lodash';
+import { FileEntity } from '@modules/files/entity';
+import { ClassEntity } from '@modules/class/entity';
+import { GroupEntity } from '@modules/group/entity';
+import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
+import { ShareToken } from '@modules/sharing/entity/share-token.entity';
+import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
+import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { RegistrationPinEntity } from '@modules/registration-pin/entity';
+import {
+	Account,
+	BoardNode,
+	CardNode,
+	ColumnBoardNode,
+	ColumnNode,
+	ExternalToolElementNodeEntity,
+	FileElementNode,
+	LinkElementNode,
+	RichTextElementNode,
+	SubmissionContainerElementNode,
+	SubmissionItemNode,
+	Course,
+	CourseGroup,
+	DashboardGridElementModel,
+	DashboardModelEntity,
+	FederalStateEntity,
+	ImportUser,
+	Board,
+	BoardElement,
+	ColumnboardBoardElement,
+	ColumnBoardTarget,
+	LessonBoardElement,
+	TaskBoardElement,
+	LessonEntity,
+	LtiTool,
+	Material,
+	CourseNews,
+	News,
+	SchoolNews,
+	TeamNews,
+	Role,
+	SchoolEntity,
+	SchoolRolePermission,
+	SchoolRoles,
+	SchoolYearEntity,
+	StorageProviderEntity,
+	Submission,
+	SystemEntity,
+	Task,
+	TeamEntity,
+	TeamUserEntity,
+	UserLoginMigrationEntity,
+	User,
+	VideoConference,
+} from '@shared/domain/entity';
 import { MongoDatabaseModuleOptions } from './types';
+
+const entities = [
+	Account,
+	Board,
+	BoardElement,
+	BoardNode,
+	CardNode,
+	ColumnboardBoardElement,
+	ColumnBoardNode,
+	ColumnBoardTarget,
+	ColumnNode,
+	ClassEntity,
+	FileElementNode,
+	LinkElementNode,
+	RichTextElementNode,
+	SubmissionContainerElementNode,
+	SubmissionItemNode,
+	ExternalToolElementNodeEntity,
+	Course,
+	ContextExternalToolEntity,
+	CourseGroup,
+	CourseNews,
+	DashboardGridElementModel,
+	DashboardModelEntity,
+	ExternalToolEntity,
+	FederalStateEntity,
+	ImportUser,
+	LessonEntity,
+	LessonBoardElement,
+	LtiTool,
+	Material,
+	News,
+	PseudonymEntity,
+	ExternalToolPseudonymEntity,
+	Role,
+	SchoolEntity,
+	SchoolExternalToolEntity,
+	SchoolNews,
+	SchoolRolePermission,
+	SchoolRoles,
+	SchoolYearEntity,
+	ShareToken,
+	StorageProviderEntity,
+	Submission,
+	SystemEntity,
+	Task,
+	TaskBoardElement,
+	TeamEntity,
+	TeamNews,
+	TeamUserEntity,
+	User,
+	UserLoginMigrationEntity,
+	VideoConference,
+	GroupEntity,
+	RegistrationPinEntity,
+	FileEntity,
+];
 
 const dbName = () => _.times(20, () => _.random(35).toString(36)).join('');
 
@@ -30,7 +141,7 @@ export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		const defaultOptions = {
-			entities: ALL_ENTITIES,
+			entities,
 		};
 		return {
 			module: MongoMemoryDatabaseModule,
