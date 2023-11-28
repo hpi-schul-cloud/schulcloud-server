@@ -161,12 +161,14 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-deployment.yml.j2
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
 
   - name: TlDraw server service
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-server-svc.yml.j2
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
 
   - name: Tldraw ingress
     kubernetes.core.k8s:
@@ -174,3 +176,4 @@
       namespace: "{{ NAMESPACE }}"
       template: tldraw-ingress.yml.j2
       apply: yes
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
