@@ -11,3 +11,10 @@ export enum CommonCartridgeResourceType {
 	WEB_LINK_V_1_1 = 'imswl_xmlv1p1',
 	WEB_LINK_V_1_3 = 'imswl_xmlv1p3',
 }
+
+export enum CommonCartridgeIntendedUseType {
+	ASSIGNMENT = 'assignment',
+	LESSON_PLAN = 'lessonplan',
+	SYLLABUS = 'syllabus',
+	UNSPECIFIED = 'unspecified',
+}
