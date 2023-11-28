@@ -4,17 +4,20 @@ import { MissingYearsLoggableException } from '../error/missing-years.loggable-e
 
 export class YearsResponseMapper {
 	public static mapToResponse(school: School, schoolYears: SchoolYear[]): YearsResponse {
-		const schoolYearResponses = schoolYears.map((schoolYear) => schoolYear.getProps());
+		const sortedSchoolYears = schoolYears.sort(
+			(a, b) => a.getProps().startDate.getTime() - b.getProps().startDate.getTime()
+		);
 
-		const activeYear = this.computeActiveYear(school, schoolYears);
-		const nextYear = this.computeNextYear(schoolYears, activeYear);
-		const lastYear = this.computeLastYear(schoolYears, activeYear);
+		const schoolYearResponses = sortedSchoolYears.map((schoolYear) => schoolYear.getProps());
+		const activeYear = this.computeActiveYear(school, sortedSchoolYears);
+		const nextYear = this.computeNextYear(sortedSchoolYears, activeYear);
+		const lastYear = this.computeLastYear(sortedSchoolYears, activeYear);
 
 		const res = {
 			schoolYears: schoolYearResponses,
 			activeYear,
-			nextYear,
 			lastYear,
+			nextYear,
 		};
 
 		return res;
@@ -39,20 +42,6 @@ export class YearsResponseMapper {
 		return res;
 	}
 
-	private static computeNextYear(schoolYears: SchoolYear[], activeYear?: SchoolYearResponse): SchoolYearResponse {
-		const indexOfActiveYear = schoolYears.findIndex((schoolYear) => schoolYear.id === activeYear?.id);
-
-		const nextYear = schoolYears[indexOfActiveYear + 1];
-
-		if (!nextYear) {
-			throw new MissingYearsLoggableException();
-		}
-
-		const res = nextYear.getProps();
-
-		return res;
-	}
-
 	private static computeLastYear(schoolYears: SchoolYear[], activeYear?: SchoolYearResponse): SchoolYearResponse {
 		const indexOfActiveYear = schoolYears.findIndex((schoolYear) => schoolYear.id === activeYear?.id);
 
@@ -63,6 +52,21 @@ export class YearsResponseMapper {
 		}
 
 		const res = lastYear.getProps();
+
+		return res;
+	}
+
+	private static computeNextYear(schoolYears: SchoolYear[], activeYear?: SchoolYearResponse): SchoolYearResponse {
+		const indexOfActiveYear = schoolYears.findIndex((schoolYear) => schoolYear.id === activeYear?.id);
+
+		const nextYear = schoolYears[indexOfActiveYear + 1];
+
+		if (!nextYear) {
+			console.log('nextYear', nextYear);
+			throw new MissingYearsLoggableException();
+		}
+
+		const res = nextYear.getProps();
 
 		return res;
 	}
