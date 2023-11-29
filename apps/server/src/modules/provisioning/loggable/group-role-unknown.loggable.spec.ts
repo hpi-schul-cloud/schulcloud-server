@@ -23,7 +23,7 @@ describe('GroupRoleUnknownLoggable', () => {
 				message: 'Unable to add unknown user to group during provisioning.',
 				data: {
 					externalUserId: sanisSonstigeGruppenzugehoerigeResponse.ktid,
-					externalRoleName: sanisSonstigeGruppenzugehoerigeResponse.rollen[0],
+					externalRoleName: sanisSonstigeGruppenzugehoerigeResponse.rollen?.[0],
 				},
 			});
 		});
