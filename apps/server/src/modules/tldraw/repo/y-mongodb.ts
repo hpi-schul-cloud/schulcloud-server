@@ -83,8 +83,8 @@ export class YMongodb {
 			const updates = await this.getMongoUpdates(docName);
 			const ydoc = new Doc();
 			ydoc.transact(() => {
-				for (let i = 0; i < updates.length; i += 1) {
-					applyUpdate(ydoc, updates[i]);
+				for (const element of updates) {
+					applyUpdate(ydoc, element);
 				}
 			});
 			if (updates.length > this.flushSize) {
@@ -148,9 +148,12 @@ export class YMongodb {
 		const updates: Buffer[] = [];
 		for (let i = 0; i < docs.length; i += 1) {
 			const doc = docs[i];
+
 			if (!doc.part) {
 				updates.push(Buffer.from(doc.value.buffer));
-			} else if (doc.part === 1) {
+			}
+
+			if (doc.part === 1) {
 				// merge the docs together that got split because of mongodb size limits
 				const parts = this.mergeDocsTogether(doc, docs, i);
 				updates.push(Buffer.concat(parts));
