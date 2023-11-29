@@ -14,7 +14,6 @@ export class SanisResponse {
 	person!: SanisPersonResponse;
 
 	@IsArray()
-	@IsObject({ each: true })
 	@ArrayMinSize(1)
 	@ValidateNested({ each: true })
 	@Type(() => SanisPersonenkontextResponse)

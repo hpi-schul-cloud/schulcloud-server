@@ -19,7 +19,6 @@ export class SanisPersonenkontextResponse {
 
 	@IsOptional()
 	@IsArray()
-	@IsObject({ each: true })
 	@ValidateNested({ each: true, groups: [SanisResponseValidationGroups.GROUPS] })
 	@Type(() => SanisGruppenResponse)
 	gruppen?: SanisGruppenResponse[];
