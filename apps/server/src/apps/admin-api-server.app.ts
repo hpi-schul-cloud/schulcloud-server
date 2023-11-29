@@ -15,11 +15,13 @@ async function bootstrap() {
 	const nestAdminServerExpress = express();
 	const nestAdminServerExpressAdapter = new ExpressAdapter(nestAdminServerExpress);
 	nestAdminServerExpressAdapter.disable('x-powered-by');
+
 	const nestAdminServerApp = await NestFactory.create(AdminApiServerModule, nestAdminServerExpressAdapter);
-	nestAdminServerApp.useLogger(await nestAdminServerApp.resolve(LegacyLogger));
+	const logger = await nestAdminServerApp.resolve(Logger);
+	const legacyLogger = await nestAdminServerApp.resolve(LegacyLogger);
+	nestAdminServerApp.useLogger(legacyLogger);
 	nestAdminServerApp.enableCors();
 
-	const logger = await nestAdminServerApp.resolve(Logger);
 	enableOpenApiDocs(nestAdminServerApp, 'docs');
 	nestAdminServerApp.setGlobalPrefix('/admin/api/v1');
 
