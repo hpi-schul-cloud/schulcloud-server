@@ -24,13 +24,15 @@ export class CommonCartridgeWebLinkResource implements CommonCartridgeResource {
 
 	getFileContent(): string {
 		return buildXmlString({
-			$: this.getXmlNamespacesByVersion(),
-			title: this.props.title,
-			url: {
-				$: {
-					href: this.props.url,
-					target: '_self',
-					windowFeatures: 'width=100, height=100',
+			webLink: {
+				$: this.getXmlNamespacesByVersion(),
+				title: this.props.title,
+				url: {
+					$: {
+						href: this.props.url,
+						target: '_self',
+						windowFeatures: 'width=100, height=100',
+					},
 				},
 			},
 		});
