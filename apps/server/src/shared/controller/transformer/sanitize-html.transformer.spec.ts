@@ -1,6 +1,7 @@
 import { NotImplementedException } from '@nestjs/common';
 import { InputFormat } from '@shared/domain';
 import { plainToClass } from 'class-transformer';
+import { describe } from 'node:test';
 import { SanitizeHtml } from './sanitize-html.transformer';
 
 describe('SanitizeHtmlTransformer Decorator', () => {
@@ -51,6 +52,17 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 			const plainString = { contentCk4: '<h1><b>html text</b></h1><scriPT>alert("foobar");</sCript><stYle></style>' };
 			const instance = plainToClass(WithHtmlDto, plainString);
 			expect(instance.contentCk4).toEqual('<h1><b>html text</b></h1>');
+		});
+	});
+
+	describe('when sanitizing rich text news formatting', () => {
+		it('should remove all html but rich text news tags', () => {
+			const plainString = {
+				contentRichTextNews:
+					'<h1><b>html text</b></h1><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
+			};
+			const instance = plainToClass(WithHtmlDto, plainString);
+			expect(instance.contentRichTextNews).toEqual('<h1><b>html text</b></h1>');
 		});
 	});
 
