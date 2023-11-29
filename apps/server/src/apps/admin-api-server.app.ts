@@ -41,6 +41,8 @@ async function bootstrap() {
 				})
 			);
 		});
+	} else {
+		process.exit(0);
 	}
 }
 
