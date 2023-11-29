@@ -4,14 +4,10 @@ import { MissingYearsLoggableException } from '../error/missing-years.loggable-e
 
 export class YearsResponseMapper {
 	public static mapToResponse(school: School, schoolYears: SchoolYear[]): YearsResponse {
-		const sortedSchoolYears = schoolYears.sort(
-			(a, b) => a.getProps().startDate.getTime() - b.getProps().startDate.getTime()
-		);
-
-		const schoolYearResponses = sortedSchoolYears.map((schoolYear) => schoolYear.getProps());
-		const activeYear = this.computeActiveYear(school, sortedSchoolYears);
-		const nextYear = this.computeNextYear(sortedSchoolYears, activeYear);
-		const lastYear = this.computeLastYear(sortedSchoolYears, activeYear);
+		const schoolYearResponses = schoolYears.map((schoolYear) => schoolYear.getProps());
+		const activeYear = this.computeActiveYear(school, schoolYears);
+		const nextYear = this.computeNextYear(schoolYears, activeYear);
+		const lastYear = this.computeLastYear(schoolYears, activeYear);
 
 		const res = {
 			schoolYears: schoolYearResponses,
@@ -42,10 +38,11 @@ export class YearsResponseMapper {
 		return res;
 	}
 
-	private static computeLastYear(schoolYears: SchoolYear[], activeYear?: SchoolYearResponse): SchoolYearResponse {
-		const indexOfActiveYear = schoolYears.findIndex((schoolYear) => schoolYear.id === activeYear?.id);
-
-		const lastYear = schoolYears[indexOfActiveYear - 1];
+	private static computeLastYear(schoolYears: SchoolYear[], activeYear: SchoolYearResponse): SchoolYearResponse {
+		const oneYearAgo = new Date(new Date().setFullYear(activeYear.startDate.getFullYear() - 1));
+		const lastYear = schoolYears.find(
+			(schoolYear) => schoolYear.getProps().startDate <= oneYearAgo && schoolYear.getProps().endDate >= oneYearAgo
+		);
 
 		if (!lastYear) {
 			throw new MissingYearsLoggableException();
@@ -56,13 +53,13 @@ export class YearsResponseMapper {
 		return res;
 	}
 
-	private static computeNextYear(schoolYears: SchoolYear[], activeYear?: SchoolYearResponse): SchoolYearResponse {
-		const indexOfActiveYear = schoolYears.findIndex((schoolYear) => schoolYear.id === activeYear?.id);
-
-		const nextYear = schoolYears[indexOfActiveYear + 1];
+	private static computeNextYear(schoolYears: SchoolYear[], activeYear: SchoolYearResponse): SchoolYearResponse {
+		const oneYearAhead = new Date(new Date().setFullYear(activeYear.startDate.getFullYear() + 1));
+		const nextYear = schoolYears.find(
+			(schoolYear) => schoolYear.getProps().startDate <= oneYearAhead && schoolYear.getProps().endDate >= oneYearAhead
+		);
 
 		if (!nextYear) {
-			console.log('nextYear', nextYear);
 			throw new MissingYearsLoggableException();
 		}
 
