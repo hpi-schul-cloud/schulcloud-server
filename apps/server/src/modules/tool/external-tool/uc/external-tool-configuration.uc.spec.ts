@@ -578,7 +578,7 @@ describe('ExternalToolConfigurationUc', () => {
 					contextExternalToolId
 				);
 
-				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
+				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
 
@@ -618,7 +618,7 @@ describe('ExternalToolConfigurationUc', () => {
 					contextExternalToolId
 				);
 
-				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
+				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
 				toolPermissionHelper.ensureContextPermissions.mockImplementation(() => {
 					throw new UnauthorizedException();
 				});
@@ -657,7 +657,7 @@ describe('ExternalToolConfigurationUc', () => {
 					contextExternalToolId
 				);
 
-				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
+				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
 

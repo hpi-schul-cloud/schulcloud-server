@@ -1,6 +1,6 @@
+import { AuthorizationContext, AuthorizationContextBuilder } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
-import { AuthorizationContext, AuthorizationContextBuilder } from '@modules/authorization';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool, ContextRef, ToolReference } from '../domain';
@@ -55,7 +55,7 @@ export class ToolReferenceUc {
 	}
 
 	async getToolReference(userId: EntityId, contextExternalToolId: EntityId): Promise<ToolReference> {
-		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findById(
+		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(
 			contextExternalToolId
 		);
 
