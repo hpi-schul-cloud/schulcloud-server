@@ -52,6 +52,9 @@ spec:
         - containerPort: 3349
           name: tldraw-http
           protocol: TCP
+        - containerPort: 9045
+          name: tldraw-metrics
+          protocol: TCP
         envFrom:
         - configMapRef:
             name: api-configmap

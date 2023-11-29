@@ -12,6 +12,12 @@ spec:
         operator: in
         values:
           - api-svc
+      - key: app.kubernetes.io/name
+        operator: in
+        values:
+          - tldraw-server-svc
   endpoints:
   - path: /metrics
     port: api-metrics
+  - path: /tldraw-metrics
+    port: tldraw-metrics
