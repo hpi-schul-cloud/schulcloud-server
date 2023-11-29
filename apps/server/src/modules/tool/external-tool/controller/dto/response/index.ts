@@ -7,4 +7,4 @@ export * from './context-external-tool-configuration-template-list.response';
 export * from './school-external-tool-configuration-template.response';
 export * from './school-external-tool-configuration-template-list.response';
 export * from './external-tool-metadata.response';
-export * from './tool-context-types-list';
+export * from './tool-context-types-list.response';

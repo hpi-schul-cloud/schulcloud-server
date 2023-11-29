@@ -280,7 +280,7 @@ describe('ToolContextController (API)', () => {
 
 				const response = await loggedInClient.post().send(postParams);
 
-				expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
+				expect(response.statusCode).toEqual(HttpStatus.UNPROCESSABLE_ENTITY);
 			});
 		});
 	});

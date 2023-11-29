@@ -16,7 +16,6 @@ import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ContextExternalToolTemplateInfo } from '../uc';
 import { ExternalToolConfigurationService } from './external-tool-configuration.service';
-import { ToolContextTypesList } from '../controller/dto/response/tool-context-types-list';
 import { CommonToolService } from '../../common/service';
 
 describe('ExternalToolConfigurationService', () => {
@@ -305,9 +304,9 @@ describe('ExternalToolConfigurationService', () => {
 	describe('getToolContextTypes', () => {
 		describe('when it is called', () => {
 			it('should return ToolContextTypes', () => {
-				const types: ToolContextTypesList = service.getToolContextTypes();
+				const types: ToolContextType[] = service.getToolContextTypes();
 
-				expect(types).toEqual({ data: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT] });
+				expect(types).toEqual([ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT]);
 			});
 		});
 	});

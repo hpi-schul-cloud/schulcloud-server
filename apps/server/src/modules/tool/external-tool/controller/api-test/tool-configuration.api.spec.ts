@@ -17,9 +17,13 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@modules/server';
-import { CustomParameterTypeParams, ToolContextType } from '@modules/tool/common/enum';
 import { Response } from 'supertest';
-import { CustomParameterLocationParams, CustomParameterScopeTypeParams } from '../../../common/enum';
+import {
+	CustomParameterLocationParams,
+	CustomParameterScopeTypeParams,
+	CustomParameterTypeParams,
+	ToolContextType,
+} from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ExternalToolEntity } from '../../entity';
@@ -28,7 +32,7 @@ import {
 	ContextExternalToolConfigurationTemplateResponse,
 	SchoolExternalToolConfigurationTemplateListResponse,
 	SchoolExternalToolConfigurationTemplateResponse,
-	ToolContextTypesList,
+	ToolContextTypesListResponse,
 } from '../dto';
 
 describe('ToolConfigurationController (API)', () => {
@@ -716,7 +720,7 @@ describe('ToolConfigurationController (API)', () => {
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				const contextTypeList: ToolContextTypesList = new ToolContextTypesList([
+				const contextTypeList: ToolContextTypesListResponse = new ToolContextTypesListResponse([
 					ToolContextType.COURSE,
 					ToolContextType.BOARD_ELEMENT,
 				]);

@@ -7,7 +7,7 @@ import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ContextExternalToolTemplateInfo } from '../uc/dto';
-import { ToolContextTypesList } from '../controller/dto/response/tool-context-types-list';
+import { ToolContextTypesListResponse } from '../controller/dto/response/tool-context-types-list.response';
 import { CommonToolService } from '../../common/service';
 
 @Injectable()
@@ -97,8 +97,8 @@ export class ExternalToolConfigurationService {
 		}
 	}
 
-	public getToolContextTypes(): ToolContextTypesList {
-		const toolContextTypes: ToolContextTypesList = { data: Object.values(ToolContextType) };
+	public getToolContextTypes(): ToolContextType[] {
+		const toolContextTypes: ToolContextType[] = Object.values(ToolContextType);
 
 		return toolContextTypes;
 	}

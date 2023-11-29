@@ -682,10 +682,13 @@ describe('ExternalToolConfigurationUc', () => {
 				const userId: string = new ObjectId().toHexString();
 				const user: User = userFactory.build();
 				user.id = userId;
+				const contextTypes: ToolContextType[] = Object.values(ToolContextType);
 
 				authorizationServie.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationServie.checkAllPermissions.mockReturnValueOnce();
+				externalToolConfigurationService.getToolContextTypes.mockReturnValueOnce(contextTypes);
 
-				return { userId, user };
+				return { userId, user, contextTypes };
 			};
 
 			it('should get User', async () => {
@@ -710,6 +713,14 @@ describe('ExternalToolConfigurationUc', () => {
 				await uc.getToolContextTypes(userId);
 
 				expect(externalToolConfigurationService.getToolContextTypes).toHaveBeenCalled();
+			});
+
+			it('should return all context types', async () => {
+				const { userId } = setup();
+
+				const result = await uc.getToolContextTypes(userId);
+
+				expect(result).toEqual([ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT]);
 			});
 		});
 	});

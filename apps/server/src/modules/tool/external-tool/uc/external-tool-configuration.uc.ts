@@ -12,7 +12,6 @@ import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalTool } from '../domain';
 import { ExternalToolConfigurationService, ExternalToolLogoService, ExternalToolService } from '../service';
 import { ContextExternalToolTemplateInfo } from './dto';
-import { ToolContextTypesList } from '../controller/dto/response';
 
 @Injectable()
 export class ExternalToolConfigurationUc {
@@ -27,11 +26,11 @@ export class ExternalToolConfigurationUc {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	public async getToolContextTypes(userId: EntityId): Promise<ToolContextTypesList> {
+	public async getToolContextTypes(userId: EntityId): Promise<ToolContextType[]> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
-		const toolContextTypes: ToolContextTypesList = this.externalToolConfigurationService.getToolContextTypes();
+		const toolContextTypes: ToolContextType[] = this.externalToolConfigurationService.getToolContextTypes();
 
 		return toolContextTypes;
 	}
