@@ -1,6 +1,6 @@
-import { CountyEmbeddable, FederalStateEntity, FederalStateProperties } from '@shared/domain';
-import { ObjectId } from 'bson';
+import { FederalStateEntity, FederalStateProperties } from '@shared/domain';
 import { BaseFactory } from './base.factory';
+import { countyEmbeddableFactory } from './county.embeddable.factory';
 
 export const federalStateFactory = BaseFactory.define<FederalStateEntity, FederalStateProperties>(
 	FederalStateEntity,
@@ -10,20 +10,7 @@ export const federalStateFactory = BaseFactory.define<FederalStateEntity, Federa
 			abbreviation: 'HH',
 			logoUrl:
 				'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Coat_of_arms_of_Hamburg.svg/1200px-Coat_of_arms_of_Hamburg.svg.png',
-			counties: [
-				new CountyEmbeddable({
-					_id: new ObjectId(),
-					name: 'Hamburg-Mitte',
-					countyId: 2000,
-					antaresKey: '02000',
-				}),
-				new CountyEmbeddable({
-					_id: new ObjectId(),
-					name: 'Altona',
-					countyId: 2002,
-					antaresKey: '02002',
-				}),
-			],
+			counties: countyEmbeddableFactory.buildList(2),
 			createdAt: new Date(2020, 1),
 			updatedAt: new Date(2020, 1),
 		};

@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { cleanupCollections, federalStateFactory, schoolFactory, systemEntityFactory } from '@shared/testing';
+import { countyEmbeddableFactory } from '@shared/testing/factory/county.embeddable.factory';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
 import { SchoolFeature, SCHOOL_REPO } from '../../domain';
 import { SchoolEntityMapper } from './mapper';
@@ -145,8 +146,9 @@ describe('SchoolMikroOrmRepo', () => {
 		describe('when entity is found', () => {
 			const setup = async () => {
 				const systems = systemEntityFactory.buildList(2);
+				const county = countyEmbeddableFactory.build();
 				const schoolId = new ObjectId().toHexString();
-				const entity = schoolFactory.buildWithId({ systems }, schoolId);
+				const entity = schoolFactory.buildWithId({ systems, county }, schoolId);
 				await em.persistAndFlush([entity]);
 				em.clear();
 				const schoolDo = SchoolEntityMapper.mapToDo(entity);
