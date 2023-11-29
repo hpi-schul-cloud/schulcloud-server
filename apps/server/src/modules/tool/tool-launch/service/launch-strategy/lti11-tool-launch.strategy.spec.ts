@@ -26,7 +26,7 @@ import {
 } from '../auto-parameter-strategy';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
-import { IToolLaunchParams } from './tool-launch-params.interface';
+import { ToolLaunchParams } from './tool-launch-params.interface';
 
 describe('Lti11ToolLaunchStrategy', () => {
 	let module: TestingModule;
@@ -108,7 +108,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
 
-				const data: IToolLaunchParams = {
+				const data: ToolLaunchParams = {
 					contextExternalTool,
 					schoolExternalTool,
 					externalTool,
@@ -205,7 +205,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 					contextRef: { id: contextId, type: ToolContextType.COURSE },
 				});
 
-				const data: IToolLaunchParams = {
+				const data: ToolLaunchParams = {
 					contextExternalTool,
 					schoolExternalTool,
 					externalTool,
@@ -252,7 +252,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
 
-				const data: IToolLaunchParams = {
+				const data: ToolLaunchParams = {
 					contextExternalTool,
 					schoolExternalTool,
 					externalTool,
@@ -301,7 +301,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
 
-				const data: IToolLaunchParams = {
+				const data: ToolLaunchParams = {
 					contextExternalTool,
 					schoolExternalTool,
 					externalTool,
@@ -352,7 +352,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
 
-				const data: IToolLaunchParams = {
+				const data: ToolLaunchParams = {
 					contextExternalTool,
 					schoolExternalTool,
 					externalTool,
@@ -390,7 +390,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
 
-				const data: IToolLaunchParams = {
+				const data: ToolLaunchParams = {
 					contextExternalTool,
 					schoolExternalTool,
 					externalTool,

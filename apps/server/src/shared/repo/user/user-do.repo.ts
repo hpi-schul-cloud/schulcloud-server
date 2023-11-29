@@ -1,12 +1,12 @@
-import { EntityData, EntityName, FilterQuery, QueryOrderMap, RequiredEntityData } from '@mikro-orm/core';
+import { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { UserQuery } from '@modules/user/service/user-query.type';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import { EntityId, IFindOptions, IPagination, Role, SchoolEntity, SortOrder, SortOrderMap, User } from '@shared/domain';
+import { EntityId, IFindOptions, Pagination, Role, SchoolEntity, SortOrder, SortOrderMap, User } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { BaseDORepo, Scope } from '@shared/repo';
-import { UserQuery } from '@modules/user/service/user-query.type';
 import { UserScope } from './user.scope';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 	}
 
 	async find(query: UserQuery, options?: IFindOptions<UserDO>) {
-		const pagination: IPagination = options?.pagination || {};
+		const pagination: Pagination = options?.pagination || {};
 		const order: QueryOrderMap<User> = this.createQueryOrderMap(options?.order || {});
 		const scope: Scope<User> = new UserScope()
 			.bySchoolId(query.schoolId)
@@ -94,6 +94,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			lastLoginSystemChange: entity.lastLoginSystemChange,
 			outdatedSince: entity.outdatedSince,
 			previousExternalId: entity.previousExternalId,
+			birthday: entity.birthday,
 		});
 
 		if (entity.roles.isInitialized()) {
@@ -120,6 +121,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			lastLoginSystemChange: entityDO.lastLoginSystemChange,
 			outdatedSince: entityDO.outdatedSince,
 			previousExternalId: entityDO.previousExternalId,
+			birthday: entityDO.birthday,
 		};
 	}
 

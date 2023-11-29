@@ -1,13 +1,13 @@
 import { EntityData, EntityName, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { IFindOptions, IPagination, Page, SortOrder } from '@shared/domain';
-import { BaseDORepo, ExternalToolRepoMapper, ExternalToolSortingMapper, Scope } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
 import { ToolConfigType } from '@modules/tool/common/enum';
 import { ExternalToolSearchQuery } from '@modules/tool/common/interface';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { ExternalToolEntity, IExternalToolProperties } from '@modules/tool/external-tool/entity';
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { IFindOptions, Page, Pagination, SortOrder } from '@shared/domain';
+import { BaseDORepo, ExternalToolRepoMapper, ExternalToolSortingMapper, Scope } from '@shared/repo';
+import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolScope } from './external-tool.scope';
 
 @Injectable()
@@ -48,7 +48,7 @@ export class ExternalToolRepo extends BaseDORepo<ExternalTool, ExternalToolEntit
 	}
 
 	async find(query: ExternalToolSearchQuery, options?: IFindOptions<ExternalTool>): Promise<Page<ExternalTool>> {
-		const pagination: IPagination = options?.pagination || {};
+		const pagination: Pagination = options?.pagination || {};
 		const order: QueryOrderMap<ExternalToolEntity> = ExternalToolSortingMapper.mapDOSortOrderToQueryOrder(
 			options?.order || {}
 		);

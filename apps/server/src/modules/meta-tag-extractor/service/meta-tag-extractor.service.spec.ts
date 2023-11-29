@@ -1,35 +1,52 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
+import ogs from 'open-graph-scraper';
 import { ImageObject } from 'open-graph-scraper/dist/lib/types';
 import { MetaTagExtractorService } from './meta-tag-extractor.service';
+import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
 
-let ogsResponseMock = {};
-let ogsRejectMock: Error | undefined;
+jest.mock('open-graph-scraper', () => {
+	return {
+		__esModule: true,
+		default: jest.fn(),
+	};
+});
 
-jest.mock('open-graph-scraper', () => () => {
-	if (ogsRejectMock) {
-		return Promise.reject(ogsRejectMock);
-	}
-
-	return Promise.resolve({
+const mockOgsResolve = (result: Record<any, any>) => {
+	const mockedOgs = ogs as jest.Mock;
+	mockedOgs.mockResolvedValueOnce({
 		error: false,
 		html: '',
 		response: {},
-		result: ogsResponseMock,
+		result,
 	});
-});
+};
+
+const mockOgsReject = (error: Error) => {
+	const mockedOgs = ogs as jest.Mock;
+	mockedOgs.mockRejectedValueOnce(error);
+};
 
 describe(MetaTagExtractorService.name, () => {
 	let module: TestingModule;
+	let metaTagInternalUrlService: DeepMocked<MetaTagInternalUrlService>;
 	let service: MetaTagExtractorService;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [MetaTagExtractorService],
+			providers: [
+				MetaTagExtractorService,
+				{
+					provide: MetaTagInternalUrlService,
+					useValue: createMock<MetaTagInternalUrlService>(),
+				},
+			],
 		}).compile();
 
+		metaTagInternalUrlService = module.get(MetaTagInternalUrlService);
 		service = module.get(MetaTagExtractorService);
-
 		await setupEntities();
 	});
 
@@ -38,8 +55,8 @@ describe(MetaTagExtractorService.name, () => {
 	});
 
 	beforeEach(() => {
-		ogsResponseMock = {};
-		ogsRejectMock = undefined;
+		Configuration.set('SC_DOMAIN', 'localhost');
+		metaTagInternalUrlService.tryInternalLinkMetaTags.mockResolvedValue(undefined);
 	});
 
 	afterEach(() => {
@@ -48,26 +65,28 @@ describe(MetaTagExtractorService.name, () => {
 
 	describe('create', () => {
 		describe('when url points to webpage', () => {
-			it('should return also the original url', async () => {
-				const url = 'https://de.wikipedia.org';
-
-				const result = await service.fetchMetaData(url);
-
-				expect(result).toEqual(expect.objectContaining({ url }));
-			});
-
 			it('should thrown an error if url is an empty string', async () => {
 				const url = '';
 
-				await expect(service.fetchMetaData(url)).rejects.toThrow();
+				await expect(service.getMetaData(url)).rejects.toThrow();
+			});
+
+			it('should return also the original url', async () => {
+				const ogTitle = 'My Title';
+				const url = 'https://de.wikipedia.org';
+				mockOgsResolve({ url, ogTitle });
+
+				const result = await service.getMetaData(url);
+
+				expect(result).toEqual(expect.objectContaining({ url }));
 			});
 
 			it('should return ogTitle as title', async () => {
 				const ogTitle = 'My Title';
 				const url = 'https://de.wikipedia.org';
-				ogsResponseMock = { ogTitle };
+				mockOgsResolve({ ogTitle });
 
-				const result = await service.fetchMetaData(url);
+				const result = await service.getMetaData(url);
 
 				expect(result).toEqual(expect.objectContaining({ title: ogTitle }));
 			});
@@ -91,9 +110,9 @@ describe(MetaTagExtractorService.name, () => {
 					},
 				];
 				const url = 'https://de.wikipedia.org';
-				ogsResponseMock = { ogImage };
+				mockOgsResolve({ url, ogImage });
 
-				const result = await service.fetchMetaData(url);
+				const result = await service.getMetaData(url);
 
 				expect(result).toEqual(expect.objectContaining({ image: ogImage[1] }));
 			});
@@ -102,9 +121,10 @@ describe(MetaTagExtractorService.name, () => {
 		describe('when url points to a file', () => {
 			it('should return filename as title', async () => {
 				const url = 'https://de.wikipedia.org/abc.jpg';
-				ogsRejectMock = new Error('no open graph data included... probably not a webpage');
 
-				const result = await service.fetchMetaData(url);
+				mockOgsReject(new Error('no open graph data included... probably not a webpage'));
+
+				const result = await service.getMetaData(url);
 				expect(result).toEqual(expect.objectContaining({ title: 'abc.jpg' }));
 			});
 		});
@@ -112,9 +132,10 @@ describe(MetaTagExtractorService.name, () => {
 		describe('when url is invalid', () => {
 			it('should return url as it is', async () => {
 				const url = 'not-a-real-domain';
-				ogsRejectMock = new Error('no open graph data included... probably not a webpage');
 
-				const result = await service.fetchMetaData(url);
+				mockOgsReject(new Error('no open graph data included... probably not a webpage'));
+
+				const result = await service.getMetaData(url);
 				expect(result).toEqual(expect.objectContaining({ url, title: '', description: '' }));
 			});
 		});

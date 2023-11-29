@@ -3,20 +3,20 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 
-export interface ISystemProperties {
+export interface SystemEntityProps {
 	type: string;
 	url?: string;
 	alias?: string;
 	displayName?: string;
-	oauthConfig?: OauthConfig;
-	oidcConfig?: OidcConfig;
-	ldapConfig?: LdapConfig;
+	oauthConfig?: OauthConfigEntity;
+	oidcConfig?: OidcConfigEntity;
+	ldapConfig?: LdapConfigEntity;
 	provisioningStrategy?: SystemProvisioningStrategy;
 	provisioningUrl?: string;
 }
 
-export class OauthConfig {
-	constructor(oauthConfig: OauthConfig) {
+export class OauthConfigEntity {
+	constructor(oauthConfig: OauthConfigEntity) {
 		this.clientId = oauthConfig.clientId;
 		this.clientSecret = oauthConfig.clientSecret;
 		this.idpHint = oauthConfig.idpHint;
@@ -73,8 +73,8 @@ export class OauthConfig {
 }
 
 @Embeddable()
-export class LdapConfig {
-	constructor(ldapConfig: Readonly<LdapConfig>) {
+export class LdapConfigEntity {
+	constructor(ldapConfig: Readonly<LdapConfigEntity>) {
 		this.active = ldapConfig.active;
 		this.federalState = ldapConfig.federalState;
 		this.lastSyncAttempt = ldapConfig.lastSyncAttempt;
@@ -150,8 +150,8 @@ export class LdapConfig {
 		};
 	};
 }
-export class OidcConfig {
-	constructor(oidcConfig: OidcConfig) {
+export class OidcConfigEntity {
+	constructor(oidcConfig: OidcConfigEntity) {
 		this.clientId = oidcConfig.clientId;
 		this.clientSecret = oidcConfig.clientSecret;
 		this.idpHint = oidcConfig.idpHint;
@@ -189,7 +189,7 @@ export class OidcConfig {
 
 @Entity({ tableName: 'systems' })
 export class SystemEntity extends BaseEntityWithTimestamps {
-	constructor(props: ISystemProperties) {
+	constructor(props: SystemEntityProps) {
 		super();
 		this.type = props.type;
 		this.url = props.url;
@@ -215,17 +215,17 @@ export class SystemEntity extends BaseEntityWithTimestamps {
 	displayName?: string;
 
 	@Property({ nullable: true })
-	oauthConfig?: OauthConfig;
+	oauthConfig?: OauthConfigEntity;
 
 	@Property({ nullable: true })
 	@Enum()
 	provisioningStrategy?: SystemProvisioningStrategy;
 
 	@Property({ nullable: true })
-	oidcConfig?: OidcConfig;
+	oidcConfig?: OidcConfigEntity;
 
-	@Embedded({ entity: () => LdapConfig, object: true, nullable: true })
-	ldapConfig?: LdapConfig;
+	@Embedded({ entity: () => LdapConfigEntity, object: true, nullable: true })
+	ldapConfig?: LdapConfigEntity;
 
 	@Property({ nullable: true })
 	provisioningUrl?: string;

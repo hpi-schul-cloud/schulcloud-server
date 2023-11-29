@@ -1,6 +1,7 @@
 import { AccountService } from '@modules/account';
 import { AccountDto } from '@modules/account/services/dto';
 // invalid import
+import { OauthCurrentUser } from '@modules/authentication/interface';
 import { CurrentUserMapper } from '@modules/authentication/mapper';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { RoleService } from '@modules/role/service/role.service';
@@ -10,8 +11,7 @@ import { EntityId, IFindOptions, LanguageType, User } from '@shared/domain';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { OauthCurrentUser } from '@modules/authentication/interface';
-import { IUserConfig } from '../interfaces';
+import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
@@ -21,7 +21,7 @@ export class UserService {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly userDORepo: UserDORepo,
-		private readonly configService: ConfigService<IUserConfig, true>,
+		private readonly configService: ConfigService<UserConfig, true>,
 		private readonly roleService: RoleService,
 		private readonly accountService: AccountService
 	) {}
@@ -119,5 +119,11 @@ export class UserService {
 		const deletedUserNumber: Promise<number> = this.userRepo.deleteUser(userId);
 
 		return deletedUserNumber;
+	}
+
+	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
+		const parentEmails = this.userRepo.getParentEmailsFromUser(userId);
+
+		return parentEmails;
 	}
 }

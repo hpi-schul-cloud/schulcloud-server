@@ -4,12 +4,12 @@ import { Role } from './role.entity';
 import { SchoolEntity } from './school.entity';
 import { User } from './user.entity';
 
-export interface ITeamProperties {
+export interface TeamProperties {
 	name: string;
 	teamUsers?: TeamUserEntity[];
 }
 
-export interface ITeamUserProperties {
+export interface TeamUserProperties {
 	user: User;
 	role: Role;
 	school: SchoolEntity;
@@ -17,7 +17,7 @@ export interface ITeamUserProperties {
 
 @Embeddable()
 export class TeamUserEntity {
-	constructor(props: ITeamUserProperties) {
+	constructor(props: TeamUserProperties) {
 		this.userId = props.user;
 		this.role = props.role;
 		this.schoolId = props.school;
@@ -66,7 +66,7 @@ export class TeamEntity extends BaseEntityWithTimestamps {
 		this.userIds = value;
 	}
 
-	constructor(props: ITeamProperties) {
+	constructor(props: TeamProperties) {
 		super();
 		this.name = props.name;
 		this.userIds = props.teamUsers ? props.teamUsers.map((teamUser) => new TeamUserEntity(teamUser)) : [];

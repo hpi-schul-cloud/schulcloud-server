@@ -1,12 +1,12 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Entity, EntityData, EntityName, Property } from '@mikro-orm/core';
-import { BaseDO, BaseEntityWithTimestamps } from '@shared/domain';
+import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
+import { Entity, EntityData, EntityName, Property } from '@mikro-orm/core';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { BaseDO, BaseEntityWithTimestamps } from '@shared/domain';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { LegacyLogger } from '@src/core/logger';
-import { createMock } from '@golevelup/ts-jest';
 
 describe('BaseDORepo', () => {
 	@Entity()
@@ -14,7 +14,7 @@ describe('BaseDORepo', () => {
 		@Property()
 		name: string;
 
-		constructor(props: ITestEntityProperties = { name: 'test' }) {
+		constructor(props: TestEntityProperties = { name: 'test' }) {
 			super();
 			this.name = props.name;
 		}
@@ -30,7 +30,7 @@ describe('BaseDORepo', () => {
 		}
 	}
 
-	interface ITestEntityProperties {
+	interface TestEntityProperties {
 		name: string;
 	}
 

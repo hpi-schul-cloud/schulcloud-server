@@ -1,9 +1,9 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
+import { createMock, DeepMocked } from '@golevelup/ts-jest/lib/mocks';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
-import { S3ClientAdapter } from '@infra/s3-client';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';

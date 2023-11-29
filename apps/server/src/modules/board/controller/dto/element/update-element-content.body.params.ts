@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger
 import { ContentElementType } from '@shared/domain';
 import { InputFormat } from '@shared/domain/types';
 import { Type } from 'class-transformer';
-import { IsDate, IsEnum, IsMongoId, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
+import { IsDate, IsEnum, IsMongoId, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export abstract class ElementContentBody {
 	@IsEnum(ContentElementType)
@@ -34,7 +34,7 @@ export class FileElementContentBody extends ElementContentBody {
 }
 
 export class LinkContentBody {
-	@IsUrl()
+	@IsString()
 	@ApiProperty({})
 	url!: string;
 
@@ -71,6 +71,12 @@ export class RichTextContentBody {
 	@IsEnum(InputFormat)
 	@ApiProperty()
 	inputFormat!: InputFormat;
+}
+
+export class DrawingContentBody {
+	@IsString()
+	@ApiProperty()
+	description!: string;
 }
 
 export class RichTextElementContentBody extends ElementContentBody {
@@ -118,6 +124,7 @@ export class ExternalToolElementContentBody extends ElementContentBody {
 
 export type AnyElementContentBody =
 	| FileContentBody
+	| DrawingContentBody
 	| LinkContentBody
 	| RichTextContentBody
 	| SubmissionContainerContentBody

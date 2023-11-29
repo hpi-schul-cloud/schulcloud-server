@@ -1,26 +1,26 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 
-export interface ITargetGroupProperties {
+export interface TargetGroupProperties {
 	state?: string;
 	schoolType?: string;
 	grade?: string;
 }
 
-export interface IRelatedResourceProperties {
+export interface RelatedResourceProperties {
 	originId?: string;
 	relationType?: string;
 }
 
-export interface IMaterialProperties {
+export interface MaterialProperties {
 	client: string;
 	description?: string;
 	license: string[];
 	merlinReference?: string;
-	relatedResources: IRelatedResourceProperties[];
+	relatedResources: RelatedResourceProperties[];
 	subjects: string[];
 	tags: string[];
-	targetGroups: ITargetGroupProperties[];
+	targetGroups: TargetGroupProperties[];
 	title: string;
 	url: string;
 }
@@ -40,7 +40,7 @@ export class Material extends BaseEntityWithTimestamps {
 	merlinReference?: string;
 
 	@Property()
-	relatedResources: IRelatedResourceProperties[] | [];
+	relatedResources: RelatedResourceProperties[] | [];
 
 	@Property()
 	subjects: string[] | [];
@@ -49,7 +49,7 @@ export class Material extends BaseEntityWithTimestamps {
 	tags: string[] | [];
 
 	@Property()
-	targetGroups: ITargetGroupProperties[] | [];
+	targetGroups: TargetGroupProperties[] | [];
 
 	@Property()
 	title: string;
@@ -57,7 +57,7 @@ export class Material extends BaseEntityWithTimestamps {
 	@Property()
 	url: string;
 
-	constructor(props: IMaterialProperties) {
+	constructor(props: MaterialProperties) {
 		super();
 		this.client = props.client;
 		this.description = props.description || '';

@@ -16,11 +16,11 @@ import {
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
 } from '../auto-parameter-strategy';
-import { IToolLaunchParams } from './tool-launch-params.interface';
-import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
+import { ToolLaunchParams } from './tool-launch-params.interface';
+import { ToolLaunchStrategy } from './tool-launch-strategy.interface';
 
 @Injectable()
-export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
+export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 	private readonly autoParameterStrategyMap: Map<CustomParameterType, AutoParameterStrategy>;
 
 	constructor(
@@ -37,7 +37,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		]);
 	}
 
-	public async createLaunchData(userId: EntityId, data: IToolLaunchParams): Promise<ToolLaunchData> {
+	public async createLaunchData(userId: EntityId, data: ToolLaunchParams): Promise<ToolLaunchData> {
 		const launchData: ToolLaunchData = this.buildToolLaunchDataFromExternalTool(data.externalTool);
 
 		const launchDataProperties: PropertyData[] = await this.buildToolLaunchDataFromTools(data);
@@ -54,7 +54,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 
 	public abstract buildToolLaunchDataFromConcreteConfig(
 		userId: EntityId,
-		config: IToolLaunchParams
+		config: ToolLaunchParams
 	): Promise<PropertyData[]>;
 
 	public abstract buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string | null;
@@ -136,7 +136,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		return launchData;
 	}
 
-	private async buildToolLaunchDataFromTools(data: IToolLaunchParams): Promise<PropertyData[]> {
+	private async buildToolLaunchDataFromTools(data: ToolLaunchParams): Promise<PropertyData[]> {
 		const propertyData: PropertyData[] = [];
 		const { externalTool, schoolExternalTool, contextExternalTool } = data;
 		const customParameters = externalTool.parameters || [];

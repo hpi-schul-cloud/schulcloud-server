@@ -1,4 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountSaveDto } from '@modules/account/services/dto';
+import { AccountDto } from '@modules/account/services/dto/account.dto';
+import { ICurrentUser } from '@modules/authentication';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
@@ -16,12 +20,8 @@ import {
 	User,
 } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
-import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { accountFactory, schoolFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountSaveDto } from '@modules/account/services/dto';
-import { AccountDto } from '@modules/account/services/dto/account.dto';
-import { ICurrentUser } from '@modules/authentication';
 import { ObjectId } from 'bson';
 import {
 	AccountByIdBodyParams,
@@ -431,7 +431,7 @@ describe('AccountUc', () => {
 			userId: mockUnknownRoleUser.id,
 			password: defaultPasswordHash,
 		});
-		const externalSystem = systemFactory.buildWithId();
+		const externalSystem = systemEntityFactory.buildWithId();
 		mockExternalUserAccount = accountFactory.buildWithId({
 			userId: mockExternalUser.id,
 			password: defaultPasswordHash,
@@ -440,25 +440,25 @@ describe('AccountUc', () => {
 		mockAccountWithoutUser = accountFactory.buildWithId({
 			userId: undefined,
 			password: defaultPasswordHash,
-			systemId: systemFactory.buildWithId().id,
+			systemId: systemEntityFactory.buildWithId().id,
 		});
 		mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId(10)).build();
 		mockAccountWithLastFailedLogin = accountFactory.buildWithId({
 			userId: undefined,
 			password: defaultPasswordHash,
-			systemId: systemFactory.buildWithId().id,
+			systemId: systemEntityFactory.buildWithId().id,
 			lasttriedFailedLogin: new Date(),
 		});
 		mockAccountWithOldLastFailedLogin = accountFactory.buildWithId({
 			userId: undefined,
 			password: defaultPasswordHash,
-			systemId: systemFactory.buildWithId().id,
+			systemId: systemEntityFactory.buildWithId().id,
 			lasttriedFailedLogin: new Date(new Date().getTime() - LOGIN_BLOCK_TIME - 1),
 		});
 		mockAccountWithNoLastFailedLogin = accountFactory.buildWithId({
 			userId: undefined,
 			password: defaultPasswordHash,
-			systemId: systemFactory.buildWithId().id,
+			systemId: systemEntityFactory.buildWithId().id,
 			lasttriedFailedLogin: undefined,
 		});
 

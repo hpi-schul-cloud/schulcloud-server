@@ -30,7 +30,7 @@ import {
 	AutoSchoolNumberStrategy,
 } from '../auto-parameter-strategy';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
-import { IToolLaunchParams } from './tool-launch-params.interface';
+import { ToolLaunchParams } from './tool-launch-params.interface';
 
 const concreteConfigParameter: PropertyData = {
 	location: PropertyLocation.QUERY,
@@ -48,7 +48,7 @@ class TestLaunchStrategy extends AbstractLaunchStrategy {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		userId: EntityId,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		config: IToolLaunchParams
+		config: ToolLaunchParams
 	): Promise<PropertyData[]> {
 		// Implement this method with your own logic for the mock launch strategy
 		return Promise.resolve([concreteConfigParameter]);

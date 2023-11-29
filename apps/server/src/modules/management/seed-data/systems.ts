@@ -1,10 +1,10 @@
 /* eslint-disable no-template-curly-in-string */
-import { ISystemProperties } from '@shared/domain';
+import { SystemEntityProps } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { systemFactory } from '@shared/testing';
+import { systemEntityFactory } from '@shared/testing';
 import { DeepPartial } from 'fishery';
 
-type SystemPartial = DeepPartial<ISystemProperties> & {
+type SystemPartial = DeepPartial<SystemEntityProps> & {
 	id?: string;
 	createdAt?: string;
 	updatedAt?: string;
@@ -66,7 +66,7 @@ const data: SystemPartial[] = [
 export function generateSystems(injectEnvVars: (s: string) => string) {
 	const systems = data.map((d) => {
 		d = JSON.parse(injectEnvVars(JSON.stringify(d))) as typeof d;
-		const params: DeepPartial<ISystemProperties> = {
+		const params: DeepPartial<SystemEntityProps> = {
 			alias: d.alias,
 			displayName: d.displayName,
 			type: d.type,
@@ -77,7 +77,7 @@ export function generateSystems(injectEnvVars: (s: string) => string) {
 			provisioningUrl: d.provisioningUrl,
 			url: d.url,
 		};
-		const system = systemFactory.buildWithId(params, d.id);
+		const system = systemEntityFactory.buildWithId(params, d.id);
 
 		if (d.createdAt) system.createdAt = new Date(d.createdAt);
 		if (d.updatedAt) system.updatedAt = new Date(d.updatedAt);

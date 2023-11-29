@@ -1,11 +1,11 @@
+import { UserService } from '@modules/user';
+import { ErrorStatus } from '@modules/video-conference/error/error-status.enum';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, UserDO } from '@shared/domain';
-import { ErrorStatus } from '@modules/video-conference/error/error-status.enum';
-import { UserService } from '@modules/user';
 import { BBBBaseMeetingConfig, BBBBaseResponse, BBBResponse, BBBRole, BBBService } from '../bbb';
-import { IScopeInfo, ScopeRef, VideoConference, VideoConferenceState } from './dto';
-import { VideoConferenceService } from '../service';
 import { PermissionMapping } from '../mapper/video-conference.mapper';
+import { VideoConferenceService } from '../service';
+import { ScopeInfo, ScopeRef, VideoConference, VideoConferenceState } from './dto';
 
 @Injectable()
 export class VideoConferenceEndUc {
@@ -27,7 +27,7 @@ export class VideoConferenceEndUc {
 
 		await this.videoConferenceService.throwOnFeaturesDisabled(user.schoolId);
 
-		const scopeInfo: IScopeInfo = await this.videoConferenceService.getScopeInfo(userId, scope.id, scope.scope);
+		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(userId, scope.id, scope.scope);
 
 		const bbbRole: BBBRole = await this.videoConferenceService.determineBbbRole(userId, scopeInfo.scopeId, scope.scope);
 
