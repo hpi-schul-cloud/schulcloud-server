@@ -53,12 +53,6 @@ async function bootstrap() {
 
 		createAndStartPrometheusMetricsAppIfEnabled(logger);
 	});
-
-	logger.info(
-		new AppStartLoggable({
-			appName: 'Tldraw server app',
-		})
-	);
 }
 
 void bootstrap();
