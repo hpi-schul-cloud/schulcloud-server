@@ -15,6 +15,6 @@ export class SanisGruppenResponse {
 
 	@IsOptional()
 	@ValidateNested({ each: true })
-	@Type(() => SanisGruppenzugehoerigkeitResponse)
+	@Type(() => SanisSonstigeGruppenzugehoerigeResponse)
 	sonstige_gruppenzugehoerige?: SanisSonstigeGruppenzugehoerigeResponse[];
 }
