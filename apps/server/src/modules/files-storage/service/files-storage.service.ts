@@ -1,3 +1,5 @@
+import { AntivirusService } from '@infra/antivirus';
+import { S3ClientAdapter } from '@infra/s3-client';
 import {
 	BadRequestException,
 	ConflictException,
@@ -8,8 +10,6 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain';
-import { AntivirusService } from '@infra/antivirus';
-import { S3ClientAdapter } from '@infra/s3-client';
 import { LegacyLogger } from '@src/core/logger';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
@@ -25,7 +25,7 @@ import {
 import { FileDto } from '../dto';
 import { FileRecord, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
-import { FileStorageConfig, FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
+import { FILES_STORAGE_S3_CONNECTION, FileStorageConfig } from '../files-storage.config';
 import {
 	createCopyFiles,
 	createFileRecord,
@@ -81,6 +81,7 @@ export class FilesStorageService {
 		const { fileRecord, stream } = await this.createFileRecord(file, params, userId);
 		// MimeType Detection consumes part of the stream, so the restored stream is passed on
 		file.data = stream;
+		file.mimeType = fileRecord.mimeType;
 		await this.fileRecordRepo.save(fileRecord);
 
 		await this.createFileInStorageAndRollbackOnError(fileRecord, params, file);
