@@ -12,32 +12,36 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 async function bootstrap() {
 	sourceMapInstall();
 
-	const nestAdminServerExpress = express();
-	const nestAdminServerExpressAdapter = new ExpressAdapter(nestAdminServerExpress);
-	nestAdminServerExpressAdapter.disable('x-powered-by');
+	const enabled = Configuration.get('ADMIN_API__ENABLED') as boolean;
 
-	const nestAdminServerApp = await NestFactory.create(AdminApiServerModule, nestAdminServerExpressAdapter);
-	const logger = await nestAdminServerApp.resolve(Logger);
-	const legacyLogger = await nestAdminServerApp.resolve(LegacyLogger);
-	nestAdminServerApp.useLogger(legacyLogger);
-	nestAdminServerApp.enableCors();
+	if (enabled) {
+		const nestAdminServerExpress = express();
+		const nestAdminServerExpressAdapter = new ExpressAdapter(nestAdminServerExpress);
+		nestAdminServerExpressAdapter.disable('x-powered-by');
 
-	enableOpenApiDocs(nestAdminServerApp, 'docs');
-	nestAdminServerApp.setGlobalPrefix('/admin/api/v1');
+		const nestAdminServerApp = await NestFactory.create(AdminApiServerModule, nestAdminServerExpressAdapter);
+		const logger = await nestAdminServerApp.resolve(Logger);
+		const legacyLogger = await nestAdminServerApp.resolve(LegacyLogger);
+		nestAdminServerApp.useLogger(legacyLogger);
+		nestAdminServerApp.enableCors();
 
-	await nestAdminServerApp.init();
+		enableOpenApiDocs(nestAdminServerApp, 'docs');
+		nestAdminServerApp.setGlobalPrefix('/admin/api/v1');
 
-	const adminApiServerPort = Configuration.get('ADMIN_API__PORT') as number;
+		await nestAdminServerApp.init();
 
-	nestAdminServerExpress.listen(adminApiServerPort, () => {
-		logger.info(
-			new AppStartLoggable({
-				appName: 'Admin API server app',
-				port: adminApiServerPort,
-				mountsDescription: `/admin/api/v1 --> Admin API Server`,
-			})
-		);
-	});
+		const adminApiServerPort = Configuration.get('ADMIN_API__PORT') as number;
+
+		nestAdminServerExpress.listen(adminApiServerPort, () => {
+			logger.info(
+				new AppStartLoggable({
+					appName: 'Admin API server app',
+					port: adminApiServerPort,
+					mountsDescription: `/admin/api/v1 --> Admin API Server`,
+				})
+			);
+		});
+	}
 }
 
 void bootstrap();
