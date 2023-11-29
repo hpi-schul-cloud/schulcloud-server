@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, InputFormat } from '@shared/domain';
+import { InputFormat, PermissionCrud } from '@shared/domain';
 import {
 	fileElementFactory,
 	richTextElementFactory,
@@ -10,7 +10,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AuthorizationService, Action } from '@modules/authorization';
+import { AuthorizationService, PermissionContextService } from '@modules/authorization';
 import { ObjectId } from 'bson';
 import { ForbiddenException } from '@nestjs/common';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
@@ -20,8 +20,8 @@ describe(ElementUc.name, () => {
 	let module: TestingModule;
 	let uc: ElementUc;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let elementService: DeepMocked<ContentElementService>;
+	let permissionContextService: DeepMocked<PermissionContextService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -47,17 +47,18 @@ describe(ElementUc.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: PermissionContextService,
+					useValue: createMock<PermissionContextService>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get(ElementUc);
 		authorizationService = module.get(AuthorizationService);
 		authorizationService.checkPermission.mockImplementation(() => {});
-		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
-		boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-			new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
-		);
 		elementService = module.get(ContentElementService);
+		permissionContextService = module.get(PermissionContextService);
 		await setupEntities();
 	});
 
@@ -73,7 +74,7 @@ describe(ElementUc.name, () => {
 				const content = { text: 'this has been updated', inputFormat: InputFormat.RICH_TEXT_CK5 };
 
 				const elementSpy = elementService.findById.mockResolvedValue(richTextElement);
-
+				permissionContextService.resolvePermissions.mockResolvedValueOnce([PermissionCrud.UPDATE]);
 				return { richTextElement, user, content, elementSpy };
 			};
 
@@ -101,6 +102,7 @@ describe(ElementUc.name, () => {
 				const content = { caption: 'this has been updated', alternativeText: 'this altText has been updated' };
 
 				const elementSpy = elementService.findById.mockResolvedValue(fileElement);
+				permissionContextService.resolvePermissions.mockResolvedValueOnce([PermissionCrud.UPDATE]);
 
 				return { fileElement, user, content, elementSpy };
 			};
@@ -130,32 +132,24 @@ describe(ElementUc.name, () => {
 				const element = richTextElementFactory.build();
 				const submissionItem = submissionItemFactory.build({ userId: user.id });
 
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
-				);
-
 				elementService.findById.mockResolvedValueOnce(element);
 				return { element, user, submissionItem };
 			};
 
 			it('should call the service to find the element', async () => {
 				const { element, user } = setup();
+				permissionContextService.resolvePermissions.mockResolvedValueOnce([PermissionCrud.DELETE]);
+
 				await uc.deleteElement(user.id, element.id);
 
 				expect(elementService.findById).toHaveBeenCalledWith(element.id);
-			});
-
-			it('should call the service to find the parent of the element', async () => {
-				const { element, user } = setup();
-				await uc.deleteElement(user.id, element.id);
-
-				expect(elementService.findParentOfId).toHaveBeenCalledWith(element.id);
 			});
 
 			it('should throw if the user is not the owner of the submission item', async () => {
 				const { element, user } = setup();
 				const otherSubmissionItem = submissionItemFactory.build({ userId: new ObjectId().toHexString() });
 				elementService.findParentOfId.mockResolvedValueOnce(otherSubmissionItem);
+				permissionContextService.resolvePermissions.mockResolvedValueOnce([]);
 
 				await expect(uc.deleteElement(user.id, element.id)).rejects.toThrow(new ForbiddenException());
 			});
@@ -163,30 +157,28 @@ describe(ElementUc.name, () => {
 			it('should authorize the user to delete the element', async () => {
 				const { element, user, submissionItem } = setup();
 				elementService.findParentOfId.mockResolvedValueOnce(submissionItem);
-				const boardDoAuthorizable = await boardDoAuthorizableService.getBoardAuthorizable(submissionItem);
-				const context = { action: Action.read, requiredPermissions: [] };
+				permissionContextService.resolvePermissions.mockResolvedValueOnce([PermissionCrud.DELETE]);
+
 				await uc.deleteElement(user.id, element.id);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, boardDoAuthorizable, context);
+				expect(permissionContextService.resolvePermissions).toHaveBeenCalled();
 			});
 
 			it('should call the service to delete the element', async () => {
 				const { user, element, submissionItem } = setup();
 				elementService.findParentOfId.mockResolvedValueOnce(submissionItem);
+				permissionContextService.resolvePermissions.mockResolvedValueOnce([PermissionCrud.DELETE]);
 
 				await uc.deleteElement(user.id, element.id);
 
 				expect(elementService.delete).toHaveBeenCalledWith(element);
 			});
 		});
+
 		describe('when deleting a content element', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const element = richTextElementFactory.build();
-
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
-				);
 
 				return { user, element };
 			};
