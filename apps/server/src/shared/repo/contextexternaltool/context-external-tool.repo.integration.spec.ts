@@ -367,7 +367,7 @@ describe('ContextExternalToolRepo', () => {
 				};
 			};
 
-			it('should return correct results', async () => {
+			it('should return a context external tool', async () => {
 				const { contextExternalTool, schoolExternalTool } = await setup();
 
 				const result = await repo.findById(contextExternalTool.id);
@@ -412,7 +412,7 @@ describe('ContextExternalToolRepo', () => {
 				};
 			};
 
-			it('should return correct results', async () => {
+			it('should return a context external tool', async () => {
 				const { contextExternalTool, schoolExternalTool } = await setup();
 
 				const result = await repo.findByIdOrNull(contextExternalTool.id);
@@ -440,7 +440,7 @@ describe('ContextExternalToolRepo', () => {
 		});
 
 		describe('when no ContextExternalTool is found', () => {
-			it('should return correct results', async () => {
+			it('should should return null', async () => {
 				const result: ContextExternalTool | null = await repo.findByIdOrNull(new ObjectId().toHexString());
 
 				expect(result).toBeNull();
