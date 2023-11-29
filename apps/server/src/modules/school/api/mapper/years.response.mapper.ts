@@ -39,10 +39,8 @@ export class YearsResponseMapper {
 	}
 
 	private static computeLastYear(schoolYears: SchoolYear[], activeYear: SchoolYearResponse): SchoolYearResponse {
-		const oneYearAgo = new Date(new Date().setFullYear(activeYear.startDate.getFullYear() - 1));
-		const lastYear = schoolYears.find(
-			(schoolYear) => schoolYear.getProps().startDate <= oneYearAgo && schoolYear.getProps().endDate >= oneYearAgo
-		);
+		const yearBefore = activeYear.startDate.getFullYear() - 1;
+		const lastYear = schoolYears.find((schoolYear) => schoolYear.getProps().startDate.getFullYear() === yearBefore);
 
 		if (!lastYear) {
 			throw new MissingYearsLoggableException();
@@ -54,10 +52,8 @@ export class YearsResponseMapper {
 	}
 
 	private static computeNextYear(schoolYears: SchoolYear[], activeYear: SchoolYearResponse): SchoolYearResponse {
-		const oneYearAhead = new Date(new Date().setFullYear(activeYear.startDate.getFullYear() + 1));
-		const nextYear = schoolYears.find(
-			(schoolYear) => schoolYear.getProps().startDate <= oneYearAhead && schoolYear.getProps().endDate >= oneYearAhead
-		);
+		const yearAfter = activeYear.startDate.getFullYear() + 1;
+		const nextYear = schoolYears.find((schoolYear) => schoolYear.getProps().startDate.getFullYear() === yearAfter);
 
 		if (!nextYear) {
 			throw new MissingYearsLoggableException();
