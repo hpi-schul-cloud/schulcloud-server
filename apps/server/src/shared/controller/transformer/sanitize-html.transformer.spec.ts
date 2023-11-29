@@ -11,20 +11,14 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		@SanitizeHtml(InputFormat.PLAIN_TEXT)
 		title2!: string;
 
-		@SanitizeHtml(InputFormat.RICH_TEXT_SIMPLE)
-		excerpt?: string;
-
-		@SanitizeHtml(InputFormat.RICH_TEXT)
-		content!: string;
-
 		@SanitizeHtml(InputFormat.RICH_TEXT_CK5)
 		contentCk5!: string;
 
-		@SanitizeHtml(InputFormat.RICH_TEXT_CK5_SIMPLE)
-		contentCk5Simple!: string;
-
 		@SanitizeHtml(InputFormat.RICH_TEXT_CK4)
 		contentCk4!: string;
+
+		@SanitizeHtml(InputFormat.RICH_TEXT_NEWS)
+		contentRichTextNews!: string;
 	}
 
 	describe('when fully sanitizing an input string', () => {
@@ -39,22 +33,6 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		});
 	});
 
-	describe('when sanitizing inline formatting', () => {
-		it('should remove all html but inline tags', () => {
-			const plainString = { excerpt: '<h1><b>html text</b></h1>' };
-			const instance = plainToClass(WithHtmlDto, plainString);
-			expect(instance.excerpt).toEqual('<b>html text</b>');
-		});
-	});
-
-	describe('when sanitizing rich text formatting', () => {
-		it('should remove all html but rich text tags', () => {
-			const plainString = { content: '<h1><b>html text</b></h1><scriPT>alert("foobar");</sCript><stYle></style>' };
-			const instance = plainToClass(WithHtmlDto, plainString);
-			expect(instance.content).toEqual('<h1><b>html text</b></h1>');
-		});
-	});
-
 	describe('when sanitizing rich text ck5 formatting', () => {
 		it('should remove all html but rich text ck5 tags', () => {
 			const plainString = {
@@ -65,17 +43,6 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 			expect(instance.contentCk5).toEqual(
 				'<b><mark>html <h4>text</h4></mark></b><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span>'
 			);
-		});
-	});
-
-	describe('when sanitizing rich text ck5 simple formatting', () => {
-		it('should remove all html but rich text ck5 simple tags', () => {
-			const plainString = {
-				contentCk5Simple:
-					'<p><b>strong</b><br />text</p><h2></h2><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
-			};
-			const instance = plainToClass(WithHtmlDto, plainString);
-			expect(instance.contentCk5Simple).toEqual('<p><b>strong</b><br />text</p>');
 		});
 	});
 
