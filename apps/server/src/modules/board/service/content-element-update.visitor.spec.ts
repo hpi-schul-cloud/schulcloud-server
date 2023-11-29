@@ -21,14 +21,13 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const board = columnBoardFactory.build();
 			const column = columnFactory.build();
 			const card = cardFactory.build();
-			const drawingItem = drawingElementFactory.build();
 			const content = new RichTextContentBody();
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
 			const submissionItem = submissionItemFactory.build();
 			const updater = new ContentElementUpdateVisitor(content);
 
-			return { board, column, card, submissionItem, drawingItem, updater };
+			return { board, column, card, submissionItem, updater };
 		};
 
 		describe('when component is a column board', () => {
@@ -56,13 +55,6 @@ describe(ContentElementUpdateVisitor.name, () => {
 			it('should throw an error', async () => {
 				const { submissionItem, updater } = setup();
 				await expect(() => updater.visitSubmissionItemAsync(submissionItem)).rejects.toThrow();
-			});
-		});
-
-		describe('when component is a drawing-item', () => {
-			it('should throw an error', async () => {
-				const { drawingItem, updater } = setup();
-				await expect(() => updater.visitDrawingElementAsync(drawingItem)).rejects.toThrow();
 			});
 		});
 	});
