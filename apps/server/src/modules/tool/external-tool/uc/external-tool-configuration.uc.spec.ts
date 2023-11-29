@@ -2,15 +2,16 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Page, Permission } from '@shared/domain';
+import { Page, Permission, User } from '@shared/domain';
 import {
 	contextExternalToolFactory,
 	customParameterFactory,
 	externalToolFactory,
 	schoolExternalToolFactory,
 	setupEntities,
+	userFactory,
 } from '@shared/testing';
-import { AuthorizationContextBuilder } from '@modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -31,6 +32,7 @@ describe('ExternalToolConfigurationUc', () => {
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let toolPermissionHelper: DeepMocked<ToolPermissionHelper>;
 	let logoService: DeepMocked<ExternalToolLogoService>;
+	let authorizationServie: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -62,6 +64,10 @@ describe('ExternalToolConfigurationUc', () => {
 					provide: ExternalToolLogoService,
 					useValue: createMock<ExternalToolLogoService>(),
 				},
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
 			],
 		}).compile();
 
@@ -72,6 +78,7 @@ describe('ExternalToolConfigurationUc', () => {
 		contextExternalToolService = module.get(ContextExternalToolService);
 		toolPermissionHelper = module.get(ToolPermissionHelper);
 		logoService = module.get(ExternalToolLogoService);
+		authorizationServie = module.get(AuthorizationService);
 	});
 
 	afterEach(() => {
@@ -673,16 +680,28 @@ describe('ExternalToolConfigurationUc', () => {
 		describe('when it is called', () => {
 			const setup = () => {
 				const userId: string = new ObjectId().toHexString();
+				const user: User = userFactory.build();
+				user.id = userId;
 
-				return { userId };
+				authorizationServie.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				return { userId, user };
 			};
 
-			it('should check Permission', async () => {
+			it('should get User', async () => {
 				const { userId } = setup();
 
 				await uc.getToolContextTypes(userId);
 
-				expect(toolPermissionHelper.ensurePermission).toHaveBeenCalledWith(userId, 'TOOL_ADMIN');
+				expect(authorizationServie.getUserWithPermissions).toHaveBeenCalledWith(userId);
+			});
+
+			it('should check Permission', async () => {
+				const { userId, user } = setup();
+
+				await uc.getToolContextTypes(userId);
+
+				expect(authorizationServie.checkAllPermissions).toHaveBeenCalledWith(user, ['TOOL_ADMIN']);
 			});
 
 			it('should get context types', async () => {

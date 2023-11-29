@@ -1,8 +1,8 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { EntityId, Permission } from '@shared/domain';
+import { EntityId, Permission, User } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
-import { AuthorizationContext, AuthorizationContextBuilder } from '@modules/authorization';
+import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -23,11 +23,13 @@ export class ExternalToolConfigurationUc {
 		@Inject(forwardRef(() => ToolPermissionHelper))
 		private readonly toolPermissionHelper: ToolPermissionHelper,
 		private readonly externalToolConfigurationService: ExternalToolConfigurationService,
-		private readonly externalToolLogoService: ExternalToolLogoService
+		private readonly externalToolLogoService: ExternalToolLogoService,
+		private readonly authorizationService: AuthorizationService
 	) {}
 
 	public async getToolContextTypes(userId: EntityId): Promise<ToolContextTypesList> {
-		await this.toolPermissionHelper.ensurePermission(userId, Permission.TOOL_ADMIN);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
 		const toolContextTypes: ToolContextTypesList = this.externalToolConfigurationService.getToolContextTypes();
 

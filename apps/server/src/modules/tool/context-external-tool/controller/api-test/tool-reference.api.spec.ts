@@ -6,6 +6,7 @@ import {
 	cleanupCollections,
 	contextExternalToolEntityFactory,
 	courseFactory,
+	customParameterFactory,
 	externalToolEntityFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
@@ -14,12 +15,7 @@ import {
 } from '@shared/testing';
 import { ServerTestModule } from '@modules/server';
 import { Response } from 'supertest';
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	ToolContextType,
-} from '../../../common/enum';
+import { CustomParameterLocation, CustomParameterScope, ToolContextType } from '../../../common/enum';
 import { ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
@@ -120,22 +116,16 @@ describe('ToolReferenceController (API)', () => {
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					logoBase64: 'logoBase64',
 					parameters: [
-						{
+						customParameterFactory.build({
 							name: 'schoolMockParameter',
-							displayName: 'MockParameter',
 							scope: CustomParameterScope.SCHOOL,
-							type: CustomParameterType.STRING,
 							location: CustomParameterLocation.PATH,
-							isOptional: false,
-						},
-						{
+						}),
+						customParameterFactory.build({
 							name: 'contextMockParameter',
-							displayName: 'MockParameter',
 							scope: CustomParameterScope.CONTEXT,
-							type: CustomParameterType.STRING,
 							location: CustomParameterLocation.PATH,
-							isOptional: false,
-						},
+						}),
 					],
 				});
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
@@ -257,22 +247,16 @@ describe('ToolReferenceController (API)', () => {
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					logoBase64: 'logoBase64',
 					parameters: [
-						{
+						customParameterFactory.build({
 							name: 'schoolMockParameter',
-							displayName: 'MockParameter',
 							scope: CustomParameterScope.SCHOOL,
-							type: CustomParameterType.STRING,
 							location: CustomParameterLocation.PATH,
-							isOptional: false,
-						},
-						{
+						}),
+						customParameterFactory.build({
 							name: 'contextMockParameter',
-							displayName: 'MockParameter',
 							scope: CustomParameterScope.CONTEXT,
-							type: CustomParameterType.STRING,
 							location: CustomParameterLocation.PATH,
-							isOptional: false,
-						},
+						}),
 					],
 				});
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({

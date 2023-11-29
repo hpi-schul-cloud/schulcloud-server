@@ -220,7 +220,7 @@ describe('ToolConfigurationController (API)', () => {
 				});
 			});
 
-			it('should not return context restricted tool', async () => {
+			it('should not return the context restricted tool', async () => {
 				const { board, loggedInClient, externalToolWithoutContextRestriction, schoolExternalTool2 } = await setup();
 
 				const response: Response = await loggedInClient.get(`board-element/${board.id}/available-tools`);
@@ -700,21 +700,8 @@ describe('ToolConfigurationController (API)', () => {
 
 	describe('GET tools/context-types', () => {
 		describe('when user is not authorized', () => {
-			const setup = async () => {
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-
-				await em.persistAndFlush([teacherAccount, teacherUser]);
-				em.clear();
-
-				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
-
-				return { loggedInClient };
-			};
-
 			it('should return unauthorized status', async () => {
-				const { loggedInClient } = await setup();
-
-				const response = await loggedInClient.get('context-types');
+				const response = await testApiClient.get('context-types');
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});

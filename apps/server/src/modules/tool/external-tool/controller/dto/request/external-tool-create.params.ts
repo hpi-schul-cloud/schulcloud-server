@@ -1,6 +1,6 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ToolConfigType, ToolContextType } from '../../../../common/enum';
 import {
 	BasicToolConfigParams,
@@ -64,6 +64,7 @@ export class ExternalToolCreateParams {
 
 	@IsArray()
 	@IsOptional()
-	@ApiPropertyOptional({ enum: ToolContextType, enumName: 'ToolContextType' })
+	@IsEnum(ToolContextType, { each: true })
+	@ApiPropertyOptional({ enum: ToolContextType, enumName: 'ToolContextType', isArray: true })
 	restrictToContexts?: ToolContextType[];
 }

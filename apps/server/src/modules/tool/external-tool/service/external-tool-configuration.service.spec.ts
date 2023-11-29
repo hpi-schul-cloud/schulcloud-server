@@ -22,7 +22,7 @@ import { CommonToolService } from '../../common/service';
 describe('ExternalToolConfigurationService', () => {
 	let module: TestingModule;
 	let service: ExternalToolConfigurationService;
-	let commonToolservice: DeepMocked<CommonToolService>;
+	let commonToolService: DeepMocked<CommonToolService>;
 
 	let toolFeatures: IToolFeatures;
 
@@ -47,7 +47,7 @@ describe('ExternalToolConfigurationService', () => {
 
 		service = module.get(ExternalToolConfigurationService);
 		toolFeatures = module.get(ToolFeatures);
-		commonToolservice = module.get(CommonToolService);
+		commonToolService = module.get(CommonToolService);
 	});
 
 	afterEach(() => {
@@ -205,13 +205,21 @@ describe('ExternalToolConfigurationService', () => {
 
 				const availableTools: ContextExternalToolTemplateInfo[] = [{ externalTool, schoolExternalTool }];
 
-				commonToolservice.isContextRestricted.mockReturnValueOnce(false);
+				commonToolService.isContextRestricted.mockReturnValueOnce(false);
 
 				return {
 					contextType,
 					availableTools,
 				};
 			};
+
+			it('should check if context is restricted', () => {
+				const { contextType, availableTools } = setup();
+
+				service.filterForContextRestrictions(availableTools, contextType);
+
+				expect(commonToolService.isContextRestricted).toHaveBeenCalledWith(availableTools[0].externalTool, contextType);
+			});
 
 			it('should pass the filter', () => {
 				const { contextType, availableTools } = setup();
@@ -227,7 +235,7 @@ describe('ExternalToolConfigurationService', () => {
 
 		describe('when context restrictions are given', () => {
 			const setup = () => {
-				const contextType = ToolContextType.COURSE;
+				const contextType: ToolContextType = ToolContextType.COURSE;
 
 				const externalToolWithCourseRestriction: ExternalTool = externalToolFactory.build({
 					restrictToContexts: [ToolContextType.COURSE],
@@ -236,35 +244,26 @@ describe('ExternalToolConfigurationService', () => {
 					restrictToContexts: [ToolContextType.BOARD_ELEMENT],
 				});
 
-				const externalToolWithAllRestrictions: ExternalTool = externalToolFactory.build({
-					restrictToContexts: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT],
-				});
-
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 
 				const availableTools: ContextExternalToolTemplateInfo[] = [
 					{ externalTool: externalToolWithCourseRestriction, schoolExternalTool },
 					{ externalTool: externalToolWithBoardRestriction, schoolExternalTool },
-					{ externalTool: externalToolWithAllRestrictions, schoolExternalTool },
 				];
+
+				commonToolService.isContextRestricted.mockReturnValueOnce(false);
+				commonToolService.isContextRestricted.mockReturnValueOnce(true);
 
 				return {
 					contextType,
 					availableTools,
 					externalToolWithCourseRestriction,
-					externalToolWithAllRestrictions,
 					schoolExternalTool,
 				};
 			};
 
 			it('should only return tools restricted to this context', () => {
-				const {
-					contextType,
-					availableTools,
-					externalToolWithCourseRestriction,
-					externalToolWithAllRestrictions,
-					schoolExternalTool,
-				} = setup();
+				const { contextType, availableTools, externalToolWithCourseRestriction, schoolExternalTool } = setup();
 
 				const result: ContextExternalToolTemplateInfo[] = service.filterForContextRestrictions(
 					availableTools,
@@ -273,7 +272,6 @@ describe('ExternalToolConfigurationService', () => {
 
 				expect(result).toEqual<ContextExternalToolTemplateInfo[]>([
 					{ externalTool: externalToolWithCourseRestriction, schoolExternalTool },
-					{ externalTool: externalToolWithAllRestrictions, schoolExternalTool },
 				]);
 			});
 		});

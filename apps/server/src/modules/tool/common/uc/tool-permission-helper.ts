@@ -61,9 +61,4 @@ export class ToolPermissionHelper {
 
 		this.authorizationService.checkPermission(user, school, context);
 	}
-
-	public async ensurePermission(userId: EntityId, permission: Permission) {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkAllPermissions(user, [permission]);
-	}
 }
