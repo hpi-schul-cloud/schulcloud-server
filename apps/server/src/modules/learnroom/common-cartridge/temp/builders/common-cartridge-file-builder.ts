@@ -1,39 +1,45 @@
 import AdmZip from 'adm-zip';
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
-import { CommonCartridgeMetadataBuilder } from './common-cartridge-metadata-builder';
-import { CommonCartridgeOrganizationBuilder } from './common-cartridge-organization-builder';
-import { CommonCartridgeManifestBuilder } from './common-cartridge-manifest-builder';
+import {
+	CommonCartridgeOrganizationBuilder,
+	CommonCartridgeOrganizationBuilderOptions,
+} from './common-cartridge-organization-builder';
 import { checkCommonCartridgeVersion, isCommonCartridgeResource, checkDefined } from '../utils';
+import { CommonCartridgeManifestResource } from '../resources/common-cartridge-manifest-resource';
+import {
+	CommonCartridgeMetadataElement,
+	CommonCartridgeMetadataElementProps,
+} from '../elements/common-cartridge-metadata-element';
+import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
+
+export type CommonCartridgeFileBuilderProps = {
+	version: CommonCartridgeVersion;
+	identifier: string;
+};
 
 export class CommonCartridgeFileBuilder {
-	private identifier?: string;
+	private readonly archive: AdmZip = new AdmZip();
 
-	private readonly archive: AdmZip;
-
-	private readonly metadataBuilder: CommonCartridgeMetadataBuilder;
+	private metadata?: CommonCartridgeElement;
 
 	private readonly organizationBuilders: CommonCartridgeOrganizationBuilder[];
 
-	constructor(private readonly version: CommonCartridgeVersion) {
-		checkCommonCartridgeVersion(version);
+	constructor(private readonly props: CommonCartridgeFileBuilderProps) {
+		checkCommonCartridgeVersion(props.version);
 
-		this.archive = new AdmZip();
-		this.metadataBuilder = new CommonCartridgeMetadataBuilder(version);
 		this.organizationBuilders = [];
 	}
 
-	setIdentifier(identifier: string): CommonCartridgeFileBuilder {
-		this.identifier = identifier;
+	withMetadata(props: Omit<CommonCartridgeMetadataElementProps, 'version'>): CommonCartridgeFileBuilder {
+		this.metadata = new CommonCartridgeMetadataElement({ ...props, version: this.props.version });
 
 		return this;
 	}
 
-	withMetadata(): CommonCartridgeMetadataBuilder {
-		return this.metadataBuilder;
-	}
-
-	withOrganization(): CommonCartridgeOrganizationBuilder {
-		const builder = new CommonCartridgeOrganizationBuilder(this.version);
+	withOrganization(
+		props: Omit<CommonCartridgeOrganizationBuilderOptions, 'version'>
+	): CommonCartridgeOrganizationBuilder {
+		const builder = new CommonCartridgeOrganizationBuilder({ ...props, version: this.props.version });
 
 		this.organizationBuilders.push(builder);
 
@@ -41,14 +47,15 @@ export class CommonCartridgeFileBuilder {
 	}
 
 	build(): Promise<Buffer> {
-		const identifier = checkDefined(this.identifier, 'Identifier');
-		const metadata = this.metadataBuilder.build();
+		const metadata = checkDefined(this.metadata, 'metadata');
 		const organizations = this.organizationBuilders.map((builder) => builder.build());
-		const manifest = new CommonCartridgeManifestBuilder(this.version)
-			.setIdentifier(identifier)
-			.setMetadata(metadata)
-			.setOrganizations(organizations)
-			.build();
+		const manifest = new CommonCartridgeManifestResource({
+			version: this.props.version,
+			identifier: this.props.identifier,
+			metadata,
+			organizations,
+			resources: [], // TODO: add resources
+		});
 
 		for (const organization of organizations) {
 			if (isCommonCartridgeResource(organization) && !organization.canInline()) {
