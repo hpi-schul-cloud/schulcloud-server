@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
 import { LegacyLogger } from '@src/core/logger';
-import { YMongodb } from './y-mongodb';
 import { calculateDiff } from '../utils';
-import { WsSharedDocDo } from '../types';
+import { WsSharedDocDo } from '../domain';
+import { YMongodb } from './y-mongodb';
 
 @Injectable()
 export class TldrawBoardRepo {

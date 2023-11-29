@@ -8,9 +8,9 @@ import * as binary from 'lib0/binary';
 import * as encoding from 'lib0/encoding';
 import { BulkWriteResult } from 'mongodb';
 import { TldrawDrawing } from '../entities';
-import { TldrawRepo } from './tldraw.repo';
 import { TldrawConfig } from '../config';
 import { YTransaction } from '../types';
+import { TldrawRepo } from './tldraw.repo';
 
 @Injectable()
 export class YMongodb {

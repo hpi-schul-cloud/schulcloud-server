@@ -2,7 +2,6 @@ import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntity
 import {
 	AnyBoardDo,
 	AnyContentElementDo,
-	DrawingElement,
 	EntityId,
 	isSubmissionContainerElement,
 	isSubmissionItem,
@@ -11,9 +10,6 @@ import {
 } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService, Action } from '@modules/authorization';
-import { HttpService } from '@nestjs/axios';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { firstValueFrom } from 'rxjs';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { SubmissionItemService } from '../service/submission-item.service';
@@ -27,8 +23,7 @@ export class ElementUc extends BaseUc {
 		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly elementService: ContentElementService,
 		private readonly submissionItemService: SubmissionItemService,
-		private readonly logger: Logger,
-		private readonly httpService: HttpService
+		private readonly logger: Logger
 	) {
 		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(ElementUc.name);
@@ -45,21 +40,10 @@ export class ElementUc extends BaseUc {
 		return element;
 	}
 
-	async deleteElement(userId: EntityId, elementId: EntityId, auth = ''): Promise<void> {
+	async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
 		const element = await this.getElementWithWritePermission(userId, elementId);
 
 		await this.elementService.delete(element);
-
-		if (element instanceof DrawingElement) {
-			await firstValueFrom(
-				this.httpService.delete(`${Configuration.get('TLDRAW_URI') as string}/tldraw-document/${element.drawingName}`, {
-					headers: {
-						Accept: 'Application/json',
-						Authorization: auth,
-					},
-				})
-			);
-		}
 	}
 
 	private async getElementWithWritePermission(userId: EntityId, elementId: EntityId): Promise<AnyContentElementDo> {

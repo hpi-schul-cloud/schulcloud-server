@@ -3,8 +3,8 @@ import WebSocket from 'ws';
 import { applyAwarenessUpdate, Awareness, encodeAwarenessUpdate } from 'y-protocols/awareness';
 import { encoding } from 'lib0';
 import { Logger } from '@nestjs/common';
-import { WSMessageType } from '../types/connection-enum';
-import { TldrawWsService } from '../service';
+import { TldrawWsService } from '@modules/tldraw/service';
+import { WSMessageType } from '../types';
 
 export class WsSharedDocDo extends Doc {
 	private readonly logger = new Logger(WsSharedDocDo.name);

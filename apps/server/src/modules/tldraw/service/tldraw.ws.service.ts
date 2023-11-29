@@ -7,9 +7,10 @@ import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
 import { Buffer } from 'node:buffer';
 import { Redis } from 'ioredis';
 import { LegacyLogger } from '@src/core/logger';
-import { TldrawBoardRepo } from '../repo';
 import { TldrawConfig } from '../config';
-import { WSConnectionState, WSMessageType, WsSharedDocDo } from '../types';
+import { WSConnectionState, WSMessageType } from '../types';
+import { WsSharedDocDo } from '../domain';
+import { TldrawBoardRepo } from '../repo';
 
 @Injectable()
 export class TldrawWsService {
