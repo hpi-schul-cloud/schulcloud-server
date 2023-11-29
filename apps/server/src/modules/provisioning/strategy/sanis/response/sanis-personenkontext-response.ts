@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsEnum, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { SanisGruppenResponse } from './sanis-gruppen-response';
 import { SanisOrganisationResponse } from './sanis-organisation-response';
 import { SanisResponseValidationGroups } from './sanis-response-validation-groups';
@@ -12,12 +12,14 @@ export class SanisPersonenkontextResponse {
 	@IsEnum(SanisRole, { groups: [SanisResponseValidationGroups.USER] })
 	rolle!: SanisRole;
 
+	@IsObject()
 	@ValidateNested({ groups: [SanisResponseValidationGroups.SCHOOL] })
 	@Type(() => SanisOrganisationResponse)
 	organisation!: SanisOrganisationResponse;
 
 	@IsOptional()
 	@IsArray()
+	@IsObject({ each: true })
 	@ValidateNested({ each: true, groups: [SanisResponseValidationGroups.GROUPS] })
 	@Type(() => SanisGruppenResponse)
 	gruppen?: SanisGruppenResponse[];

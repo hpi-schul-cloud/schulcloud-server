@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { SanisAnschriftResponse } from './sanis-anschrift-response';
 
 export class SanisOrganisationResponse {
@@ -13,6 +13,7 @@ export class SanisOrganisationResponse {
 	name!: string;
 
 	@IsOptional()
+	@IsObject()
 	@ValidateNested()
 	@Type(() => SanisAnschriftResponse)
 	anschrift?: SanisAnschriftResponse;
