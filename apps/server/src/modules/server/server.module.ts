@@ -136,7 +136,6 @@ const setupSessions = (consumer: MiddlewareConsumer, redisClient: RedisClient | 
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
 			entities: ALL_ENTITIES,
-			ensureIndexes: true,
 
 			// debug: true, // use it for locally debugging of queries
 		}),
