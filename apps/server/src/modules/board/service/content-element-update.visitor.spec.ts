@@ -102,6 +102,23 @@ describe(ContentElementUpdateVisitor.name, () => {
 		});
 	});
 
+	describe('when visiting a drawing element using the wrong content', () => {
+		const setup = () => {
+			const drawingElement = drawingElementFactory.build();
+			const content = new FileContentBody();
+			content.caption = 'a caption';
+			const updater = new ContentElementUpdateVisitor(content);
+
+			return { drawingElement, updater };
+		};
+
+		it('should throw an error', async () => {
+			const { drawingElement, updater } = setup();
+
+			await expect(() => updater.visitDrawingElementAsync(drawingElement)).rejects.toThrow();
+		});
+	});
+
 	describe('when visiting a submission container element using the wrong content', () => {
 		const setup = () => {
 			const submissionContainerElement = submissionContainerElementFactory.build();

@@ -16,6 +16,7 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
+import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
 
 describe(RecursiveDeleteVisitor.name, () => {
@@ -25,6 +26,7 @@ describe(RecursiveDeleteVisitor.name, () => {
 	let em: DeepMocked<EntityManager>;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
+	let drawingElementAdapterService: DeepMocked<DrawingElementAdapterService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -33,6 +35,7 @@ describe(RecursiveDeleteVisitor.name, () => {
 				{ provide: EntityManager, useValue: createMock<EntityManager>() },
 				{ provide: FilesStorageClientAdapterService, useValue: createMock<FilesStorageClientAdapterService>() },
 				{ provide: ContextExternalToolService, useValue: createMock<ContextExternalToolService>() },
+				{ provide: DrawingElementAdapterService, useValue: createMock<DrawingElementAdapterService>() },
 			],
 		}).compile();
 
@@ -40,6 +43,7 @@ describe(RecursiveDeleteVisitor.name, () => {
 		em = module.get(EntityManager);
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 		contextExternalToolService = module.get(ContextExternalToolService);
+		drawingElementAdapterService = module.get(DrawingElementAdapterService);
 
 		await setupEntities();
 	});
@@ -195,6 +199,14 @@ describe(RecursiveDeleteVisitor.name, () => {
 			await service.visitDrawingElementAsync(childDrawingElement);
 
 			expect(em.remove).toHaveBeenCalledWith(em.getReference(childDrawingElement.constructor, childDrawingElement.id));
+		});
+
+		it('should trigger deletion of tldraw data via adapter', async () => {
+			const { childDrawingElement } = setup();
+
+			await service.visitDrawingElementAsync(childDrawingElement);
+
+			expect(drawingElementAdapterService.deleteDrawingBinData).toHaveBeenCalledWith(childDrawingElement.id);
 		});
 	});
 

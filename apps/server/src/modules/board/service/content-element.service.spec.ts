@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	ContentElementFactory,
@@ -171,7 +171,7 @@ describe(ContentElementService.name, () => {
 
 				await service.create(card, ContentElementType.RICH_TEXT);
 
-				expect(contentElementFactory.build).toHaveBeenCalledWith(ContentElementType.RICH_TEXT, card.id);
+				expect(contentElementFactory.build).toHaveBeenCalledWith(ContentElementType.RICH_TEXT);
 			});
 
 			it('should call addChild method of parent element', async () => {
@@ -189,6 +189,25 @@ describe(ContentElementService.name, () => {
 				await service.create(card, ContentElementType.RICH_TEXT);
 
 				expect(boardDoRepo.save).toHaveBeenCalledWith([richTextElement], card);
+			});
+		});
+
+		describe('when creating a drawing element multiple times', () => {
+			const setup = () => {
+				const card = cardFactory.build();
+				const drawingElement = drawingElementFactory.build();
+
+				contentElementFactory.build.mockReturnValue(drawingElement);
+
+				return { card, drawingElement };
+			};
+
+			it('should return error for second creation', async () => {
+				const { card } = setup();
+
+				await service.create(card, ContentElementType.DRAWING);
+
+				await expect(service.create(card, ContentElementType.DRAWING)).rejects.toThrow(BadRequestException);
 			});
 		});
 	});
@@ -253,7 +272,6 @@ describe(ContentElementService.name, () => {
 			const setup = () => {
 				const drawingElement = drawingElementFactory.build();
 				const content = new DrawingContentBody();
-				content.drawingName = 'test-drawingName';
 				content.description = 'test-description';
 				const card = cardFactory.build();
 				boardDoRepo.findParentOfId.mockResolvedValue(card);
@@ -266,7 +284,6 @@ describe(ContentElementService.name, () => {
 
 				await service.update(drawingElement, content);
 
-				expect(drawingElement.drawingName).toEqual(content.drawingName);
 				expect(drawingElement.description).toEqual(content.description);
 			});
 

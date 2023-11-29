@@ -2,7 +2,7 @@ import { WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection }
 import { Server, WebSocket } from 'ws';
 import { ConfigService } from '@nestjs/config';
 import { TldrawConfig, SOCKET_PORT } from '../config';
-import { WsCloseCodeEnum } from '../types/ws-close-code-enum';
+import { WsCloseCodeEnum } from '../types';
 import { TldrawWsService } from '../service';
 
 @WebSocketGateway(SOCKET_PORT)

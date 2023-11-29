@@ -1,5 +1,5 @@
 import { BaseFactory } from '@shared/testing/factory/base.factory';
-import { TldrawDrawing, TldrawDrawingProps } from '@src/modules/tldraw/entities';
+import { TldrawDrawing, TldrawDrawingProps } from '../entities';
 
 export const tldrawEntityFactory = BaseFactory.define<TldrawDrawing, TldrawDrawingProps>(
 	TldrawDrawing,

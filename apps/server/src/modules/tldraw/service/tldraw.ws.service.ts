@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TldrawConfig } from '@src/modules/tldraw/config';
-import { WSConnectionState, WSMessageType, WsSharedDocDo } from '@src/modules/tldraw/types';
 import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
 import { encoding, decoding, map } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
-import { TldrawBoardRepo } from '@src/modules/tldraw/repo';
 import { Buffer } from 'node:buffer';
 import { Redis } from 'ioredis';
 import { LegacyLogger } from '@src/core/logger';
+import { TldrawBoardRepo } from '../repo';
+import { TldrawConfig } from '../config';
+import { WSConnectionState, WSMessageType, WsSharedDocDo } from '../types';
 
 @Injectable()
 export class TldrawWsService {
@@ -168,7 +168,7 @@ export class TldrawWsService {
 
 		// listen and reply to events
 		ws.on('message', (message: ArrayBufferLike) => {
-			void this.messageHandler(ws, doc, new Uint8Array(message));
+			this.messageHandler(ws, doc, new Uint8Array(message));
 		});
 
 		// Check if connection is still alive

@@ -11,7 +11,7 @@ import { AnyContentElementDo, ContentElementType } from './types';
 
 @Injectable()
 export class ContentElementFactory {
-	build(type: ContentElementType, param?: string): AnyContentElementDo {
+	build(type: ContentElementType): AnyContentElementDo {
 		let element!: AnyContentElementDo;
 
 		switch (type) {
@@ -25,7 +25,7 @@ export class ContentElementFactory {
 				element = this.buildRichText();
 				break;
 			case ContentElementType.DRAWING:
-				element = this.buildDrawing(param);
+				element = this.buildDrawing();
 				break;
 			case ContentElementType.SUBMISSION_CONTAINER:
 				element = this.buildSubmissionContainer();
@@ -82,10 +82,9 @@ export class ContentElementFactory {
 		return element;
 	}
 
-	private buildDrawing(cardId: string | undefined) {
+	private buildDrawing() {
 		const element = new DrawingElement({
 			id: new ObjectId().toHexString(),
-			drawingName: cardId ?? '',
 			description: '',
 			children: [],
 			createdAt: new Date(),

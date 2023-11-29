@@ -1,5 +1,5 @@
 import { setupEntities } from '@shared/testing';
-import { TldrawDrawing } from '@src/modules/tldraw/entities/tldraw-drawing.entity';
+import { TldrawDrawing } from './tldraw-drawing.entity';
 
 describe('tldraw entity', () => {
 	beforeAll(async () => {

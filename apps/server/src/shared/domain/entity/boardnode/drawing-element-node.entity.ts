@@ -6,15 +6,11 @@ import { BoardDoBuilder, BoardNodeType } from './types';
 @Entity({ discriminatorValue: BoardNodeType.DRAWING_ELEMENT })
 export class DrawingElementNode extends BoardNode {
 	@Property()
-	drawingName: string;
-
-	@Property()
 	description: string;
 
 	constructor(props: DrawingElementNodeProps) {
 		super(props);
 		this.type = BoardNodeType.DRAWING_ELEMENT;
-		this.drawingName = props.drawingName;
 		this.description = props.description;
 	}
 
@@ -25,6 +21,5 @@ export class DrawingElementNode extends BoardNode {
 }
 
 export interface DrawingElementNodeProps extends BoardNodeProps {
-	drawingName: string;
 	description: string;
 }

@@ -5,15 +5,15 @@ import { WsAdapter } from '@nestjs/platform-ws';
 import { CoreModule } from '@src/core';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
-import { config } from '@src/modules/tldraw/config';
-import { WsSharedDocDo } from '@src/modules/tldraw/types';
 import { TextEncoder } from 'util';
 import * as SyncProtocols from 'y-protocols/sync';
 import * as AwarenessProtocol from 'y-protocols/awareness';
 import { encoding } from 'lib0';
-import { TldrawBoardRepo } from '@src/modules/tldraw/repo';
-import { TldrawWs } from '@src/modules/tldraw/controller';
 import { TldrawWsFactory } from '@shared/testing/factory/tldraw.ws.factory';
+import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
+import { config } from '../config';
+import { TldrawBoardRepo } from '../repo';
+import { TldrawWs } from '../controller';
 import { TldrawWsService } from '.';
 import { TestConnection } from '../testing/test-connection';
 
@@ -221,8 +221,8 @@ describe('TldrawWSService', () => {
 
 			it('should not call send method when received message of type AWARENESS', async () => {
 				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([1, 1, 0]);
-				await service.messageHandler(ws, doc, msg);
 
+				await service.messageHandler(ws, doc, msg);
 				expect(sendSpy).toHaveBeenCalledTimes(0);
 				expect(applyAwarenessUpdateSpy).toHaveBeenCalledTimes(1);
 

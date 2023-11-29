@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { TldrawRepo } from '@src/modules/tldraw/repo/tldraw.repo';
+import { TldrawRepo } from '../repo/tldraw.repo';
 
 @Injectable()
 export class TldrawService {
 	constructor(private readonly tldrawRepo: TldrawRepo) {}
 
-	async deleteByDrawingName(drawingName: string): Promise<void> {
-		const drawings = await this.tldrawRepo.findByDrawingName(drawingName);
+	async deleteByDocName(docName: string): Promise<void> {
+		const drawings = await this.tldrawRepo.findByDocName(docName);
 		await this.tldrawRepo.delete(drawings);
 	}
 }

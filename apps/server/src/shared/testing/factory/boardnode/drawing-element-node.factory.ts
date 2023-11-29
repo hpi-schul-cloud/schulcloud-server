@@ -6,8 +6,7 @@ export const drawingElementNodeFactory = BaseFactory.define<DrawingElementNode, 
 	DrawingElementNode,
 	({ sequence }) => {
 		return {
-			drawingName: `drawing-name-${sequence}`,
-			description: 'test-description',
+			description: `test-description-${sequence}`,
 		};
 	}
 );

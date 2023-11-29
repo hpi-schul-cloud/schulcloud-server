@@ -1,9 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { TldrawDrawing } from '@src/modules/tldraw/entities';
 import { ConfigService } from '@nestjs/config';
 import { BulkWriteResult, Collection, Sort } from 'mongodb';
 import { TldrawConfig } from '../config';
+import { TldrawDrawing } from '../entities';
 
 @Injectable()
 export class TldrawRepo {
@@ -17,8 +17,8 @@ export class TldrawRepo {
 		await this._em.persistAndFlush(entity);
 	}
 
-	public async findByDrawingName(drawingName: string): Promise<TldrawDrawing[]> {
-		return this._em.find(TldrawDrawing, { docName: drawingName });
+	public async findByDocName(docName: string): Promise<TldrawDrawing[]> {
+		return this._em.find(TldrawDrawing, { docName });
 	}
 
 	public async delete(entity: TldrawDrawing | TldrawDrawing[]): Promise<void> {

@@ -2,8 +2,8 @@ import { applyUpdate, Doc } from 'yjs';
 import WebSocket from 'ws';
 import { applyAwarenessUpdate, Awareness, encodeAwarenessUpdate } from 'y-protocols/awareness';
 import { encoding } from 'lib0';
-import { WSMessageType } from '@modules/tldraw/types';
 import { Logger } from '@nestjs/common';
+import { WSMessageType } from '../types/connection-enum';
 import { TldrawWsService } from '../service';
 
 export class WsSharedDocDo extends Doc {
@@ -101,7 +101,8 @@ export class WsSharedDocDo extends Doc {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, WSMessageType.AWARENESS);
 		encoding.writeVarUint8Array(encoder, encodeAwarenessUpdate(this.awareness, changedClients));
-		return encoding.toUint8Array(encoder);
+		const message = encoding.toUint8Array(encoder);
+		return message;
 	}
 
 	/**

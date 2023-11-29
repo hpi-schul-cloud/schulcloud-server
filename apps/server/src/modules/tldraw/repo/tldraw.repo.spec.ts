@@ -51,8 +51,8 @@ describe(TldrawRepo.name, () => {
 		});
 	});
 
-	describe('findByDrawingName', () => {
-		describe('when finding by drawingName', () => {
+	describe('findByDocName', () => {
+		describe('when finding by docName', () => {
 			const setup = async () => {
 				const drawing = tldrawEntityFactory.build();
 				await em.persistAndFlush(drawing);
@@ -63,13 +63,13 @@ describe(TldrawRepo.name, () => {
 
 			it('should return the object', async () => {
 				const { drawing } = await setup();
-				const result = await repo.findByDrawingName(drawing.docName);
+				const result = await repo.findByDocName(drawing.docName);
 				expect(result[0].docName).toEqual(drawing.docName);
 				expect(result[0]._id).toEqual(drawing._id);
 			});
 
 			it('should not find any record giving wrong docName', async () => {
-				const result = await repo.findByDrawingName('invalid-name');
+				const result = await repo.findByDocName('invalid-name');
 				expect(result.length).toEqual(0);
 			});
 		});
@@ -81,10 +81,10 @@ describe(TldrawRepo.name, () => {
 				const drawing = tldrawEntityFactory.build();
 				await repo.create(drawing);
 
-				const results = await repo.findByDrawingName(drawing.docName);
+				const results = await repo.findByDocName(drawing.docName);
 				await repo.delete(results);
 
-				const emptyResults = await repo.findByDrawingName(drawing.docName);
+				const emptyResults = await repo.findByDocName(drawing.docName);
 				expect(emptyResults.length).toEqual(0);
 			});
 		});

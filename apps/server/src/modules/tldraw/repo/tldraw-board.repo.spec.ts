@@ -55,6 +55,11 @@ describe('TldrawBoardRepo', () => {
 	it('should check if repo and its properties are set correctly', () => {
 		expect(repo).toBeDefined();
 		expect(repo.mdb).toBeDefined();
+		expect(repo.configService).toBeDefined();
+		expect(repo.flushSize).toBeDefined();
+		expect(repo.multipleCollections).toBeDefined();
+		expect(repo.connectionString).toBeDefined();
+		expect(repo.collectionName).toBeDefined();
 	});
 
 	describe('updateDocument', () => {
