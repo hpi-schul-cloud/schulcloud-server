@@ -13,6 +13,7 @@ describe('CommonCartridgeWebLinkResource', () => {
 		title: 'Web Link v3',
 		url: 'https://example.com/linkv3',
 	};
+
 	const propsOfV1: CommonCartridgeWebLinkResourceProps = {
 		type: CommonCartridgeResourceType.WEB_LINK,
 		version: CommonCartridgeVersion.V_1_1,
@@ -22,17 +23,26 @@ describe('CommonCartridgeWebLinkResource', () => {
 		url: 'https://example.com/link1',
 	};
 
+	const webLinkResourceV3 = new CommonCartridgeWebLinkResource(propsOfV3);
+	const webLinkResourceV1 = new CommonCartridgeWebLinkResource(propsOfV1);
+
 	describe('canInline', () => {
-		describe('when version is 1.3', () => {
-			it('should return false', () => {
-				const webLinkResource = new CommonCartridgeWebLinkResource(propsOfV3);
-				expect(webLinkResource.canInline()).toBe(false);
+		describe('when the return value of the method is called', () => {
+			it('should return false regardless of the common cartridge version', () => {
+				expect(webLinkResourceV3.canInline()).toBe(false);
+				expect(webLinkResourceV1.canInline()).toBe(false);
 			});
 		});
-		describe('when version is 1.1', () => {
-			it('should return false', () => {
-				const webLinkResource = new CommonCartridgeWebLinkResource(propsOfV1);
-				expect(webLinkResource.canInline()).toBe(false);
+	});
+
+	describe('getFilePath', () => {
+		describe('when the return value of the method is called', () => {
+			it('should return the file path regardless of the common cartridge version', () => {
+				const filePathV3 = webLinkResourceV3.getFilePath();
+				const filePathV1 = webLinkResourceV1.getFilePath();
+
+				expect(filePathV3).toBe(`${propsOfV3.folder}/${propsOfV3.identifier}.xml`);
+				expect(filePathV1).toBe(`${propsOfV1.folder}/${propsOfV1.identifier}.xml`);
 			});
 		});
 	});
@@ -40,8 +50,7 @@ describe('CommonCartridgeWebLinkResource', () => {
 	describe('getFileContent', () => {
 		describe('when version is 1.3', () => {
 			it('should return XML content of common cartridge version 1.3', () => {
-				const webLinkResource = new CommonCartridgeWebLinkResource(propsOfV3);
-				const content = webLinkResource.getFileContent();
+				const content = webLinkResourceV3.getFileContent();
 
 				expect(content).toContain('webLink');
 				expect(content).toContain('http://www.w3.org/2001/XMLSchema-instance');
@@ -52,8 +61,7 @@ describe('CommonCartridgeWebLinkResource', () => {
 
 		describe('when version is 1.1', () => {
 			it('should return XML content of common cartridge version 1.1', () => {
-				const webLinkResource = new CommonCartridgeWebLinkResource(propsOfV1);
-				const content = webLinkResource.getFileContent();
+				const content = webLinkResourceV1.getFileContent();
 
 				expect(content).toContain('webLink');
 				expect(content).toContain('http://www.w3.org/2001/XMLSchema-instance');
@@ -77,12 +85,12 @@ describe('CommonCartridgeWebLinkResource', () => {
 	});
 
 	describe('getManifestXml', () => {
-		describe('when version is 1.3', () => {
-			it('should return manifest XML of common cartridge version 1.3', () => {
-				const webLinkResource = new CommonCartridgeWebLinkResource(propsOfV3);
-				const transformed = webLinkResource.getManifestXml();
+		describe('when the return value of the method is called', () => {
+			it('should return manifest xml content regardless of the common cartridge version', () => {
+				const transformedV3 = webLinkResourceV3.getManifestXml();
+				const transformedV1 = webLinkResourceV1.getManifestXml();
 
-				expect(transformed).toEqual({
+				expect(transformedV3).toEqual({
 					$: {
 						identifier: propsOfV3.identifier,
 						type: propsOfV3.type,
@@ -93,15 +101,8 @@ describe('CommonCartridgeWebLinkResource', () => {
 						},
 					},
 				});
-			});
-		});
 
-		describe('when version is 1.1', () => {
-			it('should return manifest XML of common cartridge version 1.1', () => {
-				const webLinkResource = new CommonCartridgeWebLinkResource(propsOfV1);
-				const transformed = webLinkResource.getManifestXml();
-
-				expect(transformed).toEqual({
+				expect(transformedV1).toEqual({
 					$: {
 						identifier: propsOfV1.identifier,
 						type: propsOfV1.type,

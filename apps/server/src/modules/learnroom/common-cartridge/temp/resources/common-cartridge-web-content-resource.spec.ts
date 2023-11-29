@@ -14,32 +14,49 @@ describe('CommonCartridgeWebContentResource', () => {
 		html: 'html tages for testing',
 	};
 	const webContentResource = new CommonCartridgeWebContentResource(props);
-	describe('content', () => {
-		it('should return html content regardless of common cartridge version', () => {
-			const content = webContentResource.getFileContent();
-			expect(content).toContain(props.html);
-		});
-	});
+
 	describe('canInline', () => {
-		it('check the return value of the method Can Inline ', () => {
-			expect(webContentResource.canInline()).toBe(false);
+		describe('when the return value of the method is called', () => {
+			it('should return false regardless of the common cartridge version', () => {
+				expect(webContentResource.canInline()).toBe(false);
+			});
 		});
 	});
-	describe('transform', () => {
-		it('should transform XML content regardless of common cartridge version', () => {
-			const transformed = webContentResource.getManifestXml();
-			expect(webContentResource.canInline()).toBe(false);
-			expect(transformed).toEqual({
-				$: {
-					identifier: props.identifier,
-					type: props.type,
-					intendeduse: 'unspecified',
-				},
-				file: {
+
+	describe('getFilePath', () => {
+		describe('when the return value of the method is called', () => {
+			it('should return the file path regardless of the common cartridge version', () => {
+				const filePath = webContentResource.getFilePath();
+				expect(filePath).toBe(`${props.folder}/${props.identifier}.html`);
+			});
+		});
+	});
+
+	describe('getFileContent', () => {
+		describe('when the return value of the method is called', () => {
+			it('should return html content regardless of the common cartridge version', () => {
+				const content = webContentResource.getFileContent();
+				expect(content).toContain(props.html);
+			});
+		});
+	});
+
+	describe('getManifestXml', () => {
+		describe('when the return value of the method is called', () => {
+			it('should return manifest xml content regardless of the common cartridge version', () => {
+				const transformed = webContentResource.getManifestXml();
+				expect(transformed).toEqual({
 					$: {
-						href: props.folder,
+						identifier: props.identifier,
+						type: props.type,
+						intendeduse: 'unspecified',
 					},
-				},
+					file: {
+						$: {
+							href: props.folder,
+						},
+					},
+				});
 			});
 		});
 	});
