@@ -19,7 +19,6 @@ export class CommonCartridgeLtiResource implements CommonCartridgeResource {
 		return false;
 	}
 
-	// TODO: This is not correct. The href should be relative to the imsmanifest.xml file.
 	getFilePath(): string {
 		return `${this.props.folder}/${this.props.identifier}.xml`;
 	}

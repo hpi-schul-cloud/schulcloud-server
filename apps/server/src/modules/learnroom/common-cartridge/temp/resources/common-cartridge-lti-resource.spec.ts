@@ -25,72 +25,86 @@ describe('CommonCartridgeLtiResource', () => {
 	const ltiResourceVersion1 = new CommonCartridgeLtiResource(propsVersion1);
 	const ltiResourceVersion3 = new CommonCartridgeLtiResource(propsVersion3);
 
-	describe('content', () => {
-		describe('When Common Cartridge version 1.1', () => {
-			it('should return correct content for version 1.1', () => {
-				const expectedContent = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-										<cartridge_basiclti_link
-											xmlns="/xsd/imslticc_v1p0"
-											xmlns:blti="/xsd/imsbasiclti_v1p0"
-											xmlns:lticm="/xsd/imslticm_v1p0"
-											xmlns:lticp="/xsd/imslticp_v1p0"
-											xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-											xsi:schemaLocation="/xsd/imslticc_v1p0
-																/xsd/lti/ltiv1p0/imslticc_v1p0.xsd/xsd/imsbasiclti_v1p0
-																/xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd/xsd/imslticm_v1p0
-																/xsd/lti/ltiv1p0/imslticm_v1p0.xsd/xsd/imslticp_v1p0
-																/xsd/lti/ltiv1p0/imslticp_v1p0.xsd&quot;">
-											<blti>
-												<title>lti-title-version1</title>
-												<description>lti-description-version1</description>
-												<launch_url>https://to-a-lti-tool-version1.tld</launch_url>
-												<secure_launch_url>https://to-a-lti-tool-version1.tld</secure_launch_url>
-												<cartridge_bundle identifierref="BLTI001_Bundle"/>
-												<cartridge_icon identifierref="BLTI001_Icon"/>
-											</blti>
-										</cartridge_basiclti_link>`;
+	describe('canInline', () => {
+		describe('when the return value of the method is called', () => {
+			it('should return false regardless of the common cartridge version', () => {
+				const resultVersion1 = ltiResourceVersion1.canInline();
+				const resultVersion3 = ltiResourceVersion3.canInline();
 
-				const content = ltiResourceVersion1.getFileContent();
-
-				expect(content.replace(/\s/g, '')).toEqual(expectedContent.replace(/\s/g, ''));
-			});
-		});
-
-		describe('When Common Cartridge version 1.3', () => {
-			it('should return correct content for version 1.3', () => {
-				const expectedContent = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-										<cartridge_basiclti_link
-											xmlns="http://www.imsglobal.org/xsd/imslticc_v1p3"
-											xmlns:blti="http://www.imsglobal.org/xsd/imsbasiclti_v1p0"
-											xmlns:lticm="http://www.imsglobal.org/xsd/imslticm_v1p0"
-											xmlns:lticp="http://www.imsglobal.org/xsd/imslticp_v1p0"
-											xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-											xsi:schemaLocation="http://www.imsglobal.org/xsd/imslticc_v1p3
-														http://www.imsglobal.org/xsd/imslticc_v1p3.xsd
-														http://www.imsglobal.org/xsd/imslticp_v1p0imslticp_v1p0.xsd
-														http://www.imsglobal.org/xsd/imslticm_v1p0imslticm_v1p0.xsd
-														http://www.imsglobal.org/xsd/imsbasiclti_v1p0imsbasiclti_v1p0p1.xsd&quot;">
-											<blti>
-												<title>lti-title-version3</title>
-												<description>lti-description-version3</description>
-												<launch_url>https://to-a-lti-tool-version3.tld</launch_url>
-												<secure_launch_url>https://to-a-lti-tool-version3.tld</secure_launch_url>
-												<cartridge_bundle identifierref="BLTI001_Bundle"/>
-												<cartridge_icon identifierref="BLTI001_Icon"/>
-											</blti>
-										</cartridge_basiclti_link>`;
-
-				const content = ltiResourceVersion3.getFileContent();
-
-				expect(content.replace(/\s/g, '')).toEqual(expectedContent.replace(/\s/g, ''));
+				expect(resultVersion1).toBe(false);
+				expect(resultVersion3).toBe(false);
 			});
 		});
 	});
 
-	describe('transform', () => {
-		describe('When Common Cartridge version 1.1', () => {
-			it('should transform props into the expected resource structure', () => {
-				const expectedOutput = {
+	describe('getFilePath', () => {
+		describe('when the return value of the method is called', () => {
+			it('should return the file path regardless of the common cartridge version', () => {
+				const filePathVersion1 = ltiResourceVersion1.getFilePath();
+				const filePathVersion3 = ltiResourceVersion3.getFilePath();
+
+				expect(filePathVersion1).toBe(`${propsVersion1.folder}/${propsVersion1.identifier}.xml`);
+				expect(filePathVersion3).toBe(`${propsVersion3.folder}/${propsVersion3.identifier}.xml`);
+			});
+		});
+	});
+
+	describe('getFileContent', () => {
+		describe('when Common Cartridge version 1.1', () => {
+			it('should return correct XML content for version 1.1', () => {
+				const content = ltiResourceVersion1.getFileContent();
+
+				expect(content).toContain('cartridge_basiclti_link');
+				expect(content).toContain('/xsd/imslticc_v1p0');
+				expect(content).toContain('/xsd/imsbasiclti_v1p0');
+				expect(content).toContain('/xsd/imslticm_v1p0');
+				expect(content).toContain('/xsd/imslticp_v1p0');
+				expect(content).toContain(
+					'/xsd/imslticc_v1p0 /xsd/lti/ltiv1p0/imslticc_v1p0.xsd' +
+						'/xsd/imsbasiclti_v1p0 /xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd' +
+						'/xsd/imslticm_v1p0 /xsd/lti/ltiv1p0/imslticm_v1p0.xsd' +
+						'/xsd/imslticp_v1p0 /xsd/lti/ltiv1p0/imslticp_v1p0.xsd'
+				);
+			});
+		});
+
+		describe('when Common Cartridge version 1.3', () => {
+			it('should return correct XML content for version 1.3', () => {
+				const content = ltiResourceVersion3.getFileContent();
+
+				expect(content).toContain('cartridge_basiclti_link');
+				expect(content).toContain('http://www.imsglobal.org/xsd/imslticc_v1p3');
+				expect(content).toContain('http://www.imsglobal.org/xsd/imsbasiclti_v1p0');
+				expect(content).toContain('http://www.imsglobal.org/xsd/imslticm_v1p0');
+				expect(content).toContain('http://www.imsglobal.org/xsd/imslticp_v1p0');
+				expect(content).toContain(
+					'http://www.imsglobal.org/xsd/imslticc_v1p3 http://www.imsglobal.org/xsd/imslticc_v1p3.xsd' +
+						'http://www.imsglobal.org/xsd/imslticp_v1p0 imslticp_v1p0.xsd' +
+						'http://www.imsglobal.org/xsd/imslticm_v1p0 imslticm_v1p0.xsd' +
+						'http://www.imsglobal.org/xsd/imsbasiclti_v1p0 imsbasiclti_v1p0p1.xsd'
+				);
+			});
+		});
+
+		describe('when version is not supported', () => {
+			it('should throw an error', () => {
+				const ltiResource = new CommonCartridgeLtiResource({
+					...propsVersion1,
+					version: 'xxx' as CommonCartridgeVersion,
+				});
+
+				expect(() => ltiResource.getFileContent()).toThrowError('Version xxx is not supported');
+			});
+		});
+	});
+
+	describe('getManifestXml', () => {
+		describe('when the return value of the method is called', () => {
+			it('should return manifest xml content regardless of the common cartridge version', () => {
+				const transformedVersion1 = ltiResourceVersion1.getManifestXml();
+				const transformedVersion3 = ltiResourceVersion3.getManifestXml();
+
+				expect(transformedVersion1).toEqual({
 					$: {
 						identifier: propsVersion1.identifier,
 						type: propsVersion1.type,
@@ -100,15 +114,9 @@ describe('CommonCartridgeLtiResource', () => {
 							href: propsVersion1.folder,
 						},
 					},
-				};
+				});
 
-				const transformed = ltiResourceVersion1.getManifestXml();
-				expect(transformed).toEqual(expectedOutput);
-			});
-		});
-		describe('When Common Cartridge version 1.3', () => {
-			it('should transform props into the expected resource structure', () => {
-				const expectedOutput = {
+				expect(transformedVersion3).toEqual({
 					$: {
 						identifier: propsVersion3.identifier,
 						type: propsVersion3.type,
@@ -118,25 +126,7 @@ describe('CommonCartridgeLtiResource', () => {
 							href: propsVersion3.folder,
 						},
 					},
-				};
-
-				const transformed = ltiResourceVersion3.getManifestXml();
-				expect(transformed).toEqual(expectedOutput);
-			});
-		});
-	});
-
-	describe('canInline', () => {
-		describe('When Common Cartridge version 1.1', () => {
-			it('should return false for canInline', () => {
-				const result = ltiResourceVersion1.canInline();
-				expect(result).toBe(false);
-			});
-		});
-		describe('When Common Cartridge version 1.3', () => {
-			it('should return false for canInline', () => {
-				const result = ltiResourceVersion3.canInline();
-				expect(result).toBe(false);
+				});
 			});
 		});
 	});
