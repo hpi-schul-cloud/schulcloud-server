@@ -1,6 +1,5 @@
 import { permissionContextFactory, setupEntities, userFactory } from '@shared/testing';
-import { UserDelta } from './permission-context.entity';
-import { Permission } from '../interface';
+import { PermissionCrud, UserDelta } from './permission-context.entity';
 
 describe('PermissionContextEntity Entity', () => {
 	beforeAll(async () => {
@@ -16,10 +15,10 @@ describe('PermissionContextEntity Entity', () => {
 				const parentUserDelta = new UserDelta([
 					{
 						userId: user.id,
-						included_permissions: [Permission.ACCOUNT_EDIT, Permission.ADMIN_EDIT],
-						excluded_permissions: [],
+						includedPermissions: [PermissionCrud.CREATE, PermissionCrud.READ],
+						excludedPermissions: [],
 					},
-					{ userId: 'SOME OTHER USER', included_permissions: [Permission.ACCOUNT_CREATE], excluded_permissions: [] },
+					{ userId: 'SOME OTHER USER', includedPermissions: [PermissionCrud.DELETE], excludedPermissions: [] },
 				]);
 
 				const parentCtx = permissionContextFactory.withUserDelta(parentUserDelta).buildWithId();
@@ -27,10 +26,10 @@ describe('PermissionContextEntity Entity', () => {
 				const childUserDelta = new UserDelta([
 					{
 						userId: user.id,
-						included_permissions: [Permission.ADD_SCHOOL_MEMBERS],
-						excluded_permissions: [Permission.ADMIN_EDIT],
+						includedPermissions: [PermissionCrud.UPDATE],
+						excludedPermissions: [PermissionCrud.CREATE],
 					},
-					{ userId: 'SOME OTHER USER', included_permissions: [Permission.BASE_VIEW], excluded_permissions: [] },
+					{ userId: 'SOME OTHER USER', includedPermissions: [PermissionCrud.READ], excludedPermissions: [] },
 				]);
 
 				const permissionContext = permissionContextFactory
@@ -41,10 +40,10 @@ describe('PermissionContextEntity Entity', () => {
 				return { user, permissionContext };
 			};
 
-			it('should resolve nested permissions', () => {
+			it('should resolve nested permissions', async () => {
 				const { user, permissionContext } = setup();
-				const resolvedPermissions = permissionContext.resolvedPermissions(user.id);
-				expect(resolvedPermissions.sort()).toEqual([Permission.ADD_SCHOOL_MEMBERS, Permission.ACCOUNT_EDIT].sort());
+				const resolvedPermissions = await permissionContext.resolvedPermissions(user.id);
+				expect(resolvedPermissions.sort()).toEqual([PermissionCrud.READ, PermissionCrud.UPDATE].sort());
 			});
 		});
 	});
