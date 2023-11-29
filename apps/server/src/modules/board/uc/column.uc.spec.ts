@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain';
+import { ContentElementType, PermissionCrud } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@modules/authorization';
+import { AuthorizationService, PermissionContextService } from '@modules/authorization';
 import { ContentElementService, BoardDoAuthorizableService, CardService, ColumnService } from '../service';
 import { ColumnUc } from './column.uc';
 
@@ -12,9 +12,9 @@ describe(ColumnUc.name, () => {
 	let module: TestingModule;
 	let uc: ColumnUc;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let columnService: DeepMocked<ColumnService>;
 	let cardService: DeepMocked<CardService>;
+	let permissionContextService: DeepMocked<PermissionContextService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -44,14 +44,18 @@ describe(ColumnUc.name, () => {
 					provide: ContentElementService,
 					useValue: createMock<ContentElementService>(),
 				},
+				{
+					provide: PermissionContextService,
+					useValue: createMock<PermissionContextService>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get(ColumnUc);
 		authorizationService = module.get(AuthorizationService);
-		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
 		columnService = module.get(ColumnService);
 		cardService = module.get(CardService);
+		permissionContextService = module.get(PermissionContextService);
 		await setupEntities();
 	});
 
@@ -72,15 +76,15 @@ describe(ColumnUc.name, () => {
 		const card = cardFactory.build();
 		authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-		const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-			users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
-			id: board.id,
-		});
+		permissionContextService.resolvePermissions.mockResolvedValueOnce([
+			PermissionCrud.CREATE,
+			PermissionCrud.READ,
+			PermissionCrud.UPDATE,
+			PermissionCrud.DELETE,
+		]);
 		const createCardBodyParams = {
 			requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
 		};
-
-		boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
 
 		return { user, board, boardId, column, card, createCardBodyParams };
 	};
