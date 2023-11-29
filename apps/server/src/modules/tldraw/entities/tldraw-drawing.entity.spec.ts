@@ -16,13 +16,20 @@ describe('tldraw entity', () => {
 					_id: 'test-id',
 					clock: 0,
 					action: 'update',
+					part: 1,
 				});
 				expect(tldraw).toBeInstanceOf(TldrawDrawing);
 			});
 
 			it('should throw with empty docName', () => {
 				const call = () =>
-					new TldrawDrawing({ docName: '', version: 'v1_tst', value: Buffer.from('bindatamock'), _id: 'test-id' });
+					new TldrawDrawing({
+						docName: '',
+						version: 'v1_tst',
+						value: Buffer.from('bindatamock'),
+						_id: 'test-id',
+						part: 1,
+					});
 				expect(call).toThrow();
 			});
 		});
