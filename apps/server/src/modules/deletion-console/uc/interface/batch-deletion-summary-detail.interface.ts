@@ -1,4 +1,4 @@
-import { QueueDeletionRequestInput, QueueDeletionRequestOutput } from '../../../deletion/services';
+import { QueueDeletionRequestInput, QueueDeletionRequestOutput } from '../../services/interface';
 
 export interface BatchDeletionSummaryDetail {
 	input: QueueDeletionRequestInput;
