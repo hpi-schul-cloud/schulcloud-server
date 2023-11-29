@@ -2,17 +2,11 @@ import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import WebSocket from 'ws';
 import { WsAdapter } from '@nestjs/platform-ws';
-import { CoreModule } from '@src/core';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@src/config';
-import { createMock } from '@golevelup/ts-jest';
 import * as AwarenessProtocol from 'y-protocols/awareness';
-import { config } from '../config';
-import { TldrawBoardRepo } from '../repo/tldraw-board.repo';
 import { TldrawWsService } from '../service';
 import { WsSharedDocDo } from './ws-shared-doc.do';
-import { TldrawWs } from '../controller';
 import { TestConnection } from '../testing/test-connection';
+import { TldrawWsTestModule } from '../tldraw-ws-test.module';
 
 describe('WsSharedDocDo', () => {
 	let app: INestApplication;
@@ -25,17 +19,8 @@ describe('WsSharedDocDo', () => {
 	jest.useFakeTimers();
 
 	beforeAll(async () => {
-		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
-			imports,
-			providers: [
-				TldrawWs,
-				TldrawBoardRepo,
-				{
-					provide: TldrawWsService,
-					useValue: createMock<TldrawWsService>(),
-				},
-			],
+			imports: [TldrawWsTestModule],
 		}).compile();
 
 		service = testingModule.get<TldrawWsService>(TldrawWsService);
@@ -56,6 +41,7 @@ describe('WsSharedDocDo', () => {
 			class MockAwareness {
 				on = jest.fn();
 			}
+
 			const doc = new WsSharedDocDo('TEST', service);
 			doc.awareness = new MockAwareness() as unknown as AwarenessProtocol.Awareness;
 			const awarenessMetaMock = new Map<number, { clock: number; lastUpdated: number }>();

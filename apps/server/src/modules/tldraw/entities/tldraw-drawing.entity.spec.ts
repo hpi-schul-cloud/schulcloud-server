@@ -12,7 +12,7 @@ describe('tldraw entity', () => {
 				const tldraw = new TldrawDrawing({
 					docName: 'test',
 					version: 'v1_tst',
-					value: 'bindatamock',
+					value: Buffer.from('bindatamock'),
 					_id: 'test-id',
 					clock: 0,
 					action: 'update',
@@ -21,7 +21,8 @@ describe('tldraw entity', () => {
 			});
 
 			it('should throw with empty docName', () => {
-				const call = () => new TldrawDrawing({ docName: '', version: 'v1_tst', value: 'bindatamock', _id: 'test-id' });
+				const call = () =>
+					new TldrawDrawing({ docName: '', version: 'v1_tst', value: Buffer.from('bindatamock'), _id: 'test-id' });
 				expect(call).toThrow();
 			});
 		});

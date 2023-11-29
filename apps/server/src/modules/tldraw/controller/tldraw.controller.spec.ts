@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TldrawController } from './tldraw.controller';
-import { TldrawService } from '../service/tldraw.service';
+import { TldrawService } from '../service';
 import { TldrawDeleteParams } from './tldraw.params';
 
 describe('TldrawController', () => {

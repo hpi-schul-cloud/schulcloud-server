@@ -3,19 +3,19 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
 import { tldrawEntityFactory } from '@src/modules/tldraw/factory';
 import { TldrawDrawing } from '@src/modules/tldraw/entities';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { TldrawRepo } from './tldraw.repo';
+import { TldrawWsTestModule } from '../tldraw-ws-test.module';
 
-describe(TldrawRepo.name, () => {
+describe('TldrawRepo', () => {
 	let module: TestingModule;
 	let repo: TldrawRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [TldrawDrawing] })],
-			providers: [TldrawRepo],
+			imports: [TldrawWsTestModule],
 		}).compile();
+
 		repo = module.get(TldrawRepo);
 		em = module.get(EntityManager);
 	});

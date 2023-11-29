@@ -4,13 +4,19 @@ import { CoreModule } from '@src/core';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
-import { TldrawBoardRepo } from './repo';
+import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
 import { TldrawWsService } from './service';
 import { config } from './config';
 import { TldrawWs } from './controller';
+import { TldrawDrawing } from './entities';
 
-const imports = [LoggerModule, CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
-const providers = [TldrawWs, TldrawBoardRepo, TldrawWsService];
+const imports = [
+	LoggerModule,
+	CoreModule,
+	MongoMemoryDatabaseModule.forRoot({ entities: [TldrawDrawing] }),
+	ConfigModule.forRoot(createConfigModuleOptions(config)),
+];
+const providers = [TldrawWs, TldrawWsService, TldrawBoardRepo, TldrawRepo, YMongodb];
 @Module({
 	imports,
 	providers,

@@ -2,18 +2,13 @@ import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import WebSocket from 'ws';
 import { WsAdapter } from '@nestjs/platform-ws';
-import { CoreModule } from '@src/core';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@src/config';
-import { createMock } from '@golevelup/ts-jest';
 import { Doc } from 'yjs';
 import * as YjsUtils from '../utils/ydoc-utils';
-import { config } from '../config';
 import { TldrawBoardRepo } from './tldraw-board.repo';
-import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
+import { WsSharedDocDo } from '../domain';
 import { TldrawWsService } from '../service';
-import { TldrawWs } from '../controller';
 import { TestConnection } from '../testing/test-connection';
+import { TldrawWsTestModule } from '../tldraw-ws-test.module';
 
 describe('TldrawBoardRepo', () => {
 	let app: INestApplication;
@@ -27,17 +22,8 @@ describe('TldrawBoardRepo', () => {
 	jest.useFakeTimers();
 
 	beforeAll(async () => {
-		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
-			imports,
-			providers: [
-				TldrawWs,
-				TldrawBoardRepo,
-				{
-					provide: TldrawWsService,
-					useValue: createMock<TldrawWsService>(),
-				},
-			],
+			imports: [TldrawWsTestModule],
 		}).compile();
 
 		service = testingModule.get<TldrawWsService>(TldrawWsService);
@@ -55,11 +41,6 @@ describe('TldrawBoardRepo', () => {
 	it('should check if repo and its properties are set correctly', () => {
 		expect(repo).toBeDefined();
 		expect(repo.mdb).toBeDefined();
-		expect(repo.configService).toBeDefined();
-		expect(repo.flushSize).toBeDefined();
-		expect(repo.multipleCollections).toBeDefined();
-		expect(repo.connectionString).toBeDefined();
-		expect(repo.collectionName).toBeDefined();
 	});
 
 	describe('updateDocument', () => {
@@ -75,7 +56,9 @@ describe('TldrawBoardRepo', () => {
 				const storeGetYDocSpy = jest
 					.spyOn(repo.mdb, 'getYDoc')
 					.mockImplementation(() => Promise.resolve(new WsSharedDocDo('TEST', service)));
-				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional').mockImplementation(() => Promise.resolve(1));
+				const storeUpdateSpy = jest
+					.spyOn(repo.mdb, 'storeUpdateTransactional')
+					.mockImplementation(() => Promise.resolve(1));
 
 				return {
 					doc,
@@ -105,7 +88,9 @@ describe('TldrawBoardRepo', () => {
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				doc.conns.set(ws, wsSet);
-				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional').mockImplementation(() => Promise.resolve(1));
+				const storeUpdateSpy = jest
+					.spyOn(repo.mdb, 'storeUpdateTransactional')
+					.mockImplementation(() => Promise.resolve(1));
 				const storeGetYDocSpy = jest
 					.spyOn(repo.mdb, 'getYDoc')
 					.mockImplementation(() => Promise.resolve(new WsSharedDocDo('TEST', service)));
@@ -158,7 +143,9 @@ describe('TldrawBoardRepo', () => {
 		describe('when the difference between update and current drawing is more than 0', () => {
 			const setup = () => {
 				const calculateDiffSpy = jest.spyOn(YjsUtils, 'calculateDiff').mockImplementationOnce(() => 1);
-				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional').mockResolvedValueOnce(Promise.resolve(1));
+				const storeUpdateSpy = jest
+					.spyOn(repo.mdb, 'storeUpdateTransactional')
+					.mockResolvedValueOnce(Promise.resolve(1));
 
 				return {
 					calculateDiffSpy,
@@ -204,7 +191,9 @@ describe('TldrawBoardRepo', () => {
 
 	describe('flushDocument', () => {
 		const setup = () => {
-			const flushDocumentSpy = jest.spyOn(repo.mdb, 'flushDocumentTransactional').mockResolvedValueOnce(Promise.resolve());
+			const flushDocumentSpy = jest
+				.spyOn(repo.mdb, 'flushDocumentTransactional')
+				.mockResolvedValueOnce(Promise.resolve());
 
 			return { flushDocumentSpy };
 		};

@@ -22,6 +22,7 @@ describe('WebSocketController (WsAdapter)', () => {
 		const testingModule = await Test.createTestingModule({
 			imports: [TldrawWsTestModule],
 		}).compile();
+
 		gateway = testingModule.get<TldrawWs>(TldrawWs);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
