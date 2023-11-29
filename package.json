@@ -76,6 +76,9 @@
 		"nest:start:h5p:library-management": "nest start h5p-library-management",
 		"nest:start:h5p:library-management:dev": "nest start h5p-library-management --debug --watch",
 		"nest:start:h5p:library-management:prod": "node dist/apps/server/apps/h5p-library-management.app",
+		"nest:start:tldraw": "nest start tldraw",
+		"nest:start:tldraw:dev": "nest start tldraw --debug --watch",
+		"nest:start:tldraw:prod": "node dist/apps/server/apps/tldraw.app",
 		"nest:start:console": "nest start console --",
 		"nest:start:console:dev": "nest start console --watch --",
 		"nest:start:console:debug": "nest start console --debug --watch --",
@@ -121,7 +124,9 @@
 		"@nestjs/microservices": "^10.2.4",
 		"@nestjs/passport": "^10.0.1",
 		"@nestjs/platform-express": "^10.2.4",
+		"@nestjs/platform-ws": "^10.2.4",
 		"@nestjs/swagger": "^7.1.10",
+		"@nestjs/websockets": "^10.2.4",
 		"@types/cache-manager-redis-store": "^2.0.1",
 		"@types/connect-redis": "^0.0.19",
 		"@types/gm": "^1.25.1",
@@ -221,7 +226,10 @@
 		"universal-analytics": "^0.5.1",
 		"urlsafe-base64": "^1.0.0",
 		"uuid": "^8.3.0",
-		"winston": "^3.8.2"
+		"winston": "^3.8.2",
+		"y-mongodb-provider": "^0.1.7",
+		"y-protocols": "^1.0.5",
+		"yjs": "^13.6.7"
 	},
 	"devDependencies": {
 		"@aws-sdk/client-s3": "^3.352.0",

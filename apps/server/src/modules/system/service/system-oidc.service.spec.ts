@@ -2,27 +2,27 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { SystemEntity } from '@shared/domain';
-import { SystemRepo } from '@shared/repo';
-import { systemFactory } from '@shared/testing';
+import { LegacySystemRepo } from '@shared/repo';
+import { systemEntityFactory } from '@shared/testing';
 import { SystemOidcMapper } from '../mapper/system-oidc.mapper';
 import { SystemOidcService } from './system-oidc.service';
 
 describe('SystemService', () => {
 	let module: TestingModule;
 	let systemService: SystemOidcService;
-	let systemRepoMock: DeepMocked<SystemRepo>;
+	let systemRepoMock: DeepMocked<LegacySystemRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				SystemOidcService,
 				{
-					provide: SystemRepo,
-					useValue: createMock<SystemRepo>(),
+					provide: LegacySystemRepo,
+					useValue: createMock<LegacySystemRepo>(),
 				},
 			],
 		}).compile();
-		systemRepoMock = module.get(SystemRepo);
+		systemRepoMock = module.get(LegacySystemRepo);
 		systemService = module.get(SystemOidcService);
 	});
 
@@ -35,8 +35,8 @@ describe('SystemService', () => {
 	});
 
 	describe('findById', () => {
-		const oidcSystem = systemFactory.withOidcConfig().buildWithId({ alias: 'oidcSystem' });
-		const standaloneSystem = systemFactory.buildWithId({ alias: 'standaloneSystem' });
+		const oidcSystem = systemEntityFactory.withOidcConfig().buildWithId({ alias: 'oidcSystem' });
+		const standaloneSystem = systemEntityFactory.buildWithId({ alias: 'standaloneSystem' });
 		const setup = (system: SystemEntity) => {
 			systemRepoMock.findById.mockResolvedValue(system);
 		};
@@ -54,9 +54,9 @@ describe('SystemService', () => {
 	});
 
 	describe('findAll', () => {
-		const ldapSystem = systemFactory.withLdapConfig().buildWithId({ alias: 'ldapSystem' });
-		const oauthSystem = systemFactory.withOauthConfig().buildWithId({ alias: 'oauthSystem' });
-		const oidcSystem = systemFactory.withOidcConfig().buildWithId({ alias: 'oidcSystem' });
+		const ldapSystem = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'ldapSystem' });
+		const oauthSystem = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'oauthSystem' });
+		const oidcSystem = systemEntityFactory.withOidcConfig().buildWithId({ alias: 'oidcSystem' });
 
 		it('should return oidc systems only', async () => {
 			systemRepoMock.findByFilter.mockResolvedValue([ldapSystem, oauthSystem, oidcSystem]);
