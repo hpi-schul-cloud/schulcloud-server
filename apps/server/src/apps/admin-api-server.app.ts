@@ -12,38 +12,32 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 async function bootstrap() {
 	sourceMapInstall();
 
-	const enabled = Configuration.get('ADMIN_API__ENABLED') as boolean;
+	const nestAdminServerExpress = express();
+	const nestAdminServerExpressAdapter = new ExpressAdapter(nestAdminServerExpress);
+	nestAdminServerExpressAdapter.disable('x-powered-by');
 
-	if (enabled) {
-		const nestAdminServerExpress = express();
-		const nestAdminServerExpressAdapter = new ExpressAdapter(nestAdminServerExpress);
-		nestAdminServerExpressAdapter.disable('x-powered-by');
+	const nestAdminServerApp = await NestFactory.create(AdminApiServerModule, nestAdminServerExpressAdapter);
+	const logger = await nestAdminServerApp.resolve(Logger);
+	const legacyLogger = await nestAdminServerApp.resolve(LegacyLogger);
+	nestAdminServerApp.useLogger(legacyLogger);
+	nestAdminServerApp.enableCors();
 
-		const nestAdminServerApp = await NestFactory.create(AdminApiServerModule, nestAdminServerExpressAdapter);
-		const logger = await nestAdminServerApp.resolve(Logger);
-		const legacyLogger = await nestAdminServerApp.resolve(LegacyLogger);
-		nestAdminServerApp.useLogger(legacyLogger);
-		nestAdminServerApp.enableCors();
+	enableOpenApiDocs(nestAdminServerApp, 'docs');
+	nestAdminServerApp.setGlobalPrefix('/admin/api/v1');
 
-		enableOpenApiDocs(nestAdminServerApp, 'docs');
-		nestAdminServerApp.setGlobalPrefix('/admin/api/v1');
+	await nestAdminServerApp.init();
 
-		await nestAdminServerApp.init();
+	const adminApiServerPort = Configuration.get('ADMIN_API__PORT') as number;
 
-		const adminApiServerPort = Configuration.get('ADMIN_API__PORT') as number;
-
-		nestAdminServerExpress.listen(adminApiServerPort, () => {
-			logger.info(
-				new AppStartLoggable({
-					appName: 'Admin API server app',
-					port: adminApiServerPort,
-					mountsDescription: `/admin/api/v1 --> Admin API Server`,
-				})
-			);
-		});
-	} else {
-		process.exit(0);
-	}
+	nestAdminServerExpress.listen(adminApiServerPort, () => {
+		logger.info(
+			new AppStartLoggable({
+				appName: 'Admin API server app',
+				port: adminApiServerPort,
+				mountsDescription: `/admin/api/v1 --> Admin API Server`,
+			})
+		);
+	});
 }
 
 void bootstrap();
