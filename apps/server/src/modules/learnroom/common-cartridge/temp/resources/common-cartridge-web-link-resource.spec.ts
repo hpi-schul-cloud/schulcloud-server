@@ -9,7 +9,7 @@ describe('CommonCartridgeWebLinkResourceElement', () => {
 		type: CommonCartridgeResourceType.WEB_LINK,
 		version: CommonCartridgeVersion.V_1_3,
 		identifier: 'web-link-v3',
-		href: 'https://example.com/linkv3',
+		folder: 'https://example.com/linkv3',
 		title: 'Web Link v3',
 		url: 'https://example.com/linkv3',
 	};
@@ -17,7 +17,7 @@ describe('CommonCartridgeWebLinkResourceElement', () => {
 		type: CommonCartridgeResourceType.WEB_LINK,
 		version: CommonCartridgeVersion.V_1_1,
 		identifier: 'web-link-v1',
-		href: 'https://example.com/link1',
+		folder: 'https://example.com/link1',
 		title: 'Web Link v1',
 		url: 'https://example.com/link1',
 	};
@@ -39,7 +39,7 @@ describe('CommonCartridgeWebLinkResourceElement', () => {
 				},
 				file: {
 					$: {
-						href: propsOfV3.href,
+						href: propsOfV3.folder,
 					},
 				},
 			});
@@ -66,7 +66,7 @@ describe('CommonCartridgeWebLinkResourceElement', () => {
 				},
 				file: {
 					$: {
-						href: propsOfV1.href,
+						href: propsOfV1.folder,
 					},
 				},
 			});

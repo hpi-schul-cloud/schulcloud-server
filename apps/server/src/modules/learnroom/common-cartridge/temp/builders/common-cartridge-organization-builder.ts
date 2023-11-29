@@ -1,45 +1,66 @@
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
+import { CommonCartridgeOrganizationElement } from '../resources/common-cartridge-organization-resource';
+import {
+	CommonCartridgeResourceFactory,
+	CommonCartridgeResourceProps,
+} from '../resources/common-cartridge-resource-factory';
 
 export type CommonCartridgeOrganizationBuilderOptions = {
 	version: CommonCartridgeVersion;
-	title: string;
 	identifier: string;
+	title: string;
+	parentFolder?: string;
 };
 
 export class CommonCartridgeOrganizationBuilder {
-	private readonly items = new Array<CommonCartridgeResource>();
+	private readonly items = new Array<CommonCartridgeElement>();
 
 	private readonly children = new Array<CommonCartridgeOrganizationBuilder>();
 
 	constructor(
 		protected readonly options: CommonCartridgeOrganizationBuilderOptions,
-		private readonly parent?: CommonCartridgeOrganizationBuilder
+		private readonly addResourceToFileBuilder: (resource: CommonCartridgeResource) => void
 	) {}
 
-	public get resources(): CommonCartridgeResource[] {
-		return this.items;
+	private get folder(): string {
+		return this.options.parentFolder
+			? `${this.options.parentFolder}/${this.options.identifier}`
+			: this.options.identifier;
 	}
 
-	addOrganization(options: CommonCartridgeOrganizationBuilderOptions): CommonCartridgeOrganizationBuilder {
-		const child = new CommonCartridgeOrganizationBuilder(options, this);
+	addSubOrganization(
+		options: Omit<CommonCartridgeOrganizationBuilderOptions, 'version'>
+	): CommonCartridgeOrganizationBuilder {
+		const child = new CommonCartridgeOrganizationBuilder(
+			{ ...options, version: this.options.version, parentFolder: this.folder },
+			this.addResourceToFileBuilder.bind(this)
+		);
 
 		this.children.push(child);
 
 		return child;
 	}
 
-	addOrganizationItem(item: CommonCartridgeResource): CommonCartridgeOrganizationBuilder {
-		this.items.push(item);
+	addResource(props: CommonCartridgeResourceProps): CommonCartridgeOrganizationBuilder {
+		const resource = CommonCartridgeResourceFactory.create({
+			...props,
+			version: this.options.version,
+			folder: this.folder,
+		});
+
+		this.items.push(resource);
+		this.addResourceToFileBuilder(resource);
 
 		return this;
 	}
 
 	build(): CommonCartridgeElement {
-		// const title = isDefined(this.title, 'Title');
-		// const identifier = isDefined(this.identifier, 'Identifier');
-
-		throw new Error('Not implemented');
+		return new CommonCartridgeOrganizationElement({
+			identifier: this.options.identifier,
+			title: this.options.title,
+			items: this.items,
+		});
 	}
 }

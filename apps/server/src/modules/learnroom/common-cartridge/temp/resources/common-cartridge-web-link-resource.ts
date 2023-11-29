@@ -6,7 +6,7 @@ export type CommonCartridgeWebLinkResourceProps = {
 	type: CommonCartridgeResourceType.WEB_LINK;
 	version: CommonCartridgeVersion;
 	identifier: string;
-	href: string;
+	folder: string;
 	title: string;
 	url: string;
 };
@@ -18,9 +18,8 @@ export class CommonCartridgeWebLinkResource implements CommonCartridgeResource {
 		return false;
 	}
 
-	// TODO: This is not correct. The href should be relative to the imsmanifest.xml file.
 	getFilePath(): string {
-		return this.props.href;
+		return `${this.props.folder}/${this.props.identifier}.xml`;
 	}
 
 	getFileContent(): string {
@@ -45,7 +44,7 @@ export class CommonCartridgeWebLinkResource implements CommonCartridgeResource {
 			},
 			file: {
 				$: {
-					href: this.props.href,
+					href: this.props.folder,
 				},
 			},
 		};

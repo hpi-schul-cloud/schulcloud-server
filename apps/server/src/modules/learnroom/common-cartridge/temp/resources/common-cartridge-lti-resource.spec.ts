@@ -6,7 +6,7 @@ describe('CommonCartridgeLtiResource', () => {
 		type: CommonCartridgeResourceType.LTI,
 		version: CommonCartridgeVersion.V_1_1,
 		identifier: 'lti-identifier-version1',
-		href: 'lti-identifier-version1/lti.xml',
+		folder: 'lti-identifier-version1/lti.xml',
 		title: 'lti-title-version1',
 		description: 'lti-description-version1',
 		url: 'https://to-a-lti-tool-version1.tld',
@@ -16,7 +16,7 @@ describe('CommonCartridgeLtiResource', () => {
 		type: CommonCartridgeResourceType.LTI,
 		version: CommonCartridgeVersion.V_1_3,
 		identifier: 'lti-identifier-version3',
-		href: 'lti-identifier-version3/lti.xml',
+		folder: 'lti-identifier-version3/lti.xml',
 		title: 'lti-title-version3',
 		description: 'lti-description-version3',
 		url: 'https://to-a-lti-tool-version3.tld',
@@ -97,7 +97,7 @@ describe('CommonCartridgeLtiResource', () => {
 					},
 					file: {
 						$: {
-							href: propsVersion1.href,
+							href: propsVersion1.folder,
 						},
 					},
 				};
@@ -115,7 +115,7 @@ describe('CommonCartridgeLtiResource', () => {
 					},
 					file: {
 						$: {
-							href: propsVersion3.href,
+							href: propsVersion3.folder,
 						},
 					},
 				};

@@ -6,7 +6,7 @@ export type CommonCartridgeLtiResourceProps = {
 	type: CommonCartridgeResourceType.LTI;
 	version: CommonCartridgeVersion;
 	identifier: string;
-	href: string;
+	folder: string;
 	title: string;
 	description?: string;
 	url: string;
@@ -21,7 +21,7 @@ export class CommonCartridgeLtiResource implements CommonCartridgeResource {
 
 	// TODO: This is not correct. The href should be relative to the imsmanifest.xml file.
 	getFilePath(): string {
-		return this.props.href;
+		return `${this.props.folder}/${this.props.identifier}.xml`;
 	}
 
 	getFileContent(): string {
@@ -56,7 +56,7 @@ export class CommonCartridgeLtiResource implements CommonCartridgeResource {
 			},
 			file: {
 				$: {
-					href: this.props.href,
+					href: this.props.folder,
 				},
 			},
 		};

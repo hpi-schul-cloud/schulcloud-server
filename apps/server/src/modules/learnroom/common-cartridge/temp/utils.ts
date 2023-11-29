@@ -1,19 +1,14 @@
-import { ObjectId } from 'bson';
 import { Builder } from 'xml2js';
 import { CommonCartridgeVersion } from './common-cartridge.enums';
-import { CommonCartridgeElement } from './interfaces/common-cartridge-element.interface';
-import { CommonCartridgeResource } from './interfaces/common-cartridge-resource.interface';
+
+export type OmitVersion<T> = Omit<T, 'version'>;
+
+export type OmitVersionAndFolder<T> = Omit<T, 'version' | 'folder'>;
 
 const xmlBuilder = new Builder();
 
 export function buildXmlString(obj: unknown): string {
 	return xmlBuilder.buildObject(obj);
-}
-
-export function createIdentifier(id?: string | ObjectId): string {
-	id = id ?? new ObjectId();
-
-	return `i${id.toString()}`;
 }
 
 export function createVersionNotSupportedError(version: CommonCartridgeVersion): Error {
@@ -36,31 +31,4 @@ export function checkDefined<T>(value: T | undefined | null, name: string): T | 
 	}
 
 	throw new Error(`${name} is null or undefined`);
-}
-
-export function isCommonCartridgeElement(element: unknown): element is CommonCartridgeElement {
-	return (
-		(element as CommonCartridgeElement).getManifestXml !== undefined &&
-		typeof (element as CommonCartridgeElement).getManifestXml === 'function'
-	);
-}
-
-export function isCommonCartridgeElementArray(elements: unknown[]): elements is CommonCartridgeElement[] {
-	return elements.every((element) => isCommonCartridgeElement(element));
-}
-
-export function isCommonCartridgeResource(element: unknown): element is CommonCartridgeResource {
-	return (
-		isCommonCartridgeElement(element) &&
-		(element as CommonCartridgeResource).canInline !== undefined &&
-		typeof (element as CommonCartridgeResource).canInline === 'function' &&
-		(element as CommonCartridgeResource).getFilePath !== undefined &&
-		typeof (element as CommonCartridgeResource).getFilePath === 'function' &&
-		(element as CommonCartridgeResource).getFileContent !== undefined &&
-		typeof (element as CommonCartridgeResource).getFileContent === 'function'
-	);
-}
-
-export function isCommonCartridgeResourceArray(elements: unknown[]): elements is CommonCartridgeResource[] {
-	return elements.every((element) => isCommonCartridgeResource(element));
 }

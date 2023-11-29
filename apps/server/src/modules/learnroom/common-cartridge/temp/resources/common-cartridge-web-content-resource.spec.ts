@@ -9,7 +9,7 @@ describe('CommonCartridgeWebContentResource', () => {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		version: CommonCartridgeVersion.V_1_3,
 		identifier: 'web-link',
-		href: 'https://example.com/link',
+		folder: 'https://example.com/link',
 		title: 'Web Link',
 		html: 'html tages for testing',
 	};
@@ -37,7 +37,7 @@ describe('CommonCartridgeWebContentResource', () => {
 				},
 				file: {
 					$: {
-						href: props.href,
+						href: props.folder,
 					},
 				},
 			});
