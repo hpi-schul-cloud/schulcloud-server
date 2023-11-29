@@ -59,7 +59,7 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		it('should remove all html but rich text news tags', () => {
 			const plainString = {
 				contentRichTextNews:
-					'<h1><b>html text</b></h1><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
+					'<h1><b>html text</b><i></i></h1><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
 			};
 			const instance = plainToClass(WithHtmlDto, plainString);
 			expect(instance.contentRichTextNews).toEqual('<h1><b>html text</b></h1>');
