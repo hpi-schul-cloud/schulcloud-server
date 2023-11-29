@@ -2,7 +2,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { BoardExternalReference, Column, ColumnBoard, EntityId, PermissionCrud } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@modules/authorization/domain';
-import { Action, PermissionContextService } from '@modules/authorization';
+import { PermissionContextService } from '@modules/authorization';
 import { CardService, ColumnBoardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 import { BaseUc } from './base.uc';
@@ -69,7 +69,7 @@ export class BoardUc extends BaseUc {
 
 		await this.pocCheckPermission(userId, boardId, [PermissionCrud.CREATE]);
 		const board = await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.write);
+		// await this.checkPermission(userId, board, Action.write);
 
 		const column = await this.columnService.create(board);
 		return column;

@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain';
+import { ContentElementType, PermissionCrud } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@modules/authorization';
+import { AuthorizationService, PermissionContextService } from '@modules/authorization';
 import { ObjectId } from 'bson';
 import {
 	BoardDoAuthorizableService,
@@ -20,9 +20,9 @@ describe(BoardUc.name, () => {
 	let module: TestingModule;
 	let uc: BoardUc;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let columnService: DeepMocked<ColumnService>;
+	let permissionContextService: DeepMocked<PermissionContextService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -56,14 +56,18 @@ describe(BoardUc.name, () => {
 					provide: ContentElementService,
 					useValue: createMock<ContentElementService>(),
 				},
+				{
+					provide: PermissionContextService,
+					useValue: createMock<PermissionContextService>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get(BoardUc);
 		authorizationService = module.get(AuthorizationService);
-		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
 		columnBoardService = module.get(ColumnBoardService);
 		columnService = module.get(ColumnService);
+		permissionContextService = module.get(PermissionContextService);
 		await setupEntities();
 	});
 
@@ -83,15 +87,16 @@ describe(BoardUc.name, () => {
 		const column = columnFactory.build();
 		authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-		const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-			users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
-			id: board.id,
-		});
 		const createCardBodyParams = {
 			requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
 		};
 
-		boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
+		permissionContextService.resolvePermissions.mockResolvedValueOnce([
+			PermissionCrud.CREATE,
+			PermissionCrud.READ,
+			PermissionCrud.UPDATE,
+			PermissionCrud.DELETE,
+		]);
 
 		return { user, board, boardId, column, createCardBodyParams };
 	};
@@ -99,7 +104,8 @@ describe(BoardUc.name, () => {
 	describe('findBoard', () => {
 		describe('when loading a board and having required permission', () => {
 			it('should call the service', async () => {
-				const { user, boardId } = setup();
+				const { user, boardId, board } = setup();
+				columnBoardService.findById.mockResolvedValueOnce(board);
 
 				await uc.findBoard(user.id, boardId);
 
@@ -117,14 +123,12 @@ describe(BoardUc.name, () => {
 		});
 
 		describe('when loading a board without having permissions', () => {
-			it('should return the column board object', async () => {
+			it('should return ForbiddenException', async () => {
 				const { board } = setup();
 				columnBoardService.findById.mockResolvedValueOnce(board);
 
 				const fakeUserId = new ObjectId().toHexString();
-				authorizationService.checkPermission.mockImplementationOnce(() => {
-					throw new ForbiddenException();
-				});
+				jest.spyOn(uc as any, 'pocCheckPermission').mockRejectedValueOnce(new ForbiddenException());
 
 				await expect(uc.findBoard(fakeUserId, board.id)).rejects.toThrow(ForbiddenException);
 			});
