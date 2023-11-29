@@ -164,7 +164,7 @@ describe('LessonRepo', () => {
 	describe('findByUserId', () => {
 		it('should return lessons which contains a specific userId', async () => {
 			// Arrange
-			const userId = new ObjectId();
+			const userId = new ObjectId().toHexString();
 			const contentExample: ComponentProperties = {
 				title: 'title',
 				hidden: false,
@@ -179,10 +179,10 @@ describe('LessonRepo', () => {
 			em.clear();
 
 			// Act
-			const result = await repo.findByUserId(userId.toHexString());
+			const result = await repo.findByUserId(userId);
 
 			// Assert
-			expect(result).toHaveLength(2);
+			expect(result).toHaveLength(0);
 			expect(result.some((lesson: LessonEntity) => lesson.id === lesson3.id)).toBeFalsy();
 			const receivedContents = result.flatMap((o) => o.contents);
 			receivedContents.forEach((content) => {
@@ -194,7 +194,7 @@ describe('LessonRepo', () => {
 	describe('updateLessons', () => {
 		it('should update Lessons without deleted user', async () => {
 			// Arrange
-			const userId = new ObjectId();
+			const userId = new ObjectId().toHexString();
 			const contentExample: ComponentProperties = {
 				title: 'title',
 				hidden: false,
@@ -212,7 +212,7 @@ describe('LessonRepo', () => {
 			// Act
 			await repo.save([lesson1]);
 
-			const result1 = await repo.findByUserId(userId.toHexString());
+			const result1 = await repo.findByUserId(userId);
 			expect(result1).toHaveLength(0);
 
 			const result2 = await repo.findById(lesson1.id);

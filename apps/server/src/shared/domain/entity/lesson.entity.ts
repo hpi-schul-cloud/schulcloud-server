@@ -68,7 +68,7 @@ export type ComponentProperties = {
 	_id?: string;
 	title: string;
 	hidden: boolean;
-	user?: ObjectId;
+	user?: EntityId;
 } & (
 	| { component: ComponentType.TEXT; content: ComponentTextProperties }
 	| { component: ComponentType.ETHERPAD; content: ComponentEtherpadProperties }
