@@ -1,5 +1,5 @@
 import { AnyBoardDo, ColumnBoard, EntityId, PermissionCrud, SubmissionItem, UserRoleEnum } from '@shared/domain';
-import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException } from '@nestjs/common';
 import { AuthorizationService, Action, PermissionContextService } from '@modules/authorization';
 import { BoardDoAuthorizableService } from '../service';
 
@@ -27,7 +27,7 @@ export abstract class BaseUc {
 	): Promise<void> {
 		const hasPermission = await this.pocHasPermission(userId, contextReference, permissionsToContain);
 		if (!hasPermission) {
-			throw new UnauthorizedException();
+			throw new ForbiddenException();
 		}
 	}
 

@@ -1,11 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain';
+import { ContentElementType, PermissionCrud } from '@shared/domain';
 import { columnBoardFactory, columnFactory, setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@modules/authorization';
-import { ObjectId } from 'bson';
+import { AuthorizationService, PermissionContextService } from '@modules/authorization';
 import { BoardDoAuthorizableService, ContentElementService, CardService } from '../service';
 import { CardUc } from './card.uc';
 
@@ -13,9 +12,9 @@ describe(CardUc.name, () => {
 	let module: TestingModule;
 	let uc: CardUc;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let cardService: DeepMocked<CardService>;
 	let elementService: DeepMocked<ContentElementService>;
+	let permissionContextService: DeepMocked<PermissionContextService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -41,12 +40,16 @@ describe(CardUc.name, () => {
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
+				{
+					provide: PermissionContextService,
+					useValue: createMock<PermissionContextService>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get(CardUc);
 		authorizationService = module.get(AuthorizationService);
-		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
+		permissionContextService = module.get(PermissionContextService);
 
 		cardService = module.get(CardService);
 		elementService = module.get(ContentElementService);
@@ -68,9 +71,7 @@ describe(CardUc.name, () => {
 				const cards = cardFactory.buildList(3);
 				const cardIds = cards.map((c) => c.id);
 
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
-				);
+				permissionContextService.resolvePermissions.mockResolvedValueOnce([PermissionCrud.READ]);
 
 				return { user, cards, cardIds };
 			};
@@ -103,15 +104,10 @@ describe(CardUc.name, () => {
 			const card = cardFactory.build();
 			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
-				id: board.id,
-			});
 			const createCardBodyParams = {
 				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
 			};
-
-			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
+			permissionContextService.resolvePermissions.mockResolvedValueOnce([PermissionCrud.DELETE]);
 
 			return { user, board, boardId, column, card, createCardBodyParams };
 		};
@@ -145,15 +141,11 @@ describe(CardUc.name, () => {
 			const card = cardFactory.build();
 			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
-				id: board.id,
-			});
+			permissionContextService.resolvePermissions.mockResolvedValueOnce([PermissionCrud.UPDATE]);
+
 			const createCardBodyParams = {
 				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
 			};
-
-			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
 
 			return { user, board, boardId, column, card, createCardBodyParams };
 		};
@@ -174,7 +166,8 @@ describe(CardUc.name, () => {
 
 				await uc.updateCardHeight(user.id, card.id, cardHeight);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalled();
+				// eslint-disable-next-line @typescript-eslint/dot-notation
+				expect(uc['pocCheckPermission']).toHaveBeenCalled();
 			});
 
 			it('should call the service to update the card height', async () => {
@@ -198,15 +191,11 @@ describe(CardUc.name, () => {
 			const card = cardFactory.build();
 			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
-				id: board.id,
-			});
+			permissionContextService.resolvePermissions.mockResolvedValueOnce([PermissionCrud.UPDATE]);
+
 			const createCardBodyParams = {
 				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
 			};
-
-			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
 
 			return { user, board, boardId, column, card, createCardBodyParams };
 		};
@@ -242,9 +231,7 @@ describe(CardUc.name, () => {
 				cardService.findById.mockResolvedValueOnce(card);
 				elementService.create.mockResolvedValueOnce(element);
 
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
-				);
+				permissionContextService.resolvePermissions.mockResolvedValueOnce([PermissionCrud.CREATE]);
 
 				return { user, card, element };
 			};
@@ -292,18 +279,14 @@ describe(CardUc.name, () => {
 	describe('moveElement', () => {
 		describe('when moving an element', () => {
 			const setup = () => {
+				jest.restoreAllMocks();
 				const user = userFactory.build();
 				const element = richTextElementFactory.build();
 				const card = cardFactory.build();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-					users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
-					id: element.id,
-				});
-
-				boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
+				permissionContextService.resolvePermissions.mockResolvedValue([PermissionCrud.UPDATE]);
 
 				return { user, card, element };
 			};
