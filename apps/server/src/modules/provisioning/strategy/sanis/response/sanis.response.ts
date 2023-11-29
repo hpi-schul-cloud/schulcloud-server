@@ -8,7 +8,7 @@ export class SanisResponse {
 	@IsString({ groups: [SanisResponseValidationGroups.USER] })
 	pid!: string;
 
-	@IsObject()
+	@IsObject({ groups: [SanisResponseValidationGroups.USER] })
 	@ValidateNested({ groups: [SanisResponseValidationGroups.USER] })
 	@Type(() => SanisPersonResponse)
 	person!: SanisPersonResponse;

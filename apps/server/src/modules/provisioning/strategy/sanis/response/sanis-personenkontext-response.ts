@@ -12,13 +12,13 @@ export class SanisPersonenkontextResponse {
 	@IsEnum(SanisRole, { groups: [SanisResponseValidationGroups.USER] })
 	rolle!: SanisRole;
 
-	@IsObject()
+	@IsObject({ groups: [SanisResponseValidationGroups.SCHOOL] })
 	@ValidateNested({ groups: [SanisResponseValidationGroups.SCHOOL] })
 	@Type(() => SanisOrganisationResponse)
 	organisation!: SanisOrganisationResponse;
 
-	@IsOptional()
-	@IsArray()
+	@IsOptional({ groups: [SanisResponseValidationGroups.GROUPS] })
+	@IsArray({ groups: [SanisResponseValidationGroups.GROUPS] })
 	@ValidateNested({ each: true, groups: [SanisResponseValidationGroups.GROUPS] })
 	@Type(() => SanisGruppenResponse)
 	gruppen?: SanisGruppenResponse[];
