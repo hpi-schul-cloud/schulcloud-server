@@ -350,6 +350,51 @@ describe('ContextExternalToolRepo', () => {
 		});
 	});
 
+	describe('findById', () => {
+		describe('when a ContextExternalTool is found', () => {
+			const setup = async () => {
+				const schoolExternalTool = schoolExternalToolEntityFactory.buildWithId();
+				const contextExternalTool = contextExternalToolEntityFactory.buildWithId({
+					contextType: ContextExternalToolType.COURSE,
+					schoolTool: schoolExternalTool,
+				});
+
+				await em.persistAndFlush([schoolExternalTool, contextExternalTool]);
+
+				return {
+					contextExternalTool,
+					schoolExternalTool,
+				};
+			};
+
+			it('should return correct results', async () => {
+				const { contextExternalTool, schoolExternalTool } = await setup();
+
+				const result = await repo.findById(contextExternalTool.id);
+
+				expect(result).toEqual<ContextExternalToolProps>({
+					id: contextExternalTool.id,
+					contextRef: {
+						id: contextExternalTool.contextId,
+						type: ToolContextType.COURSE,
+					},
+					displayName: contextExternalTool.displayName,
+					parameters: [
+						{
+							name: contextExternalTool.parameters[0].name,
+							value: contextExternalTool.parameters[0].value,
+						},
+					],
+					schoolToolRef: {
+						schoolToolId: schoolExternalTool.id,
+						schoolId: schoolExternalTool.school.id,
+					},
+					toolVersion: contextExternalTool.toolVersion,
+				});
+			});
+		});
+	});
+
 	describe('findByIdOrNull', () => {
 		describe('when a ContextExternalTool is found', () => {
 			const setup = async () => {
