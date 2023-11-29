@@ -116,7 +116,7 @@ export class SanisResponseMapper {
 	}
 
 	private mapToExternalGroupUser(relation: SanisSonstigeGruppenzugehoerigeResponse): ExternalGroupUserDto | null {
-		if (!relation.rollen.length) {
+		if (!relation.rollen?.length) {
 			return null;
 		}
 
