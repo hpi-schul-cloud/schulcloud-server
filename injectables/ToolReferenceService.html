@@ -357,7 +357,7 @@ export class ToolReferenceService {
 	) {}
 
 	async getToolReference(contextExternalToolId: EntityId): Promise&lt;ToolReference&gt; {
-		const contextExternalTool: ContextExternalTool &#x3D; await this.contextExternalToolService.findById(
+		const contextExternalTool: ContextExternalTool &#x3D; await this.contextExternalToolService.findByIdOrFail(
 			contextExternalToolId
 		);
 		const schoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolService.findById(

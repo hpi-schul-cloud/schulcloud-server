@@ -311,8 +311,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="97"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:97</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="99"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:99</a></div>
                         </td>
                     </tr>
 
@@ -449,8 +449,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="101"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:101</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="103"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:103</a></div>
                         </td>
                     </tr>
 
@@ -1125,6 +1125,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
+import { DrawingElementAdapterService } from &#x27;@modules/tldraw-client/service/drawing-element-adapter.service&#x27;;
 import { ContextExternalTool } from &#x27;@modules/tool/context-external-tool/domain&#x27;;
 import { ContextExternalToolService } from &#x27;@modules/tool/context-external-tool/service&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
@@ -1141,9 +1142,8 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from &#x27;@shared/domain&#x27;;
-import { LinkElement } from &#x27;@shared/domain/domainobject/board/link-element.do&#x27;;
 import { DrawingElement } from &#x27;@shared/domain/domainobject/board/drawing-element.do&#x27;;
-import { DrawingElementAdapterService } from &#x27;@modules/tldraw-client/service/drawing-element-adapter.service&#x27;;
+import { LinkElement } from &#x27;@shared/domain/domainobject/board/link-element.do&#x27;;
 
 @Injectable()
 export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
@@ -1207,11 +1207,13 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 
 	async visitExternalToolElementAsync(externalToolElement: ExternalToolElement): Promise&lt;void&gt; {
 		if (externalToolElement.contextExternalToolId) {
-			const linkedTool: ContextExternalTool &#x3D; await this.contextExternalToolService.findById(
+			const linkedTool: ContextExternalTool | null &#x3D; await this.contextExternalToolService.findById(
 				externalToolElement.contextExternalToolId
 			);
 
-			await this.contextExternalToolService.deleteContextExternalTool(linkedTool);
+			if (linkedTool) {
+				await this.contextExternalToolService.deleteContextExternalTool(linkedTool);
+			}
 		}
 
 		this.deleteNode(externalToolElement);

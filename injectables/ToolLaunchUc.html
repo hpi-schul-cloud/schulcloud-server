@@ -323,9 +323,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContext, AuthorizationContextBuilder } from &#x27;@modules/authorization&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId, Permission } from &#x27;@shared/domain&#x27;;
-import { AuthorizationContext, AuthorizationContextBuilder } from &#x27;@modules/authorization&#x27;;
 import { ToolPermissionHelper } from &#x27;../../common/uc/tool-permission-helper&#x27;;
 import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
 import { ContextExternalToolService } from &#x27;../../context-external-tool/service&#x27;;
@@ -341,7 +341,7 @@ export class ToolLaunchUc {
 	) {}
 
 	async getToolLaunchRequest(userId: EntityId, contextExternalToolId: EntityId): Promise&lt;ToolLaunchRequest&gt; {
-		const contextExternalTool: ContextExternalTool &#x3D; await this.contextExternalToolService.findById(
+		const contextExternalTool: ContextExternalTool &#x3D; await this.contextExternalToolService.findByIdOrFail(
 			contextExternalToolId
 		);
 		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);

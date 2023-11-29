@@ -174,6 +174,11 @@
                                 <a href="#findById" >findById</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#findByIdOrNull" >findByIdOrNull</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                 <a href="#mapContextTypeToDoType" >mapContextTypeToDoType</a>
                             </li>
@@ -338,8 +343,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="78"
-                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:78</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="96"
+                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:96</a></div>
                         </td>
                     </tr>
 
@@ -758,6 +763,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findByIdOrNull"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>findByIdOrNull</b></span>
+                        <a href="#findByIdOrNull"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByIdOrNull(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:78</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;ContextExternalTool | null&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="mapContextTypeToDoType"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -776,8 +851,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="133"
-                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:133</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="151"
+                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:151</a></div>
                         </td>
                     </tr>
 
@@ -845,8 +920,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="122"
-                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:122</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="140"
+                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:140</a></div>
                         </td>
                     </tr>
 
@@ -918,7 +993,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:111</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:129</a></code>
 </div>
                         </td>
                     </tr>
@@ -991,7 +1066,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:90</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:108</a></code>
 </div>
                         </td>
                     </tr>
@@ -1825,6 +1900,24 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;
 				populate: [&#x27;schoolTool.school&#x27;],
 			}
 		);
+
+		const mapped: ContextExternalTool &#x3D; this.mapEntityToDO(entity);
+
+		return mapped;
+	}
+
+	public async findByIdOrNull(id: EntityId): Promise&lt;ContextExternalTool | null&gt; {
+		const entity: ContextExternalToolEntity | null &#x3D; await this._em.findOne(
+			this.entityName,
+			{ id },
+			{
+				populate: [&#x27;schoolTool.school&#x27;],
+			}
+		);
+
+		if (!entity) {
+			return null;
+		}
 
 		const mapped: ContextExternalTool &#x3D; this.mapEntityToDO(entity);
 

@@ -160,6 +160,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findByIdOrFail" >findByIdOrFail</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findContextExternalTools" >findContextExternalTools</a>
                             </li>
                             <li>
@@ -254,8 +258,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -323,8 +327,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -392,8 +396,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="43"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:43</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -455,6 +459,75 @@
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
                     <code>findById(contextExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>contextExternalToolId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;ContextExternalTool | null&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findByIdOrFail"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findByIdOrFail</b></span>
+                        <a href="#findByIdOrFail"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByIdOrFail(contextExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -599,8 +672,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -668,8 +741,14 @@ export class ContextExternalToolService {
 		return contextExternalTools;
 	}
 
-	async findById(contextExternalToolId: EntityId): Promise&lt;ContextExternalTool&gt; {
+	async findByIdOrFail(contextExternalToolId: EntityId): Promise&lt;ContextExternalTool&gt; {
 		const tool: ContextExternalTool &#x3D; await this.contextExternalToolRepo.findById(contextExternalToolId);
+
+		return tool;
+	}
+
+	async findById(contextExternalToolId: EntityId): Promise&lt;ContextExternalTool | null&gt; {
+		const tool: ContextExternalTool | null &#x3D; await this.contextExternalToolRepo.findByIdOrNull(contextExternalToolId);
 
 		return tool;
 	}

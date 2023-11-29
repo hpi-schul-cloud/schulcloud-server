@@ -897,7 +897,7 @@ export class ContextExternalToolUc {
 			throw new ForbiddenLoggableException(userId, AuthorizableReferenceType.ContextExternalToolEntity, context);
 		}
 
-		let contextExternalTool: ContextExternalTool &#x3D; await this.contextExternalToolService.findById(
+		let contextExternalTool: ContextExternalTool &#x3D; await this.contextExternalToolService.findByIdOrFail(
 			contextExternalToolId
 		);
 
@@ -919,7 +919,7 @@ export class ContextExternalToolUc {
 	}
 
 	public async deleteContextExternalTool(userId: EntityId, contextExternalToolId: EntityId): Promise&lt;void&gt; {
-		const tool: ContextExternalTool &#x3D; await this.contextExternalToolService.findById(contextExternalToolId);
+		const tool: ContextExternalTool &#x3D; await this.contextExternalToolService.findByIdOrFail(contextExternalToolId);
 
 		const context &#x3D; AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
 		await this.toolPermissionHelper.ensureContextPermissions(userId, tool, context);
@@ -942,7 +942,7 @@ export class ContextExternalToolUc {
 	}
 
 	async getContextExternalTool(userId: EntityId, contextToolId: EntityId) {
-		const tool: ContextExternalTool &#x3D; await this.contextExternalToolService.findById(contextToolId);
+		const tool: ContextExternalTool &#x3D; await this.contextExternalToolService.findByIdOrFail(contextToolId);
 		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 
 		await this.toolPermissionHelper.ensureContextPermissions(userId, tool, context);
