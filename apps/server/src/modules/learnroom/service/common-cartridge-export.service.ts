@@ -1,9 +1,13 @@
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { ComponentProperties, EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
-import { CommonCartridgeFileBuilder, CommonCartridgeVersion } from '../common-cartridge';
+import {
+	CommonCartridgeFileBuilder,
+	CommonCartridgeOrganizationBuilder,
+	CommonCartridgeVersion,
+} from '../common-cartridge';
 import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
 import { CourseService } from './course.service';
 
@@ -41,21 +45,7 @@ export class CommonCartridgeExportService {
 			const organizationBuilder = builder.addOrganization(CommonCartridgeMapper.mapLessonToOrganization(lesson));
 
 			lesson.contents.forEach((content) => {
-				const resources = CommonCartridgeMapper.mapContentToResources(content, version);
-
-				if (!Array.isArray(resources)) {
-					organizationBuilder.addResource(resources);
-				}
-
-				if (Array.isArray(resources)) {
-					const subOrganizationBuilder = organizationBuilder.addSubOrganization(
-						CommonCartridgeMapper.mapContentToOrganization(content)
-					);
-
-					resources.forEach((resource) => {
-						subOrganizationBuilder.addResource(resource);
-					});
-				}
+				this.addComponent(organizationBuilder, content, version);
 			});
 		});
 	}
@@ -75,5 +65,27 @@ export class CommonCartridgeExportService {
 		tasks.forEach((task) => {
 			organizationBuilder.addResource(CommonCartridgeMapper.mapTaskToResource(task, version));
 		});
+	}
+
+	private addComponent(
+		organizationBuilder: CommonCartridgeOrganizationBuilder,
+		component: ComponentProperties,
+		version: CommonCartridgeVersion
+	): void {
+		const resources = CommonCartridgeMapper.mapContentToResources(component, version);
+
+		if (!Array.isArray(resources)) {
+			organizationBuilder.addResource(resources);
+		}
+
+		if (Array.isArray(resources)) {
+			const subOrganizationBuilder = organizationBuilder.addSubOrganization(
+				CommonCartridgeMapper.mapContentToOrganization(component)
+			);
+
+			resources.forEach((resource) => {
+				subOrganizationBuilder.addResource(resource);
+			});
+		}
 	}
 }
