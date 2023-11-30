@@ -89,3 +89,11 @@
   e.g.
   api: <PaginationParams, pagination.params.ts>, <CreatNewsParams, create-news.params.ts>, <NewsResponse, news.response.ts>
   domain: <CreateNews, create-news.interface.ts>, <News, news.entity.ts>
+
+### EW-539
+
+- tests for CCExportService
+- tests for CCMapper
+- tests for CCManifestResource
+- tests for CC*Element
+- Cleanup FIXMEs

@@ -6,12 +6,13 @@ import {
 	CommonCartridgeResourceFactory,
 	CommonCartridgeResourceProps,
 } from '../resources/common-cartridge-resource-factory';
+import { OmitVersionAndFolder } from '../utils';
 
 export type CommonCartridgeOrganizationBuilderOptions = {
 	version: CommonCartridgeVersion;
 	identifier: string;
 	title: string;
-	parentFolder?: string;
+	folder?: string;
 };
 
 export class CommonCartridgeOrganizationBuilder {
@@ -25,16 +26,14 @@ export class CommonCartridgeOrganizationBuilder {
 	) {}
 
 	private get folder(): string {
-		return this.options.parentFolder
-			? `${this.options.parentFolder}/${this.options.identifier}`
-			: this.options.identifier;
+		return this.options.folder ? `${this.options.folder}/${this.options.identifier}` : this.options.identifier;
 	}
 
 	addSubOrganization(
-		options: Omit<CommonCartridgeOrganizationBuilderOptions, 'version'>
+		options: OmitVersionAndFolder<CommonCartridgeOrganizationBuilderOptions>
 	): CommonCartridgeOrganizationBuilder {
 		const child = new CommonCartridgeOrganizationBuilder(
-			{ ...options, version: this.options.version, parentFolder: this.folder },
+			{ ...options, version: this.options.version, folder: this.folder },
 			this.addResourceToFileBuilder.bind(this)
 		);
 
