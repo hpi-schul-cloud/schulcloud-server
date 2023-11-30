@@ -69,8 +69,16 @@ describe('YMongoDb', () => {
 
 	describe('getYDoc', () => {
 		describe('when getting document with part defined', () => {
-			it('should return ydoc from the database', async () => {
+			const setup = () => {
 				const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValue();
+
+				return {
+					applyUpdateSpy,
+				};
+			};
+
+			it('should return ydoc from the database', async () => {
+				const { applyUpdateSpy } = setup();
 
 				const drawing1 = tldrawEntityFactory.build({ clock: 1, part: 1 });
 				const drawing2 = tldrawEntityFactory.build({ clock: 1, part: 2 });
@@ -85,7 +93,8 @@ describe('YMongoDb', () => {
 			});
 
 			it('should not return ydoc if part is missing', async () => {
-				const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValue();
+				const { applyUpdateSpy } = setup();
+
 				const drawing1 = tldrawEntityFactory.build({ clock: 1, part: 1 });
 				const drawing2 = tldrawEntityFactory.build({ clock: 1, part: 3 });
 				const drawing3 = tldrawEntityFactory.build({ clock: 1, part: 4 });
@@ -100,7 +109,7 @@ describe('YMongoDb', () => {
 		});
 
 		describe('when getting document with part undefined', () => {
-			it('should return ydoc from the database', async () => {
+			const setup = async () => {
 				const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValue();
 
 				const drawing1 = tldrawEntityFactory.build({ part: undefined });
@@ -109,10 +118,32 @@ describe('YMongoDb', () => {
 				await em.persistAndFlush([drawing1, drawing2, drawing3]);
 				em.clear();
 
+				return {
+					applyUpdateSpy,
+				};
+			};
+
+			it('should return ydoc from the database', async () => {
+				const { applyUpdateSpy } = await setup();
 				const doc = await mdb.getYDoc('test-name');
 
 				expect(doc).toBeDefined();
 				applyUpdateSpy.mockRestore();
+			});
+
+			describe('when single entity size is greater than MAX_DOCUMENT_SIZE', () => {
+				it('should return ydoc from the database', async () => {
+					// set private property to 1 instead of creating mock 15mb document
+					// eslint-disable-next-line @typescript-eslint/dot-notation
+					mdb['MAX_DOCUMENT_SIZE'] = 1;
+					const { applyUpdateSpy } = await setup();
+					const doc = await mdb.getYDoc('test-name');
+
+					expect(doc).toBeDefined();
+					applyUpdateSpy.mockRestore();
+					// eslint-disable-next-line @typescript-eslint/dot-notation
+					mdb['MAX_DOCUMENT_SIZE'] = 15000000;
+				});
 			});
 		});
 	});
