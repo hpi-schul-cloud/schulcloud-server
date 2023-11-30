@@ -3720,6 +3720,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/DrawingElementContent.html" data-type="entity-link" >DrawingElementContent</a>
                             </li>
                             <li class="link">
+                                <a href="classes/DrawingElementContentBody.html" data-type="entity-link" >DrawingElementContentBody</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/DrawingElementResponse.html" data-type="entity-link" >DrawingElementResponse</a>
                             </li>
                             <li class="link">

@@ -200,7 +200,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="79" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:79</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -284,6 +284,21 @@ export class LinkElementContentBody extends ElementContentBody {
 	content!: LinkContentBody;
 }
 
+export class DrawingContentBody {
+	@IsString()
+	@ApiProperty()
+	description!: string;
+}
+
+export class DrawingElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.DRAWING })
+	type!: ContentElementType.DRAWING;
+
+	@ValidateNested()
+	@ApiProperty()
+	content!: DrawingContentBody;
+}
+
 export class RichTextContentBody {
 	@IsString()
 	@ApiProperty()
@@ -292,12 +307,6 @@ export class RichTextContentBody {
 	@IsEnum(InputFormat)
 	@ApiProperty()
 	inputFormat!: InputFormat;
-}
-
-export class DrawingContentBody {
-	@IsString()
-	@ApiProperty()
-	description!: string;
 }
 
 export class RichTextElementContentBody extends ElementContentBody {
@@ -362,6 +371,8 @@ export class UpdateElementContentBodyParams {
 				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
 				{ value: SubmissionContainerElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
 				{ value: ExternalToolElementContentBody, name: ContentElementType.EXTERNAL_TOOL },
+				{ value: ExternalToolElementContentBody, name: ContentElementType.DRAWING },
+				{ value: DrawingElementContentBody, name: ContentElementType.DRAWING },
 			],
 		},
 		keepDiscriminatorProperty: true,
@@ -373,6 +384,7 @@ export class UpdateElementContentBodyParams {
 			{ $ref: getSchemaPath(RichTextElementContentBody) },
 			{ $ref: getSchemaPath(SubmissionContainerElementContentBody) },
 			{ $ref: getSchemaPath(ExternalToolElementContentBody) },
+			{ $ref: getSchemaPath(DrawingElementContentBody) },
 		],
 	})
 	data!:
@@ -380,7 +392,8 @@ export class UpdateElementContentBodyParams {
 		| LinkElementContentBody
 		| RichTextElementContentBody
 		| SubmissionContainerElementContentBody
-		| ExternalToolElementContentBody;
+		| ExternalToolElementContentBody
+		| DrawingElementContentBody;
 }
 </code></pre>
     </div>

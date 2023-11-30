@@ -247,8 +247,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="125"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:125</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="129"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:129</a></div>
                         </td>
                     </tr>
 
@@ -354,8 +354,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="110"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:110</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="114"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:114</a></div>
                         </td>
                     </tr>
 
@@ -449,8 +449,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:51</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -551,14 +551,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@ApiOperation({summary: &#x27;Update a single content element.&#x27;})<br />@ApiExtraModels(FileElementContentBody, RichTextElementContentBody, SubmissionContainerElementContentBody, ExternalToolElementContentBody, LinkElementContentBody)<br />@ApiResponse({status: 201, schema: undefined})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(201)<br />@Patch(&#x27;:contentElementId/content&#x27;)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Update a single content element.&#x27;})<br />@ApiExtraModels(FileElementContentBody, RichTextElementContentBody, SubmissionContainerElementContentBody, ExternalToolElementContentBody, LinkElementContentBody, DrawingElementContentBody)<br />@ApiResponse({status: 201, schema: undefined})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(201)<br />@Patch(&#x27;:contentElementId/content&#x27;)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="89"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:89</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="93"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:93</a></div>
                         </td>
                     </tr>
 
@@ -653,6 +653,8 @@ import {
 	AnyContentElementResponse,
 	ContentElementUrlParams,
 	CreateSubmissionItemBodyParams,
+	DrawingElementContentBody,
+	DrawingElementResponse,
 	ExternalToolElementContentBody,
 	ExternalToolElementResponse,
 	FileElementContentBody,
@@ -701,7 +703,8 @@ export class ElementController {
 		RichTextElementContentBody,
 		SubmissionContainerElementContentBody,
 		ExternalToolElementContentBody,
-		LinkElementContentBody
+		LinkElementContentBody,
+		DrawingElementContentBody
 	)
 	@ApiResponse({
 		status: 201,
@@ -712,6 +715,7 @@ export class ElementController {
 				{ $ref: getSchemaPath(LinkElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
+				{ $ref: getSchemaPath(DrawingElementResponse) },
 			],
 		},
 	})
