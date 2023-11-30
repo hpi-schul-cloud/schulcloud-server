@@ -1,6 +1,6 @@
-import { EntityId } from '@shared/domain';
 import { CopyFileDto } from '@modules/files-storage-client/dto';
 import { FileRecordParentType } from '@modules/files-storage/entity';
+import { EntityId } from '@shared/domain/types';
 
 export type SchoolSpecificFileCopyServiceCopyParams = {
 	sourceParentId: EntityId;

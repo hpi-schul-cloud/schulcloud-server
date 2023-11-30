@@ -8,8 +8,8 @@ import {
 	QueueDeletionRequestOutputBuilder,
 	ReferencesService,
 } from '../services';
-import { BatchDeletionSummaryDetail, BatchDeletionSummaryOverallStatus } from './interface';
-import { BatchDeletionSummaryDetailBuilder } from './builder';
+import { BatchDeletionSummaryDetail, BatchDeletionSummaryOverallStatus } from '../interface';
+import { BatchDeletionSummaryDetailBuilder } from '../builder';
 import { BatchDeletionUc } from './batch-deletion.uc';
 
 describe(BatchDeletionUc.name, () => {

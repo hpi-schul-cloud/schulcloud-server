@@ -21,7 +21,8 @@ import {
 	NotAcceptableException,
 	NotFoundException,
 } from '@nestjs/common';
-import { EntityId, LanguageType } from '@shared/domain';
+import { LanguageType } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { ICurrentUser } from '@src/modules/authentication';
 import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
 import { AuthorizationReferenceService } from '@src/modules/authorization/domain';

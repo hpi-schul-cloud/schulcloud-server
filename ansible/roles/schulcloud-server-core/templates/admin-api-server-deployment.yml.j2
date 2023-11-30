@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-api-deployment
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-admin
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    app.kubernetes.io/name: api-admin
+    app.kubernetes.io/component: server
+    app.kubernetes.io/managed-by: ansible
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+spec:
+  replicas: {{ ADMIN_API_SERVER_REPLICAS|default("1", true) }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      #maxUnavailable: 1
+  revisionHistoryLimit: 4
+  paused: false
+  selector:
+    matchLabels:
+      app: api-admin
+  template:
+    metadata:
+      labels:
+        app: api-admin
+        app.kubernetes.io/part-of: schulcloud-verbund
+        app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        app.kubernetes.io/name: api-admin
+        app.kubernetes.io/component: server
+        app.kubernetes.io/managed-by: ansible
+        git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+        git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+      containers:
+      - name: api-admin
+        image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 4030
+          name: admin
+          protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: api-configmap
+        - secretRef:
+            name: api-secret
+        command: ['npm', 'run', 'nest:start:admin-api-server:prod']
+        resources:
+          limits:
+            cpu: {{ ADMIN_API_SERVER_CPU_LIMITS|default("2000m", true) }}
+            memory: {{ ADMIN_API_SERVER_MEMORY_LIMITS|default("4Gi", true) }}
+          requests:
+            cpu: {{  ADMIN_API_SERVER_CPU_REQUESTS|default("100m", true) }}
+            memory: {{  ADMIN_API_SERVER_MEMORY_REQUESTS|default("150Mi", true) }}

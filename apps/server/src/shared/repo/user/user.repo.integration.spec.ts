@@ -2,7 +2,8 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MatchCreator, SortOrder, SystemEntity, User } from '@shared/domain';
+import { MatchCreator, SystemEntity, User } from '@shared/domain/entity';
+import { SortOrder } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	importUserFactory,

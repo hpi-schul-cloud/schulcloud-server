@@ -1,9 +1,7 @@
-import { DeletionDomainModel } from '../../domain/types/deletion-domain-model.enum';
-import { DeletionLogStatisticBuilder } from './deletion-log-statistic.builder';
-import { DeletionRequestLogBuilder } from './deletion-request-log.builder';
-import { DeletionTargetRefBuilder } from './deletion-target-ref.builder';
+import { DeletionDomainModel } from '../domain/types';
+import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from './index';
 
-describe(DeletionRequestLogBuilder.name, () => {
+describe(DeletionRequestLogResponseBuilder.name, () => {
 	afterAll(() => {
 		jest.clearAllMocks();
 	});
@@ -18,7 +16,7 @@ describe(DeletionRequestLogBuilder.name, () => {
 		const deletedCount = 2;
 		const statistics = [DeletionLogStatisticBuilder.build(targetRefDomain, modifiedCount, deletedCount)];
 
-		const result = DeletionRequestLogBuilder.build(targetRef, deletionPlannedAt, statistics);
+		const result = DeletionRequestLogResponseBuilder.build(targetRef, deletionPlannedAt, statistics);
 
 		// Assert
 		expect(result.targetRef).toEqual(targetRef);
