@@ -2,8 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { DeletionLog } from '../domain/deletion-log.do';
-import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
-import { DeletionOperationModel } from '../domain/types/deletion-operation-model.enum';
+import { DeletionDomainModel, DeletionOperationModel } from '../domain/types';
 import { DeletionLogRepo } from '../repo';
 
 @Injectable()
@@ -19,6 +18,7 @@ export class DeletionLogService {
 	): Promise<void> {
 		const newDeletionLog = new DeletionLog({
 			id: new ObjectId().toHexString(),
+			performedAt: new Date(),
 			domain,
 			deletionRequestId,
 			operation,

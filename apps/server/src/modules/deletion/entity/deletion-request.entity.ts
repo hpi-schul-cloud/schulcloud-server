@@ -1,9 +1,9 @@
-import { Entity, Index, Property } from '@mikro-orm/core';
+import { Entity, Index, Property, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
-import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
-import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
+import { DeletionDomainModel, DeletionStatusModel } from '../domain/types';
 
+const SECONDS_OF_90_DAYS = 90 * 24 * 60 * 60;
 export interface DeletionRequestEntityProps {
 	id?: EntityId;
 	targetRefDomain: DeletionDomainModel;
@@ -15,19 +15,19 @@ export interface DeletionRequestEntityProps {
 }
 
 @Entity({ tableName: 'deletionrequests' })
-@Index({ properties: ['targetRefId', 'targetRefDomain'] })
+@Unique({ properties: ['targetRefId', 'targetRefDomain'] })
 export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 	@Property()
+	@Index({ options: { expireAfterSeconds: SECONDS_OF_90_DAYS } })
 	deleteAfter: Date;
 
 	@Property()
-	targetRefId: EntityId;
+	targetRefId!: EntityId;
 
 	@Property()
 	targetRefDomain: DeletionDomainModel;
 
 	@Property()
-	@Index()
 	status: DeletionStatusModel;
 
 	constructor(props: DeletionRequestEntityProps) {

@@ -38,7 +38,7 @@ export class LessonService implements AuthorizationLoaderService {
 		const updatedLessons = lessons.map((lesson: LessonEntity) => {
 			lesson.contents.map((c: ComponentProperties) => {
 				if (c.user === userId) {
-					c.user = '';
+					c.user = undefined;
 				}
 				return c;
 			});

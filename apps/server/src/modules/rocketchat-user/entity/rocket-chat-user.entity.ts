@@ -13,7 +13,7 @@ export interface RocketChatUserEntityProps {
 	updatedAt?: Date;
 }
 
-@Entity({ tableName: 'rocketchatuser' })
+@Entity({ tableName: 'rocketchatusers' })
 export class RocketChatUserEntity extends BaseEntityWithTimestamps {
 	@Property()
 	@Unique()

@@ -1,9 +1,8 @@
-import { Entity, Property } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseEntityWithTimestamps } from '@shared/domain/entity';
+import { Entity, Index, Property } from '@mikro-orm/core';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
-import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
-import { DeletionOperationModel } from '../domain/types/deletion-operation-model.enum';
+import { ObjectId } from 'bson';
+import { DeletionDomainModel, DeletionOperationModel } from '../domain/types';
 
 export interface DeletionLogEntityProps {
 	id?: EntityId;
@@ -12,6 +11,7 @@ export interface DeletionLogEntityProps {
 	modifiedCount?: number;
 	deletedCount?: number;
 	deletionRequestId?: ObjectId;
+	performedAt?: Date;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
@@ -32,6 +32,10 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	deletionRequestId?: ObjectId;
+
+	@Property({ nullable: true })
+	@Index({ options: { expireAfterSeconds: 7776000 } })
+	performedAt?: Date;
 
 	constructor(props: DeletionLogEntityProps) {
 		super();
@@ -63,6 +67,10 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 
 		if (props.updatedAt !== undefined) {
 			this.updatedAt = props.updatedAt;
+		}
+
+		if (props.performedAt !== undefined) {
+			this.performedAt = props.performedAt;
 		}
 	}
 }
