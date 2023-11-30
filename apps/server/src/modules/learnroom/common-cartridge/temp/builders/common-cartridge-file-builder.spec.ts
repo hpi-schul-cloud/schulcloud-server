@@ -2,6 +2,7 @@ import AdmZip from 'adm-zip';
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeMetadataElementProps } from '../elements/common-cartridge-metadata-element';
 import { CommonCartridgeResourceProps } from '../resources/common-cartridge-resource-factory';
+import { OmitVersion } from '../utils';
 import { CommonCartridgeFileBuilder, CommonCartridgeFileBuilderProps } from './common-cartridge-file-builder';
 import { CommonCartridgeOrganizationBuilderOptions } from './common-cartridge-organization-builder';
 
@@ -15,36 +16,36 @@ describe('CommonCartridgeFileBuilder', () => {
 		version: CommonCartridgeVersion.V_1_1,
 		identifier: 'manifest-identifier',
 	};
-	const metadataProps: Omit<CommonCartridgeMetadataElementProps, 'version'> = {
+	const metadataProps: OmitVersion<CommonCartridgeMetadataElementProps> = {
 		title: 'metadata-title',
 		creationDate: new Date(),
 		copyrightOwners: ['John Doe', 'Jane Doe'],
 	};
-	const organizationProps: Omit<CommonCartridgeOrganizationBuilderOptions, 'version'> = {
+	const organizationOptions: OmitVersion<CommonCartridgeOrganizationBuilderOptions> = {
 		title: 'organization-title',
 		identifier: 'organization-identifier',
 	};
-	const subOrganizationProps: Omit<CommonCartridgeOrganizationBuilderOptions, 'version'> = {
+	const subOrganizationOptions: OmitVersion<CommonCartridgeOrganizationBuilderOptions> = {
 		title: 'sub-organization-title',
 		identifier: 'sub-organization-identifier',
 	};
-	const subSubOrganizationProps: Omit<CommonCartridgeOrganizationBuilderOptions, 'version'> = {
+	const subSubOrganizationOptions: OmitVersion<CommonCartridgeOrganizationBuilderOptions> = {
 		title: 'sub-sub-organization-title',
 		identifier: 'sub-sub-organization-identifier',
 	};
-	const resource1: CommonCartridgeResourceProps = {
+	const resource1Props: CommonCartridgeResourceProps = {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		identifier: 'resource-1-identifier',
 		title: 'resource-1-title',
 		html: '<p>resource-1-html</p>',
 	};
-	const resource2: CommonCartridgeResourceProps = {
+	const resource2Props: CommonCartridgeResourceProps = {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		identifier: 'resource-2-identifier',
 		title: 'resource-2-title',
 		html: '<p>resource-2-html</p>',
 	};
-	const resource3: CommonCartridgeResourceProps = {
+	const resource3Props: CommonCartridgeResourceProps = {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		identifier: 'resource-3-identifier',
 		title: 'resource-3-title',
@@ -56,12 +57,12 @@ describe('CommonCartridgeFileBuilder', () => {
 			beforeAll(async () => {
 				sut = new CommonCartridgeFileBuilder(fileBuilderOptions);
 				sut.addMetadata(metadataProps)
-					.addOrganization(organizationProps)
-					.addResource(resource1)
-					.addSubOrganization(subOrganizationProps)
-					.addResource(resource2)
-					.addSubOrganization(subSubOrganizationProps)
-					.addResource(resource3);
+					.addOrganization(organizationOptions)
+					.addResource(resource1Props)
+					.addSubOrganization(subOrganizationOptions)
+					.addResource(resource2Props)
+					.addSubOrganization(subSubOrganizationOptions)
+					.addResource(resource3Props);
 
 				archive = new AdmZip(await sut.build());
 			});

@@ -1,7 +1,7 @@
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
+import { CommonCartridgeOrganizationElement } from '../elements/common-cartridge-organization-element';
 import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
-import { CommonCartridgeOrganizationElement } from '../resources/common-cartridge-organization-resource';
 import {
 	CommonCartridgeResourceFactory,
 	CommonCartridgeResourceProps,
