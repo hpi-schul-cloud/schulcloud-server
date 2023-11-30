@@ -68,5 +68,69 @@
 		},
 		"schoolParameters": [],
 		"toolVersion": 2
+	},
+	{
+		"_id": {
+			"$oid": "647de374cf6a427b9d39e5bc"
+		},
+		"createdAt": {
+			"$date": "2023-11-30T15:23:31.370Z"
+		},
+		"updatedAt": {
+			"$date": "2023-11-30T15:23:31.370Z"
+		},
+		"tool": {
+			"$oid": "647de247cf6a427b9d39e5b10"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"schoolParameters": [{
+			"name": "search",
+			"value": "xxx"
+		}],
+		"toolVersion": 1
+	},
+	{
+		"_id": {
+			"$oid": "647de374cf6a427b9d39e5bd"
+		},
+		"createdAt": {
+			"$date": "2023-11-30T15:23:45.423Z"
+		},
+		"updatedAt": {
+			"$date": "2023-11-30T15:23:45.423Z"
+		},
+		"tool": {
+			"$oid": "647de247cf6a427b9d39e5b11"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"schoolParameters": [],
+		"toolVersion": 1
+	},
+	{
+		"_id": {
+			"$oid": "647de374cf6a427b9d39e5be"
+		},
+		"createdAt": {
+			"$date": "2023-11-30T15:29:00.061Z"
+		},
+		"updatedAt": {
+			"$date": "2023-11-30T15:29:00.061Z"
+		},
+		"tool": {
+			"$oid": "647de247cf6a427b9d39e5b12"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"schoolParameters": [{
+			"name": "schoolParan",
+			"value": "test"
+		}],
+		"toolVersion": 1
 	}
+
 ]
