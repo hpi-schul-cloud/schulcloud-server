@@ -1,20 +1,6 @@
 import { NotImplementedException } from '@nestjs/common';
-import type {
-	BoardDoBuilder,
-	BoardNode,
-	CardNode,
-	ColumnBoardNode,
-	ColumnNode,
-	ExternalToolElementNodeEntity,
-	FileElementNode,
-	LinkElementNode,
-	RichTextElementNode,
-	SubmissionContainerElementNode,
-	SubmissionItemNode,
-} from '@shared/domain';
 import {
 	AnyBoardDo,
-	BoardNodeType,
 	Card,
 	Column,
 	ColumnBoard,
@@ -24,9 +10,23 @@ import {
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
-} from '@shared/domain';
-import { DrawingElementNode } from '@shared/domain/entity/boardnode/drawing-element-node.entity';
+} from '@shared/domain/domainobject';
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
+import {
+	BoardNodeType,
+	type BoardDoBuilder,
+	type BoardNode,
+	type CardNode,
+	type ColumnBoardNode,
+	type ColumnNode,
+	type ExternalToolElementNodeEntity,
+	type FileElementNode,
+	type LinkElementNode,
+	type RichTextElementNode,
+	type SubmissionContainerElementNode,
+	type SubmissionItemNode,
+} from '@shared/domain/entity';
+import { DrawingElementNode } from '@shared/domain/entity/boardnode/drawing-element-node.entity';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};

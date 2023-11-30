@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { LinkElementNode, LinkElementNodeProps } from '@shared/domain';
+import { LinkElementNode, LinkElementNodeProps } from '@shared/domain/entity';
 import { BaseFactory } from '../base.factory';
 
 export const linkElementNodeFactory = BaseFactory.define<LinkElementNode, LinkElementNodeProps>(

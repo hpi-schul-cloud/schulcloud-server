@@ -2,8 +2,8 @@ import { AccountService } from '@modules/account/services/account.service';
 import { AccountDto } from '@modules/account/services/dto';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { UserMigrationDatabaseOperationFailedLoggableException } from '../loggable';
 

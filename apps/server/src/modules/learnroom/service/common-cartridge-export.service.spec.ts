@@ -11,7 +11,7 @@ import {
 	Course,
 	LessonEntity,
 	Task,
-} from '@shared/domain';
+} from '@shared/domain/entity';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import AdmZip from 'adm-zip';
 import { CommonCartridgeVersion } from '../common-cartridge';

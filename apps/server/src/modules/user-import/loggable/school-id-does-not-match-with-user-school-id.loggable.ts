@@ -1,5 +1,5 @@
+import { EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
-import { EntityId } from '@shared/domain';
 
 export class SchoolIdDoesNotMatchWithUserSchoolId implements Loggable {
 	constructor(

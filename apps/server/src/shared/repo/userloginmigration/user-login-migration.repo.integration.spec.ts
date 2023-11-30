@@ -2,7 +2,9 @@ import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, SystemEntity, UserLoginMigrationDO } from '@shared/domain';
+import { SchoolEntity, SystemEntity } from '@shared/domain/entity';
+
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { cleanupCollections, schoolFactory, systemEntityFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';

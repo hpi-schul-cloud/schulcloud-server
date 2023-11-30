@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 
 export const FilesStorageExchange = Configuration.get('FILES_STORAGE__EXCHANGE') as string;
 

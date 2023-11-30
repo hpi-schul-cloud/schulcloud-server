@@ -2,7 +2,9 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { EntityId, Permission, SystemEntity, SystemType, SystemTypeEnum, User } from '@shared/domain';
+import { SystemEntity, User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
+import { EntityId, SystemType, SystemTypeEnum } from '@shared/domain/types';
 import { System } from '../domain';
 import { LegacySystemService, SystemDto, SystemService } from '../service';
 

@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller';
-import { InputFormat, NewsTargetModel } from '@shared/domain';
+import { InputFormat, NewsTargetModel } from '@shared/domain/types';
 import { IsDate, IsEnum, IsMongoId, IsOptional, IsString } from 'class-validator';
 
 /**
