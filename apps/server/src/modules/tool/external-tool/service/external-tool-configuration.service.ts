@@ -7,7 +7,6 @@ import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ContextExternalToolTemplateInfo } from '../uc/dto';
-import { ToolContextTypesListResponse } from '../controller/dto/response/tool-context-types-list.response';
 import { CommonToolService } from '../../common/service';
 
 @Injectable()

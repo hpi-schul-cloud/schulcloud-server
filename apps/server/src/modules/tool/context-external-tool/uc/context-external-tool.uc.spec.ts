@@ -97,8 +97,6 @@ describe('ContextExternalToolUc', () => {
 					},
 				});
 
-				const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
-
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				contextExternalToolService.saveContextExternalTool.mockResolvedValue(contextExternalTool);
 
@@ -106,7 +104,6 @@ describe('ContextExternalToolUc', () => {
 					contextExternalTool,
 					userId,
 					schoolId,
-					context,
 				};
 			};
 
@@ -131,15 +128,11 @@ describe('ContextExternalToolUc', () => {
 			});
 
 			it('should check for context restrictions', async () => {
-				const { contextExternalTool, userId, schoolId, context } = setup();
+				const { contextExternalTool, userId, schoolId } = setup();
 
 				await uc.createContextExternalTool(userId, schoolId, contextExternalTool);
 
-				expect(contextExternalToolService.checkContextRestrictions).toHaveBeenCalledWith(
-					contextExternalTool,
-					userId,
-					context
-				);
+				expect(contextExternalToolService.checkContextRestrictions).toHaveBeenCalledWith(contextExternalTool);
 			});
 
 			it('should call contextExternalToolValidationService', async () => {
