@@ -81,15 +81,6 @@ spec:
                   operator: In
                   values:
                   - preview-generator
-              topologyKey: "kubernetes.io/hostname"
-          - weight: 10
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app.kubernetes.io/name
-                  operator: In
-                  values:
-                  - preview-generator
               topologyKey: "cloud.ionos.com/nodepool-name"
           - weight: 10
             podAffinityTerm:
