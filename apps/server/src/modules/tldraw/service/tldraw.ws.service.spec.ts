@@ -416,9 +416,9 @@ describe('TldrawWSService', () => {
 
 	describe('updateHandler', () => {
 		const setup = async () => {
-			ws = await TestConnection.setupWs(wsUrl, 'TEST');
+			ws = await TestConnection.setupWs(wsUrl);
 
-			const propagateUpdateSpy = jest.spyOn(service, 'updateHandler').mockReturnValueOnce();
+			const sendSpy = jest.spyOn(service, 'send').mockReturnValueOnce();
 			const errorLogSpy = jest.spyOn(logger, 'error');
 
 			const doc = TldrawWsFactory.createWsSharedDocDo();
@@ -428,18 +428,18 @@ describe('TldrawWSService', () => {
 
 			return {
 				doc,
-				propagateUpdateSpy,
+				sendSpy,
 				socketMock,
 				msg,
 				errorLogSpy,
 			};
 		};
 
-		it('should call propagateUpdate', async () => {
-			const { propagateUpdateSpy, doc, socketMock, msg } = await setup();
+		it('should call send method', async () => {
+			const { sendSpy, doc, socketMock, msg } = await setup();
 			service.updateHandler(msg, socketMock, doc);
 
-			expect(propagateUpdateSpy).toHaveBeenCalled();
+			expect(sendSpy).toHaveBeenCalled();
 			ws.close();
 		});
 
