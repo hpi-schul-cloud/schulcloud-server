@@ -63,7 +63,7 @@ export class CommonCartridgeLtiResource implements CommonCartridgeResource {
 
 	private getXmlNamespacesByVersion(): Record<string, string> {
 		switch (this.props.version) {
-			case CommonCartridgeVersion.V_1_1:
+			case CommonCartridgeVersion.V_1_1_0:
 				return {
 					xmlns: '/xsd/imslticc_v1p0',
 					'xmlns:blti': '/xsd/imsbasiclti_v1p0',
@@ -75,7 +75,7 @@ export class CommonCartridgeLtiResource implements CommonCartridgeResource {
 						'/xsd/imslticm_v1p0 /xsd/lti/ltiv1p0/imslticm_v1p0.xsd' +
 						'/xsd/imslticp_v1p0 /xsd/lti/ltiv1p0/imslticp_v1p0.xsd"',
 				};
-			case CommonCartridgeVersion.V_1_3:
+			case CommonCartridgeVersion.V_1_3_0:
 				return {
 					xmlns: 'http://www.imsglobal.org/xsd/imslticc_v1p3',
 					'xmlns:blti': 'http://www.imsglobal.org/xsd/imsbasiclti_v1p0',

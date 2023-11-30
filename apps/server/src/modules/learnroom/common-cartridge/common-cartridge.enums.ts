@@ -1,9 +1,9 @@
 export enum CommonCartridgeVersion {
-	V_1_0 = '1.0.0',
-	V_1_1 = '1.1.0',
-	V_1_2 = '1.2.0',
-	V_1_3 = '1.3.0',
-	V_1_4 = '1.4.0',
+	V_1_0_0 = '1.0.0',
+	V_1_1_0 = '1.1.0',
+	V_1_2_0 = '1.2.0',
+	V_1_3_0 = '1.3.0',
+	V_1_4_0 = '1.4.0',
 }
 
 export enum CommonCartridgeResourceType {

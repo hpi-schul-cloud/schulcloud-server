@@ -4,7 +4,7 @@ import { CommonCartridgeLtiResource, CommonCartridgeLtiResourceProps } from './c
 describe('CommonCartridgeLtiResource', () => {
 	const propsVersion1: CommonCartridgeLtiResourceProps = {
 		type: CommonCartridgeResourceType.LTI,
-		version: CommonCartridgeVersion.V_1_1,
+		version: CommonCartridgeVersion.V_1_1_0,
 		identifier: 'lti-identifier-version1',
 		folder: 'lti-identifier-version1/lti.xml',
 		title: 'lti-title-version1',
@@ -14,7 +14,7 @@ describe('CommonCartridgeLtiResource', () => {
 
 	const propsVersion3: CommonCartridgeLtiResourceProps = {
 		type: CommonCartridgeResourceType.LTI,
-		version: CommonCartridgeVersion.V_1_3,
+		version: CommonCartridgeVersion.V_1_3_0,
 		identifier: 'lti-identifier-version3',
 		folder: 'lti-identifier-version3/lti.xml',
 		title: 'lti-title-version3',

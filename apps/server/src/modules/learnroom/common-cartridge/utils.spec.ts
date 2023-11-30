@@ -13,7 +13,7 @@ describe('CommonCartridgeUtils', () => {
 	describe('createVersionNotSupportedError', () => {
 		describe('when creating error', () => {
 			it('should return error with message', () => {
-				const error = createVersionNotSupportedError(CommonCartridgeVersion.V_1_0);
+				const error = createVersionNotSupportedError(CommonCartridgeVersion.V_1_0_0);
 
 				expect(error).toBeDefined();
 				expect(error.message).toBe('Version 1.0.0 is not supported');
@@ -25,12 +25,12 @@ describe('CommonCartridgeUtils', () => {
 	describe('checkCommonCartridgeVersion', () => {
 		describe('when checking version', () => {
 			it('should not throw error when version is supported', () => {
-				expect(() => checkCommonCartridgeVersion(CommonCartridgeVersion.V_1_1)).not.toThrow();
+				expect(() => checkCommonCartridgeVersion(CommonCartridgeVersion.V_1_1_0)).not.toThrow();
 			});
 
 			it('should throw error when version is not supported', () => {
-				expect(() => checkCommonCartridgeVersion(CommonCartridgeVersion.V_1_0)).toThrow(
-					createVersionNotSupportedError(CommonCartridgeVersion.V_1_0)
+				expect(() => checkCommonCartridgeVersion(CommonCartridgeVersion.V_1_0_0)).toThrow(
+					createVersionNotSupportedError(CommonCartridgeVersion.V_1_0_0)
 				);
 			});
 		});

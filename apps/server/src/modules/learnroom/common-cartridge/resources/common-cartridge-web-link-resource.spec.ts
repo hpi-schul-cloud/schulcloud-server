@@ -7,7 +7,7 @@ import {
 describe('CommonCartridgeWebLinkResource', () => {
 	const propsOfV3: CommonCartridgeWebLinkResourceProps = {
 		type: CommonCartridgeResourceType.WEB_LINK,
-		version: CommonCartridgeVersion.V_1_3,
+		version: CommonCartridgeVersion.V_1_3_0,
 		identifier: 'web-link-v3',
 		folder: 'https://example.com/linkv3',
 		title: 'Web Link v3',
@@ -16,7 +16,7 @@ describe('CommonCartridgeWebLinkResource', () => {
 
 	const propsOfV1: CommonCartridgeWebLinkResourceProps = {
 		type: CommonCartridgeResourceType.WEB_LINK,
-		version: CommonCartridgeVersion.V_1_1,
+		version: CommonCartridgeVersion.V_1_1_0,
 		identifier: 'web-link-v1',
 		folder: 'https://example.com/link1',
 		title: 'Web Link v1',

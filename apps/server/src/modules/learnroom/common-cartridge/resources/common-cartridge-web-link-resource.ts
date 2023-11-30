@@ -54,14 +54,14 @@ export class CommonCartridgeWebLinkResource implements CommonCartridgeResource {
 
 	private getXmlNamespacesByVersion(): Record<string, string> {
 		switch (this.props.version) {
-			case CommonCartridgeVersion.V_1_1:
+			case CommonCartridgeVersion.V_1_1_0:
 				return {
 					xmlns: 'http://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1',
 					'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
 					'xsi:schemaLocation':
 						'http://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1 https://www.imsglobal.org/sites/default/files/profile/cc/ccv1p1/ccv1p1_imswl_v1p1.xsd',
 				};
-			case CommonCartridgeVersion.V_1_3:
+			case CommonCartridgeVersion.V_1_3_0:
 				return {
 					xmlns: 'http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3',
 					'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',

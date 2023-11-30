@@ -15,17 +15,17 @@ describe('CommonCartridgeOrganizationBuilder', () => {
 	const organizationOptions: CommonCartridgeOrganizationBuilderOptions = {
 		title: 'organization-title',
 		identifier: 'organization-identifier',
-		version: CommonCartridgeVersion.V_1_1,
+		version: CommonCartridgeVersion.V_1_1_0,
 	};
 	const subOrganizationOptions: CommonCartridgeOrganizationBuilderOptions = {
 		title: 'sub-organization-title',
 		identifier: 'sub-organization-identifier',
-		version: CommonCartridgeVersion.V_1_1,
+		version: CommonCartridgeVersion.V_1_1_0,
 	};
 	const subSubOrganizationOptions: CommonCartridgeOrganizationBuilderOptions = {
 		title: 'sub-sub-organization-title',
 		identifier: 'sub-sub-organization-identifier',
-		version: CommonCartridgeVersion.V_1_1,
+		version: CommonCartridgeVersion.V_1_1_0,
 	};
 	const resource1Props: CommonCartridgeResourceProps = {
 		type: CommonCartridgeResourceType.WEB_CONTENT,

@@ -5,7 +5,7 @@ import { CommonCartridgeWebContentResource } from './common-cartridge-web-conten
 import { CommonCartridgeWebLinkResource } from './common-cartridge-web-link-resource';
 
 describe('CommonCartridgeResourceFactory', () => {
-	const versionAndFolderProps = { version: CommonCartridgeVersion.V_1_1, folder: 'folder' };
+	const versionAndFolderProps = { version: CommonCartridgeVersion.V_1_1_0, folder: 'folder' };
 
 	describe('create', () => {
 		// AI next 14 lines

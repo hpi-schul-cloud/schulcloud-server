@@ -7,7 +7,7 @@ import {
 describe('CommonCartridgeWebContentResource', () => {
 	const props: CommonCartridgeWebContentResourceProps = {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
-		version: CommonCartridgeVersion.V_1_3,
+		version: CommonCartridgeVersion.V_1_3_0,
 		identifier: 'web-link',
 		folder: 'https://example.com/link',
 		title: 'Web Link',

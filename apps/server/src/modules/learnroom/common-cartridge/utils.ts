@@ -16,7 +16,7 @@ export function createVersionNotSupportedError(version: CommonCartridgeVersion):
 }
 
 export function checkCommonCartridgeVersion(version: CommonCartridgeVersion): void | never {
-	const supportedVersions = [CommonCartridgeVersion.V_1_1, CommonCartridgeVersion.V_1_3];
+	const supportedVersions = [CommonCartridgeVersion.V_1_1_0, CommonCartridgeVersion.V_1_3_0];
 
 	if (supportedVersions.includes(version)) {
 		return;

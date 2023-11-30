@@ -13,7 +13,7 @@ describe('CommonCartridgeFileBuilder', () => {
 	const getFileContentAsString = (zip: AdmZip, path: string): string | undefined =>
 		zip.getEntry(path)?.getData().toString();
 	const fileBuilderOptions: CommonCartridgeFileBuilderProps = {
-		version: CommonCartridgeVersion.V_1_1,
+		version: CommonCartridgeVersion.V_1_1_0,
 		identifier: 'manifest-identifier',
 	};
 	const metadataProps: OmitVersion<CommonCartridgeMetadataElementProps> = {
