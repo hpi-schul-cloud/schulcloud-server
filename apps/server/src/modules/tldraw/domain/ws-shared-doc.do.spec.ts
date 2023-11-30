@@ -93,6 +93,32 @@ describe('WsSharedDocDo', () => {
 		});
 	});
 
+	describe('destroy', () => {
+		const setup = () => {
+			const doc = new WsSharedDocDo('TEST', service);
+			doc.awarenessChannel = 'TEST-AWARENESS';
+			const loggerSpy = jest.spyOn(service, 'logYDocError');
+
+			return {
+				doc,
+				loggerSpy,
+			};
+		};
+
+		describe('when unsubscribing from redis channels', () => {
+			it('should call logYDocError function in service on error', async () => {
+				jest.spyOn(Ioredis.Redis.prototype, 'unsubscribe').mockRejectedValueOnce(() => new Error('error'));
+
+				const { doc, loggerSpy } = setup();
+				doc.destroy();
+
+				await delay(20);
+				expect(doc).toBeDefined();
+				expect(loggerSpy).toHaveBeenCalled();
+			});
+		});
+	});
+
 	describe('redis message handler', () => {
 		const setup = () => {
 			const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValueOnce();

@@ -5,6 +5,7 @@ import { WsAdapter } from '@nestjs/platform-ws';
 import { TextEncoder } from 'util';
 import * as SyncProtocols from 'y-protocols/sync';
 import * as AwarenessProtocol from 'y-protocols/awareness';
+import * as Ioredis from 'ioredis';
 import { encoding } from 'lib0';
 import { TldrawWsFactory } from '@shared/testing/factory/tldraw.ws.factory';
 import { LegacyLogger } from '@src/core/logger';
@@ -97,7 +98,7 @@ describe('TldrawWSService', () => {
 		};
 	};
 
-	it('should chcek if service properties are set correctly', () => {
+	it('should check if service properties are set correctly', () => {
 		expect(service).toBeDefined();
 		expect(service.pingTimeout).toBeDefined();
 	});
@@ -135,7 +136,7 @@ describe('TldrawWSService', () => {
 			});
 		});
 
-		describe('when websocket has ready state different than 0 or 1', () => {
+		describe('when websocket has ready state different than Open (1) or Connecting (0)', () => {
 			const setup = () => {
 				const clientMessageMock = 'test-message';
 				const closeConSpy = jest.spyOn(service, 'closeConn');
@@ -167,7 +168,7 @@ describe('TldrawWSService', () => {
 			});
 		});
 
-		describe('when websocket has ready state 0', () => {
+		describe('when websocket has ready state Open (0)', () => {
 			const setup = async () => {
 				ws = await TestConnection.setupWs(wsUrl);
 				const clientMessageMock = 'test-message';
@@ -405,13 +406,52 @@ describe('TldrawWSService', () => {
 				service.setupWSConnection(ws);
 
 				await delay(10);
-
 				expect(flushDocumentSpy).toHaveBeenCalled();
 				expect(errorLogSpy).toHaveBeenCalled();
 
 				ws.close();
-				flushDocumentSpy.mockRestore();
 			});
+		});
+	});
+
+	describe('updateHandler', () => {
+		const setup = async () => {
+			ws = await TestConnection.setupWs(wsUrl, 'TEST');
+
+			const propagateUpdateSpy = jest.spyOn(service, 'updateHandler').mockReturnValueOnce();
+			const errorLogSpy = jest.spyOn(logger, 'error');
+
+			const doc = TldrawWsFactory.createWsSharedDocDo();
+			const socketMock = TldrawWsFactory.createWebsocket(0);
+			doc.conns.set(socketMock, new Set());
+			const msg = new Uint8Array([0]);
+
+			return {
+				doc,
+				propagateUpdateSpy,
+				socketMock,
+				msg,
+				errorLogSpy,
+			};
+		};
+
+		it('should call propagateUpdate', async () => {
+			const { propagateUpdateSpy, doc, socketMock, msg } = await setup();
+			service.updateHandler(msg, socketMock, doc);
+
+			expect(propagateUpdateSpy).toHaveBeenCalled();
+			ws.close();
+		});
+
+		it('should log error when publish to Redis throws', async () => {
+			jest.spyOn(Ioredis.Redis.prototype, 'publish').mockRejectedValueOnce(() => new Error('error'));
+			const { doc, socketMock, msg, errorLogSpy } = await setup();
+
+			service.updateHandler(msg, socketMock, doc);
+
+			await delay(10);
+			expect(errorLogSpy).toHaveBeenCalled();
+			ws.close();
 		});
 	});
 
@@ -420,6 +460,7 @@ describe('TldrawWSService', () => {
 			const setup = async (messageValues: number[]) => {
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
+				const errorLogSpy = jest.spyOn(logger, 'error');
 				const messageHandlerSpy = jest.spyOn(service, 'messageHandler');
 				const readSyncMessageSpy = jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementationOnce((dec, enc) => {
 					enc.bufs = [new Uint8Array(2), new Uint8Array(2)];
@@ -428,9 +469,10 @@ describe('TldrawWSService', () => {
 				const { msg } = createMessage(messageValues);
 
 				return {
-					messageHandlerSpy,
 					msg,
+					messageHandlerSpy,
 					readSyncMessageSpy,
+					errorLogSpy,
 				};
 			};
 
@@ -445,6 +487,18 @@ describe('TldrawWSService', () => {
 				ws.close();
 				messageHandlerSpy.mockRestore();
 				readSyncMessageSpy.mockRestore();
+			});
+
+			it('should log error when publish to Redis throws', async () => {
+				jest.spyOn(Ioredis.Redis.prototype, 'publish').mockRejectedValueOnce(() => new Error('error'));
+				const { msg, errorLogSpy } = await setup([1, 1]);
+
+				service.setupWSConnection(ws);
+				ws.emit('message', msg);
+
+				await delay(10);
+				expect(errorLogSpy).toHaveBeenCalled();
+				ws.close();
 			});
 		});
 	});

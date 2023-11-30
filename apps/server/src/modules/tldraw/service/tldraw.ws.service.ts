@@ -118,10 +118,6 @@ export class TldrawWsService {
 		return map.setIfUndefined(this.docs, docName, () => {
 			const doc = new WsSharedDocDo(docName, this, gc);
 
-			doc.on('error', (message: string, error) => {
-				this.logger.error(`Error in doc ${doc.name}: ${message}`, error);
-			});
-
 			this.tldrawBoardRepo
 				.updateDocument(docName, doc)
 				.catch((err) => this.logger.error('Error while updating document', err));
