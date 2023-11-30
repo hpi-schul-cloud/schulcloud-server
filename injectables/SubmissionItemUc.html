@@ -573,7 +573,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:12</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:13</a></code>
 </div>
                         </td>
                     </tr>
@@ -685,7 +685,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:44</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:45</a></code>
 </div>
                         </td>
                     </tr>
@@ -773,7 +773,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:28</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:29</a></code>
 </div>
                         </td>
                     </tr>
@@ -838,7 +838,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Action, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import {
 	BadRequestException,
 	forwardRef,
 	Inject,
@@ -848,7 +849,6 @@
 } from &#x27;@nestjs/common&#x27;;
 import {
 	ContentElementType,
-	EntityId,
 	FileElement,
 	isFileElement,
 	isRichTextElement,
@@ -858,8 +858,8 @@ import {
 	SubmissionItem,
 	UserBoardRoles,
 	UserRoleEnum,
-} from &#x27;@shared/domain&#x27;;
-import { AuthorizationService, Action } from &#x27;@modules/authorization&#x27;;
+} from &#x27;@shared/domain/domainobject&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from &#x27;../service&#x27;;
 import { BaseUc } from &#x27;./base.uc&#x27;;
 

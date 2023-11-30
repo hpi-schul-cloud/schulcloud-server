@@ -174,7 +174,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/user-login-migration/uc/toggle-user-login-migration.uc.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/user-login-migration/uc/toggle-user-login-migration.uc.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -276,8 +276,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/toggle-user-login-migration.uc.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/toggle-user-login-migration.uc.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -357,8 +357,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/toggle-user-login-migration.uc.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="21"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/toggle-user-login-migration.uc.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -437,7 +437,10 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, LegacySchoolDo, Permission, User, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
+import { LegacySchoolDo, UserLoginMigrationDO } from &#x27;@shared/domain/domainobject&#x27;;
+import { User } from &#x27;@shared/domain/entity&#x27;;
+import { Permission } from &#x27;@shared/domain/interface&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { UserLoginMigrationMandatoryLoggable, UserLoginMigrationNotFoundLoggableException } from &#x27;../loggable&#x27;;
 import { UserLoginMigrationService } from &#x27;../service&#x27;;

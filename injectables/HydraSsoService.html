@@ -714,14 +714,14 @@ import { HydraRedirectDto } from &#x27;@modules/oauth/service/dto/hydra.redirect
 import { HttpService } from &#x27;@nestjs/axios&#x27;;
 import { Inject, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
-import { OauthConfigEntity } from &#x27;@shared/domain&#x27;;
 import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
+import { OauthConfigEntity } from &#x27;@shared/domain/entity&#x27;;
 import { LtiToolRepo } from &#x27;@shared/repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
 import { nanoid } from &#x27;nanoid&#x27;;
 import QueryString from &#x27;qs&#x27;;
-import { firstValueFrom, Observable } from &#x27;rxjs&#x27;;
+import { Observable, firstValueFrom } from &#x27;rxjs&#x27;;
 
 @Injectable()
 export class HydraSsoService {

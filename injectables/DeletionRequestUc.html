@@ -793,7 +793,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;DeletionRequestLogResponse&gt;</code>
+                            <b>Returns : </b>        <code><a href="../interfaces/DeletionRequestLog.html" target="_self" >Promise&lt;DeletionRequestLogResponse&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1697,28 +1697,28 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId } from &#x27;@shared/domain&#x27;;
-import { PseudonymService } from &#x27;@modules/pseudonym&#x27;;
-import { UserService } from &#x27;@modules/user&#x27;;
-import { TeamService } from &#x27;@modules/teams&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountService } from &#x27;@modules/account/services&#x27;;
 import { ClassService } from &#x27;@modules/class&#x27;;
-import { LessonService } from &#x27;@modules/lesson/service&#x27;;
-import { CourseGroupService, CourseService } from &#x27;@modules/learnroom/service&#x27;;
 import { FilesService } from &#x27;@modules/files/service&#x27;;
-import { AccountService } from &#x27;@modules/account/services&#x27;;
-import { RocketChatUserService } from &#x27;@modules/rocketchat-user&#x27;;
-import { RocketChatService } from &#x27;@modules/rocketchat&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+import { CourseGroupService, CourseService } from &#x27;@modules/learnroom/service&#x27;;
+import { LessonService } from &#x27;@modules/lesson/service&#x27;;
+import { PseudonymService } from &#x27;@modules/pseudonym&#x27;;
 import { RegistrationPinService } from &#x27;@modules/registration-pin&#x27;;
-import { DeletionRequestService } from &#x27;../services/deletion-request.service&#x27;;
-import { DeletionDomainModel, DeletionOperationModel, DeletionStatusModel } from &#x27;../domain/types&#x27;;
-import { DeletionLogService } from &#x27;../services/deletion-log.service&#x27;;
-import { DeletionRequest } from &#x27;../domain/deletion-request.do&#x27;;
-import { DeletionLog } from &#x27;../domain/deletion-log.do&#x27;;
-import { DeletionLogStatistic } from &#x27;../interface/interfaces&#x27;;
+import { RocketChatService } from &#x27;@modules/rocketchat&#x27;;
+import { RocketChatUserService } from &#x27;@modules/rocketchat-user&#x27;;
+import { TeamService } from &#x27;@modules/teams&#x27;;
+import { UserService } from &#x27;@modules/user&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from &#x27;../builder&#x27;;
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from &#x27;../controller/dto&#x27;;
+import { DeletionLog } from &#x27;../domain/deletion-log.do&#x27;;
+import { DeletionRequest } from &#x27;../domain/deletion-request.do&#x27;;
+import { DeletionDomainModel, DeletionOperationModel, DeletionStatusModel } from &#x27;../domain/types&#x27;;
+import { DeletionLogStatistic } from &#x27;../interface/interfaces&#x27;;
+import { DeletionLogService } from &#x27;../services/deletion-log.service&#x27;;
+import { DeletionRequestService } from &#x27;../services/deletion-request.service&#x27;;
 
 @Injectable()
 export class DeletionRequestUc {

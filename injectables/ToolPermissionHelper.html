@@ -175,7 +175,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/tool/common/uc/tool-permission-helper.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/tool/common/uc/tool-permission-helper.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -289,8 +289,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/uc/tool-permission-helper.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/uc/tool-permission-helper.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -383,8 +383,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/uc/tool-permission-helper.ts:51</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/uc/tool-permission-helper.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -465,8 +465,10 @@ import { AuthorizableReferenceType } from &#x27;@modules/authorization/domain&#x
 import { BoardDoAuthorizableService, ContentElementService } from &#x27;@modules/board&#x27;;
 import { CourseService } from &#x27;@modules/learnroom&#x27;;
 import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
-import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-import { BoardDoAuthorizable, Course, EntityId, LegacySchoolDo, User } from &#x27;@shared/domain&#x27;;
+import { Inject, Injectable, forwardRef } from &#x27;@nestjs/common&#x27;;
+import { BoardDoAuthorizable, LegacySchoolDo } from &#x27;@shared/domain/domainobject&#x27;;
+import { Course, User } from &#x27;@shared/domain/entity&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
 import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
 import { ToolContextType } from &#x27;../enum&#x27;;

@@ -169,7 +169,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/pseudonym/uc/pseudonym.uc.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/pseudonym/uc/pseudonym.uc.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -258,8 +258,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/uc/pseudonym.uc.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/uc/pseudonym.uc.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -323,11 +323,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, LegacySchoolDo, Pseudonym, User } from &#x27;@shared/domain&#x27;;
-import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
-import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
+import { LegacySchoolDo, Pseudonym } from &#x27;@shared/domain/domainobject&#x27;;
+import { User } from &#x27;@shared/domain/entity&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { PseudonymService } from &#x27;../service&#x27;;
 
 @Injectable()

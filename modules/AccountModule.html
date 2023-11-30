@@ -413,8 +413,9 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IdentityManagementModule } from &#x27;@infra/identity-management&#x27;;
 import { Module } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { PermissionService } from &#x27;@shared/domain&#x27;;
+import { PermissionService } from &#x27;@shared/domain/service&#x27;;
 import { LegacySystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
+
 import { LoggerModule } from &#x27;@src/core/logger/logger.module&#x27;;
 import { ServerConfig } from &#x27;../server/server.config&#x27;;
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb, AccountIdmToDtoMapperIdm } from &#x27;./mapper&#x27;;

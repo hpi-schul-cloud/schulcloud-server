@@ -169,7 +169,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -246,8 +246,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:15</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="16"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -323,10 +323,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, Permission } from &#x27;@shared/domain&#x27;;
-import { AuthorizationContextBuilder } from &#x27;@modules/authorization&#x27;;
-import { AuthorizationReferenceService, AuthorizableReferenceType } from &#x27;@modules/authorization/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContextBuilder } from &#x27;@modules/authorization&#x27;;
+import { AuthorizableReferenceType, AuthorizationReferenceService } from &#x27;@modules/authorization/domain&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { Permission } from &#x27;@shared/domain/interface&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { CommonCartridgeVersion } from &#x27;../common-cartridge&#x27;;
 import { CommonCartridgeExportService } from &#x27;../service/common-cartridge-export.service&#x27;;
 

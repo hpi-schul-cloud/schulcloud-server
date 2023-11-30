@@ -290,12 +290,12 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;;
-import { PermissionService } from &#x27;@shared/domain&#x27;;
+import { PermissionService } from &#x27;@shared/domain/service&#x27;;
 import { UserRepo } from &#x27;@shared/repo&#x27;;
+import { LoggerModule } from &#x27;../../core/logger/logger.module&#x27;;
 import { AccountModule } from &#x27;./account.module&#x27;;
 import { AccountController } from &#x27;./controller/account.controller&#x27;;
 import { AccountUc } from &#x27;./uc/account.uc&#x27;;
-import { LoggerModule } from &#x27;../../core/logger/logger.module&#x27;;
 
 @Module({
 	imports: [AccountModule, LoggerModule],

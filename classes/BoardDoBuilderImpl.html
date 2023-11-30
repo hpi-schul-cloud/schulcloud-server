@@ -1392,22 +1392,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { NotImplementedException } from &#x27;@nestjs/common&#x27;;
-import type {
-	BoardDoBuilder,
-	BoardNode,
-	CardNode,
-	ColumnBoardNode,
-	ColumnNode,
-	ExternalToolElementNodeEntity,
-	FileElementNode,
-	LinkElementNode,
-	RichTextElementNode,
-	SubmissionContainerElementNode,
-	SubmissionItemNode,
-} from &#x27;@shared/domain&#x27;;
 import {
 	AnyBoardDo,
-	BoardNodeType,
 	Card,
 	Column,
 	ColumnBoard,
@@ -1417,9 +1403,23 @@ import {
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
-} from &#x27;@shared/domain&#x27;;
-import { DrawingElementNode } from &#x27;@shared/domain/entity/boardnode/drawing-element-node.entity&#x27;;
+} from &#x27;@shared/domain/domainobject&#x27;;
 import { DrawingElement } from &#x27;@shared/domain/domainobject/board/drawing-element.do&#x27;;
+import {
+	BoardNodeType,
+	type BoardDoBuilder,
+	type BoardNode,
+	type CardNode,
+	type ColumnBoardNode,
+	type ColumnNode,
+	type ExternalToolElementNodeEntity,
+	type FileElementNode,
+	type LinkElementNode,
+	type RichTextElementNode,
+	type SubmissionContainerElementNode,
+	type SubmissionItemNode,
+} from &#x27;@shared/domain/entity&#x27;;
+import { DrawingElementNode } from &#x27;@shared/domain/entity/boardnode/drawing-element-node.entity&#x27;;
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record&lt;string, BoardNode[]&gt; &#x3D; {};

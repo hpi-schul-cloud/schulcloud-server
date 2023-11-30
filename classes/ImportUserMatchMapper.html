@@ -196,8 +196,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="5"
-                                    class="link-to-prism">apps/server/src/modules/user-import/mapper/match.mapper.ts:5</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="6"
+                                    class="link-to-prism">apps/server/src/modules/user-import/mapper/match.mapper.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -265,8 +265,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/modules/user-import/mapper/match.mapper.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="13"
+                                    class="link-to-prism">apps/server/src/modules/user-import/mapper/match.mapper.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -322,8 +322,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MatchCreator, MatchCreatorScope } from &#x27;@shared/domain&#x27;;
-import { MatchType, FilterMatchType } from &#x27;../controller/dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MatchCreator } from &#x27;@shared/domain/entity&#x27;;
+import { MatchCreatorScope } from &#x27;@shared/domain/types&#x27;;
+import { FilterMatchType, MatchType } from &#x27;../controller/dto&#x27;;
 
 export class ImportUserMatchMapper {
 	static mapImportUserMatchScopeToDomain(match: FilterMatchType): MatchCreatorScope {

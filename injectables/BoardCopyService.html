@@ -962,32 +962,32 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import {
-	Board,
-	BoardElement,
-	BoardElementType,
-	ColumnBoard,
-	ColumnboardBoardElement,
-	ColumnBoardTarget,
-	Course,
-	isColumnBoardTarget,
-	isLesson,
-	isTask,
-	LessonEntity,
-	LessonBoardElement,
-	Task,
-	TaskBoardElement,
-	User,
-} from &#x27;@shared/domain&#x27;;
-import { BoardExternalReferenceType } from &#x27;@shared/domain/domainobject/board/types&#x27;;
-import { BoardRepo } from &#x27;@shared/repo&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { ColumnBoardCopyService } from &#x27;@modules/board/service/column-board-copy.service&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ColumnBoardCopyService } from &#x27;@modules/board/service/column-board-copy.service&#x27;;
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from &#x27;@modules/copy-helper&#x27;;
 import { getResolvedValues } from &#x27;@modules/files-storage/helper&#x27;;
 import { LessonCopyService } from &#x27;@modules/lesson/service&#x27;;
 import { TaskCopyService } from &#x27;@modules/task/service&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { ColumnBoard } from &#x27;@shared/domain/domainobject&#x27;;
+import { BoardExternalReferenceType } from &#x27;@shared/domain/domainobject/board/types&#x27;;
+import {
+	Board,
+	BoardElement,
+	BoardElementType,
+	ColumnBoardTarget,
+	ColumnboardBoardElement,
+	Course,
+	LessonBoardElement,
+	LessonEntity,
+	Task,
+	TaskBoardElement,
+	User,
+	isColumnBoardTarget,
+	isLesson,
+	isTask,
+} from &#x27;@shared/domain/entity&#x27;;
+import { BoardRepo } from &#x27;@shared/repo&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { sortBy } from &#x27;lodash&#x27;;
 
 type BoardCopyParams &#x3D; {

@@ -202,7 +202,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -315,8 +315,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:40</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -408,8 +408,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -489,8 +489,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:51</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -594,8 +594,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -694,7 +694,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:12</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:13</a></code>
 </div>
                         </td>
                     </tr>
@@ -806,7 +806,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:44</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:45</a></code>
 </div>
                         </td>
                     </tr>
@@ -894,7 +894,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:28</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:29</a></code>
 </div>
                         </td>
                     </tr>
@@ -959,11 +959,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-import { Card, ContentElementType, EntityId } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Action, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { Card, ContentElementType } from &#x27;@shared/domain/domainobject&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { AuthorizationService, Action } from &#x27;@modules/authorization&#x27;;
-import { CardService, ColumnService, BoardDoAuthorizableService } from &#x27;../service&#x27;;
+import { BoardDoAuthorizableService, CardService, ColumnService } from &#x27;../service&#x27;;
 import { BaseUc } from &#x27;./base.uc&#x27;;
 
 @Injectable()

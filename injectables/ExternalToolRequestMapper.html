@@ -927,7 +927,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { SortOrderMap } from &#x27;@shared/domain&#x27;;
+import { SortOrderMap } from &#x27;@shared/domain/interface&#x27;;
 import {
 	CustomParameterLocation,
 	CustomParameterLocationParams,
@@ -936,6 +936,7 @@ import {
 	CustomParameterType,
 	CustomParameterTypeParams,
 } from &#x27;../../common/enum&#x27;;
+import { ExternalToolSearchQuery } from &#x27;../../common/interface&#x27;;
 import {
 	BasicToolConfigParams,
 	CustomParameterPostParams,
@@ -948,6 +949,7 @@ import {
 	Oauth2ToolConfigUpdateParams,
 	SortExternalToolParams,
 } from &#x27;../controller/dto&#x27;;
+import { ExternalTool } from &#x27;../domain&#x27;;
 import {
 	BasicToolConfigDto,
 	CustomParameterDto,
@@ -958,8 +960,6 @@ import {
 	Oauth2ToolConfigCreate,
 	Oauth2ToolConfigUpdate,
 } from &#x27;../uc&#x27;;
-import { ExternalTool } from &#x27;../domain&#x27;;
-import { ExternalToolSearchQuery } from &#x27;../../common/interface&#x27;;
 
 const scopeMapping: Record&lt;CustomParameterScopeTypeParams, CustomParameterScope&gt; &#x3D; {
 	[CustomParameterScopeTypeParams.GLOBAL]: CustomParameterScope.GLOBAL,

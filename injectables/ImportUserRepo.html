@@ -234,8 +234,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="69"
-                                    class="link-to-prism">apps/server/src/shared/repo/importuser/importuser.repo.ts:69</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">apps/server/src/shared/repo/importuser/importuser.repo.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -309,7 +309,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseRepo.html#source" target="_self" >BaseRepo:15</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/BaseRepo.html#source" target="_self" >BaseRepo:17</a></code>
 </div>
                         </td>
                     </tr>
@@ -378,8 +378,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/shared/repo/importuser/importuser.repo.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="36"
+                                    class="link-to-prism">apps/server/src/shared/repo/importuser/importuser.repo.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -480,8 +480,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">apps/server/src/shared/repo/importuser/importuser.repo.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/shared/repo/importuser/importuser.repo.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -561,8 +561,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">apps/server/src/shared/repo/importuser/importuser.repo.ts:27</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/shared/repo/importuser/importuser.repo.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -855,7 +855,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/shared/repo/importuser/importuser.repo.ts:11</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/shared/repo/importuser/importuser.repo.ts:13</a></div>
                                 </td>
                             </tr>
 
@@ -870,7 +870,9 @@
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
-import { Counted, EntityId, IFindOptions, IImportUserScope, ImportUser, SchoolEntity, User } from &#x27;@shared/domain&#x27;;
+import { ImportUser, SchoolEntity, User } from &#x27;@shared/domain/entity&#x27;;
+import { IFindOptions } from &#x27;@shared/domain/interface&#x27;;
+import { Counted, EntityId, IImportUserScope } from &#x27;@shared/domain/types&#x27;;
 import { BaseRepo } from &#x27;@shared/repo/base.repo&#x27;;
 import { ImportUserScope } from &#x27;./importuser.scope&#x27;;
 

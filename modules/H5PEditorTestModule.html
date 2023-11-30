@@ -543,25 +543,25 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DynamicModule, Module } from &#x27;@nestjs/common&#x27;;
-import { ALL_ENTITIES } from &#x27;@shared/domain&#x27;;
-import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from &#x27;@infra/database&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from &#x27;@infra/database&#x27;;
 import { RabbitMQWrapperTestModule } from &#x27;@infra/rabbitmq&#x27;;
 import { S3ClientModule } from &#x27;@infra/s3-client&#x27;;
-import { CoreModule } from &#x27;@src/core&#x27;;
-import { LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { AuthenticationModule } from &#x27;@modules/authentication&#x27;;
+import { AuthenticationApiModule } from &#x27;@modules/authentication/authentication-api.module&#x27;;
 import { AuthorizationReferenceModule } from &#x27;@modules/authorization/authorization-reference.module&#x27;;
 import { UserModule } from &#x27;@modules/user&#x27;;
-import { AuthenticationApiModule } from &#x27;@modules/authentication/authentication-api.module&#x27;;
+import { DynamicModule, Module } from &#x27;@nestjs/common&#x27;;
+import { ALL_ENTITIES } from &#x27;@shared/domain/entity&#x27;;
+import { CoreModule } from &#x27;@src/core&#x27;;
+import { LoggerModule } from &#x27;@src/core/logger&#x27;;
+import { H5PEditorController } from &#x27;./controller&#x27;;
+import { H5PContent } from &#x27;./entity&#x27;;
+import { s3ConfigContent, s3ConfigLibraries } from &#x27;./h5p-editor.config&#x27;;
 import { H5PEditorModule } from &#x27;./h5p-editor.module&#x27;;
+import { H5PAjaxEndpointProvider, H5PEditorProvider, H5PPlayerProvider } from &#x27;./provider&#x27;;
 import { H5PContentRepo, LibraryRepo, TemporaryFileRepo } from &#x27;./repo&#x27;;
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from &#x27;./service&#x27;;
 import { H5PEditorUc } from &#x27;./uc/h5p.uc&#x27;;
-import { s3ConfigContent, s3ConfigLibraries } from &#x27;./h5p-editor.config&#x27;;
-import { H5PEditorController } from &#x27;./controller&#x27;;
-import { H5PEditorProvider, H5PAjaxEndpointProvider, H5PPlayerProvider } from &#x27;./provider&#x27;;
-import { H5PContent } from &#x27;./entity&#x27;;
 
 const imports &#x3D; [
 	H5PEditorModule,

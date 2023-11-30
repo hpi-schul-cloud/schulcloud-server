@@ -243,19 +243,19 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
-import { Dictionary, IPrimaryKey } from &#x27;@mikro-orm/core&#x27;;
-import { MikroOrmModule } from &#x27;@mikro-orm/nestjs&#x27;;
-import { Module, NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { ConfigModule } from &#x27;@nestjs/config&#x27;;
-import { ALL_ENTITIES } from &#x27;@shared/domain&#x27;;
 import { ConsoleWriterModule } from &#x27;@infra/console/console-writer/console-writer.module&#x27;;
 import { KeycloakModule } from &#x27;@infra/identity-management/keycloak/keycloak.module&#x27;;
-import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from &#x27;@src/config&#x27;;
+import { Dictionary, IPrimaryKey } from &#x27;@mikro-orm/core&#x27;;
+import { MikroOrmModule } from &#x27;@mikro-orm/nestjs&#x27;;
 import { FilesModule } from &#x27;@modules/files&#x27;;
-import { FileEntity } from &#x27;@modules/files/entity&#x27;;
 import { FileRecord } from &#x27;@modules/files-storage/entity&#x27;;
+import { FileEntity } from &#x27;@modules/files/entity&#x27;;
 import { ManagementModule } from &#x27;@modules/management/management.module&#x27;;
 import { serverConfig } from &#x27;@modules/server&#x27;;
+import { Module, NotFoundException } from &#x27;@nestjs/common&#x27;;
+import { ConfigModule } from &#x27;@nestjs/config&#x27;;
+import { ALL_ENTITIES } from &#x27;@shared/domain/entity&#x27;;
+import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from &#x27;@src/config&#x27;;
 import { ConsoleModule } from &#x27;nestjs-console&#x27;;
 import { ServerConsole } from &#x27;./server.console&#x27;;
 

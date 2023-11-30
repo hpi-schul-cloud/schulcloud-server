@@ -183,7 +183,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -249,8 +249,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -318,8 +318,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="30"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -388,8 +388,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -457,8 +457,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="9"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:9</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="10"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -511,8 +511,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { Course } from &#x27;@shared/domain/entity&#x27;;
+import { Counted, EntityId } from &#x27;@shared/domain/types&#x27;;
 import { CourseRepo } from &#x27;@shared/repo&#x27;;
-import { Counted, Course, EntityId } from &#x27;@shared/domain&#x27;;
 
 @Injectable()
 export class CourseService {

@@ -197,8 +197,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:15</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="16"
+                                    class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -264,8 +264,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="14"
-                                    class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:14</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -331,8 +331,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -386,7 +386,8 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager, ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { DashboardEntity, DashboardModelEntity, EntityId, GridElementWithPosition } from &#x27;@shared/domain&#x27;;
+import { DashboardEntity, DashboardModelEntity, GridElementWithPosition } from &#x27;@shared/domain/entity&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { DashboardModelMapper } from &#x27;./dashboard.model.mapper&#x27;;
 
 const generateEmptyDashboard &#x3D; (userId: EntityId) &#x3D;&gt; {

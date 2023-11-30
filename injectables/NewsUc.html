@@ -210,7 +210,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -300,8 +300,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="30"
+                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -394,8 +394,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="148"
-                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:148</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="139"
+                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:139</a></div>
                         </td>
                     </tr>
 
@@ -476,8 +476,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="67"
-                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:67</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:58</a></div>
                         </td>
                     </tr>
 
@@ -572,8 +572,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="100"
-                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:100</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -654,8 +654,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="197"
-                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:197</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="188"
+                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:188</a></div>
                         </td>
                     </tr>
 
@@ -736,8 +736,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="159"
-                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:159</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="150"
+                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:150</a></div>
                         </td>
                     </tr>
 
@@ -830,8 +830,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="207"
-                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:207</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="198"
+                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:198</a></div>
                         </td>
                     </tr>
 
@@ -898,8 +898,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="179"
-                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:179</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="170"
+                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:170</a></div>
                         </td>
                     </tr>
 
@@ -992,8 +992,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="122"
-                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:122</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="113"
+                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:113</a></div>
                         </td>
                     </tr>
 
@@ -1071,18 +1071,9 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FeathersAuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import {
-	Counted,
-	CreateNews,
-	EntityId,
-	IFindOptions,
-	INewsScope,
-	IUpdateNews,
-	News,
-	NewsTargetModel,
-	Permission,
-	SortOrder,
-} from &#x27;@shared/domain&#x27;;
+import { News } from &#x27;@shared/domain/entity&#x27;;
+import { IFindOptions, Permission, SortOrder } from &#x27;@shared/domain/interface&#x27;;
+import { Counted, CreateNews, EntityId, INewsScope, IUpdateNews, NewsTargetModel } from &#x27;@shared/domain/types&#x27;;
 import { NewsRepo, NewsTargetFilter } from &#x27;@shared/repo&#x27;;
 import { CrudOperation } from &#x27;@shared/types&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;

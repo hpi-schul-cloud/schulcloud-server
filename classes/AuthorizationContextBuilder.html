@@ -409,8 +409,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Permission } from &#x27;@shared/domain&#x27;;
-import { AuthorizationContext, Action } from &#x27;../type&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Permission } from &#x27;@shared/domain/interface&#x27;;
+import { Action, AuthorizationContext } from &#x27;../type&#x27;;
 
 export class AuthorizationContextBuilder {
 	private static build(requiredPermissions: Permission[], action: Action): AuthorizationContext {

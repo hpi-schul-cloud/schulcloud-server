@@ -185,7 +185,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/board/uc/base.uc.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/board/uc/base.uc.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -264,8 +264,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/base.uc.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="13"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/base.uc.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -370,8 +370,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/base.uc.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/base.uc.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -452,8 +452,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/base.uc.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/base.uc.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -521,9 +521,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AnyBoardDo, EntityId, SubmissionItem, UserRoleEnum } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Action, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { ForbiddenException } from &#x27;@nestjs/common&#x27;;
-import { AuthorizationService, Action } from &#x27;@modules/authorization&#x27;;
+import { AnyBoardDo, SubmissionItem, UserRoleEnum } from &#x27;@shared/domain/domainobject&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { BoardDoAuthorizableService } from &#x27;../service&#x27;;
 
 export abstract class BaseUc {

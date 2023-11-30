@@ -177,7 +177,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -254,8 +254,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -323,8 +323,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -392,8 +392,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -445,10 +445,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Counted, EntityId, Submission } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { Submission } from &#x27;@shared/domain/entity&#x27;;
+import { Counted, EntityId } from &#x27;@shared/domain/types&#x27;;
 import { SubmissionRepo } from &#x27;@shared/repo&#x27;;
-import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
 
 @Injectable()
 export class SubmissionService {

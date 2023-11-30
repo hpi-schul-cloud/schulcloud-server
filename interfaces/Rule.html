@@ -191,8 +191,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="7"
-                                    class="link-to-prism">apps/server/src/modules/authorization/domain/type/rule.interface.ts:7</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="8"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/type/rule.interface.ts:8</a></div>
                         </td>
                     </tr>
 
@@ -282,8 +282,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="6"
-                                    class="link-to-prism">apps/server/src/modules/authorization/domain/type/rule.interface.ts:6</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="7"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/type/rule.interface.ts:7</a></div>
                         </td>
                     </tr>
 
@@ -359,8 +359,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BaseDO, User } from &#x27;@shared/domain&#x27;;
-import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;; // fix import when it is avaible
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;; // fix import when it is avaible
+import { BaseDO } from &#x27;@shared/domain/domainobject&#x27;;
+import { User } from &#x27;@shared/domain/entity&#x27;;
 import { AuthorizationContext } from &#x27;./authorization-context.interface&#x27;;
 
 export interface Rule&lt;T &#x3D; AuthorizableObject | BaseDO&gt; {

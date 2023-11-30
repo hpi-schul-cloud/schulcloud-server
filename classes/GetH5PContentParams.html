@@ -207,7 +207,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/h5p-editor/controller/dto/h5p-editor.params.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/h5p-editor/controller/dto/h5p-editor.params.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -246,7 +246,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/h5p-editor/controller/dto/h5p-editor.params.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/h5p-editor/controller/dto/h5p-editor.params.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -268,7 +268,9 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IContentMetadata } from &#x27;@lumieducation/h5p-server&#x27;;
 import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 import { SanitizeHtml } from &#x27;@shared/controller&#x27;;
-import { EntityId, LanguageType } from &#x27;@shared/domain&#x27;;
+
+import { LanguageType } from &#x27;@shared/domain/entity&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { IsEnum, IsMongoId, IsNotEmpty, IsObject, IsOptional, IsString } from &#x27;class-validator&#x27;;
 import { H5PContentParentType } from &#x27;../../entity&#x27;;
 

@@ -210,7 +210,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -335,8 +335,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:61</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -416,8 +416,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="43"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:43</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -497,8 +497,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -578,8 +578,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -659,8 +659,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="71"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:71</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -764,8 +764,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -864,7 +864,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:12</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:13</a></code>
 </div>
                         </td>
                     </tr>
@@ -976,7 +976,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:44</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:45</a></code>
 </div>
                         </td>
                     </tr>
@@ -1064,7 +1064,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:28</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:29</a></code>
 </div>
                         </td>
                     </tr>
@@ -1129,11 +1129,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-import { BoardExternalReference, Column, ColumnBoard, EntityId } from &#x27;@shared/domain&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Action } from &#x27;@modules/authorization&#x27;;
 import { AuthorizationService } from &#x27;@modules/authorization/domain&#x27;;
-import { Action } from &#x27;@modules/authorization&#x27;;
+import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { BoardExternalReference, Column, ColumnBoard } from &#x27;@shared/domain/domainobject&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { CardService, ColumnBoardService, ColumnService } from &#x27;../service&#x27;;
 import { BoardDoAuthorizableService } from &#x27;../service/board-do-authorizable.service&#x27;;
 import { BaseUc } from &#x27;./base.uc&#x27;;

@@ -456,11 +456,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId } from &#x27;@shared/domain&#x27;;
-import { ReferenceLoader } from &#x27;./reference.loader&#x27;;
-import { AuthorizationContext, AuthorizableReferenceType } from &#x27;../type&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ForbiddenLoggableException } from &#x27;../error&#x27;;
+import { AuthorizableReferenceType, AuthorizationContext } from &#x27;../type&#x27;;
 import { AuthorizationService } from &#x27;./authorization.service&#x27;;
+import { ReferenceLoader } from &#x27;./reference.loader&#x27;;
 
 /**
  * Should by use only internal in authorization module. See ticket: BC-3990

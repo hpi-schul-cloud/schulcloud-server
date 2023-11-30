@@ -177,7 +177,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/board/service/submission-item.service.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/board/service/submission-item.service.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -254,8 +254,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">apps/server/src/modules/board/service/submission-item.service.ts:24</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">apps/server/src/modules/board/service/submission-item.service.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -347,8 +347,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="14"
-                                    class="link-to-prism">apps/server/src/modules/board/service/submission-item.service.ts:14</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">apps/server/src/modules/board/service/submission-item.service.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -416,8 +416,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">apps/server/src/modules/board/service/submission-item.service.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/board/service/submission-item.service.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -481,11 +481,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;bson&#x27;;
-import { Injectable, NotFoundException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotFoundException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
+import { ObjectId } from &#x27;bson&#x27;;
 
-import { EntityId, isSubmissionContainerElement, SubmissionContainerElement, SubmissionItem } from &#x27;@shared/domain&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
+import { isSubmissionContainerElement, SubmissionContainerElement, SubmissionItem } from &#x27;@shared/domain/domainobject&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 
 import { BoardDoRepo } from &#x27;../repo&#x27;;
 import { BoardDoService } from &#x27;./board-do.service&#x27;;

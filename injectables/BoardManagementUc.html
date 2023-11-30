@@ -194,7 +194,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -271,8 +271,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -340,8 +340,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="49"
-                                    class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:49</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -421,8 +421,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -502,8 +502,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="60"
-                                    class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:60</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -584,8 +584,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="79"
-                                    class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:79</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -657,8 +657,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="71"
-                                    class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:71</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -746,8 +746,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="75"
-                                    class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:75</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="77"
+                                    class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:77</a></div>
                         </td>
                     </tr>
 
@@ -811,10 +811,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ConsoleWriterService } from &#x27;@infra/console&#x27;;
+import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { BoardExternalReferenceType, BoardNode, Course, EntityId, InputFormat } from &#x27;@shared/domain&#x27;;
-import { ConsoleWriterService } from &#x27;@infra/console&#x27;;
+import { BoardExternalReferenceType } from &#x27;@shared/domain/domainobject&#x27;;
+import { BoardNode, Course } from &#x27;@shared/domain/entity&#x27;;
+import { EntityId, InputFormat } from &#x27;@shared/domain/types&#x27;;
 import {
 	cardNodeFactory,
 	columnBoardNodeFactory,

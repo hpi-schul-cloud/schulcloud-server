@@ -528,21 +528,21 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { HttpService } from &#x27;@nestjs/axios&#x27;;
 import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+import { RoleName } from &#x27;@shared/domain/interface&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
 import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
 import { firstValueFrom } from &#x27;rxjs&#x27;;
-import { RoleName } from &#x27;@shared/domain&#x27;;
 import {
+	ExternalGroupDto,
 	ExternalSchoolDto,
 	ExternalUserDto,
 	OauthDataDto,
 	OauthDataStrategyInputDto,
-	ExternalGroupDto,
 } from &#x27;../../dto&#x27;;
 import { OidcProvisioningStrategy } from &#x27;../oidc/oidc.strategy&#x27;;
 import { OidcProvisioningService } from &#x27;../oidc/service/oidc-provisioning.service&#x27;;
-import { SanisResponseMapper } from &#x27;./sanis-response.mapper&#x27;;
 import { SanisResponse } from &#x27;./response&#x27;;
+import { SanisResponseMapper } from &#x27;./sanis-response.mapper&#x27;;
 
 @Injectable()
 export class SanisProvisioningStrategy extends OidcProvisioningStrategy {

@@ -182,7 +182,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/collaborative-storage/services/collaborative-storage.service.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/collaborative-storage/services/collaborative-storage.service.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -305,8 +305,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="64"
-                                    class="link-to-prism">apps/server/src/modules/collaborative-storage/services/collaborative-storage.service.ts:64</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">apps/server/src/modules/collaborative-storage/services/collaborative-storage.service.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -372,8 +372,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="60"
-                                    class="link-to-prism">apps/server/src/modules/collaborative-storage/services/collaborative-storage.service.ts:60</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/modules/collaborative-storage/services/collaborative-storage.service.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -441,8 +441,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/collaborative-storage/services/collaborative-storage.service.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/collaborative-storage/services/collaborative-storage.service.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -537,8 +537,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">apps/server/src/modules/collaborative-storage/services/collaborative-storage.service.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">apps/server/src/modules/collaborative-storage/services/collaborative-storage.service.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -606,8 +606,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">apps/server/src/modules/collaborative-storage/services/collaborative-storage.service.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">apps/server/src/modules/collaborative-storage/services/collaborative-storage.service.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -714,13 +714,14 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, Permission } from &#x27;@shared/domain&#x27;;
-import { CollaborativeStorageAdapter } from &#x27;@infra/collaborative-storage&#x27;;
-import { TeamsRepo } from &#x27;@shared/repo&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CollaborativeStorageAdapter } from &#x27;@infra/collaborative-storage&#x27;;
 import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { RoleService } from &#x27;@modules/role/service/role.service&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { Permission } from &#x27;@shared/domain/interface&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { TeamsRepo } from &#x27;@shared/repo&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { TeamMapper } from &#x27;../mapper/team.mapper&#x27;;
 import { TeamPermissionsDto } from &#x27;./dto/team-permissions.dto&#x27;;
 import { TeamDto } from &#x27;./dto/team.dto&#x27;;

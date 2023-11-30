@@ -298,12 +298,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Dictionary, IPrimaryKey } from &#x27;@mikro-orm/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MongoMemoryDatabaseModule } from &#x27;@infra/database&#x27;;
+import { MongoDatabaseModuleOptions } from &#x27;@infra/database/mongo-memory-database/types&#x27;;
+import { Dictionary, IPrimaryKey } from &#x27;@mikro-orm/core&#x27;;
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from &#x27;@mikro-orm/nestjs&#x27;;
 import { DynamicModule, Module, NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { ALL_ENTITIES } from &#x27;@shared/domain&#x27;;
-import { MongoMemoryDatabaseModule } from &#x27;@infra/database&#x27;;
-import { MongoDatabaseModuleOptions } from &#x27;@infra/database/mongo-memory-database/types&#x27;;
+import { ALL_ENTITIES } from &#x27;@shared/domain/entity&#x27;;
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from &#x27;@src/config&#x27;;
 import { ManagementModule } from &#x27;./management.module&#x27;;
 

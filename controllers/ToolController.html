@@ -261,8 +261,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:55</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -354,8 +354,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="144"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:144</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="145"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:145</a></div>
                         </td>
                     </tr>
 
@@ -447,8 +447,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="75"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:75</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -561,8 +561,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="103"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:103</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="104"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:104</a></div>
                         </td>
                     </tr>
 
@@ -653,8 +653,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="162"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:162</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="163"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:163</a></div>
                         </td>
                     </tr>
 
@@ -745,8 +745,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="178"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:178</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="179"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:179</a></div>
                         </td>
                     </tr>
 
@@ -839,8 +839,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="122"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:122</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="123"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:123</a></div>
                         </td>
                     </tr>
 
@@ -929,25 +929,26 @@ import {
 } from &#x27;@nestjs/swagger&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import { PaginationParams } from &#x27;@shared/controller&#x27;;
-import { IFindOptions, Page } from &#x27;@shared/domain&#x27;;
+import { Page } from &#x27;@shared/domain/domainobject&#x27;;
+import { IFindOptions } from &#x27;@shared/domain/interface&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { Response } from &#x27;express&#x27;;
 import { ExternalToolSearchQuery } from &#x27;../../common/interface&#x27;;
 import { ExternalTool, ExternalToolMetadata } from &#x27;../domain&#x27;;
 import { ExternalToolLogo } from &#x27;../domain/external-tool-logo&#x27;;
 
-import { ExternalToolRequestMapper, ExternalToolResponseMapper, ExternalToolMetadataMapper } from &#x27;../mapper&#x27;;
+import { ExternalToolMetadataMapper, ExternalToolRequestMapper, ExternalToolResponseMapper } from &#x27;../mapper&#x27;;
 import { ExternalToolLogoService } from &#x27;../service&#x27;;
 import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate } from &#x27;../uc&#x27;;
 import {
 	ExternalToolCreateParams,
 	ExternalToolIdParams,
+	ExternalToolMetadataResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
 	ExternalToolSearchParams,
 	ExternalToolUpdateParams,
 	SortExternalToolParams,
-	ExternalToolMetadataResponse,
 } from &#x27;./dto&#x27;;
 
 @ApiTags(&#x27;Tool&#x27;)

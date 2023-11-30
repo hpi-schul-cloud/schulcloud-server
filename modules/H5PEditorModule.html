@@ -124,13 +124,13 @@
 <title>cluster_H5PEditorModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 2205,-268 2205,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_H5PEditorModule_exports</title>
-<polygon fill="none" stroke="black" points="1014,-208 1014,-260 1258,-260 1258,-208 1014,-208"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_H5PEditorModule_imports</title>
 <polygon fill="none" stroke="black" points="1306,-78 1306,-130 2197,-130 2197,-78 1306,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_H5PEditorModule_exports</title>
+<polygon fill="none" stroke="black" points="1014,-208 1014,-260 1258,-260 1258,-208 1014,-208"/>
 </g>
 <g id="clust6" class="cluster">
 <title>cluster_H5PEditorModule_providers</title>
@@ -465,25 +465,25 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Dictionary, IPrimaryKey } from &#x27;@mikro-orm/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { RabbitMQWrapperModule } from &#x27;@infra/rabbitmq&#x27;;
+import { S3ClientModule } from &#x27;@infra/s3-client&#x27;;
+import { Dictionary, IPrimaryKey } from &#x27;@mikro-orm/core&#x27;;
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from &#x27;@mikro-orm/nestjs&#x27;;
+import { AuthenticationModule } from &#x27;@modules/authentication&#x27;;
+import { AuthorizationReferenceModule } from &#x27;@modules/authorization/authorization-reference.module&#x27;;
+import { UserModule } from &#x27;@modules/user&#x27;;
 import { Module, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { ConfigModule } from &#x27;@nestjs/config&#x27;;
-import { ALL_ENTITIES } from &#x27;@shared/domain&#x27;;
-import { RabbitMQWrapperModule } from &#x27;@infra/rabbitmq&#x27;;
+import { ALL_ENTITIES } from &#x27;@shared/domain/entity&#x27;;
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from &#x27;@src/config&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { AuthorizationReferenceModule } from &#x27;@modules/authorization/authorization-reference.module&#x27;;
-import { UserModule } from &#x27;@modules/user&#x27;;
-import { S3ClientModule } from &#x27;@infra/s3-client&#x27;;
-import { AuthenticationModule } from &#x27;@modules/authentication&#x27;;
 import { H5PEditorController } from &#x27;./controller/h5p-editor.controller&#x27;;
-import { H5PContent, InstalledLibrary, H5pEditorTempFile } from &#x27;./entity&#x27;;
+import { H5PContent, H5pEditorTempFile, InstalledLibrary } from &#x27;./entity&#x27;;
 import { config, s3ConfigContent, s3ConfigLibraries } from &#x27;./h5p-editor.config&#x27;;
+import { H5PAjaxEndpointProvider, H5PEditorProvider, H5PPlayerProvider } from &#x27;./provider&#x27;;
 import { H5PContentRepo, LibraryRepo, TemporaryFileRepo } from &#x27;./repo&#x27;;
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from &#x27;./service&#x27;;
-import { H5PEditorProvider, H5PAjaxEndpointProvider, H5PPlayerProvider } from &#x27;./provider&#x27;;
 import { H5PEditorUc } from &#x27;./uc/h5p.uc&#x27;;
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions &#x3D; {

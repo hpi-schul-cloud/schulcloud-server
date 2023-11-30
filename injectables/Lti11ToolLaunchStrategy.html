@@ -252,7 +252,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/lti11-tool-launch.strategy.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/lti11-tool-launch.strategy.ts:24</a></div>
                             </td>
                         </tr>
 
@@ -397,7 +397,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:36</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:38</a></code>
 </div>
                         </td>
                     </tr>
@@ -485,7 +485,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:128</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:130</a></code>
 </div>
                         </td>
                     </tr>
@@ -573,7 +573,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:169</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:171</a></code>
 </div>
                         </td>
                     </tr>
@@ -642,8 +642,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="150"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/lti11-tool-launch.strategy.ts:150</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="152"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/lti11-tool-launch.strategy.ts:152</a></div>
                         </td>
                     </tr>
 
@@ -1686,8 +1686,10 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { PseudonymService } from &#x27;@modules/pseudonym/service&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
-import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from &#x27;@shared/domain&#x27;;
-import { RoleReference } from &#x27;@shared/domain/domainobject&#x27;;
+import { Pseudonym, RoleReference, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
+import { LtiPrivacyPermission } from &#x27;@shared/domain/entity&#x27;;
+import { RoleName } from &#x27;@shared/domain/interface&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Authorization } from &#x27;oauth-1.0a&#x27;;
 import { LtiRole } from &#x27;../../../common/enum&#x27;;
 import { ExternalTool } from &#x27;../../../external-tool/domain&#x27;;

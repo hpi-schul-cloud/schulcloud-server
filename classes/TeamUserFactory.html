@@ -1431,12 +1431,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Role, TeamUserEntity } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Role, TeamUserEntity } from &#x27;@shared/domain/entity&#x27;;
 import { BaseFactory } from &#x27;@shared/testing/factory/base.factory&#x27;;
-import { DeepPartial } from &#x27;fishery&#x27;;
+import { roleFactory } from &#x27;@shared/testing/factory/role.factory&#x27;;
 import { schoolFactory } from &#x27;@shared/testing/factory/school.factory&#x27;;
 import { userFactory } from &#x27;@shared/testing/factory/user.factory&#x27;;
-import { roleFactory } from &#x27;@shared/testing/factory/role.factory&#x27;;
+import { DeepPartial } from &#x27;fishery&#x27;;
 
 class TeamUserFactory extends BaseFactory&lt;TeamUserEntity, TeamUserEntity&gt; {
 	withRoleAndUserId(role: Role, userId: string): this {

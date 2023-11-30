@@ -200,7 +200,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -325,8 +325,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="70"
-                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:70</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -406,8 +406,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="75"
-                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:75</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -487,8 +487,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="113"
-                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:113</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="114"
+                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:114</a></div>
                         </td>
                     </tr>
 
@@ -526,8 +526,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="63"
+                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:63</a></div>
                         </td>
                     </tr>
 
@@ -607,8 +607,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -701,8 +701,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:82</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="83"
+                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:83</a></div>
                         </td>
                     </tr>
 
@@ -783,8 +783,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="93"
-                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:93</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="94"
+                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:94</a></div>
                         </td>
                     </tr>
 
@@ -853,8 +853,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="103"
-                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:103</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="104"
+                                    class="link-to-prism">apps/server/src/modules/task/uc/task-copy.uc.ts:104</a></div>
                         </td>
                     </tr>
 
@@ -909,10 +909,11 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
 import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { CopyHelperService, CopyStatus } from &#x27;@modules/copy-helper&#x27;;
-import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { Course, EntityId, LessonEntity, Task, User } from &#x27;@shared/domain&#x27;;
-import { CourseRepo, TaskRepo } from &#x27;@shared/repo&#x27;;
 import { LessonService } from &#x27;@modules/lesson&#x27;;
+import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from &#x27;@nestjs/common&#x27;;
+import { Course, LessonEntity, Task, User } from &#x27;@shared/domain/entity&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { CourseRepo, TaskRepo } from &#x27;@shared/repo&#x27;;
 import { TaskCopyService } from &#x27;../service&#x27;;
 import { TaskCopyParentParams } from &#x27;../types&#x27;;
 
