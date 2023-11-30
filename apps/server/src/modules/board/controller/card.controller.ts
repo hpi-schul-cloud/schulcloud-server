@@ -131,8 +131,8 @@ export class CardController {
 				{ $ref: getSchemaPath(FileElementResponse) },
 				{ $ref: getSchemaPath(LinkElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
-				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
+				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 			],
 		},
 	})
