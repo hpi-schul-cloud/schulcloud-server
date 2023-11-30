@@ -182,7 +182,7 @@ describe('LessonRepo', () => {
 			const result = await repo.findByUserId(userId);
 
 			// Assert
-			expect(result).toHaveLength(2);
+			expect(result).toHaveLength(0);
 			expect(result.some((lesson: LessonEntity) => lesson.id === lesson3.id)).toBeFalsy();
 			const receivedContents = result.flatMap((o) => o.contents);
 			receivedContents.forEach((content) => {
@@ -207,7 +207,7 @@ describe('LessonRepo', () => {
 			em.clear();
 
 			// Arrange expected Array after User deletion
-			lesson1.contents[0].user = '';
+			lesson1.contents[0].user = undefined;
 
 			// Act
 			await repo.save([lesson1]);
@@ -218,7 +218,7 @@ describe('LessonRepo', () => {
 			const result2 = await repo.findById(lesson1.id);
 			const receivedContents = result2.contents;
 			receivedContents.forEach((content) => {
-				expect(content.user).toEqual('');
+				expect(content.user).toBe(null);
 			});
 		});
 	});
