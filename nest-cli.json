@@ -108,6 +108,15 @@
 			        "tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
+		"admin-api-server": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/admin-api-server.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
 		"tldraw": {
 			"type": "application",
 			"root": "apps/server",

@@ -156,6 +156,21 @@
      - KEDA_ENABLED is defined and KEDA_ENABLED|bool
      - SCALED_PREVIEW_GENERATOR_ENABLED is defined and SCALED_PREVIEW_GENERATOR_ENABLED|bool
 
+
+  - name: admin api server deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-deployment.yml.j2
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
+  - name: admin api server service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-svc.yml.j2
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
   - name: TlDraw server deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
