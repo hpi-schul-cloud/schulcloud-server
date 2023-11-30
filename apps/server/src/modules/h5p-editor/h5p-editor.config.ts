@@ -20,6 +20,8 @@ export const s3ConfigContent: S3Config = {
 	bucket: Configuration.get('H5P_EDITOR__S3_BUCKET_CONTENT') as string,
 	accessKeyId: Configuration.get('H5P_EDITOR__S3_ACCESS_KEY_ID_RW') as string,
 	secretAccessKey: Configuration.get('H5P_EDITOR__S3_SECRET_ACCESS_KEY_RW') as string,
+	// accessKeyId: Configuration.get('s3_access_key') as string,
+	// secretAccessKey: Configuration.get('s3_access_secret') as string,
 };
 
 export const s3ConfigLibraries: S3Config = {
@@ -29,6 +31,8 @@ export const s3ConfigLibraries: S3Config = {
 	bucket: Configuration.get('H5P_EDITOR__S3_BUCKET_LIBRARIES') as string,
 	accessKeyId: Configuration.get('H5P_EDITOR__S3_ACCESS_KEY_ID_R') as string,
 	secretAccessKey: Configuration.get('H5P_EDITOR__S3_SECRET_ACCESS_KEY_R') as string,
+	// accessKeyId: Configuration.get('s3_access_key') as string,
+	// secretAccessKey: Configuration.get('s3_access_secret') as string,
 };
 
 export const config = () => h5pEditorConfig;
