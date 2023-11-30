@@ -3,8 +3,9 @@ import { BoardDoAuthorizableService } from '@modules/board';
 import { LessonService } from '@modules/lesson';
 import { ContextExternalToolAuthorizableService } from '@modules/tool';
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { BaseDO, EntityId } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
+import { BaseDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import {
 	CourseGroupRepo,
 	CourseRepo,

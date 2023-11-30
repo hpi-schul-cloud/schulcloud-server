@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { LinkElement, LinkElementProps } from '@shared/domain';
+import { LinkElement, LinkElementProps } from '@shared/domain/domainobject';
 import { ObjectId } from 'bson';
 import { BaseFactory } from '../../base.factory';
 

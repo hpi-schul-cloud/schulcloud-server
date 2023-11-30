@@ -7,10 +7,10 @@ import {
 	DashboardModelEntity,
 	GridElement,
 	GridElementWithPosition,
-	Learnroom,
-	LearnroomTypes,
 	User,
-} from '@shared/domain';
+} from '@shared/domain/entity';
+import { Learnroom } from '@shared/domain/interface';
+import { LearnroomTypes } from '@shared/domain/types';
 
 @Injectable()
 export class DashboardModelMapper {

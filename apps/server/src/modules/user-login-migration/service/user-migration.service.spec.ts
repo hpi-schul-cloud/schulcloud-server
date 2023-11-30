@@ -4,7 +4,7 @@ import { AccountService } from '@modules/account/services/account.service';
 import { AccountDto } from '@modules/account/services/dto';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO } from '@shared/domain';
+import { UserDO } from '@shared/domain/domainobject';
 import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { UserMigrationDatabaseOperationFailedLoggableException } from '../loggable';

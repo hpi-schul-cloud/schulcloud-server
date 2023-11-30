@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { RocketChatUserRepo } from '../repo';
+import { EntityId } from '@shared/domain/types';
 import { RocketChatUser } from '../domain';
+import { RocketChatUserRepo } from '../repo';
 
 @Injectable()
 export class RocketChatUserService {
