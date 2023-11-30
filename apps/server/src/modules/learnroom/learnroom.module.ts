@@ -3,13 +3,14 @@ import { CopyHelperModule } from '@modules/copy-helper';
 import { LessonModule } from '@modules/lesson';
 import { TaskModule } from '@modules/task';
 import { Module } from '@nestjs/common';
-import { BoardRepo, CourseRepo, DashboardModelMapper, DashboardRepo, UserRepo } from '@shared/repo';
+import { BoardRepo, CourseGroupRepo, CourseRepo, DashboardModelMapper, DashboardRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import {
 	BoardCopyService,
 	ColumnBoardTargetService,
 	CommonCartridgeExportService,
 	CourseCopyService,
+	CourseGroupService,
 	CourseService,
 	RoomsService,
 } from './service';
@@ -31,7 +32,9 @@ import {
 		CourseService,
 		CommonCartridgeExportService,
 		ColumnBoardTargetService,
+		CourseGroupService,
+		CourseGroupRepo,
 	],
-	exports: [CourseCopyService, CourseService, RoomsService, CommonCartridgeExportService],
+	exports: [CourseCopyService, CourseService, RoomsService, CommonCartridgeExportService, CourseGroupService],
 })
 export class LearnroomModule {}
