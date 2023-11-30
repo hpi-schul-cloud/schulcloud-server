@@ -77,7 +77,10 @@ describe('CommonCartridgeExportService', () => {
 				{} as ComponentProperties,
 			],
 		});
-		tasks = taskFactory.buildListWithId(5);
+		tasks = taskFactory.buildListWithId(5, {
+			name: 'Task of a lesson',
+			lesson: lessons[0],
+		});
 	});
 
 	afterAll(async () => {
@@ -148,6 +151,14 @@ describe('CommonCartridgeExportService', () => {
 				});
 			});
 
+			it('should add tasks of lesson to manifest file', () => {
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+				lessons[0].tasks.getItems().forEach((task) => {
+					expect(manifest).toContain(`<title>${task.name}</title>`);
+					expect(manifest).toContain(`identifier="i${task.id}" type="webcontent" intendeduse="unspecified"`);
+				});
+			});
+
 			it('should add version 1 information to manifest file', () => {
 				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
 				expect(manifest).toContain(CommonCartridgeVersion.V_1_1_0);
@@ -193,6 +204,14 @@ describe('CommonCartridgeExportService', () => {
 			it('should add tasks as assignments', () => {
 				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
 				tasks.forEach((task) => {
+					expect(manifest).toContain(`<title>${task.name}</title>`);
+					expect(manifest).toContain(`identifier="i${task.id}" type="webcontent" intendeduse="assignment"`);
+				});
+			});
+
+			it('should add tasks of lesson to manifest file', () => {
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+				lessons[0].tasks.getItems().forEach((task) => {
 					expect(manifest).toContain(`<title>${task.name}</title>`);
 					expect(manifest).toContain(`identifier="i${task.id}" type="webcontent" intendeduse="assignment"`);
 				});
