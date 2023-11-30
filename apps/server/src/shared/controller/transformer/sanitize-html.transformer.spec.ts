@@ -12,6 +12,9 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		@SanitizeHtml(InputFormat.PLAIN_TEXT)
 		title2!: string;
 
+		@SanitizeHtml(InputFormat.PLAIN_TEXT)
+		excerpt?: string;
+
 		@SanitizeHtml(InputFormat.RICH_TEXT_CK5)
 		contentCk5!: string;
 
