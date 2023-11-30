@@ -56,7 +56,7 @@ export class ToolReferenceUc {
 	}
 
 	async getToolReference(userId: EntityId, contextExternalToolId: EntityId): Promise<ToolReference> {
-		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findById(
+		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(
 			contextExternalToolId
 		);
 

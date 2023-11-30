@@ -138,7 +138,7 @@ export class ExternalToolConfigurationUc {
 		userId: EntityId,
 		contextExternalToolId: EntityId
 	): Promise<ContextExternalToolTemplateInfo> {
-		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findById(
+		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(
 			contextExternalToolId
 		);
 

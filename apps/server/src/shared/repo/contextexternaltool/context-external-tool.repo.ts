@@ -75,6 +75,24 @@ export class ContextExternalToolRepo extends BaseDORepo<
 		return mapped;
 	}
 
+	public async findByIdOrNull(id: EntityId): Promise<ContextExternalTool | null> {
+		const entity: ContextExternalToolEntity | null = await this._em.findOne(
+			this.entityName,
+			{ id },
+			{
+				populate: ['schoolTool.school'],
+			}
+		);
+
+		if (!entity) {
+			return null;
+		}
+
+		const mapped: ContextExternalTool = this.mapEntityToDO(entity);
+
+		return mapped;
+	}
+
 	private buildScope(query: ContextExternalToolQuery): ContextExternalToolScope {
 		const scope: ContextExternalToolScope = new ContextExternalToolScope();
 

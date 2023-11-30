@@ -150,7 +150,7 @@ describe('ToolReferenceUc', () => {
 					openInNewTab: externalTool.openNewTab,
 				});
 
-				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
+				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
 				toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();
 				toolReferenceService.getToolReference.mockResolvedValue(toolReference);
 
@@ -195,7 +195,7 @@ describe('ToolReferenceUc', () => {
 				);
 				const error = new ForbiddenException();
 
-				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
+				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
 				toolPermissionHelper.ensureContextPermissions.mockRejectedValueOnce(error);
 
 				return {

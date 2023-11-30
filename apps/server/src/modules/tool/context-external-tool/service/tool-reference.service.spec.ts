@@ -76,7 +76,7 @@ describe('ToolReferenceService', () => {
 					.buildWithId(undefined, contextExternalToolId);
 				const logoUrl = 'logoUrl';
 
-				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
+				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
 				toolVersionService.determineToolConfigurationStatus.mockResolvedValue(ToolConfigurationStatus.OUTDATED);

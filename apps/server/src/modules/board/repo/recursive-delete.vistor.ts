@@ -1,5 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Injectable } from '@nestjs/common';
@@ -15,10 +16,8 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
-import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
-
-import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
+import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { BoardNode } from '@shared/domain/entity';
 
 @Injectable()
@@ -83,11 +82,13 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 
 	async visitExternalToolElementAsync(externalToolElement: ExternalToolElement): Promise<void> {
 		if (externalToolElement.contextExternalToolId) {
-			const linkedTool: ContextExternalTool = await this.contextExternalToolService.findById(
+			const linkedTool: ContextExternalTool | null = await this.contextExternalToolService.findById(
 				externalToolElement.contextExternalToolId
 			);
 
-			await this.contextExternalToolService.deleteContextExternalTool(linkedTool);
+			if (linkedTool) {
+				await this.contextExternalToolService.deleteContextExternalTool(linkedTool);
+			}
 		}
 
 		this.deleteNode(externalToolElement);
