@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizationService } from '@modules/authorization';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolRepo } from '@shared/repo';
@@ -7,7 +8,6 @@ import {
 	legacySchoolDoFactory,
 	schoolExternalToolFactory,
 } from '@shared/testing/factory/domainobject';
-import { AuthorizationService } from '@modules/authorization';
 import { ToolContextType } from '../../common/enum';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextExternalTool, ContextRef } from '../domain';
@@ -151,7 +151,7 @@ describe('ContextExternalToolService', () => {
 			it('should return a contextExternalTool', async () => {
 				const { contextExternalTool } = setup();
 
-				const result: ContextExternalTool = await service.findById(contextExternalTool.id as string);
+				const result: ContextExternalTool = await service.findByIdOrFail(contextExternalTool.id as string);
 
 				expect(result).toEqual(contextExternalTool);
 			});
@@ -165,9 +165,51 @@ describe('ContextExternalToolService', () => {
 			it('should throw a not found exception', async () => {
 				setup();
 
-				const func = () => service.findById('unknownContextExternalToolId');
+				const func = () => service.findByIdOrFail('unknownContextExternalToolId');
 
 				await expect(func()).rejects.toThrow(NotFoundException);
+			});
+		});
+	});
+
+	describe('findByIdOrNull', () => {
+		describe('when contextExternalToolId is given', () => {
+			const setup = () => {
+				const schoolId: string = legacySchoolDoFactory.buildWithId().id as string;
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+					schoolId,
+				});
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id as string, schoolExternalTool.schoolId)
+					.build();
+
+				contextExternalToolRepo.findByIdOrNull.mockResolvedValue(contextExternalTool);
+
+				return {
+					contextExternalTool,
+				};
+			};
+
+			it('should return a contextExternalTool', async () => {
+				const { contextExternalTool } = setup();
+
+				const result: ContextExternalTool | null = await service.findById(contextExternalTool.id as string);
+
+				expect(result).toEqual(contextExternalTool);
+			});
+		});
+
+		describe('when contextExternalTool could not be found', () => {
+			const setup = () => {
+				contextExternalToolRepo.findByIdOrNull.mockResolvedValueOnce(null);
+			};
+
+			it('should throw a not found exception', async () => {
+				setup();
+
+				const result: ContextExternalTool | null = await service.findById('unknownContextExternalToolId');
+
+				expect(result).toBeNull();
 			});
 		});
 	});
