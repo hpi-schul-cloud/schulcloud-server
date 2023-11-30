@@ -1,4 +1,4 @@
-import { TaskStatus } from '@shared/domain';
+import { TaskStatus } from '@shared/domain/types';
 import { TaskStatusResponse } from '../controller/dto/task-status.response';
 
 export class TaskStatusMapper {

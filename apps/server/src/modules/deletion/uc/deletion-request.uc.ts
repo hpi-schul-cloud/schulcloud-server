@@ -1,25 +1,25 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { PseudonymService } from '@modules/pseudonym';
-import { UserService } from '@modules/user';
-import { TeamService } from '@modules/teams';
-import { ClassService } from '@modules/class';
-import { LessonService } from '@modules/lesson/service';
-import { CourseGroupService, CourseService } from '@modules/learnroom/service';
-import { FilesService } from '@modules/files/service';
 import { AccountService } from '@modules/account/services';
-import { RocketChatUserService } from '@modules/rocketchat-user';
-import { RocketChatService } from '@modules/rocketchat';
-import { LegacyLogger } from '@src/core/logger';
+import { ClassService } from '@modules/class';
+import { FilesService } from '@modules/files/service';
+import { CourseGroupService, CourseService } from '@modules/learnroom/service';
+import { LessonService } from '@modules/lesson/service';
+import { PseudonymService } from '@modules/pseudonym';
 import { RegistrationPinService } from '@modules/registration-pin';
-import { DeletionRequestService } from '../services/deletion-request.service';
-import { DeletionDomainModel, DeletionOperationModel, DeletionStatusModel } from '../domain/types';
-import { DeletionLogService } from '../services/deletion-log.service';
-import { DeletionRequest } from '../domain/deletion-request.do';
-import { DeletionLog } from '../domain/deletion-log.do';
-import { DeletionLogStatistic } from '../interface/interfaces';
+import { RocketChatService } from '@modules/rocketchat';
+import { RocketChatUserService } from '@modules/rocketchat-user';
+import { TeamService } from '@modules/teams';
+import { UserService } from '@modules/user';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
+import { LegacyLogger } from '@src/core/logger';
 import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
+import { DeletionLog } from '../domain/deletion-log.do';
+import { DeletionRequest } from '../domain/deletion-request.do';
+import { DeletionDomainModel, DeletionOperationModel, DeletionStatusModel } from '../domain/types';
+import { DeletionLogStatistic } from '../interface/interfaces';
+import { DeletionLogService } from '../services/deletion-log.service';
+import { DeletionRequestService } from '../services/deletion-request.service';
 
 @Injectable()
 export class DeletionRequestUc {

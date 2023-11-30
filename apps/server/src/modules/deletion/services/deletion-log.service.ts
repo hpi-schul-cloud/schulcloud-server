@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DeletionLogRepo } from '../repo';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { DeletionLog } from '../domain/deletion-log.do';
 import { DeletionDomainModel, DeletionOperationModel } from '../domain/types';
+import { DeletionLogRepo } from '../repo';
 
 @Injectable()
 export class DeletionLogService {

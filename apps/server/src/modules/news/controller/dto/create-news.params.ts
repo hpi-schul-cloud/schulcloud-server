@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDate, IsEnum, IsMongoId, IsOptional, IsString } from 'class-validator';
-import { InputFormat, NewsTargetModel } from '@shared/domain';
 import { SanitizeHtml } from '@shared/controller';
+import { InputFormat, NewsTargetModel } from '@shared/domain/types';
+import { IsDate, IsEnum, IsMongoId, IsOptional, IsString } from 'class-validator';
 
 /**
  * DTO for creating a news document.
@@ -15,6 +15,7 @@ export class CreateNewsParams {
 	title!: string;
 
 	@IsString()
+	// TODO add correct validation for input format
 	@SanitizeHtml(InputFormat.RICH_TEXT)
 	@ApiProperty({
 		description: 'Content of the News entity',

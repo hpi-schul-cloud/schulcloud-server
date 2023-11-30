@@ -1,10 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, Pseudonym, SchoolEntity, User } from '@shared/domain';
-import { legacySchoolDoFactory, pseudonymFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import { ForbiddenException } from '@nestjs/common';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { ForbiddenException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { LegacySchoolDo, Pseudonym } from '@shared/domain/domainobject';
+import { SchoolEntity, User } from '@shared/domain/entity';
+import { legacySchoolDoFactory, pseudonymFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { PseudonymService } from '../service';
 import { PseudonymUc } from './pseudonym.uc';
 

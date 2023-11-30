@@ -1,10 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, RoleName, UserDO } from '@shared/domain';
+import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
+import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { legacySchoolDoFactory, userDoFactory } from '@shared/testing';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { externalGroupDtoFactory } from '@shared/testing/factory/external-group-dto.factory';
 import {
 	ExternalSchoolDto,

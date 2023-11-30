@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { Column, ColumnBoard } from '@shared/domain';
+import { Column, ColumnBoard } from '@shared/domain/domainobject';
 import { BoardResponse, TimestampsResponse } from '../dto';
 import { ColumnResponseMapper } from './column-response.mapper';
 
