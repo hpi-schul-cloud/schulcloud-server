@@ -8,6 +8,7 @@ import { LegacySystemService, SystemDto } from '@modules/system';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { EntityId, LegacySchoolDo, Page, Permission, SchoolYearEntity, SortOrder, User, UserDO } from '@shared/domain';
+import { Logger } from '@src/core/logger';
 import { SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupUser } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
@@ -15,6 +16,7 @@ import { GroupService } from '../service';
 import { SortHelper } from '../util';
 import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from './dto';
 import { GroupUcMapper } from './mapper/group-uc.mapper';
+import { MissingUserLoggable } from '../loggable/missing-user-loggable';
 
 @Injectable()
 export class GroupUc {
@@ -26,7 +28,8 @@ export class GroupUc {
 		private readonly roleService: RoleService,
 		private readonly schoolService: LegacySchoolService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolYearService: SchoolYearService
+		private readonly schoolYearService: SchoolYearService,
+		private readonly logger: Logger
 	) {}
 
 	public async findAllClasses(
@@ -192,9 +195,17 @@ export class GroupUc {
 	): Promise<ClassInfoDto[]> {
 		const classInfosFromClasses = await Promise.all(
 			filteredClassesForSchoolYear.map(async (classWithSchoolYear): Promise<ClassInfoDto> => {
-				const teachers: UserDO[] = await Promise.all(
-					classWithSchoolYear.clazz.teacherIds.map((teacherId: EntityId) => this.userService.findById(teacherId))
+				let teachers: UserDO[] = await Promise.all(
+					classWithSchoolYear.clazz.teacherIds.map(async (teacherId: EntityId) => {
+						const teacher: UserDO | null = await this.userService.findByIdOrNull(teacherId);
+						if (!teacher) {
+							this.logger.warning(new MissingUserLoggable(teacherId, 'classes', classWithSchoolYear.clazz.id));
+						}
+						return teacher as UserDO;
+					})
 				);
+
+				teachers = teachers.filter(Boolean);
 
 				const mapped: ClassInfoDto = GroupUcMapper.mapClassToClassInfoDto(
 					classWithSchoolYear.clazz,
@@ -270,7 +281,12 @@ export class GroupUc {
 	private async findUsersForGroup(group: Group): Promise<ResolvedGroupUser[]> {
 		const resolvedGroupUsers: ResolvedGroupUser[] = await Promise.all(
 			group.users.map(async (groupUser: GroupUser): Promise<ResolvedGroupUser> => {
-				const user: UserDO = await this.userService.findById(groupUser.userId);
+				const user: UserDO | null = await this.userService.findByIdOrNull(groupUser.userId);
+				if (!user) {
+					this.logger.warning(new MissingUserLoggable(groupUser.userId, 'groups', group.id));
+				}
+				// TODO filter null
+
 				const role: RoleDto = await this.roleService.findById(groupUser.roleId);
 
 				const resolvedGroups = new ResolvedGroupUser({

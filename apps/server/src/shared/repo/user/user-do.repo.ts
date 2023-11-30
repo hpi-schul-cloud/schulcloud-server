@@ -68,6 +68,24 @@ export class UserDORepo extends BaseDORepo<UserDO, User, UserProperties> {
 		return this.mapEntityToDO(userEntity);
 	}
 
+	// TODO: test me
+	async findByIdOrNull(id: EntityId, populate = false): Promise<UserDO | null> {
+		const user: User | null = await this._em.findOne(this.entityName, id as FilterQuery<User>);
+
+		if (!user) {
+			return null;
+		}
+
+		if (populate) {
+			await this._em.populate(user, ['roles', 'school.systems', 'school.schoolYear']);
+			await this.populateRoles(user.roles.getItems());
+		}
+
+		const domainObject: UserDO = this.mapEntityToDO(user);
+
+		return domainObject;
+	}
+
 	async findByExternalIdOrFail(externalId: string, systemId: string): Promise<UserDO> {
 		const userDo: UserDO | null = await this.findByExternalId(externalId, systemId);
 		if (userDo) {

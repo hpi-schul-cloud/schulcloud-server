@@ -58,6 +58,12 @@ export class UserService {
 		return userDO;
 	}
 
+	public async findByIdOrNull(id: string): Promise<UserDO | null> {
+		const userDO = await this.userDORepo.findById(id, true);
+
+		return userDO;
+	}
+
 	async save(user: UserDO): Promise<UserDO> {
 		const savedUser: Promise<UserDO> = this.userDORepo.save(user);
 
