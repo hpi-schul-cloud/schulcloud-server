@@ -68,7 +68,7 @@ spec:
       affinity:
         podAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
+          - weight: 9
             podAffinityTerm:
               labelSelector:
                 matchExpressions:
@@ -89,7 +89,7 @@ spec:
                   values:
                   - tldraw-server
               topologyKey: "cloud.ionos.com/nodepool-name"
-          - weight: 10
+          - weight: 20
             podAffinityTerm:
               labelSelector:
                 matchExpressions:
