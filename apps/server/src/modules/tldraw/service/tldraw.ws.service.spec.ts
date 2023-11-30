@@ -287,7 +287,7 @@ describe('TldrawWSService', () => {
 				const { sendSpy, doc, msg } = await setup();
 
 				service.messageHandler(ws, doc, msg);
-
+				await delay(200);
 				expect(sendSpy).toHaveBeenCalledTimes(0);
 
 				ws.close();

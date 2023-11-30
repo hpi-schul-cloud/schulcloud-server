@@ -50,7 +50,7 @@ export class YMongodb {
 				try {
 					res = await fn();
 				} catch (err) {
-					this.logger.error('Error during saving transaction', err);
+					this.logger.error('Error while saving transaction', err);
 				}
 
 				// once the last transaction for a given docName resolves, remove it from the queue

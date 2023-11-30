@@ -3,10 +3,28 @@ import { INestApplication } from '@nestjs/common';
 import WebSocket from 'ws';
 import { WsAdapter } from '@nestjs/platform-ws';
 import * as AwarenessProtocol from 'y-protocols/awareness';
+import * as Yjs from 'yjs';
+import * as Ioredis from 'ioredis';
 import { TldrawWsService } from '../service';
 import { WsSharedDocDo } from './ws-shared-doc.do';
 import { TestConnection } from '../testing/test-connection';
 import { TldrawWsTestModule } from '../tldraw-ws-test.module';
+
+jest.mock('y-protocols/awareness', () => {
+	const moduleMock: unknown = {
+		__esModule: true,
+		...jest.requireActual('y-protocols/awareness'),
+	};
+	return moduleMock;
+});
+
+jest.mock('yjs', () => {
+	const moduleMock: unknown = {
+		__esModule: true,
+		...jest.requireActual('yjs'),
+	};
+	return moduleMock;
+});
 
 describe('WsSharedDocDo', () => {
 	let app: INestApplication;
@@ -17,6 +35,11 @@ describe('WsSharedDocDo', () => {
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
 
 	jest.useFakeTimers();
+
+	const delay = (ms: number) =>
+		new Promise((resolve) => {
+			setTimeout(resolve, ms);
+		});
 
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
@@ -32,6 +55,78 @@ describe('WsSharedDocDo', () => {
 
 	afterAll(async () => {
 		await app.close();
+	});
+
+	describe('creating new instance', () => {
+		const setup = () => {
+			const doc = new WsSharedDocDo('TEST', service);
+			const redisOnSpy = jest.spyOn(Ioredis.Redis.prototype, 'on');
+			const loggerSpy = jest.spyOn(service, 'logYDocError');
+
+			return {
+				doc,
+				redisOnSpy,
+				loggerSpy,
+			};
+		};
+
+		describe('when subscribing to redis channel', () => {
+			it('should register new listener', async () => {
+				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce(() => 1);
+
+				const { doc, redisOnSpy } = setup();
+
+				await delay(20);
+				expect(doc).toBeDefined();
+				expect(redisOnSpy).toHaveBeenCalled();
+			});
+
+			it('should call logYDocError function in service on error', async () => {
+				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockRejectedValueOnce(() => new Error('error'));
+
+				const { doc, loggerSpy } = setup();
+
+				await delay(20);
+				expect(doc).toBeDefined();
+				expect(loggerSpy).toHaveBeenCalled();
+			});
+		});
+	});
+
+	describe('redis message handler', () => {
+		const setup = () => {
+			const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValueOnce();
+			const applyAwarenessUpdateSpy = jest.spyOn(AwarenessProtocol, 'applyAwarenessUpdate').mockReturnValueOnce();
+
+			const doc = new WsSharedDocDo('TEST', service);
+			doc.awarenessChannel = 'TEST-AWARENESS';
+
+			return {
+				doc,
+				applyUpdateSpy,
+				applyAwarenessUpdateSpy,
+			};
+		};
+
+		describe('when channel name is the same as docName', () => {
+			it('should call applyUpdate', () => {
+				const { doc, applyUpdateSpy } = setup();
+
+				doc.redisMessageHandler(Buffer.from('TEST'), Buffer.from('message'));
+
+				expect(applyUpdateSpy).toHaveBeenCalled();
+			});
+		});
+
+		describe('when channel name is the same as docAwarenessChannel name', () => {
+			it('should call applyAwarenessUpdate', () => {
+				const { doc, applyAwarenessUpdateSpy } = setup();
+
+				doc.redisMessageHandler(Buffer.from('TEST-AWARENESS'), Buffer.from('message'));
+
+				expect(applyAwarenessUpdateSpy).toHaveBeenCalled();
+			});
+		});
 	});
 
 	describe('ydoc client awareness change handler', () => {

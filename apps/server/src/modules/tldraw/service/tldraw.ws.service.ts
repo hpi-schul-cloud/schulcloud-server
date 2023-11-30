@@ -59,7 +59,7 @@ export class TldrawWsService {
 						doc.destroy();
 						return null;
 					})
-					.catch((err) => this.logger.error(err));
+					.catch((err) => this.logger.error('Error while flushing doc', err));
 				this.docs.delete(doc.name);
 			}
 		}
@@ -99,7 +99,9 @@ export class TldrawWsService {
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
 		const isOriginWSConn = doc.conns.has(origin as WebSocket);
 		if (isOriginWSConn) {
-			this.pub.publish(doc.name, Buffer.from(update)).catch((err) => this.logger.error(err));
+			this.pub
+				.publish(doc.name, Buffer.from(update))
+				.catch((err) => this.logger.error('Error while publishing doc state to Redis', err));
 		}
 
 		this.propagateUpdate(update, doc);
@@ -116,10 +118,20 @@ export class TldrawWsService {
 		return map.setIfUndefined(this.docs, docName, () => {
 			const doc = new WsSharedDocDo(docName, this, gc);
 
-			this.tldrawBoardRepo.updateDocument(docName, doc).catch((err) => this.logger.error(err));
+			doc.on('error', (message: string, error) => {
+				this.logger.error(`Error in doc ${doc.name}: ${message}`, error);
+			});
+
+			this.tldrawBoardRepo
+				.updateDocument(docName, doc)
+				.catch((err) => this.logger.error('Error while updating document', err));
 			this.docs.set(docName, doc);
 			return doc;
 		});
+	}
+
+	public logYDocError(docName: string, message: string, error: Error): void {
+		this.logger.error(`Error in doc ${docName}: ${message}`, error);
 	}
 
 	public async createDbIndex(): Promise<void> {
@@ -145,7 +157,9 @@ export class TldrawWsService {
 					break;
 				case WSMessageType.AWARENESS: {
 					const update = decoding.readVarUint8Array(decoder);
-					this.pub.publish(doc.awarenessChannel, Buffer.from(update)).catch((err) => this.logger.error(err));
+					this.pub
+						.publish(doc.awarenessChannel, Buffer.from(update))
+						.catch((err) => this.logger.error('Error while publishing awareness state to Redis', err));
 					applyAwarenessUpdate(doc.awareness, update, conn);
 					break;
 				}
@@ -153,7 +167,7 @@ export class TldrawWsService {
 					break;
 			}
 		} catch (err) {
-			doc.emit('error', [err]);
+			this.logger.error('Error while handling message', err);
 		}
 	}
 

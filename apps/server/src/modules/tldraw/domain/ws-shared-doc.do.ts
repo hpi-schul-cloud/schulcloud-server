@@ -2,13 +2,10 @@ import { applyUpdate, Doc } from 'yjs';
 import WebSocket from 'ws';
 import { applyAwarenessUpdate, Awareness, encodeAwarenessUpdate } from 'y-protocols/awareness';
 import { encoding } from 'lib0';
-import { Logger } from '@nestjs/common';
 import { TldrawWsService } from '@modules/tldraw/service';
 import { WSMessageType } from '../types';
 
 export class WsSharedDocDo extends Doc {
-	private readonly logger = new Logger(WsSharedDocDo.name);
-
 	public name: string;
 
 	public conns: Map<WebSocket, Set<number>>;
@@ -38,19 +35,10 @@ export class WsSharedDocDo extends Doc {
 
 		this.tldrawService.sub
 			.subscribe(this.name, this.awarenessChannel)
-			.then(() => {
-				this.tldrawService.sub.on('messageBuffer', (channel, update) => {
-					const channelId = channel.toString();
-
-					if (channelId === this.name) {
-						applyUpdate(this, update, this.tldrawService.sub);
-					} else {
-						applyAwarenessUpdate(this.awareness, update, this.tldrawService.sub);
-					}
-				});
-				return null;
-			})
-			.catch((err) => this.logger.error(err));
+			.then(() => this.tldrawService.sub.on('messageBuffer', this.redisMessageHandler))
+			.catch((err) =>
+				this.tldrawService.logYDocError(this.name, 'Error while subscribing to Redis channels', err as Error)
+			);
 	}
 
 	/**
@@ -66,9 +54,27 @@ export class WsSharedDocDo extends Doc {
 		this.sendAwarenessMessage(buff);
 	};
 
+	/**
+	 * @param {{ Buffer }} channel redis channel
+	 * @param {{ Buffer }} update update message
+	 */
+	public redisMessageHandler = (channel: Buffer, update: Buffer): void => {
+		const channelId = channel.toString();
+
+		if (channelId === this.name) {
+			applyUpdate(this, update, this.tldrawService.sub);
+		} else {
+			applyAwarenessUpdate(this.awareness, update, this.tldrawService.sub);
+		}
+	};
+
 	public destroy() {
 		super.destroy();
-		this.tldrawService.sub.unsubscribe(this.name, this.awarenessChannel).catch((err) => this.logger.error(err));
+		this.tldrawService.sub
+			.unsubscribe(this.name, this.awarenessChannel)
+			.catch((err) =>
+				this.tldrawService.logYDocError(this.name, 'Error while unsubscribing from Redis channels', err as Error)
+			);
 	}
 
 	/**
