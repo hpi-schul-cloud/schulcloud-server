@@ -58,3 +58,47 @@ spec:
           requests:
             cpu: {{ AMQP_FILE_STORAGE_CPU_REQUESTS|default("100m", true) }}
             memory: {{ AMQP_FILE_STORAGE_MEMORY_REQUESTS|default("50Mi", true) }}
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/part-of
+                  operator: In
+                  values:
+                  - schulcloud-verbund
+              topologyKey: "kubernetes.io/hostname"
+              namespaceSelector: {}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 10
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - amqp-files
+              topologyKey: "kubernetes.io/hostname"
+          - weight: 10
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - amqp-files
+              topologyKey: "cloud.ionos.com/nodepool-name"
+          - weight: 10
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - amqp-files
+              topologyKey: "topology.kubernetes.io/zone"
+              
+          
