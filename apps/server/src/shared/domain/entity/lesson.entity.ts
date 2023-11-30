@@ -1,7 +1,6 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
 import { LearnroomElement } from '@shared/domain/interface';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
