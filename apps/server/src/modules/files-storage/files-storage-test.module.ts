@@ -1,65 +1,65 @@
-import { DynamicModule, Module } from '@nestjs/common';
-import { MongoMemoryDatabaseModule, MongoDatabaseModuleOptions } from '@infra/database';
+import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
-import { CoreModule } from '@src/core';
-import { LoggerModule } from '@src/core/logger';
 import { AuthenticationModule } from '@modules/authentication';
 import { AuthorizationModule } from '@modules/authorization';
-import { FileEntity } from '@modules/files/entity';
 import { ClassEntity } from '@modules/class/entity';
+import { FileEntity } from '@modules/files/entity';
 import { GroupEntity } from '@modules/group/entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
+import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { RegistrationPinEntity } from '@modules/registration-pin/entity';
+import { DynamicModule, Module } from '@nestjs/common';
 import {
 	Account,
-	BoardNode,
-	CardNode,
-	ColumnBoardNode,
-	ColumnNode,
-	ExternalToolElementNodeEntity,
-	FileElementNode,
-	LinkElementNode,
-	RichTextElementNode,
-	SubmissionContainerElementNode,
-	SubmissionItemNode,
-	Course,
-	CourseGroup,
-	DashboardGridElementModel,
-	DashboardModelEntity,
-	FederalStateEntity,
-	ImportUser,
 	Board,
 	BoardElement,
+	BoardNode,
+	CardNode,
 	ColumnboardBoardElement,
+	ColumnBoardNode,
 	ColumnBoardTarget,
+	ColumnNode,
+	Course,
+	CourseGroup,
+	CourseNews,
+	DashboardGridElementModel,
+	DashboardModelEntity,
+	ExternalToolElementNodeEntity,
+	FederalStateEntity,
+	FileElementNode,
+	ImportUser,
 	LessonBoardElement,
-	TaskBoardElement,
 	LessonEntity,
+	LinkElementNode,
 	LtiTool,
 	Material,
-	CourseNews,
 	News,
-	SchoolNews,
-	TeamNews,
+	RichTextElementNode,
 	Role,
 	SchoolEntity,
+	SchoolNews,
 	SchoolRolePermission,
 	SchoolRoles,
 	SchoolYearEntity,
 	StorageProviderEntity,
 	Submission,
+	SubmissionContainerElementNode,
+	SubmissionItemNode,
 	SystemEntity,
 	Task,
+	TaskBoardElement,
 	TeamEntity,
+	TeamNews,
 	TeamUserEntity,
-	UserLoginMigrationEntity,
 	User,
+	UserLoginMigrationEntity,
 	VideoConference,
 } from '@shared/domain/entity';
+import { CoreModule } from '@src/core';
+import { LoggerModule } from '@src/core/logger';
 import { FileRecord, FileRecordSecurityCheck } from './entity';
 import { FilesStorageApiModule } from './files-storage-api.module';
 

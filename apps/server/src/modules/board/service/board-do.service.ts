@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AnyBoardDo } from '@shared/domain';
+import { AnyBoardDo } from '@shared/domain/domainobject';
 import { BoardDoRepo } from '../repo';
 
 @Injectable()

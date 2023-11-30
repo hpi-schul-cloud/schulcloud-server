@@ -8,7 +8,7 @@ import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/too
 import { ContextExternalToolQuery } from '@modules/tool/context-external-tool/uc/dto/context-external-tool.types';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain';
+import { SchoolEntity } from '@shared/domain/entity';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import {
 	cleanupCollections,

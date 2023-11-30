@@ -1,7 +1,7 @@
 import { Embedded, Entity, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
+import { EntityId } from '@shared/domain/types';
 import { ClassSourceOptionsEntity } from './class-source-options.entity';
 
 export interface ClassEntityProps {

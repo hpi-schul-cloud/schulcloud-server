@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { TeamDto } from '@modules/collaborative-storage/services/dto/team.dto'; // invalid import please fix
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain';
+import { RoleName } from '@shared/domain/interface';
 import { LegacyLogger } from '@src/core/logger';
 import { CollaborativeStorageAdapter } from './collaborative-storage.adapter';
 import { CollaborativeStorageAdapterMapper } from './mapper/collaborative-storage-adapter.mapper';

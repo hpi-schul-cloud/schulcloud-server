@@ -1,10 +1,10 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { INestApplication, StreamableFile } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
-import { cleanupCollections, courseFactory, UserAndAccountTestFactory, TestApiClient } from '@shared/testing';
 import { CourseMetadataListResponse } from '@modules/learnroom/controller/dto';
 import { ServerTestModule } from '@modules/server/server.module';
+import { INestApplication, StreamableFile } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface';
+import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
 
 const createStudent = () => {
 	const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({}, [Permission.COURSE_VIEW]);

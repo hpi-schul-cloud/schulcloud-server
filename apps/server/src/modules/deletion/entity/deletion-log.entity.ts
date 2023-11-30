@@ -1,6 +1,6 @@
 import { Entity, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { DeletionDomainModel, DeletionOperationModel } from '../domain/types';
 

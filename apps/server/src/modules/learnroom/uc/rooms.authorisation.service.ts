@@ -1,5 +1,5 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { Course, LessonEntity, Task, User } from '@shared/domain';
+import { Course, LessonEntity, Task, User } from '@shared/domain/entity';
 
 export enum TaskParentPermission {
 	read,

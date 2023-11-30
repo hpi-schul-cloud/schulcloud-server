@@ -1,15 +1,16 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { DynamicModule, Module } from '@nestjs/common';
-import { ALL_ENTITIES } from '@shared/domain';
+// import { ALL_ENTITIES } from '@shared/domain';
+import { FileEntity } from '@modules/files/entity';
+import { ConfigModule } from '@nestjs/config';
+import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
-import { ConfigModule } from '@nestjs/config';
-import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infra/database';
-import { FileEntity } from '@modules/files/entity';
-import { defaultMikroOrmOptions } from './server.module';
-import { serverConfig } from './server.config';
+import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
 import { DeletionApiModule } from '../deletion/deletion-api.module';
+import { serverConfig } from './server.config';
+import { defaultMikroOrmOptions } from './server.module';
 
 const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConfig)), DeletionApiModule];
 

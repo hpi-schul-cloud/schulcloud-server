@@ -1,7 +1,7 @@
 import { Entity, Index, Property, Unique } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 
 export interface RocketChatUserEntityProps {
 	id?: EntityId;

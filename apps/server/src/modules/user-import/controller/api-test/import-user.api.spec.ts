@@ -22,17 +22,8 @@ import {
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
-import {
-	ImportUser,
-	MatchCreator,
-	Permission,
-	RoleName,
-	SchoolEntity,
-	SchoolFeatures,
-	SortOrder,
-	SystemEntity,
-	User,
-} from '@shared/domain';
+import { ImportUser, MatchCreator, SchoolEntity, SchoolFeatures, SystemEntity, User } from '@shared/domain/entity';
+import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	importUserFactory,

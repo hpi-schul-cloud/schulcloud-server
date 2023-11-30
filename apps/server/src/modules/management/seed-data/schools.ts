@@ -6,7 +6,7 @@ import {
 	SchoolRoles,
 	SchoolYearEntity,
 	SystemEntity,
-} from '@shared/domain';
+} from '@shared/domain/entity';
 import { federalStateFactory, schoolFactory } from '@shared/testing';
 import { DeepPartial } from 'fishery';
 import { EFederalState } from './federalstates';

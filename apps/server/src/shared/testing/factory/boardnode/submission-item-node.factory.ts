@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { SubmissionItemNode, SubmissionItemNodeProps } from '@shared/domain';
+import { SubmissionItemNode, SubmissionItemNodeProps } from '@shared/domain/entity';
 import { BaseFactory } from '../base.factory';
 import { userFactory } from '../user.factory';
 

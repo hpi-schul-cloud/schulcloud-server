@@ -1,21 +1,21 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { firstValueFrom } from 'rxjs';
-import { RoleName } from '@shared/domain';
 import {
+	ExternalGroupDto,
 	ExternalSchoolDto,
 	ExternalUserDto,
 	OauthDataDto,
 	OauthDataStrategyInputDto,
-	ExternalGroupDto,
 } from '../../dto';
 import { OidcProvisioningStrategy } from '../oidc/oidc.strategy';
 import { OidcProvisioningService } from '../oidc/service/oidc-provisioning.service';
-import { SanisResponseMapper } from './sanis-response.mapper';
 import { SanisResponse } from './response';
+import { SanisResponseMapper } from './sanis-response.mapper';
 
 @Injectable()
 export class SanisProvisioningStrategy extends OidcProvisioningStrategy {

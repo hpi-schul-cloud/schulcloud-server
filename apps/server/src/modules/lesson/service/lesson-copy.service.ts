@@ -13,7 +13,7 @@ import {
 	ComponentType,
 	LessonEntity,
 	Material,
-} from '@shared/domain';
+} from '@shared/domain/entity';
 import { randomBytes } from 'crypto';
 import { LessonRepo } from '../repository';
 import { LessonCopyParams } from '../types';
