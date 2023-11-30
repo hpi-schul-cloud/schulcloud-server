@@ -8,7 +8,10 @@ export const tldrawEntityFactory = BaseFactory.define<TldrawDrawing, TldrawDrawi
 			_id: 'test-id',
 			docName: 'test-name',
 			value: Buffer.from('test'),
-			version: `test-version-${sequence}`,
+			version: `v1`,
+			action: 'update',
+			clock: sequence,
+			part: sequence,
 		};
 	}
 );

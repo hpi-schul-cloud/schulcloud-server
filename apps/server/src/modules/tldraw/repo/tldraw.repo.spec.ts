@@ -2,26 +2,26 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
 import { tldrawEntityFactory } from '@src/modules/tldraw/factory';
-import { TldrawDrawing } from '@src/modules/tldraw/entities';
+import { TldrawDrawing } from '../entities';
 import { TldrawRepo } from './tldraw.repo';
 import { TldrawWsTestModule } from '../tldraw-ws-test.module';
 
 describe('TldrawRepo', () => {
-	let module: TestingModule;
+	let testingModule: TestingModule;
 	let repo: TldrawRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
-		module = await Test.createTestingModule({
+		testingModule = await Test.createTestingModule({
 			imports: [TldrawWsTestModule],
 		}).compile();
 
-		repo = module.get(TldrawRepo);
-		em = module.get(EntityManager);
+		repo = testingModule.get(TldrawRepo);
+		em = testingModule.get(EntityManager);
 	});
 
 	afterAll(async () => {
-		await module.close();
+		await testingModule.close();
 	});
 
 	afterEach(async () => {
