@@ -642,7 +642,7 @@ export class LessonService implements AuthorizationLoaderService {
 		const updatedLessons &#x3D; lessons.map((lesson: LessonEntity) &#x3D;&gt; {
 			lesson.contents.map((c: ComponentProperties) &#x3D;&gt; {
 				if (c.user &#x3D;&#x3D;&#x3D; userId) {
-					c.user &#x3D; &#x27;&#x27;;
+					c.user &#x3D; undefined;
 				}
 				return c;
 			});

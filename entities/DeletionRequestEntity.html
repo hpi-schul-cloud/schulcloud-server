@@ -140,10 +140,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#deleteAfter" >deleteAfter</a>
                             </li>
                             <li>
-                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                 <a href="#status" >status</a>
                             </li>
@@ -180,6 +180,7 @@
                     <a name="deleteAfter"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>deleteAfter</b></span>
                         <a href="#deleteAfter"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -196,13 +197,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Property()<br />
+                            @Property()<br />@Index({options: undefined})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/modules/deletion/entity/deletion-request.entity.ts:21</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/deletion/entity/deletion-request.entity.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -215,7 +216,6 @@
                 <td class="col-md-4">
                     <a name="status"></a>
                     <span class="name">
-                            <span class="modifier"></span>
                             <span class="modifier"></span>
                         <span ><b>status</b></span>
                         <a href="#status"><span class="icon ion-ios-link"></span></a>
@@ -233,7 +233,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Property()<br />@Index()<br />
+                            @Property()<br />
                         </code>
                     </td>
                 </tr>
@@ -275,7 +275,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/modules/deletion/entity/deletion-request.entity.ts:27</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/modules/deletion/entity/deletion-request.entity.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -311,7 +311,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/deletion/entity/deletion-request.entity.ts:24</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/deletion/entity/deletion-request.entity.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -323,12 +323,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Index, Property } from &#x27;@mikro-orm/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Index, Property, Unique } from &#x27;@mikro-orm/core&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;@shared/domain/entity/base.entity&#x27;;
 import { EntityId } from &#x27;@shared/domain&#x27;;
-import { DeletionDomainModel } from &#x27;../domain/types/deletion-domain-model.enum&#x27;;
-import { DeletionStatusModel } from &#x27;../domain/types/deletion-status-model.enum&#x27;;
+import { DeletionDomainModel, DeletionStatusModel } from &#x27;../domain/types&#x27;;
 
+const SECONDS_OF_90_DAYS &#x3D; 90 * 24 * 60 * 60;
 export interface DeletionRequestEntityProps {
 	id?: EntityId;
 	targetRefDomain: DeletionDomainModel;
@@ -340,19 +340,19 @@ export interface DeletionRequestEntityProps {
 }
 
 @Entity({ tableName: &#x27;deletionrequests&#x27; })
-@Index({ properties: [&#x27;targetRefId&#x27;, &#x27;targetRefDomain&#x27;] })
+@Unique({ properties: [&#x27;targetRefId&#x27;, &#x27;targetRefDomain&#x27;] })
 export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 	@Property()
+	@Index({ options: { expireAfterSeconds: SECONDS_OF_90_DAYS } })
 	deleteAfter: Date;
 
 	@Property()
-	targetRefId: EntityId;
+	targetRefId!: EntityId;
 
 	@Property()
 	targetRefDomain: DeletionDomainModel;
 
 	@Property()
-	@Index()
 	status: DeletionStatusModel;
 
 	constructor(props: DeletionRequestEntityProps) {

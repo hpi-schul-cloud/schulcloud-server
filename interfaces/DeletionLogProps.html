@@ -196,6 +196,13 @@
                                 </li>
                                 <li>
                                             <span class="modifier">Optional</span>
+                                        <a href="#performedAt" 
+>
+                                            performedAt
+                                        </a>
+                                </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#updatedAt" 
 >
                                             updatedAt
@@ -439,6 +446,44 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
+                                        <a name="performedAt"></a>
+                                        <span class="name "><b>performedAt</b>
+                                            <a href="#performedAt">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>performedAt:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
                                         <a name="updatedAt"></a>
                                         <span class="name "><b>updatedAt</b>
                                             <a href="#updatedAt">
@@ -480,8 +525,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { AuthorizableObject, DomainObject } from &#x27;@shared/domain/domain-object&#x27;;
-import { DeletionDomainModel } from &#x27;./types/deletion-domain-model.enum&#x27;;
-import { DeletionOperationModel } from &#x27;./types/deletion-operation-model.enum&#x27;;
+import { DeletionDomainModel, DeletionOperationModel } from &#x27;./types&#x27;;
 
 export interface DeletionLogProps extends AuthorizableObject {
 	createdAt?: Date;
@@ -491,6 +535,7 @@ export interface DeletionLogProps extends AuthorizableObject {
 	modifiedCount?: number;
 	deletedCount?: number;
 	deletionRequestId?: EntityId;
+	performedAt?: Date;
 }
 
 export class DeletionLog extends DomainObject&lt;DeletionLogProps&gt; {
@@ -520,6 +565,10 @@ export class DeletionLog extends DomainObject&lt;DeletionLogProps&gt; {
 
 	get deletionRequestId(): EntityId | undefined {
 		return this.props.deletionRequestId;
+	}
+
+	get performedAt(): Date | undefined {
+		return this.props.performedAt;
 	}
 }
 </code></pre>

@@ -129,7 +129,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/deletion/uc/interface/interfaces.ts</code>
+            <code>apps/server/src/modules/deletion/interface/interfaces.ts</code>
         </p>
 
 
@@ -293,33 +293,17 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain&#x27;;
-import { DeletionDomainModel } from &#x27;../../domain/types/deletion-domain-model.enum&#x27;;
+import { DeletionDomainModel } from &#x27;../domain/types&#x27;;
 
 export interface DeletionTargetRef {
-	targetRefDomain: DeletionDomainModel;
-	targetRefId: EntityId;
-}
-
-export interface DeletionRequestLog {
-	targetRef: DeletionTargetRef;
-	deletionPlannedAt: Date;
-	statistics?: DeletionLogStatistic[];
+	domain: DeletionDomainModel;
+	id: EntityId;
 }
 
 export interface DeletionLogStatistic {
 	domain: DeletionDomainModel;
 	modifiedCount?: number;
 	deletedCount?: number;
-}
-
-export interface DeletionRequestProps {
-	targetRef: { targetRefDoamin: DeletionDomainModel; targetRefId: EntityId };
-	deleteInMinutes?: number;
-}
-
-export interface DeletionRequestCreateAnswer {
-	requestId: EntityId;
-	deletionPlannedAt: Date;
 }
 </code></pre>
     </div>

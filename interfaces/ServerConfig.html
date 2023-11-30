@@ -145,6 +145,7 @@
                             <code><a href="../interfaces/IdentityManagementConfig.html" target="_self" >IdentityManagementConfig</a></code>
                             <code><a href="../interfaces/CommonCartridgeConfig.html" target="_self" >CommonCartridgeConfig</a></code>
                             <code><a href="../interfaces/MailConfig.html" target="_self" >MailConfig</a></code>
+                            <code><a href="../interfaces/XApiKeyConfig.html" target="_self" >XApiKeyConfig</a></code>
             </p>
 
         <section data-compodoc="block-index">
@@ -261,6 +262,7 @@ import type { CommonCartridgeConfig } from &#x27;@modules/learnroom/common-cartr
 import type { UserConfig } from &#x27;@modules/user&#x27;;
 import type { CoreModuleConfig } from &#x27;@src/core&#x27;;
 import { MailConfig } from &#x27;@src/infra/mail/interfaces/mail-config&#x27;;
+import { XApiKeyConfig } from &#x27;@modules/authentication&#x27;;
 
 export enum NodeEnvType {
 	TEST &#x3D; &#x27;test&#x27;,
@@ -276,7 +278,8 @@ export interface ServerConfig
 		AccountConfig,
 		IdentityManagementConfig,
 		CommonCartridgeConfig,
-		MailConfig {
+		MailConfig,
+		XApiKeyConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 }
@@ -296,6 +299,9 @@ const config: ServerConfig &#x3D; {
 	FEATURE_IDENTITY_MANAGEMENT_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_ENABLED&#x27;) as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED&#x27;) as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED&#x27;) as boolean,
+	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get(&#x27;ADMIN_API__ALLOWED_API_KEYS&#x27;) as string)
+		.split(&#x27;,&#x27;)
+		.map((apiKey) &#x3D;&gt; apiKey.trim()),
 	ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS: (Configuration.get(&#x27;ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS&#x27;) as string)
 		.split(&#x27;,&#x27;)
 		.map((domain) &#x3D;&gt; domain.trim()),

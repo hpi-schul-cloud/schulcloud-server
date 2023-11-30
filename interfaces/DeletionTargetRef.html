@@ -129,7 +129,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/deletion/uc/interface/interfaces.ts</code>
+            <code>apps/server/src/modules/deletion/interface/interfaces.ts</code>
         </p>
 
 
@@ -148,15 +148,15 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                        <a href="#targetRefDomain" 
+                                        <a href="#domain" 
 >
-                                            targetRefDomain
+                                            domain
                                         </a>
                                 </li>
                                 <li>
-                                        <a href="#targetRefId" 
+                                        <a href="#id" 
 >
-                                            targetRefId
+                                            id
                                         </a>
                                 </li>
                             </ul>
@@ -174,9 +174,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="targetRefDomain"></a>
-                                        <span class="name "><b>targetRefDomain</b>
-                                            <a href="#targetRefDomain">
+                                        <a name="domain"></a>
+                                        <span class="name "><b>domain</b>
+                                            <a href="#domain">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -184,7 +184,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>targetRefDomain:         <code><a href="../miscellaneous/enumerations.html#DeletionDomainModel" target="_self" >DeletionDomainModel</a></code>
+                                        <code>domain:         <code><a href="../miscellaneous/enumerations.html#DeletionDomainModel" target="_self" >DeletionDomainModel</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -207,9 +207,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="targetRefId"></a>
-                                        <span class="name "><b>targetRefId</b>
-                                            <a href="#targetRefId">
+                                        <a name="id"></a>
+                                        <span class="name "><b>id</b>
+                                            <a href="#id">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -217,7 +217,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>targetRefId:         <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                        <code>id:         <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -242,33 +242,17 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain&#x27;;
-import { DeletionDomainModel } from &#x27;../../domain/types/deletion-domain-model.enum&#x27;;
+import { DeletionDomainModel } from &#x27;../domain/types&#x27;;
 
 export interface DeletionTargetRef {
-	targetRefDomain: DeletionDomainModel;
-	targetRefId: EntityId;
-}
-
-export interface DeletionRequestLog {
-	targetRef: DeletionTargetRef;
-	deletionPlannedAt: Date;
-	statistics?: DeletionLogStatistic[];
+	domain: DeletionDomainModel;
+	id: EntityId;
 }
 
 export interface DeletionLogStatistic {
 	domain: DeletionDomainModel;
 	modifiedCount?: number;
 	deletedCount?: number;
-}
-
-export interface DeletionRequestProps {
-	targetRef: { targetRefDoamin: DeletionDomainModel; targetRefId: EntityId };
-	deleteInMinutes?: number;
-}
-
-export interface DeletionRequestCreateAnswer {
-	requestId: EntityId;
-	deletionPlannedAt: Date;
 }
 </code></pre>
     </div>

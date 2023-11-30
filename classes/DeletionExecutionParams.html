@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >DeletionRequestLogBuilder</li>
+  <li class="breadcrumb-item" >DeletionExecutionParams</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/deletion/uc/builder/deletion-request-log.builder.ts</code>
+            <code>apps/server/src/modules/deletion/controller/dto/deletion-execution.params.ts</code>
         </p>
 
 
@@ -138,18 +138,21 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-
                 <tr>
                     <td class="col-md-4">
-                        <h6><b>Methods</b></h6>
+                        <h6><b>Properties</b></h6>
                     </td>
                 </tr>
                 <tr>
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Static</span>
-                                <a href="#build" >build</a>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#limit" >limit</a>
                             </li>
                         </ul>
                     </td>
@@ -159,111 +162,65 @@
 
 
 
+
         </tbody>
     </table>
 </section>
 
 
-
-            <section data-compodoc="block-methods">
+            <section data-compodoc="block-properties">
     
-    <h3 id="methods">
-        Methods
+    <h3 id="inputs">
+        Properties
     </h3>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="build"></a>
+                    <a name="limit"></a>
                     <span class="name">
-                            <span class="modifier">Static</span>
-                        <span ><b>build</b></span>
-                        <a href="#build"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>limit</b></span>
+                        <a href="#limit"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>build(targetRef: <a href="../interfaces/DeletionTargetRef.html" target="_self">DeletionTargetRef</a>, deletionPlannedAt: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>, statistics?: <a href="../interfaces/DeletionLogStatistic.html" target="_self">DeletionLogStatistic[]</a>)</code>
-                </td>
-            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
 
-
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>100</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @IsInt()<br />@Min(1)<br />@IsOptional()<br />@ApiPropertyOptional({description: &#x27;Page limit, defaults to 100.&#x27;, minimum: 1})<br />
+                        </code>
+                    </td>
+                </tr>
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="4"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/builder/deletion-request-log.builder.ts:4</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/deletion/controller/dto/deletion-execution.params.ts:9</a></div>
                         </td>
                     </tr>
 
 
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>targetRef</td>
-                                            <td>
-                                                            <code><a href="../interfaces/DeletionTargetRef.html" target="_self" >DeletionTargetRef</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>deletionPlannedAt</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>statistics</td>
-                                            <td>
-                                                            <code><a href="../interfaces/DeletionLogStatistic.html" target="_self" >DeletionLogStatistic[]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/DeletionRequestLog.html" target="_self" >DeletionRequestLog</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
         </tbody>
     </table>
 </section>
+
+
 
 
 
@@ -273,18 +230,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DeletionLogStatistic, DeletionRequestLog, DeletionTargetRef } from &#x27;../interface&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
+import { IsInt, IsOptional, Min } from &#x27;class-validator&#x27;;
 
-export class DeletionRequestLogBuilder {
-	static build(
-		targetRef: DeletionTargetRef,
-		deletionPlannedAt: Date,
-		statistics?: DeletionLogStatistic[]
-	): DeletionRequestLog {
-		const deletionRequestLog &#x3D; { targetRef, deletionPlannedAt, statistics };
-
-		return deletionRequestLog;
-	}
+export class DeletionExecutionParams {
+	@IsInt()
+	@Min(1)
+	@IsOptional()
+	@ApiPropertyOptional({ description: &#x27;Page limit, defaults to 100.&#x27;, minimum: 1 })
+	limit?: number &#x3D; 100;
 }
 </code></pre>
     </div>
@@ -324,7 +278,7 @@ export class DeletionRequestLogBuilder {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'DeletionRequestLogBuilder.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'DeletionExecutionParams.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/deletion/uc/builder/deletion-target-ref.builder.ts</code>
+            <code>apps/server/src/modules/deletion/builder/deletion-target-ref.builder.ts</code>
         </p>
 
 
@@ -185,7 +185,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>build(targetRefDomain: <a href="../undefineds/DeletionDomainModel.html" target="_self">DeletionDomainModel</a>, targetRefId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>build(domain: <a href="../undefineds/DeletionDomainModel.html" target="_self">DeletionDomainModel</a>, id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -193,7 +193,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="6"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/builder/deletion-target-ref.builder.ts:6</a></div>
+                                    class="link-to-prism">apps/server/src/modules/deletion/builder/deletion-target-ref.builder.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -214,7 +214,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>targetRefDomain</td>
+                                                <td>domain</td>
                                             <td>
                                                             <code><a href="../miscellaneous/enumerations.html#DeletionDomainModel" target="_self" >DeletionDomainModel</a></code>
                                             </td>
@@ -226,7 +226,7 @@
 
                                         </tr>
                                         <tr>
-                                                <td>targetRefId</td>
+                                                <td>id</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
@@ -262,12 +262,12 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain&#x27;;
-import { DeletionDomainModel } from &#x27;../../domain/types/deletion-domain-model.enum&#x27;;
+import { DeletionDomainModel } from &#x27;../domain/types&#x27;;
 import { DeletionTargetRef } from &#x27;../interface&#x27;;
 
 export class DeletionTargetRefBuilder {
-	static build(targetRefDomain: DeletionDomainModel, targetRefId: EntityId): DeletionTargetRef {
-		const deletionTargetRef &#x3D; { targetRefDomain, targetRefId };
+	static build(domain: DeletionDomainModel, id: EntityId): DeletionTargetRef {
+		const deletionTargetRef &#x3D; { domain, id };
 
 		return deletionTargetRef;
 	}

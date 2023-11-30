@@ -273,8 +273,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/deletion/repo/mapper/deletion-log.mapper.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">apps/server/src/modules/deletion/repo/mapper/deletion-log.mapper.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -342,8 +342,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/deletion/repo/mapper/deletion-log.mapper.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">apps/server/src/modules/deletion/repo/mapper/deletion-log.mapper.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -411,8 +411,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/deletion/repo/mapper/deletion-log.mapper.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/deletion/repo/mapper/deletion-log.mapper.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -483,6 +483,7 @@ export class DeletionLogMapper {
 			modifiedCount: entity.modifiedCount,
 			deletedCount: entity.deletedCount,
 			deletionRequestId: entity.deletionRequestId?.toHexString(),
+			performedAt: entity.performedAt,
 		});
 	}
 
@@ -496,6 +497,7 @@ export class DeletionLogMapper {
 			modifiedCount: domainObject.modifiedCount,
 			deletedCount: domainObject.deletedCount,
 			deletionRequestId: new ObjectId(domainObject.deletionRequestId),
+			performedAt: domainObject.performedAt,
 		});
 	}
 
