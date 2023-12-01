@@ -15,6 +15,7 @@ import { SchoolFeatures } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import {
 	externalGroupDtoFactory,
+	externalSchoolDtoFactory,
 	federalStateFactory,
 	groupFactory,
 	legacySchoolDoFactory,
@@ -487,7 +488,7 @@ describe('OidcProvisioningService', () => {
 						externalId: 'externalId',
 						name: 'existingName',
 						officialSchoolNumber: 'existingOfficialSchoolNumber',
-						systems: [],
+						systems: undefined,
 						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 					});
 
@@ -662,6 +663,293 @@ describe('OidcProvisioningService', () => {
 	});
 
 	describe('provisionExternalGroup', () => {
+		describe('when school for group could not be found', () => {
+			const setup = () => {
+				const externalGroupDto: ExternalGroupDto = externalGroupDtoFactory.build();
+				const externalSchoolDto: ExternalSchoolDto = externalSchoolDtoFactory.build();
+				const systemId = 'systemId';
+				schoolService.getSchoolByExternalId.mockResolvedValueOnce(null);
+
+				return {
+					externalSchoolDto,
+					externalGroupDto,
+					systemId,
+				};
+			};
+
+			it('should log a SchoolForGroupNotFoundLoggable', async () => {
+				const { externalGroupDto, externalSchoolDto, systemId } = setup();
+
+				await service.provisionExternalGroup(externalGroupDto, externalSchoolDto, systemId);
+
+				expect(logger.info).toHaveBeenCalledWith(
+					new SchoolForGroupNotFoundLoggable(externalGroupDto, externalSchoolDto)
+				);
+			});
+
+			it('should not call groupService.save', async () => {
+				const { externalGroupDto, externalSchoolDto, systemId } = setup();
+
+				await service.provisionExternalGroup(externalGroupDto, externalSchoolDto, systemId);
+
+				expect(groupService.save).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when the user cannot be found', () => {
+			const setup = () => {
+				const externalGroupDto: ExternalGroupDto = externalGroupDtoFactory.build({ otherUsers: undefined });
+				const systemId = 'systemId';
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+
+				userService.findByExternalId.mockResolvedValue(null);
+				schoolService.getSchoolByExternalId.mockResolvedValue(school);
+
+				return {
+					externalGroupDto,
+					systemId,
+				};
+			};
+
+			it('should log a UserForGroupNotFoundLoggable', async () => {
+				const { externalGroupDto, systemId } = setup();
+
+				await expect(service.provisionExternalGroup(externalGroupDto, undefined, systemId)).rejects.toThrow();
+
+				expect(logger.info).toHaveBeenCalledWith(new UserForGroupNotFoundLoggable(externalGroupDto.user));
+			});
+
+			it('should throw a not found exception', async () => {
+				const { externalGroupDto, systemId } = setup();
+
+				await expect(service.provisionExternalGroup(externalGroupDto, undefined, systemId)).rejects.toThrow(
+					NotFoundLoggableException
+				);
+			});
+		});
+
+		describe('when provisioning a new group with other group members', () => {
+			const setup = () => {
+				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: 'schoolId' });
+				const student: UserDO = userDoFactory
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
+					.build({ id: new ObjectId().toHexString(), externalId: 'studentExternalId' });
+				const teacher: UserDO = userDoFactory
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.TEACHER }])
+					.build({ id: new ObjectId().toHexString(), externalId: 'teacherExternalId' });
+				const studentRole: RoleDto = roleDtoFactory.build({ name: RoleName.STUDENT });
+				const teacherRole: RoleDto = roleDtoFactory.build({ name: RoleName.TEACHER });
+				const externalSchoolDto: ExternalSchoolDto = externalSchoolDtoFactory.build();
+				const externalGroupDto: ExternalGroupDto = externalGroupDtoFactory.build({
+					user: {
+						externalUserId: student.externalId as string,
+						roleName: RoleName.STUDENT,
+					},
+					otherUsers: [
+						{
+							externalUserId: teacher.externalId as string,
+							roleName: RoleName.TEACHER,
+						},
+					],
+				});
+				const systemId = new ObjectId().toHexString();
+
+				schoolService.getSchoolByExternalId.mockResolvedValueOnce(school);
+				groupService.findByExternalSource.mockResolvedValueOnce(null);
+				userService.findByExternalId.mockResolvedValueOnce(student);
+				roleService.findByNames.mockResolvedValueOnce([studentRole]);
+				userService.findByExternalId.mockResolvedValueOnce(teacher);
+				roleService.findByNames.mockResolvedValueOnce([teacherRole]);
+
+				return {
+					externalSchoolDto,
+					externalGroupDto,
+					school,
+					student,
+					teacher,
+					studentRole,
+					teacherRole,
+					systemId,
+				};
+			};
+
+			it('should use the correct school', async () => {
+				const { externalGroupDto, externalSchoolDto, systemId } = setup();
+
+				await service.provisionExternalGroup(externalGroupDto, externalSchoolDto, systemId);
+
+				expect(schoolService.getSchoolByExternalId).toHaveBeenCalledWith(externalSchoolDto.externalId, systemId);
+			});
+
+			it('should save a new group', async () => {
+				const { externalGroupDto, externalSchoolDto, school, student, studentRole, teacher, teacherRole, systemId } =
+					setup();
+
+				await service.provisionExternalGroup(externalGroupDto, externalSchoolDto, systemId);
+
+				expect(groupService.save).toHaveBeenCalledWith({
+					props: {
+						id: expect.any(String),
+						name: externalGroupDto.name,
+						externalSource: {
+							externalId: externalGroupDto.externalId,
+							systemId,
+						},
+						type: externalGroupDto.type,
+						organizationId: school.id,
+						validFrom: externalGroupDto.from,
+						validUntil: externalGroupDto.until,
+						users: [
+							{
+								userId: student.id,
+								roleId: studentRole.id,
+							},
+							{
+								userId: teacher.id,
+								roleId: teacherRole.id,
+							},
+						],
+					},
+				});
+			});
+		});
+
+		describe('when provisioning an existing group without other group members', () => {
+			const setup = () => {
+				const student: UserDO = userDoFactory
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
+					.build({ id: new ObjectId().toHexString(), externalId: 'studentExternalId' });
+				const teacherId = new ObjectId().toHexString();
+				const teacherRoleId = new ObjectId().toHexString();
+				const teacher: UserDO = userDoFactory
+					.withRoles([{ id: teacherRoleId, name: RoleName.TEACHER }])
+					.build({ id: teacherId, externalId: 'teacherExternalId' });
+				const studentRole: RoleDto = roleDtoFactory.build({ name: RoleName.STUDENT });
+				const teacherRole: RoleDto = roleDtoFactory.build({ id: teacherRoleId, name: RoleName.TEACHER });
+				const externalGroupDto: ExternalGroupDto = externalGroupDtoFactory.build({
+					user: {
+						externalUserId: student.externalId as string,
+						roleName: RoleName.STUDENT,
+					},
+					otherUsers: undefined,
+				});
+				const group: Group = groupFactory.build({ users: [{ userId: teacherId, roleId: teacherRoleId }] });
+				const systemId = new ObjectId().toHexString();
+
+				groupService.findByExternalSource.mockResolvedValueOnce(group);
+				userService.findByExternalId.mockResolvedValueOnce(student);
+				roleService.findByNames.mockResolvedValueOnce([studentRole]);
+
+				return {
+					externalGroupDto,
+					student,
+					teacher,
+					studentRole,
+					teacherRole,
+					systemId,
+					group,
+				};
+			};
+
+			it('should update the group and only add the user', async () => {
+				const { externalGroupDto, student, studentRole, teacher, teacherRole, systemId, group } = setup();
+
+				await service.provisionExternalGroup(externalGroupDto, undefined, systemId);
+
+				expect(groupService.save).toHaveBeenCalledWith({
+					props: {
+						id: group.id,
+						name: externalGroupDto.name,
+						externalSource: {
+							externalId: externalGroupDto.externalId,
+							systemId,
+						},
+						type: externalGroupDto.type,
+						organizationId: undefined,
+						validFrom: externalGroupDto.from,
+						validUntil: externalGroupDto.until,
+						users: [
+							{
+								userId: teacher.id,
+								roleId: teacherRole.id,
+							},
+							{
+								userId: student.id,
+								roleId: studentRole.id,
+							},
+						],
+					},
+				});
+			});
+		});
+
+		describe('when provisioning an existing group with empty other group members', () => {
+			const setup = () => {
+				const student: UserDO = userDoFactory
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
+					.build({ id: new ObjectId().toHexString(), externalId: 'studentExternalId' });
+				const teacherId = new ObjectId().toHexString();
+				const teacherRoleId = new ObjectId().toHexString();
+				const teacher: UserDO = userDoFactory
+					.withRoles([{ id: teacherRoleId, name: RoleName.TEACHER }])
+					.build({ id: teacherId, externalId: 'teacherExternalId' });
+				const studentRole: RoleDto = roleDtoFactory.build({ name: RoleName.STUDENT });
+				const teacherRole: RoleDto = roleDtoFactory.build({ id: teacherRoleId, name: RoleName.TEACHER });
+				const externalGroupDto: ExternalGroupDto = externalGroupDtoFactory.build({
+					user: {
+						externalUserId: student.externalId as string,
+						roleName: RoleName.STUDENT,
+					},
+					otherUsers: [],
+				});
+				const group: Group = groupFactory.build({ users: [{ userId: teacherId, roleId: teacherRoleId }] });
+				const systemId = new ObjectId().toHexString();
+
+				groupService.findByExternalSource.mockResolvedValueOnce(group);
+				userService.findByExternalId.mockResolvedValueOnce(student);
+				roleService.findByNames.mockResolvedValueOnce([studentRole]);
+
+				return {
+					externalGroupDto,
+					student,
+					teacher,
+					studentRole,
+					teacherRole,
+					systemId,
+					group,
+				};
+			};
+
+			it('should update the group with all users', async () => {
+				const { externalGroupDto, student, studentRole, systemId, group } = setup();
+
+				await service.provisionExternalGroup(externalGroupDto, undefined, systemId);
+
+				expect(groupService.save).toHaveBeenCalledWith({
+					props: {
+						id: group.id,
+						name: externalGroupDto.name,
+						externalSource: {
+							externalId: externalGroupDto.externalId,
+							systemId,
+						},
+						type: externalGroupDto.type,
+						organizationId: undefined,
+						validFrom: externalGroupDto.from,
+						validUntil: externalGroupDto.until,
+						users: [
+							{
+								userId: student.id,
+								roleId: studentRole.id,
+							},
+						],
+					},
+				});
+			});
+		});
+	});
+
+	describe('removeExternalGroupsAndAffiliation', () => {
 		describe('when group membership of user has not changed', () => {
 			const setup = () => {
 				const systemId = 'systemId';
@@ -675,11 +963,11 @@ describe('OidcProvisioningService', () => {
 
 				const firstExternalGroup: ExternalGroupDto = externalGroupDtoFactory.build({
 					externalId: existingGroups[0].externalSource?.externalId,
-					users: [{ externalUserId, roleName: role.name }],
+					user: { externalUserId, roleName: role.name },
 				});
 				const secondExternalGroup: ExternalGroupDto = externalGroupDtoFactory.build({
 					externalId: existingGroups[1].externalSource?.externalId,
-					users: [{ externalUserId, roleName: role.name }],
+					user: { externalUserId, roleName: role.name },
 				});
 				const externalGroups: ExternalGroupDto[] = [firstExternalGroup, secondExternalGroup];
 
@@ -736,7 +1024,7 @@ describe('OidcProvisioningService', () => {
 
 					const firstExternalGroup: ExternalGroupDto = externalGroupDtoFactory.build({
 						externalId: existingGroups[0].externalSource?.externalId,
-						users: [{ externalUserId, roleName: role.name }],
+						user: { externalUserId, roleName: role.name },
 					});
 					const externalGroups: ExternalGroupDto[] = [firstExternalGroup];
 
@@ -803,7 +1091,7 @@ describe('OidcProvisioningService', () => {
 
 					const firstExternalGroup: ExternalGroupDto = externalGroupDtoFactory.build({
 						externalId: existingGroups[0].externalSource?.externalId,
-						users: [{ externalUserId, roleName: role.name }],
+						user: { externalUserId, roleName: role.name },
 					});
 					const externalGroups: ExternalGroupDto[] = [firstExternalGroup];
 
@@ -857,200 +1145,6 @@ describe('OidcProvisioningService', () => {
 				const func = async () => service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
 
 				await expect(func).rejects.toThrow(new NotFoundLoggableException('User', 'externalId', externalUserId));
-			});
-		});
-
-		describe('when the group has no users', () => {
-			const setup = () => {
-				const externalGroupDto: ExternalGroupDto = externalGroupDtoFactory.build({ users: [] });
-
-				return {
-					externalGroupDto,
-				};
-			};
-
-			it('should not create a group', async () => {
-				const { externalGroupDto } = setup();
-
-				await service.provisionExternalGroup(externalGroupDto, 'systemId');
-
-				expect(groupService.save).not.toHaveBeenCalled();
-			});
-		});
-
-		describe('when group does not have an externalOrganizationId', () => {
-			const setup = () => {
-				const externalGroupDto: ExternalGroupDto = externalGroupDtoFactory.build({ externalOrganizationId: undefined });
-
-				return {
-					externalGroupDto,
-				};
-			};
-
-			it('should not call schoolService.getSchoolByExternalId', async () => {
-				const { externalGroupDto } = setup();
-
-				await service.provisionExternalGroup(externalGroupDto, 'systemId');
-
-				expect(schoolService.getSchoolByExternalId).not.toHaveBeenCalled();
-			});
-		});
-
-		describe('when school for group could not be found', () => {
-			const setup = () => {
-				const externalGroupDto: ExternalGroupDto = externalGroupDtoFactory.build({ externalOrganizationId: 'orgaId' });
-				const systemId = 'systemId';
-				schoolService.getSchoolByExternalId.mockResolvedValueOnce(null);
-
-				return {
-					externalGroupDto,
-					systemId,
-				};
-			};
-
-			it('should log a SchoolForGroupNotFoundLoggable', async () => {
-				const { externalGroupDto, systemId } = setup();
-
-				await service.provisionExternalGroup(externalGroupDto, systemId);
-
-				expect(logger.info).toHaveBeenCalledWith(new SchoolForGroupNotFoundLoggable(externalGroupDto));
-			});
-
-			it('should not call groupService.save', async () => {
-				const { externalGroupDto, systemId } = setup();
-
-				await service.provisionExternalGroup(externalGroupDto, systemId);
-
-				expect(groupService.save).not.toHaveBeenCalled();
-			});
-		});
-
-		describe('when externalGroup has no users', () => {
-			const setup = () => {
-				const externalGroupDto: ExternalGroupDto = externalGroupDtoFactory.build({
-					users: [],
-				});
-
-				return {
-					externalGroupDto,
-				};
-			};
-
-			it('should not call userService.findByExternalId', async () => {
-				const { externalGroupDto } = setup();
-
-				await service.provisionExternalGroup(externalGroupDto, 'systemId');
-
-				expect(userService.findByExternalId).not.toHaveBeenCalled();
-			});
-
-			it('should not call roleService.findByNames', async () => {
-				const { externalGroupDto } = setup();
-
-				await service.provisionExternalGroup(externalGroupDto, 'systemId');
-
-				expect(roleService.findByNames).not.toHaveBeenCalled();
-			});
-		});
-
-		describe('when externalGroupUser could not been found', () => {
-			const setup = () => {
-				const externalGroupDto: ExternalGroupDto = externalGroupDtoFactory.build();
-				const systemId = 'systemId';
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
-
-				userService.findByExternalId.mockResolvedValue(null);
-				schoolService.getSchoolByExternalId.mockResolvedValue(school);
-
-				return {
-					externalGroupDto,
-					systemId,
-				};
-			};
-
-			it('should log a UserForGroupNotFoundLoggable', async () => {
-				const { externalGroupDto, systemId } = setup();
-
-				await service.provisionExternalGroup(externalGroupDto, systemId);
-
-				expect(logger.info).toHaveBeenCalledWith(new UserForGroupNotFoundLoggable(externalGroupDto.users[0]));
-			});
-		});
-
-		describe('when provision group', () => {
-			const setup = () => {
-				const group: Group = groupFactory.build({ users: [] });
-				groupService.findByExternalSource.mockResolvedValue(group);
-
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: 'schoolId' });
-				schoolService.getSchoolByExternalId.mockResolvedValue(school);
-
-				const student: UserDO = userDoFactory
-					.withRoles([{ id: 'studentRoleId', name: RoleName.STUDENT }])
-					.build({ id: 'studentId', externalId: 'studentExternalId' });
-				const teacher: UserDO = userDoFactory
-					.withRoles([{ id: 'teacherRoleId', name: RoleName.TEACHER }])
-					.build({ id: 'teacherId', externalId: 'teacherExternalId' });
-				userService.findByExternalId.mockResolvedValueOnce(student);
-				userService.findByExternalId.mockResolvedValueOnce(teacher);
-				const studentRole: RoleDto = roleDtoFactory.build({ name: RoleName.STUDENT });
-				const teacherRole: RoleDto = roleDtoFactory.build({ name: RoleName.TEACHER });
-				roleService.findByNames.mockResolvedValueOnce([studentRole]);
-				roleService.findByNames.mockResolvedValueOnce([teacherRole]);
-				const externalGroupDto: ExternalGroupDto = externalGroupDtoFactory.build({
-					users: [
-						{
-							externalUserId: student.externalId as string,
-							roleName: RoleName.STUDENT,
-						},
-						{
-							externalUserId: teacher.externalId as string,
-							roleName: RoleName.TEACHER,
-						},
-					],
-				});
-				const systemId = 'systemId';
-
-				return {
-					externalGroupDto,
-					school,
-					student,
-					teacher,
-					studentRole,
-					teacherRole,
-					systemId,
-				};
-			};
-
-			it('should save a new group', async () => {
-				const { externalGroupDto, school, student, studentRole, teacher, teacherRole, systemId } = setup();
-
-				await service.provisionExternalGroup(externalGroupDto, systemId);
-
-				expect(groupService.save).toHaveBeenCalledWith({
-					props: {
-						id: expect.any(String),
-						name: externalGroupDto.name,
-						externalSource: {
-							externalId: externalGroupDto.externalId,
-							systemId,
-						},
-						type: externalGroupDto.type,
-						organizationId: school.id,
-						validFrom: externalGroupDto.from,
-						validUntil: externalGroupDto.until,
-						users: [
-							{
-								userId: student.id,
-								roleId: studentRole.id,
-							},
-							{
-								userId: teacher.id,
-								roleId: teacherRole.id,
-							},
-						],
-					},
-				});
 			});
 		});
 	});
