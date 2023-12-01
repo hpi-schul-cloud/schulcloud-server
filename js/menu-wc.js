@@ -4621,6 +4621,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ResponseInfo.html" data-type="entity-link" >ResponseInfo</a>
                             </li>
                             <li class="link">
+                                <a href="classes/RestrictedContextMismatchLoggable.html" data-type="entity-link" >RestrictedContextMismatchLoggable</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/RevokeConsentParams.html" data-type="entity-link" >RevokeConsentParams</a>
                             </li>
                             <li class="link">
@@ -5096,6 +5099,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/ToolContextMapper.html" data-type="entity-link" >ToolContextMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ToolContextTypesListResponse.html" data-type="entity-link" >ToolContextTypesListResponse</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ToolLaunchData.html" data-type="entity-link" >ToolLaunchData</a>

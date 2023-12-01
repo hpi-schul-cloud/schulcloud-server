@@ -163,6 +163,10 @@
                                     <span class="modifier">Static</span>
                                 <a href="#mapToSchoolExternalToolConfigurationTemplateResponse" >mapToSchoolExternalToolConfigurationTemplateResponse</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#mapToToolContextTypesListResponse" >mapToToolContextTypesListResponse</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -204,8 +208,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="60"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/tool-configuration.mapper.ts:60</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/tool-configuration.mapper.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -273,8 +277,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="41"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/tool-configuration.mapper.ts:41</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/tool-configuration.mapper.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -342,8 +346,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/tool-configuration.mapper.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="30"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/tool-configuration.mapper.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -411,8 +415,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/tool-configuration.mapper.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/tool-configuration.mapper.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -458,6 +462,75 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapToToolContextTypesListResponse"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                        <span ><b>mapToToolContextTypesListResponse</b></span>
+                        <a href="#mapToToolContextTypesListResponse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToToolContextTypesListResponse(toolContextTypes: <a href="../undefineds/ToolContextType.html" target="_self">ToolContextType[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/tool-configuration.mapper.ts:75</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>toolContextTypes</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#ToolContextType" target="_self" >ToolContextType[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/ToolContextTypesListResponse.html" target="_self" >ToolContextTypesListResponse</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -473,10 +546,12 @@
 	ContextExternalToolConfigurationTemplateResponse,
 	SchoolExternalToolConfigurationTemplateListResponse,
 	SchoolExternalToolConfigurationTemplateResponse,
+	ToolContextTypesListResponse,
 } from &#x27;../controller/dto&#x27;;
 import { ExternalTool } from &#x27;../domain&#x27;;
 import { ContextExternalToolTemplateInfo } from &#x27;../uc&#x27;;
 import { ExternalToolResponseMapper } from &#x27;./external-tool-response.mapper&#x27;;
+import { ToolContextType } from &#x27;../../common/enum&#x27;;
 
 export class ToolConfigurationMapper {
 	static mapToSchoolExternalToolConfigurationTemplateResponse(
@@ -538,6 +613,12 @@ export class ToolConfigurationMapper {
 		const mapped &#x3D; new ContextExternalToolConfigurationTemplateListResponse(mappedTools);
 
 		return mapped;
+	}
+
+	static mapToToolContextTypesListResponse(toolContextTypes: ToolContextType[]): ToolContextTypesListResponse {
+		const mappedTypes &#x3D; new ToolContextTypesListResponse(toolContextTypes);
+
+		return mappedTypes;
 	}
 }
 </code></pre>

@@ -185,6 +185,15 @@
                                     <span class="modifier">Async</span>
                                 <a href="#getConfigurationTemplateForSchool" >getConfigurationTemplateForSchool</a>
                             </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getToolContextTypes" >getToolContextTypes</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -236,8 +245,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="60"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:60</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="80"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:80</a></div>
                         </td>
                     </tr>
 
@@ -329,8 +338,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="38"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:38</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:58</a></div>
                         </td>
                     </tr>
 
@@ -423,8 +432,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="109"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:109</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="129"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:129</a></div>
                         </td>
                     </tr>
 
@@ -517,8 +526,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="86"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:86</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="106"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:106</a></div>
                         </td>
                     </tr>
 
@@ -576,6 +585,87 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getToolContextTypes"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getToolContextTypes</b></span>
+                        <a href="#getToolContextTypes"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getToolContextTypes(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;context-types&#x27;)<br />@ApiForbiddenResponse()<br />@ApiOperation({summary: &#x27;Lists all context types available in the SVS&#x27;})<br />@ApiOkResponse({description: &#x27;List of available context types&#x27;, type: ToolContextTypesListResponse})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/ToolContextTypesListResponse.html" target="_self" >Promise&lt;ToolContextTypesListResponse&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
@@ -602,13 +692,33 @@ import {
 	SchoolExternalToolConfigurationTemplateResponse,
 	SchoolExternalToolIdParams,
 	SchoolIdParams,
+	ToolContextTypesListResponse,
 } from &#x27;./dto&#x27;;
+import { ToolContextType } from &#x27;../../common/enum&#x27;;
 
 @ApiTags(&#x27;Tool&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
 @Controller(&#x27;tools&#x27;)
 export class ToolConfigurationController {
 	constructor(private readonly externalToolConfigurationUc: ExternalToolConfigurationUc) {}
+
+	@Get(&#x27;context-types&#x27;)
+	@ApiForbiddenResponse()
+	@ApiOperation({ summary: &#x27;Lists all context types available in the SVS&#x27; })
+	@ApiOkResponse({
+		description: &#x27;List of available context types&#x27;,
+		type: ToolContextTypesListResponse,
+	})
+	public async getToolContextTypes(@CurrentUser() currentUser: ICurrentUser): Promise&lt;ToolContextTypesListResponse&gt; {
+		const toolContextTypes: ToolContextType[] &#x3D; await this.externalToolConfigurationUc.getToolContextTypes(
+			currentUser.userId
+		);
+
+		const mapped: ToolContextTypesListResponse &#x3D;
+			ToolConfigurationMapper.mapToToolContextTypesListResponse(toolContextTypes);
+
+		return mapped;
+	}
 
 	@Get(&#x27;school/:schoolId/available-tools&#x27;)
 	@ApiForbiddenResponse()

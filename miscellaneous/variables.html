@@ -3970,7 +3970,7 @@ must use</p>
 		contextType: ContextExternalToolType.COURSE,
 		displayName: &#x27;My Course Tool 1&#x27;,
 		schoolTool: schoolExternalToolEntityFactory.buildWithId(),
-		parameters: [new CustomParameterEntryEntity({ name: &#x27;mockParamater&#x27;, value: &#x27;mockValue&#x27; })],
+		parameters: [new CustomParameterEntryEntity({ name: &#x27;contextMockParameter&#x27;, value: &#x27;mockValue&#x27; })],
 		toolVersion: 1,
 	};
 })</code>
@@ -9820,7 +9820,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	return {
 		tool: externalToolEntityFactory.buildWithId(),
 		school: schoolFactory.buildWithId(),
-		schoolParameters: [{ name: &#x27;mockParamater&#x27;, value: &#x27;mockValue&#x27; }],
+		schoolParameters: [{ name: &#x27;schoolMockParameter&#x27;, value: &#x27;mockValue&#x27; }],
 		toolVersion: 0,
 	};
 })</code>

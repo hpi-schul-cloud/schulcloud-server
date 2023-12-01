@@ -156,7 +156,15 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
+                                <a href="#filterForContextRestrictions" >filterForContextRestrictions</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#filterParametersForScope" >filterParametersForScope</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getToolContextTypes" >getToolContextTypes</a>
                             </li>
                         </ul>
                     </td>
@@ -176,12 +184,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(toolFeatures: <a href="../interfaces/IToolFeatures.html" target="_self">IToolFeatures</a>)</code>
+<code>constructor(toolFeatures: <a href="../interfaces/IToolFeatures.html" target="_self">IToolFeatures</a>, commonToolService: <a href="../injectables/CommonToolService.html" target="_self">CommonToolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -203,6 +211,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../interfaces/IToolFeatures.html" target="_self" >IToolFeatures</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>commonToolService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CommonToolService.html" target="_self" >CommonToolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -246,8 +266,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -327,8 +347,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -408,8 +428,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -471,6 +491,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="filterForContextRestrictions"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>filterForContextRestrictions</b></span>
+                        <a href="#filterForContextRestrictions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>filterForContextRestrictions(availableTools: <a href="../undefineds/ContextExternalToolTemplateInfo.html" target="_self">ContextExternalToolTemplateInfo[]</a>, contextType: <a href="../undefineds/ToolContextType.html" target="_self">ToolContextType</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:82</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>availableTools</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#ContextExternalToolTemplateInfo" target="_self" >ContextExternalToolTemplateInfo[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>contextType</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#ToolContextType" target="_self" >ToolContextType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#ContextExternalToolTemplateInfo" target="_self" >ContextExternalToolTemplateInfo[]</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="filterParametersForScope"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -489,8 +590,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="78"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:78</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -548,6 +649,45 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getToolContextTypes"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getToolContextTypes</b></span>
+                        <a href="#getToolContextTypes"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getToolContextTypes()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="100"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:100</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#ToolContextType" target="_self" >ToolContextType[]</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -558,16 +698,20 @@
 import { Page } from &#x27;@shared/domain/domainobject&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { CustomParameter } from &#x27;../../common/domain&#x27;;
-import { CustomParameterScope } from &#x27;../../common/enum&#x27;;
+import { CustomParameterScope, ToolContextType } from &#x27;../../common/enum&#x27;;
 import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
 import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
 import { IToolFeatures, ToolFeatures } from &#x27;../../tool-config&#x27;;
 import { ExternalTool } from &#x27;../domain&#x27;;
 import { ContextExternalToolTemplateInfo } from &#x27;../uc/dto&#x27;;
+import { CommonToolService } from &#x27;../../common/service&#x27;;
 
 @Injectable()
 export class ExternalToolConfigurationService {
-	constructor(@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures) {}
+	constructor(
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
+		private readonly commonToolService: CommonToolService
+	) {}
 
 	public filterForAvailableTools(externalTools: Page&lt;ExternalTool&gt;, toolIdsInUse: EntityId[]): ExternalTool[] {
 		const visibleTools: ExternalTool[] &#x3D; externalTools.data.filter((tool: ExternalTool): boolean &#x3D;&gt; !tool.isHidden);
@@ -631,12 +775,28 @@ export class ExternalToolConfigurationService {
 		return availableTools;
 	}
 
+	public filterForContextRestrictions(
+		availableTools: ContextExternalToolTemplateInfo[],
+		contextType: ToolContextType
+	): ContextExternalToolTemplateInfo[] {
+		const availableToolsForContext: ContextExternalToolTemplateInfo[] &#x3D; availableTools.filter(
+			(availableTool) &#x3D;&gt; !this.commonToolService.isContextRestricted(availableTool.externalTool, contextType)
+		);
+		return availableToolsForContext;
+	}
+
 	public filterParametersForScope(externalTool: ExternalTool, scope: CustomParameterScope) {
 		if (externalTool.parameters) {
 			externalTool.parameters &#x3D; externalTool.parameters.filter(
 				(parameter: CustomParameter) &#x3D;&gt; parameter.scope &#x3D;&#x3D;&#x3D; scope
 			);
 		}
+	}
+
+	public getToolContextTypes(): ToolContextType[] {
+		const toolContextTypes: ToolContextType[] &#x3D; Object.values(ToolContextType);
+
+		return toolContextTypes;
 	}
 }
 </code></pre>

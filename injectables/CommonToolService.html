@@ -143,7 +143,12 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#determineToolConfigurationStatus" class="deprecated-name">determineToolConfigurationStatus</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#isContextRestricted" >isContextRestricted</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -173,6 +178,7 @@
                 <td class="col-md-4">
                     <a name="determineToolConfigurationStatus"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                         <span class="deprecated-name"><b>determineToolConfigurationStatus</b></span>
                         <a href="#determineToolConfigurationStatus"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -185,7 +191,8 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>determineToolConfigurationStatus(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>determineToolConfigurationStatus(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -254,6 +261,87 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#ToolConfigurationStatus" target="_self" >ToolConfigurationStatus</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isContextRestricted"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>isContextRestricted</b></span>
+                        <a href="#isContextRestricted"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isContextRestricted(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, context: <a href="../undefineds/ToolContextType.html" target="_self">ToolContextType</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:34</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>externalTool</td>
+                                            <td>
+                                                            <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#ToolContextType" target="_self" >ToolContextType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 
                         </div>
                             <div class="io-description">
@@ -354,7 +442,7 @@
 import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
 import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
 import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
-import { ToolConfigurationStatus } from &#x27;../enum&#x27;;
+import { ToolConfigurationStatus, ToolContextType } from &#x27;../enum&#x27;;
 import { ToolVersion } from &#x27;../interface&#x27;;
 
 // TODO N21-1337 remove class when tool versioning is removed
@@ -363,7 +451,7 @@ export class CommonToolService {
 	/**
 	 * @deprecated use ToolVersionService
 	 */
-	determineToolConfigurationStatus(
+	public determineToolConfigurationStatus(
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
@@ -381,6 +469,13 @@ export class CommonToolService {
 
 	private isLatest(tool1: ToolVersion, tool2: ToolVersion): boolean {
 		return tool1.getVersion() &gt;&#x3D; tool2.getVersion();
+	}
+
+	public isContextRestricted(externalTool: ExternalTool, context: ToolContextType): boolean {
+		if (externalTool.restrictToContexts?.length &amp;&amp; !externalTool.restrictToContexts.includes(context)) {
+			return true;
+		}
+		return false;
 	}
 }
 </code></pre>

@@ -143,30 +143,42 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#checkContextRestrictions" >checkContextRestrictions</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteBySchoolExternalToolId" >deleteBySchoolExternalToolId</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteContextExternalTool" >deleteContextExternalTool</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findAllByContext" >findAllByContext</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findByIdOrFail" >findByIdOrFail</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findContextExternalTools" >findContextExternalTools</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#saveContextExternalTool" >saveContextExternalTool</a>
                             </li>
@@ -188,12 +200,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(contextExternalToolRepo: <a href="../injectables/ContextExternalToolRepo.html" target="_self">ContextExternalToolRepo</a>)</code>
+<code>constructor(contextExternalToolRepo: <a href="../injectables/ContextExternalToolRepo.html" target="_self">ContextExternalToolRepo</a>, externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, commonToolService: <a href="../injectables/CommonToolService.html" target="_self">CommonToolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -222,6 +234,42 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>externalToolService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ExternalToolService.html" target="_self" >ExternalToolService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>schoolExternalToolService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SchoolExternalToolService.html" target="_self" >SchoolExternalToolService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>commonToolService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CommonToolService.html" target="_self" >CommonToolService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -240,8 +288,79 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="checkContextRestrictions"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>checkContextRestrictions</b></span>
+                        <a href="#checkContextRestrictions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkContextRestrictions(contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="68"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:68</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>contextExternalTool</td>
+                                            <td>
+                                                            <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="deleteBySchoolExternalToolId"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>deleteBySchoolExternalToolId</b></span>
                         <a href="#deleteBySchoolExternalToolId"><span class="icon ion-ios-link"></span></a>
@@ -258,8 +377,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="35"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:35</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -311,6 +430,7 @@
                 <td class="col-md-4">
                     <a name="deleteContextExternalTool"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>deleteContextExternalTool</b></span>
                         <a href="#deleteContextExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -327,8 +447,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -380,6 +500,7 @@
                 <td class="col-md-4">
                     <a name="findAllByContext"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>findAllByContext</b></span>
                         <a href="#findAllByContext"><span class="icon ion-ios-link"></span></a>
@@ -396,8 +517,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="49"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:49</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -449,6 +570,7 @@
                 <td class="col-md-4">
                     <a name="findById"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>findById</b></span>
                         <a href="#findById"><span class="icon ion-ios-link"></span></a>
@@ -465,8 +587,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -518,6 +640,7 @@
                 <td class="col-md-4">
                     <a name="findByIdOrFail"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>findByIdOrFail</b></span>
                         <a href="#findByIdOrFail"><span class="icon ion-ios-link"></span></a>
@@ -534,8 +657,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -587,6 +710,7 @@
                 <td class="col-md-4">
                     <a name="findContextExternalTools"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>findContextExternalTools</b></span>
                         <a href="#findContextExternalTools"><span class="icon ion-ios-link"></span></a>
@@ -603,8 +727,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="11"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:11</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="22"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -656,6 +780,7 @@
                 <td class="col-md-4">
                     <a name="saveContextExternalTool"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>saveContextExternalTool</b></span>
                         <a href="#saveContextExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -672,8 +797,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -730,36 +855,47 @@ import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ContextExternalToolRepo } from &#x27;@shared/repo&#x27;;
 import { ContextExternalTool, ContextRef } from &#x27;../domain&#x27;;
 import { ContextExternalToolQuery } from &#x27;../uc/dto/context-external-tool.types&#x27;;
+import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
+import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
+import { ExternalToolService } from &#x27;../../external-tool/service&#x27;;
+import { SchoolExternalToolService } from &#x27;../../school-external-tool/service&#x27;;
+import { RestrictedContextMismatchLoggable } from &#x27;./restricted-context-mismatch-loggabble&#x27;;
+import { CommonToolService } from &#x27;../../common/service&#x27;;
 
 @Injectable()
 export class ContextExternalToolService {
-	constructor(private readonly contextExternalToolRepo: ContextExternalToolRepo) {}
+	constructor(
+		private readonly contextExternalToolRepo: ContextExternalToolRepo,
+		private readonly externalToolService: ExternalToolService,
+		private readonly schoolExternalToolService: SchoolExternalToolService,
+		private readonly commonToolService: CommonToolService
+	) {}
 
-	async findContextExternalTools(query: ContextExternalToolQuery): Promise&lt;ContextExternalTool[]&gt; {
+	public async findContextExternalTools(query: ContextExternalToolQuery): Promise&lt;ContextExternalTool[]&gt; {
 		const contextExternalTools: ContextExternalTool[] &#x3D; await this.contextExternalToolRepo.find(query);
 
 		return contextExternalTools;
 	}
 
-	async findByIdOrFail(contextExternalToolId: EntityId): Promise&lt;ContextExternalTool&gt; {
+	public async findByIdOrFail(contextExternalToolId: EntityId): Promise&lt;ContextExternalTool&gt; {
 		const tool: ContextExternalTool &#x3D; await this.contextExternalToolRepo.findById(contextExternalToolId);
 
 		return tool;
 	}
 
-	async findById(contextExternalToolId: EntityId): Promise&lt;ContextExternalTool | null&gt; {
+	public async findById(contextExternalToolId: EntityId): Promise&lt;ContextExternalTool | null&gt; {
 		const tool: ContextExternalTool | null &#x3D; await this.contextExternalToolRepo.findByIdOrNull(contextExternalToolId);
 
 		return tool;
 	}
 
-	async saveContextExternalTool(contextExternalTool: ContextExternalTool): Promise&lt;ContextExternalTool&gt; {
+	public async saveContextExternalTool(contextExternalTool: ContextExternalTool): Promise&lt;ContextExternalTool&gt; {
 		const savedContextExternalTool: ContextExternalTool &#x3D; await this.contextExternalToolRepo.save(contextExternalTool);
 
 		return savedContextExternalTool;
 	}
 
-	async deleteBySchoolExternalToolId(schoolExternalToolId: EntityId) {
+	public async deleteBySchoolExternalToolId(schoolExternalToolId: EntityId) {
 		const contextExternalTools: ContextExternalTool[] &#x3D; await this.contextExternalToolRepo.find({
 			schoolToolRef: {
 				schoolToolId: schoolExternalToolId,
@@ -769,16 +905,28 @@ export class ContextExternalToolService {
 		await this.contextExternalToolRepo.delete(contextExternalTools);
 	}
 
-	async deleteContextExternalTool(contextExternalTool: ContextExternalTool): Promise&lt;void&gt; {
+	public async deleteContextExternalTool(contextExternalTool: ContextExternalTool): Promise&lt;void&gt; {
 		await this.contextExternalToolRepo.delete(contextExternalTool);
 	}
 
-	async findAllByContext(contextRef: ContextRef): Promise&lt;ContextExternalTool[]&gt; {
+	public async findAllByContext(contextRef: ContextRef): Promise&lt;ContextExternalTool[]&gt; {
 		const contextExternalTools: ContextExternalTool[] &#x3D; await this.contextExternalToolRepo.find({
 			context: contextRef,
 		});
 
 		return contextExternalTools;
+	}
+
+	public async checkContextRestrictions(contextExternalTool: ContextExternalTool): Promise&lt;void&gt; {
+		const schoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolService.findById(
+			contextExternalTool.schoolToolRef.schoolToolId
+		);
+
+		const externalTool: ExternalTool &#x3D; await this.externalToolService.findById(schoolExternalTool.toolId);
+
+		if (this.commonToolService.isContextRestricted(externalTool, contextExternalTool.contextRef.type)) {
+			throw new RestrictedContextMismatchLoggable(externalTool.name, contextExternalTool.contextRef.type);
+		}
 	}
 }
 </code></pre>

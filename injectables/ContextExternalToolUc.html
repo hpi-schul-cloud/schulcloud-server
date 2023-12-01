@@ -399,8 +399,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="95"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:95</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="97"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:97</a></div>
                         </td>
                     </tr>
 
@@ -481,8 +481,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="127"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:127</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="129"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:129</a></div>
                         </td>
                     </tr>
 
@@ -562,8 +562,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="118"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:118</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="120"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:120</a></div>
                         </td>
                     </tr>
 
@@ -644,8 +644,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="104"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:104</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="106"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:106</a></div>
                         </td>
                     </tr>
 
@@ -737,8 +737,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="59"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:59</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -874,6 +874,8 @@ export class ContextExternalToolUc {
 		const contextExternalTool &#x3D; new ContextExternalTool(contextExternalToolDto);
 
 		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, context);
+
+		await this.contextExternalToolService.checkContextRestrictions(contextExternalTool);
 
 		await this.contextExternalToolValidationService.validate(contextExternalTool);
 
