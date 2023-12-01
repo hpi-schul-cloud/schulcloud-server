@@ -1,18 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { ForbiddenException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName, TeamEntity } from '@shared/domain';
 import { CollaborativeStorageAdapter } from '@infra/collaborative-storage';
-import { TeamsRepo } from '@shared/repo';
-import { setupEntities } from '@shared/testing';
-import { teamFactory } from '@shared/testing/factory/team.factory';
-import { LegacyLogger } from '@src/core/logger';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { TeamMapper } from '@modules/collaborative-storage/mapper/team.mapper';
 import { CollaborativeStorageService } from '@modules/collaborative-storage/services/collaborative-storage.service';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { RoleService } from '@modules/role/service/role.service';
+import { ForbiddenException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TeamEntity } from '@shared/domain/entity';
+import { RoleName } from '@shared/domain/interface';
+import { TeamsRepo } from '@shared/repo';
+import { setupEntities } from '@shared/testing';
+import { teamFactory } from '@shared/testing/factory/team.factory';
+import { LegacyLogger } from '@src/core/logger';
 import { TeamDto } from './dto/team.dto';
 
 describe('Collaborative Storage Service', () => {

@@ -1,5 +1,5 @@
 import { PrivacyProtect } from '@shared/controller';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { IsBoolean, IsDate, IsMongoId, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 import { passwordPattern } from '../../controller/dto/password-pattern';
 

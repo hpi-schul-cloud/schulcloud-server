@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizationContextBuilder } from '@modules/authorization';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 import { contextExternalToolFactory, externalToolFactory, toolConfigurationStatusFactory } from '@shared/testing';
-import { AuthorizationContextBuilder } from '@modules/authorization';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ExternalTool } from '../../external-tool/domain';
@@ -156,7 +156,7 @@ describe('ToolReferenceUc', () => {
 					openInNewTab: externalTool.openNewTab,
 				});
 
-				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
+				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
 				toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();
 				toolReferenceService.getToolReference.mockResolvedValue(toolReference);
 
@@ -201,7 +201,7 @@ describe('ToolReferenceUc', () => {
 				);
 				const error = new ForbiddenException();
 
-				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
+				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
 				toolPermissionHelper.ensureContextPermissions.mockRejectedValueOnce(error);
 
 				return {

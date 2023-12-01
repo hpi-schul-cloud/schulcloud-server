@@ -2,7 +2,7 @@ import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication
 import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller';
-import { Page } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject';
 import { ErrorResponse } from '@src/core/error/dto';
 import { GroupUc } from '../uc';
 import { ClassInfoDto, ResolvedGroupDto } from '../uc/dto';

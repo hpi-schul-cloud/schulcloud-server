@@ -5,7 +5,7 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { TaskListResponse } from '@modules/task/controller/dto';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	courseFactory,

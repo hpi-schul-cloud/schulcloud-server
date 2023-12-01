@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, NewsTargetModel } from '@shared/domain';
+import { EntityId, NewsTargetModel } from '@shared/domain/types';
 import { FeathersAuthProvider } from './feathers-auth.provider';
 
 @Injectable()

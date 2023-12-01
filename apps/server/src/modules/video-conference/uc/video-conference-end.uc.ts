@@ -1,7 +1,8 @@
 import { UserService } from '@modules/user';
 import { ErrorStatus } from '@modules/video-conference/error/error-status.enum';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, UserDO } from '@shared/domain';
+import { UserDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { BBBBaseMeetingConfig, BBBBaseResponse, BBBResponse, BBBRole, BBBService } from '../bbb';
 import { PermissionMapping } from '../mapper/video-conference.mapper';
 import { VideoConferenceService } from '../service';

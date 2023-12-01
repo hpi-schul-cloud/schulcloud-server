@@ -120,6 +120,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: data-deletion-trigger-cronjob.yml.j2
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
 
   - name: AMQPFileStorageDeployment
     kubernetes.core.k8s:
@@ -156,17 +157,34 @@
      - KEDA_ENABLED is defined and KEDA_ENABLED|bool
      - SCALED_PREVIEW_GENERATOR_ENABLED is defined and SCALED_PREVIEW_GENERATOR_ENABLED|bool
 
+
+  - name: admin api server deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-deployment.yml.j2
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
+  - name: admin api server service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-svc.yml.j2
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
   - name: TlDraw server deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-deployment.yml.j2
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
 
   - name: TlDraw server service
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-server-svc.yml.j2
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
 
   - name: Tldraw ingress
     kubernetes.core.k8s:
@@ -174,3 +192,4 @@
       namespace: "{{ NAMESPACE }}"
       template: tldraw-ingress.yml.j2
       apply: yes
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool

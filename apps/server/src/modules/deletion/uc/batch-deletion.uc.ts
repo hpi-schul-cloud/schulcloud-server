@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { BatchDeletionSummaryBuilder, BatchDeletionSummaryDetailBuilder } from './builder';
+import { BatchDeletionSummaryBuilder, BatchDeletionSummaryDetailBuilder } from '../builder';
 import {
 	ReferencesService,
 	BatchDeletionService,
 	QueueDeletionRequestInput,
 	QueueDeletionRequestInputBuilder,
 } from '../services';
-import { BatchDeletionSummary, BatchDeletionSummaryOverallStatus } from './interface';
+import { BatchDeletionSummary, BatchDeletionSummaryOverallStatus } from '../interface';
 
 @Injectable()
 export class BatchDeletionUc {

@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { TaskService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Task } from '@shared/domain';
+import { Task } from '@shared/domain/entity';
 import { setupEntities } from '@shared/testing';
 import { TaskUrlHandler } from './task-url-handler';
 
