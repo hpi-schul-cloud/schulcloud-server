@@ -92,8 +92,6 @@
 
 ### EW-539
 
-- tests for CCExportService
-- tests for CCMapper
 - tests for CCManifestResource
-- tests for CC*Element
 - Cleanup FIXMEs
+- Manual tests

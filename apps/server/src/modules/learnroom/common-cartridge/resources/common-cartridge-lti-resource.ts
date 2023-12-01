@@ -55,7 +55,7 @@ export class CommonCartridgeLtiResource implements CommonCartridgeResource {
 			},
 			file: {
 				$: {
-					href: this.props.folder,
+					href: this.getFilePath(),
 				},
 			},
 		};

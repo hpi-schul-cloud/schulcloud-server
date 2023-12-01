@@ -28,34 +28,25 @@ export class CommonCartridgeExportService {
 
 		builder.addMetadata(CommonCartridgeMapper.mapCourseToMetadata(course));
 
-		await this.addLessons(builder, version, courseId);
-		await this.addTasks(builder, version, courseId, userId);
+		await this.addLessons(builder, courseId);
+		await this.addTasks(builder, courseId, userId);
 
 		return builder.build();
 	}
 
-	private async addLessons(
-		builder: CommonCartridgeFileBuilder,
-		version: CommonCartridgeVersion,
-		courseId: EntityId
-	): Promise<void> {
+	private async addLessons(builder: CommonCartridgeFileBuilder, courseId: EntityId): Promise<void> {
 		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
 
 		lessons.forEach((lesson) => {
 			const organizationBuilder = builder.addOrganization(CommonCartridgeMapper.mapLessonToOrganization(lesson));
 
 			lesson.contents.forEach((content) => {
-				this.addComponent(organizationBuilder, content, version);
+				this.addComponent(organizationBuilder, content);
 			});
 		});
 	}
 
-	private async addTasks(
-		builder: CommonCartridgeFileBuilder,
-		version: CommonCartridgeVersion,
-		courseId: EntityId,
-		userId: EntityId
-	): Promise<void> {
+	private async addTasks(builder: CommonCartridgeFileBuilder, courseId: EntityId, userId: EntityId): Promise<void> {
 		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
 		const organizationBuilder = builder.addOrganization({
 			identifier: new ObjectId().toHexString(),
@@ -63,16 +54,15 @@ export class CommonCartridgeExportService {
 		});
 
 		tasks.forEach((task) => {
-			organizationBuilder.addResource(CommonCartridgeMapper.mapTaskToResource(task, version));
+			organizationBuilder.addResource(CommonCartridgeMapper.mapTaskToResource(task));
 		});
 	}
 
 	private addComponent(
 		organizationBuilder: CommonCartridgeOrganizationBuilder,
-		component: ComponentProperties,
-		version: CommonCartridgeVersion
+		component: ComponentProperties
 	): void {
-		const resources = CommonCartridgeMapper.mapContentToResources(component, version);
+		const resources = CommonCartridgeMapper.mapContentToResources(component);
 
 		if (!Array.isArray(resources)) {
 			organizationBuilder.addResource(resources);

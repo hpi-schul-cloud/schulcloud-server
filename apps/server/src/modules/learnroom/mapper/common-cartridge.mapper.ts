@@ -28,7 +28,7 @@ export class CommonCartridgeMapper {
 		content: ComponentProperties
 	): OmitVersion<CommonCartridgeOrganizationBuilderOptions> {
 		return {
-			identifier: content._id || new ObjectId().toHexString(),
+			identifier: new ObjectId(content._id).toHexString(),
 			title: content.title,
 		};
 	}
@@ -49,21 +49,21 @@ export class CommonCartridgeMapper {
 			case ComponentType.TEXT:
 				return {
 					type: CommonCartridgeResourceType.WEB_CONTENT,
-					identifier: content._id || new ObjectId().toHexString(),
+					identifier: new ObjectId(content._id).toHexString(),
 					title: content.title,
 					html: `<h1>${content.title}</h1><p>${content.content.text}</p>`,
 				};
 			case ComponentType.GEOGEBRA:
 				return {
 					type: CommonCartridgeResourceType.WEB_LINK,
-					identifier: content._id || new ObjectId().toHexString(),
+					identifier: new ObjectId(content._id).toHexString(),
 					title: content.title,
 					url: `https://www.geogebra.org/m/${content.content.materialId}`, // FIXME: hardcoded hostname
 				};
 			case ComponentType.ETHERPAD:
 				return {
 					type: CommonCartridgeResourceType.WEB_LINK,
-					identifier: content._id || new ObjectId().toHexString(),
+					identifier: new ObjectId(content._id).toHexString(),
 					title: `${content.content.title} - ${content.content.description}`,
 					url: content.content.url,
 				};
@@ -72,7 +72,7 @@ export class CommonCartridgeMapper {
 					content.content?.resources.map((resource) => {
 						return {
 							type: CommonCartridgeResourceType.WEB_LINK,
-							identifier: content._id || new ObjectId().toHexString(),
+							identifier: new ObjectId().toHexString(),
 							title: resource.description,
 							url: resource.url,
 						};

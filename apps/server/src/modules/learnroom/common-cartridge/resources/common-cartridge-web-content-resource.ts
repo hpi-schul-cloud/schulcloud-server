@@ -41,7 +41,7 @@ export class CommonCartridgeWebContentResource implements CommonCartridgeResourc
 			},
 			file: {
 				$: {
-					href: this.props.folder,
+					href: this.getFilePath(),
 				},
 			},
 		};
