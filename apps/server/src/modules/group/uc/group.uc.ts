@@ -220,7 +220,7 @@ export class GroupUc {
 			async (teacherId: EntityId): Promise<UserDO | null> => {
 				const teacher: UserDO | null = await this.userService.findByIdOrNull(teacherId);
 				if (!teacher) {
-					this.logger.warning(new ReferencedEntityNotFoundLoggable(teacherId, Class.name, classId));
+					this.logger.warning(new ReferencedEntityNotFoundLoggable(Class.name, classId, UserDO.name, teacherId));
 				}
 				return teacher;
 			}
@@ -299,7 +299,9 @@ export class GroupUc {
 				let resolvedGroup: ResolvedGroupUser | null = null;
 
 				if (!user) {
-					this.logger.warning(new ReferencedEntityNotFoundLoggable(groupUser.userId, Group.name, group.id));
+					this.logger.warning(
+						new ReferencedEntityNotFoundLoggable(Group.name, group.id, UserDO.name, groupUser.userId)
+					);
 				} else {
 					const role: RoleDto = await this.roleService.findById(groupUser.roleId);
 

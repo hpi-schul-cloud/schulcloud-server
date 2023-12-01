@@ -26,6 +26,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { ReferencedEntityNotFoundLoggable } from '@shared/common/loggable';
+import { Logger } from '@src/core/logger';
 import { SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
@@ -33,7 +34,6 @@ import { GroupService } from '../service';
 import { ClassInfoDto, ResolvedGroupDto } from './dto';
 import { ClassRootType } from './dto/class-root-type';
 import { GroupUc } from './group.uc';
-import { Logger } from '../../../core/logger';
 
 describe('GroupUc', () => {
 	let module: TestingModule;
@@ -884,10 +884,10 @@ describe('GroupUc', () => {
 				await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
 
 				expect(logger.warning).toHaveBeenCalledWith(
-					new ReferencedEntityNotFoundLoggable(notFoundReferenceId, Class.name, clazz.id)
+					new ReferencedEntityNotFoundLoggable(Class.name, clazz.id, UserDO.name, notFoundReferenceId)
 				);
 				expect(logger.warning).toHaveBeenCalledWith(
-					new ReferencedEntityNotFoundLoggable(notFoundReferenceId, Group.name, group.id)
+					new ReferencedEntityNotFoundLoggable(Group.name, group.id, UserDO.name, notFoundReferenceId)
 				);
 			});
 		});
