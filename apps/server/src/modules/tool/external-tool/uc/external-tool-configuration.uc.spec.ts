@@ -34,7 +34,7 @@ describe('ExternalToolConfigurationUc', () => {
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let toolPermissionHelper: DeepMocked<ToolPermissionHelper>;
 	let logoService: DeepMocked<ExternalToolLogoService>;
-	let authorizationServie: DeepMocked<AuthorizationService>;
+	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -80,7 +80,7 @@ describe('ExternalToolConfigurationUc', () => {
 		contextExternalToolService = module.get(ContextExternalToolService);
 		toolPermissionHelper = module.get(ToolPermissionHelper);
 		logoService = module.get(ExternalToolLogoService);
-		authorizationServie = module.get(AuthorizationService);
+		authorizationService = module.get(AuthorizationService);
 	});
 
 	afterEach(() => {
@@ -686,8 +686,8 @@ describe('ExternalToolConfigurationUc', () => {
 				user.id = userId;
 				const contextTypes: ToolContextType[] = Object.values(ToolContextType);
 
-				authorizationServie.getUserWithPermissions.mockResolvedValueOnce(user);
-				authorizationServie.checkAllPermissions.mockReturnValueOnce();
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.checkAllPermissions.mockReturnValueOnce();
 				externalToolConfigurationService.getToolContextTypes.mockReturnValueOnce(contextTypes);
 
 				return { userId, user, contextTypes };
@@ -698,7 +698,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				await uc.getToolContextTypes(userId);
 
-				expect(authorizationServie.getUserWithPermissions).toHaveBeenCalledWith(userId);
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(userId);
 			});
 
 			it('should check Permission', async () => {
@@ -706,7 +706,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				await uc.getToolContextTypes(userId);
 
-				expect(authorizationServie.checkAllPermissions).toHaveBeenCalledWith(user, ['TOOL_ADMIN']);
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, ['TOOL_ADMIN']);
 			});
 
 			it('should get context types', async () => {
@@ -723,6 +723,29 @@ describe('ExternalToolConfigurationUc', () => {
 				const result = await uc.getToolContextTypes(userId);
 
 				expect(result).toEqual([ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT]);
+			});
+		});
+
+		describe('when user does not have enough Permission', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+				const user: User = userFactory.build();
+				user.id = userId;
+				const contextTypes: ToolContextType[] = Object.values(ToolContextType);
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.checkAllPermissions.mockImplementation(() => {
+					throw new UnauthorizedException();
+				});
+				externalToolConfigurationService.getToolContextTypes.mockReturnValueOnce(contextTypes);
+
+				return { userId };
+			};
+
+			it('should throw unauthorized', async () => {
+				const { userId } = setup();
+
+				await expect(uc.getToolContextTypes(userId)).rejects.toThrow(new UnauthorizedException());
 			});
 		});
 	});
