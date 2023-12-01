@@ -279,24 +279,25 @@ export class GroupUc {
 	}
 
 	private async findUsersForGroup(group: Group): Promise<ResolvedGroupUser[]> {
-		const resolvedGroupUsers: ResolvedGroupUser[] = await Promise.all(
-			group.users.map(async (groupUser: GroupUser): Promise<ResolvedGroupUser> => {
-				const user: UserDO /* | null */ = await this.userService.findById(/* OrNull */ groupUser.userId);
-				/* if (!user) {
+		const resolvedGroupUsersOrNull: (ResolvedGroupUser | null)[] = await Promise.all(
+			group.users.map(async (groupUser: GroupUser): Promise<ResolvedGroupUser | null> => {
+				const user: UserDO | null = await this.userService.findByIdOrNull(groupUser.userId);
+				let resolvedGroups: ResolvedGroupUser | null = null;
+				if (!user) {
 					this.logger.warning(new MissingUserLoggable(groupUser.userId, 'groups', group.id));
-				} */
-				// TODO filter null
+				} else {
+					const role: RoleDto = await this.roleService.findById(groupUser.roleId);
 
-				const role: RoleDto = await this.roleService.findById(groupUser.roleId);
-
-				const resolvedGroups = new ResolvedGroupUser({
-					user,
-					role,
-				});
-
+					resolvedGroups = new ResolvedGroupUser({
+						user,
+						role,
+					});
+				}
 				return resolvedGroups;
 			})
 		);
+
+		const resolvedGroupUsers: ResolvedGroupUser[] = resolvedGroupUsersOrNull.filter(Boolean) as ResolvedGroupUser[];
 
 		return resolvedGroupUsers;
 	}
