@@ -5,9 +5,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { legacySchoolDoFactory, userDoFactory } from '@shared/testing';
-import { externalGroupDtoFactory } from '@shared/testing/factory/external-group-dto.factory';
-import { externalSchoolDtoFactory } from '@shared/testing/factory/external-school-dto.factory';
+import {
+	externalGroupDtoFactory,
+	externalSchoolDtoFactory,
+	legacySchoolDoFactory,
+	userDoFactory,
+} from '@shared/testing';
 import {
 	ExternalSchoolDto,
 	ExternalUserDto,
