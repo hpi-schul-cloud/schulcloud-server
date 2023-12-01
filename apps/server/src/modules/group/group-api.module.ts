@@ -8,9 +8,19 @@ import { UserModule } from '@modules/user';
 import { GroupController } from './controller';
 import { GroupModule } from './group.module';
 import { GroupUc } from './uc';
+import { LoggerModule } from '../../core/logger';
 
 @Module({
-	imports: [GroupModule, ClassModule, UserModule, RoleModule, LegacySchoolModule, AuthorizationModule, SystemModule],
+	imports: [
+		GroupModule,
+		ClassModule,
+		UserModule,
+		RoleModule,
+		LegacySchoolModule,
+		AuthorizationModule,
+		SystemModule,
+		LoggerModule,
+	],
 	controllers: [GroupController],
 	providers: [GroupUc],
 })

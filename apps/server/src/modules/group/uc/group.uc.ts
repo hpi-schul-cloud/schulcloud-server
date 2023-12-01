@@ -281,10 +281,10 @@ export class GroupUc {
 	private async findUsersForGroup(group: Group): Promise<ResolvedGroupUser[]> {
 		const resolvedGroupUsers: ResolvedGroupUser[] = await Promise.all(
 			group.users.map(async (groupUser: GroupUser): Promise<ResolvedGroupUser> => {
-				const user: UserDO | null = await this.userService.findByIdOrNull(groupUser.userId);
-				if (!user) {
+				const user: UserDO /* | null */ = await this.userService.findById(/* OrNull */ groupUser.userId);
+				/* if (!user) {
 					this.logger.warning(new MissingUserLoggable(groupUser.userId, 'groups', group.id));
-				}
+				} */
 				// TODO filter null
 
 				const role: RoleDto = await this.roleService.findById(groupUser.roleId);
