@@ -12,7 +12,6 @@ export type CommonCartridgeWebContentResourceProps = {
 	folder: string;
 	title: string;
 	html: string;
-	intendedUse?: CommonCartridgeIntendedUseType;
 };
 
 export class CommonCartridgeWebContentResource implements CommonCartridgeResource {
@@ -35,7 +34,10 @@ export class CommonCartridgeWebContentResource implements CommonCartridgeResourc
 			$: {
 				identifier: this.props.identifier,
 				type: this.props.type,
-				intendeduse: this.props.intendedUse ?? CommonCartridgeIntendedUseType.UNSPECIFIED,
+				intendeduse:
+					this.props.version === CommonCartridgeVersion.V_1_3_0
+						? CommonCartridgeIntendedUseType.ASSIGNMENT
+						: CommonCartridgeIntendedUseType.UNSPECIFIED,
 			},
 			file: {
 				$: {

@@ -1,12 +1,10 @@
 import { ComponentProperties, ComponentType, Course, LessonEntity, Task } from '@shared/domain';
 import { ObjectId } from 'bson';
 import {
-	CommonCartridgeIntendedUseType,
 	CommonCartridgeMetadataElementProps,
 	CommonCartridgeOrganizationBuilderOptions,
 	CommonCartridgeResourceProps,
 	CommonCartridgeResourceType,
-	CommonCartridgeVersion,
 	OmitVersion,
 } from '../common-cartridge';
 
@@ -35,22 +33,17 @@ export class CommonCartridgeMapper {
 		};
 	}
 
-	static mapTaskToResource(task: Task, version: CommonCartridgeVersion): CommonCartridgeResourceProps {
+	static mapTaskToResource(task: Task): CommonCartridgeResourceProps {
 		return {
 			type: CommonCartridgeResourceType.WEB_CONTENT,
 			identifier: task.id,
 			title: task.name,
 			html: `<h1>${task.name}</h1><p>${task.description}</p>`,
-			intendedUse:
-				version === CommonCartridgeVersion.V_1_1_0
-					? CommonCartridgeIntendedUseType.UNSPECIFIED
-					: CommonCartridgeIntendedUseType.ASSIGNMENT,
 		};
 	}
 
 	static mapContentToResources(
-		content: ComponentProperties,
-		version: CommonCartridgeVersion
+		content: ComponentProperties
 	): CommonCartridgeResourceProps | CommonCartridgeResourceProps[] {
 		switch (content.component) {
 			case ComponentType.TEXT:
@@ -59,10 +52,6 @@ export class CommonCartridgeMapper {
 					identifier: content._id || new ObjectId().toHexString(),
 					title: content.title,
 					html: `<h1>${content.title}</h1><p>${content.content.text}</p>`,
-					intendedUse:
-						version === CommonCartridgeVersion.V_1_1_0
-							? CommonCartridgeIntendedUseType.UNSPECIFIED
-							: CommonCartridgeIntendedUseType.ASSIGNMENT,
 				};
 			case ComponentType.GEOGEBRA:
 				return {
