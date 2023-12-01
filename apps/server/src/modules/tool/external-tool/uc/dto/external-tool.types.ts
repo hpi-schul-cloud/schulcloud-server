@@ -1,5 +1,6 @@
 import { BasicToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from '../../domain';
 import { CustomParameter } from '../../../common/domain';
+import { ToolContextType } from '../../../common/enum';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -33,6 +34,8 @@ export type ExternalToolDto<T> = {
 	openNewTab: boolean;
 
 	version: number;
+
+	restrictToContexts?: ToolContextType[];
 };
 
 export type ExternalToolCreate = ExternalToolDto<BasicToolConfigDto | Lti11ToolConfigCreate | Oauth2ToolConfigCreate>;
