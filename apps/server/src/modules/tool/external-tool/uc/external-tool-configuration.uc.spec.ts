@@ -2,7 +2,10 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Page, Permission, User } from '@shared/domain';
+
+import { Page } from '@shared/domain/domainobject';
+import { Permission } from '@shared/domain/interface';
+// import { Page, Permission, User } from '@shared/domain';
 import {
 	contextExternalToolFactory,
 	customParameterFactory,

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import { EntityId, SystemEntity, SystemTypeEnum } from '@shared/domain';
+import { SystemEntity } from '@shared/domain/entity';
+import { EntityId, SystemTypeEnum } from '@shared/domain/types';
 import { LegacySystemRepo } from '@shared/repo';
 import { SystemOidcMapper } from '../mapper';
 import { OidcConfigDto } from './dto';

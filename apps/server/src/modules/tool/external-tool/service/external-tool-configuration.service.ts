@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { EntityId, Page } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';

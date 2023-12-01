@@ -1,7 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundError } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, RoleName } from '@shared/domain';
+import { Role } from '@shared/domain/entity';
+import { RoleName } from '@shared/domain/interface';
 import { RoleRepo } from '@shared/repo';
 import { roleFactory } from '@shared/testing';
 import { RoleDto } from './dto/role.dto';

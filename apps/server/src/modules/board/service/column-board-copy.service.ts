@@ -1,14 +1,14 @@
+import { CopyStatus } from '@modules/copy-helper';
+import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	ColumnBoard,
-	EntityId,
 	isColumnBoard,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
-import { CopyStatus } from '@modules/copy-helper';
-import { UserService } from '@modules/user';
 import { BoardDoRepo } from '../repo';
 import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './board-do-copy-service';
 

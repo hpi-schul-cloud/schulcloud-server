@@ -9,9 +9,9 @@ import {
 	ColumnBoard,
 	ContentElementFactory,
 	ContentElementType,
-	EntityId,
 	RichTextElement,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';

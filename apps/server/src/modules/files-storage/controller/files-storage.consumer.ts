@@ -3,7 +3,7 @@ import { CopyFileDO, FileDO, FilesStorageEvents, FilesStorageExchange } from '@i
 import { RpcMessage } from '@infra/rabbitmq/rpc-message';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';

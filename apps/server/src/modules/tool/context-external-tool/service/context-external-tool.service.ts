@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { ContextExternalTool, ContextRef } from '../domain';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';

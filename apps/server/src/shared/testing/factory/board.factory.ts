@@ -1,4 +1,4 @@
-import { Board, BoardProps } from '@shared/domain';
+import { Board, BoardProps } from '@shared/domain/entity';
 import { BaseFactory } from './base.factory';
 import { courseFactory } from './course.factory';
 

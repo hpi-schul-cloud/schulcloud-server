@@ -1,6 +1,6 @@
 import { IFileStats, ITemporaryFile } from '@lumieducation/h5p-server';
 import { Entity, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps } from '@shared/domain';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 
 export interface TemporaryFileProperties {
 	filename: string;

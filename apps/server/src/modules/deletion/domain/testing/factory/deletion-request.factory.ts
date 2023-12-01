@@ -2,8 +2,7 @@ import { DoBaseFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DeepPartial } from 'fishery';
 import { DeletionRequest, DeletionRequestProps } from '../../deletion-request.do';
-import { DeletionDomainModel } from '../../types/deletion-domain-model.enum';
-import { DeletionStatusModel } from '../../types/deletion-status-model.enum';
+import { DeletionDomainModel, DeletionStatusModel } from '../../types';
 
 class DeletionRequestFactory extends DoBaseFactory<DeletionRequest, DeletionRequestProps> {
 	withUserIds(id: string): this {
