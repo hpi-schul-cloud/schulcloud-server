@@ -5,55 +5,103 @@ import {
 } from './common-cartridge-web-content-resource';
 
 describe('CommonCartridgeWebContentResource', () => {
-	const props: CommonCartridgeWebContentResourceProps = {
+	const propsVersion1: CommonCartridgeWebContentResourceProps = {
+		type: CommonCartridgeResourceType.WEB_CONTENT,
+		version: CommonCartridgeVersion.V_1_1_0,
+		identifier: 'web-link-v1',
+		folder: 'https://example.com/link1',
+		title: 'Web Link Version 1',
+		html: 'html tages for testing version 1',
+	};
+	const propsVersion3: CommonCartridgeWebContentResourceProps = {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		version: CommonCartridgeVersion.V_1_3_0,
-		identifier: 'web-link',
-		folder: 'https://example.com/link',
-		title: 'Web Link',
-		html: 'html tages for testing',
+		identifier: 'web-link-v3',
+		folder: 'https://example.com/link3',
+		title: 'Web Link Version 3',
+		html: 'html tages for testing version 3',
 	};
-	const webContentResource = new CommonCartridgeWebContentResource(props);
+
+	const webContentResourceVersion1 = new CommonCartridgeWebContentResource(propsVersion1);
+	const webContentResourceVersion3 = new CommonCartridgeWebContentResource(propsVersion3);
 
 	describe('canInline', () => {
-		describe('when the return value of the method is called', () => {
-			it('should return false regardless of the common cartridge version', () => {
-				expect(webContentResource.canInline()).toBe(false);
+		describe('when common cartridge version 1.1', () => {
+			it('should return false', () => {
+				expect(webContentResourceVersion1.canInline()).toBe(false);
+			});
+		});
+
+		describe('when common cartridge version 1.3', () => {
+			it('should return false', () => {
+				expect(webContentResourceVersion3.canInline()).toBe(false);
 			});
 		});
 	});
 
 	describe('getFilePath', () => {
-		describe('when the return value of the method is called', () => {
-			it('should return the file path regardless of the common cartridge version', () => {
-				const filePath = webContentResource.getFilePath();
-				expect(filePath).toBe(`${props.folder}/${props.identifier}.html`);
+		describe('when common cartridge version 1.1', () => {
+			it('should return the file path regarding version 1.1', () => {
+				const filePath = webContentResourceVersion1.getFilePath();
+				expect(filePath).toBe(`${propsVersion1.folder}/${propsVersion1.identifier}.html`);
+			});
+		});
+
+		describe('when common cartridge version 1.3', () => {
+			it('should return the file path regarding version 1.3', () => {
+				const filePath = webContentResourceVersion3.getFilePath();
+				expect(filePath).toBe(`${propsVersion3.folder}/${propsVersion3.identifier}.html`);
 			});
 		});
 	});
 
 	describe('getFileContent', () => {
-		describe('when the return value of the method is called', () => {
-			it('should return html content regardless of the common cartridge version', () => {
-				const content = webContentResource.getFileContent();
-				expect(content).toContain(props.html);
+		describe('when common cartridge version 1.1', () => {
+			it('should return XML content of common cartridge version 1.1', () => {
+				const content = webContentResourceVersion1.getFileContent();
+				expect(content).toContain(propsVersion1.html);
+			});
+		});
+
+		describe('when common cartridge version 1.3', () => {
+			it('should return XML content of common cartridge version 1.3', () => {
+				const content = webContentResourceVersion3.getFileContent();
+				expect(content).toContain(propsVersion3.html);
 			});
 		});
 	});
 
 	describe('getManifestXml', () => {
-		describe('when the return value of the method is called', () => {
-			it('should return manifest xml content regardless of the common cartridge version', () => {
-				const transformed = webContentResource.getManifestXml();
-				expect(transformed).toEqual({
+		describe('when common cartridge version 1.1', () => {
+			it('should return manifest xml content regarding version 1.1', () => {
+				const transformed = webContentResourceVersion1.getManifestXml();
+				expect(transformed).toStrictEqual({
 					$: {
-						identifier: props.identifier,
-						type: props.type,
+						identifier: propsVersion1.identifier,
+						type: propsVersion1.type,
 						intendeduse: 'unspecified',
 					},
 					file: {
 						$: {
-							href: props.folder,
+							href: propsVersion1.folder,
+						},
+					},
+				});
+			});
+		});
+
+		describe('when common cartridge version 1.3', () => {
+			it('should return manifest xml content regarding version 1.3', () => {
+				const transformed = webContentResourceVersion3.getManifestXml();
+				expect(transformed).toStrictEqual({
+					$: {
+						identifier: propsVersion3.identifier,
+						type: propsVersion3.type,
+						intendeduse: 'unspecified',
+					},
+					file: {
+						$: {
+							href: propsVersion3.folder,
 						},
 					},
 				});

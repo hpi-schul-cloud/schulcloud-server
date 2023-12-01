@@ -26,24 +26,32 @@ describe('CommonCartridgeLtiResource', () => {
 	const ltiResourceVersion3 = new CommonCartridgeLtiResource(propsVersion3);
 
 	describe('canInline', () => {
-		describe('when the return value of the method is called', () => {
-			it('should return false regardless of the common cartridge version', () => {
+		describe('when common cartridge version 1.1', () => {
+			it('should return false', () => {
 				const resultVersion1 = ltiResourceVersion1.canInline();
-				const resultVersion3 = ltiResourceVersion3.canInline();
-
 				expect(resultVersion1).toBe(false);
+			});
+		});
+
+		describe('when common cartridge version 1.3', () => {
+			it('should return false', () => {
+				const resultVersion3 = ltiResourceVersion3.canInline();
 				expect(resultVersion3).toBe(false);
 			});
 		});
 	});
 
 	describe('getFilePath', () => {
-		describe('when the return value of the method is called', () => {
-			it('should return the file path regardless of the common cartridge version', () => {
+		describe('when common cartridge version 1.1', () => {
+			it('should return the file path regarding version 1.1', () => {
 				const filePathVersion1 = ltiResourceVersion1.getFilePath();
-				const filePathVersion3 = ltiResourceVersion3.getFilePath();
-
 				expect(filePathVersion1).toBe(`${propsVersion1.folder}/${propsVersion1.identifier}.xml`);
+			});
+		});
+
+		describe('when common cartridge version 1.3', () => {
+			it('should return the file path regarding version 1.3', () => {
+				const filePathVersion3 = ltiResourceVersion3.getFilePath();
 				expect(filePathVersion3).toBe(`${propsVersion3.folder}/${propsVersion3.identifier}.xml`);
 			});
 		});
@@ -99,12 +107,11 @@ describe('CommonCartridgeLtiResource', () => {
 	});
 
 	describe('getManifestXml', () => {
-		describe('when the return value of the method is called', () => {
-			it('should return manifest xml content regardless of the common cartridge version', () => {
-				const transformedVersion1 = ltiResourceVersion1.getManifestXml();
-				const transformedVersion3 = ltiResourceVersion3.getManifestXml();
+		describe('when common cartridge version 1.1', () => {
+			it('should return manifest xml content regarding version 1.1', () => {
+				const transformed = ltiResourceVersion1.getManifestXml();
 
-				expect(transformedVersion1).toEqual({
+				expect(transformed).toEqual({
 					$: {
 						identifier: propsVersion1.identifier,
 						type: propsVersion1.type,
@@ -115,8 +122,14 @@ describe('CommonCartridgeLtiResource', () => {
 						},
 					},
 				});
+			});
+		});
 
-				expect(transformedVersion3).toEqual({
+		describe('when common cartridge version 1.3', () => {
+			it('should return manifest xml content regarding version 1.3', () => {
+				const transformed = ltiResourceVersion3.getManifestXml();
+
+				expect(transformed).toEqual({
 					$: {
 						identifier: propsVersion3.identifier,
 						type: propsVersion3.type,
