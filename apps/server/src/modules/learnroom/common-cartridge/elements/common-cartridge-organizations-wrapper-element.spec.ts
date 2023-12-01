@@ -1,6 +1,7 @@
 import { CommonCartridgeOrganizationsWrapperElement } from './common-cartridge-organizations-wrapper-element';
 
 describe('CommonCartridgeOrganizationsWrapperElement', () => {
+	// AI next 40 lines
 	describe('getManifestXml', () => {
 		it('should return the correct xml object', () => {
 			const element = new CommonCartridgeOrganizationsWrapperElement([
