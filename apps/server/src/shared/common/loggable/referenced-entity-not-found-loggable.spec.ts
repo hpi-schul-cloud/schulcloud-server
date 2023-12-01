@@ -26,7 +26,7 @@ describe(ReferencedEntityNotFoundLoggable.name, () => {
 			const { loggable, referencedId, sourceEntityName, sourceId } = setup();
 
 			expect(loggable.getLogMessage()).toEqual({
-				message: `The user could not been found, but it is still referenced.`,
+				message: 'The requested entity could not been found, but it is still referenced.',
 				data: {
 					userId: referencedId,
 					entityName: sourceEntityName,

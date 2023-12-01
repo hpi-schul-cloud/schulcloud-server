@@ -10,7 +10,7 @@ export class ReferencedEntityNotFoundLoggable implements Loggable {
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			message: `The user could not been found, but it is still referenced.`,
+			message: 'The requested entity could not been found, but it is still referenced.',
 			data: {
 				userId: this.referencedId,
 				entityName: this.sourceEntityName,
