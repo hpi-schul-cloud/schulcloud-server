@@ -3,7 +3,6 @@ import { Factory } from 'fishery';
 
 export const toolConfigurationStatusFactory = Factory.define<ToolConfigurationStatus>(() => {
 	return {
-		isDisabled: false,
 		isOutdatedOnScopeContext: false,
 		isOutdatedOnScopeSchool: false,
 	};

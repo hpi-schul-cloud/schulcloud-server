@@ -1,5 +1,6 @@
 import { schoolExternalToolFactory } from '@shared/testing/factory';
-import { toolConfigurationStatusResponseFactory } from '@shared/testing/factory/tool-configuration-status-response.factory';
+import { schoolToolConfigurationStatusFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool-configuration-status.factory';
+import { schoolToolConfigurationStatusResponseFactory } from '@shared/testing/factory/school-tool-configuration-status-response.factory';
 import { SchoolExternalToolResponse, SchoolExternalToolSearchListResponse } from '../controller/dto';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolResponseMapper } from './school-external-tool-response.mapper';
@@ -52,8 +53,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 									value: do1.parameters[0].value,
 								},
 							],
-							status: toolConfigurationStatusResponseFactory.build({
-								isOutdatedOnScopeContext: false,
+							status: schoolToolConfigurationStatusResponseFactory.build({
 								isOutdatedOnScopeSchool: false,
 							}),
 						},
@@ -69,8 +69,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 									value: do2.parameters[0].value,
 								},
 							],
-							status: toolConfigurationStatusResponseFactory.build({
-								isOutdatedOnScopeContext: false,
+							status: schoolToolConfigurationStatusFactory.build({
 								isOutdatedOnScopeSchool: false,
 							}),
 						},
@@ -104,8 +103,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 					expect.objectContaining({
 						id: '',
 						name: '',
-						status: toolConfigurationStatusResponseFactory.build({
-							isOutdatedOnScopeContext: false,
+						status: schoolToolConfigurationStatusResponseFactory.build({
 							isOutdatedOnScopeSchool: false,
 						}),
 					})

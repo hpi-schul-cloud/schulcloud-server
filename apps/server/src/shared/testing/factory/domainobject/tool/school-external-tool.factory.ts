@@ -2,7 +2,7 @@ import { CustomParameterEntry } from '@modules/tool/common/domain';
 import { SchoolExternalTool, SchoolExternalToolProps } from '@modules/tool/school-external-tool/domain';
 import { DeepPartial } from 'fishery';
 import { DoBaseFactory } from '../do-base.factory';
-import { toolConfigurationStatusFactory } from './tool-configuration-status.factory';
+import { schoolToolConfigurationStatusFactory } from './school-external-tool-configuration-status.factory';
 
 class SchoolExternalToolFactory extends DoBaseFactory<SchoolExternalTool, SchoolExternalToolProps> {
 	withSchoolId(schoolId: string): this {
@@ -25,6 +25,6 @@ export const schoolExternalToolFactory = SchoolExternalToolFactory.define(School
 			}),
 		],
 		toolId: 'toolId',
-		status: toolConfigurationStatusFactory.build(),
+		status: schoolToolConfigurationStatusFactory.build(),
 	};
 });

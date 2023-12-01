@@ -1,9 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ToolConfigurationStatusResponse {
-	@ApiProperty({ type: Boolean, description: 'Is the tool disabled for context?' })
-	isDisabled: boolean;
-
 	@ApiProperty({
 		type: Boolean,
 		description:
@@ -19,7 +16,6 @@ export class ToolConfigurationStatusResponse {
 	isOutdatedOnScopeContext: boolean;
 
 	constructor(props: ToolConfigurationStatusResponse) {
-		this.isDisabled = props.isDisabled;
 		this.isOutdatedOnScopeSchool = props.isOutdatedOnScopeSchool;
 		this.isOutdatedOnScopeContext = props.isOutdatedOnScopeContext;
 	}

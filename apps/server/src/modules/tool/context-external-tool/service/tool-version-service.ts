@@ -26,7 +26,6 @@ export class ToolVersionService {
 		// TODO N21-1337 remove if statement, when feature flag is removed
 		if (this.toolFeatures.toolStatusWithoutVersions) {
 			const configurationStatus: ToolConfigurationStatus = new ToolConfigurationStatus({
-				isDisabled: false,
 				isOutdatedOnScopeContext: false,
 				isOutdatedOnScopeSchool: false,
 			});

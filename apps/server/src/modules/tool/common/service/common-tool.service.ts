@@ -17,7 +17,6 @@ export class CommonToolService {
 		contextExternalTool: ContextExternalTool
 	): ToolConfigurationStatus {
 		const configurationStatus: ToolConfigurationStatus = new ToolConfigurationStatus({
-			isDisabled: false,
 			isOutdatedOnScopeContext: true,
 			isOutdatedOnScopeSchool: true,
 		});

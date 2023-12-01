@@ -4,7 +4,6 @@ import { ToolConfigurationStatus } from '../domain';
 export class ToolStatusResponseMapper {
 	static mapToResponse(status: ToolConfigurationStatus): ToolConfigurationStatusResponse {
 		const configurationStatus: ToolConfigurationStatusResponse = new ToolConfigurationStatusResponse({
-			isDisabled: status.isDisabled,
 			isOutdatedOnScopeSchool: status.isOutdatedOnScopeSchool,
 			isOutdatedOnScopeContext: status.isOutdatedOnScopeContext,
 		});

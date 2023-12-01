@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ToolConfigurationStatusResponse } from '../../../context-external-tool/controller/dto/tool-configuration-status.response';
 import { CustomParameterEntryResponse } from './custom-parameter-entry.response';
+import { SchoolToolConfigurationStatusResponse } from './school-external-tool-configuration.response';
 
 export class SchoolExternalToolResponse {
 	@ApiProperty()
@@ -21,8 +21,8 @@ export class SchoolExternalToolResponse {
 	@ApiProperty()
 	toolVersion: number;
 
-	@ApiProperty({ type: ToolConfigurationStatusResponse })
-	status: ToolConfigurationStatusResponse;
+	@ApiProperty({ type: SchoolToolConfigurationStatusResponse })
+	status: SchoolToolConfigurationStatusResponse;
 
 	@ApiPropertyOptional()
 	logoUrl?: string;
