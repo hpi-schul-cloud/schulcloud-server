@@ -2,23 +2,6 @@ import { ToolContextType } from '../../common/enum';
 import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
 
 describe('RestrictedContextMismatchLoggable', () => {
-	describe('constructor', () => {
-		const setup = () => {
-			const externalToolName = 'name';
-			const context: ToolContextType = ToolContextType.COURSE;
-
-			return { externalToolName, context };
-		};
-
-		it('should create an instance of RestrictedContextMismatchLoggable', () => {
-			const { externalToolName, context } = setup();
-
-			const loggable = new RestrictedContextMismatchLoggable(externalToolName, context);
-
-			expect(loggable).toBeInstanceOf(RestrictedContextMismatchLoggable);
-		});
-	});
-
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const externalToolName = 'name';

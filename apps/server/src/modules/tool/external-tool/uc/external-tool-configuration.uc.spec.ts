@@ -2,7 +2,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Page, Permission, User } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject';
+import { Permission } from '@shared/domain/interface';
 import {
 	contextExternalToolFactory,
 	customParameterFactory,
@@ -12,6 +13,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { User } from '@shared/domain/entity';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../../context-external-tool/domain';

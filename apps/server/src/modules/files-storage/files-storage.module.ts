@@ -1,13 +1,13 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
-import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { Module, NotFoundException } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { ALL_ENTITIES } from '@shared/domain';
 import { AntivirusModule } from '@infra/antivirus';
 import { PreviewGeneratorProducerModule } from '@infra/preview-generator';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
+import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
+import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
+import { Module, NotFoundException } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { FileRecord, FileRecordSecurityCheck } from './entity';

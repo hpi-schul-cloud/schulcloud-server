@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, Page } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import {
 	contextExternalToolFactory,
 	customParameterFactory,

@@ -1,22 +1,22 @@
-import { DynamicModule, Module } from '@nestjs/common';
-import { ALL_ENTITIES } from '@shared/domain';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
-import { CoreModule } from '@src/core';
-import { LoggerModule } from '@src/core/logger';
 import { AuthenticationModule } from '@modules/authentication';
+import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
 import { UserModule } from '@modules/user';
-import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
+import { DynamicModule, Module } from '@nestjs/common';
+import { ALL_ENTITIES } from '@shared/domain/entity';
+import { CoreModule } from '@src/core';
+import { LoggerModule } from '@src/core/logger';
+import { H5PEditorController } from './controller';
+import { H5PContent } from './entity';
+import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
 import { H5PEditorModule } from './h5p-editor.module';
+import { H5PAjaxEndpointProvider, H5PEditorProvider, H5PPlayerProvider } from './provider';
 import { H5PContentRepo, LibraryRepo, TemporaryFileRepo } from './repo';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from './service';
 import { H5PEditorUc } from './uc/h5p.uc';
-import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
-import { H5PEditorController } from './controller';
-import { H5PEditorProvider, H5PAjaxEndpointProvider, H5PPlayerProvider } from './provider';
-import { H5PContent } from './entity';
 
 const imports = [
 	H5PEditorModule,

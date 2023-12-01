@@ -2,8 +2,8 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthConfigEntity, SchoolEntity, SystemEntity } from '@shared/domain';
-import { schoolFactory, systemEntityFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { OauthConfigEntity, SchoolEntity, SystemEntity } from '@shared/domain/entity';
+import { TestApiClient, UserAndAccountTestFactory, schoolFactory, systemEntityFactory } from '@shared/testing';
 import { Response } from 'supertest';
 import { PublicSystemListResponse, PublicSystemResponse } from '../dto';
 

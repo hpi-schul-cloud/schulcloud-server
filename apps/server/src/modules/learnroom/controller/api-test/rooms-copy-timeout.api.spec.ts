@@ -6,7 +6,7 @@ import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	courseFactory,

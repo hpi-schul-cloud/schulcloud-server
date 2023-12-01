@@ -10,7 +10,7 @@ import {
 } from '@shared/testing/factory/domainobject';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Permission } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 import { ToolContextType } from '../../common/enum';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextExternalTool, ContextRef } from '../domain';
@@ -333,9 +333,7 @@ describe('ContextExternalToolService', () => {
 			it('should not throw', async () => {
 				const { contextExternalTool } = setup();
 
-				const func = async () => service.checkContextRestrictions(contextExternalTool);
-
-				await expect(func()).resolves.not.toThrow();
+				await expect(service.checkContextRestrictions(contextExternalTool)).resolves.not.toThrow();
 			});
 		});
 
@@ -352,6 +350,7 @@ describe('ContextExternalToolService', () => {
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
+				commonToolService.isContextRestricted.mockReturnValueOnce(false);
 
 				return {
 					userId,
@@ -363,9 +362,7 @@ describe('ContextExternalToolService', () => {
 			it('should not throw', async () => {
 				const { contextExternalTool } = setup();
 
-				const func = async () => service.checkContextRestrictions(contextExternalTool);
-
-				await expect(func()).resolves.not.toThrow();
+				await expect(service.checkContextRestrictions(contextExternalTool)).resolves.not.toThrow();
 			});
 		});
 

@@ -1,8 +1,10 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { EntityId, Permission, User } from '@shared/domain';
-import { Page } from '@shared/domain/domainobject/page';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { Page } from '@shared/domain/domainobject/page';
+import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
+import { User } from '@shared/domain/entity';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../../context-external-tool/domain';

@@ -1,4 +1,4 @@
-import { Card } from '@shared/domain';
+import { Card } from '@shared/domain/domainobject';
 import { CardResponse, TimestampsResponse, VisibilitySettingsResponse } from '../dto';
 import { ContentElementResponseFactory } from './content-element-response.factory';
 
