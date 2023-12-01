@@ -276,7 +276,7 @@ describe('ToolContextController (API)', () => {
 				};
 			};
 
-			it('should return forbidden', async () => {
+			it('should return unprocessable entity', async () => {
 				const { postParams, loggedInClient } = await setup();
 
 				const response = await loggedInClient.post().send(postParams);

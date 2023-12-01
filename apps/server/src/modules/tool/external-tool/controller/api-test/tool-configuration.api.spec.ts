@@ -1,7 +1,6 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
-import { CustomParameterTypeParams } from '@modules/tool/common/enum';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, Board, Course, SchoolEntity, User } from '@shared/domain/entity';

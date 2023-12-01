@@ -14,7 +14,7 @@ import { CommonToolService } from '../../common/service';
 export class ExternalToolConfigurationService {
 	constructor(
 		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
-		private readonly commonTooLService: CommonToolService
+		private readonly commonToolService: CommonToolService
 	) {}
 
 	public filterForAvailableTools(externalTools: Page<ExternalTool>, toolIdsInUse: EntityId[]): ExternalTool[] {
@@ -84,7 +84,7 @@ export class ExternalToolConfigurationService {
 		contextType: ToolContextType
 	): ContextExternalToolTemplateInfo[] {
 		const availableToolsForContext: ContextExternalToolTemplateInfo[] = availableTools.filter(
-			(availableTool) => !this.commonTooLService.isContextRestricted(availableTool.externalTool, contextType)
+			(availableTool) => !this.commonToolService.isContextRestricted(availableTool.externalTool, contextType)
 		);
 		return availableToolsForContext;
 	}

@@ -14,9 +14,10 @@ import {
 	externalToolEntityFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
+	customParameterFactory,
 } from '@shared/testing';
 import { Response } from 'supertest';
-import { ToolConfigType } from '../../../common/enum';
+import { CustomParameterLocation, CustomParameterScope, ToolConfigType } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';

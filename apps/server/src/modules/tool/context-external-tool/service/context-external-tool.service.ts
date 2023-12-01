@@ -25,13 +25,13 @@ export class ContextExternalToolService {
 		return contextExternalTools;
 	}
 
-	async findByIdOrFail(contextExternalToolId: EntityId): Promise<ContextExternalTool> {
+	public async findByIdOrFail(contextExternalToolId: EntityId): Promise<ContextExternalTool> {
 		const tool: ContextExternalTool = await this.contextExternalToolRepo.findById(contextExternalToolId);
 
 		return tool;
 	}
 
-	async findById(contextExternalToolId: EntityId): Promise<ContextExternalTool | null> {
+	public async findById(contextExternalToolId: EntityId): Promise<ContextExternalTool | null> {
 		const tool: ContextExternalTool | null = await this.contextExternalToolRepo.findByIdOrNull(contextExternalToolId);
 
 		return tool;
