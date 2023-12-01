@@ -13,7 +13,6 @@ import { HydraOauthUc } from '.';
 import { AuthorizationParams } from '../controller/dto';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
 import { OAuthTokenDto } from '../interface';
-import { OAuthSSOError } from '../loggable';
 
 class HydraOauthUcSpec extends HydraOauthUc {
 	public validateStatusSpec = (status: number) => this.validateStatus(status);
@@ -35,7 +34,6 @@ describe('HydraOauthUc', () => {
 	};
 
 	const JWTMock = 'jwtMock';
-	const userIdMock = 'userIdMock';
 	const oauthClientId = 'oauthClientIdMock';
 	const hydraUri = 'hydraUri';
 	const apiHost = 'apiHost';
@@ -198,7 +196,7 @@ describe('HydraOauthUc', () => {
 			hydraOauthService.processRedirect.mockResolvedValueOnce(responseDto1);
 			hydraOauthService.processRedirect.mockResolvedValueOnce(responseDto2);
 
-			const authParams: AuthorizationParams = await uc.requestAuthCode(userIdMock, JWTMock, oauthClientId);
+			const authParams: AuthorizationParams = await uc.requestAuthCode(JWTMock, oauthClientId);
 
 			expect(authParams).toStrictEqual(expectedAuthParams);
 			expect(hydraOauthService.processRedirect).toBeCalledTimes(2);
@@ -211,9 +209,7 @@ describe('HydraOauthUc', () => {
 				return Promise.resolve(dto);
 			});
 
-			await expect(uc.requestAuthCode(userIdMock, JWTMock, oauthClientId)).rejects.toThrow(
-				InternalServerErrorException
-			);
+			await expect(uc.requestAuthCode(JWTMock, oauthClientId)).rejects.toThrow(InternalServerErrorException);
 		});
 	});
 

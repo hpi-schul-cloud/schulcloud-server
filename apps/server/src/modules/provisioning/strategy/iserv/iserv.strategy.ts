@@ -1,5 +1,4 @@
 import { LegacySchoolService } from '@modules/legacy-school';
-import { OAuthSSOError } from '@modules/oauth/loggable';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
@@ -7,6 +6,8 @@ import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { IdTokenExtractionFailureLoggableException } from '../../../oauth/loggable';
+import { IdTokenUserNotFoundLoggableException } from '../../../oauth/loggable/id-token-user-not-found-loggable-exception';
 import {
 	ExternalSchoolDto,
 	ExternalUserDto,
@@ -31,7 +32,7 @@ export class IservProvisioningStrategy extends ProvisioningStrategy {
 		const idToken: JwtPayload | null = jwt.decode(input.idToken, { json: true });
 
 		if (!idToken || !idToken.uuid) {
-			throw new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem');
+			throw new IdTokenExtractionFailureLoggableException('uuid');
 		}
 
 		const ldapUser: UserDO | null = await this.userService.findByExternalId(
@@ -40,10 +41,7 @@ export class IservProvisioningStrategy extends ProvisioningStrategy {
 		);
 		if (!ldapUser) {
 			const additionalInfo: string = await this.getAdditionalErrorInfo(idToken.email as string | undefined);
-			throw new OAuthSSOError(
-				`Failed to find user with Id ${idToken.uuid as string}${additionalInfo}`,
-				'sso_user_notfound'
-			);
+			throw new IdTokenUserNotFoundLoggableException(idToken?.uuid as string, additionalInfo);
 		}
 
 		const ldapSchool: LegacySchoolDo = await this.schoolService.getSchoolById(ldapUser.schoolId);
