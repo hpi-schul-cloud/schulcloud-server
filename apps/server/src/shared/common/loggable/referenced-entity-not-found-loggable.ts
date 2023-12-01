@@ -3,18 +3,20 @@ import { EntityId } from '../../domain/types';
 
 export class ReferencedEntityNotFoundLoggable implements Loggable {
 	constructor(
-		private readonly referencedId: EntityId,
 		private readonly sourceEntityName: string,
-		private readonly sourceId: EntityId
+		private readonly sourceEntityId: EntityId,
+		private readonly referencedEntityName: string,
+		private readonly referencedEntityId: EntityId
 	) {}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			message: 'The requested entity could not been found, but it is still referenced.',
 			data: {
-				userId: this.referencedId,
-				entityName: this.sourceEntityName,
-				entityId: this.sourceId,
+				referencedEntityName: this.referencedEntityName,
+				referencedEntityId: this.referencedEntityId,
+				sourceEntityName: this.sourceEntityName,
+				sourceEntityId: this.sourceEntityId,
 			},
 		};
 	}
