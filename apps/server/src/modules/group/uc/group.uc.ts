@@ -198,23 +198,14 @@ export class GroupUc {
 	): Promise<ClassInfoDto[]> {
 		const classInfosFromClasses = await Promise.all(
 			filteredClassesForSchoolYear.map(async (classWithSchoolYear): Promise<ClassInfoDto> => {
-				let teachers: UserDO[] = await Promise.all(
-					classWithSchoolYear.clazz.teacherIds.map(async (teacherId: EntityId) => {
-						const teacher: UserDO | null = await this.userService.findByIdOrNull(teacherId);
-						if (!teacher) {
-							this.logger.warning(
-								new ReferencedEntityNotFoundLoggable(teacherId, 'classes', classWithSchoolYear.clazz.id)
-							);
-						}
-						return teacher as UserDO;
-					})
-				);
+				const { teacherIds } = classWithSchoolYear.clazz;
+				const teachers: UserDO[] = await this.getTeachersByIds(teacherIds, classWithSchoolYear);
 
-				teachers = teachers.filter(Boolean);
+				const filteredTeachers: UserDO[] = teachers.filter((teacher): teacher is UserDO => teacher !== null);
 
 				const mapped: ClassInfoDto = GroupUcMapper.mapClassToClassInfoDto(
 					classWithSchoolYear.clazz,
-					teachers,
+					filteredTeachers,
 					classWithSchoolYear.schoolYear
 				);
 
@@ -222,6 +213,25 @@ export class GroupUc {
 			})
 		);
 		return classInfosFromClasses;
+	}
+
+	private async getTeachersByIds(
+		teacherIds: EntityId[],
+		classWithSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }
+	): Promise<UserDO[]> {
+		const teacherPromises: Promise<UserDO | null>[] = teacherIds.map(async (teacherId: EntityId) => {
+			const teacher: UserDO | null = await this.userService.findByIdOrNull(teacherId);
+			if (!teacher) {
+				this.logger.warning(new ReferencedEntityNotFoundLoggable(teacherId, Class.name, classWithSchoolYear.clazz.id));
+			}
+			return teacher;
+		});
+
+		const teachers: UserDO[] = (await Promise.all(teacherPromises)).filter(
+			(teacher: UserDO | null): teacher is UserDO => teacher !== null
+		);
+
+		return teachers;
 	}
 
 	private async findGroupsOfTypeClassForSchool(schoolId: EntityId): Promise<ClassInfoDto[]> {
@@ -287,22 +297,26 @@ export class GroupUc {
 		const resolvedGroupUsersOrNull: (ResolvedGroupUser | null)[] = await Promise.all(
 			group.users.map(async (groupUser: GroupUser): Promise<ResolvedGroupUser | null> => {
 				const user: UserDO | null = await this.userService.findByIdOrNull(groupUser.userId);
-				let resolvedGroups: ResolvedGroupUser | null = null;
+				let resolvedGroup: ResolvedGroupUser | null = null;
+
 				if (!user) {
 					this.logger.warning(new ReferencedEntityNotFoundLoggable(groupUser.userId, 'groups', group.id));
 				} else {
 					const role: RoleDto = await this.roleService.findById(groupUser.roleId);
 
-					resolvedGroups = new ResolvedGroupUser({
+					resolvedGroup = new ResolvedGroupUser({
 						user,
 						role,
 					});
 				}
-				return resolvedGroups;
+
+				return resolvedGroup;
 			})
 		);
 
-		const resolvedGroupUsers: ResolvedGroupUser[] = resolvedGroupUsersOrNull.filter(Boolean) as ResolvedGroupUser[];
+		const resolvedGroupUsers: ResolvedGroupUser[] = resolvedGroupUsersOrNull.filter(
+			(resolvedGroupUser: ResolvedGroupUser | null): resolvedGroupUser is ResolvedGroupUser => resolvedGroupUser != null
+		);
 
 		return resolvedGroupUsers;
 	}
