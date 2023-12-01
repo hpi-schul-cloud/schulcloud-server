@@ -98,6 +98,7 @@ spec:
               namespaceSelector: {}
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
+{% if ANIT_AFFINITY_NODEPOOL_ENABLE is defined and ANIT_AFFINITY_NODEPOOL_ENABLE|bool %}
           - weight: 10
             podAffinityTerm:
               labelSelector:
@@ -106,7 +107,8 @@ spec:
                   operator: In
                   values:
                   - management-deployment
-              topologyKey: "cloud.ionos.com/nodepool-name"
+              topologyKey: {{ ANIT_AFFINITY_NODEPOOL_TOPOLOGY_KEY }}
+{% endif %}
           - weight: 20
             podAffinityTerm:
               labelSelector:
