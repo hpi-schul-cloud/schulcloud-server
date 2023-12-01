@@ -47,7 +47,7 @@ export class CommonCartridgeLtiResource implements CommonCartridgeResource {
 		});
 	}
 
-	getManifestXml(): Record<string, unknown> {
+	getManifestXmlObject(): Record<string, unknown> {
 		return {
 			$: {
 				identifier: this.props.identifier,

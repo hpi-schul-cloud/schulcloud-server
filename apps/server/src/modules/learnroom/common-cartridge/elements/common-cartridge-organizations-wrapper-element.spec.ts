@@ -6,7 +6,7 @@ describe('CommonCartridgeOrganizationsWrapperElement', () => {
 		it('should return the correct xml object', () => {
 			const element = new CommonCartridgeOrganizationsWrapperElement([
 				{
-					getManifestXml: () => {
+					getManifestXmlObject: () => {
 						return {
 							$: {
 								identifier: 'identifier',
@@ -17,7 +17,7 @@ describe('CommonCartridgeOrganizationsWrapperElement', () => {
 				},
 			]);
 
-			expect(element.getManifestXml()).toStrictEqual({
+			expect(element.getManifestXmlObject()).toStrictEqual({
 				organization: [
 					{
 						$: {

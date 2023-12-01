@@ -28,18 +28,18 @@ export class CommonCartridgeManifestResource implements CommonCartridgeResource 
 	}
 
 	getFileContent(): string {
-		return this.xmlBuilder.buildObject(this.getManifestXml());
+		return this.xmlBuilder.buildObject(this.getManifestXmlObject());
 	}
 
-	getManifestXml(): Record<string, unknown> {
+	getManifestXmlObject(): Record<string, unknown> {
 		return {
 			manifest: {
 				$: this.getXmlNamespacesByVersion(),
-				metadata: this.props.metadata.getManifestXml(),
+				metadata: this.props.metadata.getManifestXmlObject(),
 				organizations: new CommonCartridgeOrganizationsWrapperElement(
 					this.props.organizations
-				).getManifestXml(),
-				resources: new CommonCartridgeResourcesWrapperElement(this.props.resources).getManifestXml(),
+				).getManifestXmlObject(),
+				resources: new CommonCartridgeResourcesWrapperElement(this.props.resources).getManifestXmlObject(),
 			},
 		};
 	}

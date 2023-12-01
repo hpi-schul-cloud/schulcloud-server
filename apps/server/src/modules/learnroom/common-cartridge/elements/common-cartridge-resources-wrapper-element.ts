@@ -3,11 +3,11 @@ import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.i
 export class CommonCartridgeResourcesWrapperElement implements CommonCartridgeElement {
 	constructor(private readonly items: CommonCartridgeElement[]) {}
 
-	getManifestXml(): Record<string, unknown> {
+	getManifestXmlObject(): Record<string, unknown> {
 		return {
 			resources: [
 				{
-					resource: this.items.map((items) => items.getManifestXml()),
+					resource: this.items.map((items) => items.getManifestXmlObject()),
 				},
 			],
 		};

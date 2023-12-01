@@ -9,7 +9,7 @@ describe('CommonCartridgeOrganizationElement', () => {
 				title: 'title',
 				items: [
 					{
-						getManifestXml: () => {
+						getManifestXmlObject: () => {
 							return {
 								$: {
 									identifier: 'identifier',
@@ -21,7 +21,7 @@ describe('CommonCartridgeOrganizationElement', () => {
 				],
 			});
 
-			expect(element.getManifestXml()).toStrictEqual({
+			expect(element.getManifestXmlObject()).toStrictEqual({
 				$: {
 					identifier: 'identifier',
 				},

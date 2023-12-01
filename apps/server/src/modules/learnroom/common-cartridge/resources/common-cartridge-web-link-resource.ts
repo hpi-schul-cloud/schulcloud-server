@@ -38,7 +38,7 @@ export class CommonCartridgeWebLinkResource implements CommonCartridgeResource {
 		});
 	}
 
-	getManifestXml(): Record<string, unknown> {
+	getManifestXmlObject(): Record<string, unknown> {
 		return {
 			$: {
 				identifier: this.props.identifier,

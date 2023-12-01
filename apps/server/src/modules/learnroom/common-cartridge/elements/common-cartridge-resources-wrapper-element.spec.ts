@@ -6,7 +6,7 @@ describe('CommonCartridgeResourcesWrapperElement', () => {
 		it('should return the correct xml object', () => {
 			const element = new CommonCartridgeResourcesWrapperElement([
 				{
-					getManifestXml: () => {
+					getManifestXmlObject: () => {
 						return {
 							$: {
 								identifier: 'identifier',
@@ -17,7 +17,7 @@ describe('CommonCartridgeResourcesWrapperElement', () => {
 				},
 			]);
 
-			expect(element.getManifestXml()).toStrictEqual({
+			expect(element.getManifestXmlObject()).toStrictEqual({
 				resources: [
 					{
 						resource: [

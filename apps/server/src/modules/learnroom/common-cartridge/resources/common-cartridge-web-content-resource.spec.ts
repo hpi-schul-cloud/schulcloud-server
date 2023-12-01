@@ -74,7 +74,7 @@ describe('CommonCartridgeWebContentResource', () => {
 	describe('getManifestXml', () => {
 		describe('when common cartridge version 1.1', () => {
 			it('should return manifest xml content regarding version 1.1', () => {
-				const transformed = webContentResourceVersion1.getManifestXml();
+				const transformed = webContentResourceVersion1.getManifestXmlObject();
 				expect(transformed).toStrictEqual({
 					$: {
 						identifier: propsVersion1.identifier,
@@ -92,7 +92,7 @@ describe('CommonCartridgeWebContentResource', () => {
 
 		describe('when common cartridge version 1.3', () => {
 			it('should return manifest xml content regarding version 1.3', () => {
-				const transformed = webContentResourceVersion3.getManifestXml();
+				const transformed = webContentResourceVersion3.getManifestXmlObject();
 				expect(transformed).toStrictEqual({
 					$: {
 						identifier: propsVersion3.identifier,

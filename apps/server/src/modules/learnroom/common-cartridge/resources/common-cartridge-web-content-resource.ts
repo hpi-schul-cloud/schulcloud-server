@@ -30,7 +30,7 @@ export class CommonCartridgeWebContentResource implements CommonCartridgeResourc
 		return this.props.html;
 	}
 
-	getManifestXml(): Record<string, unknown> {
+	getManifestXmlObject(): Record<string, unknown> {
 		return {
 			$: {
 				identifier: this.props.identifier,

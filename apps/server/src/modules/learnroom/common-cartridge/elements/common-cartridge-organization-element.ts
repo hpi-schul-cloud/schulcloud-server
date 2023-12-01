@@ -9,13 +9,13 @@ type CommonCartridgeOrganizationElementProps = {
 export class CommonCartridgeOrganizationElement implements CommonCartridgeElement {
 	constructor(private readonly props: CommonCartridgeOrganizationElementProps) {}
 
-	getManifestXml(): Record<string, unknown> {
+	getManifestXmlObject(): Record<string, unknown> {
 		return {
 			$: {
 				identifier: this.props.identifier,
 			},
 			title: this.props.title,
-			item: this.props.items.map((item) => item.getManifestXml()),
+			item: this.props.items.map((item) => item.getManifestXmlObject()),
 		};
 	}
 }

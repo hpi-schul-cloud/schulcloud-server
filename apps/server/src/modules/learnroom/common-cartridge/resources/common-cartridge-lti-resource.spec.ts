@@ -109,7 +109,7 @@ describe('CommonCartridgeLtiResource', () => {
 	describe('getManifestXml', () => {
 		describe('when common cartridge version 1.1', () => {
 			it('should return manifest xml content regarding version 1.1', () => {
-				const transformed = ltiResourceVersion1.getManifestXml();
+				const transformed = ltiResourceVersion1.getManifestXmlObject();
 
 				expect(transformed).toEqual({
 					$: {
@@ -127,7 +127,7 @@ describe('CommonCartridgeLtiResource', () => {
 
 		describe('when common cartridge version 1.3', () => {
 			it('should return manifest xml content regarding version 1.3', () => {
-				const transformed = ltiResourceVersion3.getManifestXml();
+				const transformed = ltiResourceVersion3.getManifestXmlObject();
 
 				expect(transformed).toEqual({
 					$: {

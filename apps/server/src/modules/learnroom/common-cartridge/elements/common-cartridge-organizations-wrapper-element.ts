@@ -3,7 +3,7 @@ import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.i
 export class CommonCartridgeOrganizationsWrapperElement implements CommonCartridgeElement {
 	constructor(private readonly items: CommonCartridgeElement[]) {}
 
-	getManifestXml(): Record<string, unknown> {
+	getManifestXmlObject(): Record<string, unknown> {
 		return {
 			organization: [
 				{
@@ -16,7 +16,7 @@ export class CommonCartridgeOrganizationsWrapperElement implements CommonCartrid
 							$: {
 								identifier: 'LearningModules',
 							},
-							item: this.items.map((items) => items.getManifestXml()),
+							item: this.items.map((items) => items.getManifestXmlObject()),
 						},
 					],
 				},
