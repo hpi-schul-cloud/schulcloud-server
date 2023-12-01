@@ -6,7 +6,7 @@ import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.i
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
 import { createVersionNotSupportedError } from '../utils';
 
-type CommonCartridgeManifestElementProps = {
+export type CommonCartridgeManifestElementProps = {
 	version: CommonCartridgeVersion;
 	identifier: string;
 	metadata: CommonCartridgeElement;
