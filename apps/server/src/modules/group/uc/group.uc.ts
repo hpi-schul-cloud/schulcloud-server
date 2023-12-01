@@ -219,13 +219,17 @@ export class GroupUc {
 		teacherIds: EntityId[],
 		classWithSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }
 	): Promise<UserDO[]> {
-		const teacherPromises: Promise<UserDO | null>[] = teacherIds.map(async (teacherId: EntityId) => {
-			const teacher: UserDO | null = await this.userService.findByIdOrNull(teacherId);
-			if (!teacher) {
-				this.logger.warning(new ReferencedEntityNotFoundLoggable(teacherId, Class.name, classWithSchoolYear.clazz.id));
+		const teacherPromises: Promise<UserDO | null>[] = teacherIds.map(
+			async (teacherId: EntityId): Promise<UserDO | null> => {
+				const teacher: UserDO | null = await this.userService.findByIdOrNull(teacherId);
+				if (!teacher) {
+					this.logger.warning(
+						new ReferencedEntityNotFoundLoggable(teacherId, Class.name, classWithSchoolYear.clazz.id)
+					);
+				}
+				return teacher;
 			}
-			return teacher;
-		});
+		);
 
 		const teachers: UserDO[] = (await Promise.all(teacherPromises)).filter(
 			(teacher: UserDO | null): teacher is UserDO => teacher !== null
