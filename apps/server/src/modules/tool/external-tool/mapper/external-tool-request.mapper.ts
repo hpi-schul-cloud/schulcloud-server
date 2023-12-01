@@ -81,6 +81,7 @@ export class ExternalToolRequestMapper {
 			isHidden: externalToolUpdateParams.isHidden,
 			openNewTab: externalToolUpdateParams.openNewTab,
 			version,
+			restrictToContexts: externalToolUpdateParams.restrictToContexts,
 		};
 	}
 
@@ -107,6 +108,7 @@ export class ExternalToolRequestMapper {
 			isHidden: externalToolCreateParams.isHidden,
 			openNewTab: externalToolCreateParams.openNewTab,
 			version,
+			restrictToContexts: externalToolCreateParams.restrictToContexts,
 		};
 	}
 

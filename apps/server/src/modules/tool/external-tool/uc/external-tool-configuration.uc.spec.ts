@@ -1,9 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AuthorizationContextBuilder } from '@modules/authorization';
 import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-
 import { Page } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import {
@@ -12,7 +10,10 @@ import {
 	externalToolFactory,
 	schoolExternalToolFactory,
 	setupEntities,
+	userFactory,
 } from '@shared/testing';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { User } from '@shared/domain/entity';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -33,6 +34,7 @@ describe('ExternalToolConfigurationUc', () => {
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let toolPermissionHelper: DeepMocked<ToolPermissionHelper>;
 	let logoService: DeepMocked<ExternalToolLogoService>;
+	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -64,6 +66,10 @@ describe('ExternalToolConfigurationUc', () => {
 					provide: ExternalToolLogoService,
 					useValue: createMock<ExternalToolLogoService>(),
 				},
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
 			],
 		}).compile();
 
@@ -74,6 +80,7 @@ describe('ExternalToolConfigurationUc', () => {
 		contextExternalToolService = module.get(ContextExternalToolService);
 		toolPermissionHelper = module.get(ToolPermissionHelper);
 		logoService = module.get(ExternalToolLogoService);
+		authorizationService = module.get(AuthorizationService);
 	});
 
 	afterEach(() => {
@@ -270,6 +277,9 @@ describe('ExternalToolConfigurationUc', () => {
 				externalToolConfigurationService.filterForAvailableExternalTools.mockReturnValue([
 					{ externalTool: usedTool, schoolExternalTool: usedSchoolExternalTool },
 				]);
+				externalToolConfigurationService.filterForContextRestrictions.mockReturnValue([
+					{ externalTool: usedTool, schoolExternalTool: usedSchoolExternalTool },
+				]);
 
 				return {
 					toolIds,
@@ -327,6 +337,17 @@ describe('ExternalToolConfigurationUc', () => {
 				);
 			});
 
+			it('should filter for restricted contexts', async () => {
+				const { usedTool, usedSchoolExternalTool } = setup();
+
+				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
+
+				expect(externalToolConfigurationService.filterForContextRestrictions).toHaveBeenCalledWith(
+					[{ externalTool: usedTool, schoolExternalTool: usedSchoolExternalTool }],
+					ToolContextType.COURSE
+				);
+			});
+
 			it('should call filterParametersForScope', async () => {
 				const { usedTool } = setup();
 
@@ -359,6 +380,7 @@ describe('ExternalToolConfigurationUc', () => {
 					unusedSchoolExternalTool,
 				]);
 				externalToolConfigurationService.filterForAvailableExternalTools.mockReturnValue([]);
+				externalToolConfigurationService.filterForContextRestrictions.mockReturnValue([]);
 
 				return {};
 			};
@@ -398,6 +420,9 @@ describe('ExternalToolConfigurationUc', () => {
 					usedSchoolExternalTool,
 				]);
 				externalToolConfigurationService.filterForAvailableExternalTools.mockReturnValue([
+					{ externalTool: usedTool, schoolExternalTool: usedSchoolExternalTool },
+				]);
+				externalToolConfigurationService.filterForContextRestrictions.mockReturnValue([
 					{ externalTool: usedTool, schoolExternalTool: usedSchoolExternalTool },
 				]);
 
@@ -649,6 +674,78 @@ describe('ExternalToolConfigurationUc', () => {
 				const result = uc.getTemplateForContextExternalTool('userId', contextExternalToolId);
 
 				await expect(result).rejects.toThrow(new NotFoundException('Could not find the Tool Template'));
+			});
+		});
+	});
+
+	describe('getToolContextTypes', () => {
+		describe('when it is called', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+				const user: User = userFactory.build();
+				user.id = userId;
+				const contextTypes: ToolContextType[] = Object.values(ToolContextType);
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.checkAllPermissions.mockReturnValueOnce();
+				externalToolConfigurationService.getToolContextTypes.mockReturnValueOnce(contextTypes);
+
+				return { userId, user, contextTypes };
+			};
+
+			it('should get User', async () => {
+				const { userId } = setup();
+
+				await uc.getToolContextTypes(userId);
+
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(userId);
+			});
+
+			it('should check Permission', async () => {
+				const { userId, user } = setup();
+
+				await uc.getToolContextTypes(userId);
+
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, ['TOOL_ADMIN']);
+			});
+
+			it('should get context types', async () => {
+				const { userId } = setup();
+
+				await uc.getToolContextTypes(userId);
+
+				expect(externalToolConfigurationService.getToolContextTypes).toHaveBeenCalled();
+			});
+
+			it('should return all context types', async () => {
+				const { userId } = setup();
+
+				const result = await uc.getToolContextTypes(userId);
+
+				expect(result).toEqual([ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT]);
+			});
+		});
+
+		describe('when user does not have enough Permission', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+				const user: User = userFactory.build();
+				user.id = userId;
+				const contextTypes: ToolContextType[] = Object.values(ToolContextType);
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.checkAllPermissions.mockImplementation(() => {
+					throw new UnauthorizedException();
+				});
+				externalToolConfigurationService.getToolContextTypes.mockReturnValueOnce(contextTypes);
+
+				return { userId };
+			};
+
+			it('should throw unauthorized', async () => {
+				const { userId } = setup();
+
+				await expect(uc.getToolContextTypes(userId)).rejects.toThrow(new UnauthorizedException());
 			});
 		});
 	});

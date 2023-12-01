@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextExternalTool } from '../../context-external-tool/domain';
+import { ToolContextType } from '../enum';
 import { ToolConfigurationStatus } from '../domain';
 import { ToolVersion } from '../interface';
 
@@ -11,7 +12,7 @@ export class CommonToolService {
 	/**
 	 * @deprecated use ToolVersionService
 	 */
-	determineToolConfigurationStatus(
+	public determineToolConfigurationStatus(
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
@@ -40,5 +41,12 @@ export class CommonToolService {
 
 	private isLatest(tool1: ToolVersion, tool2: ToolVersion): boolean {
 		return tool1.getVersion() >= tool2.getVersion();
+	}
+
+	public isContextRestricted(externalTool: ExternalTool, context: ToolContextType): boolean {
+		if (externalTool.restrictToContexts?.length && !externalTool.restrictToContexts.includes(context)) {
+			return true;
+		}
+		return false;
 	}
 }
