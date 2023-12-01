@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ToolConfigurationStatusResponse } from './tool-configuration-status.response';
+import { ToolConfigurationStatusResponse } from '../../../common/controller/dto/tool-configuration-status.response';
 
 export class ToolReferenceResponse {
 	@ApiProperty({ nullable: false, required: true, description: 'The id of the tool in the context' })

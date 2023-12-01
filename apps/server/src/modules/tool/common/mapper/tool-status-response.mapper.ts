@@ -1,4 +1,4 @@
-import { ToolConfigurationStatusResponse } from '../../context-external-tool/controller/dto';
+import { ToolConfigurationStatusResponse } from '../controller/dto/tool-configuration-status.response';
 import { ToolConfigurationStatus } from '../domain';
 
 export class ToolStatusResponseMapper {
