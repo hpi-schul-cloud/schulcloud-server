@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-h5p-proxy-configmap-files
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-h5p-proxy
+data:
+  default.conf: |
+    server {
+      listen       80;
+      server_name  localhost;
+
+      location / {
+        return 200 'it works!';
+      #  proxy_hide_header 'Access-Control-Allow-Origin';
+      #  add_header 'Access-Control-Allow-Origin' $http_origin;
+      #  proxy_pass https://{{ bettermarks_subdomain_apm }}.{{ bettermarks_domain }};
+      #  proxy_ssl_server_name on;
+      #  proxy_intercept_errors off;
+      #  proxy_cookie_domain .{{ bettermarks_domain }} .{{ bettermarks_proxy_maindomain }};
+      #  # Turn off gzip so that we can perform regex replacement
+      #  proxy_set_header Accept-Encoding "";
+      #  # Search for ORIGIN and replace with HOST
+      #  sub_filter {{ bettermarks_subdomain_apm }}.{{ bettermarks_domain }} {{ bettermarks_subdomain_apm }}.{{ bettermarks_proxy_maindomain }};
+      #  sub_filter .{{ bettermarks_domain }} .{{ bettermarks_proxy_maindomain }};
+      #  sub_filter_once off;
+      #  proxy_pass http://api-h5p-svc:4448;
+      }
