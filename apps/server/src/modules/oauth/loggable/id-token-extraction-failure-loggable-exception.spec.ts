@@ -14,8 +14,8 @@ describe(IdTokenExtractionFailureLoggableException.name, () => {
 			const logMessage = exception.getLogMessage();
 
 			expect(logMessage).toEqual({
-				type: 'SSO_ID_TOKEN_EXTRACTION',
-				message: 'Id Token could not be extracted from the token response',
+				type: 'SSO_JWT_PROBLEM',
+				message: 'Failed to extract field',
 				stack: exception.stack,
 				data: {
 					fieldName,
