@@ -3,7 +3,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder } from '@modules/authorization';
 import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Page, Permission } from '@shared/domain';
+
+import { Page } from '@shared/domain/domainobject';
+import { Permission } from '@shared/domain/interface';
 import {
 	contextExternalToolFactory,
 	customParameterFactory,

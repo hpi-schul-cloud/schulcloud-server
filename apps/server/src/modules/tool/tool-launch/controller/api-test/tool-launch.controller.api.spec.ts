@@ -1,26 +1,27 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, Permission, SchoolEntity } from '@shared/domain';
+import { Course, SchoolEntity } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	basicToolConfigFactory,
-	contextExternalToolFactory,
 	contextExternalToolEntityFactory,
+	contextExternalToolFactory,
 	courseFactory,
 	externalToolEntityFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@modules/server';
 import { Response } from 'supertest';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
-import { LaunchRequestMethod } from '../../types';
-import { ToolLaunchRequestResponse, ToolLaunchParams } from '../dto';
+import { ToolConfigType } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { ExternalToolEntity } from '../../../external-tool/entity';
-import { ToolConfigType } from '../../../common/enum';
+import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
+import { LaunchRequestMethod } from '../../types';
+import { ToolLaunchParams, ToolLaunchRequestResponse } from '../dto';
 
 describe('ToolLaunchController (API)', () => {
 	let app: INestApplication;

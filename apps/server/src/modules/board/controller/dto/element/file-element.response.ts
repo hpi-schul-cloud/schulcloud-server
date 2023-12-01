@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
-import { ContentElementType } from '@shared/domain';
+import { ContentElementType } from '@shared/domain/domainobject';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class FileElementContent {

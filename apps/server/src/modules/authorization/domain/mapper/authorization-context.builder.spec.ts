@@ -1,6 +1,6 @@
-import { Permission } from '@shared/domain';
-import { AuthorizationContextBuilder } from './authorization-context.builder';
+import { Permission } from '@shared/domain/interface';
 import { Action } from '../type';
+import { AuthorizationContextBuilder } from './authorization-context.builder';
 
 describe('AuthorizationContextBuilder', () => {
 	it('Should allow to set required permissions.', () => {

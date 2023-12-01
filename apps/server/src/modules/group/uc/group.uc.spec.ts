@@ -12,7 +12,9 @@ import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { LegacySchoolDo, Page, Permission, SchoolYearEntity, SortOrder, User, UserDO } from '@shared/domain';
+import { LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
+import { SchoolYearEntity, User } from '@shared/domain/entity';
+import { Permission, SortOrder } from '@shared/domain/interface';
 import {
 	groupFactory,
 	legacySchoolDoFactory,

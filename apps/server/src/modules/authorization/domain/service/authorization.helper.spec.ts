@@ -1,4 +1,4 @@
-import { Permission } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 import { courseFactory, roleFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { AuthorizationHelper } from './authorization.helper';
 

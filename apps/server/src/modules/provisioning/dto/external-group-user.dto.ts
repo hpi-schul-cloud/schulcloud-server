@@ -1,4 +1,4 @@
-import { RoleName } from '@shared/domain';
+import { RoleName } from '@shared/domain/interface';
 
 export class ExternalGroupUserDto {
 	externalUserId: string;

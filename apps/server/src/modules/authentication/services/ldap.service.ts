@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { SystemEntity } from '@shared/domain';
+import { SystemEntity } from '@shared/domain/entity';
 import { ErrorUtils } from '@src/core/error/utils';
 import { LegacyLogger } from '@src/core/logger';
 import { Client, createClient } from 'ldapjs';

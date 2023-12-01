@@ -1,20 +1,19 @@
-import { VideoConferenceRepo } from '@shared/repo';
+import { createMock } from '@golevelup/ts-jest';
+import { MongoMemoryDatabaseModule } from '@infra/database';
+import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { cleanupCollections } from '@shared/testing';
+import { VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
 import {
 	IVideoConferenceProperties,
 	TargetModels,
 	VideoConference,
-	VideoConferenceDO,
 	VideoConferenceOptions,
-	VideoConferenceOptionsDO,
-} from '@shared/domain';
-import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
-import { NotFoundError } from '@mikro-orm/core';
+} from '@shared/domain/entity';
 import { VideoConferenceScope } from '@shared/domain/interface';
-import { createMock } from '@golevelup/ts-jest';
+import { VideoConferenceRepo } from '@shared/repo';
+import { cleanupCollections } from '@shared/testing';
+import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
 import { LegacyLogger } from '@src/core/logger';
 
 class VideoConferenceRepoSpec extends VideoConferenceRepo {

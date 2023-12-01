@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { SchoolFeatures, UserLoginMigrationDO } from '@shared/domain';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { Injectable } from '@nestjs/common';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { SchoolFeatures } from '@shared/domain/entity';
 import { UserLoginMigrationService } from './user-login-migration.service';
 
 @Injectable()
