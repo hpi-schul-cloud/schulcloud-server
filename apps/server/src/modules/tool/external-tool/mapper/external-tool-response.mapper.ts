@@ -65,6 +65,7 @@ export class ExternalToolResponseMapper {
 			isHidden: externalTool.isHidden,
 			openNewTab: externalTool.openNewTab,
 			version: externalTool.version,
+			restrictToContexts: externalTool.restrictToContexts,
 		});
 	}
 

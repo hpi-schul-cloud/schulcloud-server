@@ -14,9 +14,10 @@ import {
 	externalToolEntityFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
+	customParameterFactory,
 } from '@shared/testing';
 import { Response } from 'supertest';
-import { ToolConfigType } from '../../../common/enum';
+import { CustomParameterLocation, CustomParameterScope, ToolConfigType } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
@@ -65,6 +66,18 @@ describe('ToolLaunchController (API)', () => {
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
 					version: 0,
+					parameters: [
+						customParameterFactory.build({
+							name: 'schoolMockParameter',
+							scope: CustomParameterScope.SCHOOL,
+							location: CustomParameterLocation.PATH,
+						}),
+						customParameterFactory.build({
+							name: 'contextMockParameter',
+							scope: CustomParameterScope.CONTEXT,
+							location: CustomParameterLocation.PATH,
+						}),
+					],
 				});
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					tool: externalToolEntity,

@@ -99,5 +99,27 @@
 		"isHidden": false,
 		"openNewTab": false,
 		"version": 2
+	},
+	{
+		"_id": {
+			"$oid": "644a4593d0a8301e6cf25d86"
+		},
+		"createdAt": {
+			"$date": "2023-04-27T09:51:15.592Z"
+		},
+		"updatedAt": {
+			"$date": "2023-04-27T09:51:15.592Z"
+		},
+		"name": "CY Test Tool Board-Element Restriction",
+		"url": "https://google.de/",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.de/",
+		"parameters": [],
+		"isHidden": false,
+		"openNewTab": true,
+		"version": 1,
+		"restrictToContexts": [
+			"board-element"
+		]
 	}
 ]
