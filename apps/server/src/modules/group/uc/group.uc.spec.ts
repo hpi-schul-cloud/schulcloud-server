@@ -735,8 +735,111 @@ describe('GroupUc', () => {
 		});
 
 		// TODO: test me
-		describe('when class has an user referenced which is not existing', () => {
-			const setup = () => {};
+		describe('when class has a user referenced which is not existing', () => {
+			const setup = () => {
+				const setup = () => {
+					const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+					const notFoundReferenceId = new ObjectId().toHexString();
+					const { studentUser } = UserAndAccountTestFactory.buildStudent();
+					const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+					const teacherRole: RoleDto = roleDtoFactory.buildWithId({
+						id: teacherUser.roles[0].id,
+						name: teacherUser.roles[0].name,
+					});
+					const studentRole: RoleDto = roleDtoFactory.buildWithId({
+						id: studentUser.roles[0].id,
+						name: studentUser.roles[0].name,
+					});
+
+					const teacherUserDo: UserDO = userDoFactory.buildWithId({
+						id: teacherUser.id,
+						lastName: teacherUser.lastName,
+						roles: [{ id: teacherUser.roles[0].id, name: teacherUser.roles[0].name }],
+					});
+					const studentUserDo: UserDO = userDoFactory.buildWithId({
+						id: studentUser.id,
+						lastName: studentUser.lastName,
+						roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
+					});
+
+					const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
+					const clazz: Class = classFactory.build({
+						name: 'A',
+						teacherIds: [teacherUser.id, notFoundReferenceId],
+						source: 'LDAP',
+						year: schoolYear.id,
+					});
+					const system: SystemDto = new SystemDto({
+						id: new ObjectId().toHexString(),
+						displayName: 'External System',
+						type: 'oauth2',
+					});
+					const group: Group = groupFactory.build({
+						name: 'B',
+						users: [
+							{ userId: teacherUser.id, roleId: teacherUser.roles[0].id },
+							{ userId: notFoundReferenceId, roleId: teacherUser.roles[0].id },
+						],
+						externalSource: undefined,
+					});
+
+					schoolService.getSchoolById.mockResolvedValueOnce(school);
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
+					authorizationService.hasAllPermissions.mockReturnValueOnce(false);
+					classService.findClassesForSchool.mockResolvedValueOnce([clazz]);
+					groupService.findClassesForSchool.mockResolvedValueOnce([group]);
+					systemService.findById.mockResolvedValue(system);
+
+					userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
+						if (userId === teacherUser.id) {
+							return Promise.resolve(teacherUserDo);
+						}
+
+						if (userId === studentUser.id) {
+							return Promise.resolve(studentUserDo);
+						}
+
+						throw new Error();
+					});
+					userService.findByIdOrNull.mockImplementation((userId: string): Promise<UserDO | null> => {
+						if (userId === teacherUser.id) {
+							return Promise.resolve(teacherUserDo);
+						}
+
+						if (userId === studentUser.id) {
+							return Promise.resolve(studentUserDo);
+						}
+
+						if (userId === notFoundReferenceId) {
+							return Promise.resolve(null);
+						}
+
+						throw new Error();
+					});
+					roleService.findById.mockImplementation((roleId: string): Promise<RoleDto> => {
+						if (roleId === teacherUser.roles[0].id) {
+							return Promise.resolve(teacherRole);
+						}
+
+						if (roleId === studentUser.roles[0].id) {
+							return Promise.resolve(studentRole);
+						}
+
+						throw new Error();
+					});
+					schoolYearService.findById.mockResolvedValue(schoolYear);
+
+					return {
+						teacherUser,
+						school,
+						clazz,
+						group,
+						system,
+						schoolYear,
+					};
+				};
+			};
 
 			it('should return class without missing user', async () => {});
 
