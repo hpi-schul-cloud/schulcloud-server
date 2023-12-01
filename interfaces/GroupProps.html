@@ -538,6 +538,10 @@ export class Group extends DomainObject&lt;GroupProps&gt; {
 		return this.props.users;
 	}
 
+	set users(value: GroupUser[]) {
+		this.props.users &#x3D; value;
+	}
+
 	get externalSource(): ExternalSource | undefined {
 		return this.props.externalSource;
 	}

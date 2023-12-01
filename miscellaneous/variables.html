@@ -401,6 +401,9 @@
                             <a href="#externalGroupDtoFactory" title="apps/server/src/shared/testing/factory/external-group-dto.factory.ts" ><b>externalGroupDtoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-group-dto.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#externalSchoolDtoFactory" title="apps/server/src/shared/testing/factory/external-school-dto.factory.ts" ><b>externalSchoolDtoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-school-dto.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#externalToolElementFactory" title="apps/server/src/shared/testing/factory/domainobject/board/external-tool-element.do.factory.ts" ><b>externalToolElementFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-element.do.factory.ts)</a>
                         </li>
                         <li>
@@ -6105,29 +6108,53 @@ it should ensure an empty result</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;ExternalGroupDto, ExternalGroupDto&gt;(
-	ExternalGroupDto,
-	({ sequence }) &#x3D;&gt; {
-		return {
-			externalId: new ObjectId().toHexString(),
-			name: &#x60;Group ${sequence}&#x60;,
-			type: GroupTypes.CLASS,
-			users: [
-				{
-					externalUserId: new ObjectId().toHexString(),
-					roleName: RoleName.TEACHER,
-				},
-				{
-					externalUserId: new ObjectId().toHexString(),
-					roleName: RoleName.STUDENT,
-				},
-			],
-			from: new Date(2023, 1),
-			until: new Date(2023, 6),
-			externalOrganizationId: new ObjectId().toHexString(),
-		};
-	}
-)</code>
+                        <i>Default value : </i><code>Factory.define&lt;ExternalGroupDto, ExternalGroupDto&gt;(({ sequence }) &#x3D;&gt; {
+	return {
+		externalId: new ObjectId().toHexString(),
+		name: &#x60;Group ${sequence}&#x60;,
+		type: GroupTypes.CLASS,
+		user: {
+			externalUserId: new ObjectId().toHexString(),
+			roleName: RoleName.TEACHER,
+		},
+		otherUsers: [
+			{
+				externalUserId: new ObjectId().toHexString(),
+				roleName: RoleName.STUDENT,
+			},
+		],
+		from: new Date(2023, 1),
+		until: new Date(2023, 6),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/external-school-dto.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="externalSchoolDtoFactory"></a>
+                    <span class="name">
+                        <span ><b>externalSchoolDtoFactory</b></span>
+                        <a href="#externalSchoolDtoFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Factory.define&lt;ExternalSchoolDto, ExternalSchoolDto&gt;(({ sequence }) &#x3D;&gt; {
+	return {
+		externalId: new ObjectId().toHexString(),
+		name: &#x60;External School ${sequence}&#x60;,
+	};
+})</code>
                     </td>
                 </tr>
 

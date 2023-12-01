@@ -151,22 +151,24 @@
                             </li>
                             <li>
                                     <span class="modifier">Optional</span>
-                                <a href="#externalOrganizationId" >externalOrganizationId</a>
-                            </li>
-                            <li>
                                 <a href="#from" >from</a>
                             </li>
                             <li>
                                 <a href="#name" >name</a>
                             </li>
                             <li>
+                                    <span class="modifier">Optional</span>
+                                <a href="#otherUsers" >otherUsers</a>
+                            </li>
+                            <li>
                                 <a href="#type" >type</a>
                             </li>
                             <li>
+                                    <span class="modifier">Optional</span>
                                 <a href="#until" >until</a>
                             </li>
                             <li>
-                                <a href="#users" >users</a>
+                                <a href="#user" >user</a>
                             </li>
                         </ul>
                     </td>
@@ -265,35 +267,9 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="externalOrganizationId"></a>
-                    <span class="name">
-                            <span class="modifier">Optional</span>
-                        <span ><b>externalOrganizationId</b></span>
-                        <a href="#externalOrganizationId"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/provisioning/dto/external-group.dto.ts:17</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="from"></a>
                     <span class="name">
+                            <span class="modifier">Optional</span>
                         <span ><b>from</b></span>
                         <a href="#from"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -307,7 +283,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/provisioning/dto/external-group.dto.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/provisioning/dto/external-group.dto.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -344,6 +320,33 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="otherUsers"></a>
+                    <span class="name">
+                            <span class="modifier">Optional</span>
+                        <span ><b>otherUsers</b></span>
+                        <a href="#otherUsers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../entitys/User.html" target="_self" >ExternalGroupUserDto[]</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/provisioning/dto/external-group.dto.ts:11</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="type"></a>
                     <span class="name">
                         <span ><b>type</b></span>
@@ -354,6 +357,33 @@
                 <tr>
                     <td class="col-md-4">
                         <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#GroupTypes" target="_self" >GroupTypes</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/provisioning/dto/external-group.dto.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="until"></a>
+                    <span class="name">
+                            <span class="modifier">Optional</span>
+                        <span ><b>until</b></span>
+                        <a href="#until"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
 
                     </td>
                 </tr>
@@ -370,42 +400,16 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="until"></a>
+                    <a name="user"></a>
                     <span class="name">
-                        <span ><b>until</b></span>
-                        <a href="#until"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>user</b></span>
+                        <a href="#user"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/provisioning/dto/external-group.dto.ts:13</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="users"></a>
-                    <span class="name">
-                        <span ><b>users</b></span>
-                        <a href="#users"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../entitys/User.html" target="_self" >ExternalGroupUserDto[]</a></code>
+                        <i>Type : </i>        <code><a href="../classes/ExternalGroupUserDto.html" target="_self" >ExternalGroupUserDto</a></code>
 
                     </td>
                 </tr>
@@ -438,24 +442,24 @@ export class ExternalGroupDto {
 
 	name: string;
 
-	users: ExternalGroupUserDto[];
+	user: ExternalGroupUserDto;
 
-	from: Date;
+	otherUsers?: ExternalGroupUserDto[];
 
-	until: Date;
+	from?: Date;
+
+	until?: Date;
 
 	type: GroupTypes;
-
-	externalOrganizationId?: string;
 
 	constructor(props: ExternalGroupDto) {
 		this.externalId &#x3D; props.externalId;
 		this.name &#x3D; props.name;
-		this.users &#x3D; props.users;
+		this.user &#x3D; props.user;
+		this.otherUsers &#x3D; props.otherUsers;
 		this.from &#x3D; props.from;
 		this.until &#x3D; props.until;
 		this.type &#x3D; props.type;
-		this.externalOrganizationId &#x3D; props.externalOrganizationId;
 	}
 }
 </code></pre>

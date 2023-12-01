@@ -174,7 +174,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(group: <a href="../classes/ExternalGroupDto.html" target="_self">ExternalGroupDto</a>)</code>
+<code>constructor(group: <a href="../classes/ExternalGroupDto.html" target="_self">ExternalGroupDto</a>, school: <a href="../classes/ExternalSchoolDto.html" target="_self">ExternalSchoolDto</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -201,6 +201,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../classes/ExternalGroupDto.html" target="_self" >ExternalGroupDto</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>school</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/ExternalSchoolDto.html" target="_self" >ExternalSchoolDto</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -271,17 +283,17 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
-import { ExternalGroupDto } from &#x27;../dto&#x27;;
+import { ExternalGroupDto, ExternalSchoolDto } from &#x27;../dto&#x27;;
 
 export class SchoolForGroupNotFoundLoggable implements Loggable {
-	constructor(private readonly group: ExternalGroupDto) {}
+	constructor(private readonly group: ExternalGroupDto, private readonly school: ExternalSchoolDto) {}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			message: &#x27;Unable to provision group, since the connected school cannot be found.&#x27;,
 			data: {
 				externalGroupId: this.group.externalId,
-				externalOrganizationId: this.group.externalOrganizationId,
+				externalOrganizationId: this.school.externalId,
 			},
 		};
 	}

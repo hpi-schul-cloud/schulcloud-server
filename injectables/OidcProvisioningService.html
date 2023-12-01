@@ -149,6 +149,11 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getGroupUser" >getGroupUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#getSchoolName" >getSchoolName</a>
                             </li>
                             <li>
@@ -340,8 +345,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="178"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:178</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="189"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:189</a></div>
                         </td>
                     </tr>
 
@@ -390,6 +395,88 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="../entitys/User.html" target="_self" >Promise&lt;GroupUser[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getGroupUser"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getGroupUser</b></span>
+                        <a href="#getGroupUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getGroupUser(externalGroupUser: <a href="../classes/ExternalGroupUserDto.html" target="_self">ExternalGroupUserDto</a>, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="206"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:206</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>externalGroupUser</td>
+                                            <td>
+                                                            <code><a href="../classes/ExternalGroupUserDto.html" target="_self" >ExternalGroupUserDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>systemId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/User.html" target="_self" >Promise&lt;GroupUser | null&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -483,7 +570,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>provisionExternalGroup(externalGroup: <a href="../classes/ExternalGroupDto.html" target="_self">ExternalGroupDto</a>, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>provisionExternalGroup(externalGroup: <a href="../classes/ExternalGroupDto.html" target="_self">ExternalGroupDto</a>, externalSchool: <a href="../classes/ExternalSchoolDto.html" target="_self">ExternalSchoolDto | undefined</a>, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -515,6 +602,18 @@
                                                 <td>externalGroup</td>
                                             <td>
                                                             <code><a href="../classes/ExternalGroupDto.html" target="_self" >ExternalGroupDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>externalSchool</td>
+                                            <td>
+                                                            <code><a href="../classes/ExternalSchoolDto.html" target="_self" >ExternalSchoolDto | undefined</a></code>
                                             </td>
 
                                             <td>
@@ -738,15 +837,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeExternalGroupsAndAffiliation(externalUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, externalGroups: <a href="../interfaces/Group.html" target="_self">ExternalGroupDto[]</a>, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>removeExternalGroupsAndAffiliation(externalUserId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalGroups: <a href="../interfaces/Group.html" target="_self">ExternalGroupDto[]</a>, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="203"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:203</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="223"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:223</a></div>
                         </td>
                     </tr>
 
@@ -769,7 +868,7 @@
                                         <tr>
                                                 <td>externalUserId</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
 
                                             <td>
@@ -954,35 +1053,33 @@ export class OidcProvisioningService {
 		return savedUser;
 	}
 
-	async provisionExternalGroup(externalGroup: ExternalGroupDto, systemId: EntityId): Promise&lt;void&gt; {
-		const existingGroup: Group | null &#x3D; await this.groupService.findByExternalSource(
-			externalGroup.externalId,
-			systemId
-		);
-
+	async provisionExternalGroup(
+		externalGroup: ExternalGroupDto,
+		externalSchool: ExternalSchoolDto | undefined,
+		systemId: EntityId
+	): Promise&lt;void&gt; {
 		let organizationId: string | undefined;
-		if (externalGroup.externalOrganizationId) {
+		if (externalSchool) {
 			const existingSchool: LegacySchoolDo | null &#x3D; await this.schoolService.getSchoolByExternalId(
-				externalGroup.externalOrganizationId,
+				externalSchool.externalId,
 				systemId
 			);
 
 			if (!existingSchool || !existingSchool.id) {
-				this.logger.info(new SchoolForGroupNotFoundLoggable(externalGroup));
+				this.logger.info(new SchoolForGroupNotFoundLoggable(externalGroup, externalSchool));
 				return;
 			}
 
 			organizationId &#x3D; existingSchool.id;
 		}
 
-		const users: GroupUser[] &#x3D; await this.getFilteredGroupUsers(externalGroup, systemId);
-
-		if (!users.length) {
-			return;
-		}
+		const existingGroup: Group | null &#x3D; await this.groupService.findByExternalSource(
+			externalGroup.externalId,
+			systemId
+		);
 
 		const group: Group &#x3D; new Group({
-			id: existingGroup ? existingGroup.id : new ObjectId().toHexString(),
+			id: existingGroup?.id ?? new ObjectId().toHexString(),
 			name: externalGroup.name,
 			externalSource: new ExternalSource({
 				externalId: externalGroup.externalId,
@@ -992,31 +1089,36 @@ export class OidcProvisioningService {
 			organizationId,
 			validFrom: externalGroup.from,
 			validUntil: externalGroup.until,
-			users: existingGroup ? existingGroup.users : [],
+			users: existingGroup?.users ?? [],
 		});
-		users.forEach((user: GroupUser) &#x3D;&gt; group.addUser(user));
+
+		if (externalGroup.otherUsers !&#x3D;&#x3D; undefined) {
+			const otherUsers: GroupUser[] &#x3D; await this.getFilteredGroupUsers(externalGroup, systemId);
+
+			group.users &#x3D; otherUsers;
+		}
+
+		const self: GroupUser | null &#x3D; await this.getGroupUser(externalGroup.user, systemId);
+
+		if (!self) {
+			throw new NotFoundLoggableException(UserDO.name, &#x27;externalId&#x27;, externalGroup.user.externalUserId);
+		}
+
+		group.addUser(self);
 
 		await this.groupService.save(group);
 	}
 
 	private async getFilteredGroupUsers(externalGroup: ExternalGroupDto, systemId: string): Promise&lt;GroupUser[]&gt; {
+		if (!externalGroup.otherUsers?.length) {
+			return [];
+		}
+
 		const users: (GroupUser | null)[] &#x3D; await Promise.all(
-			externalGroup.users.map(async (externalGroupUser: ExternalGroupUserDto): Promise&lt;GroupUser | null&gt; &#x3D;&gt; {
-				const user: UserDO | null &#x3D; await this.userService.findByExternalId(externalGroupUser.externalUserId, systemId);
-				const roles: RoleDto[] &#x3D; await this.roleService.findByNames([externalGroupUser.roleName]);
-
-				if (!user?.id || roles.length !&#x3D;&#x3D; 1 || !roles[0].id) {
-					this.logger.info(new UserForGroupNotFoundLoggable(externalGroupUser));
-					return null;
-				}
-
-				const groupUser: GroupUser &#x3D; new GroupUser({
-					userId: user.id,
-					roleId: roles[0].id,
-				});
-
-				return groupUser;
-			})
+			externalGroup.otherUsers.map(
+				async (externalGroupUser: ExternalGroupUserDto): Promise&lt;GroupUser | null&gt; &#x3D;&gt;
+					this.getGroupUser(externalGroupUser, systemId)
+			)
 		);
 
 		const filteredUsers: GroupUser[] &#x3D; users.filter((groupUser): groupUser is GroupUser &#x3D;&gt; groupUser !&#x3D;&#x3D; null);
@@ -1024,8 +1126,25 @@ export class OidcProvisioningService {
 		return filteredUsers;
 	}
 
+	private async getGroupUser(externalGroupUser: ExternalGroupUserDto, systemId: EntityId): Promise&lt;GroupUser | null&gt; {
+		const user: UserDO | null &#x3D; await this.userService.findByExternalId(externalGroupUser.externalUserId, systemId);
+		const roles: RoleDto[] &#x3D; await this.roleService.findByNames([externalGroupUser.roleName]);
+
+		if (!user?.id || roles.length !&#x3D;&#x3D; 1 || !roles[0].id) {
+			this.logger.info(new UserForGroupNotFoundLoggable(externalGroupUser));
+			return null;
+		}
+
+		const groupUser: GroupUser &#x3D; new GroupUser({
+			userId: user.id,
+			roleId: roles[0].id,
+		});
+
+		return groupUser;
+	}
+
 	async removeExternalGroupsAndAffiliation(
-		externalUserId: EntityId,
+		externalUserId: string,
 		externalGroups: ExternalGroupDto[],
 		systemId: EntityId
 	): Promise&lt;void&gt; {

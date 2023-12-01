@@ -4678,6 +4678,39 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/RpcMessageProducer.html" data-type="entity-link" >RpcMessageProducer</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SanisAnschriftResponse.html" data-type="entity-link" >SanisAnschriftResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SanisGeburtResponse.html" data-type="entity-link" >SanisGeburtResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SanisGruppenResponse.html" data-type="entity-link" >SanisGruppenResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SanisGruppenzugehoerigkeitResponse.html" data-type="entity-link" >SanisGruppenzugehoerigkeitResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SanisGruppeResponse.html" data-type="entity-link" >SanisGruppeResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SanisNameResponse.html" data-type="entity-link" >SanisNameResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SanisOrganisationResponse.html" data-type="entity-link" >SanisOrganisationResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SanisPersonenkontextResponse.html" data-type="entity-link" >SanisPersonenkontextResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SanisPersonResponse.html" data-type="entity-link" >SanisPersonResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SanisResponse.html" data-type="entity-link" >SanisResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SanisSonstigeGruppenzugehoerigeResponse.html" data-type="entity-link" >SanisSonstigeGruppenzugehoerigeResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SaveH5PEditorParams.html" data-type="entity-link" >SaveH5PEditorParams</a>
                             </li>
                             <li class="link">
@@ -5234,6 +5267,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/ValidationErrorDetailResponse.html" data-type="entity-link" >ValidationErrorDetailResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ValidationErrorLoggableException.html" data-type="entity-link" >ValidationErrorLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/VideoConference.html" data-type="entity-link" >VideoConference</a>
@@ -6697,42 +6733,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/S3Config-1.html" data-type="entity-link" >S3Config</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/SanisAnschriftResponse.html" data-type="entity-link" >SanisAnschriftResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/SanisGeburtResponse.html" data-type="entity-link" >SanisGeburtResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/SanisGruppenResponse.html" data-type="entity-link" >SanisGruppenResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/SanisGruppenzugehoerigkeitResponse.html" data-type="entity-link" >SanisGruppenzugehoerigkeitResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/SanisGruppeResponse.html" data-type="entity-link" >SanisGruppeResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/SanisLaufzeitResponse.html" data-type="entity-link" >SanisLaufzeitResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/SanisNameResponse.html" data-type="entity-link" >SanisNameResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/SanisOrganisationResponse.html" data-type="entity-link" >SanisOrganisationResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/SanisPersonenkontextResponse.html" data-type="entity-link" >SanisPersonenkontextResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/SanisPersonResponse.html" data-type="entity-link" >SanisPersonResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/SanisResponse.html" data-type="entity-link" >SanisResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/SanisSonstigeGruppenzugehoerigeResponse.html" data-type="entity-link" >SanisSonstigeGruppenzugehoerigeResponse</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/ScanResult.html" data-type="entity-link" >ScanResult</a>
