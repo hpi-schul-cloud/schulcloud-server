@@ -4,14 +4,15 @@ import { Class } from '@modules/class/domain';
 import { LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
-import { LegacySystemService, SystemDto } from '@modules/system';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
+import { ReferencedEntityNotFoundLoggable } from '@shared/common/loggable';
 import { LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
+import { LegacySystemService, SystemDto } from '@src/modules/system';
 import { SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupUser } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
@@ -19,7 +20,6 @@ import { GroupService } from '../service';
 import { SortHelper } from '../util';
 import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from './dto';
 import { GroupUcMapper } from './mapper/group-uc.mapper';
-import { MissingUserLoggable } from '../loggable/missing-user-loggable';
 
 @Injectable()
 export class GroupUc {
@@ -202,7 +202,9 @@ export class GroupUc {
 					classWithSchoolYear.clazz.teacherIds.map(async (teacherId: EntityId) => {
 						const teacher: UserDO | null = await this.userService.findByIdOrNull(teacherId);
 						if (!teacher) {
-							this.logger.warning(new MissingUserLoggable(teacherId, 'classes', classWithSchoolYear.clazz.id));
+							this.logger.warning(
+								new ReferencedEntityNotFoundLoggable(teacherId, 'classes', classWithSchoolYear.clazz.id)
+							);
 						}
 						return teacher as UserDO;
 					})
@@ -287,7 +289,7 @@ export class GroupUc {
 				const user: UserDO | null = await this.userService.findByIdOrNull(groupUser.userId);
 				let resolvedGroups: ResolvedGroupUser | null = null;
 				if (!user) {
-					this.logger.warning(new MissingUserLoggable(groupUser.userId, 'groups', group.id));
+					this.logger.warning(new ReferencedEntityNotFoundLoggable(groupUser.userId, 'groups', group.id));
 				} else {
 					const role: RoleDto = await this.roleService.findById(groupUser.roleId);
 

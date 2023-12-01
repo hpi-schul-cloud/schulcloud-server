@@ -5,10 +5,10 @@ import { RoleModule } from '@modules/role';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
+import { LoggerModule } from '@src/core/logger';
 import { GroupController } from './controller';
 import { GroupModule } from './group.module';
 import { GroupUc } from './uc';
-import { LoggerModule } from '../../core/logger';
 
 @Module({
 	imports: [

@@ -135,6 +135,42 @@ describe('UserService', () => {
 		});
 	});
 
+	describe('findByIdOrNull', () => {
+		describe('when a user with this id exists', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId();
+
+				userDORepo.findByIdOrNull.mockResolvedValue(user);
+
+				return {
+					user,
+				};
+			};
+
+			it('should return the user', async () => {
+				const { user } = setup();
+
+				const result: UserDO | null = await service.findByIdOrNull('id');
+
+				expect(result).toEqual(user);
+			});
+		});
+
+		describe('when a user with this id does not exist', () => {
+			const setup = () => {
+				userDORepo.findByIdOrNull.mockResolvedValue(null);
+			};
+
+			it('should return null', async () => {
+				setup();
+
+				const result: UserDO | null = await service.findByIdOrNull('id');
+
+				expect(result).toBeNull();
+			});
+		});
+	});
+
 	describe('getResolvedUser is called', () => {
 		describe('when a resolved user is requested', () => {
 			const setup = () => {

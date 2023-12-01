@@ -61,7 +61,7 @@ export class UserService {
 	}
 
 	public async findByIdOrNull(id: string): Promise<UserDO | null> {
-		const userDO = await this.userDORepo.findByIdOrNull(id, true);
+		const userDO: UserDO | null = await this.userDORepo.findByIdOrNull(id, true);
 
 		return userDO;
 	}

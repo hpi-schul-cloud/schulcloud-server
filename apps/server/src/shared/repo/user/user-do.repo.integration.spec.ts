@@ -522,4 +522,43 @@ describe('UserRepo', () => {
 			});
 		});
 	});
+
+	describe('findByIdOrNull', () => {
+		describe('when user not found', () => {
+			const setup = () => {
+				const id = new ObjectId().toHexString();
+
+				return { id };
+			};
+
+			it('should return null', async () => {
+				const { id } = setup();
+
+				const result: UserDO | null = await repo.findByIdOrNull(id);
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when user was found', () => {
+			const setup = async () => {
+				const user: User = userFactory.buildWithId();
+
+				await em.persistAndFlush(user);
+				em.clear();
+
+				return { user };
+			};
+
+			it('should return user', async () => {
+				const { user } = await setup();
+
+				return expect(repo.findByIdOrNull(user.id)).resolves.toEqual(
+					expect.objectContaining<Partial<UserDO>>({
+						id: user.id,
+					})
+				);
+			});
+		});
+	});
 });

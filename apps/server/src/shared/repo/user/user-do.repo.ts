@@ -58,7 +58,6 @@ export class UserDORepo extends BaseDORepo<UserDO, User, UserProperties> {
 		return this.mapEntityToDO(userEntity);
 	}
 
-	// TODO: test me
 	async findByIdOrNull(id: EntityId, populate = false): Promise<UserDO | null> {
 		const user: User | null = await this._em.findOne(this.entityName, id as FilterQuery<User>);
 

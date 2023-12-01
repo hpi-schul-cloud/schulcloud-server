@@ -733,6 +733,15 @@ describe('GroupUc', () => {
 				});
 			});
 		});
+
+		// TODO: test me
+		describe('when class has an user referenced which is not existing', () => {
+			const setup = () => {};
+
+			it('should return class without missing user', async () => {});
+
+			it('should log the missing user', async () => {});
+		});
 	});
 
 	describe('getGroup', () => {
