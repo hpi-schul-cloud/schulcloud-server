@@ -304,7 +304,7 @@ export class GroupUc {
 				let resolvedGroup: ResolvedGroupUser | null = null;
 
 				if (!user) {
-					this.logger.warning(new ReferencedEntityNotFoundLoggable(groupUser.userId, 'groups', group.id));
+					this.logger.warning(new ReferencedEntityNotFoundLoggable(groupUser.userId, Group.name, group.id));
 				} else {
 					const role: RoleDto = await this.roleService.findById(groupUser.roleId);
 
