@@ -1,0 +1,39 @@
+import { CommonCartridgeOrganizationElement } from './common-cartridge-organization-element';
+
+describe('CommonCartridgeOrganizationElement', () => {
+	describe('getManifestXml', () => {
+		it('should return the correct xml object', () => {
+			const element = new CommonCartridgeOrganizationElement({
+				identifier: 'identifier',
+				title: 'title',
+				items: [
+					{
+						getManifestXml: () => {
+							return {
+								$: {
+									identifier: 'identifier',
+								},
+								title: 'title',
+							};
+						},
+					},
+				],
+			});
+
+			expect(element.getManifestXml()).toStrictEqual({
+				$: {
+					identifier: 'identifier',
+				},
+				title: 'title',
+				item: [
+					{
+						$: {
+							identifier: 'identifier',
+						},
+						title: 'title',
+					},
+				],
+			});
+		});
+	});
+});
