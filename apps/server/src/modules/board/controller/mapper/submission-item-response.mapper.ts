@@ -1,4 +1,10 @@
-import { FileElement, isSubmissionItemContent, RichTextElement, SubmissionItem, UserBoardRoles } from '@shared/domain';
+import {
+	FileElement,
+	isSubmissionItemContent,
+	RichTextElement,
+	SubmissionItem,
+	UserBoardRoles,
+} from '@shared/domain/domainobject';
 import { SubmissionItemResponse, SubmissionsResponse, TimestampsResponse, UserDataResponse } from '../dto';
 import { ContentElementResponseFactory } from './content-element-response.factory';
 

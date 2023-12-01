@@ -1,6 +1,6 @@
 import { GroupTypes } from '@modules/group';
 import { Injectable } from '@nestjs/common';
-import { RoleName } from '@shared/domain';
+import { RoleName } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
 import { GroupRoleUnknownLoggable } from '../../loggable';

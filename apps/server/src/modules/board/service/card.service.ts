@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Card, Column, ContentElementType, EntityId } from '@shared/domain';
+import { Card, Column, ContentElementType } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';

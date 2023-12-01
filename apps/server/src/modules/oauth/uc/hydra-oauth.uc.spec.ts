@@ -5,7 +5,7 @@ import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto'
 import { HttpModule } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthConfigEntity } from '@shared/domain';
+import { OauthConfigEntity } from '@shared/domain/entity';
 import { axiosResponseFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AxiosResponse } from 'axios';

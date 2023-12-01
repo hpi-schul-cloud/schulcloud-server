@@ -4,15 +4,16 @@ import { classEntityFactory } from '@modules/class/entity/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, RoleName, SchoolEntity, SchoolYearEntity, SortOrder, SystemEntity, User } from '@shared/domain';
+import { Role, SchoolEntity, SchoolYearEntity, SystemEntity, User } from '@shared/domain/entity';
+import { RoleName, SortOrder } from '@shared/domain/interface';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	groupEntityFactory,
 	roleFactory,
 	schoolFactory,
 	schoolYearFactory,
 	systemEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
 import { ObjectId } from 'bson';

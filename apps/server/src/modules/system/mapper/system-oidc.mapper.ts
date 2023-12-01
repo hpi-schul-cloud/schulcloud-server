@@ -1,5 +1,5 @@
 import { OidcConfigDto } from '@modules/system/service/dto/oidc-config.dto';
-import { OidcConfigEntity, SystemEntity } from '@shared/domain';
+import { OidcConfigEntity, SystemEntity } from '@shared/domain/entity';
 
 export class SystemOidcMapper {
 	static mapFromEntityToDto(entity: SystemEntity): OidcConfigDto | undefined {

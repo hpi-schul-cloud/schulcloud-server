@@ -4,7 +4,7 @@ import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { AuthenticationModule } from '@modules/authentication/authentication.module';
 import { AuthorizationModule } from '@modules/authorization';
-import { Course, User } from '@shared/domain';
+import { Course, User } from '@shared/domain/entity';
 import { AuthenticationApiModule } from '../authentication/authentication-api.module';
 import { TldrawWsModule } from './tldraw-ws.module';
 import { TldrawWs } from './controller';

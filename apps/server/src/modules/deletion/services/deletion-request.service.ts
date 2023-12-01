@@ -1,10 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DeletionRequestRepo } from '../repo/deletion-request.repo';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { DeletionRequest } from '../domain/deletion-request.do';
-import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
-import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
+import { DeletionDomainModel, DeletionStatusModel } from '../domain/types';
+import { DeletionRequestRepo } from '../repo/deletion-request.repo';
 
 @Injectable()
 export class DeletionRequestService {

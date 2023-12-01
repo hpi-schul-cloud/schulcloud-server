@@ -5,10 +5,10 @@ import {
 	ContentElementFactory,
 	ContentElementType,
 	FileElement,
-	InputFormat,
 	RichTextElement,
 	SubmissionContainerElement,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
+import { InputFormat } from '@shared/domain/types';
 import { drawingElementFactory, setupEntities } from '@shared/testing';
 import {
 	cardFactory,
