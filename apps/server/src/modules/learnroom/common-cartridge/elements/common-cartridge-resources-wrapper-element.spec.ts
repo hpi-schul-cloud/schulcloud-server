@@ -1,35 +1,38 @@
 import { CommonCartridgeResourcesWrapperElement } from './common-cartridge-resources-wrapper-element';
 
 describe('CommonCartridgeResourcesWrapperElement', () => {
-	// AI next 30 lines
-	describe('getManifestXml', () => {
-		it('should return the correct xml object', () => {
-			const element = new CommonCartridgeResourcesWrapperElement([
-				{
-					getManifestXmlObject: () => {
-						return {
-							$: {
-								identifier: 'identifier',
-							},
-							title: 'title',
-						};
+	const sut = new CommonCartridgeResourcesWrapperElement([
+		{
+			getManifestXmlObject: () => {
+				return {
+					$: {
+						identifier: 'identifier',
 					},
-				},
-			]);
+					title: 'title',
+				};
+			},
+		},
+	]);
 
-			expect(element.getManifestXmlObject()).toStrictEqual({
-				resources: [
-					{
-						resource: [
-							{
-								$: {
-									identifier: 'identifier',
+	describe('getManifestXmlObject', () => {
+		describe('when building common cartridge manifest', () => {
+			it('should return the correct xml object', () => {
+				const xmlObject = sut.getManifestXmlObject();
+
+				expect(xmlObject).toStrictEqual({
+					resources: [
+						{
+							resource: [
+								{
+									$: {
+										identifier: 'identifier',
+									},
+									title: 'title',
 								},
-								title: 'title',
-							},
-						],
-					},
-				],
+							],
+						},
+					],
+				});
 			});
 		});
 	});

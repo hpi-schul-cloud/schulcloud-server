@@ -1,39 +1,42 @@
 import { CommonCartridgeOrganizationElement } from './common-cartridge-organization-element';
 
 describe('CommonCartridgeOrganizationElement', () => {
-	// AI next 34 lines
-	describe('getManifestXml', () => {
-		it('should return the correct xml object', () => {
-			const element = new CommonCartridgeOrganizationElement({
-				identifier: 'identifier',
-				title: 'title',
-				items: [
-					{
-						getManifestXmlObject: () => {
-							return {
-								$: {
-									identifier: 'identifier',
-								},
-								title: 'title',
-							};
-						},
-					},
-				],
-			});
-
-			expect(element.getManifestXmlObject()).toStrictEqual({
-				$: {
-					identifier: 'identifier',
-				},
-				title: 'title',
-				item: [
-					{
+	const sut = new CommonCartridgeOrganizationElement({
+		identifier: 'identifier',
+		title: 'title',
+		items: [
+			{
+				getManifestXmlObject: () => {
+					return {
 						$: {
 							identifier: 'identifier',
 						},
 						title: 'title',
+					};
+				},
+			},
+		],
+	});
+
+	describe('getManifestXmlObject', () => {
+		describe('when building common cartridge manifest', () => {
+			it('should return correct xml object', () => {
+				const xmlObject = sut.getManifestXmlObject();
+
+				expect(xmlObject).toStrictEqual({
+					$: {
+						identifier: 'identifier',
 					},
-				],
+					title: 'title',
+					item: [
+						{
+							$: {
+								identifier: 'identifier',
+							},
+							title: 'title',
+						},
+					],
+				});
 			});
 		});
 	});

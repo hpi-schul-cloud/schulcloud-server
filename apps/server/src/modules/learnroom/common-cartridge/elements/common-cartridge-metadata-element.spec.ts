@@ -5,35 +5,37 @@ import {
 } from './common-cartridge-metadata-element';
 
 describe('CommonCartridgeMetadataElement', () => {
+	let sut: CommonCartridgeMetadataElement;
+
 	const propsVersion1: CommonCartridgeMetadataElementProps = {
-		version: CommonCartridgeVersion.V_1_1,
+		version: CommonCartridgeVersion.V_1_1_0,
 		title: 'Metadata Element Version 1.1',
 		creationDate: new Date(),
 		copyrightOwners: ['copyrightOwner1Version1', 'copyrightOwner2Version1'],
 	};
-
 	const propsVersion3: CommonCartridgeMetadataElementProps = {
-		version: CommonCartridgeVersion.V_1_3,
+		version: CommonCartridgeVersion.V_1_3_0,
 		title: 'Metadata Element Version 1.3',
 		creationDate: new Date(),
 		copyrightOwners: ['copyrightOwner1Version3', 'copyrightOwner2Version3'],
 	};
 
-	const metadataElementVersion1 = new CommonCartridgeMetadataElement(propsVersion1);
-	const metadataElementVersion3 = new CommonCartridgeMetadataElement(propsVersion3);
+	describe('getManifestXmlObject', () => {
+		describe('when using common cartridge version 1.1', () => {
+			beforeAll(() => {
+				sut = new CommonCartridgeMetadataElement(propsVersion1);
+			});
 
-	describe('getManifestXml', () => {
-		describe('when the return value of the method is called', () => {
-			it('should return manifest xml content regardless of the common cartridge version', () => {
-				const transformed = metadataElement.getManifestXml();
+			it('should return correct xml object', () => {
+				const xmlObject = sut.getManifestXmlObject();
 
-				expect(transformed).toStrictEqual({
+				expect(xmlObject).toStrictEqual({
 					schema: 'IMS Common Cartridge',
-					schemaversion: props.version,
+					schemaversion: propsVersion1.version,
 					'mnf:lom': {
 						'mnf:general': {
 							'mnf:title': {
-								'mnf:string': props.title,
+								'mnf:string': propsVersion1.title,
 							},
 						},
 						'mnf:rights': {
@@ -41,7 +43,41 @@ describe('CommonCartridgeMetadataElement', () => {
 								'mnf:value': 'yes',
 							},
 							'mnf:description': {
-								'mnf:string': `${props.creationDate.getFullYear()} ${props.creationDate.getFullYear()}`,
+								'mnf:string': `${propsVersion1.creationDate.getFullYear()} ${propsVersion1.copyrightOwners.join(
+									', '
+								)}`,
+							},
+						},
+					},
+				});
+			});
+		});
+
+		describe('when using common cartridge version 1.3', () => {
+			beforeAll(() => {
+				sut = new CommonCartridgeMetadataElement(propsVersion3);
+			});
+
+			it('should return correct xml object', () => {
+				const xmlObject = sut.getManifestXmlObject();
+
+				expect(xmlObject).toStrictEqual({
+					schema: 'IMS Common Cartridge',
+					schemaversion: propsVersion3.version,
+					'mnf:lom': {
+						'mnf:general': {
+							'mnf:title': {
+								'mnf:string': propsVersion3.title,
+							},
+						},
+						'mnf:rights': {
+							'mnf:copyrightAndOtherRestrictions': {
+								'mnf:value': 'yes',
+							},
+							'mnf:description': {
+								'mnf:string': `${propsVersion3.creationDate.getFullYear()} ${propsVersion3.copyrightOwners.join(
+									', '
+								)}`,
 							},
 						},
 					},
