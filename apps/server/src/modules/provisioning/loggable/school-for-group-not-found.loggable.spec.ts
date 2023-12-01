@@ -3,22 +3,6 @@ import { ExternalGroupDto } from '../dto';
 import { SchoolForGroupNotFoundLoggable } from './school-for-group-not-found.loggable';
 
 describe('SchoolForGroupNotFoundLoggable', () => {
-	describe('constructor', () => {
-		const setup = () => {
-			const externalGroupDto: ExternalGroupDto = externalGroupDtoFactory.build();
-
-			return { externalGroupDto };
-		};
-
-		it('should create an instance of UserForGroupNotFoundLoggable', () => {
-			const { externalGroupDto } = setup();
-
-			const loggable = new SchoolForGroupNotFoundLoggable(externalGroupDto);
-
-			expect(loggable).toBeInstanceOf(SchoolForGroupNotFoundLoggable);
-		});
-	});
-
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const externalGroupDto: ExternalGroupDto = externalGroupDtoFactory.build();
