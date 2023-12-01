@@ -14,7 +14,7 @@ describe(ReferencedEntityNotFoundLoggable.name, () => {
 				sourceEntityName,
 				sourceEntityId,
 				referencedEntityName,
-				sourceEntityId
+				referencedEntityId
 			);
 
 			return {
