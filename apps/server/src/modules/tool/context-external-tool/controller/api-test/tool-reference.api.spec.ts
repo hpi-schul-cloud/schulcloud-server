@@ -14,7 +14,7 @@ import {
 	schoolExternalToolEntityFactory,
 	schoolFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@modules/server';
+
 import { toolConfigurationStatusResponseFactory } from '@shared/testing/factory/tool-configuration-status-response.factory';
 import { Response } from 'supertest';
 import { ToolContextType } from '../../../common/enum';
