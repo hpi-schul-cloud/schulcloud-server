@@ -22,6 +22,7 @@ class Service extends AdapterBase {
 		}
 
 		const { whitelist = ['$regex', '$populate', '$exists', '$elemMatch'] } = options;
+		const multiple = options.multi !== undefined ? options.multi : true;
 
 		super({
 			id: '_id',
@@ -34,6 +35,7 @@ class Service extends AdapterBase {
 			queryModifierKey: 'queryModifier',
 			...options,
 			whitelist: whitelist.concat('$and'),
+			multi: multiple,
 		});
 
 		this.discriminatorKey = this.Model.schema.options.discriminatorKey;
@@ -417,18 +419,34 @@ class Service extends AdapterBase {
 	}
 
 	create(data, params = {}) {
+		if (Array.isArray(data) && !this.allowsMulti('create')) {
+			return Promise.reject(new errors.MethodNotAllowed(`Can not create multiple entries`));
+		}
+
 		return this._create(data, params);
 	}
 
 	update(id, data, params = {}) {
+		if (id === null || Array.isArray(data)) {
+			return Promise.reject(new errors.BadRequest(`You can not replace multiple instances. Did you mean 'patch'?`));
+		}
+
 		return this._update(id, data, params);
 	}
 
 	patch(id, data, params = {}) {
+		if (id === null && !this.allowsMulti('patch')) {
+			return Promise.reject(new errors.MethodNotAllowed(`Can not patch multiple entries`));
+		}
+
 		return this._patch(id, data, params);
 	}
 
 	remove(id, params = {}) {
+		if (id === null && !this.allowsMulti('remove')) {
+			return Promise.reject(new errors.MethodNotAllowed(`Can not remove multiple entries`));
+		}
+
 		return this._remove(id, params);
 	}
 
