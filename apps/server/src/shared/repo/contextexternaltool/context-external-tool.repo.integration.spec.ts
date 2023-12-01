@@ -8,7 +8,7 @@ import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/too
 import { ContextExternalToolQuery } from '@modules/tool/context-external-tool/uc/dto/context-external-tool.types';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain';
+import { SchoolEntity } from '@shared/domain/entity';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import {
 	cleanupCollections,
@@ -367,7 +367,7 @@ describe('ContextExternalToolRepo', () => {
 				};
 			};
 
-			it('should return correct results', async () => {
+			it('should return a context external tool', async () => {
 				const { contextExternalTool, schoolExternalTool } = await setup();
 
 				const result = await repo.findById(contextExternalTool.id);
@@ -391,6 +391,59 @@ describe('ContextExternalToolRepo', () => {
 					},
 					toolVersion: contextExternalTool.toolVersion,
 				});
+			});
+		});
+	});
+
+	describe('findByIdOrNull', () => {
+		describe('when a ContextExternalTool is found', () => {
+			const setup = async () => {
+				const schoolExternalTool = schoolExternalToolEntityFactory.buildWithId();
+				const contextExternalTool = contextExternalToolEntityFactory.buildWithId({
+					contextType: ContextExternalToolType.COURSE,
+					schoolTool: schoolExternalTool,
+				});
+
+				await em.persistAndFlush([schoolExternalTool, contextExternalTool]);
+
+				return {
+					contextExternalTool,
+					schoolExternalTool,
+				};
+			};
+
+			it('should return a context external tool', async () => {
+				const { contextExternalTool, schoolExternalTool } = await setup();
+
+				const result = await repo.findByIdOrNull(contextExternalTool.id);
+
+				expect(result).toEqual<ContextExternalToolProps>({
+					id: contextExternalTool.id,
+					contextRef: {
+						id: contextExternalTool.contextId,
+						type: ToolContextType.COURSE,
+					},
+					displayName: contextExternalTool.displayName,
+					parameters: [
+						{
+							name: contextExternalTool.parameters[0].name,
+							value: contextExternalTool.parameters[0].value,
+						},
+					],
+					schoolToolRef: {
+						schoolToolId: schoolExternalTool.id,
+						schoolId: schoolExternalTool.school.id,
+					},
+					toolVersion: contextExternalTool.toolVersion,
+				});
+			});
+		});
+
+		describe('when no ContextExternalTool is found', () => {
+			it('should should return null', async () => {
+				const result: ContextExternalTool | null = await repo.findByIdOrNull(new ObjectId().toHexString());
+
+				expect(result).toBeNull();
 			});
 		});
 	});

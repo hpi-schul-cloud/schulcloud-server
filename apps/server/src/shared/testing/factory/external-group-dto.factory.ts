@@ -1,6 +1,6 @@
 import { GroupTypes } from '@modules/group';
 import { ExternalGroupDto } from '@modules/provisioning/dto';
-import { RoleName } from '@shared/domain';
+import { RoleName } from '@shared/domain/interface';
 import { ObjectId } from 'bson';
 import { Factory } from 'fishery';
 

@@ -1,9 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Action, AuthorizationService } from '@modules/authorization';
+import { HttpService } from '@nestjs/axios';
+import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, InputFormat } from '@shared/domain';
+import { BoardDoAuthorizable } from '@shared/domain/domainobject';
+import { InputFormat } from '@shared/domain/types';
 import {
-	fileElementFactory,
 	drawingElementFactory,
+	fileElementFactory,
 	richTextElementFactory,
 	setupEntities,
 	submissionContainerElementFactory,
@@ -11,10 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AuthorizationService, Action } from '@modules/authorization';
 import { ObjectId } from 'bson';
-import { ForbiddenException } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { ElementUc } from './element.uc';
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { ContextExternalTool, ContextRef } from '../domain';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
@@ -14,8 +14,14 @@ export class ContextExternalToolService {
 		return contextExternalTools;
 	}
 
-	async findById(contextExternalToolId: EntityId): Promise<ContextExternalTool> {
+	async findByIdOrFail(contextExternalToolId: EntityId): Promise<ContextExternalTool> {
 		const tool: ContextExternalTool = await this.contextExternalToolRepo.findById(contextExternalToolId);
+
+		return tool;
+	}
+
+	async findById(contextExternalToolId: EntityId): Promise<ContextExternalTool | null> {
+		const tool: ContextExternalTool | null = await this.contextExternalToolRepo.findByIdOrNull(contextExternalToolId);
 
 		return tool;
 	}

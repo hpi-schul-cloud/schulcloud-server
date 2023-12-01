@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BatchDeletionSummaryDetail } from '..';
-import { QueueDeletionRequestInput, QueueDeletionRequestOutput } from '../../services';
+import { QueueDeletionRequestInput, QueueDeletionRequestOutput } from '../services';
 import { BatchDeletionSummaryDetailBuilder } from './batch-deletion-summary-detail.builder';
+import { BatchDeletionSummaryDetail } from '../interface';
 
 describe(BatchDeletionSummaryDetailBuilder.name, () => {
 	describe(BatchDeletionSummaryDetailBuilder.build.name, () => {
