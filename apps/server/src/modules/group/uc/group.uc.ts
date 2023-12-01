@@ -200,13 +200,11 @@ export class GroupUc {
 		const classInfosFromClasses: ClassInfoDto[] = await Promise.all(
 			filteredClassesForSchoolYear.map(async (classWithSchoolYear): Promise<ClassInfoDto> => {
 				const { teacherIds } = classWithSchoolYear.clazz;
-				const teachers: UserDO[] = await this.getTeachersByIds(teacherIds, classWithSchoolYear);
-
-				const filteredTeachers: UserDO[] = teachers.filter((teacher: UserDO): teacher is UserDO => teacher !== null);
+				const teachers: UserDO[] = await this.getTeachersByIds(teacherIds, classWithSchoolYear.clazz.id);
 
 				const mapped: ClassInfoDto = GroupUcMapper.mapClassToClassInfoDto(
 					classWithSchoolYear.clazz,
-					filteredTeachers,
+					teachers,
 					classWithSchoolYear.schoolYear
 				);
 
@@ -217,17 +215,12 @@ export class GroupUc {
 		return classInfosFromClasses;
 	}
 
-	private async getTeachersByIds(
-		teacherIds: EntityId[],
-		classWithSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }
-	): Promise<UserDO[]> {
+	private async getTeachersByIds(teacherIds: EntityId[], classId: EntityId): Promise<UserDO[]> {
 		const teacherPromises: Promise<UserDO | null>[] = teacherIds.map(
 			async (teacherId: EntityId): Promise<UserDO | null> => {
 				const teacher: UserDO | null = await this.userService.findByIdOrNull(teacherId);
 				if (!teacher) {
-					this.logger.warning(
-						new ReferencedEntityNotFoundLoggable(teacherId, Class.name, classWithSchoolYear.clazz.id)
-					);
+					this.logger.warning(new ReferencedEntityNotFoundLoggable(teacherId, Class.name, classId));
 				}
 				return teacher;
 			}
@@ -321,7 +314,8 @@ export class GroupUc {
 		);
 
 		const resolvedGroupUsers: ResolvedGroupUser[] = resolvedGroupUsersOrNull.filter(
-			(resolvedGroupUser: ResolvedGroupUser | null): resolvedGroupUser is ResolvedGroupUser => resolvedGroupUser != null
+			(resolvedGroupUser: ResolvedGroupUser | null): resolvedGroupUser is ResolvedGroupUser =>
+				resolvedGroupUser !== null
 		);
 
 		return resolvedGroupUsers;

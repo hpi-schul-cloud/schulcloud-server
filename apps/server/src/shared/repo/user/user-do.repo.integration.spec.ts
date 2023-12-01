@@ -542,22 +542,28 @@ describe('UserRepo', () => {
 
 		describe('when user was found', () => {
 			const setup = async () => {
-				const user: User = userFactory.buildWithId();
+				const role: Role = roleFactory.build();
 
-				await em.persistAndFlush(user);
+				const user: User = userFactory.buildWithId({ roles: [role] });
+
+				await em.persistAndFlush([user, role]);
 				em.clear();
 
-				return { user };
+				return { user, role };
 			};
 
-			it('should return user', async () => {
-				const { user } = await setup();
+			it('should return user with role', async () => {
+				const { user, role } = await setup();
 
-				return expect(repo.findByIdOrNull(user.id)).resolves.toEqual(
-					expect.objectContaining<Partial<UserDO>>({
-						id: user.id,
-					})
-				);
+				const result: UserDO | null = await repo.findByIdOrNull(user.id, true);
+
+				expect(result?.id).toEqual(user.id);
+				expect(result?.roles).toEqual([
+					{
+						id: role.id,
+						name: role.name,
+					},
+				]);
 			});
 		});
 	});

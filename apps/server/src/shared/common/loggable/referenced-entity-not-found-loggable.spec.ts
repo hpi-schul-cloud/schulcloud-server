@@ -1,12 +1,13 @@
 import { ObjectId } from 'bson';
 import { ReferencedEntityNotFoundLoggable } from './referenced-entity-not-found-loggable';
+import { EntityId } from '../../domain/types';
 
 describe(ReferencedEntityNotFoundLoggable.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const referencedId: string = new ObjectId().toHexString();
 			const sourceEntityName = 'entityName';
-			const sourceId: string = new ObjectId().toHexString();
+			const sourceId: EntityId = new ObjectId().toHexString();
 
 			const loggable: ReferencedEntityNotFoundLoggable = new ReferencedEntityNotFoundLoggable(
 				referencedId,

@@ -225,6 +225,17 @@ describe('GroupUc', () => {
 
 					throw new Error();
 				});
+				userService.findByIdOrNull.mockImplementation((userId: string): Promise<UserDO> => {
+					if (userId === teacherUser.id) {
+						return Promise.resolve(teacherUserDo);
+					}
+
+					if (userId === studentUser.id) {
+						return Promise.resolve(studentUserDo);
+					}
+
+					throw new Error();
+				});
 				roleService.findById.mockImplementation((roleId: string): Promise<RoleDto> => {
 					if (roleId === teacherUser.roles[0].id) {
 						return Promise.resolve(teacherRole);
@@ -575,6 +586,21 @@ describe('GroupUc', () => {
 
 					throw new Error();
 				});
+				userService.findByIdOrNull.mockImplementation((userId: string): Promise<UserDO> => {
+					if (userId === teacherUser.id) {
+						return Promise.resolve(teacherUserDo);
+					}
+
+					if (userId === studentUser.id) {
+						return Promise.resolve(studentUserDo);
+					}
+
+					if (userId === adminUser.id) {
+						return Promise.resolve(adminUserDo);
+					}
+
+					throw new Error();
+				});
 				roleService.findById.mockImplementation((roleId: string): Promise<RoleDto> => {
 					if (roleId === teacherUser.roles[0].id) {
 						return Promise.resolve(teacherRole);
@@ -742,7 +768,6 @@ describe('GroupUc', () => {
 			});
 		});
 
-		// TODO: test me
 		describe('when class has a user referenced which is not existing', () => {
 			const setup = () => {
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
@@ -950,8 +975,10 @@ describe('GroupUc', () => {
 				groupService.findById.mockResolvedValueOnce(group);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 				userService.findById.mockResolvedValueOnce(teacherUserDo);
+				userService.findByIdOrNull.mockResolvedValueOnce(teacherUserDo);
 				roleService.findById.mockResolvedValueOnce(teacherRole);
 				userService.findById.mockResolvedValueOnce(studentUserDo);
+				userService.findByIdOrNull.mockResolvedValueOnce(studentUserDo);
 				roleService.findById.mockResolvedValueOnce(studentRole);
 
 				return {

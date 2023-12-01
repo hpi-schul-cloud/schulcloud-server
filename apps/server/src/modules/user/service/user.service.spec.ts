@@ -12,6 +12,7 @@ import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 import { UserService } from './user.service';
@@ -138,19 +139,21 @@ describe('UserService', () => {
 	describe('findByIdOrNull', () => {
 		describe('when a user with this id exists', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const userId = new ObjectId().toHexString();
+				const user: UserDO = userDoFactory.buildWithId({ id: userId });
 
 				userDORepo.findByIdOrNull.mockResolvedValue(user);
 
 				return {
 					user,
+					userId,
 				};
 			};
 
 			it('should return the user', async () => {
-				const { user } = setup();
+				const { user, userId } = setup();
 
-				const result: UserDO | null = await service.findByIdOrNull('id');
+				const result: UserDO | null = await service.findByIdOrNull(userId);
 
 				expect(result).toEqual(user);
 			});
@@ -158,13 +161,17 @@ describe('UserService', () => {
 
 		describe('when a user with this id does not exist', () => {
 			const setup = () => {
+				const userId = new ObjectId().toHexString();
+
 				userDORepo.findByIdOrNull.mockResolvedValue(null);
+
+				return { userId };
 			};
 
 			it('should return null', async () => {
-				setup();
+				const { userId } = setup();
 
-				const result: UserDO | null = await service.findByIdOrNull('id');
+				const result: UserDO | null = await service.findByIdOrNull(userId);
 
 				expect(result).toBeNull();
 			});
