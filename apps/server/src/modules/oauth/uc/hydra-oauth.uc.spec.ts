@@ -13,6 +13,7 @@ import { HydraOauthUc } from '.';
 import { AuthorizationParams } from '../controller/dto';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
 import { OAuthTokenDto } from '../interface';
+import { AuthCodeFailureLoggableException } from '../loggable';
 
 class HydraOauthUcSpec extends HydraOauthUc {
 	public validateStatusSpec = (status: number) => this.validateStatus(status);
@@ -115,9 +116,7 @@ describe('HydraOauthUc', () => {
 
 				const func = () => uc.getOauthToken('4566456', undefined, error);
 
-				await expect(func).rejects.toThrow(
-					new OAuthSSOError('Authorization Query Object has no authorization code or error', error)
-				);
+				await expect(func).rejects.toThrow(new AuthCodeFailureLoggableException(error));
 			});
 		});
 
@@ -131,9 +130,7 @@ describe('HydraOauthUc', () => {
 
 				const func = async () => uc.getOauthToken('oauthClientId', undefined, error);
 
-				await expect(func).rejects.toThrow(
-					new OAuthSSOError('Authorization Query Object has no authorization code or error', error)
-				);
+				await expect(func).rejects.toThrow(new AuthCodeFailureLoggableException(error));
 			});
 		});
 	});
