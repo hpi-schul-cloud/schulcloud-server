@@ -102,7 +102,7 @@
 	},
 	{
 		"_id": {
-			"$oid": "647de247cf6a427b9d39e5b10"
+			"$oid": "647de247cf6a427b9d39e5b1"
 		},
 		"createdAt": {
 			"$date": "2023-11-30T12:37:54.977Z"
@@ -110,7 +110,7 @@
 		"updatedAt": {
 			"$date": "2023-11-30T15:31:47.749Z"
 		},
-		"name": "Cypress Test Tool School Scope",
+		"name": "Cy Test Tool School Scope",
 		"config_type": "basic",
 		"config_baseUrl": "http:google.com",
 		"parameters": [{
@@ -128,7 +128,7 @@
 	},
 	{
 		"_id": {
-			"$oid": "647de247cf6a427b9d39e5b11"
+			"$oid": "647de247cf6a427b9d39e5c2"
 		},
 		"createdAt": {
 			"$date": "2023-11-30T12:40:29.049Z"
@@ -136,7 +136,7 @@
 		"updatedAt": {
 			"$date": "2023-11-30T15:32:05.991Z"
 		},
-		"name": "Cypress Test Tool Context Scope",
+		"name": "CY Test Tool Context Scope",
 		"config_type": "basic",
 		"config_baseUrl": "https:google.com",
 		"parameters": [{
@@ -154,7 +154,7 @@
 	},
 	{
 		"_id": {
-			"$oid": "647de247cf6a427b9d39e5b12"
+			"$oid": "647de247cf6a427b9d39e5c3"
 		},
 		"createdAt": {
 			"$date": "2023-11-30T15:28:04.733Z"
@@ -162,7 +162,7 @@
 		"updatedAt": {
 			"$date": "2023-11-30T15:32:42.888Z"
 		},
-		"name": "Cypress Test Tool School and Context Scope",
+		"name": "CY Test Tool School and Context Scope",
 		"config_type": "basic",
 		"config_baseUrl": "https:google.com",
 		"parameters": [{
