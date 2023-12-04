@@ -16,7 +16,7 @@ import {
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
-import { ToolConfigurationStatusResponse } from '../../../context-external-tool/controller/dto';
+import { schoolToolConfigurationStatusFactory } from '@shared/testing/factory';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../entity';
@@ -141,7 +141,9 @@ describe('ToolSchoolController (API)', () => {
 				name: externalToolEntity.name,
 				schoolId: postParams.schoolId,
 				toolId: postParams.toolId,
-				status: ToolConfigurationStatusResponse.LATEST,
+				status: schoolToolConfigurationStatusFactory.build({
+					isOutdatedOnScopeSchool: false,
+				}),
 				toolVersion: postParams.version,
 				parameters: [
 					{ name: 'param1', value: 'value' },
@@ -298,7 +300,9 @@ describe('ToolSchoolController (API)', () => {
 							name: externalToolEntity.name,
 							schoolId: school.id,
 							toolId: externalToolEntity.id,
-							status: ToolConfigurationStatusResponse.OUTDATED,
+							status: schoolToolConfigurationStatusFactory.build({
+								isOutdatedOnScopeSchool: true,
+							}),
 							toolVersion: schoolExternalToolEntity.toolVersion,
 							parameters: [
 								{
@@ -341,7 +345,9 @@ describe('ToolSchoolController (API)', () => {
 				name: '',
 				schoolId: school.id,
 				toolId: externalToolEntity.id,
-				status: ToolConfigurationStatusResponse.UNKNOWN,
+				status: schoolToolConfigurationStatusFactory.build({
+					isOutdatedOnScopeSchool: false,
+				}),
 				toolVersion: schoolExternalToolEntity.toolVersion,
 				parameters: [
 					{
@@ -467,7 +473,9 @@ describe('ToolSchoolController (API)', () => {
 				name: externalToolEntity.name,
 				schoolId: postParamsUpdate.schoolId,
 				toolId: postParamsUpdate.toolId,
-				status: ToolConfigurationStatusResponse.LATEST,
+				status: schoolToolConfigurationStatusFactory.build({
+					isOutdatedOnScopeSchool: false,
+				}),
 				toolVersion: postParamsUpdate.version,
 				parameters: [
 					{
