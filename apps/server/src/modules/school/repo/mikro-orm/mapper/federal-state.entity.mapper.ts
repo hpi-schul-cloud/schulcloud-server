@@ -4,7 +4,7 @@ import { CountyEmbeddableMapper } from './county.embeddable.mapper';
 
 export class FederalStateEntityMapper {
 	public static mapToDo(entity: FederalStateEntity): FederalState {
-		const counties = entity.counties?.map((county) => CountyEmbeddableMapper.mapToDomainType(county));
+		const counties = entity.counties?.map((county) => CountyEmbeddableMapper.mapToDo(county));
 
 		const federalState = new FederalState({
 			id: entity.id,

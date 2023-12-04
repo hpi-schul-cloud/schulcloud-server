@@ -11,7 +11,7 @@ export class SchoolEntityMapper {
 		const federalState = FederalStateEntityMapper.mapToDo(entity.federalState);
 		const features = SchoolEntityMapper.mapFeatures(entity);
 		const systems = entity.systems?.getItems().map((system) => SystemEntityMapper.mapToDo(system));
-		const county = entity.county && CountyEmbeddableMapper.mapToDomainType(entity.county);
+		const county = entity.county && CountyEmbeddableMapper.mapToDo(entity.county);
 
 		const school = new School({
 			id: entity.id,
