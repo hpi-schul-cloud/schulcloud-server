@@ -1,23 +1,19 @@
-import { EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { UserQuery } from '@modules/user/service/user-query.type';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { Page, RoleReference } from '@shared/domain/domainobject';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Role, SchoolEntity, SystemEntity, User, UserProperties } from '@shared/domain/entity';
+import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BaseDORepo, Scope } from '@shared/repo';
 import { UserScope } from './user.scope';
 
 @Injectable()
-export class UserDORepo extends BaseDORepo<UserDO, User, UserProperties> {
+export class UserDORepo extends BaseDORepo<UserDO, User> {
 	get entityName(): EntityName<User> {
 		return User;
-	}
-
-	entityFactory(props: UserProperties): User {
-		return new User(props);
 	}
 
 	async find(query: UserQuery, options?: IFindOptions<UserDO>) {
@@ -87,7 +83,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, UserProperties> {
 		const userEntitys: User[] = await this._em.find(User, { externalId }, { populate: ['school.systems'] });
 		const userEntity: User | undefined = userEntitys.find((user: User): boolean => {
 			const { systems } = user.school;
-			return systems && !!systems.getItems().find((system: SystemEntity): boolean => system.id === systemId);
+			return systems && !!systems.getItems().find((system): boolean => system.id === systemId);
 		});
 
 		const userDo: UserDO | null = userEntity ? this.mapEntityToDO(userEntity) : null;
@@ -128,7 +124,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, UserProperties> {
 		return user;
 	}
 
-	mapDOToEntityProperties(entityDO: UserDO): UserProperties {
+	mapDOToEntityProperties(entityDO: UserDO): EntityData<User> {
 		return {
 			email: entityDO.email,
 			firstName: entityDO.firstName,

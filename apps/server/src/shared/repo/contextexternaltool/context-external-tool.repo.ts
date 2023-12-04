@@ -1,12 +1,8 @@
-import { EntityName } from '@mikro-orm/core';
+import { EntityData, EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ToolContextType } from '@modules/tool/common/enum/tool-context-type.enum';
 import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
-import {
-	ContextExternalToolEntity,
-	ContextExternalToolProperties,
-	ContextExternalToolType,
-} from '@modules/tool/context-external-tool/entity';
+import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/entity';
 import { ContextExternalToolQuery } from '@modules/tool/context-external-tool/uc/dto/context-external-tool.types';
 import { SchoolExternalToolRefDO } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
@@ -18,21 +14,13 @@ import { ExternalToolRepoMapper } from '../externaltool';
 import { ContextExternalToolScope } from './context-external-tool.scope';
 
 @Injectable()
-export class ContextExternalToolRepo extends BaseDORepo<
-	ContextExternalTool,
-	ContextExternalToolEntity,
-	ContextExternalToolProperties
-> {
+export class ContextExternalToolRepo extends BaseDORepo<ContextExternalTool, ContextExternalToolEntity> {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 
 	get entityName(): EntityName<ContextExternalToolEntity> {
 		return ContextExternalToolEntity;
-	}
-
-	entityFactory(props: ContextExternalToolProperties): ContextExternalToolEntity {
-		return new ContextExternalToolEntity(props);
 	}
 
 	async deleteBySchoolExternalToolIds(schoolExternalToolIds: string[]): Promise<number> {
@@ -126,7 +114,7 @@ export class ContextExternalToolRepo extends BaseDORepo<
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: ContextExternalTool): ContextExternalToolProperties {
+	mapDOToEntityProperties(entityDO: ContextExternalTool): EntityData<ContextExternalToolEntity> {
 		return {
 			contextId: entityDO.contextRef.id,
 			contextType: this.mapContextTypeToEntityType(entityDO.contextRef.type),
