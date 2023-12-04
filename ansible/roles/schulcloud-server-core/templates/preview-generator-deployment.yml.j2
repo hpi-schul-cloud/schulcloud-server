@@ -58,6 +58,7 @@ spec:
           requests:
             cpu: {{ AMQP_FILE_PREVIEW_CPU_REQUESTS|default("100m", true) }}
             memory: {{ AMQP_FILE_PREVIEW_MEMORY_REQUESTS|default("250Mi", true) }}
+{% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
       affinity:
         podAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

@@ -48,6 +48,7 @@ spec:
                 cpu: {{ API_H5P_LIBRARY_MANAGEMENT_CPU_REQUESTS|default("100m", true) }}
                 memory: {{ API_H5P_LIBRARY_MANAGEMENT_MEMORY_REQUESTS|default("150Mi", true) }}
           restartPolicy: OnFailure
+{% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
           affinity:
             podAffinity:
               preferredDuringSchedulingIgnoredDuringExecution:
@@ -61,3 +62,4 @@ spec:
                       - schulcloud-verbund
                   topologyKey: "kubernetes.io/hostname"
                   namespaceSelector: {}
+{% endif %}

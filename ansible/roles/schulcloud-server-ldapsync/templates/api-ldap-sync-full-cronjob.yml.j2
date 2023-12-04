@@ -37,6 +37,7 @@ spec:
                 cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
                 memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
           restartPolicy: OnFailure
+{% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
           affinity:
             podAffinity:
               preferredDuringSchedulingIgnoredDuringExecution:
@@ -50,6 +51,7 @@ spec:
                       - schulcloud-verbund
                   topologyKey: "kubernetes.io/hostname"
                   namespaceSelector: {}
+{% endif %}
         metadata:
           labels:
             app: api-ldapsync-cronjob

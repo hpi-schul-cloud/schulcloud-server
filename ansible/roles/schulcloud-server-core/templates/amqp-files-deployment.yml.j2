@@ -58,6 +58,7 @@ spec:
           requests:
             cpu: {{ AMQP_FILE_STORAGE_CPU_REQUESTS|default("100m", true) }}
             memory: {{ AMQP_FILE_STORAGE_MEMORY_REQUESTS|default("50Mi", true) }}
+{% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
       affinity:
         podAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -93,5 +94,6 @@ spec:
                   values:
                   - amqp-files
               topologyKey: "topology.kubernetes.io/zone"
+{% endif %}
               
           
