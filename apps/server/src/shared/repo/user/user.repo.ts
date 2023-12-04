@@ -170,6 +170,13 @@ export class UserRepo extends BaseRepo<User> {
 		return deletedUserNumber;
 	}
 
+	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
+		const user = await this._em.findOneOrFail(User, { id: userId });
+		const parentsEmails = user.parents?.map((parent) => parent.email) ?? [];
+
+		return parentsEmails;
+	}
+
 	private async populateRoles(roles: Role[]): Promise<void> {
 		for (let i = 0; i < roles.length; i += 1) {
 			const role = roles[i];
