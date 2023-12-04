@@ -177,7 +177,7 @@
 		},
 		"ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS": {
 			"type": "string",
-			"default":"",
+			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
 		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
@@ -1124,7 +1124,7 @@
 			"default": false,
 			"description": "Toggle for copy course feature."
 		},
-		"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": {
+		"FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for the IMSCC course download feature."

@@ -39,12 +39,20 @@ export class CourseController {
 		@Query() queryParams: CourseQueryParams,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
-		if (!this.configService.get<boolean>('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')) throw new NotFoundException();
-		const result = await this.courseExportUc.exportCourse(urlParams.courseId, currentUser.userId, queryParams.version);
+		if (!this.configService.get<boolean>('FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED'))
+			throw new NotFoundException();
+
+		const result = await this.courseExportUc.exportCourse(
+			urlParams.courseId,
+			currentUser.userId,
+			queryParams.version
+		);
+
 		response.set({
 			'Content-Type': 'application/zip',
 			'Content-Disposition': 'attachment;',
 		});
+
 		return new StreamableFile(result);
 	}
 }
