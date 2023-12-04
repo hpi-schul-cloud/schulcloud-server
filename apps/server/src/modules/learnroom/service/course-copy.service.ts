@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { Injectable } from '@nestjs/common';
 import { Course, User } from '@shared/domain/entity';
@@ -33,6 +34,7 @@ export class CourseCopyService {
 		newName?: string | undefined;
 	}): Promise<CopyStatus> {
 		const user: User = await this.userRepo.findById(userId, true);
+		const copyNexboardEnabled = Configuration.get('FEATURE_COPY_NEXBOARD_ENABLED') as boolean;
 
 		// fetch original course and board
 		const originalCourse = await this.courseRepo.findById(courseId);
@@ -47,11 +49,20 @@ export class CourseCopyService {
 		// copy course and board
 		const courseCopy = await this.copyCourseEntity({ user, originalCourse, copyName });
 		const boardStatus = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
+		const filteredBoardStatus = this.filterOutNeXboardFromCopyStatus(boardStatus, copyNexboardEnabled);
 		const finishedCourseCopy = await this.finishCourseCopying(courseCopy);
 
-		const courseStatus = this.deriveCourseStatus(originalCourse, finishedCourseCopy, boardStatus);
-
+		const courseStatus = this.deriveCourseStatus(originalCourse, finishedCourseCopy, filteredBoardStatus);
 		return courseStatus;
+	}
+
+	private filterOutNeXboardFromCopyStatus(boardStatus: CopyStatus, copyNexboardEnabled: boolean): CopyStatus {
+		if (!copyNexboardEnabled && boardStatus.elements) {
+			boardStatus.elements = boardStatus.elements.filter(
+				(elementStatus) => elementStatus.type !== CopyElementType.LESSON_CONTENT_NEXBOARD
+			);
+		}
+		return boardStatus;
 	}
 
 	private async copyCourseEntity(params: CourseCopyParams): Promise<Course> {
