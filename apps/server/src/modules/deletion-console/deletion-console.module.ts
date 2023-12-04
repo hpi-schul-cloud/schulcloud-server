@@ -10,7 +10,7 @@ import { DeletionQueueConsole } from './deletion-queue.console';
 import { DeletionExecutionConsole } from './deletion-execution.console';
 import { BatchDeletionService } from './services';
 import { BatchDeletionUc } from './uc';
-import { DeletionExecutionUc } from '../deletion/uc';
+import { DeletionExecutionUc } from '@modules/deletion';
 
 @Module({
 	imports: [
