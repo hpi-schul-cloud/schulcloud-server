@@ -22,8 +22,8 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		@SanitizeHtml(InputFormat.RICH_TEXT_CK4)
 		contentCk4!: string;
 
-		@SanitizeHtml(InputFormat.RICH_TEXT_NEWS)
-		contentRichTextNews!: string;
+		@SanitizeHtml(InputFormat.RICH_TEXT_CK5_SIMPLE)
+		contentRichTextCk5Simple!: string;
 	}
 
 	describe('when fully sanitizing an input string', () => {
@@ -59,14 +59,14 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		});
 	});
 
-	describe('when sanitizing rich text news formatting', () => {
-		it('should remove all html but rich text news tags', () => {
+	describe('when sanitizing rich text simple formatting', () => {
+		it('should remove all html but rich text simple tags', () => {
 			const plainString = {
-				contentRichTextNews:
+				contentRichTextCk5Simple:
 					'<h1><b>html text</b><i></i></h1><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
 			};
 			const instance = plainToClass(WithHtmlDto, plainString);
-			expect(instance.contentRichTextNews).toEqual('<h1><b>html text</b></h1>');
+			expect(instance.contentRichTextCk5Simple).toEqual('<h1><b>html text</b></h1>');
 		});
 	});
 

@@ -107,7 +107,7 @@ const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
 export const getSanitizeHtmlOptions = (inputFormat?: InputFormat): IInputFormatsConfig => {
 	switch (inputFormat) {
 		case InputFormat.RICH_TEXT_CK5_SIMPLE:
-			return inputFormatsSanitizeConfig.RichTextNews;
+			return inputFormatsSanitizeConfig.RichTextCk5Simple;
 		case InputFormat.RICH_TEXT_CK4:
 			return inputFormatsSanitizeConfig.RichTextCk4;
 		case InputFormat.RICH_TEXT_CK5:
