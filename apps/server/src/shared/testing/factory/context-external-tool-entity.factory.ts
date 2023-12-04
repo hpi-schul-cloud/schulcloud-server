@@ -17,7 +17,7 @@ export const contextExternalToolEntityFactory = BaseFactory.define<
 		contextType: ContextExternalToolType.COURSE,
 		displayName: 'My Course Tool 1',
 		schoolTool: schoolExternalToolEntityFactory.buildWithId(),
-		parameters: [new CustomParameterEntryEntity({ name: 'mockParamater', value: 'mockValue' })],
+		parameters: [new CustomParameterEntryEntity({ name: 'contextMockParameter', value: 'mockValue' })],
 		toolVersion: 1,
 	};
 });
