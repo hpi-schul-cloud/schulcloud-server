@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { Entity, EntityName, Property } from '@mikro-orm/core';
+import { Entity, EntityData, EntityName, Property } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -8,6 +8,8 @@ import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { LegacyLogger } from '@src/core/logger';
 import { BaseDO } from '@src/shared/domain/domainobject';
+
+const TEST_CREATED_AT = new Date('2022-01-01');
 
 describe('BaseDORepo', () => {
 	@Entity()
@@ -24,10 +26,13 @@ describe('BaseDORepo', () => {
 	class TestDO extends BaseDO {
 		name: string;
 
+		createdAt?: Date = new Date();
+
 		constructor(entityDO: TestDO = { name: 'test' }) {
 			super();
 			this.id = entityDO.id;
 			this.name = entityDO.name;
+			this.createdAt = TEST_CREATED_AT;
 		}
 	}
 
@@ -36,22 +41,19 @@ describe('BaseDORepo', () => {
 	}
 
 	@Injectable()
-	class TestRepo extends BaseDORepo<TestDO, TestEntity, TestEntityProperties> {
+	class TestRepo extends BaseDORepo<TestDO, TestEntity> {
 		get entityName(): EntityName<TestEntity> {
 			return TestEntity;
-		}
-
-		entityFactory(props: TestEntityProperties): TestEntity {
-			return new TestEntity(props);
 		}
 
 		mapEntityToDO(entity: TestEntity): TestDO {
 			return new TestDO({ id: entity.id, name: entity.name });
 		}
 
-		mapDOToEntityProperties(entityDO: TestDO): TestEntityProperties {
+		mapDOToEntityProperties(entityDO: TestDO): EntityData<TestEntity> {
 			return {
 				name: entityDO.name,
+				createdAt: TEST_CREATED_AT,
 			};
 		}
 	}
@@ -95,24 +97,6 @@ describe('BaseDORepo', () => {
 		});
 	});
 
-	describe('entityFactory', () => {
-		const props: TestEntityProperties = {
-			name: 'name',
-		};
-
-		it('should return new entity of type TestEntity', () => {
-			const result: TestEntity = repo.entityFactory(props);
-
-			expect(result).toBeInstanceOf(TestEntity);
-		});
-
-		it('should return new entity with values from properties', () => {
-			const result: TestEntity = repo.entityFactory(props);
-
-			expect(result).toEqual(expect.objectContaining(props));
-		});
-	});
-
 	describe('save', () => {
 		it('should persist and flush a single new entity', async () => {
 			const testDO = new TestDO({ name: 'test' });
@@ -122,6 +106,7 @@ describe('BaseDORepo', () => {
 
 			const result = await em.find(TestEntity, {});
 			expect(result).toHaveLength(1);
+			expect(result[0].createdAt).not.toEqual(TEST_CREATED_AT);
 		});
 
 		it('should persist and flush a single updated entity', async () => {
@@ -273,6 +258,16 @@ describe('BaseDORepo', () => {
 				const entities: TestEntity[] = await em.find(repo.entityName, {});
 
 				expect(entities.length).toEqual(0);
+			});
+		});
+
+		describe('when domainobject has no id', () => {
+			it('should throw an error', async () => {
+				const { testDO1 } = await setupDelete();
+
+				testDO1.id = undefined;
+
+				await expect(repo.delete([testDO1])).rejects.toThrowError();
 			});
 		});
 	});
