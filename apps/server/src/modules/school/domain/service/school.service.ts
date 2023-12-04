@@ -48,10 +48,10 @@ export class SchoolService {
 
 		if (configValue === 'enabled') {
 			school.addFeature(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
-		} else if (configValue === 'disabled') {
+		}
+
+		if (configValue === 'disabled') {
 			school.removeFeature(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
-		} else {
-			// leave it as it is configured for the specific school
 		}
 
 		return school;
