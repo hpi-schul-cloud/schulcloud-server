@@ -7,6 +7,7 @@ import {
 describe('CommonCartridgeMetadataElement', () => {
 	let sut: CommonCartridgeMetadataElement;
 
+	// move testfixtures into the blocks they are used in
 	const propsVersion1: CommonCartridgeMetadataElementProps = {
 		version: CommonCartridgeVersion.V_1_1_0,
 		title: 'Metadata Element Version 1.1',

@@ -50,6 +50,13 @@ describe('CommonCartridgeOrganizationBuilder', () => {
 		jest.clearAllMocks();
 	});
 
+	/*
+	TODO:
+	- create testfactories for CommonCartridgeResourceProps and CommonCartridgeOrganizationBuilderOptions
+	- move fixture creation into setup function (you can even inline it, eg. .addSubOrganization(CommonCartrigeOrganizationFactory.build()))
+	- use setup function instead of beforeAll to get rid of "global" variables
+	*/
+
 	describe('build', () => {
 		describe('when creating a common cartridge archive', () => {
 			beforeAll(() => {

@@ -58,6 +58,7 @@ export class CommonCartridgeMapper {
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: new ObjectId(content._id).toHexString(),
 					title: content.title,
+					// TODO: put into environment, talk to capcakes if geogebra has been moved to tools, maybe there is a url in the data by now
 					url: `https://www.geogebra.org/m/${content.content.materialId}`, // FIXME: hardcoded hostname
 				};
 			case ComponentType.ETHERPAD:

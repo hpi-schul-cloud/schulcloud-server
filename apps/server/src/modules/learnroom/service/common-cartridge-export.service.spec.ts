@@ -15,6 +15,7 @@ describe('CommonCartridgeExportService', () => {
 	let lessonServiceMock: DeepMocked<LessonService>;
 	let taskServiceMock: DeepMocked<TaskService>;
 
+	// move into setup methods
 	let course: Course;
 	let lessons: LessonEntity[];
 	let tasks: Task[];
@@ -47,6 +48,7 @@ describe('CommonCartridgeExportService', () => {
 		courseServiceMock = module.get(CourseService);
 		lessonServiceMock = module.get(LessonService);
 		taskServiceMock = module.get(TaskService);
+		// TODO: everything below this line belongs into setup methods
 		course = courseFactory.teachersWithId(2).buildWithId();
 		tasks = taskFactory.buildListWithId(2);
 		lessons = lessonFactory.buildListWithId(1, {

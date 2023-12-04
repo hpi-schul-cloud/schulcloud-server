@@ -53,7 +53,7 @@ describe('CommonCartridgeFileBuilder', () => {
 	};
 
 	describe('build', () => {
-		describe('when creating a common cartridge archive', () => {
+		describe('when a common cartridge archive has been created', () => {
 			beforeAll(async () => {
 				sut = new CommonCartridgeFileBuilder(fileBuilderOptions);
 				sut.addMetadata(metadataProps)
@@ -67,19 +67,19 @@ describe('CommonCartridgeFileBuilder', () => {
 				archive = new AdmZip(await sut.build());
 			});
 
-			it('should create imsmanifest.xml in archive root', () => {
+			it('should have a imsmanifest.xml in archive root', () => {
 				const manifest = getFileContentAsString(archive, 'imsmanifest.xml');
 
 				expect(manifest).toBeDefined();
 			});
 
-			it('should create resource in organization folder', () => {
+			it('should have included the resource in organization folder', () => {
 				const resource = getFileContentAsString(archive, 'organization-identifier/resource-1-identifier.html');
 
 				expect(resource).toBeDefined();
 			});
 
-			it('should create resource in sub-organization folder', () => {
+			it('should have included the resource in sub-organization folder', () => {
 				const resource = getFileContentAsString(
 					archive,
 					'organization-identifier/sub-organization-identifier/resource-2-identifier.html'
@@ -88,7 +88,7 @@ describe('CommonCartridgeFileBuilder', () => {
 				expect(resource).toBeDefined();
 			});
 
-			it('should create resource in sub-sub-organization folder', () => {
+			it('should have included the resource in sub-sub-organization folder', () => {
 				const resource = getFileContentAsString(
 					archive,
 					'organization-identifier/sub-organization-identifier/sub-sub-organization-identifier/resource-3-identifier.html'

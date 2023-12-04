@@ -31,6 +31,7 @@ export class CommonCartridgeResourceFactory {
 			case CommonCartridgeResourceType.WEB_LINK:
 				return new CommonCartridgeWebLinkResource(props);
 			default:
+				// use InternalServerErrorException
 				throw new Error(`Unknown Common Cartridge resource type`);
 		}
 	}

@@ -31,6 +31,8 @@ export class CommonCartridgeFileBuilder {
 		checkCommonCartridgeVersion(props.version);
 	}
 
+	// TODO: explicitly mark public methods
+
 	addMetadata(props: OmitVersion<CommonCartridgeMetadataElementProps>): CommonCartridgeFileBuilder {
 		this.metadata = new CommonCartridgeMetadataElement({ ...props, version: this.props.version });
 

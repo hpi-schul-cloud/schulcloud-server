@@ -47,7 +47,9 @@ export class CommonCartridgeExportService {
 	}
 
 	private async addTasks(builder: CommonCartridgeFileBuilder, courseId: EntityId, userId: EntityId): Promise<void> {
+		// TODO: figure out with UX/PM if drafts should be exported. explicitly set the option
 		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
+		// TODO: each task can be their own organisation
 		const organizationBuilder = builder.addOrganization({
 			identifier: new ObjectId().toHexString(),
 			title: '', // FIXME: add title

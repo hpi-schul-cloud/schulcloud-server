@@ -6,6 +6,8 @@ export enum CommonCartridgeVersion {
 	V_1_4_0 = '1.4.0',
 }
 
+// TODO: think about if there is a way to ensure that an implementation that is dependent on these versions has implementations for all versions. (HINT: helper class, composable, abstract class...)
+
 export enum CommonCartridgeResourceType {
 	LTI = 'lti',
 	WEB_CONTENT = 'webcontent',
