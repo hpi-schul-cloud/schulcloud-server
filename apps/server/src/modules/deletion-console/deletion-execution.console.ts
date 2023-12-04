@@ -1,6 +1,6 @@
 import { Command, Console } from 'nestjs-console';
 import { ConsoleWriterService } from '@infra/console';
-import { DeletionExecutionUc } from '../deletion/uc';
+import { DeletionExecutionUc } from '@modules/deletion';
 import { DeletionExecutionTriggerResultBuilder } from './builder';
 import { DeletionExecutionTriggerResult, TriggerDeletionExecutionOptions } from './interface';
 
