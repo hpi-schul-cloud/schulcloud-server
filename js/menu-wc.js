@@ -3256,6 +3256,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/AppStartLoggable.html" data-type="entity-link" >AppStartLoggable</a>
                             </li>
                             <li class="link">
+                                <a href="classes/AuthCodeFailureLoggableException.html" data-type="entity-link" >AuthCodeFailureLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/AuthenticationCodeGrantTokenRequest.html" data-type="entity-link" >AuthenticationCodeGrantTokenRequest</a>
                             </li>
                             <li class="link">
@@ -4150,6 +4153,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/IdTokenCreationLoggableException.html" data-type="entity-link" >IdTokenCreationLoggableException</a>
                             </li>
                             <li class="link">
+                                <a href="classes/IdTokenExtractionFailureLoggableException.html" data-type="entity-link" >IdTokenExtractionFailureLoggableException</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/IdTokenInvalidLoggableException.html" data-type="entity-link" >IdTokenInvalidLoggableException</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/IdTokenUserNotFoundLoggableException.html" data-type="entity-link" >IdTokenUserNotFoundLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ImportUser.html" data-type="entity-link" >ImportUser</a>
                             </li>
                             <li class="link">
@@ -4429,6 +4441,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/OauthConfigEntity.html" data-type="entity-link" >OauthConfigEntity</a>
                             </li>
                             <li class="link">
+                                <a href="classes/OauthConfigMissingLoggableException.html" data-type="entity-link" >OauthConfigMissingLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/OauthConfigResponse.html" data-type="entity-link" >OauthConfigResponse</a>
                             </li>
                             <li class="link">
@@ -4453,7 +4468,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/OAuthRejectableBody.html" data-type="entity-link" >OAuthRejectableBody</a>
                             </li>
                             <li class="link">
-                                <a href="classes/OAuthSSOError.html" data-type="entity-link" class="deprecated-name">OAuthSSOError</a>
+                                <a href="classes/OauthSsoErrorLoggableException.html" data-type="entity-link" >OauthSsoErrorLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/OAuthTokenDto.html" data-type="entity-link" >OAuthTokenDto</a>

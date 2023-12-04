@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >UserNotFoundAfterProvisioningLoggableException</li>
+  <li class="breadcrumb-item" >OauthSsoErrorLoggableException</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/oauth/loggable/user-not-found-after-provisioning.loggable-exception.ts</code>
+            <code>apps/server/src/modules/oauth/loggable/oauth-sso-error-loggable-exception.ts</code>
         </p>
 
 
@@ -135,7 +135,7 @@
                 <h3>Extends</h3>
             </p>
             <p class="comment">
-                            <code><a href="../classes/OauthSsoErrorLoggableException.html" target="_self" >OauthSsoErrorLoggableException</a></code>
+                        <code>InternalServerErrorException</code>
             </p>
 
             <p class="comment">
@@ -160,7 +160,6 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier"></span>
                                 <a href="#getLogMessage" >getLogMessage</a>
                             </li>
                         </ul>
@@ -175,78 +174,6 @@
     </table>
 </section>
 
-            <section data-compodoc="block-constructor">
-    <h3 id="constructor">Constructor</h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-<code>constructor(externalUserId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, officialSchoolNumber?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/oauth/loggable/user-not-found-after-provisioning.loggable-exception.ts:5</a></div>
-                            </td>
-                        </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                            <div>
-                                    <b>Parameters :</b>
-                                    <table class="params">
-                                        <thead>
-                                            <tr>
-                                                <td>Name</td>
-                                                    <td>Type</td>
-                                                <td>Optional</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                <tr>
-                                                        <td>externalUserId</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>systemId</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>officialSchoolNumber</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            Yes
-                                                    </td>
-                                                    
-                                                </tr>
-                                        </tbody>
-                                    </table>
-                            </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-</section>
 
 
             <section data-compodoc="block-methods">
@@ -260,7 +187,6 @@
                 <td class="col-md-4">
                     <a name="getLogMessage"></a>
                     <span class="name">
-                            <span class="modifier"></span>
                         <span ><b>getLogMessage</b></span>
                         <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -268,22 +194,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getLogMessage()</code>
+<code>getLogMessage()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/OauthSsoErrorLoggableException.html" target="_self" >OauthSsoErrorLoggableException</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/OauthSsoErrorLoggableException.html#source" target="_self" >OauthSsoErrorLoggableException:17</a></code>
-</div>
+                            <div class="io-line">Defined in <a href="" data-line="5"
+                                    class="link-to-prism">apps/server/src/modules/oauth/loggable/oauth-sso-error-loggable-exception.ts:5</a></div>
                         </td>
                     </tr>
 
@@ -309,31 +228,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain/types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
-import { OauthSsoErrorLoggableException } from &#x27;./oauth-sso-error-loggable-exception&#x27;;
 
-export class UserNotFoundAfterProvisioningLoggableException extends OauthSsoErrorLoggableException implements Loggable {
-	constructor(
-		private readonly externalUserId: string,
-		private readonly systemId: EntityId,
-		private readonly officialSchoolNumber?: string
-	) {
-		super(
-			&#x27;Unable to find user after provisioning. The feature for OAuth2 provisioning might be disabled for this school.&#x27;,
-			&#x27;sso_user_not_found_after_provisioning&#x27;
-		);
-	}
-
-	override getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+export class OauthSsoErrorLoggableException extends InternalServerErrorException implements Loggable {
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
+			type: &#x27;SSO_LOGIN_FAILED&#x27;,
 			message: this.message,
 			stack: this.stack,
-			data: {
-				externalUserId: this.externalUserId,
-				systemId: this.systemId,
-				officialSchoolNumber: this.officialSchoolNumber,
-			},
 		};
 	}
 }
@@ -375,7 +278,7 @@ export class UserNotFoundAfterProvisioningLoggableException extends OauthSsoErro
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'UserNotFoundAfterProvisioningLoggableException.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'OauthSsoErrorLoggableException.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

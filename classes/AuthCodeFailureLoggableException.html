@@ -102,9 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" 
-        class="breadcrumb-item deprecated-name"
-    >OAuthSSOError</li>
+  <li class="breadcrumb-item" >AuthCodeFailureLoggableException</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -128,30 +126,16 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/oauth/loggable/oauth-sso.error.ts</code>
+            <code>apps/server/src/modules/oauth/loggable/auth-code-failure-loggable-exception.ts</code>
         </p>
 
-            <p class="comment">
-                <h3 class="deprecated">Deprecated</h3>
-            </p>
-            <p class="comment">
-                Please create a loggable instead.
-This will be removed with: https://ticketsystem.dbildungscloud.de/browse/N21-1483
-            </p>
 
-            <p class="comment">
-                <h3>Description</h3>
-            </p>
-            <p class="comment">
-                <p>This will be removed with: <a href="https://ticketsystem.dbildungscloud.de/browse/N21-1483">https://ticketsystem.dbildungscloud.de/browse/N21-1483</a></p>
-
-            </p>
 
             <p class="comment">
                 <h3>Extends</h3>
             </p>
             <p class="comment">
-                        <code>InternalServerErrorException</code>
+                            <code><a href="../classes/OauthSsoErrorLoggableException.html" target="_self" >OauthSsoErrorLoggableException</a></code>
             </p>
 
 
@@ -160,34 +144,22 @@ This will be removed with: https://ticketsystem.dbildungscloud.de/browse/N21-148
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+
                 <tr>
                     <td class="col-md-4">
-                        <h6><b>Properties</b></h6>
+                        <h6><b>Methods</b></h6>
                     </td>
                 </tr>
                 <tr>
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Readonly</span>
-                                <a href="#DEFAULT_ERRORCODE" >DEFAULT_ERRORCODE</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Readonly</span>
-                                <a href="#DEFAULT_MESSAGE" >DEFAULT_MESSAGE</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Readonly</span>
-                                <a href="#errorcode" >errorcode</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Readonly</span>
-                                <a href="#message" >message</a>
+                                    <span class="modifier"></span>
+                                <a href="#getLogMessage" >getLogMessage</a>
                             </li>
                         </ul>
                     </td>
                 </tr>
-
 
 
 
@@ -203,12 +175,12 @@ This will be removed with: https://ticketsystem.dbildungscloud.de/browse/N21-148
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(message?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, errorcode?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>constructor(errorCode?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/oauth/loggable/oauth-sso.error.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/oauth/loggable/auth-code-failure-loggable-exception.ts:4</a></div>
                             </td>
                         </tr>
 
@@ -226,19 +198,7 @@ This will be removed with: https://ticketsystem.dbildungscloud.de/browse/N21-148
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>message</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            Yes
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>errorcode</td>
+                                                        <td>errorCode</td>
                                                   
                                                         <td>
                                                                         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
@@ -258,132 +218,58 @@ This will be removed with: https://ticketsystem.dbildungscloud.de/browse/N21-148
         </table>
 </section>
 
-            <section data-compodoc="block-properties">
+
+            <section data-compodoc="block-methods">
     
-    <h3 id="inputs">
-        Properties
+    <h3 id="methods">
+        Methods
     </h3>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="DEFAULT_ERRORCODE"></a>
+                    <a name="getLogMessage"></a>
                     <span class="name">
-                            <span class="modifier">Readonly</span>
-                        <span ><b>DEFAULT_ERRORCODE</b></span>
-                        <a href="#DEFAULT_ERRORCODE"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier"></span>
+                        <span ><b>getLogMessage</b></span>
+                        <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>SSOErrorCode.SSO_OAUTH_LOGIN_FAILED</code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/oauth/loggable/oauth-sso.error.ts:15</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="DEFAULT_MESSAGE"></a>
-                    <span class="name">
-                            <span class="modifier">Readonly</span>
-                        <span ><b>DEFAULT_MESSAGE</b></span>
-                        <a href="#DEFAULT_MESSAGE"><span class="icon ion-ios-link"></span></a>
-                    </span>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getLogMessage()</code>
                 </td>
             </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>&#x27;Error in SSO Oauth Process.&#x27;</code>
-                    </td>
-                </tr>
+
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/oauth/loggable/oauth-sso.error.ts:13</a></div>
+                            <div class="io-line">Inherited from         <code><a href="../classes/OauthSsoErrorLoggableException.html" target="_self" >OauthSsoErrorLoggableException</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/OauthSsoErrorLoggableException.html#source" target="_self" >OauthSsoErrorLoggableException:9</a></code>
+</div>
                         </td>
                     </tr>
 
 
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="errorcode"></a>
-                    <span class="name">
-                            <span class="modifier">Readonly</span>
-                        <span ><b>errorcode</b></span>
-                        <a href="#errorcode"><span class="icon ion-ios-link"></span></a>
-                    </span>
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/ValidationError.html" target="_self" >LogMessage | ErrorLogMessage | ValidationErrorLogMessage</a></code>
+
+                        </div>
                 </td>
             </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/oauth/loggable/oauth-sso.error.ts:11</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="message"></a>
-                    <span class="name">
-                            <span class="modifier">Readonly</span>
-                        <span ><b>message</b></span>
-                        <a href="#message"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/oauth/loggable/oauth-sso.error.ts:9</a></div>
-                        </td>
-                    </tr>
-
-
         </tbody>
     </table>
 </section>
-
-
 
 
 
@@ -393,26 +279,23 @@ This will be removed with: https://ticketsystem.dbildungscloud.de/browse/N21-148
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
-import { SSOErrorCode } from &#x27;./sso-error-code.enum&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
+import { OauthSsoErrorLoggableException } from &#x27;./oauth-sso-error-loggable-exception&#x27;;
 
-/**
- * @deprecated Please create a loggable instead.
- * This will be removed with: https://ticketsystem.dbildungscloud.de/browse/N21-1483
- */
-export class OAuthSSOError extends InternalServerErrorException {
-	readonly message: string;
+export class AuthCodeFailureLoggableException extends OauthSsoErrorLoggableException {
+	constructor(private readonly errorCode?: string) {
+		super(errorCode ?? &#x27;sso_auth_code_step&#x27;, &#x27;Authorization Query Object has no authorization code or error&#x27;);
+	}
 
-	readonly errorcode: string;
-
-	readonly DEFAULT_MESSAGE: string &#x3D; &#x27;Error in SSO Oauth Process.&#x27;;
-
-	readonly DEFAULT_ERRORCODE: string &#x3D; SSOErrorCode.SSO_OAUTH_LOGIN_FAILED;
-
-	constructor(message?: string, errorcode?: string) {
-		super(message);
-		this.message &#x3D; message || this.DEFAULT_MESSAGE;
-		this.errorcode &#x3D; errorcode || this.DEFAULT_ERRORCODE;
+	override getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+		return {
+			type: &#x27;SSO_AUTH_CODE_STEP&#x27;,
+			message: &#x27;Authorization Query Object has no authorization code or error&#x27;,
+			stack: this.stack,
+			data: {
+				errorCode: this.errorCode,
+			},
+		};
 	}
 }
 </code></pre>
@@ -453,7 +336,7 @@ export class OAuthSSOError extends InternalServerErrorException {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'OAuthSSOError.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'AuthCodeFailureLoggableException.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

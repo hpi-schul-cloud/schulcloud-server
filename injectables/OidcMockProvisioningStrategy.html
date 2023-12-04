@@ -381,7 +381,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
 import jwt, { JwtPayload } from &#x27;jsonwebtoken&#x27;;
-import { OAuthSSOError } from &#x27;@modules/oauth/loggable&#x27;;
+import { IdTokenExtractionFailureLoggableException } from &#x27;@modules/oauth/loggable&#x27;;
 import { ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto } from &#x27;../../dto&#x27;;
 import { ProvisioningStrategy } from &#x27;../base.strategy&#x27;;
 
@@ -394,7 +394,7 @@ export class OidcMockProvisioningStrategy extends ProvisioningStrategy {
 	override async getData(input: OauthDataStrategyInputDto): Promise&lt;OauthDataDto&gt; {
 		const idToken &#x3D; jwt.decode(input.idToken, { json: true }) as (JwtPayload &amp; { external_sub?: string }) | null;
 		if (!idToken || !idToken.external_sub) {
-			throw new OAuthSSOError(&#x27;Failed to extract external_sub&#x27;, &#x27;sso_jwt_problem&#x27;);
+			throw new IdTokenExtractionFailureLoggableException(&#x27;external_sub&#x27;);
 		}
 
 		const externalUser: ExternalUserDto &#x3D; new ExternalUserDto({
