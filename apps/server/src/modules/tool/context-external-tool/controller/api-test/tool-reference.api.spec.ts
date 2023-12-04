@@ -14,14 +14,15 @@ import {
 	externalToolEntityFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
+	contextExternalToolConfigurationStatusResponseFactory,
 } from '@shared/testing';
+
 import { Response } from 'supertest';
 import { CustomParameterLocation, CustomParameterScope, ToolContextType } from '../../../common/enum';
 import { ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
 import { ContextExternalToolContextParams, ToolReferenceListResponse, ToolReferenceResponse } from '../dto';
-import { ToolConfigurationStatusResponse } from '../dto/tool-configuration-status.response';
 
 describe('ToolReferenceController (API)', () => {
 	let app: INestApplication;
@@ -174,7 +175,10 @@ describe('ToolReferenceController (API)', () => {
 						{
 							contextToolId: contextExternalToolEntity.id,
 							displayName: contextExternalToolEntity.displayName as string,
-							status: ToolConfigurationStatusResponse.LATEST,
+							status: contextExternalToolConfigurationStatusResponseFactory.build({
+								isOutdatedOnScopeSchool: false,
+								isOutdatedOnScopeContext: false,
+							}),
 							logoUrl: `http://localhost:3030/api/v3/tools/external-tools/${externalToolEntity.id}/logo`,
 							openInNewTab: externalToolEntity.openNewTab,
 						},
@@ -303,7 +307,10 @@ describe('ToolReferenceController (API)', () => {
 				expect(response.body).toEqual<ToolReferenceResponse>({
 					contextToolId: contextExternalToolEntity.id,
 					displayName: contextExternalToolEntity.displayName as string,
-					status: ToolConfigurationStatusResponse.LATEST,
+					status: contextExternalToolConfigurationStatusResponseFactory.build({
+						isOutdatedOnScopeSchool: false,
+						isOutdatedOnScopeContext: false,
+					}),
 					logoUrl: `http://localhost:3030/api/v3/tools/external-tools/${externalToolEntity.id}/logo`,
 					openInNewTab: externalToolEntity.openNewTab,
 				});

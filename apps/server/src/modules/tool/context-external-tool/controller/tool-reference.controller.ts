@@ -60,7 +60,8 @@ export class ToolReferenceController {
 
 		const toolReferenceResponses: ToolReferenceResponse[] =
 			ContextExternalToolResponseMapper.mapToToolReferenceResponses(toolReferences);
-		const toolReferenceListResponse = new ToolReferenceListResponse(toolReferenceResponses);
+
+		const toolReferenceListResponse: ToolReferenceListResponse = new ToolReferenceListResponse(toolReferenceResponses);
 
 		return toolReferenceListResponse;
 	}

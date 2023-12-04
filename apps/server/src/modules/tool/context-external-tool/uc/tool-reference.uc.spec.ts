@@ -3,8 +3,8 @@ import { AuthorizationContextBuilder } from '@modules/authorization';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { contextExternalToolFactory, externalToolFactory } from '@shared/testing';
-import { ToolConfigurationStatus, ToolContextType } from '../../common/enum';
+import { contextExternalToolFactory, externalToolFactory, toolConfigurationStatusFactory } from '@shared/testing';
+import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ExternalTool } from '../../external-tool/domain';
 import { ContextExternalTool, ToolReference } from '../domain';
@@ -60,7 +60,10 @@ describe('ToolReferenceUc', () => {
 					logoUrl: externalTool.logoUrl,
 					contextToolId: contextExternalTool.id as string,
 					displayName: contextExternalTool.displayName as string,
-					status: ToolConfigurationStatus.LATEST,
+					status: toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeSchool: false,
+						isOutdatedOnScopeContext: false,
+					}),
 					openInNewTab: externalTool.openNewTab,
 				});
 
@@ -146,7 +149,10 @@ describe('ToolReferenceUc', () => {
 					logoUrl: externalTool.logoUrl,
 					contextToolId: contextExternalTool.id as string,
 					displayName: contextExternalTool.displayName as string,
-					status: ToolConfigurationStatus.LATEST,
+					status: toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeSchool: false,
+						isOutdatedOnScopeContext: false,
+					}),
 					openInNewTab: externalTool.openNewTab,
 				});
 
