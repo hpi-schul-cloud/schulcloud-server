@@ -311,6 +311,20 @@ export class FilesStorageService {
 		}
 	}
 
+	public async removeCreatorIdFromFileRecord(userId: EntityId): Promise<number> {
+		const [fileRecords] = await this.fileRecordRepo.findByCreatorId(userId);
+
+		if (fileRecords.length === 0) {
+			return 0;
+		}
+
+		fileRecords.forEach((entity) => entity.removeCreatorId());
+
+		await this.fileRecordRepo.save(fileRecords);
+
+		return fileRecords.length;
+	}
+
 	// restore
 	private async restoreFilesInFileStorageClient(fileRecords: FileRecord[]) {
 		const paths = getPaths(fileRecords);

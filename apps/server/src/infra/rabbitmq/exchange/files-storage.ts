@@ -51,7 +51,7 @@ export interface FileDO {
 	parentId: string;
 	securityCheckStatus: ScanStatus;
 	size: number;
-	creatorId: string;
+	creatorId?: string;
 	mimeType: string;
 	parentType: FileRecordParentType;
 	deletedSince?: Date;
