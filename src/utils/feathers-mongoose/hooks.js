@@ -1,3 +1,7 @@
+/*
+This is a port of the deprecated feathers-mongoose module to work with the new feathers version 5.
+Codebase clone from https://github.com/feathersjs-ecosystem/feathers-mongoose
+*/
 exports.toObject =
 	(options = {}, dataField = 'data') =>
 	(hook) => {

@@ -1,4 +1,8 @@
 /* eslint-disable no-unused-expressions */
+/*
+This is a port of the deprecated feathers-mongoose module to work with the new feathers version 5.
+Codebase clone from https://github.com/feathersjs-ecosystem/feathers-mongoose
+*/
 const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
