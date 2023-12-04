@@ -56,8 +56,7 @@ describe('SchoolMikroOrmRepo', () => {
 
 		describe('when query is given', () => {
 			const setup = async () => {
-				const someFederalStateId = new ObjectId().toHexString();
-				const federalState = federalStateFactory.buildWithId({}, someFederalStateId);
+				const federalState = federalStateFactory.build();
 				const entity1 = schoolFactory.build({ federalState });
 				const entity2 = schoolFactory.build();
 				await em.persistAndFlush([entity1, entity2]);
@@ -65,7 +64,7 @@ describe('SchoolMikroOrmRepo', () => {
 				const schoolDo1 = SchoolEntityMapper.mapToDo(entity1);
 				const schoolDo2 = SchoolEntityMapper.mapToDo(entity2);
 
-				const query = { federalStateId: someFederalStateId };
+				const query = { federalStateId: federalState.id };
 
 				return { schoolDo1, schoolDo2, query };
 			};
