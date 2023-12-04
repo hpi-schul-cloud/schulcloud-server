@@ -15,7 +15,6 @@ describe('School', () => {
 	describe('removeFeature', () => {
 		it('should remove the given feature from the features set', () => {
 			const feature = 'test feature' as SchoolFeature;
-
 			const school = schoolFactory.build({
 				features: new Set([feature]),
 			});

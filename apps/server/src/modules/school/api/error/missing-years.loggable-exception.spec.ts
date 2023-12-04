@@ -8,6 +8,7 @@ describe('MissingYearsLoggableException', () => {
 			const result = exception.getLogMessage();
 
 			expect(result).toStrictEqual({
+				message: 'There must exist at least three school years: last, active and next.',
 				type: 'INTERNAL_SERVER_ERROR',
 				stack: exception.stack,
 			});
