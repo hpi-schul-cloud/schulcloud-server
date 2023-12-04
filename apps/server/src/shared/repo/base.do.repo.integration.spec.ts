@@ -9,6 +9,8 @@ import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { LegacyLogger } from '@src/core/logger';
 import { BaseDO } from '@src/shared/domain/domainobject';
 
+const TEST_CREATED_AT = new Date('2022-01-01');
+
 describe('BaseDORepo', () => {
 	@Entity()
 	class TestEntity extends BaseEntityWithTimestamps {
@@ -24,10 +26,13 @@ describe('BaseDORepo', () => {
 	class TestDO extends BaseDO {
 		name: string;
 
+		createdAt?: Date = new Date();
+
 		constructor(entityDO: TestDO = { name: 'test' }) {
 			super();
 			this.id = entityDO.id;
 			this.name = entityDO.name;
+			this.createdAt = TEST_CREATED_AT;
 		}
 	}
 
@@ -48,6 +53,7 @@ describe('BaseDORepo', () => {
 		mapDOToEntityProperties(entityDO: TestDO): EntityData<TestEntity> {
 			return {
 				name: entityDO.name,
+				createdAt: TEST_CREATED_AT,
 			};
 		}
 	}
@@ -100,6 +106,7 @@ describe('BaseDORepo', () => {
 
 			const result = await em.find(TestEntity, {});
 			expect(result).toHaveLength(1);
+			expect(result[0].createdAt).not.toEqual(TEST_CREATED_AT);
 		});
 
 		it('should persist and flush a single updated entity', async () => {
@@ -251,6 +258,16 @@ describe('BaseDORepo', () => {
 				const entities: TestEntity[] = await em.find(repo.entityName, {});
 
 				expect(entities.length).toEqual(0);
+			});
+		});
+
+		describe('when domainobject has no id', () => {
+			it('should throw an error', async () => {
+				const { testDO1 } = await setupDelete();
+
+				testDO1.id = undefined;
+
+				await expect(repo.delete([testDO1])).rejects.toThrowError();
 			});
 		});
 	});
