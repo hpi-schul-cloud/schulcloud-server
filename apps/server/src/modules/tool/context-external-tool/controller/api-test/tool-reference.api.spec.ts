@@ -14,9 +14,9 @@ import {
 	externalToolEntityFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
+	contextExternalToolConfigurationStatusResponseFactory,
 } from '@shared/testing';
 
-import { contextExternalToolConfigurationStatusResponseFactory } from '@shared/testing/factory/context-external-tool-configuration-status-response.factory';
 import { Response } from 'supertest';
 import { CustomParameterLocation, CustomParameterScope, ToolContextType } from '../../../common/enum';
 import { ExternalToolEntity } from '../../../external-tool/entity';

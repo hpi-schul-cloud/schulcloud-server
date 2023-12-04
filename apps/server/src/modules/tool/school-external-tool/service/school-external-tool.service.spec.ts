@@ -2,9 +2,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { SchoolExternalToolRepo } from '@shared/repo';
-import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { schoolToolConfigurationStatusFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool-configuration-status.factory';
-import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import {
+	schoolExternalToolFactory,
+	schoolToolConfigurationStatusFactory,
+	externalToolFactory,
+} from '@shared/testing/factory';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';

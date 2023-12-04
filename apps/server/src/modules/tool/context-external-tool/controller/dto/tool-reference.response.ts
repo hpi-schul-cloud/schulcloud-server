@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ContextExternalToolConfigurationStatusResponse } from '../../../common/controller/dto/context-external-tool-configuration-status.response';
+import { ContextExternalToolConfigurationStatusResponse } from '../../../common/controller/dto';
 
 export class ToolReferenceResponse {
 	@ApiProperty({ nullable: false, required: true, description: 'The id of the tool in the context' })

@@ -1,6 +1,9 @@
-import { schoolExternalToolFactory } from '@shared/testing/factory';
-import { schoolToolConfigurationStatusFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool-configuration-status.factory';
-import { schoolToolConfigurationStatusResponseFactory } from '@shared/testing/factory/school-tool-configuration-status-response.factory';
+import {
+	schoolExternalToolFactory,
+	schoolToolConfigurationStatusFactory,
+	schoolToolConfigurationStatusResponseFactory,
+} from '@shared/testing/factory';
+
 import { SchoolExternalToolResponse, SchoolExternalToolSearchListResponse } from '../controller/dto';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolResponseMapper } from './school-external-tool-response.mapper';
