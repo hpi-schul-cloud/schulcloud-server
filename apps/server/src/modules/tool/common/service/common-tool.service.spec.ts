@@ -84,7 +84,7 @@ describe('CommonToolService', () => {
 
 				expect(result).toEqual(
 					toolConfigurationStatusFactory.build({
-						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeContext: true,
 						isOutdatedOnScopeSchool: true,
 					})
 				);
@@ -116,7 +116,7 @@ describe('CommonToolService', () => {
 				expect(result).toEqual(
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: true,
-						isOutdatedOnScopeSchool: false,
+						isOutdatedOnScopeSchool: true,
 					})
 				);
 			});
@@ -147,7 +147,7 @@ describe('CommonToolService', () => {
 				expect(result).toEqual(
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: true,
-						isOutdatedOnScopeSchool: false,
+						isOutdatedOnScopeSchool: true,
 					})
 				);
 			});

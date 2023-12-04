@@ -22,18 +22,16 @@ export class CommonToolService {
 			isOutdatedOnScopeSchool: true,
 		});
 
-		if (!this.isLatest(schoolExternalTool, externalTool)) {
+		if (
+			this.isLatest(schoolExternalTool, externalTool) &&
+			this.isLatest(contextExternalTool, schoolExternalTool) &&
+			this.isLatest(contextExternalTool, externalTool)
+		) {
 			configurationStatus.isOutdatedOnScopeContext = false;
-			configurationStatus.isOutdatedOnScopeSchool = true;
-		} else if (!this.isLatest(contextExternalTool, schoolExternalTool)) {
-			configurationStatus.isOutdatedOnScopeContext = true;
 			configurationStatus.isOutdatedOnScopeSchool = false;
-		} else if (!this.isLatest(contextExternalTool, externalTool)) {
-			configurationStatus.isOutdatedOnScopeContext = true;
-			configurationStatus.isOutdatedOnScopeSchool = true;
 		} else {
-			configurationStatus.isOutdatedOnScopeContext = false;
-			configurationStatus.isOutdatedOnScopeSchool = false;
+			configurationStatus.isOutdatedOnScopeContext = true;
+			configurationStatus.isOutdatedOnScopeSchool = true;
 		}
 
 		return configurationStatus;
