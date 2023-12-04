@@ -264,7 +264,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { PrimaryKey, Property, SerializedPrimaryKey } from &#x27;@mikro-orm/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OptionalProps, PrimaryKey, Property, SerializedPrimaryKey } from &#x27;@mikro-orm/core&#x27;;
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import type { AuthorizableObject } from &#x27;../domain-object&#x27;;
 import type { IEntity } from &#x27;../interface&#x27;;
@@ -286,7 +286,9 @@ export type BaseEntityReference &#x3D; &#x27;id&#x27; | &#x27;_id&#x27;;
 // that can be cumbersome e.g. in tests. that&#x27;s why we define it as a root class here.
 // TODO check if we can use EntitySchema to prevent code duplication (decorators don&#x27;t work for defining properties btw.)
 
-export abstract class BaseEntityWithTimestamps implements AuthorizableObject {
+export abstract class BaseEntityWithTimestamps&lt;Optional &#x3D; never&gt; implements AuthorizableObject {
+	[OptionalProps]?: Optional | &#x27;createdAt&#x27; | &#x27;updatedAt&#x27;;
+
 	@PrimaryKey()
 	_id!: ObjectId;
 

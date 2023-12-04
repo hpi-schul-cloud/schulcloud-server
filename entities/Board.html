@@ -187,7 +187,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @OneToOne({type: &#x27;Course&#x27;, fieldName: &#x27;courseId&#x27;, wrappedReference: true, unique: true})<br />
+                            @OneToOne({type: &#x27;Course&#x27;, fieldName: &#x27;courseId&#x27;, wrappedReference: true, unique: true, owner: true})<br />
                         </code>
                     </td>
                 </tr>
@@ -267,7 +267,7 @@ export class Board extends BaseEntityWithTimestamps {
 		this.course &#x3D; wrap(props.course).toReference();
 	}
 
-	@OneToOne({ type: &#x27;Course&#x27;, fieldName: &#x27;courseId&#x27;, wrappedReference: true, unique: true })
+	@OneToOne({ type: &#x27;Course&#x27;, fieldName: &#x27;courseId&#x27;, wrappedReference: true, unique: true, owner: true })
 	course: IdentifiedReference&lt;Course&gt;;
 
 	@ManyToMany(&#x27;BoardElement&#x27;, undefined, { fieldName: &#x27;referenceIds&#x27; })

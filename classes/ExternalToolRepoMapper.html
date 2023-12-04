@@ -687,7 +687,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#IExternalToolProperties" target="_self" >IExternalToolProperties</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/ExternalTool.html" target="_self" >EntityData&lt;ExternalToolEntity&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1061,10 +1061,10 @@ import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
 	ExternalToolEntity,
-	IExternalToolProperties,
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
 } from &#x27;@modules/tool/external-tool/entity&#x27;;
+import { EntityData } from &#x27;@mikro-orm/core&#x27;;
 
 // TODO: maybe rename because of usage in external tool repo and school external tool repo
 export class ExternalToolRepoMapper {
@@ -1129,7 +1129,7 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapDOToEntityProperties(entityDO: ExternalTool): IExternalToolProperties {
+	static mapDOToEntityProperties(entityDO: ExternalTool): EntityData&lt;ExternalToolEntity&gt; {
 		let config: BasicToolConfigEntity | Oauth2ToolConfigEntity | Lti11ToolConfigEntity;
 		switch (entityDO.config.type) {
 			case ToolConfigType.BASIC:

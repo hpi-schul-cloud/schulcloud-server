@@ -322,7 +322,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @OneToOne(undefined, undefined, {nullable: false})<br />
+                            @OneToOne(undefined, school &#x3D;&gt; school.userLoginMigration, {nullable: false, owner: true})<br />
                         </code>
                     </td>
                 </tr>
@@ -458,7 +458,7 @@ export type IUserLoginMigration &#x3D; Readonly&lt;Omit&lt;UserLoginMigrationEnt
 
 @Entity({ tableName: &#x27;user-login-migrations&#x27; })
 export class UserLoginMigrationEntity extends BaseEntityWithTimestamps {
-	@OneToOne(() &#x3D;&gt; SchoolEntity, undefined, { nullable: false })
+	@OneToOne(() &#x3D;&gt; SchoolEntity, (school) &#x3D;&gt; school.userLoginMigration, { nullable: false, owner: true })
 	school: SchoolEntity;
 
 	// undefined, if migrating from &#x27;local&#x27;

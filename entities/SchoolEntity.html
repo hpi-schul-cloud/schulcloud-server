@@ -316,7 +316,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="107" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:107</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="105" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:105</a></div>
                         </td>
                     </tr>
 
@@ -640,13 +640,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @OneToOne(undefined, userLoginMigration &#x3D;&gt; userLoginMigration.school, {orphanRemoval: true, nullable: true, fieldName: &#x27;userLoginMigrationId&#x27;})<br />
+                            @OneToOne(undefined, userLoginMigration &#x3D;&gt; userLoginMigration.school, {orphanRemoval: true})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="104" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:104</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="102" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:102</a></div>
                         </td>
                     </tr>
 
@@ -757,8 +757,6 @@ export class SchoolEntity extends BaseEntity {
 		(userLoginMigration: UserLoginMigrationEntity) &#x3D;&gt; userLoginMigration.school,
 		{
 			orphanRemoval: true,
-			nullable: true,
-			fieldName: &#x27;userLoginMigrationId&#x27;,
 		}
 	)
 	userLoginMigration?: UserLoginMigrationEntity;

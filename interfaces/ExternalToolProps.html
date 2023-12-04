@@ -629,6 +629,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BaseDO } from &#x27;@shared/domain/domainobject/base.do&#x27;;
+import { InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { ToolVersion } from &#x27;../../common/interface&#x27;;
 import { Oauth2ToolConfig, BasicToolConfig, Lti11ToolConfig, ExternalToolConfig } from &#x27;./config&#x27;;
 import { CustomParameter } from &#x27;../../common/domain&#x27;;
@@ -686,7 +687,15 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 		this.url &#x3D; props.url;
 		this.logoUrl &#x3D; props.logoUrl;
 		this.logo &#x3D; props.logo;
-		this.config &#x3D; props.config;
+		if (ExternalTool.isBasicConfig(props.config)) {
+			this.config &#x3D; new BasicToolConfig(props.config);
+		} else if (ExternalTool.isOauth2Config(props.config)) {
+			this.config &#x3D; new Oauth2ToolConfig(props.config);
+		} else if (ExternalTool.isLti11Config(props.config)) {
+			this.config &#x3D; new Lti11ToolConfig(props.config);
+		} else {
+			throw new InternalServerErrorException(&#x60;Unknown tool config&#x60;);
+		}
 		this.parameters &#x3D; props.parameters;
 		this.isHidden &#x3D; props.isHidden;
 		this.openNewTab &#x3D; props.openNewTab;
@@ -696,6 +705,10 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 
 	getVersion(): number {
 		return this.version;
+	}
+
+	static isBasicConfig(config: ExternalToolConfig): config is BasicToolConfig {
+		return ToolConfigType.BASIC &#x3D;&#x3D;&#x3D; config.type;
 	}
 
 	static isOauth2Config(config: ExternalToolConfig): config is Oauth2ToolConfig {
