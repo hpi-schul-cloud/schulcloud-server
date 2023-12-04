@@ -5,27 +5,16 @@ import {
 } from './common-cartridge-metadata-element';
 
 describe('CommonCartridgeMetadataElement', () => {
-	let sut: CommonCartridgeMetadataElement;
-
-	// move testfixtures into the blocks they are used in
-	const propsVersion1: CommonCartridgeMetadataElementProps = {
-		version: CommonCartridgeVersion.V_1_1_0,
-		title: 'Metadata Element Version 1.1',
-		creationDate: new Date(),
-		copyrightOwners: ['copyrightOwner1Version1', 'copyrightOwner2Version1'],
-	};
-	const propsVersion3: CommonCartridgeMetadataElementProps = {
-		version: CommonCartridgeVersion.V_1_3_0,
-		title: 'Metadata Element Version 1.3',
-		creationDate: new Date(),
-		copyrightOwners: ['copyrightOwner1Version3', 'copyrightOwner2Version3'],
-	};
-
 	describe('getManifestXmlObject', () => {
 		describe('when using common cartridge version 1.1', () => {
-			beforeAll(() => {
-				sut = new CommonCartridgeMetadataElement(propsVersion1);
-			});
+			const propsVersion1: CommonCartridgeMetadataElementProps = {
+				version: CommonCartridgeVersion.V_1_1_0,
+				title: 'Metadata Element Version 1.1',
+				creationDate: new Date(),
+				copyrightOwners: ['copyrightOwner1Version1', 'copyrightOwner2Version1'],
+			};
+
+			const sut = new CommonCartridgeMetadataElement(propsVersion1);
 
 			it('should return correct xml object', () => {
 				const xmlObject = sut.getManifestXmlObject();
@@ -55,9 +44,14 @@ describe('CommonCartridgeMetadataElement', () => {
 		});
 
 		describe('when using common cartridge version 1.3', () => {
-			beforeAll(() => {
-				sut = new CommonCartridgeMetadataElement(propsVersion3);
-			});
+			const propsVersion3: CommonCartridgeMetadataElementProps = {
+				version: CommonCartridgeVersion.V_1_3_0,
+				title: 'Metadata Element Version 1.3',
+				creationDate: new Date(),
+				copyrightOwners: ['copyrightOwner1Version3', 'copyrightOwner2Version3'],
+			};
+
+			const sut = new CommonCartridgeMetadataElement(propsVersion3);
 
 			it('should return correct xml object', () => {
 				const xmlObject = sut.getManifestXmlObject();
