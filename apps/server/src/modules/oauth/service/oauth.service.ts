@@ -1,6 +1,7 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
+import { SchoolFeature } from '@modules/school';
 import { LegacySystemService } from '@modules/system';
 import { SystemDto } from '@modules/system/service';
 import { UserService } from '@modules/user';
@@ -9,7 +10,6 @@ import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { EntityId, LegacySchoolDo, OauthConfigEntity, UserDO } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { SchoolFeature } from '@src/modules/school/domain';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthTokenDto } from '../interface';
 import { OAuthSSOError, SSOErrorCode, UserNotFoundAfterProvisioningLoggableException } from '../loggable';

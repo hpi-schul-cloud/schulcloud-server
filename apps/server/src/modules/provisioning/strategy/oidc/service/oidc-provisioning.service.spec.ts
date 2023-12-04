@@ -6,6 +6,7 @@ import { Group, GroupService } from '@modules/group';
 import { FederalStateService, LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
+import { SchoolFeature } from '@modules/school';
 import { UserService } from '@modules/user';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -23,7 +24,6 @@ import {
 	userDoFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { SchoolFeature } from '@src/modules/school/domain';
 import CryptoJS from 'crypto-js';
 import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';

@@ -3,6 +3,7 @@ import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/learnroom/service';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { SchoolFeature } from '@modules/school';
 import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
@@ -22,7 +23,6 @@ import { courseFactory, roleFactory, setupEntities, userDoFactory, userFactory }
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
-import { SchoolFeature } from '@src/modules/school/domain';
 import { ObjectId } from 'bson';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';

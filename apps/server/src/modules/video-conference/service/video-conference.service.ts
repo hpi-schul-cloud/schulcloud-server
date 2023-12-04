@@ -2,6 +2,7 @@ import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { SchoolFeature } from '@modules/school';
 import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import {
@@ -19,7 +20,6 @@ import {
 	VideoConferenceScope,
 } from '@shared/domain';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import { SchoolFeature } from '@src/modules/school/domain';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
 import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';

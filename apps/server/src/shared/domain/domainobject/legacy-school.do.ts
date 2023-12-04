@@ -1,6 +1,6 @@
+import { SchoolFeature } from '@modules/school';
 import { FederalStateEntity, SchoolYearEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { SchoolFeature } from '@src/modules/school/domain';
 import { BaseDO } from './base.do';
 
 /**

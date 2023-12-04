@@ -2,6 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { SchoolFeature } from '@modules/school';
 import { ServerTestModule } from '@modules/server/server.module';
 import {
 	FilterImportUserParams,
@@ -43,7 +44,6 @@ import {
 } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
-import { SchoolFeature } from '@src/modules/school/domain';
 
 describe('ImportUser Controller (API)', () => {
 	let app: INestApplication;

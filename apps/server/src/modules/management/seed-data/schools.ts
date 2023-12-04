@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
+import { SchoolFeature, SchoolPurpose } from '@modules/school';
 import { FederalStateEntity, SchoolProperties, SchoolRoles, SchoolYearEntity, SystemEntity } from '@shared/domain';
 import { federalStateFactory, schoolFactory } from '@shared/testing';
-import { SchoolFeature, SchoolPurpose } from '@src/modules/school/domain';
 import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
 import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';

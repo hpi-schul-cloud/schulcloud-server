@@ -4,6 +4,7 @@ import { DefaultEncryptionService, EncryptionService, SymetricKeyEncryptionServi
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { ProvisioningService } from '@modules/provisioning';
+import { SchoolFeature } from '@modules/school';
 import { OauthConfigDto } from '@modules/system/service';
 import { SystemDto } from '@modules/system/service/dto/system.dto';
 import { UserService } from '@modules/user';
@@ -14,7 +15,6 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { legacySchoolDoFactory, setupEntities, systemEntityFactory, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { SchoolFeature } from '@src/modules/school/domain';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { LegacySystemService } from '../../system/service/legacy-system.service';
 import { OAuthTokenDto } from '../interface';
