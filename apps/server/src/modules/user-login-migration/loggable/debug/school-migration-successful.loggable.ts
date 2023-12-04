@@ -1,4 +1,4 @@
-import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain';
+import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { Loggable, LogMessage } from '@src/core/logger';
 
 export class SchoolMigrationSuccessfulLoggable implements Loggable {

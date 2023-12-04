@@ -1,7 +1,9 @@
 import { EntityData, EntityName, FilterQuery, Primary, RequiredEntityData, Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { BaseDO, BaseEntity, baseEntityProperties, EntityId } from '@shared/domain';
+import { BaseDO } from '@shared/domain/domainobject';
+import { BaseEntity, baseEntityProperties } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 
 @Injectable()

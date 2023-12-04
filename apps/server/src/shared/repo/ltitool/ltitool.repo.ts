@@ -1,7 +1,7 @@
 import { EntityData, EntityName, NotFoundError } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { LtiPrivacyPermission, LtiTool } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { LtiPrivacyPermission, LtiTool } from '@shared/domain/entity';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 
 @Injectable()

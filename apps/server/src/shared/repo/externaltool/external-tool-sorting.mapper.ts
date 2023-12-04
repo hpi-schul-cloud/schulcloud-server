@@ -1,7 +1,7 @@
 import { QueryOrderMap } from '@mikro-orm/core';
-import { SortOrderMap } from '@shared/domain';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { SortOrderMap } from '@shared/domain/interface';
 
 export class ExternalToolSortingMapper {
 	static mapDOSortOrderToQueryOrder(sort: SortOrderMap<ExternalTool>): QueryOrderMap<ExternalToolEntity> {

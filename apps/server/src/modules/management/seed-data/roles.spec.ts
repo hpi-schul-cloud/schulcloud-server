@@ -1,4 +1,4 @@
-import { RoleName } from '@shared/domain';
+import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@shared/testing';
 import * as roleModule from './roles';
 

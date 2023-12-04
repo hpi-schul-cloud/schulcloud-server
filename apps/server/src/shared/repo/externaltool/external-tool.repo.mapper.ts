@@ -42,6 +42,7 @@ export class ExternalToolRepoMapper {
 			isHidden: entity.isHidden,
 			openNewTab: entity.openNewTab,
 			version: entity.version,
+			restrictToContexts: entity.restrictToContexts,
 		});
 	}
 
@@ -101,6 +102,7 @@ export class ExternalToolRepoMapper {
 			isHidden: entityDO.isHidden,
 			openNewTab: entityDO.openNewTab,
 			version: entityDO.version,
+			restrictToContexts: entityDO.restrictToContexts,
 		};
 	}
 

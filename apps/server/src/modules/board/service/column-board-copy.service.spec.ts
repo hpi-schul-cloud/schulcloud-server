@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, ColumnBoard, UserDO } from '@shared/domain';
-import { CourseRepo } from '@shared/repo';
-import { columnBoardFactory, courseFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { UserService } from '@modules/user';
+import { Test, TestingModule } from '@nestjs/testing';
+import { BoardExternalReferenceType, ColumnBoard, UserDO } from '@shared/domain/domainobject';
+import { CourseRepo } from '@shared/repo';
+import { columnBoardFactory, courseFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { BoardDoRepo } from '../repo';
 import {
 	BoardDoCopyService,

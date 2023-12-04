@@ -9,18 +9,10 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Course,
-	EntityId,
-	Permission,
-	Role,
-	RoleName,
-	RoleReference,
-	TeamEntity,
-	UserDO,
-	VideoConferenceDO,
-} from '@shared/domain';
-import { VideoConferenceScope } from '@shared/domain/interface';
+import { RoleReference, UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
+import { Course, Role, TeamEntity } from '@shared/domain/entity';
+import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';

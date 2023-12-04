@@ -4,6 +4,7 @@ import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '
 import { CopyFilesService } from '@modules/files-storage-client';
 import { TaskCopyService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
+import { AuthorizableObject } from '@shared/domain/domain-object';
 import {
 	BaseEntity,
 	ComponentEtherpadProperties,
@@ -13,11 +14,10 @@ import {
 	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
-	EntityId,
 	LessonEntity,
 	Material,
-} from '@shared/domain';
-import { AuthorizableObject } from '@shared/domain/domain-object';
+} from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import {
 	courseFactory,
 	lessonFactory,

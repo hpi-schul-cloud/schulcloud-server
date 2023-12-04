@@ -7,9 +7,9 @@ import { ContextExternalToolQuery } from '@modules/tool/context-external-tool/uc
 import { SchoolExternalToolRefDO } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { BaseDORepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { EntityId } from '../../domain';
 import { ExternalToolRepoMapper } from '../externaltool';
 import { ContextExternalToolScope } from './context-external-tool.scope';
 
@@ -57,6 +57,24 @@ export class ContextExternalToolRepo extends BaseDORepo<ContextExternalTool, Con
 				populate: ['schoolTool.school'],
 			}
 		);
+
+		const mapped: ContextExternalTool = this.mapEntityToDO(entity);
+
+		return mapped;
+	}
+
+	public async findByIdOrNull(id: EntityId): Promise<ContextExternalTool | null> {
+		const entity: ContextExternalToolEntity | null = await this._em.findOne(
+			this.entityName,
+			{ id },
+			{
+				populate: ['schoolTool.school'],
+			}
+		);
+
+		if (!entity) {
+			return null;
+		}
 
 		const mapped: ContextExternalTool = this.mapEntityToDO(entity);
 

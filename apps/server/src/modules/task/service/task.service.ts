@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { Counted, EntityId, IFindOptions, Task } from '@shared/domain';
-import { TaskRepo } from '@shared/repo';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { Injectable } from '@nestjs/common';
+import { Task } from '@shared/domain/entity';
+import { IFindOptions } from '@shared/domain/interface';
+import { Counted, EntityId } from '@shared/domain/types';
+import { TaskRepo } from '@shared/repo';
 import { SubmissionService } from './submission.service';
 
 @Injectable()

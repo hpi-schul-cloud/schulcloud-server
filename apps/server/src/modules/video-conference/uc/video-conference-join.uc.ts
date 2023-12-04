@@ -1,11 +1,12 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, UserDO, VideoConferenceDO } from '@shared/domain';
-import { ErrorStatus } from '@modules/video-conference/error/error-status.enum';
 import { UserService } from '@modules/user';
+import { ErrorStatus } from '@modules/video-conference/error/error-status.enum';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { BBBJoinConfigBuilder, BBBRole, BBBService } from '../bbb';
-import { ScopeRef, VideoConferenceJoin, VideoConferenceState } from './dto';
-import { VideoConferenceService } from '../service';
 import { PermissionMapping } from '../mapper/video-conference.mapper';
+import { VideoConferenceService } from '../service';
+import { ScopeRef, VideoConferenceJoin, VideoConferenceState } from './dto';
 
 @Injectable()
 export class VideoConferenceJoinUc {

@@ -1,5 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InputFormat, Task, TaskParentDescriptions, TaskStatus, TaskUpdate } from '@shared/domain';
+import { Task, TaskParentDescriptions } from '@shared/domain/entity';
+import { InputFormat, TaskStatus, TaskUpdate } from '@shared/domain/types';
 import { setupEntities, taskFactory } from '@shared/testing';
 import { TaskCreateParams, TaskResponse, TaskStatusResponse, TaskUpdateParams } from '../controller/dto';
 import { TaskMapper } from './task.mapper';

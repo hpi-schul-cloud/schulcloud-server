@@ -4,7 +4,7 @@ import { S3ClientAdapter } from '@infra/s3-client';
 import { IContentMetadata, ILibraryName, IUser, LibraryName } from '@lumieducation/h5p-server';
 import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IEntity } from '@shared/domain';
+import { IEntity } from '@shared/domain/interface';
 import { ObjectID } from 'bson';
 import { Readable } from 'stream';
 import { GetH5PFileResponse } from '../controller/dto';

@@ -1,6 +1,6 @@
-import { Permission } from '@shared/domain';
-import { VideoConferenceState } from './video-conference-state.enum';
+import { Permission } from '@shared/domain/interface';
 import { BBBBaseResponse, BBBResponse } from '../../bbb';
+import { VideoConferenceState } from './video-conference-state.enum';
 
 export class VideoConference<T extends BBBBaseResponse> {
 	state: VideoConferenceState;

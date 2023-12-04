@@ -1,7 +1,8 @@
 import { LessonService } from '@modules/lesson/service';
 import { TaskService } from '@modules/task/service';
 import { Injectable } from '@nestjs/common';
-import { ComponentProperties, Course, EntityId, Task } from '@shared/domain';
+import { ComponentProperties, Course, Task } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { ComponentType } from '@src/shared/domain/entity/lesson.entity';
 import {
 	CommonCartridgeFileBuilder,
@@ -58,6 +59,11 @@ export class CommonCartridgeExportService {
 				if (resourceProps) {
 					organizationBuilder.addResourceToOrganization(resourceProps);
 				}
+			});
+
+			const tasks = lesson.tasks.getItems();
+			tasks.forEach((task) => {
+				organizationBuilder.addResourceToOrganization(this.mapTaskToWebContentResource(task, version));
 			});
 		});
 	}

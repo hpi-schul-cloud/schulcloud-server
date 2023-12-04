@@ -4,15 +4,15 @@ import { EntityData, EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { LegacySchoolDo } from '@shared/domain/domainobject';
 import {
-	LegacySchoolDo,
 	SchoolEntity,
 	SchoolRolePermission,
 	SchoolRoles,
 	SchoolYearEntity,
 	SystemEntity,
 	UserLoginMigrationEntity,
-} from '@shared/domain';
+} from '@shared/domain/entity';
 import {
 	legacySchoolDoFactory,
 	schoolFactory,

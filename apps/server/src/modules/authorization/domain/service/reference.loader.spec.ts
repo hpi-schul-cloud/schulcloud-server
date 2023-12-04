@@ -1,10 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardDoAuthorizableService } from '@modules/board';
+import { LessonService } from '@modules/lesson';
 import { ContextExternalToolAuthorizableService } from '@modules/tool';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import {
 	CourseGroupRepo,
 	CourseRepo,
@@ -16,7 +17,6 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { LessonService } from '@modules/lesson';
 import { AuthorizableReferenceType } from '../type';
 import { ReferenceLoader } from './reference.loader';
 

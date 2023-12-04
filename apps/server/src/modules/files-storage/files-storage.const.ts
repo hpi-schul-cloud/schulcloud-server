@@ -1,4 +1,4 @@
-import { Permission } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 import { AuthorizationContextBuilder } from '../authorization';
 
 export enum FilesStorageInternalActions {
