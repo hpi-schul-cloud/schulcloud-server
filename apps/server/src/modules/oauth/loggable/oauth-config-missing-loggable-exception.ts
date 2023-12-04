@@ -6,7 +6,7 @@ export class OauthConfigMissingLoggableException extends OauthSsoErrorLoggableEx
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	override getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			type: 'SSO_INTERNAL_ERROR',
 			message: 'Requested system has no oauth configured',

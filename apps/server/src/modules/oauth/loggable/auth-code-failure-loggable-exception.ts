@@ -6,7 +6,7 @@ export class AuthCodeFailureLoggableException extends OauthSsoErrorLoggableExcep
 		super(errorCode ?? 'sso_auth_code_step', 'Authorization Query Object has no authorization code or error');
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	override getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			type: 'SSO_AUTH_CODE_STEP',
 			message: 'Authorization Query Object has no authorization code or error',

@@ -6,7 +6,7 @@ export class IdTokenExtractionFailureLoggableException extends OauthSsoErrorLogg
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	override getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			type: 'SSO_JWT_PROBLEM',
 			message: 'Failed to extract field',

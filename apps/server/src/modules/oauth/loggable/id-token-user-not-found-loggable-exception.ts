@@ -6,7 +6,7 @@ export class IdTokenUserNotFoundLoggableException extends OauthSsoErrorLoggableE
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	override getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			type: 'SSO_USER_NOTFOUND',
 			message: 'Failed to find user with uuid from id token',

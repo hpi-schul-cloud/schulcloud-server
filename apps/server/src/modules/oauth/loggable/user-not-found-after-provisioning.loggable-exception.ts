@@ -14,7 +14,7 @@ export class UserNotFoundAfterProvisioningLoggableException extends OauthSsoErro
 		);
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	override getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			message: this.message,
 			stack: this.stack,

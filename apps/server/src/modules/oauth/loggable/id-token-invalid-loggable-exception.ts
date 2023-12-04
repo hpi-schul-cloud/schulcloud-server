@@ -2,7 +2,7 @@ import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@src/cor
 import { OauthSsoErrorLoggableException } from './oauth-sso-error-loggable-exception';
 
 export class IdTokenInvalidLoggableException extends OauthSsoErrorLoggableException {
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	override getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			type: 'SSO_JWT_PROBLEM',
 			message: 'Failed to validate idToken',

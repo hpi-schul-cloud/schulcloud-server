@@ -1,9 +1,10 @@
+import { ObjectId } from 'bson';
 import { OauthConfigMissingLoggableException } from './oauth-config-missing-loggable-exception';
 
 describe(OauthConfigMissingLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const systemId = 'systemId';
+			const systemId = new ObjectId().toHexString();
 			const exception = new OauthConfigMissingLoggableException(systemId);
 
 			return {
