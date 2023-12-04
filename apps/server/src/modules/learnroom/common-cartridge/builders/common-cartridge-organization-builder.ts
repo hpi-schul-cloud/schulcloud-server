@@ -29,7 +29,7 @@ export class CommonCartridgeOrganizationBuilder {
 		return this.options.folder ? `${this.options.folder}/${this.options.identifier}` : this.options.identifier;
 	}
 
-	addSubOrganization(
+	public addSubOrganization(
 		options: OmitVersionAndFolder<CommonCartridgeOrganizationBuilderOptions>
 	): CommonCartridgeOrganizationBuilder {
 		const child = new CommonCartridgeOrganizationBuilder(
@@ -42,7 +42,7 @@ export class CommonCartridgeOrganizationBuilder {
 		return child;
 	}
 
-	addResource(props: CommonCartridgeResourceProps): CommonCartridgeOrganizationBuilder {
+	public addResource(props: CommonCartridgeResourceProps): CommonCartridgeOrganizationBuilder {
 		const resource = CommonCartridgeResourceFactory.create({
 			...props,
 			version: this.options.version,
@@ -55,7 +55,7 @@ export class CommonCartridgeOrganizationBuilder {
 		return this;
 	}
 
-	build(): CommonCartridgeElement {
+	public build(): CommonCartridgeElement {
 		return new CommonCartridgeOrganizationElement({
 			identifier: this.options.identifier,
 			title: this.options.title,

@@ -15,15 +15,15 @@ export type CommonCartridgeLtiResourceProps = {
 export class CommonCartridgeLtiResource implements CommonCartridgeResource {
 	constructor(private readonly props: CommonCartridgeLtiResourceProps) {}
 
-	canInline(): boolean {
+	public canInline(): boolean {
 		return false;
 	}
 
-	getFilePath(): string {
+	public getFilePath(): string {
 		return `${this.props.folder}/${this.props.identifier}.xml`;
 	}
 
-	getFileContent(): string {
+	public getFileContent(): string {
 		return buildXmlString({
 			cartridge_basiclti_link: {
 				$: this.getXmlNamespacesByVersion(),
@@ -47,7 +47,7 @@ export class CommonCartridgeLtiResource implements CommonCartridgeResource {
 		});
 	}
 
-	getManifestXmlObject(): Record<string, unknown> {
+	public getManifestXmlObject(): Record<string, unknown> {
 		return {
 			$: {
 				identifier: this.props.identifier,

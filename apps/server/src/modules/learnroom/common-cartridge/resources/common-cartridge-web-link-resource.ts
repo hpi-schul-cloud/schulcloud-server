@@ -14,15 +14,15 @@ export type CommonCartridgeWebLinkResourceProps = {
 export class CommonCartridgeWebLinkResource implements CommonCartridgeResource {
 	constructor(private readonly props: CommonCartridgeWebLinkResourceProps) {}
 
-	canInline(): boolean {
+	public canInline(): boolean {
 		return false;
 	}
 
-	getFilePath(): string {
+	public getFilePath(): string {
 		return `${this.props.folder}/${this.props.identifier}.xml`;
 	}
 
-	getFileContent(): string {
+	public getFileContent(): string {
 		return buildXmlString({
 			webLink: {
 				$: this.getXmlNamespacesByVersion(),
@@ -38,7 +38,7 @@ export class CommonCartridgeWebLinkResource implements CommonCartridgeResource {
 		});
 	}
 
-	getManifestXmlObject(): Record<string, unknown> {
+	public getManifestXmlObject(): Record<string, unknown> {
 		return {
 			$: {
 				identifier: this.props.identifier,

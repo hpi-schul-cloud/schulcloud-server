@@ -31,15 +31,15 @@ export class CommonCartridgeFileBuilder {
 		checkCommonCartridgeVersion(props.version);
 	}
 
-	// TODO: explicitly mark public methods
-
-	addMetadata(props: OmitVersion<CommonCartridgeMetadataElementProps>): CommonCartridgeFileBuilder {
+	public addMetadata(props: OmitVersion<CommonCartridgeMetadataElementProps>): CommonCartridgeFileBuilder {
 		this.metadata = new CommonCartridgeMetadataElement({ ...props, version: this.props.version });
 
 		return this;
 	}
 
-	addOrganization(props: OmitVersion<CommonCartridgeOrganizationBuilderOptions>): CommonCartridgeOrganizationBuilder {
+	public addOrganization(
+		props: OmitVersion<CommonCartridgeOrganizationBuilderOptions>
+	): CommonCartridgeOrganizationBuilder {
 		const builder = new CommonCartridgeOrganizationBuilder(
 			{ ...props, version: this.props.version },
 			this.addResource.bind(this)
@@ -50,7 +50,7 @@ export class CommonCartridgeFileBuilder {
 		return builder;
 	}
 
-	build(): Promise<Buffer> {
+	public build(): Promise<Buffer> {
 		const metadata = checkDefined(this.metadata, 'metadata');
 		const organizations = this.organizationBuilders.map((builder) => builder.build());
 		const manifest = new CommonCartridgeManifestResource({

@@ -19,19 +19,19 @@ export class CommonCartridgeManifestResource implements CommonCartridgeResource 
 
 	constructor(private readonly props: CommonCartridgeManifestElementProps) {}
 
-	canInline(): boolean {
+	public canInline(): boolean {
 		return false;
 	}
 
-	getFilePath(): string {
+	public getFilePath(): string {
 		return 'imsmanifest.xml';
 	}
 
-	getFileContent(): string {
+	public getFileContent(): string {
 		return this.xmlBuilder.buildObject(this.getManifestXmlObject());
 	}
 
-	getManifestXmlObject(): Record<string, unknown> {
+	public getManifestXmlObject(): Record<string, unknown> {
 		return {
 			manifest: {
 				$: this.getXmlNamespacesByVersion(),

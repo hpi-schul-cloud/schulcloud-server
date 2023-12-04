@@ -17,19 +17,19 @@ export type CommonCartridgeWebContentResourceProps = {
 export class CommonCartridgeWebContentResource implements CommonCartridgeResource {
 	constructor(private readonly props: CommonCartridgeWebContentResourceProps) {}
 
-	canInline(): boolean {
+	public canInline(): boolean {
 		return false;
 	}
 
-	getFilePath(): string {
+	public getFilePath(): string {
 		return `${this.props.folder}/${this.props.identifier}.html`;
 	}
 
-	getFileContent(): string {
+	public getFileContent(): string {
 		return this.props.html;
 	}
 
-	getManifestXmlObject(): Record<string, unknown> {
+	public getManifestXmlObject(): Record<string, unknown> {
 		return {
 			$: {
 				identifier: this.props.identifier,
