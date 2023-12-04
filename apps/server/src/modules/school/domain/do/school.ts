@@ -1,6 +1,7 @@
 import { EntityId } from '@shared/domain';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { County, FileStorageType, SchoolFeature, SchoolPermissions, SchoolPurpose } from '../type';
+import { FileStorageType, SchoolFeature, SchoolPermissions, SchoolPurpose } from '../type';
+import { County } from './county';
 import { FederalState } from './federal-state';
 import { SchoolYear } from './school-year';
 import { System } from './system';

@@ -1,5 +1,5 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { County } from '../type';
+import { County } from './county';
 
 export class FederalState extends DomainObject<FederalStateProps> {}
 

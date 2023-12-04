@@ -1,14 +1,16 @@
 import { School } from '../../domain';
 import { SchoolForExternalInviteResponse, SchoolResponse, YearsResponse } from '../dto/response';
+import { FederalStateResponseMapper } from './federal-state.response.mapper';
 
 export class SchoolResponseMapper {
 	public static mapToResponse(school: School, years: YearsResponse): SchoolResponse {
 		const schoolProps = school.getProps();
 
-		const federalState = schoolProps.federalState.getProps();
+		const federalState = FederalStateResponseMapper.mapToResponse(schoolProps.federalState);
 		const currentYear = schoolProps.currentYear?.getProps();
 		const features = schoolProps.features && Array.from(schoolProps.features);
 		const systems = schoolProps.systems?.map((system) => system.getProps());
+		const county = schoolProps.county?.getProps();
 
 		const res = {
 			...schoolProps,
@@ -16,6 +18,7 @@ export class SchoolResponseMapper {
 			federalState,
 			features,
 			systems,
+			county,
 			inMaintenance: school.isInMaintenance(),
 			isExternal: school.isExternal(),
 			years,
