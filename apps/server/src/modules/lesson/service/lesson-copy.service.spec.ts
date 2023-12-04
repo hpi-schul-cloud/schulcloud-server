@@ -1058,6 +1058,44 @@ describe('lesson copy service', () => {
 			configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue(true);
 		});
 
+		it('should not copy neXboard, if FEATURE_COPY_NEXBOARD_ENABLED is false', async () => {
+			const { user, destinationCourse, originalLesson } = setup();
+
+			configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValueOnce(false);
+
+			const status = await copyService.copyLesson({
+				originalLessonId: originalLesson.id,
+				destinationCourse,
+				user,
+			});
+			const lessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
+			expect(configurationSpy).toHaveBeenCalledWith('FEATURE_COPY_NEXBOARD_ENABLED');
+			expect(nexboardService.createNexboard).not.toHaveBeenCalled();
+			expect(lessonContents).toEqual([]);
+		});
+
+		it('should not copy the neXboard content, if neXboard creation is set as NOT_DOING', async () => {
+			const { user, destinationCourse, originalLesson } = setup();
+
+			nexboardService.createNexboard.mockResolvedValue(false);
+
+			const status = await copyService.copyLesson({
+				originalLessonId: originalLesson.id,
+				destinationCourse,
+				user,
+			});
+
+			let contentStatus = CopyStatusEnum.SUCCESS;
+			const group = status.elements?.filter((element) => element.type === CopyElementType.LESSON_CONTENT_GROUP)[0];
+			if (group && group.elements) {
+				contentStatus = group.elements[0].status;
+			}
+			expect(contentStatus).toEqual(CopyStatusEnum.NOT_DOING);
+
+			const lessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
+			expect(lessonContents.length).toEqual(0);
+		});
+
 		it('should call neXboard service to create new neXboard', async () => {
 			const { user, destinationCourse, originalLesson } = setup();
 
@@ -1092,20 +1130,20 @@ describe('lesson copy service', () => {
 			expect(lessonContents.length).toEqual(0);
 		});
 
-		it('should copy neXboard correctly', async () => {
+		it('should copy neXboard correctly if FEATURE_COPY_NEXBOARD_ENABLED is true', async () => {
 			const { user, destinationCourse, originalLesson } = setup();
 
-			nexboardService.createNexboard.mockResolvedValue({ board: '123', url: 'abc' });
+			configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValueOnce(true);
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
-			const copiedLessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
-			const copiedNexboard = copiedLessonContents[0].content as ComponentNexboardProperties;
-			expect(copiedNexboard.url).toEqual('abc');
-			expect(copiedNexboard.board).toEqual('123');
+			const lessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
+			expect(configurationSpy).toHaveBeenCalledWith('FEATURE_COPY_NEXBOARD_ENABLED');
+			expect(nexboardService.createNexboard).not.toHaveBeenCalled();
+			expect(lessonContents).toEqual([]);
 		});
 
 		it('should set content type to LESSON_CONTENT_NEXBOARD', async () => {
