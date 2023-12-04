@@ -2,7 +2,7 @@ import { BaseDO } from '@shared/domain/domainobject/base.do';
 import { ToolVersion } from '../../common/interface';
 import { Oauth2ToolConfig, BasicToolConfig, Lti11ToolConfig, ExternalToolConfig } from './config';
 import { CustomParameter } from '../../common/domain';
-import { ToolConfigType } from '../../common/enum';
+import { ToolConfigType, ToolContextType } from '../../common/enum';
 
 export interface ExternalToolProps {
 	id?: string;
@@ -24,6 +24,8 @@ export interface ExternalToolProps {
 	openNewTab: boolean;
 
 	version: number;
+
+	restrictToContexts?: ToolContextType[];
 }
 
 export class ExternalTool extends BaseDO implements ToolVersion {
@@ -45,6 +47,8 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 
 	version: number;
 
+	restrictToContexts?: ToolContextType[];
+
 	constructor(props: ExternalToolProps) {
 		super(props.id);
 
@@ -57,6 +61,7 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 		this.isHidden = props.isHidden;
 		this.openNewTab = props.openNewTab;
 		this.version = props.version;
+		this.restrictToContexts = props.restrictToContexts;
 	}
 
 	getVersion(): number {

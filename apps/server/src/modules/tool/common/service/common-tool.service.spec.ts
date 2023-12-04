@@ -3,7 +3,7 @@ import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFact
 import { CommonToolService } from './common-tool.service';
 import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ToolConfigurationStatus } from '../enum';
+import { ToolConfigurationStatus, ToolContextType } from '../enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 
 describe('CommonToolService', () => {
@@ -202,6 +202,80 @@ describe('CommonToolService', () => {
 				);
 
 				expect(result).toBe(ToolConfigurationStatus.LATEST);
+			});
+		});
+	});
+
+	describe('isContextRestricted', () => {
+		describe('when tool is not restricted to context', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.build({ restrictToContexts: [] });
+				const context: ToolContextType = ToolContextType.COURSE;
+
+				return { externalTool, context };
+			};
+
+			it('should return false', () => {
+				const { externalTool, context } = setup();
+
+				const result = service.isContextRestricted(externalTool, context);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when tool is restricted to all contexts', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.build({
+					restrictToContexts: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT],
+				});
+				const context: ToolContextType = ToolContextType.COURSE;
+
+				return { externalTool, context };
+			};
+
+			it('should return false', () => {
+				const { externalTool, context } = setup();
+
+				const result = service.isContextRestricted(externalTool, context);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when tool is restricted to correct context', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.build({ restrictToContexts: [ToolContextType.COURSE] });
+				const context: ToolContextType = ToolContextType.COURSE;
+
+				return { externalTool, context };
+			};
+
+			it('should return false', () => {
+				const { externalTool, context } = setup();
+
+				const result = service.isContextRestricted(externalTool, context);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when tool is restricted to wrong context', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.build({
+					restrictToContexts: [ToolContextType.BOARD_ELEMENT],
+				});
+				const context: ToolContextType = ToolContextType.COURSE;
+
+				return { externalTool, context };
+			};
+
+			it('should return true', () => {
+				const { externalTool, context } = setup();
+
+				const result = service.isContextRestricted(externalTool, context);
+
+				expect(result).toBe(true);
 			});
 		});
 	});
