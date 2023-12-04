@@ -6,7 +6,10 @@ import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { IdTokenExtractionFailureLoggableException, IdTokenUserNotFoundLoggableException } from '@modules/oauth';
+import {
+	IdTokenExtractionFailureLoggableException,
+	IdTokenUserNotFoundLoggableException,
+} from '@modules/oauth/loggable';
 import {
 	ExternalSchoolDto,
 	ExternalUserDto,
