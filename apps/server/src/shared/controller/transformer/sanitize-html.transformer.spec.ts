@@ -52,9 +52,11 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 
 	describe('when sanitizing rich text ck4 formatting', () => {
 		it('should remove all html but rich text ck4 tags', () => {
-			const plainString = { contentCk4: '<h1><b>html text</b></h1><scriPT>alert("foobar");</sCript><stYle></style>' };
+			const plainString = {
+				contentCk4: '<h1><b>html text</b></h1><scriPT>alert("foobar");</sCript><stYle></style><a href></a>',
+			};
 			const instance = plainToClass(WithHtmlDto, plainString);
-			expect(instance.contentCk4).toEqual('<h1><b>html text</b></h1>');
+			expect(instance.contentCk4).toEqual('<h1><b>html text</b></h1><a href></a>');
 		});
 	});
 
