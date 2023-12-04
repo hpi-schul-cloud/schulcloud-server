@@ -68,5 +68,28 @@
 		},
 		"schoolParameters": [],
 		"toolVersion": 2
+	},
+	{
+		"_id": {
+			"$oid": "65685717ed7c14d921698602"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1685971828284"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1685971828284"
+			}
+		},
+		"tool": {
+			"$oid": "644a4593d0a8301e6cf25d86"
+		},
+		"school": {
+			"$oid": "5fa2c5ccb229544f2c69666c"
+		},
+		"schoolParameters": [],
+		"toolVersion": 1
 	}
 ]

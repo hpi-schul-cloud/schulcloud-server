@@ -10,12 +10,13 @@ import {
 	cleanupCollections,
 	contextExternalToolEntityFactory,
 	courseFactory,
+	customParameterFactory,
 	externalToolEntityFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
 } from '@shared/testing';
 import { Response } from 'supertest';
-import { ToolContextType } from '../../../common/enum';
+import { CustomParameterLocation, CustomParameterScope, ToolContextType } from '../../../common/enum';
 import { ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
@@ -115,6 +116,18 @@ describe('ToolReferenceController (API)', () => {
 				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					logoBase64: 'logoBase64',
+					parameters: [
+						customParameterFactory.build({
+							name: 'schoolMockParameter',
+							scope: CustomParameterScope.SCHOOL,
+							location: CustomParameterLocation.PATH,
+						}),
+						customParameterFactory.build({
+							name: 'contextMockParameter',
+							scope: CustomParameterScope.CONTEXT,
+							location: CustomParameterLocation.PATH,
+						}),
+					],
 				});
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
@@ -234,6 +247,18 @@ describe('ToolReferenceController (API)', () => {
 				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					logoBase64: 'logoBase64',
+					parameters: [
+						customParameterFactory.build({
+							name: 'schoolMockParameter',
+							scope: CustomParameterScope.SCHOOL,
+							location: CustomParameterLocation.PATH,
+						}),
+						customParameterFactory.build({
+							name: 'contextMockParameter',
+							scope: CustomParameterScope.CONTEXT,
+							location: CustomParameterLocation.PATH,
+						}),
+					],
 				});
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
