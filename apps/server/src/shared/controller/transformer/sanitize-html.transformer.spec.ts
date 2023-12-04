@@ -58,14 +58,16 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		});
 	});
 
-	describe('when sanitizing rich text simple formatting', () => {
-		it('should remove all html but rich text simple tags', () => {
+	describe('when sanitizing rich text Ck5 simple formatting', () => {
+		it('should remove all html but rich text ck5 simple tags', () => {
 			const plainString = {
 				contentRichTextCk5Simple:
-					'<h1><b>html text</b><i></i></h1><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
+					'<h1></h1><h2><b><mark>html <h4>text</h4></mark></b></h2><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
 			};
 			const instance = plainToClass(WithHtmlDto, plainString);
-			expect(instance.contentRichTextCk5Simple).toEqual('<h1><b>html text</b></h1>');
+			expect(instance.contentRichTextCk5Simple).toEqual(
+				'<h2>html <h4>text</h4></h2>[x=rac{-bpmsqrt{b^2-4ac}}{2a}]<img src="some.png" />'
+			);
 		});
 	});
 
