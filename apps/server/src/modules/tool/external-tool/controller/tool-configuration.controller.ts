@@ -20,13 +20,33 @@ import {
 	SchoolExternalToolConfigurationTemplateResponse,
 	SchoolExternalToolIdParams,
 	SchoolIdParams,
+	ToolContextTypesListResponse,
 } from './dto';
+import { ToolContextType } from '../../common/enum';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
 @Controller('tools')
 export class ToolConfigurationController {
 	constructor(private readonly externalToolConfigurationUc: ExternalToolConfigurationUc) {}
+
+	@Get('context-types')
+	@ApiForbiddenResponse()
+	@ApiOperation({ summary: 'Lists all context types available in the SVS' })
+	@ApiOkResponse({
+		description: 'List of available context types',
+		type: ToolContextTypesListResponse,
+	})
+	public async getToolContextTypes(@CurrentUser() currentUser: ICurrentUser): Promise<ToolContextTypesListResponse> {
+		const toolContextTypes: ToolContextType[] = await this.externalToolConfigurationUc.getToolContextTypes(
+			currentUser.userId
+		);
+
+		const mapped: ToolContextTypesListResponse =
+			ToolConfigurationMapper.mapToToolContextTypesListResponse(toolContextTypes);
+
+		return mapped;
+	}
 
 	@Get('school/:schoolId/available-tools')
 	@ApiForbiddenResponse()

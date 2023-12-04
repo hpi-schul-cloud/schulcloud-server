@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	Action,
+	AuthorizationContext,
 	AuthorizationContextBuilder,
 	AuthorizationService,
 	ForbiddenLoggableException,
@@ -128,6 +129,14 @@ describe('ContextExternalToolUc', () => {
 				);
 			});
 
+			it('should check for context restrictions', async () => {
+				const { contextExternalTool, userId, schoolId } = setup();
+
+				await uc.createContextExternalTool(userId, schoolId, contextExternalTool);
+
+				expect(contextExternalToolService.checkContextRestrictions).toHaveBeenCalledWith(contextExternalTool);
+			});
+
 			it('should call contextExternalToolValidationService', async () => {
 				const { contextExternalTool, userId, schoolId } = setup();
 
@@ -142,6 +151,53 @@ describe('ContextExternalToolUc', () => {
 				const result = await uc.createContextExternalTool(userId, schoolId, contextExternalTool);
 
 				expect(result).toEqual(contextExternalTool);
+			});
+		});
+
+		describe('when tool is restricted to a different context', () => {
+			const setup = () => {
+				const userId: EntityId = new ObjectId().toHexString();
+				const schoolId: EntityId = new ObjectId().toHexString();
+
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+					schoolId,
+				});
+
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+					displayName: 'Course',
+					schoolToolRef: {
+						schoolToolId: schoolExternalTool.id,
+						schoolId,
+					},
+					contextRef: {
+						id: 'contextId',
+						type: ToolContextType.COURSE,
+					},
+				});
+
+				const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
+
+				const error: Error = new Error();
+
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				contextExternalToolService.saveContextExternalTool.mockResolvedValue(contextExternalTool);
+				contextExternalToolService.checkContextRestrictions.mockRejectedValueOnce(error);
+
+				return {
+					contextExternalTool,
+					userId,
+					schoolId,
+					context,
+					error,
+				};
+			};
+
+			it('should throw an error and not save the contextExternalTool', async () => {
+				const { contextExternalTool, userId, error, schoolId } = setup();
+
+				await expect(uc.createContextExternalTool(userId, schoolId, contextExternalTool)).rejects.toThrow(error);
+
+				expect(contextExternalToolService.saveContextExternalTool).not.toHaveBeenCalled();
 			});
 		});
 

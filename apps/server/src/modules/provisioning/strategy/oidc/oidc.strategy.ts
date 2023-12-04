@@ -33,7 +33,11 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 			if (data.externalGroups) {
 				await Promise.all(
 					data.externalGroups.map((externalGroup) =>
-						this.oidcProvisioningService.provisionExternalGroup(externalGroup, data.system.systemId)
+						this.oidcProvisioningService.provisionExternalGroup(
+							externalGroup,
+							data.externalSchool,
+							data.system.systemId
+						)
 					)
 				);
 			}

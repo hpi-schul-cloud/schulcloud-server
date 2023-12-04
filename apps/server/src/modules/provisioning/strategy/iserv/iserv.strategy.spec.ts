@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { OAuthSSOError } from '@modules/oauth/loggable';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
@@ -10,6 +9,10 @@ import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { legacySchoolDoFactory, schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import jwt from 'jsonwebtoken';
+import {
+	IdTokenExtractionFailureLoggableException,
+	IdTokenUserNotFoundLoggableException,
+} from '@src/modules/oauth/loggable';
 import { RoleDto } from '../../../role/service/dto/role.dto';
 import {
 	ExternalSchoolDto,
@@ -130,7 +133,7 @@ describe('IservProvisioningStrategy', () => {
 
 				const func = () => strategy.getData(input);
 
-				await expect(func).rejects.toThrow(new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem'));
+				await expect(func).rejects.toThrow(new IdTokenExtractionFailureLoggableException('uuid'));
 			});
 		});
 
@@ -152,10 +155,7 @@ describe('IservProvisioningStrategy', () => {
 				const func = () => strategy.getData(input);
 
 				await expect(func).rejects.toThrow(
-					new OAuthSSOError(
-						`Failed to find user with Id ${userUUID} [schoolId: ${schoolId}, currentLdapId: ${userUUID}]`,
-						'sso_user_notfound'
-					)
+					new IdTokenUserNotFoundLoggableException(userUUID, `email: ${email}, schoolId: ${schoolId}`)
 				);
 			});
 
@@ -170,9 +170,7 @@ describe('IservProvisioningStrategy', () => {
 
 				const func = () => strategy.getData(input);
 
-				await expect(func).rejects.toThrow(
-					new OAuthSSOError(`Failed to find user with Id ${userUUID}`, 'sso_user_notfound')
-				);
+				await expect(func).rejects.toThrow(new IdTokenUserNotFoundLoggableException(userUUID));
 			});
 		});
 	});

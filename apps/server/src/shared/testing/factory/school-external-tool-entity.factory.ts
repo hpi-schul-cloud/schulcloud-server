@@ -10,7 +10,7 @@ export const schoolExternalToolEntityFactory = BaseFactory.define<
 	return {
 		tool: externalToolEntityFactory.buildWithId(),
 		school: schoolFactory.buildWithId(),
-		schoolParameters: [{ name: 'mockParamater', value: 'mockValue' }],
+		schoolParameters: [{ name: 'schoolMockParameter', value: 'mockValue' }],
 		toolVersion: 0,
 	};
 });
