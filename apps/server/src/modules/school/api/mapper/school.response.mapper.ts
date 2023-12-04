@@ -25,7 +25,7 @@ export class SchoolResponseMapper {
 	}
 
 	public static mapToListForExternalInviteResponses(schools: School[]): SchoolForExternalInviteResponse[] {
-		const dtos = schools.map((school) => this.mapToExternalInviteResponse(school));
+		const dtos = schools.map((school) => SchoolResponseMapper.mapToExternalInviteResponse(school));
 
 		return dtos;
 	}

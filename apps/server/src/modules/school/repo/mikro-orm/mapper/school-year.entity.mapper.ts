@@ -14,7 +14,7 @@ export class SchoolYearEntityMapper {
 	}
 
 	public static mapToDos(entities: SchoolYearEntity[]) {
-		const schoolYears = entities.map((entity) => this.mapToDo(entity));
+		const schoolYears = entities.map((entity) => SchoolYearEntityMapper.mapToDo(entity));
 
 		return schoolYears;
 	}

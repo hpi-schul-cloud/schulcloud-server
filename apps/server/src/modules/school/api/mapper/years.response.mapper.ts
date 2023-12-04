@@ -5,9 +5,9 @@ import { MissingYearsLoggableException } from '../error/missing-years.loggable-e
 export class YearsResponseMapper {
 	public static mapToResponse(school: School, schoolYears: SchoolYear[]): YearsResponse {
 		const schoolYearResponses = schoolYears.map((schoolYear) => schoolYear.getProps());
-		const activeYear = this.computeActiveYear(school, schoolYears);
-		const nextYear = this.computeNextYear(schoolYears, activeYear);
-		const lastYear = this.computeLastYear(schoolYears, activeYear);
+		const activeYear = YearsResponseMapper.computeActiveYear(school, schoolYears);
+		const nextYear = YearsResponseMapper.computeNextYear(schoolYears, activeYear);
+		const lastYear = YearsResponseMapper.computeLastYear(schoolYears, activeYear);
 
 		const res = {
 			schoolYears: schoolYearResponses,

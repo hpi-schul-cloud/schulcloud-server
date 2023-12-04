@@ -9,7 +9,7 @@ export class SchoolEntityMapper {
 	public static mapToDo(entity: SchoolEntity): School {
 		const currentYear = entity.currentYear && SchoolYearEntityMapper.mapToDo(entity.currentYear);
 		const federalState = FederalStateEntityMapper.mapToDo(entity.federalState);
-		const features = this.mapFeatures(entity);
+		const features = SchoolEntityMapper.mapFeatures(entity);
 		const systems = entity.systems?.getItems().map((system) => SystemEntityMapper.mapToDo(system));
 		const county = entity.county && CountyEmbeddableMapper.mapToDomainType(entity.county);
 
@@ -41,7 +41,7 @@ export class SchoolEntityMapper {
 	}
 
 	public static mapToDos(schoolEntities: SchoolEntity[]): School[] {
-		const schools = schoolEntities.map((entity) => this.mapToDo(entity));
+		const schools = schoolEntities.map((entity) => SchoolEntityMapper.mapToDo(entity));
 
 		return schools;
 	}
