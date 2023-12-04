@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConsoleWriterService } from '@infra/console';
-import { DeletionExecutionUc } from '../deletion/uc';
+import { DeletionExecutionUc } from '@modules/deletion';
 import { DeletionExecutionConsole } from './deletion-execution.console';
 import { DeletionExecutionTriggerResultBuilder, TriggerDeletionExecutionOptionsBuilder } from './builder';
 
