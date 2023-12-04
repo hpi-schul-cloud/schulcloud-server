@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ToolConfigType } from '@modules/tool/common/enum';
 import { ExternalToolSearchQuery } from '@modules/tool/common/interface';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { ExternalToolEntity, IExternalToolProperties } from '@modules/tool/external-tool/entity';
+import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Pagination, SortOrder } from '@shared/domain/interface';
