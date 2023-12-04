@@ -199,8 +199,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="14"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:14</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -260,7 +260,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#ToolConfigurationStatus" target="_self" >ToolConfigurationStatus</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/ContextExternalToolConfigurationStatus.html" target="_self" >ContextExternalToolConfigurationStatus</a></code>
 
                         </div>
                             <div class="io-description">
@@ -292,8 +292,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -373,8 +373,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -442,7 +442,8 @@
 import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
 import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
 import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
-import { ToolConfigurationStatus, ToolContextType } from &#x27;../enum&#x27;;
+import { ToolContextType } from &#x27;../enum&#x27;;
+import { ContextExternalToolConfigurationStatus } from &#x27;../domain&#x27;;
 import { ToolVersion } from &#x27;../interface&#x27;;
 
 // TODO N21-1337 remove class when tool versioning is removed
@@ -455,16 +456,25 @@ export class CommonToolService {
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
-	): ToolConfigurationStatus {
+	): ContextExternalToolConfigurationStatus {
+		const configurationStatus: ContextExternalToolConfigurationStatus &#x3D; new ContextExternalToolConfigurationStatus({
+			isOutdatedOnScopeContext: true,
+			isOutdatedOnScopeSchool: true,
+		});
+
 		if (
 			this.isLatest(schoolExternalTool, externalTool) &amp;&amp;
 			this.isLatest(contextExternalTool, schoolExternalTool) &amp;&amp;
 			this.isLatest(contextExternalTool, externalTool)
 		) {
-			return ToolConfigurationStatus.LATEST;
+			configurationStatus.isOutdatedOnScopeContext &#x3D; false;
+			configurationStatus.isOutdatedOnScopeSchool &#x3D; false;
+		} else {
+			configurationStatus.isOutdatedOnScopeContext &#x3D; true;
+			configurationStatus.isOutdatedOnScopeSchool &#x3D; true;
 		}
 
-		return ToolConfigurationStatus.OUTDATED;
+		return configurationStatus;
 	}
 
 	private isLatest(tool1: ToolVersion, tool2: ToolVersion): boolean {

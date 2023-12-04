@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >ToolReferenceResponse</li>
+  <li class="breadcrumb-item" >SchoolExternalToolConfigurationStatusResponse</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/context-external-tool/controller/dto/tool-reference.response.ts</code>
+            <code>apps/server/src/modules/tool/school-external-tool/controller/dto/school-external-tool-configuration.response.ts</code>
         </p>
 
 
@@ -148,24 +148,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#contextToolId" >contextToolId</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                <a href="#displayName" >displayName</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Optional</span>
-                                <a href="#logoUrl" >logoUrl</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                <a href="#openInNewTab" >openInNewTab</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                <a href="#status" >status</a>
+                                <a href="#isOutdatedOnScopeSchool" >isOutdatedOnScopeSchool</a>
                             </li>
                         </ul>
                     </td>
@@ -186,12 +169,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(toolReferenceResponse: <a href="../classes/ToolReferenceResponse.html" target="_self">ToolReferenceResponse</a>)</code>
+<code>constructor(props: <a href="../classes/SchoolExternalToolConfigurationStatusResponse.html" target="_self">SchoolExternalToolConfigurationStatusResponse</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/dto/tool-reference.response.ts:27</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/dto/school-external-tool-configuration.response.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -209,10 +192,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>toolReferenceResponse</td>
+                                                        <td>props</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../classes/ToolReferenceResponse.html" target="_self" >ToolReferenceResponse</a></code>
+                                                                        <code><a href="../classes/SchoolExternalToolConfigurationStatusResponse.html" target="_self" >SchoolExternalToolConfigurationStatusResponse</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -238,120 +221,11 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="contextToolId"></a>
+                    <a name="isOutdatedOnScopeSchool"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                        <span ><b>contextToolId</b></span>
-                        <a href="#contextToolId"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty({nullable: false, required: true, description: &#x27;The id of the tool in the context&#x27;})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/dto/tool-reference.response.ts:6</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="displayName"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                        <span ><b>displayName</b></span>
-                        <a href="#displayName"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty({nullable: false, required: true, description: &#x27;The display name of the tool&#x27;})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/dto/tool-reference.response.ts:16</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="logoUrl"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier">Optional</span>
-                        <span ><b>logoUrl</b></span>
-                        <a href="#logoUrl"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiPropertyOptional({nullable: false, required: false, description: &#x27;The url of the logo which is stored in the db&#x27;})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/dto/tool-reference.response.ts:13</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="openInNewTab"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                        <span ><b>openInNewTab</b></span>
-                        <a href="#openInNewTab"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>isOutdatedOnScopeSchool</b></span>
+                        <a href="#isOutdatedOnScopeSchool"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -366,49 +240,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({nullable: false, required: true, description: &#x27;Whether the tool should be opened in a new tab&#x27;})<br />
+                            @ApiProperty({type: Boolean, description: &#x27;Is the tool outdated on school scope, because of non matching versions or required parameter changes on ExternalTool?&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/dto/tool-reference.response.ts:19</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="status"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                        <span ><b>status</b></span>
-                        <a href="#status"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../classes/ContextExternalToolConfigurationStatusResponse.html" target="_self" >ContextExternalToolConfigurationStatusResponse</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty({type: ContextExternalToolConfigurationStatusResponse, nullable: false, required: true, description: &#x27;The status of the tool&#x27;})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/dto/tool-reference.response.ts:27</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/dto/school-external-tool-configuration.response.ts:9</a></div>
                         </td>
                     </tr>
 
@@ -427,40 +265,18 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
-import { ContextExternalToolConfigurationStatusResponse } from &#x27;../../../common/controller/dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 
-export class ToolReferenceResponse {
-	@ApiProperty({ nullable: false, required: true, description: &#x27;The id of the tool in the context&#x27; })
-	contextToolId: string;
-
-	@ApiPropertyOptional({
-		nullable: false,
-		required: false,
-		description: &#x27;The url of the logo which is stored in the db&#x27;,
-	})
-	logoUrl?: string;
-
-	@ApiProperty({ nullable: false, required: true, description: &#x27;The display name of the tool&#x27; })
-	displayName: string;
-
-	@ApiProperty({ nullable: false, required: true, description: &#x27;Whether the tool should be opened in a new tab&#x27; })
-	openInNewTab: boolean;
-
+export class SchoolExternalToolConfigurationStatusResponse {
 	@ApiProperty({
-		type: ContextExternalToolConfigurationStatusResponse,
-		nullable: false,
-		required: true,
-		description: &#x27;The status of the tool&#x27;,
+		type: Boolean,
+		description:
+			&#x27;Is the tool outdated on school scope, because of non matching versions or required parameter changes on ExternalTool?&#x27;,
 	})
-	status: ContextExternalToolConfigurationStatusResponse;
+	isOutdatedOnScopeSchool: boolean;
 
-	constructor(toolReferenceResponse: ToolReferenceResponse) {
-		this.contextToolId &#x3D; toolReferenceResponse.contextToolId;
-		this.logoUrl &#x3D; toolReferenceResponse.logoUrl;
-		this.displayName &#x3D; toolReferenceResponse.displayName;
-		this.openInNewTab &#x3D; toolReferenceResponse.openInNewTab;
-		this.status &#x3D; toolReferenceResponse.status;
+	constructor(props: SchoolExternalToolConfigurationStatusResponse) {
+		this.isOutdatedOnScopeSchool &#x3D; props.isOutdatedOnScopeSchool;
 	}
 }
 </code></pre>
@@ -501,7 +317,7 @@ export class ToolReferenceResponse {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'ToolReferenceResponse.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SchoolExternalToolConfigurationStatusResponse.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

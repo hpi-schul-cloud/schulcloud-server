@@ -86,7 +86,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content injectable">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -96,9 +96,13 @@
 
 
 
+
+
+
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >SchoolExternalToolResponseMapper</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >SchoolToolConfigurationStatusResponseMapper</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -122,8 +126,9 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts</code>
+            <code>apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-status-response.mapper.ts</code>
         </p>
+
 
 
 
@@ -143,14 +148,8 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#mapToCustomParameterEntryResponse" >mapToCustomParameterEntryResponse</a>
-                            </li>
-                            <li>
-                                <a href="#mapToSchoolExternalToolResponse" >mapToSchoolExternalToolResponse</a>
-                            </li>
-                            <li>
-                                <a href="#mapToSearchListResponse" >mapToSearchListResponse</a>
+                                    <span class="modifier">Static</span>
+                                <a href="#mapToResponse" >mapToResponse</a>
                             </li>
                         </ul>
                     </td>
@@ -165,6 +164,7 @@
 </section>
 
 
+
             <section data-compodoc="block-methods">
     
     <h3 id="methods">
@@ -174,26 +174,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapToCustomParameterEntryResponse"></a>
+                    <a name="mapToResponse"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>mapToCustomParameterEntryResponse</b></span>
-                        <a href="#mapToCustomParameterEntryResponse"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Static</span>
+                        <span ><b>mapToResponse</b></span>
+                        <a href="#mapToResponse"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToCustomParameterEntryResponse(entries: CustomParameterEntry[])</code>
+                    <code>mapToResponse(status: <a href="../classes/SchoolExternalToolConfigurationStatus.html" target="_self">SchoolExternalToolConfigurationStatus</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="5"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-status-response.mapper.ts:5</a></div>
                         </td>
                     </tr>
 
@@ -214,9 +214,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>entries</td>
+                                                <td>status</td>
                                             <td>
-                                                        <code>CustomParameterEntry[]</code>
+                                                            <code><a href="../classes/SchoolExternalToolConfigurationStatus.html" target="_self" >SchoolExternalToolConfigurationStatus</a></code>
                                             </td>
 
                                             <td>
@@ -229,141 +229,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>CustomParameterEntryResponse[]</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="mapToSchoolExternalToolResponse"></a>
-                    <span class="name">
-                        <span ><b>mapToSchoolExternalToolResponse</b></span>
-                        <a href="#mapToSchoolExternalToolResponse"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>mapToSchoolExternalToolResponse(schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts:20</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>schoolExternalTool</td>
-                                            <td>
-                                                            <code><a href="../classes/SchoolExternalTool.html" target="_self" >SchoolExternalTool</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/SchoolExternalToolResponse.html" target="_self" >SchoolExternalToolResponse</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="mapToSearchListResponse"></a>
-                    <span class="name">
-                        <span ><b>mapToSearchListResponse</b></span>
-                        <a href="#mapToSearchListResponse"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>mapToSearchListResponse(externalTools: SchoolExternalTool[])</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts:13</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>externalTools</td>
-                                            <td>
-                                                        <code>SchoolExternalTool[]</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/SchoolExternalToolSearchListResponse.html" target="_self" >SchoolExternalToolSearchListResponse</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/SchoolExternalToolConfigurationStatusResponse.html" target="_self" >SchoolExternalToolConfigurationStatusResponse</a></code>
 
                         </div>
                             <div class="io-description">
@@ -375,61 +241,30 @@
     </table>
 </section>
 
+
+
+
+
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { CustomParameterEntry } from &#x27;../../common/domain&#x27;;
-import {
-	CustomParameterEntryResponse,
-	SchoolExternalToolResponse,
-	SchoolExternalToolSearchListResponse,
-} from &#x27;../controller/dto&#x27;;
-import { SchoolExternalTool } from &#x27;../domain&#x27;;
-import { SchoolToolConfigurationStatusResponseMapper } from &#x27;./school-external-tool-status-response.mapper&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SchoolExternalToolConfigurationStatus } from &#x27;../controller/dto&#x27;;
+import { SchoolExternalToolConfigurationStatusResponse } from &#x27;../controller/dto/school-external-tool-configuration.response&#x27;;
 
-@Injectable()
-export class SchoolExternalToolResponseMapper {
-	mapToSearchListResponse(externalTools: SchoolExternalTool[]): SchoolExternalToolSearchListResponse {
-		const responses: SchoolExternalToolResponse[] &#x3D; externalTools.map((toolDO: SchoolExternalTool) &#x3D;&gt;
-			this.mapToSchoolExternalToolResponse(toolDO)
-		);
-		return new SchoolExternalToolSearchListResponse(responses);
-	}
+export class SchoolToolConfigurationStatusResponseMapper {
+	static mapToResponse(status: SchoolExternalToolConfigurationStatus): SchoolExternalToolConfigurationStatusResponse {
+		const configurationStatus: SchoolExternalToolConfigurationStatusResponse &#x3D;
+			new SchoolExternalToolConfigurationStatusResponse({
+				isOutdatedOnScopeSchool: status.isOutdatedOnScopeSchool,
+			});
 
-	mapToSchoolExternalToolResponse(schoolExternalTool: SchoolExternalTool): SchoolExternalToolResponse {
-		return {
-			id: schoolExternalTool.id ?? &#x27;&#x27;,
-			name: schoolExternalTool.name ?? &#x27;&#x27;,
-			toolId: schoolExternalTool.toolId,
-			schoolId: schoolExternalTool.schoolId,
-			parameters: this.mapToCustomParameterEntryResponse(schoolExternalTool.parameters),
-			toolVersion: schoolExternalTool.toolVersion,
-			status: SchoolToolConfigurationStatusResponseMapper.mapToResponse(
-				schoolExternalTool.status ?? { isOutdatedOnScopeSchool: false }
-			),
-		};
-	}
-
-	private mapToCustomParameterEntryResponse(entries: CustomParameterEntry[]): CustomParameterEntryResponse[] {
-		return entries.map(
-			(entry: CustomParameterEntry): CustomParameterEntry &#x3D;&gt;
-				new CustomParameterEntryResponse({
-					name: entry.name,
-					value: entry.value,
-				})
-		);
+		return configurationStatus;
 	}
 }
 </code></pre>
     </div>
-
 </div>
-
-
-
-
 
 
 
@@ -464,8 +299,8 @@ export class SchoolExternalToolResponseMapper {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'SchoolExternalToolResponseMapper.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'SchoolToolConfigurationStatusResponseMapper.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -149,7 +149,7 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#determineStatus" >determineStatus</a>
+                                <a href="#determineSchoolToolStatus" >determineSchoolToolStatus</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -297,8 +297,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="76"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:76</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="85"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:85</a></div>
                         </td>
                     </tr>
 
@@ -348,19 +348,19 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="determineStatus"></a>
+                    <a name="determineSchoolToolStatus"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
-                        <span ><b>determineStatus</b></span>
-                        <a href="#determineStatus"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>determineSchoolToolStatus</b></span>
+                        <a href="#determineSchoolToolStatus"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>determineStatus(tool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>)</code>
+                    <code>determineSchoolToolStatus(tool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -416,7 +416,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/ToolConfiguration.html" target="_self" >Promise&lt;ToolConfigurationStatus&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;SchoolExternalToolConfigurationStatus&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -726,8 +726,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="80"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:80</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="89"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:89</a></div>
                         </td>
                     </tr>
 
@@ -782,10 +782,10 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { SchoolExternalToolRepo } from &#x27;@shared/repo&#x27;;
-import { ToolConfigurationStatus } from &#x27;../../common/enum&#x27;;
 import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
 import { ExternalToolService } from &#x27;../../external-tool/service&#x27;;
 import { IToolFeatures, ToolFeatures } from &#x27;../../tool-config&#x27;;
+import { SchoolExternalToolConfigurationStatus } from &#x27;../controller/dto&#x27;;
 import { SchoolExternalTool } from &#x27;../domain&#x27;;
 import { SchoolExternalToolQuery } from &#x27;../uc/dto/school-external-tool.types&#x27;;
 import { SchoolExternalToolValidationService } from &#x27;./school-external-tool-validation.service&#x27;;
@@ -824,7 +824,7 @@ export class SchoolExternalToolService {
 
 	private async enrichDataFromExternalTool(tool: SchoolExternalTool): Promise&lt;SchoolExternalTool&gt; {
 		const externalTool: ExternalTool &#x3D; await this.externalToolService.findById(tool.toolId);
-		const status: ToolConfigurationStatus &#x3D; await this.determineStatus(tool, externalTool);
+		const status: SchoolExternalToolConfigurationStatus &#x3D; await this.determineSchoolToolStatus(tool, externalTool);
 		const schoolExternalTool: SchoolExternalTool &#x3D; new SchoolExternalTool({
 			...tool,
 			status,
@@ -834,24 +834,33 @@ export class SchoolExternalToolService {
 		return schoolExternalTool;
 	}
 
-	private async determineStatus(
+	private async determineSchoolToolStatus(
 		tool: SchoolExternalTool,
 		externalTool: ExternalTool
-	): Promise&lt;ToolConfigurationStatus&gt; {
+	): Promise&lt;SchoolExternalToolConfigurationStatus&gt; {
+		const status: SchoolExternalToolConfigurationStatus &#x3D; new SchoolExternalToolConfigurationStatus({
+			isOutdatedOnScopeSchool: true,
+		});
+
 		if (this.toolFeatures.toolStatusWithoutVersions) {
 			try {
 				await this.schoolExternalToolValidationService.validate(tool);
-				return ToolConfigurationStatus.LATEST;
+
+				status.isOutdatedOnScopeSchool &#x3D; false;
+
+				return status;
 			} catch (err) {
-				return ToolConfigurationStatus.OUTDATED;
+				return status;
 			}
 		}
 
 		if (externalTool.version &lt;&#x3D; tool.toolVersion) {
-			return ToolConfigurationStatus.LATEST;
+			status.isOutdatedOnScopeSchool &#x3D; false;
+
+			return status;
 		}
 
-		return ToolConfigurationStatus.OUTDATED;
+		return status;
 	}
 
 	async deleteSchoolExternalToolById(schoolExternalToolId: EntityId): Promise&lt;void&gt; {

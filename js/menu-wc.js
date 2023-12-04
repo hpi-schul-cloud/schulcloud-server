@@ -3529,6 +3529,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ContextExternalTool.html" data-type="entity-link" >ContextExternalTool</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ContextExternalToolConfigurationStatus.html" data-type="entity-link" >ContextExternalToolConfigurationStatus</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ContextExternalToolConfigurationStatusResponse.html" data-type="entity-link" >ContextExternalToolConfigurationStatusResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ContextExternalToolConfigurationTemplateListResponse.html" data-type="entity-link" >ContextExternalToolConfigurationTemplateListResponse</a>
                             </li>
                             <li class="link">
@@ -4744,6 +4750,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchoolExternalTool.html" data-type="entity-link" >SchoolExternalTool</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SchoolExternalToolConfigurationStatus.html" data-type="entity-link" >SchoolExternalToolConfigurationStatus</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchoolExternalToolConfigurationStatusResponse.html" data-type="entity-link" >SchoolExternalToolConfigurationStatusResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SchoolExternalToolConfigurationTemplateListResponse.html" data-type="entity-link" >SchoolExternalToolConfigurationTemplateListResponse</a>
                             </li>
                             <li class="link">
@@ -4835,6 +4847,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolSpecificFileCopyServiceImpl.html" data-type="entity-link" >SchoolSpecificFileCopyServiceImpl</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchoolToolConfigurationStatusResponseMapper.html" data-type="entity-link" >SchoolToolConfigurationStatusResponseMapper</a>
                             </li>
                             <li class="link">
                                 <a href="classes/Scope.html" data-type="entity-link" >Scope</a>

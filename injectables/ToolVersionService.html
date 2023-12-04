@@ -331,7 +331,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/ToolConfiguration.html" target="_self" >Promise&lt;ToolConfigurationStatus&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;ContextExternalToolConfigurationStatus&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -349,7 +349,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject } from &#x27;@nestjs/common&#x27;;
 import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
-import { ToolConfigurationStatus } from &#x27;../../common/enum&#x27;;
+import { ContextExternalToolConfigurationStatus } from &#x27;../../common/domain&#x27;;
 import { CommonToolService } from &#x27;../../common/service&#x27;;
 import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
 import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
@@ -371,18 +371,29 @@ export class ToolVersionService {
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
-	): Promise&lt;ToolConfigurationStatus&gt; {
+	): Promise&lt;ContextExternalToolConfigurationStatus&gt; {
 		// TODO N21-1337 remove if statement, when feature flag is removed
 		if (this.toolFeatures.toolStatusWithoutVersions) {
+			const configurationStatus: ContextExternalToolConfigurationStatus &#x3D; new ContextExternalToolConfigurationStatus({
+				isOutdatedOnScopeContext: false,
+				isOutdatedOnScopeSchool: false,
+			});
+
 			try {
 				await this.schoolExternalToolValidationService.validate(schoolExternalTool);
-				await this.contextExternalToolValidationService.validate(contextExternalTool);
-				return ToolConfigurationStatus.LATEST;
 			} catch (err) {
-				return ToolConfigurationStatus.OUTDATED;
+				configurationStatus.isOutdatedOnScopeSchool &#x3D; true;
 			}
+
+			try {
+				await this.contextExternalToolValidationService.validate(contextExternalTool);
+			} catch (err) {
+				configurationStatus.isOutdatedOnScopeContext &#x3D; true;
+			}
+
+			return configurationStatus;
 		}
-		const status: ToolConfigurationStatus &#x3D; this.commonToolService.determineToolConfigurationStatus(
+		const status: ContextExternalToolConfigurationStatus &#x3D; this.commonToolService.determineToolConfigurationStatus(
 			externalTool,
 			schoolExternalTool,
 			contextExternalTool

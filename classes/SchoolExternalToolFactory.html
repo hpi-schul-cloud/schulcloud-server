@@ -292,8 +292,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="7"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/school-external-tool.factory.ts:7</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="8"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/school-external-tool.factory.ts:8</a></div>
                         </td>
                     </tr>
 
@@ -1356,10 +1356,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CustomParameterEntry, ToolConfigurationStatus } from &#x27;@modules/tool/common/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CustomParameterEntry } from &#x27;@modules/tool/common/domain&#x27;;
 import { SchoolExternalTool, SchoolExternalToolProps } from &#x27;@modules/tool/school-external-tool/domain&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import { DoBaseFactory } from &#x27;../do-base.factory&#x27;;
+import { schoolToolConfigurationStatusFactory } from &#x27;./school-external-tool-configuration-status.factory&#x27;;
 
 class SchoolExternalToolFactory extends DoBaseFactory&lt;SchoolExternalTool, SchoolExternalToolProps&gt; {
 	withSchoolId(schoolId: string): this {
@@ -1382,7 +1383,7 @@ export const schoolExternalToolFactory &#x3D; SchoolExternalToolFactory.define(S
 			}),
 		],
 		toolId: &#x27;toolId&#x27;,
-		status: ToolConfigurationStatus.LATEST,
+		status: schoolToolConfigurationStatusFactory.build(),
 	};
 });
 </code></pre>

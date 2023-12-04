@@ -180,7 +180,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+<code>constructor(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, isOutdatedOnScopeSchool: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, isOutdatedOnScopeContext: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -226,6 +226,30 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>isOutdatedOnScopeSchool</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>isOutdatedOnScopeContext</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -261,8 +285,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/error/tool-status-outdated.loggable-exception.ts:10</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/error/tool-status-outdated.loggable-exception.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -293,7 +317,12 @@ import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
 
 export class ToolStatusOutdatedLoggableException extends BadRequestException implements Loggable {
-	constructor(private readonly userId: EntityId, private readonly toolId: EntityId) {
+	constructor(
+		private readonly userId: EntityId,
+		private readonly toolId: EntityId,
+		private readonly isOutdatedOnScopeSchool: boolean,
+		private readonly isOutdatedOnScopeContext: boolean
+	) {
 		super();
 	}
 
@@ -305,6 +334,8 @@ export class ToolStatusOutdatedLoggableException extends BadRequestException imp
 			data: {
 				userId: this.userId,
 				toolId: this.toolId,
+				isOutdatedOnScopeSchool: this.isOutdatedOnScopeSchool,
+				isOutdatedOnScopeContext: this.isOutdatedOnScopeContext,
 			},
 		};
 	}

@@ -434,7 +434,8 @@ export class ToolReferenceController {
 
 		const toolReferenceResponses: ToolReferenceResponse[] &#x3D;
 			ContextExternalToolResponseMapper.mapToToolReferenceResponses(toolReferences);
-		const toolReferenceListResponse &#x3D; new ToolReferenceListResponse(toolReferenceResponses);
+
+		const toolReferenceListResponse: ToolReferenceListResponse &#x3D; new ToolReferenceListResponse(toolReferenceResponses);
 
 		return toolReferenceListResponse;
 	}

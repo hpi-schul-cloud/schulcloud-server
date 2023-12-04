@@ -251,6 +251,9 @@
                             <a href="#contentTypeDetector" title="apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts" ><b>contentTypeDetector</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-logo.service.ts)</a>
                         </li>
                         <li>
+                            <a href="#contextExternalToolConfigurationStatusResponseFactory" title="apps/server/src/shared/testing/factory/context-external-tool-configuration-status-response.factory.ts" ><b>contextExternalToolConfigurationStatusResponseFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../context-external-tool-configuration-status-response.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#contextExternalToolEntityFactory" title="apps/server/src/shared/testing/factory/context-external-tool-entity.factory.ts" ><b>contextExternalToolEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../context-external-tool-entity.factory.ts)</a>
                         </li>
                         <li>
@@ -797,6 +800,12 @@
                             <a href="#schoolNewsFactory" title="apps/server/src/shared/testing/factory/news.factory.ts" ><b>schoolNewsFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../news.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#schoolToolConfigurationStatusFactory" title="apps/server/src/shared/testing/factory/domainobject/tool/school-external-tool-configuration-status.factory.ts" ><b>schoolToolConfigurationStatusFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school-external-tool-configuration-status.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#schoolToolConfigurationStatusResponseFactory" title="apps/server/src/shared/testing/factory/school-tool-configuration-status-response.factory.ts" ><b>schoolToolConfigurationStatusResponseFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school-tool-configuration-status-response.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#schoolUnpublishedNewsFactory" title="apps/server/src/shared/testing/factory/news.factory.ts" ><b>schoolUnpublishedNewsFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../news.factory.ts)</a>
                         </li>
                         <li>
@@ -858,9 +867,6 @@
                         </li>
                         <li>
                             <a href="#STATIC_FILES_BASE" title="apps/server/src/modules/h5p-editor/service/config/h5p-service-config.ts" ><b>STATIC_FILES_BASE</b>&nbsp;&nbsp;&nbsp;(apps/.../h5p-service-config.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#statusMapping" title="apps/server/src/modules/tool/common/mapper/tool-status-response.mapper.ts" ><b>statusMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../tool-status-response.mapper.ts)</a>
                         </li>
                         <li>
                             <a href="#storageProviderFactory" title="apps/server/src/shared/testing/factory/storageprovider.factory.ts" ><b>storageProviderFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../storageprovider.factory.ts)</a>
@@ -942,6 +948,9 @@
                         </li>
                         <li>
                             <a href="#toolConfigTypeToToolLaunchDataTypeMapping" title="apps/server/src/modules/tool/tool-launch/mapper/tool-launch.mapper.ts" ><b>toolConfigTypeToToolLaunchDataTypeMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../tool-launch.mapper.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#toolConfigurationStatusFactory" title="apps/server/src/shared/testing/factory/domainobject/tool/tool-configuration-status.factory.ts" ><b>toolConfigurationStatusFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../tool-configuration-status.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#ToolFeatures" title="apps/server/src/modules/tool/tool-config.ts" ><b>ToolFeatures</b>&nbsp;&nbsp;&nbsp;(apps/.../tool-config.ts)</a>
@@ -3939,6 +3948,34 @@ must use</p>
 	&#x27;89504e47&#x27;: &#x27;image/png&#x27;,
 	&#x27;47494638&#x27;: &#x27;image/gif&#x27;,
 }</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/context-external-tool-configuration-status-response.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="contextExternalToolConfigurationStatusResponseFactory"></a>
+                    <span class="name">
+                        <span ><b>contextExternalToolConfigurationStatusResponseFactory</b></span>
+                        <a href="#contextExternalToolConfigurationStatusResponseFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Factory.define&lt;ContextExternalToolConfigurationStatusResponse&gt;(() &#x3D;&gt; {
+		return {
+			isOutdatedOnScopeContext: false,
+			isOutdatedOnScopeSchool: false,
+		};
+	})</code>
                     </td>
                 </tr>
 
@@ -9858,7 +9895,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 			}),
 		],
 		toolId: &#x27;toolId&#x27;,
-		status: ToolConfigurationStatus.LATEST,
+		status: schoolToolConfigurationStatusFactory.build(),
 	};
 })</code>
                     </td>
@@ -9890,6 +9927,60 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		federalState: federalStateFactory.build(),
 	};
 })</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/domainobject/tool/school-external-tool-configuration-status.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="schoolToolConfigurationStatusFactory"></a>
+                    <span class="name">
+                        <span ><b>schoolToolConfigurationStatusFactory</b></span>
+                        <a href="#schoolToolConfigurationStatusFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Factory.define&lt;SchoolExternalToolConfigurationStatus&gt;(() &#x3D;&gt; {
+	return {
+		isOutdatedOnScopeSchool: false,
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/school-tool-configuration-status-response.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="schoolToolConfigurationStatusResponseFactory"></a>
+                    <span class="name">
+                        <span ><b>schoolToolConfigurationStatusResponseFactory</b></span>
+                        <a href="#schoolToolConfigurationStatusResponseFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Factory.define&lt;SchoolExternalToolConfigurationStatusResponse&gt;(() &#x3D;&gt; {
+		return {
+			isOutdatedOnScopeSchool: false,
+		};
+	})</code>
                     </td>
                 </tr>
 
@@ -10599,39 +10690,6 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/modules/tool/common/mapper/tool-status-response.mapper.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="statusMapping"></a>
-                    <span class="name">
-                        <span ><b>statusMapping</b></span>
-                        <a href="#statusMapping"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../classes/ToolConfiguration.html" target="_self" >Record&lt;ToolConfigurationStatus, ToolConfigurationStatusResponse&gt;</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>{
-	[ToolConfigurationStatus.LATEST]: ToolConfigurationStatusResponse.LATEST,
-	[ToolConfigurationStatus.OUTDATED]: ToolConfigurationStatusResponse.OUTDATED,
-	[ToolConfigurationStatus.UNKNOWN]: ToolConfigurationStatusResponse.UNKNOWN,
-}</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
     <h3>apps/server/src/shared/testing/factory/storageprovider.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -11123,6 +11181,34 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		};
 	}
 )</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/domainobject/tool/tool-configuration-status.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="toolConfigurationStatusFactory"></a>
+                    <span class="name">
+                        <span ><b>toolConfigurationStatusFactory</b></span>
+                        <a href="#toolConfigurationStatusFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Factory.define&lt;ContextExternalToolConfigurationStatus&gt;(() &#x3D;&gt; {
+	return {
+		isOutdatedOnScopeContext: false,
+		isOutdatedOnScopeSchool: false,
+	};
+})</code>
                     </td>
                 </tr>
 

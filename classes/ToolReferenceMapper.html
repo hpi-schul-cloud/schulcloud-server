@@ -185,7 +185,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToToolReference(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>, status: <a href="../undefineds/ToolConfigurationStatus.html" target="_self">ToolConfigurationStatus</a>)</code>
+                    <code>mapToToolReference(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>, status: <a href="../classes/ContextExternalToolConfigurationStatus.html" target="_self">ContextExternalToolConfigurationStatus</a>)</code>
                 </td>
             </tr>
 
@@ -240,7 +240,7 @@
                                         <tr>
                                                 <td>status</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#ToolConfigurationStatus" target="_self" >ToolConfigurationStatus</a></code>
+                                                            <code><a href="../classes/ContextExternalToolConfigurationStatus.html" target="_self" >ContextExternalToolConfigurationStatus</a></code>
                                             </td>
 
                                             <td>
@@ -273,7 +273,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ToolConfigurationStatus } from &#x27;../../common/enum&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ContextExternalToolConfigurationStatus } from &#x27;../../common/domain&#x27;;
 import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
 import { ContextExternalTool, ToolReference } from &#x27;../domain&#x27;;
 
@@ -281,7 +281,7 @@ export class ToolReferenceMapper {
 	static mapToToolReference(
 		externalTool: ExternalTool,
 		contextExternalTool: ContextExternalTool,
-		status: ToolConfigurationStatus
+		status: ContextExternalToolConfigurationStatus
 	): ToolReference {
 		const toolReference &#x3D; new ToolReference({
 			contextToolId: contextExternalTool.id ?? &#x27;&#x27;,
