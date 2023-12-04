@@ -63,7 +63,9 @@ export class WsSharedDocDo extends Doc {
 
 		if (channelId === this.name) {
 			applyUpdate(this, update, this.tldrawService.sub);
-		} else {
+		}
+
+		if (channelId === this.awarenessChannel) {
 			applyAwarenessUpdate(this.awareness, update, this.tldrawService.sub);
 		}
 	};
