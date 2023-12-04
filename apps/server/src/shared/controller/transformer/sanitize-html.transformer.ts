@@ -14,18 +14,6 @@ const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
 		allowedAttributes: {},
 	},
 
-	RichTextSimple: {
-		allowedTags: ['b', 'i', 'em', 'strong', 'small', 's', 'u'],
-		allowedAttributes: {},
-	},
-
-	RichTextNews: {
-		allowedTags: ['p', 'br', 'strong', 'em', 'u', 's', 'h2', 'h3', 'h4', 'ul', 'ol', 'li', 'img', 'src'],
-		allowedAttributes: {
-			img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
-		},
-	},
-
 	RichTextCk4: {
 		allowedTags: [
 			'b',
@@ -64,6 +52,7 @@ const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
 			'img',
 		],
 		allowedAttributes: {
+			a: ['href', 'name', 'target'],
 			img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
 		},
 	},
@@ -108,14 +97,16 @@ const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
 	},
 
 	RichTextCk5Simple: {
-		allowedTags: ['p', 'br', 'b', 'strong', 'i', 'em', 'u'],
-		allowedAttributes: {},
+		allowedTags: ['p', 'br', 'strong', 'em', 'u', 's', 'h2', 'h3', 'h4', 'ul', 'ol', 'li', 'img', 'src'],
+		allowedAttributes: {
+			img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
+		},
 	},
 };
 
 export const getSanitizeHtmlOptions = (inputFormat?: InputFormat): IInputFormatsConfig => {
 	switch (inputFormat) {
-		case InputFormat.RICH_TEXT_NEWS:
+		case InputFormat.RICH_TEXT_CK5_SIMPLE:
 			return inputFormatsSanitizeConfig.RichTextNews;
 		case InputFormat.RICH_TEXT_CK4:
 			return inputFormatsSanitizeConfig.RichTextCk4;
