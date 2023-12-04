@@ -2,7 +2,6 @@ import { NotImplementedException } from '@nestjs/common';
 
 import { InputFormat } from '@shared/domain/types';
 import { plainToClass } from 'class-transformer';
-import { describe } from 'node:test';
 import { SanitizeHtml } from './sanitize-html.transformer';
 
 describe('SanitizeHtmlTransformer Decorator', () => {
