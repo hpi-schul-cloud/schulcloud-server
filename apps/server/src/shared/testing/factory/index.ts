@@ -41,5 +41,5 @@ export * from './legacy-file-entity-mock.factory';
 export * from './jwt.test.factory';
 export * from './axios-error.factory';
 export { externalSchoolDtoFactory } from './external-school-dto.factory';
-export * from './tool-configuration-status-response.factory';
+export * from './context-external-tool-configuration-status-response.factory';
 export * from './school-tool-configuration-status-response.factory';

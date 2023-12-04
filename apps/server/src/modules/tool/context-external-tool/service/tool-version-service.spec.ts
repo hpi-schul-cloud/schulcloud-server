@@ -7,7 +7,7 @@ import {
 	schoolExternalToolFactory,
 	toolConfigurationStatusFactory,
 } from '@shared/testing';
-import { ToolConfigurationStatus } from '../../common/domain';
+import { ContextExternalToolConfigurationStatus } from '../../common/domain';
 import { CommonToolService } from '../../common/service';
 import { SchoolExternalToolValidationService } from '../../school-external-tool/service';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
@@ -121,7 +121,7 @@ describe('ToolVersionService', () => {
 			it('should return latest tool status', async () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const status: ToolConfigurationStatus = await service.determineToolConfigurationStatus(
+				const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
@@ -177,7 +177,7 @@ describe('ToolVersionService', () => {
 			it('should return outdated tool status', async () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const status: ToolConfigurationStatus = await service.determineToolConfigurationStatus(
+				const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
@@ -233,7 +233,7 @@ describe('ToolVersionService', () => {
 			it('should return outdated tool status', async () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const status: ToolConfigurationStatus = await service.determineToolConfigurationStatus(
+				const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
@@ -289,7 +289,7 @@ describe('ToolVersionService', () => {
 			it('should return outdated tool status', async () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const status: ToolConfigurationStatus = await service.determineToolConfigurationStatus(
+				const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool

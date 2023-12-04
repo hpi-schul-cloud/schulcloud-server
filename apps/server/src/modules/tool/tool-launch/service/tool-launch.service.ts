@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ToolConfigurationStatus } from '../../common/domain';
+import { ContextExternalToolConfigurationStatus } from '../../common/domain';
 import { ToolConfigType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ToolVersionService } from '../../context-external-tool/service/tool-version-service';
@@ -90,11 +90,12 @@ export class ToolLaunchService {
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
 	): Promise<void> {
-		const status: ToolConfigurationStatus = await this.toolVersionService.determineToolConfigurationStatus(
-			externalTool,
-			schoolExternalTool,
-			contextExternalTool
-		);
+		const status: ContextExternalToolConfigurationStatus =
+			await this.toolVersionService.determineToolConfigurationStatus(
+				externalTool,
+				schoolExternalTool,
+				contextExternalTool
+			);
 
 		if (status.isOutdatedOnScopeSchool || status.isOutdatedOnScopeContext) {
 			throw new ToolStatusOutdatedLoggableException(

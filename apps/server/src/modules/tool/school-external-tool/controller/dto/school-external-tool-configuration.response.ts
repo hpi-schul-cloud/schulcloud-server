@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class SchoolToolConfigurationStatusResponse {
+export class SchoolExternalToolConfigurationStatusResponse {
 	@ApiProperty({
 		type: Boolean,
 		description:
@@ -8,7 +8,7 @@ export class SchoolToolConfigurationStatusResponse {
 	})
 	isOutdatedOnScopeSchool: boolean;
 
-	constructor(props: SchoolToolConfigurationStatusResponse) {
+	constructor(props: SchoolExternalToolConfigurationStatusResponse) {
 		this.isOutdatedOnScopeSchool = props.isOutdatedOnScopeSchool;
 	}
 }

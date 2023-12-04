@@ -9,7 +9,7 @@ import { CommonToolService } from './common-tool.service';
 import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ToolContextType } from '../enum';
-import { ToolConfigurationStatus } from '../domain';
+import { ContextExternalToolConfigurationStatus } from '../domain';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 
 describe('CommonToolService', () => {
@@ -45,7 +45,7 @@ describe('CommonToolService', () => {
 			it('should return a configuration status with latest true', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
+				const result: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
@@ -76,7 +76,7 @@ describe('CommonToolService', () => {
 			it('should return outdated status for school level', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
+				const result: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
@@ -107,7 +107,7 @@ describe('CommonToolService', () => {
 			it('should return outdated status for context level', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
+				const result: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
@@ -138,7 +138,7 @@ describe('CommonToolService', () => {
 			it('should return outdated status for context and school level', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
+				const result: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
@@ -169,7 +169,7 @@ describe('CommonToolService', () => {
 			it('should return a configuration status with latest true', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
+				const result: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
@@ -200,7 +200,7 @@ describe('CommonToolService', () => {
 			it('should return a configuration status with latest true', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
+				const result: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
@@ -231,7 +231,7 @@ describe('CommonToolService', () => {
 			it('should return a configuration status with latest true', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
+				const result: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool

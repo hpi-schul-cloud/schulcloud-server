@@ -16,7 +16,7 @@ import {
 	schoolFactory,
 } from '@shared/testing';
 
-import { toolConfigurationStatusResponseFactory } from '@shared/testing/factory/tool-configuration-status-response.factory';
+import { contextExternalToolConfigurationStatusResponseFactory } from '@shared/testing/factory/context-external-tool-configuration-status-response.factory';
 import { Response } from 'supertest';
 import { CustomParameterLocation, CustomParameterScope, ToolContextType } from '../../../common/enum';
 import { ExternalToolEntity } from '../../../external-tool/entity';
@@ -175,7 +175,7 @@ describe('ToolReferenceController (API)', () => {
 						{
 							contextToolId: contextExternalToolEntity.id,
 							displayName: contextExternalToolEntity.displayName as string,
-							status: toolConfigurationStatusResponseFactory.build({
+							status: contextExternalToolConfigurationStatusResponseFactory.build({
 								isOutdatedOnScopeSchool: false,
 								isOutdatedOnScopeContext: false,
 							}),
@@ -307,7 +307,7 @@ describe('ToolReferenceController (API)', () => {
 				expect(response.body).toEqual<ToolReferenceResponse>({
 					contextToolId: contextExternalToolEntity.id,
 					displayName: contextExternalToolEntity.displayName as string,
-					status: toolConfigurationStatusResponseFactory.build({
+					status: contextExternalToolConfigurationStatusResponseFactory.build({
 						isOutdatedOnScopeSchool: false,
 						isOutdatedOnScopeContext: false,
 					}),

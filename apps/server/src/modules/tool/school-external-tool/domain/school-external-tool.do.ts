@@ -1,7 +1,7 @@
 import { BaseDO } from '@shared/domain/domainobject/base.do';
 import { CustomParameterEntry } from '../../common/domain';
 import { ToolVersion } from '../../common/interface';
-import { SchoolToolConfigurationStatus } from '../controller/dto';
+import { SchoolExternalToolConfigurationStatus } from '../controller/dto';
 
 export interface SchoolExternalToolProps {
 	id?: string;
@@ -16,7 +16,7 @@ export interface SchoolExternalToolProps {
 
 	toolVersion: number;
 
-	status?: SchoolToolConfigurationStatus;
+	status?: SchoolExternalToolConfigurationStatus;
 }
 
 export class SchoolExternalTool extends BaseDO implements ToolVersion {
@@ -30,7 +30,7 @@ export class SchoolExternalTool extends BaseDO implements ToolVersion {
 
 	toolVersion: number;
 
-	status?: SchoolToolConfigurationStatus;
+	status?: SchoolExternalToolConfigurationStatus;
 
 	constructor(props: SchoolExternalToolProps) {
 		super(props.id);

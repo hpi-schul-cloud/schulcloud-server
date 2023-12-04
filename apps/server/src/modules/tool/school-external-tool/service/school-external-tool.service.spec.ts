@@ -8,7 +8,7 @@ import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
-import { SchoolToolConfigurationStatus } from '../controller/domain/school-external-tool-configuration-status';
+import { SchoolExternalToolConfigurationStatus } from '../controller/domain/school-external-tool-configuration-status';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 import { SchoolExternalToolService } from './school-external-tool.service';
@@ -113,7 +113,7 @@ describe('SchoolExternalToolService', () => {
 							schoolExternalTool
 						);
 
-						expect(schoolExternalToolDOs[0].status).toEqual<SchoolToolConfigurationStatus>(
+						expect(schoolExternalToolDOs[0].status).toEqual<SchoolExternalToolConfigurationStatus>(
 							schoolToolConfigurationStatusFactory.build({
 								isOutdatedOnScopeSchool: true,
 							})

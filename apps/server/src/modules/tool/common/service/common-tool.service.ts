@@ -3,7 +3,7 @@ import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ToolContextType } from '../enum';
-import { ToolConfigurationStatus } from '../domain';
+import { ContextExternalToolConfigurationStatus } from '../domain';
 import { ToolVersion } from '../interface';
 
 // TODO N21-1337 remove class when tool versioning is removed
@@ -16,8 +16,8 @@ export class CommonToolService {
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
-	): ToolConfigurationStatus {
-		const configurationStatus: ToolConfigurationStatus = new ToolConfigurationStatus({
+	): ContextExternalToolConfigurationStatus {
+		const configurationStatus: ContextExternalToolConfigurationStatus = new ContextExternalToolConfigurationStatus({
 			isOutdatedOnScopeContext: true,
 			isOutdatedOnScopeSchool: true,
 		});

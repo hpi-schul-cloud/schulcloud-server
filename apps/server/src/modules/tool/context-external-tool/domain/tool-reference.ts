@@ -1,4 +1,4 @@
-import { ToolConfigurationStatus } from '../../common/domain';
+import { ContextExternalToolConfigurationStatus } from '../../common/domain';
 
 export class ToolReference {
 	contextToolId: string;
@@ -9,7 +9,7 @@ export class ToolReference {
 
 	openInNewTab: boolean;
 
-	status: ToolConfigurationStatus;
+	status: ContextExternalToolConfigurationStatus;
 
 	constructor(toolReference: ToolReference) {
 		this.contextToolId = toolReference.contextToolId;

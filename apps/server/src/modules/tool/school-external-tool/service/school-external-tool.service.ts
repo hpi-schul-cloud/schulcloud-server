@@ -4,7 +4,7 @@ import { SchoolExternalToolRepo } from '@shared/repo';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
-import { SchoolToolConfigurationStatus } from '../controller/dto';
+import { SchoolExternalToolConfigurationStatus } from '../controller/dto';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
@@ -43,7 +43,7 @@ export class SchoolExternalToolService {
 
 	private async enrichDataFromExternalTool(tool: SchoolExternalTool): Promise<SchoolExternalTool> {
 		const externalTool: ExternalTool = await this.externalToolService.findById(tool.toolId);
-		const status: SchoolToolConfigurationStatus = await this.determineSchoolToolStatus(tool, externalTool);
+		const status: SchoolExternalToolConfigurationStatus = await this.determineSchoolToolStatus(tool, externalTool);
 		const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool({
 			...tool,
 			status,
@@ -56,8 +56,8 @@ export class SchoolExternalToolService {
 	private async determineSchoolToolStatus(
 		tool: SchoolExternalTool,
 		externalTool: ExternalTool
-	): Promise<SchoolToolConfigurationStatus> {
-		const status: SchoolToolConfigurationStatus = new SchoolToolConfigurationStatus({
+	): Promise<SchoolExternalToolConfigurationStatus> {
+		const status: SchoolExternalToolConfigurationStatus = new SchoolExternalToolConfigurationStatus({
 			isOutdatedOnScopeSchool: true,
 		});
 

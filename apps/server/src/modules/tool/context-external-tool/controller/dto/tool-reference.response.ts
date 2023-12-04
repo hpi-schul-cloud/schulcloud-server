@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ToolConfigurationStatusResponse } from '../../../common/controller/dto/tool-configuration-status.response';
+import { ContextExternalToolConfigurationStatusResponse } from '../../../common/controller/dto/context-external-tool-configuration-status.response';
 
 export class ToolReferenceResponse {
 	@ApiProperty({ nullable: false, required: true, description: 'The id of the tool in the context' })
@@ -19,12 +19,12 @@ export class ToolReferenceResponse {
 	openInNewTab: boolean;
 
 	@ApiProperty({
-		type: ToolConfigurationStatusResponse,
+		type: ContextExternalToolConfigurationStatusResponse,
 		nullable: false,
 		required: true,
 		description: 'The status of the tool',
 	})
-	status: ToolConfigurationStatusResponse;
+	status: ContextExternalToolConfigurationStatusResponse;
 
 	constructor(toolReferenceResponse: ToolReferenceResponse) {
 		this.contextToolId = toolReferenceResponse.contextToolId;
