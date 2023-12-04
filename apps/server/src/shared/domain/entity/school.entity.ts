@@ -97,8 +97,6 @@ export class SchoolEntity extends BaseEntity {
 		(userLoginMigration: UserLoginMigrationEntity) => userLoginMigration.school,
 		{
 			orphanRemoval: true,
-			nullable: true,
-			fieldName: 'userLoginMigrationId',
 		}
 	)
 	userLoginMigration?: UserLoginMigrationEntity;
