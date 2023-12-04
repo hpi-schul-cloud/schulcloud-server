@@ -1,4 +1,4 @@
-import { EntityName, Loaded } from '@mikro-orm/core';
+import { EntityData, EntityName, Loaded } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { VideoConferenceDO } from '@shared/domain/domainobject';
 import { TargetModels, VideoConference } from '@shared/domain/entity/video-conference.entity';

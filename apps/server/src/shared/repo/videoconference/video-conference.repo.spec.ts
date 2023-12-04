@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { NotFoundError } from '@mikro-orm/core';
+import { EntityData, NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
