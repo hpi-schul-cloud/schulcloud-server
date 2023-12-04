@@ -34,8 +34,8 @@ export class SchoolResponse {
 	@ApiPropertyOptional({ enum: SchoolPurpose, enumName: 'SchoolPurpose' })
 	purpose?: SchoolPurpose;
 
-	@ApiPropertyOptional({ enum: SchoolFeature, enumName: 'SchoolFeature', isArray: true })
-	features?: SchoolFeature[];
+	@ApiProperty({ enum: SchoolFeature, enumName: 'SchoolFeature', isArray: true })
+	features!: SchoolFeature[];
 
 	@ApiPropertyOptional({ type: () => [SystemResponse] })
 	systems?: SystemResponse[];

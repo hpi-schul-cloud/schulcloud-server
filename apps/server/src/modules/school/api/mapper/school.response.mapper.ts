@@ -8,7 +8,7 @@ export class SchoolResponseMapper {
 
 		const federalState = FederalStateResponseMapper.mapToResponse(schoolProps.federalState);
 		const currentYear = schoolProps.currentYear?.getProps();
-		const features = schoolProps.features && Array.from(schoolProps.features);
+		const features = Array.from(schoolProps.features);
 		const systems = schoolProps.systems?.map((system) => system.getProps());
 		const county = schoolProps.county?.getProps();
 

@@ -8,11 +8,11 @@ import { System } from './system';
 
 export class School extends DomainObject<SchoolProps> {
 	public addFeature(feature: SchoolFeature): void {
-		this.props.features?.add(feature);
+		this.props.features.add(feature);
 	}
 
 	public removeFeature(feature: SchoolFeature): void {
-		this.props.features?.delete(feature);
+		this.props.features.delete(feature);
 	}
 
 	public isInMaintenance(): boolean {
@@ -52,7 +52,7 @@ export interface SchoolProps extends AuthorizableObject {
 	federalState: FederalState;
 	county?: County;
 	purpose?: SchoolPurpose;
-	features?: Set<SchoolFeature>;
+	features: Set<SchoolFeature>;
 	systems?: System[];
 	logo_dataUrl?: string;
 	logo_name?: string;
