@@ -10,7 +10,6 @@ import {
 	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,
 	ComponentInternalProperties,
-	ComponentNexboardProperties,
 	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
