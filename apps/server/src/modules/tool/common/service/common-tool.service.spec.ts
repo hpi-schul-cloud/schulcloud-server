@@ -1,9 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
+import {
+	contextExternalToolFactory,
+	externalToolFactory,
+	schoolExternalToolFactory,
+	toolConfigurationStatusFactory,
+} from '@shared/testing';
 import { CommonToolService } from './common-tool.service';
 import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ToolConfigurationStatus, ToolContextType } from '../enum';
+import { ToolContextType } from '../enum';
+import { ContextExternalToolConfigurationStatus } from '../domain';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 
 describe('CommonToolService', () => {
@@ -36,16 +42,21 @@ describe('CommonToolService', () => {
 				};
 			};
 
-			it('should return ToolConfigurationStatus.LATEST', () => {
+			it('should return a configuration status with latest true', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
+				const result: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
 				);
 
-				expect(result).toBe(ToolConfigurationStatus.LATEST);
+				expect(result).toEqual(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeSchool: false,
+					})
+				);
 			});
 		});
 
@@ -62,16 +73,21 @@ describe('CommonToolService', () => {
 				};
 			};
 
-			it('should return ToolConfigurationStatus.OUTDATED', () => {
+			it('should return outdated status for school level', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
+				const result: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
 				);
 
-				expect(result).toBe(ToolConfigurationStatus.OUTDATED);
+				expect(result).toEqual(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: true,
+						isOutdatedOnScopeSchool: true,
+					})
+				);
 			});
 		});
 
@@ -88,16 +104,21 @@ describe('CommonToolService', () => {
 				};
 			};
 
-			it('should return ToolConfigurationStatus.OUTDATED', () => {
+			it('should return outdated status for context level', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
+				const result: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
 				);
 
-				expect(result).toBe(ToolConfigurationStatus.OUTDATED);
+				expect(result).toEqual(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: true,
+						isOutdatedOnScopeSchool: true,
+					})
+				);
 			});
 		});
 
@@ -114,16 +135,21 @@ describe('CommonToolService', () => {
 				};
 			};
 
-			it('should return ToolConfigurationStatus.OUTDATED', () => {
+			it('should return outdated status for context and school level', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
+				const result: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
 				);
 
-				expect(result).toBe(ToolConfigurationStatus.OUTDATED);
+				expect(result).toEqual(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: true,
+						isOutdatedOnScopeSchool: true,
+					})
+				);
 			});
 		});
 
@@ -140,16 +166,21 @@ describe('CommonToolService', () => {
 				};
 			};
 
-			it('should return ToolConfigurationStatus.LATEST', () => {
+			it('should return a configuration status with latest true', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
+				const result: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
 				);
 
-				expect(result).toBe(ToolConfigurationStatus.LATEST);
+				expect(result).toEqual(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeSchool: false,
+					})
+				);
 			});
 		});
 
@@ -166,16 +197,21 @@ describe('CommonToolService', () => {
 				};
 			};
 
-			it('should return ToolConfigurationStatus.LATEST', () => {
+			it('should return a configuration status with latest true', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
+				const result: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
 				);
 
-				expect(result).toBe(ToolConfigurationStatus.LATEST);
+				expect(result).toEqual(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeSchool: false,
+					})
+				);
 			});
 		});
 
@@ -192,16 +228,21 @@ describe('CommonToolService', () => {
 				};
 			};
 
-			it('should return ToolConfigurationStatus.LATEST', () => {
+			it('should return a configuration status with latest true', () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
+				const result: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
 				);
 
-				expect(result).toBe(ToolConfigurationStatus.LATEST);
+				expect(result).toEqual(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeSchool: false,
+					})
+				);
 			});
 		});
 	});
