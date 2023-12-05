@@ -2,7 +2,6 @@ import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { ComponentProperties, EntityId } from '@shared/domain';
-import { ObjectId } from 'bson';
 import {
 	CommonCartridgeFileBuilder,
 	CommonCartridgeOrganizationBuilder,
@@ -16,7 +15,8 @@ export class CommonCartridgeExportService {
 	constructor(
 		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
-		private readonly taskService: TaskService
+		private readonly taskService: TaskService,
+		private readonly commonCartridgeMapper: CommonCartridgeMapper
 	) {}
 
 	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise<Buffer> {
@@ -26,7 +26,7 @@ export class CommonCartridgeExportService {
 			version,
 		});
 
-		builder.addMetadata(CommonCartridgeMapper.mapCourseToMetadata(course));
+		builder.addMetadata(this.commonCartridgeMapper.mapCourseToMetadata(course));
 
 		await this.addLessons(builder, courseId);
 		await this.addTasks(builder, courseId, userId);
@@ -38,7 +38,9 @@ export class CommonCartridgeExportService {
 		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
 
 		lessons.forEach((lesson) => {
-			const organizationBuilder = builder.addOrganization(CommonCartridgeMapper.mapLessonToOrganization(lesson));
+			const organizationBuilder = builder.addOrganization(
+				this.commonCartridgeMapper.mapLessonToOrganization(lesson)
+			);
 
 			lesson.contents.forEach((content) => {
 				this.addComponent(organizationBuilder, content);
@@ -47,16 +49,12 @@ export class CommonCartridgeExportService {
 	}
 
 	private async addTasks(builder: CommonCartridgeFileBuilder, courseId: EntityId, userId: EntityId): Promise<void> {
-		// TODO: figure out with UX/PM if drafts should be exported. explicitly set the option
 		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
-		// TODO: each task can be their own organisation
-		const organizationBuilder = builder.addOrganization({
-			identifier: new ObjectId().toHexString(),
-			title: '', // FIXME: add title
-		});
 
 		tasks.forEach((task) => {
-			organizationBuilder.addResource(CommonCartridgeMapper.mapTaskToResource(task));
+			const organization = builder.addOrganization(this.commonCartridgeMapper.mapTaskToOrganization(task));
+
+			organization.addResource(this.commonCartridgeMapper.mapTaskToResource(task));
 		});
 	}
 
@@ -64,7 +62,7 @@ export class CommonCartridgeExportService {
 		organizationBuilder: CommonCartridgeOrganizationBuilder,
 		component: ComponentProperties
 	): void {
-		const resources = CommonCartridgeMapper.mapContentToResources(component);
+		const resources = this.commonCartridgeMapper.mapContentToResources(component);
 
 		if (!Array.isArray(resources)) {
 			organizationBuilder.addResource(resources);
@@ -72,7 +70,7 @@ export class CommonCartridgeExportService {
 
 		if (Array.isArray(resources)) {
 			const subOrganizationBuilder = organizationBuilder.addSubOrganization(
-				CommonCartridgeMapper.mapContentToOrganization(component)
+				this.commonCartridgeMapper.mapContentToOrganization(component)
 			);
 
 			resources.forEach((resource) => {

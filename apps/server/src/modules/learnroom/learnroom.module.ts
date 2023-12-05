@@ -5,6 +5,7 @@ import { TaskModule } from '@modules/task';
 import { Module } from '@nestjs/common';
 import { BoardRepo, CourseRepo, DashboardModelMapper, DashboardRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
+import { CommonCartridgeMapper } from './mapper/common-cartridge.mapper';
 import {
 	BoardCopyService,
 	ColumnBoardTargetService,
@@ -31,6 +32,7 @@ import {
 		CourseService,
 		CommonCartridgeExportService,
 		ColumnBoardTargetService,
+		CommonCartridgeMapper,
 	],
 	exports: [CourseCopyService, CourseService, RoomsService, CommonCartridgeExportService],
 })

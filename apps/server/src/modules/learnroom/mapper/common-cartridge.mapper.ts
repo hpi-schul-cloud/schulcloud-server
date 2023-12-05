@@ -1,3 +1,5 @@
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ComponentProperties, ComponentType, Course, LessonEntity, Task } from '@shared/domain';
 import { ObjectId } from 'bson';
 import {
@@ -7,9 +9,13 @@ import {
 	CommonCartridgeResourceType,
 	OmitVersion,
 } from '../common-cartridge';
+import { LearnroomConfig } from '../service/learnroom.config';
 
+@Injectable()
 export class CommonCartridgeMapper {
-	static mapCourseToMetadata(course: Course): OmitVersion<CommonCartridgeMetadataElementProps> {
+	public constructor(private readonly configService: ConfigService<LearnroomConfig, true>) {}
+
+	public mapCourseToMetadata(course: Course): OmitVersion<CommonCartridgeMetadataElementProps> {
 		return {
 			title: course.name,
 			copyrightOwners: course.teachers.toArray().map((teacher) => `${teacher.firstName} ${teacher.lastName}`),
@@ -17,14 +23,14 @@ export class CommonCartridgeMapper {
 		};
 	}
 
-	static mapLessonToOrganization(lesson: LessonEntity): OmitVersion<CommonCartridgeOrganizationBuilderOptions> {
+	public mapLessonToOrganization(lesson: LessonEntity): OmitVersion<CommonCartridgeOrganizationBuilderOptions> {
 		return {
 			identifier: lesson.id,
 			title: lesson.name,
 		};
 	}
 
-	static mapContentToOrganization(
+	public mapContentToOrganization(
 		content: ComponentProperties
 	): OmitVersion<CommonCartridgeOrganizationBuilderOptions> {
 		return {
@@ -33,7 +39,14 @@ export class CommonCartridgeMapper {
 		};
 	}
 
-	static mapTaskToResource(task: Task): CommonCartridgeResourceProps {
+	public mapTaskToOrganization(task: Task): OmitVersion<CommonCartridgeOrganizationBuilderOptions> {
+		return {
+			identifier: task.id,
+			title: task.name,
+		};
+	}
+
+	public mapTaskToResource(task: Task): CommonCartridgeResourceProps {
 		return {
 			type: CommonCartridgeResourceType.WEB_CONTENT,
 			identifier: task.id,
@@ -42,7 +55,7 @@ export class CommonCartridgeMapper {
 		};
 	}
 
-	static mapContentToResources(
+	public mapContentToResources(
 		content: ComponentProperties
 	): CommonCartridgeResourceProps | CommonCartridgeResourceProps[] {
 		switch (content.component) {
@@ -58,8 +71,9 @@ export class CommonCartridgeMapper {
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: new ObjectId(content._id).toHexString(),
 					title: content.title,
-					// TODO: put into environment, talk to capcakes if geogebra has been moved to tools, maybe there is a url in the data by now
-					url: `https://www.geogebra.org/m/${content.content.materialId}`, // FIXME: hardcoded hostname
+					url: `${this.configService.getOrThrow<string>(
+						'FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED'
+					)}/m/${content.content.materialId}`,
 				};
 			case ComponentType.ETHERPAD:
 				return {
