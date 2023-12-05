@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain';
-import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import {
 	CommonCartridgeMetadataElementProps,
 	CommonCartridgeOrganizationBuilderOptions,
@@ -47,7 +47,9 @@ describe('CommonCartridgeMapper', () => {
 	describe('mapCourseToMetadata', () => {
 		describe('when mapping course to metadata', () => {
 			const setup = () => {
-				const course = courseFactory.buildWithId();
+				const course = courseFactory.buildWithId({
+					teachers: userFactory.buildListWithId(2),
+				});
 
 				configServiceMock.getOrThrow.mockReturnValue('https://example.com');
 
@@ -139,6 +141,28 @@ describe('CommonCartridgeMapper', () => {
 					identifier: task.id,
 					title: task.name,
 					html: `<h1>${task.name}</h1><p>${task.description}</p>`,
+				});
+			});
+		});
+	});
+
+	describe('mapTaskToOrganization', () => {
+		describe('when mapping task', () => {
+			const setup = () => {
+				const task = taskFactory.buildWithId();
+
+				configServiceMock.getOrThrow.mockReturnValue('https://example.com');
+
+				return { task };
+			};
+
+			it('should map to organization', () => {
+				const { task } = setup();
+				const organizationProps = sut.mapTaskToOrganization(task);
+
+				expect(organizationProps).toStrictEqual<OmitVersion<CommonCartridgeOrganizationBuilderOptions>>({
+					identifier: task.id,
+					title: task.name,
 				});
 			});
 		});
