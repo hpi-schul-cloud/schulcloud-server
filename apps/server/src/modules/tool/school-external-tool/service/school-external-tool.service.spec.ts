@@ -2,12 +2,15 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { SchoolExternalToolRepo } from '@shared/repo';
-import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
-import { ToolConfigurationStatus } from '../../common/enum';
+import {
+	schoolExternalToolFactory,
+	schoolToolConfigurationStatusFactory,
+	externalToolFactory,
+} from '@shared/testing/factory';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
+import { SchoolExternalToolConfigurationStatus } from '../controller/domain/school-external-tool-configuration-status';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 import { SchoolExternalToolService } from './school-external-tool.service';
@@ -112,7 +115,11 @@ describe('SchoolExternalToolService', () => {
 							schoolExternalTool
 						);
 
-						expect(schoolExternalToolDOs[0].status).toEqual(ToolConfigurationStatus.OUTDATED);
+						expect(schoolExternalToolDOs[0].status).toEqual<SchoolExternalToolConfigurationStatus>(
+							schoolToolConfigurationStatusFactory.build({
+								isOutdatedOnScopeSchool: true,
+							})
+						);
 					});
 				});
 
@@ -128,7 +135,11 @@ describe('SchoolExternalToolService', () => {
 							schoolExternalTool
 						);
 
-						expect(schoolExternalToolDOs[0].status).toEqual(ToolConfigurationStatus.LATEST);
+						expect(schoolExternalToolDOs[0].status).toEqual(
+							schoolToolConfigurationStatusFactory.build({
+								isOutdatedOnScopeSchool: false,
+							})
+						);
 					});
 				});
 
@@ -144,7 +155,11 @@ describe('SchoolExternalToolService', () => {
 							schoolExternalTool
 						);
 
-						expect(schoolExternalToolDOs[0].status).toEqual(ToolConfigurationStatus.LATEST);
+						expect(schoolExternalToolDOs[0].status).toEqual(
+							schoolToolConfigurationStatusFactory.build({
+								isOutdatedOnScopeSchool: false,
+							})
+						);
 					});
 				});
 			});
@@ -170,7 +185,11 @@ describe('SchoolExternalToolService', () => {
 					const schoolExternalToolDOs: SchoolExternalTool[] = await service.findSchoolExternalTools(schoolExternalTool);
 
 					expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
-					expect(schoolExternalToolDOs[0].status).toEqual(ToolConfigurationStatus.LATEST);
+					expect(schoolExternalToolDOs[0].status).toEqual(
+						schoolToolConfigurationStatusFactory.build({
+							isOutdatedOnScopeSchool: false,
+						})
+					);
 				});
 			});
 
@@ -195,7 +214,11 @@ describe('SchoolExternalToolService', () => {
 					const schoolExternalToolDOs: SchoolExternalTool[] = await service.findSchoolExternalTools(schoolExternalTool);
 
 					expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
-					expect(schoolExternalToolDOs[0].status).toEqual(ToolConfigurationStatus.OUTDATED);
+					expect(schoolExternalToolDOs[0].status).toEqual(
+						schoolToolConfigurationStatusFactory.build({
+							isOutdatedOnScopeSchool: true,
+						})
+					);
 				});
 			});
 		});

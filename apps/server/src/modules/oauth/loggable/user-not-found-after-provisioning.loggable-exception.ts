@@ -1,8 +1,8 @@
 import { EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
-import { OAuthSSOError } from './oauth-sso.error';
+import { OauthSsoErrorLoggableException } from './oauth-sso-error-loggable-exception';
 
-export class UserNotFoundAfterProvisioningLoggableException extends OAuthSSOError implements Loggable {
+export class UserNotFoundAfterProvisioningLoggableException extends OauthSsoErrorLoggableException implements Loggable {
 	constructor(
 		private readonly externalUserId: string,
 		private readonly systemId: EntityId,
@@ -14,7 +14,7 @@ export class UserNotFoundAfterProvisioningLoggableException extends OAuthSSOErro
 		);
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	override getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			message: this.message,
 			stack: this.stack,

@@ -1,15 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { NotFoundError } from '@mikro-orm/core';
+import { EntityData, NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
-import {
-	IVideoConferenceProperties,
-	TargetModels,
-	VideoConference,
-	VideoConferenceOptions,
-} from '@shared/domain/entity';
+import { TargetModels, VideoConference, VideoConferenceOptions } from '@shared/domain/entity';
 import { VideoConferenceScope } from '@shared/domain/interface';
 import { VideoConferenceRepo } from '@shared/repo';
 import { cleanupCollections } from '@shared/testing';
@@ -21,7 +16,7 @@ class VideoConferenceRepoSpec extends VideoConferenceRepo {
 		return super.mapEntityToDO(entity);
 	}
 
-	mapDOToEntityPropertiesSpec(entityDO: VideoConferenceDO): IVideoConferenceProperties {
+	mapDOToEntityPropertiesSpec(entityDO: VideoConferenceDO): EntityData<VideoConference> {
 		return super.mapDOToEntityProperties(entityDO);
 	}
 }
@@ -61,30 +56,6 @@ describe('Video Conference Repo', () => {
 
 	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(VideoConference);
-	});
-
-	describe('entityFactory', () => {
-		const props: IVideoConferenceProperties = {
-			target: 'teams',
-			targetModel: TargetModels.EVENTS,
-			options: new VideoConferenceOptions({
-				everybodyJoinsAsModerator: false,
-				everyAttendeJoinsMuted: false,
-				moderatorMustApproveJoinRequests: false,
-			}),
-		};
-
-		it('should return new entity of type VideoConference', () => {
-			const result: VideoConference = repo.entityFactory(props);
-
-			expect(result).toBeInstanceOf(VideoConference);
-		});
-
-		it('should return new entity with values from properties', () => {
-			const result: VideoConference = repo.entityFactory(props);
-
-			expect(result).toEqual(expect.objectContaining(props));
-		});
 	});
 
 	describe('findByScopeId', () => {
@@ -161,14 +132,14 @@ describe('Video Conference Repo', () => {
 			});
 
 			// Act
-			const result: IVideoConferenceProperties = repo.mapDOToEntityPropertiesSpec(testDO);
+			const result: EntityData<VideoConference> = repo.mapDOToEntityPropertiesSpec(testDO);
 
 			// Assert
 			expect(result.target).toEqual(testDO.target);
 			expect(result.targetModel).toEqual(TargetModels.COURSES);
-			expect(result.options.everyAttendeJoinsMuted).toEqual(testDO.options.everyAttendeeJoinsMuted);
-			expect(result.options.everybodyJoinsAsModerator).toEqual(testDO.options.everybodyJoinsAsModerator);
-			expect(result.options.moderatorMustApproveJoinRequests).toEqual(testDO.options.moderatorMustApproveJoinRequests);
+			expect(result.options?.everyAttendeJoinsMuted).toEqual(testDO.options.everyAttendeeJoinsMuted);
+			expect(result.options?.everybodyJoinsAsModerator).toEqual(testDO.options.everybodyJoinsAsModerator);
+			expect(result.options?.moderatorMustApproveJoinRequests).toEqual(testDO.options.moderatorMustApproveJoinRequests);
 		});
 	});
 });
