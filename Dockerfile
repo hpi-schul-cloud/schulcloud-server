@@ -21,7 +21,6 @@ COPY src /schulcloud-server/src
 COPY apps /schulcloud-server/apps
 COPY --from=git /app/serverversion /schulcloud-server/apps/server/static-assets
 COPY scripts/ldapSync.sh /schulcloud-server/scripts/
-COPY add-ts-nocheck.js /schulcloud-server/
 RUN npm run build
 
 ENV NODE_ENV=production
