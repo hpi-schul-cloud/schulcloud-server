@@ -402,7 +402,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'update-teacher',
 				entity: tspTeacher.lehrerUid,
-				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}" konnte nicht aktualisiert werden.`,
+				message: `teacher "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}" with tsp id ${tspTeacher.lehrerUid} and user id ${user._id} could not be updated.`,
 			});
 
 			return null;
@@ -542,8 +542,8 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				type: 'update-student',
 				entity: tspStudent.schuelerUid,
 				message:
-					`Schüler "${tspStudent.schuelerVorname} ${tspStudent.schuelerNachname}"` +
-					' konnte nicht aktualisiert werden.',
+					`student "${tspStudent.schuelerVorname} ${tspStudent.schuelerNachname}"` +
+					` with tsp id ${tspStudent.lehrerUid} and user id ${user._id} could not be updated.`,
 			});
 
 			return null;
