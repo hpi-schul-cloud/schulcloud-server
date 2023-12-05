@@ -1129,6 +1129,13 @@
 			"default": false,
 			"description": "Toggle for the IMSCC course download feature."
 		},
+		"GEOGEBRA_BASE_URL": {
+			"type": "string",
+			"format": "uri",
+			"default": "https://www.geogebra.org",
+			"pattern": ".*(?<!/)$",
+			"description": "Base URL of GeoGebra materials"
+		},
 		"GHOST_BASE_URL": {
 			"type": "string",
 			"format": "uri",

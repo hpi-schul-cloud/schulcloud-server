@@ -12,14 +12,14 @@ import { CourseService } from './course.service';
 
 @Injectable()
 export class CommonCartridgeExportService {
-	constructor(
+	public constructor(
 		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
 		private readonly taskService: TaskService,
 		private readonly commonCartridgeMapper: CommonCartridgeMapper
 	) {}
 
-	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise<Buffer> {
+	public async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
 		const builder = new CommonCartridgeFileBuilder({
 			identifier: courseId,

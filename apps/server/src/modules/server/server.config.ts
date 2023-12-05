@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { AccountConfig } from '@modules/account';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
-import type { CommonCartridgeConfig } from '@modules/learnroom/common-cartridge';
+import type { LearnroomConfig } from '@modules/learnroom';
 import type { UserConfig } from '@modules/user';
 import type { CoreModuleConfig } from '@src/core';
 import { MailConfig } from '@src/infra/mail/interfaces/mail-config';
@@ -20,7 +20,7 @@ export interface ServerConfig
 		FilesStorageClientConfig,
 		AccountConfig,
 		IdentityManagementConfig,
-		CommonCartridgeConfig,
+		LearnroomConfig,
 		MailConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
@@ -40,6 +40,7 @@ const config: ServerConfig = {
 	FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED: Configuration.get(
 		'FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED'
 	) as boolean,
+	GEOGEBRA_BASE_URL: Configuration.get('GEOGEBRA_BASE_URL') as string,
 	FEATURE_IDENTITY_MANAGEMENT_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get(
 		'FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED'

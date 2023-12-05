@@ -11,7 +11,7 @@ import {
 	CommonCartridgeResourceType,
 	OmitVersion,
 } from '../common-cartridge';
-import { LearnroomConfig } from '../service/learnroom.config';
+import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeMapper } from './common-cartridge.mapper';
 
 describe('CommonCartridgeMapper', () => {

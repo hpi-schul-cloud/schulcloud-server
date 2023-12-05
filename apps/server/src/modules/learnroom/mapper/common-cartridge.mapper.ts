@@ -9,7 +9,7 @@ import {
 	CommonCartridgeResourceType,
 	OmitVersion,
 } from '../common-cartridge';
-import { LearnroomConfig } from '../service/learnroom.config';
+import { LearnroomConfig } from '../learnroom.config';
 
 @Injectable()
 export class CommonCartridgeMapper {
