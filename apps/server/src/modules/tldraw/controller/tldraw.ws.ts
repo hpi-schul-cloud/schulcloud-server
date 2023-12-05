@@ -1,6 +1,8 @@
 import { WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection } from '@nestjs/websockets';
 import { Server, WebSocket } from 'ws';
+import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
+import cookie from 'cookie';
 import { TldrawConfig, SOCKET_PORT } from '../config';
 import { WsCloseCodeEnum } from '../types';
 import { TldrawWsService } from '../service';
@@ -15,9 +17,20 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		private readonly tldrawWsService: TldrawWsService
 	) {}
 
-	public handleConnection(client: WebSocket, request: Request): void {
+	async handleConnection(client: WebSocket, request: Request): Promise<void> {
 		const docName = this.getDocNameFromRequest(request);
-
+		const cookies = cookie.parse(request.headers.cookie || '');
+		if (!cookies?.jwt) {
+			client.close(WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE, 'Unauthorised connection.');
+		}
+		try {
+			await this.tldrawWsService.authorizeConnection(docName, cookies.jwt);
+		} catch (e) {
+			client.close(
+				WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
+				"Unauthorised connection - you don't have permission to this drawing."
+			);
+		}
 		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
 			this.tldrawWsService.setupWSConnection(client, docName);
 		} else {
