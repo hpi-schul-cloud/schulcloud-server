@@ -20,6 +20,14 @@ const Roles = mongoose.model(
 
 module.exports = {
 	up: async function up() {
+		// eslint-disable-next-line no-process-env
+		if (process.env.SC_THEME !== 'n21') {
+			info(
+				'Migration does not add the SYSTEM_CREATE and SYSTEM_EDIT permission to role administrator for this instance.'
+			);
+			return;
+		}
+
 		await connect();
 
 		await Roles.updateOne(
@@ -50,6 +58,16 @@ module.exports = {
 	},
 
 	down: async function down() {
+		// eslint-disable-next-line no-process-env
+		if (process.env.SC_THEME !== 'n21') {
+			info(
+				'Migration does not remove the SYSTEM_CREATE and SYSTEM_EDIT permission to role administrator for this instance.'
+			);
+			return;
+		}
+
+		await connect();
+
 		await Roles.updateOne(
 			{ name: 'administrator' },
 			{
