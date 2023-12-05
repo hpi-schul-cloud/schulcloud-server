@@ -38,7 +38,7 @@ describe('roster service', function oauth() {
 		pseudonymService = app.service('pseudonym');
 		toolService = app.service('ltiTools');
 		courseService = app.service('courseModel');
-		server = app.listen(0);
+		server = await app.listen(0);
 
 		testUser1 = { _id: '0000d231816abba584714c9e' }; // cord carl
 		testToolTemplate = {
