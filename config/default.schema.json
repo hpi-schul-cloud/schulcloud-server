@@ -333,25 +333,25 @@
 					"default": "eu-central-2",
 					"description": "Region name of bucket"
 				},
-				"S3_ACCESS_KEY_ID_RW": {
+				"S3_ACCESS_KEY_ID": {
 					"type": "string",
 					"default": "",
-					"description": "Access Key to S3_BUCKET_CONTENT with R/W permissions"
+					"description": "Access Key to S3_BUCKET_CONTENT with RW and S3_BUCKET_LIBRARIES with R permissions"
 				},
-				"S3_SECRET_ACCESS_KEY_RW": {
+				"S3_SECRET_ACCESS_KEY": {
 					"type": "string",
 					"default": "",
-					"description": "Secret key to S3_BUCKET_CONTENT with R/W permissions"
+					"description": "Secret key to to S3_BUCKET_CONTENT with RW and S3_BUCKET_LIBRARIES with R permissions"
 				},
-				"S3_ACCESS_KEY_ID_R": {
+				"LIBRARIES_S3_ACCESS_KEY_ID": {
 					"type": "string",
 					"default": "",
-					"description": "Access Key to S3_BUCKET_LIBRARIES with R permissions"
+					"description": "Access Key to S3_BUCKET_LIBRARIES with RW permissions"
 				},
-				"S3_SECRET_ACCESS_KEY_R": {
+				"LIBRARIES_S3_SECRET_ACCESS_KEY": {
 					"type": "string",
 					"default": "",
-					"description": "Secret key to S3_BUCKET_LIBRARIES with R permissions"
+					"description": "Secret key to S3_BUCKET_LIBRARIES with RW permissions"
 				},
 				"S3_BUCKET_CONTENT": {
 					"type": "string",
