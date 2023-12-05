@@ -1,10 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
+import { EntityData, NotFoundError } from '@mikro-orm/core';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { ILtiToolProperties, LtiTool } from '@shared/domain/entity';
+import { LtiTool } from '@shared/domain/entity';
 import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
 import { LtiToolRepo } from '@shared/repo/ltitool/ltitool.repo';
 import { cleanupCollections } from '@shared/testing';
@@ -16,7 +16,7 @@ class LtiToolRepoSpec extends LtiToolRepo {
 		return super.mapEntityToDO(entity);
 	}
 
-	mapDOToEntityPropertiesSpec(entityDO: LtiToolDO): ILtiToolProperties {
+	mapDOToEntityPropertiesSpec(entityDO: LtiToolDO): EntityData<LtiTool> {
 		return super.mapDOToEntityProperties(entityDO);
 	}
 }
@@ -56,38 +56,6 @@ describe('LtiTool Repo', () => {
 
 	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(LtiTool);
-	});
-
-	describe('entityFactory', () => {
-		const props: ILtiToolProperties = {
-			name: 'toolName',
-			oAuthClientId: 'clientId',
-			secret: 'secret',
-			isLocal: true,
-			customs: [],
-			isHidden: false,
-			isTemplate: false,
-			key: 'key',
-			openNewTab: false,
-			originToolId: undefined,
-			privacy_permission: LtiPrivacyPermission.NAME,
-			roles: [LtiRoleType.INSTRUCTOR, LtiRoleType.LEARNER],
-			url: 'url',
-			friendlyUrl: 'friendlyUrl',
-			frontchannel_logout_uri: 'frontchannel_logout_uri',
-		};
-
-		it('should return new entity of type LtiTool', () => {
-			const result: LtiTool = repo.entityFactory(props);
-
-			expect(result).toBeInstanceOf(LtiTool);
-		});
-
-		it('should return new entity with values from properties', () => {
-			const result: LtiTool = repo.entityFactory(props);
-
-			expect(result).toEqual(expect.objectContaining(props));
-		});
 	});
 
 	describe('findByUserAndTool', () => {
@@ -187,7 +155,7 @@ describe('LtiTool Repo', () => {
 				frontchannel_logout_uri: 'frontchannel_logout_uri',
 			});
 
-			const result: ILtiToolProperties = repo.mapDOToEntityPropertiesSpec(testDO);
+			const result: EntityData<LtiTool> = repo.mapDOToEntityPropertiesSpec(testDO);
 
 			expect(testDO).toEqual(expect.objectContaining(result));
 		});
