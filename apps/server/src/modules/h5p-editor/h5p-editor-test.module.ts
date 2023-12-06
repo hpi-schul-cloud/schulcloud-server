@@ -1,3 +1,19 @@
+import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
+import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
+import { S3ClientModule } from '@infra/s3-client';
+import { AuthenticationModule } from '@modules/authentication';
+import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
+import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
+import { ClassEntity } from '@modules/class/entity';
+import { GroupEntity } from '@modules/group/entity';
+import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
+import { RegistrationPinEntity } from '@modules/registration-pin/entity';
+import { ShareToken } from '@modules/sharing/entity/share-token.entity';
+import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
+import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { UserModule } from '@modules/user';
+import { DynamicModule, Module } from '@nestjs/common';
 import {
 	Account,
 	Board,
