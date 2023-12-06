@@ -3,7 +3,6 @@ import { FileStorageType, SchoolFeature, SchoolPermissions, SchoolPurpose } from
 import { CountyResponse } from './county.response';
 import { FederalStateResponse } from './federal-state.response';
 import { SchoolYearResponse } from './school-year.response';
-import { SystemResponse } from './system.response';
 import { YearsResponse } from './years.response';
 
 export class SchoolResponse {
@@ -37,8 +36,8 @@ export class SchoolResponse {
 	@ApiProperty({ enum: SchoolFeature, enumName: 'SchoolFeature', isArray: true })
 	features!: SchoolFeature[];
 
-	@ApiPropertyOptional({ type: () => [SystemResponse] })
-	systems?: SystemResponse[];
+	@ApiProperty()
+	systemIds!: string[];
 
 	@ApiProperty()
 	inMaintenance!: boolean;

@@ -9,16 +9,16 @@ export class SchoolResponseMapper {
 		const federalState = FederalStateResponseMapper.mapToResponse(schoolProps.federalState);
 		const currentYear = schoolProps.currentYear?.getProps();
 		const features = Array.from(schoolProps.features);
-		const systems = schoolProps.systems?.map((system) => system.getProps());
 		const county = schoolProps.county?.getProps();
+		const systemIds = schoolProps.systemIds ?? [];
 
 		const res = {
 			...schoolProps,
 			currentYear,
 			federalState,
 			features,
-			systems,
 			county,
+			systemIds,
 			inMaintenance: school.isInMaintenance(),
 			isExternal: school.isExternal(),
 			years,

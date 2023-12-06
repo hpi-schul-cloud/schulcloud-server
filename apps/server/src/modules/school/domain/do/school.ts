@@ -4,7 +4,6 @@ import { FileStorageType, SchoolFeature, SchoolPermissions, SchoolPurpose } from
 import { County } from './county';
 import { FederalState } from './federal-state';
 import { SchoolYear } from './school-year';
-import { System } from './system';
 
 export class School extends DomainObject<SchoolProps> {
 	public addFeature(feature: SchoolFeature): void {
@@ -53,7 +52,7 @@ export interface SchoolProps extends AuthorizableObject {
 	county?: County;
 	purpose?: SchoolPurpose;
 	features: Set<SchoolFeature>;
-	systems?: System[];
+	systemIds?: EntityId[];
 	logo_dataUrl?: string;
 	logo_name?: string;
 	fileStorageType?: FileStorageType;

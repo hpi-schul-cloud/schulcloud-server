@@ -17,7 +17,7 @@ export class SchoolMikroOrmRepo implements SchoolRepo {
 		scope.allowEmptyQuery(true);
 		scope.byFederalState(query.federalStateId);
 
-		const findOptions = this.mapToMikroOrmOptions(options, ['federalState', 'currentYear', 'systems']);
+		const findOptions = this.mapToMikroOrmOptions(options, ['federalState', 'currentYear']);
 
 		const entities = await this.em.find(SchoolEntity, scope.query, findOptions);
 
@@ -30,7 +30,7 @@ export class SchoolMikroOrmRepo implements SchoolRepo {
 		const entity = await this.em.findOneOrFail(
 			SchoolEntity,
 			{ id: schoolId },
-			{ populate: ['federalState', 'currentYear', 'systems'] }
+			{ populate: ['federalState', 'currentYear'] }
 		);
 
 		const school = SchoolEntityMapper.mapToDo(entity);

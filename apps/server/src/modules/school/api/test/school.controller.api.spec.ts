@@ -6,6 +6,7 @@ import {
 	federalStateFactory,
 	schoolFactory,
 	schoolYearFactory,
+	systemEntityFactory,
 	UserAndAccountTestFactory,
 } from '@shared/testing/factory';
 import { ServerTestModule } from '@src/modules/server';
@@ -115,7 +116,8 @@ describe('School Controller (API)', () => {
 				const schoolYears = schoolYearFactory.withStartYear(2002).buildList(3);
 				const currentYear = schoolYears[1];
 				const federalState = federalStateFactory.build();
-				const school = schoolFactory.build({ currentYear, federalState });
+				const systems = systemEntityFactory.buildList(3);
+				const school = schoolFactory.build({ currentYear, federalState, systems });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 
 				await em.persistAndFlush([...schoolYears, federalState, school, studentAccount, studentUser]);
@@ -151,7 +153,7 @@ describe('School Controller (API)', () => {
 						nextYear: schoolYearResponses[2],
 					},
 					features: [],
-					systems: [],
+					systemIds: systems.map((system) => system.id),
 				};
 
 				const loggedInClient = await testApiClient.login(studentAccount);
