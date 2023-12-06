@@ -1,8 +1,8 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder } from '@shared/domain';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections, federalStateFactory, schoolFactory, systemEntityFactory } from '@shared/testing';
 import { countyEmbeddableFactory } from '@shared/testing/factory/county.embeddable.factory';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';

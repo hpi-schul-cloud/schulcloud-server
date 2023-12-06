@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolYearEntity } from '@shared/domain';
+import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
 import { cleanupCollections, schoolYearFactory } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
 import { SCHOOL_YEAR_REPO } from '../../domain';

@@ -1,7 +1,7 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
-import { SortOrder } from '@shared/domain';
-import { EntityId } from '@shared/domain/types/entity-id';
+import { SortOrder } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { SchoolQuery } from '../domain/query';
 import { SchoolService, SchoolYearService } from '../domain/service';
 import { SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
