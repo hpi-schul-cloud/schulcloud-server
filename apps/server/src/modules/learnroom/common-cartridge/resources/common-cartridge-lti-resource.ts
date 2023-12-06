@@ -1,5 +1,4 @@
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
-import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
 import { buildXmlString, createVersionNotSupportedError } from '../utils';
 
 export type CommonCartridgeLtiResourceProps = {
@@ -12,7 +11,7 @@ export type CommonCartridgeLtiResourceProps = {
 	url: string;
 };
 
-export class CommonCartridgeLtiResource implements CommonCartridgeResource {
+export class CommonCartridgeLtiResource {
 	constructor(private readonly props: CommonCartridgeLtiResourceProps) {}
 
 	public canInline(): boolean {

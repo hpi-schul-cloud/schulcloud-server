@@ -1,0 +1,39 @@
+import { CommonCartridgeResourceType } from '../../common-cartridge.enums';
+import { CommonCartridgeResourceFactory } from '../../interfaces/common-cartridge-resource-factory.interface';
+import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resource.interface';
+import { createResourceTypeNotSupportedError } from '../../utils';
+import { CommonCartridgeLtiResource, CommonCartridgeLtiResourceProps } from './common-cartridge-lti-resource';
+import {
+	CommonCartridgeWebContentResource,
+	CommonCartridgeWebContentResourceProps,
+} from './common-cartridge-web-content-resource';
+import {
+	CommonCartridgeWebLinkResource,
+	CommonCartridgeWebLinkResourceProps,
+} from './common-cartridge-web-link-resource';
+
+export type CommonCartridgeResourceProps =
+	| CommonCartridgeLtiResourceProps
+	| CommonCartridgeWebContentResourceProps
+	| CommonCartridgeWebLinkResourceProps;
+
+export class CommonCartridgeResourceFactoryV130 extends CommonCartridgeResourceFactory {
+	public static readonly instance = new CommonCartridgeResourceFactoryV130();
+
+	public static getInstance(): CommonCartridgeResourceFactory {
+		return this.instance;
+	}
+
+	public override createResource(props: CommonCartridgeResourceProps): CommonCartridgeResource {
+		switch (props.type) {
+			case CommonCartridgeResourceType.LTI:
+				return new CommonCartridgeLtiResource(props);
+			case CommonCartridgeResourceType.WEB_CONTENT:
+				return new CommonCartridgeWebContentResource(props);
+			case CommonCartridgeResourceType.WEB_LINK:
+				return new CommonCartridgeWebLinkResource(props);
+			default:
+				throw createResourceTypeNotSupportedError(props.type);
+		}
+	}
+}

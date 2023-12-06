@@ -1,3 +1,4 @@
+import { InternalServerErrorException } from '@nestjs/common';
 import { Builder } from 'xml2js';
 import { CommonCartridgeVersion } from './common-cartridge.enums';
 
@@ -11,8 +12,12 @@ export function buildXmlString(obj: unknown): string {
 	return xmlBuilder.buildObject(obj);
 }
 
-export function createVersionNotSupportedError(version: CommonCartridgeVersion): Error {
-	return new Error(`Version ${version} is not supported`);
+export function createVersionNotSupportedError(version: string): Error {
+	return new InternalServerErrorException(`Common Cartridge version ${version} is not supported`);
+}
+
+export function createResourceTypeNotSupportedError(type: string): Error {
+	return new InternalServerErrorException(`Common Cartridge resource type ${type} is not supported`);
 }
 
 export function checkCommonCartridgeVersion(version: CommonCartridgeVersion): void | never {
