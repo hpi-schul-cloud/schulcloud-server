@@ -1,5 +1,4 @@
-import { AuthorizationContextBuilder } from '@modules/authorization/domain/mapper/authorization-context.builder';
-import { AuthorizationService } from '@modules/authorization/domain/service/authorization.service';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain';
 import { EntityId } from '@shared/domain/types/entity-id';
