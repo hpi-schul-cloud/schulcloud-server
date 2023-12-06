@@ -35,7 +35,6 @@ import { GroupService } from '../service';
 import { ClassInfoDto, ResolvedGroupDto } from './dto';
 import { ClassRootType } from './dto/class-root-type';
 import { GroupUc } from './group.uc';
-import any = jasmine.any;
 
 describe('GroupUc', () => {
 	let module: TestingModule;
