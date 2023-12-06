@@ -1,5 +1,8 @@
+const { Configuration } = require('@hpi-schul-cloud/commons/lib');
 const { BadRequest } = require('../../../errors');
 const oauth2 = require('../../oauth2/hooks');
+
+const webUri = Configuration.get('HOST');
 
 module.exports = {
 	/**
@@ -68,8 +71,7 @@ module.exports = {
 		if (
 			users.some(
 				(user) =>
-					user.user_id ===
-						oauth2.getSubject(context.params.tokenInfo.obfuscated_subject, context.app.settings.services.web) ||
+					user.user_id === oauth2.getSubject(context.params.tokenInfo.obfuscated_subject, webUri) ||
 					user.user_id === context.params.tokenInfo.obfuscated_subject
 			)
 		)
