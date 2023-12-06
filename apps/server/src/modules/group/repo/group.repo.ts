@@ -1,4 +1,4 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { type UserDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
