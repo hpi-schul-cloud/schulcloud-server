@@ -64,6 +64,10 @@ describe('School Controller (API)', () => {
 				const response = await loggedInClient.get(`id/123`);
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				expect(response.body.validationErrors).toEqual([
+					{ errors: ['schoolId must be a mongodb id'], field: ['schoolId'] },
+				]);
 			});
 		});
 
