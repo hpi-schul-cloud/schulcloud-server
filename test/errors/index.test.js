@@ -318,9 +318,9 @@ describe('errors', () => {
 		const err = new Gone(message);
 		expect(err instanceof Error).to.be.true;
 		expect(err instanceof FeathersError).to.be.true;
-		expect(err.message, 'message should empty string').to.equal('');
-		expect(err.code, 'code should undefined').to.be.undefined;
-		expect(err.type, 'type should undefined').to.be.undefined;
+		expect(err.message, 'message should be given message').to.equal(message);
+		expect(err.code).to.equal(410);
+		expect(err.type).to.equal('FeathersError');
 		expect(err.className, 'should the name of constructor as lower case notation').to.equal('gone');
 		expect(err.name, 'should the name of constructor').to.equal('Gone');
 		expect(err.data, 'should empty object').to.eql({});
