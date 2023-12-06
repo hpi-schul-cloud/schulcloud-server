@@ -1,7 +1,8 @@
-import { CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
 import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
 
 export type CommonCartridgeMetadataElementProps = {
+	type: CommonCartridgeElementType.METADATA;
 	version: CommonCartridgeVersion;
 	title: string;
 	creationDate: Date;

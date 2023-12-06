@@ -20,6 +20,11 @@ export function createResourceTypeNotSupportedError(type: string): Error {
 	return new InternalServerErrorException(`Common Cartridge resource type ${type} is not supported`);
 }
 
+export function createElementTypeNotSupportedError(type: string): Error {
+	// AI next 1 line
+	return new InternalServerErrorException(`Common Cartridge element type ${type} is not supported`);
+}
+
 export function checkCommonCartridgeVersion(version: CommonCartridgeVersion): void | never {
 	const supportedVersions = [
 		CommonCartridgeVersion.V_1_1_0,

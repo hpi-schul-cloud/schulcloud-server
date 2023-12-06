@@ -20,3 +20,10 @@ export enum CommonCartridgeIntendedUseType {
 	SYLLABUS = 'syllabus',
 	UNSPECIFIED = 'unspecified',
 }
+
+export enum CommonCartridgeElementType {
+	METADATA = 'metadata',
+	ORGANIZATION = 'organization',
+	RESOURCES_WRAPPER = 'resourceswrapper',
+	ORGANIZATIONS_WRAPPER = 'organizationswrapper',
+}
