@@ -4,13 +4,11 @@ import { ICurrentUser } from '@modules/authentication';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, Permission, Role, SortOrder, User } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
+import { Role, User } from '@shared/domain/entity';
+import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import {
-	externalToolFactory,
-	oauth2ToolConfigFactory,
-} from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { externalToolFactory, oauth2ToolConfigFactory } from '@shared/testing/factory';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalTool, ExternalToolMetadata, Oauth2ToolConfig } from '../domain';
 import {
@@ -550,7 +548,7 @@ describe('ExternalToolUc', () => {
 
 				const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
 					schoolExternalToolCount: 2,
-					contextExternalToolCountPerContext: { course: 3, 'board-element': 3 },
+					contextExternalToolCountPerContext: { course: 3, boardElement: 3 },
 				});
 
 				externalToolMetadataService.getMetadata.mockResolvedValue(externalToolMetadata);

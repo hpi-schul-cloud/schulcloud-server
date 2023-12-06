@@ -1,24 +1,30 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AccountEntity, Course, Permission, SchoolEntity, User } from '@shared/domain';
+import { AccountEntity, Board, Course, SchoolEntity, User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	accountFactory,
+	boardFactory,
 	contextExternalToolEntityFactory,
 	courseFactory,
 	customParameterFactory,
 	externalToolEntityFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@modules/server';
-import { CustomParameterTypeParams } from '@modules/tool/common/enum';
 import { Response } from 'supertest';
-import { CustomParameterLocationParams, CustomParameterScopeTypeParams } from '../../../common/enum';
+import {
+	CustomParameterLocationParams,
+	CustomParameterScopeTypeParams,
+	CustomParameterTypeParams,
+	ToolContextType,
+} from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ExternalToolEntity } from '../../entity';
@@ -27,6 +33,7 @@ import {
 	ContextExternalToolConfigurationTemplateResponse,
 	SchoolExternalToolConfigurationTemplateListResponse,
 	SchoolExternalToolConfigurationTemplateResponse,
+	ToolContextTypesListResponse,
 } from '../dto';
 
 describe('ToolConfigurationController (API)', () => {
@@ -111,7 +118,7 @@ describe('ToolConfigurationController (API)', () => {
 			});
 		});
 
-		describe('when tools are available for a course', () => {
+		describe('when tools are available for a context', () => {
 			const setup = async () => {
 				const school: SchoolEntity = schoolFactory.buildWithId();
 
@@ -120,35 +127,67 @@ describe('ToolConfigurationController (API)', () => {
 				]);
 
 				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
+				const board: Board = boardFactory.buildWithId({ course });
 
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					restrictToContexts: [ToolContextType.COURSE],
 					logoBase64: 'logo',
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
 				externalTool.logoUrl = `http://localhost:3030/api/v3/tools/external-tools/${externalTool.id}/logo`;
+
+				const externalToolWithoutContextRestriction: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					restrictToContexts: [],
+				});
 
 				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalTool,
 				});
 
-				await em.persistAndFlush([school, course, teacherUser, teacherAccount, externalTool, schoolExternalTool]);
+				const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+					school,
+					tool: externalToolWithoutContextRestriction,
+				});
+
+				await em.persistAndFlush([
+					school,
+					course,
+					board,
+					teacherUser,
+					teacherAccount,
+					externalTool,
+					externalToolWithoutContextRestriction,
+					schoolExternalTool,
+					schoolExternalTool2,
+				]);
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
 				return {
 					course,
+					board,
 					externalTool,
+					externalToolWithoutContextRestriction,
 					schoolExternalTool,
+					schoolExternalTool2,
 					contextParameter,
 					loggedInClient,
 				};
 			};
 
 			it('should return an array of available tools with parameters of scope context', async () => {
-				const { course, externalTool, contextParameter, schoolExternalTool, loggedInClient } = await setup();
+				const {
+					course,
+					externalTool,
+					externalToolWithoutContextRestriction,
+					contextParameter,
+					schoolExternalTool,
+					schoolExternalTool2,
+					loggedInClient,
+				} = await setup();
 
 				const response: Response = await loggedInClient.get(`course/${course.id}/available-tools`);
 
@@ -174,6 +213,31 @@ describe('ToolConfigurationController (API)', () => {
 								},
 							],
 							version: externalTool.version,
+						},
+						{
+							externalToolId: externalToolWithoutContextRestriction.id,
+							name: externalToolWithoutContextRestriction.name,
+							parameters: [],
+							schoolExternalToolId: schoolExternalTool2.id,
+							version: externalToolWithoutContextRestriction.version,
+						},
+					],
+				});
+			});
+
+			it('should not return the context restricted tool', async () => {
+				const { board, loggedInClient, externalToolWithoutContextRestriction, schoolExternalTool2 } = await setup();
+
+				const response: Response = await loggedInClient.get(`board-element/${board.id}/available-tools`);
+
+				expect(response.body).toEqual<ContextExternalToolConfigurationTemplateListResponse>({
+					data: [
+						{
+							externalToolId: externalToolWithoutContextRestriction.id,
+							name: externalToolWithoutContextRestriction.name,
+							parameters: [],
+							schoolExternalToolId: schoolExternalTool2.id,
+							version: externalToolWithoutContextRestriction.version,
 						},
 					],
 				});
@@ -633,7 +697,44 @@ describe('ToolConfigurationController (API)', () => {
 				const response: Response = await loggedInClient.get(
 					`context-external-tools/${contextExternalTool.id}/configuration-template`
 				);
+
 				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+			});
+		});
+	});
+
+	describe('GET tools/context-types', () => {
+		describe('when user is not authorized', () => {
+			it('should return unauthorized status', async () => {
+				const response = await testApiClient.get('context-types');
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user is authorized', () => {
+			const setup = async () => {
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
+
+				await em.persistAndFlush([adminAccount, adminUser]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
+				const contextTypeList: ToolContextTypesListResponse = new ToolContextTypesListResponse([
+					ToolContextType.COURSE,
+					ToolContextType.BOARD_ELEMENT,
+				]);
+
+				return { loggedInClient, contextTypeList };
+			};
+
+			it('should return all context types', async () => {
+				const { loggedInClient, contextTypeList } = await setup();
+
+				const response = await loggedInClient.get('context-types');
+
+				expect(response.body).toEqual(contextTypeList);
 			});
 		});
 	});

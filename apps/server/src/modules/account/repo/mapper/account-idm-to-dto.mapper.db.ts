@@ -1,5 +1,5 @@
-import { IdmAccount } from '@shared/domain';
-import { AccountDto } from '../../services/dto/account.dto';
+import { IdmAccount } from '@shared/domain/interface';
+import { AccountDto } from '../../services';
 import { AccountIdmToDtoMapper } from './account-idm-to-dto.mapper.abstract';
 
 export class AccountIdmToDtoMapperDb extends AccountIdmToDtoMapper {

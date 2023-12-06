@@ -1,8 +1,9 @@
 import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Counted, EntityId, SortOrder } from '@shared/domain';
 import { AccountEntity } from '@shared/domain/entity/account.entity';
+import { SortOrder } from '@shared/domain/interface';
+import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 
 @Injectable()

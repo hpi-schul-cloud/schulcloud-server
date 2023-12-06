@@ -4,7 +4,9 @@ import { OauthProviderService } from '@infra/oauth-provider';
 import { ProviderOauthClient } from '@infra/oauth-provider/dto';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, Page, SortOrder } from '@shared/domain';
+
+import { Page } from '@shared/domain/domainobject';
+import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import {
 	externalToolFactory,

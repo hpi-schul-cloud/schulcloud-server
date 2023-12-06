@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { AccountEntity, Counted, EntityId, Permission, Role, RoleName, User } from '@shared/domain';
+import { AccountEntity, Role, User } from '@shared/domain/entity';
+import { Permission, RoleName } from '@shared/domain/interface';
+import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing';
 import { ObjectId } from 'bson';

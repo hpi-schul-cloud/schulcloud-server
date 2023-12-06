@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Card, ContentElementType } from '@shared/domain';
+import { Card, ContentElementType } from '@shared/domain/domainobject';
 import { setupEntities } from '@shared/testing';
 import {
 	cardFactory,

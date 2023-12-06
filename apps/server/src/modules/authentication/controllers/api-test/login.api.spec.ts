@@ -1,10 +1,10 @@
 import { EntityManager } from '@mikro-orm/core';
-import { SSOErrorCode } from '@src/modules/oauth/loggable';
 import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server/server.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AccountEntity, RoleName, SchoolEntity, SystemEntity, User } from '@shared/domain';
+import { AccountEntity, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { RoleName } from '@shared/domain/interface';
 import { accountFactory, roleFactory, schoolFactory, systemEntityFactory, userFactory } from '@shared/testing';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -415,7 +415,7 @@ describe('Login Controller (api)', () => {
 					.post(`${basePath}/oauth2`)
 					.send({
 						redirectUri: 'redirectUri',
-						error: SSOErrorCode.SSO_OAUTH_LOGIN_FAILED,
+						error: 'sso_login_failed',
 						systemId: system.id,
 					})
 					// TODO N21-820: change this to UNAUTHORIZED when refactoring exceptions

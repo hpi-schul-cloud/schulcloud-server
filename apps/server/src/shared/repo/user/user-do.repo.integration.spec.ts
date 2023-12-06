@@ -1,23 +1,14 @@
 import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
+import { EntityData, FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { UserQuery } from '@modules/user/service/user-query.type';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import {
-	IFindOptions,
-	LanguageType,
-	Role,
-	RoleName,
-	SchoolEntity,
-	SortOrder,
-	SystemEntity,
-	User,
-	UserProperties,
-} from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { LanguageType, Role, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { IFindOptions, RoleName, SortOrder } from '@shared/domain/interface';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import {
 	cleanupCollections,
@@ -64,36 +55,6 @@ describe('UserRepo', () => {
 
 	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(User);
-	});
-
-	describe('entityFactory', () => {
-		const props: UserProperties = {
-			email: 'email@email.email',
-			firstName: 'firstName',
-			lastName: 'lastName',
-			school: schoolFactory.buildWithId(),
-			roles: [roleFactory.buildWithId()],
-		};
-
-		it('should return new entity of type User', () => {
-			const result: User = repo.entityFactory(props);
-
-			expect(result).toBeInstanceOf(User);
-		});
-
-		it('should return new entity with values from properties', () => {
-			const result: User = repo.entityFactory(props);
-
-			expect(result).toEqual(
-				expect.objectContaining({
-					email: props.email,
-					firstName: props.firstName,
-					lastName: props.lastName,
-					school: props.school,
-				})
-			);
-			expect(result.roles.getItems()).toEqual(props.roles);
-		});
 	});
 
 	describe('findById', () => {
@@ -306,9 +267,9 @@ describe('UserRepo', () => {
 					'testId'
 				);
 
-			const result: UserProperties = repo.mapDOToEntityProperties(testDO);
+			const result: EntityData<User> = repo.mapDOToEntityProperties(testDO);
 
-			expect(result).toEqual<UserProperties>({
+			expect(result).toEqual<EntityData<User>>({
 				email: testDO.email,
 				firstName: testDO.firstName,
 				lastName: testDO.lastName,
@@ -528,6 +489,51 @@ describe('UserRepo', () => {
 						orderBy: expect.objectContaining<QueryOrderMap<User>>({}) as QueryOrderMap<User>,
 					})
 				);
+			});
+		});
+	});
+
+	describe('findByIdOrNull', () => {
+		describe('when user not found', () => {
+			const setup = () => {
+				const id = new ObjectId().toHexString();
+
+				return { id };
+			};
+
+			it('should return null', async () => {
+				const { id } = setup();
+
+				const result: UserDO | null = await repo.findByIdOrNull(id);
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when user was found', () => {
+			const setup = async () => {
+				const role: Role = roleFactory.build();
+
+				const user: User = userFactory.buildWithId({ roles: [role] });
+
+				await em.persistAndFlush([user, role]);
+				em.clear();
+
+				return { user, role };
+			};
+
+			it('should return user with role', async () => {
+				const { user, role } = await setup();
+
+				const result: UserDO | null = await repo.findByIdOrNull(user.id, true);
+
+				expect(result?.id).toEqual(user.id);
+				expect(result?.roles).toEqual([
+					{
+						id: role.id,
+						name: role.name,
+					},
+				]);
 			});
 		});
 	});

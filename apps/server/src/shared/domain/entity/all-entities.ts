@@ -1,16 +1,19 @@
-import { ClassEntity } from '@modules/class/entity';
-import { GroupEntity } from '@modules/group/entity';
-import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
-import { ShareToken } from '@modules/sharing/entity/share-token.entity';
-import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
-import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
-import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { ClassEntity } from '@src/modules/class/entity';
+import { DeletionLogEntity, DeletionRequestEntity } from '@src/modules/deletion/entity';
+import { GroupEntity } from '@src/modules/group/entity';
+import { ExternalToolPseudonymEntity, PseudonymEntity } from '@src/modules/pseudonym/entity';
+import { RegistrationPinEntity } from '@src/modules/registration-pin/entity';
+import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
+import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
+import { ContextExternalToolEntity, SchoolExternalToolEntity } from '@src/modules/tool';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
 import { AccountEntity } from './account.entity';
 import {
 	BoardNode,
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	DrawingElementNode,
 	ExternalToolElementNodeEntity,
 	FileElementNode,
 	LinkElementNode,
@@ -26,8 +29,8 @@ import { ImportUser } from './import-user.entity';
 import {
 	Board,
 	BoardElement,
-	ColumnboardBoardElement,
 	ColumnBoardTarget,
+	ColumnboardBoardElement,
 	LessonBoardElement,
 	TaskBoardElement,
 } from './legacy-board';
@@ -58,9 +61,12 @@ export const ALL_ENTITIES = [
 	ColumnBoardTarget,
 	ColumnNode,
 	ClassEntity,
+	DeletionRequestEntity,
+	DeletionLogEntity,
 	FileElementNode,
 	LinkElementNode,
 	RichTextElementNode,
+	DrawingElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 	ExternalToolElementNodeEntity,
@@ -80,6 +86,7 @@ export const ALL_ENTITIES = [
 	News,
 	PseudonymEntity,
 	ExternalToolPseudonymEntity,
+	RocketChatUserEntity,
 	Role,
 	SchoolEntity,
 	SchoolExternalToolEntity,
@@ -100,4 +107,5 @@ export const ALL_ENTITIES = [
 	UserLoginMigrationEntity,
 	VideoConference,
 	GroupEntity,
+	RegistrationPinEntity,
 ];

@@ -1,4 +1,4 @@
-import { AccountEntity } from '@shared/domain';
+import { AccountEntity } from '@shared/domain/entity';
 import { ObjectId } from 'bson';
 import { AccountEntityToDtoMapper } from './account-entity-to-dto.mapper';
 

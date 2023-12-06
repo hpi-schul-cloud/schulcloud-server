@@ -1,5 +1,3 @@
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountDto } from '@modules/account/services/dto/account.dto';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -8,21 +6,17 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
-import {
-	AccountEntity,
-	EntityId,
-	Permission,
-	PermissionService,
-	Role,
-	RoleName,
-	SchoolEntity,
-	User,
-} from '@shared/domain';
+import { AccountEntity, Role, SchoolEntity, User } from '@shared/domain/entity';
+import { Permission, RoleName } from '@shared/domain/interface';
+import { PermissionService } from '@shared/domain/service';
+import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 
 import { ICurrentUser } from '@modules/authentication';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ObjectId } from 'bson';
+import { AccountService } from '../services';
+import { AccountDto, AccountSaveDto } from '../services/dto';
 import { AccountConfig } from '../account-config';
 import {
 	AccountByIdBodyParams,
@@ -35,7 +29,6 @@ import {
 } from '../controller/dto';
 import { AccountResponseMapper } from '../repo/mapper';
 import { AccountValidationService } from '../services/account.validation.service';
-import { AccountSaveDto } from '../services/dto';
 
 type UserPreferences = {
 	// first login completed

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { ToolContextType } from '../../common/enum';
 import { ToolContextMapper } from '../../common/mapper/tool-context.mapper';
@@ -28,10 +28,10 @@ export class SchoolExternalToolMetadataService {
 			})
 		);
 
-		const schoolExternaltoolMetadata: SchoolExternalToolMetadata = new SchoolExternalToolMetadata({
+		const schoolExternalToolMetadata: SchoolExternalToolMetadata = new SchoolExternalToolMetadata({
 			contextExternalToolCountPerContext: contextExternalToolCount,
 		});
 
-		return schoolExternaltoolMetadata;
+		return schoolExternalToolMetadata;
 	}
 }

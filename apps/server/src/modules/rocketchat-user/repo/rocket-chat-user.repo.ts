@@ -1,8 +1,8 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { RocketChatUserEntity } from '../entity';
+import { EntityId } from '@shared/domain/types';
 import { RocketChatUser } from '../domain/rocket-chat-user.do';
+import { RocketChatUserEntity } from '../entity';
 import { RocketChatUserMapper } from './mapper';
 
 @Injectable()

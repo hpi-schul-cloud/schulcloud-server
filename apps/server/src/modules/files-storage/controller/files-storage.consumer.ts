@@ -2,7 +2,7 @@ import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 import { CopyFileDO, FileDO, FilesStorageEvents, FilesStorageExchange, RpcMessage } from '@infra/rabbitmq';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageMapper } from '../repo/mapper';
 import { FilesStorageService } from '../service/files-storage.service';

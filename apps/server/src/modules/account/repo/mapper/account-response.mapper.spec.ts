@@ -1,7 +1,7 @@
-import { AccountEntity } from '@shared/domain';
-import { AccountDto } from '@modules/account/services/dto/account.dto';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@shared/domain/entity';
 import { AccountResponseMapper } from '.';
+import { AccountDto } from '../../services';
 
 describe('AccountResponseMapper', () => {
 	describe('mapToResponseFromEntity', () => {

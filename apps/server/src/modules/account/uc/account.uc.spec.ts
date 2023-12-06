@@ -1,24 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountSaveDto } from '@modules/account/services/dto';
-import { AccountDto } from '@modules/account/services/dto/account.dto';
 import { ICurrentUser } from '@modules/authentication';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import {
-	AccountEntity,
-	Counted,
-	EntityId,
-	Permission,
-	PermissionService,
-	Role,
-	RoleName,
-	SchoolEntity,
-	SchoolRolePermission,
-	SchoolRoles,
-	User,
-} from '@shared/domain';
+import { AccountEntity, Role, SchoolEntity, SchoolRolePermission, SchoolRoles, User } from '@shared/domain/entity';
+import { Permission, RoleName } from '@shared/domain/interface';
+import { PermissionService } from '@shared/domain/service';
+import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
@@ -31,6 +19,8 @@ import {
 	AccountSearchType,
 } from '../controller/dto';
 import { AccountEntityToDtoMapper, AccountResponseMapper } from '../repo/mapper';
+import { AccountDto, AccountService } from '../services';
+import { AccountSaveDto } from '../services/dto';
 import { AccountValidationService } from '../services/account.validation.service';
 import { AccountUc } from './account.uc';
 

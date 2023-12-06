@@ -1,29 +1,29 @@
-import { Injectable } from '@nestjs/common';
-import {
-	Board,
-	BoardElement,
-	BoardElementType,
-	ColumnBoard,
-	ColumnboardBoardElement,
-	ColumnBoardTarget,
-	Course,
-	isColumnBoardTarget,
-	isLesson,
-	isTask,
-	LessonEntity,
-	LessonBoardElement,
-	Task,
-	TaskBoardElement,
-	User,
-} from '@shared/domain';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
-import { BoardRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
 import { ColumnBoardCopyService } from '@modules/board/service/column-board-copy.service';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { getResolvedValues } from '@modules/files-storage/helper';
 import { LessonCopyService } from '@modules/lesson/service';
 import { TaskCopyService } from '@modules/task/service';
+import { Injectable } from '@nestjs/common';
+import { ColumnBoard } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
+import {
+	Board,
+	BoardElement,
+	BoardElementType,
+	ColumnBoardTarget,
+	ColumnboardBoardElement,
+	Course,
+	LessonBoardElement,
+	LessonEntity,
+	Task,
+	TaskBoardElement,
+	User,
+	isColumnBoardTarget,
+	isLesson,
+	isTask,
+} from '@shared/domain/entity';
+import { BoardRepo } from '@shared/repo';
+import { LegacyLogger } from '@src/core/logger';
 import { sortBy } from 'lodash';
 
 type BoardCopyParams = {

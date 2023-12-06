@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError } from '@shared/common';
-import { IdmAccount } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { IdentityManagementOauthService, IdentityManagementService } from '@infra/identity-management';
 import { NotImplementedException } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
 import { ConfigModule } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { EntityNotFoundError } from '@shared/common';
+import { IdmAccount } from '@shared/domain/interface';
+import { LoggerModule } from '@src/core/logger';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../repo/mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountLookupService } from './account-lookup.service';

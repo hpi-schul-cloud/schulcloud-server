@@ -1,13 +1,14 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import bcrypt from 'bcryptjs';
 import { EntityNotFoundError } from '@shared/common';
-import { AccountEntity, Counted, EntityId } from '@shared/domain';
-import { AccountRepo } from '../repo/account.repo';
+import { AccountEntity } from '@shared/domain/entity';
+import { Counted, EntityId } from '@shared/domain/types';
+import bcrypt from 'bcryptjs';
 import { AccountEntityToDtoMapper } from '../repo/mapper';
-import { AccountDto, AccountSaveDto } from './dto';
-import { AbstractAccountService } from './account.service.abstract';
+import { AccountRepo } from '../repo/account.repo';
 import { AccountLookupService } from './account-lookup.service';
+import { AbstractAccountService } from './account.service.abstract';
+import { AccountDto, AccountSaveDto } from './dto';
 
 @Injectable()
 export class AccountServiceDb extends AbstractAccountService {

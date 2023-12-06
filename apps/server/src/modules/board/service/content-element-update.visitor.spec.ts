@@ -1,10 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InputFormat } from '@shared/domain';
+import { InputFormat } from '@shared/domain/types';
 import {
 	cardFactory,
 	columnBoardFactory,
 	columnFactory,
 	externalToolElementFactory,
+	drawingElementFactory,
 	fileElementFactory,
 	linkElementFactory,
 	richTextElementFactory,
@@ -90,6 +91,23 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const { richTextElement, updater } = setup();
 
 			await expect(() => updater.visitRichTextElementAsync(richTextElement)).rejects.toThrow();
+		});
+	});
+
+	describe('when visiting a drawing element using the wrong content', () => {
+		const setup = () => {
+			const drawingElement = drawingElementFactory.build();
+			const content = new FileContentBody();
+			content.caption = 'a caption';
+			const updater = new ContentElementUpdateVisitor(content);
+
+			return { drawingElement, updater };
+		};
+
+		it('should throw an error', async () => {
+			const { drawingElement, updater } = setup();
+
+			await expect(() => updater.visitDrawingElementAsync(drawingElement)).rejects.toThrow();
 		});
 	});
 
