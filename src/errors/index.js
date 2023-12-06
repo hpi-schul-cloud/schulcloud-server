@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-const featherErrors = require('@feathersjs/errors');
+const FeathersError = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
 const logger = require('../logger');
 
@@ -65,114 +65,114 @@ const prepare = (ref, message, additional, params, className) => {
 	// Error.captureStackTrace(ref, ref.constructor);
 };
 
-class BadRequest extends featherErrors.BadRequest {
+class BadRequest extends FeathersError.BadRequest {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'bad-request');
 	}
 }
 
-class NotAuthenticated extends featherErrors.NotAuthenticated {
+class NotAuthenticated extends FeathersError.NotAuthenticated {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'not-authenticated');
 	}
 }
 
-class AutoLogout extends featherErrors.NotAuthenticated {
+class AutoLogout extends FeathersError.NotAuthenticated {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'auto-logout');
 	}
 }
 
-class PaymentError extends featherErrors.PaymentError {
+class PaymentError extends FeathersError.PaymentError {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'payment-error');
 	}
 }
 
-class Forbidden extends featherErrors.Forbidden {
+class Forbidden extends FeathersError.Forbidden {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'forbidden');
 	}
 }
 
-class NotFound extends featherErrors.NotFound {
+class NotFound extends FeathersError.NotFound {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'not-found');
 	}
 }
 
-class MethodNotAllowed extends featherErrors.MethodNotAllowed {
+class MethodNotAllowed extends FeathersError.MethodNotAllowed {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'method-not-allowed');
 	}
 }
 
-class NotAcceptable extends featherErrors.NotAcceptable {
+class NotAcceptable extends FeathersError.NotAcceptable {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'not-acceptable');
 	}
 }
 
-class Timeout extends featherErrors.Timeout {
+class Timeout extends FeathersError.Timeout {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'timeout');
 	}
 }
 
-class SlowQuery extends featherErrors.Timeout {
+class SlowQuery extends FeathersError.Timeout {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'slow-query');
 	}
 }
 
-class Conflict extends featherErrors.Conflict {
+class Conflict extends FeathersError.Conflict {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'conflict');
 	}
 }
 
-class LengthRequired extends featherErrors.LengthRequired {
+class LengthRequired extends FeathersError.LengthRequired {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'length-required');
 	}
 }
 
-class Unprocessable extends featherErrors.Unprocessable {
+class Unprocessable extends FeathersError.Unprocessable {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'unprocessable');
 	}
 }
 
-class TooManyRequests extends featherErrors.TooManyRequests {
+class TooManyRequests extends FeathersError.TooManyRequests {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'too-many-requests');
 	}
 }
 
-class BruteForcePrevention extends featherErrors.TooManyRequests {
+class BruteForcePrevention extends FeathersError.TooManyRequests {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'brute-force-prevention');
 	}
 }
 
-class GeneralError extends featherErrors.GeneralError {
+class GeneralError extends FeathersError.GeneralError {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'general-error');
 		// keep original error location by re throwing errors
 		if (Error.captureStackTrace) {
@@ -181,30 +181,30 @@ class GeneralError extends featherErrors.GeneralError {
 	}
 }
 
-class NotImplemented extends featherErrors.NotImplemented {
+class NotImplemented extends FeathersError.NotImplemented {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'not-implemented');
 	}
 }
 
-class BadGateway extends featherErrors.BadGateway {
+class BadGateway extends FeathersError.BadGateway {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'bad-gateway');
 	}
 }
 
-class Unavailable extends featherErrors.Unavailable {
+class Unavailable extends FeathersError.Unavailable {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'unavailable');
 	}
 }
 
-class Gone extends featherErrors.Gone {
+class Gone extends FeathersError.Gone {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'gone');
 	}
 }
@@ -217,9 +217,9 @@ class PageNotFound extends NotFound {
 	}
 }
 
-class UnhandledRejection extends featherErrors.GeneralError {
+class UnhandledRejection extends FeathersError.GeneralError {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'unhandled-rejection');
 		if (Error.captureStackTrace) {
 			Error.captureStackTrace(this, UnhandledRejection);
@@ -227,9 +227,9 @@ class UnhandledRejection extends featherErrors.GeneralError {
 	}
 }
 
-class UnhandledException extends featherErrors.GeneralError {
+class UnhandledException extends FeathersError.GeneralError {
 	constructor(message, additional, ...params) {
-		super(message, additional, ...params);
+		super(message, ...params);
 		prepare(this, message, additional, params, 'unhandled-exception');
 		if (Error.captureStackTrace) {
 			Error.captureStackTrace(this, UnhandledException);
@@ -251,8 +251,8 @@ module.exports = {
 	AssertionError,
 	ForbiddenError,
 	DeletedUserDataError,
-	FeathersError: featherErrors.FeathersError,
-	FeathersNotAuthenticated: featherErrors.NotAuthenticated,
+	FeathersError: FeathersError.FeathersError,
+	FeathersNotAuthenticated: FeathersError.NotAuthenticated,
 	BadRequest,
 	NotAuthenticated,
 	AutoLogout,
