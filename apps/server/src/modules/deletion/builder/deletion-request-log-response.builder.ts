@@ -1,6 +1,6 @@
-import { DeletionLogStatistic, DeletionRequestLog, DeletionTargetRef } from '../interface';
+import { DeletionLogStatistic, DeletionRequestLog, DeletionTargetRef } from '../uc/interface';
 
-export class DeletionRequestLogBuilder {
+export class DeletionRequestLogResponseBuilder {
 	static build(
 		targetRef: DeletionTargetRef,
 		deletionPlannedAt: Date,

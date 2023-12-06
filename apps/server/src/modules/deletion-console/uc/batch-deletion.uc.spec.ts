@@ -7,7 +7,7 @@ import { BatchDeletionService, ReferencesService } from '../services';
 import { QueueDeletionRequestOutput } from '../services/interface';
 import { QueueDeletionRequestInputBuilder, QueueDeletionRequestOutputBuilder } from '../services/builder';
 import { BatchDeletionSummary, BatchDeletionSummaryDetail, BatchDeletionSummaryOverallStatus } from './interface';
-import { BatchDeletionSummaryDetailBuilder } from './builder';
+import { BatchDeletionSummaryDetailBuilder } from '../builder';
 
 describe(BatchDeletionUc.name, () => {
 	let module: TestingModule;

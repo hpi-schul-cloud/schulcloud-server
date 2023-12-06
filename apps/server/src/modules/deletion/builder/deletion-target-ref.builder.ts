@@ -1,6 +1,6 @@
 import { EntityId } from '@shared/domain';
-import { DeletionDomainModel } from '../../domain/types';
-import { DeletionTargetRef } from '..';
+import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
+import { DeletionTargetRef } from '../uc/interface';
 
 export class DeletionTargetRefBuilder {
 	static build(targetRefDomain: DeletionDomainModel, targetRefId: EntityId): DeletionTargetRef {

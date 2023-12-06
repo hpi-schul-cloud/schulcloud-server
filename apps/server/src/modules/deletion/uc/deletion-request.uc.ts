@@ -11,22 +11,16 @@ import { AccountService } from '@modules/account/services';
 import { RocketChatUserService } from '@modules/rocketchat-user';
 import { RocketChatService } from '@modules/rocketchat';
 import { RegistrationPinService } from '@modules/registration-pin';
-import { DeletionRequestService } from '../services/deletion-request.service';
-import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
-import { DeletionLogService } from '../services/deletion-log.service';
-import { DeletionRequest } from '../domain/deletion-request.do';
-import { DeletionOperationModel } from '../domain/types/deletion-operation-model.enum';
-import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
-import { DeletionLog } from '../domain/deletion-log.do';
+import { DeletionRequestService, DeletionLogService } from '../services';
+import { DeletionDomainModel, DeletionOperationModel, DeletionStatusModel } from '../domain/types';
+import { DeletionRequest, DeletionLog } from '../domain';
 import {
 	DeletionRequestProps,
 	DeletionRequestLog,
 	DeletionLogStatistic,
 	DeletionRequestCreateAnswer,
 } from './interface/interfaces';
-import { DeletionLogStatisticBuilder } from './builder/deletion-log-statistic.builder';
-import { DeletionRequestLogBuilder } from './builder/deletion-request-log.builder';
-import { DeletionTargetRefBuilder } from './builder/deletion-target-ref.builder';
+import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder, DeletionRequestLogResponseBuilder } from '../builder';
 
 @Injectable()
 export class DeletionRequestUc {
@@ -70,7 +64,7 @@ export class DeletionRequestUc {
 
 	async findById(deletionRequestId: EntityId): Promise<DeletionRequestLog> {
 		const deletionRequest: DeletionRequest = await this.deletionRequestService.findById(deletionRequestId);
-		let response: DeletionRequestLog = DeletionRequestLogBuilder.build(
+		let response: DeletionRequestLog = DeletionRequestLogResponseBuilder.build(
 			DeletionTargetRefBuilder.build(deletionRequest.targetRefDomain, deletionRequest.targetRefId),
 			deletionRequest.deleteAfter
 		);
