@@ -10,6 +10,10 @@ import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { AppStartLoggable } from '@src/apps/helpers/app-start-loggable';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
+import {
+	addPrometheusMetricsMiddlewaresIfEnabled,
+	createAndStartPrometheusMetricsAppIfEnabled,
+} from '@src/apps/helpers/prometheus-metrics';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -33,6 +37,7 @@ async function bootstrap() {
 	// mount instances
 	const rootExpress = express();
 
+	addPrometheusMetricsMiddlewaresIfEnabled(logger, rootExpress);
 	const port = 3349;
 	const basePath = '/api/v3';
 
@@ -40,11 +45,16 @@ async function bootstrap() {
 	rootExpress.use(basePath, nestExpress);
 	rootExpress.listen(port);
 
-	logger.info(
-		new AppStartLoggable({
-			appName: 'Tldraw server app',
-		})
-	);
+	rootExpress.listen(port, () => {
+		logger.info(
+			new AppStartLoggable({
+				appName: 'Tldraw server app',
+				port,
+			})
+		);
+
+		createAndStartPrometheusMetricsAppIfEnabled(logger);
+	});
 }
 
 void bootstrap();
