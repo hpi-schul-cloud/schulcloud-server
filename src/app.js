@@ -1,12 +1,12 @@
 const express = require('@feathersjs/express');
-const feathers = require('@feathersjs/feathers');
+const { feathers } = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const path = require('path');
 const favicon = require('serve-favicon');
 const compress = require('compression');
 const cors = require('cors');
-const rest = require('@feathersjs/express/rest');
+const { rest } = require('@feathersjs/express');
 const bodyParser = require('body-parser');
 const { ObjectId } = require('mongoose').Types;
 
@@ -50,7 +50,6 @@ const setupApp = async (orm) => {
 	setupSwagger(app);
 	initializeRedisClient();
 	rabbitMq.setup(app);
-
 	app
 		.use(compress())
 		.options('*', cors())

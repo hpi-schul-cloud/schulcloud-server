@@ -15,8 +15,7 @@ export class CreateNewsParams {
 	title!: string;
 
 	@IsString()
-	// TODO add correct validation for input format
-	@SanitizeHtml(InputFormat.RICH_TEXT)
+	@SanitizeHtml(InputFormat.RICH_TEXT_CK5_SIMPLE)
 	@ApiProperty({
 		description: 'Content of the News entity',
 	})
