@@ -543,7 +543,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				entity: tspStudent.schuelerUid,
 				message:
 					`student "${tspStudent.schuelerVorname} ${tspStudent.schuelerNachname}"` +
-					` with tsp id ${tspStudent.lehrerUid} and user id ${user._id} could not be updated.`,
+					` with tsp id ${tspStudent.schuelerUid} and user id ${user._id} could not be updated.`,
 			});
 
 			return null;
