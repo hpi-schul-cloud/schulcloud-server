@@ -1,5 +1,5 @@
-import { CommonCartridgeVersion } from '../common-cartridge.enums';
-import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
+import { CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
 
 export type CommonCartridgeMetadataElementProps = {
 	version: CommonCartridgeVersion;
@@ -13,14 +13,14 @@ export class CommonCartridgeMetadataElement extends CommonCartridgeElement {
 		super(props);
 	}
 
-	public override getSupportedVersions(): CommonCartridgeVersion[] {
-		return [CommonCartridgeVersion.V_1_1_0, CommonCartridgeVersion.V_1_2_0, CommonCartridgeVersion.V_1_3_0];
+	public override getSupportedVersion(): CommonCartridgeVersion {
+		return CommonCartridgeVersion.V_1_1_0;
 	}
 
 	public override getManifestXmlObject(): Record<string, unknown> {
 		return {
-			schema: 'IMS Common Cartridge',
-			schemaversion: this.props.version,
+			schema: '1EdTech Common Cartridge',
+			schemaversion: '1.1.0',
 			'mnf:lom': {
 				'mnf:general': {
 					'mnf:title': {

@@ -1,9 +1,21 @@
+import { CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
 
-export class CommonCartridgeOrganizationsWrapperElement implements CommonCartridgeElement {
-	constructor(private readonly items: CommonCartridgeElement[]) {}
+export type CommonCartridgeOrganizationsWrapperElementProps = {
+	version: CommonCartridgeVersion;
+	items: CommonCartridgeElement[];
+};
 
-	public getManifestXmlObject(): Record<string, unknown> {
+export class CommonCartridgeOrganizationsWrapperElement extends CommonCartridgeElement {
+	public constructor(private readonly props: CommonCartridgeOrganizationsWrapperElementProps) {
+		super(props);
+	}
+
+	public override getSupportedVersions(): CommonCartridgeVersion[] {
+		return [CommonCartridgeVersion.V_1_1_0, CommonCartridgeVersion.V_1_3_0];
+	}
+
+	public override getManifestXmlObject(): Record<string, unknown> {
 		return {
 			organization: [
 				{
@@ -16,7 +28,7 @@ export class CommonCartridgeOrganizationsWrapperElement implements CommonCartrid
 							$: {
 								identifier: 'LearningModules',
 							},
-							item: this.items.map((items) => items.getManifestXmlObject()),
+							item: this.props.items.map((items) => items.getManifestXmlObject()),
 						},
 					],
 				},

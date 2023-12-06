@@ -20,7 +20,7 @@ export class CommonCartridgeOrganizationBuilder {
 
 	private readonly children = new Array<CommonCartridgeOrganizationBuilder>();
 
-	constructor(
+	public constructor(
 		protected readonly options: CommonCartridgeOrganizationBuilderOptions,
 		private readonly addResourceToFileBuilder: (resource: CommonCartridgeResource) => void
 	) {}

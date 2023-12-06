@@ -1,13 +1,25 @@
+import { CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
 
-export class CommonCartridgeResourcesWrapperElement implements CommonCartridgeElement {
-	constructor(private readonly items: CommonCartridgeElement[]) {}
+export type CommonCartridgeResourcesWrapperElementProps = {
+	version: CommonCartridgeVersion;
+	items: CommonCartridgeElement[];
+};
 
-	public getManifestXmlObject(): Record<string, unknown> {
+export class CommonCartridgeResourcesWrapperElement extends CommonCartridgeElement {
+	constructor(private readonly props: CommonCartridgeResourcesWrapperElementProps) {
+		super(props);
+	}
+
+	public override getSupportedVersions(): CommonCartridgeVersion[] {
+		return [CommonCartridgeVersion.V_1_1_0, CommonCartridgeVersion.V_1_3_0];
+	}
+
+	public override getManifestXmlObject(): Record<string, unknown> {
 		return {
 			resources: [
 				{
-					resource: this.items.map((items) => items.getManifestXmlObject()),
+					resource: this.props.items.map((items) => items.getManifestXmlObject()),
 				},
 			],
 		};
