@@ -45,6 +45,7 @@ describe('jwtTimer service', () => {
 				/* eslint-disable global-require */
 				redisHelper = require('../../../../src/utils/redis');
 				const { jwtTimerServiceSetup } = require('../../../../src/services/account/services/jwtTimerService');
+				app.unuse('/accounts/jwtTimer');
 				app.configure(jwtTimerServiceSetup);
 				/* eslint-enable global-require */
 
@@ -105,6 +106,7 @@ describe('jwtTimer service', () => {
 				/* eslint-disable global-require */
 				redisHelper = require('../../../../src/utils/redis');
 				const { jwtTimerServiceSetup } = require('../../../../src/services/account/services/jwtTimerService');
+				app.unuse('/accounts/jwtTimer');
 				app.configure(jwtTimerServiceSetup);
 				/* eslint-enable global-require */
 

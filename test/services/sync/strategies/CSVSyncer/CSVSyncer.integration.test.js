@@ -472,6 +472,7 @@ describe('CSVSyncer Integration', () => {
 
 		it('should import five teachers into three existing classes', async () => {
 			const emails = [];
+			app.unuse('/mails');
 			app.use(
 				'/mails',
 				new MockEmailService((email) => {
@@ -726,6 +727,7 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should not be able to send emails', async () => {
+			app.unuse('/mails');
 			app.use(
 				'/mails',
 				new MockEmailService(() => {
@@ -791,6 +793,7 @@ describe('CSVSyncer Integration', () => {
 
 		it('should import one user report two failures', async () => {
 			const emails = [];
+			app.unuse('/mails');
 			app.use(
 				'/mails',
 				new MockEmailService((email) => {
