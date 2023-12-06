@@ -226,13 +226,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsString()<br />@SanitizeHtml(InputFormat.RICH_TEXT)<br />@ApiProperty({description: &#x27;Content of the News entity&#x27;})<br />
+                            @IsString()<br />@SanitizeHtml(InputFormat.RICH_TEXT_CK5_SIMPLE)<br />@ApiProperty({description: &#x27;Content of the News entity&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/news/controller/dto/create-news.params.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/news/controller/dto/create-news.params.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -271,7 +271,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/modules/news/controller/dto/create-news.params.ts:31</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/news/controller/dto/create-news.params.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -308,7 +308,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">apps/server/src/modules/news/controller/dto/create-news.params.ts:45</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">apps/server/src/modules/news/controller/dto/create-news.params.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -345,7 +345,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">apps/server/src/modules/news/controller/dto/create-news.params.ts:38</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">apps/server/src/modules/news/controller/dto/create-news.params.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -419,8 +419,7 @@ export class CreateNewsParams {
 	title!: string;
 
 	@IsString()
-	// TODO add correct validation for input format
-	@SanitizeHtml(InputFormat.RICH_TEXT)
+	@SanitizeHtml(InputFormat.RICH_TEXT_CK5_SIMPLE)
 	@ApiProperty({
 		description: &#x27;Content of the News entity&#x27;,
 	})

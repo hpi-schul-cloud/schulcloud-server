@@ -219,7 +219,7 @@ A PartialType is a halper which allows to extend an existing class by making all
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsOptional()<br />@IsString()<br />@SanitizeHtml(InputFormat.RICH_TEXT)<br />@ApiPropertyOptional({description: &#x27;Content of the News entity&#x27;})<br />
+                            @IsOptional()<br />@IsString()<br />@SanitizeHtml(InputFormat.RICH_TEXT_CK5_SIMPLE)<br />@ApiPropertyOptional({description: &#x27;Content of the News entity&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -341,7 +341,7 @@ export class UpdateNewsParams {
 
 	@IsOptional()
 	@IsString()
-	@SanitizeHtml(InputFormat.RICH_TEXT)
+	@SanitizeHtml(InputFormat.RICH_TEXT_CK5_SIMPLE)
 	@ApiPropertyOptional({
 		description: &#x27;Content of the News entity&#x27;,
 	})

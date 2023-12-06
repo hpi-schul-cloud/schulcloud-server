@@ -6756,16 +6756,12 @@ it should ensure an empty result</p>
                     <td class="col-md-4">
                         <i>Default value : </i><code>(inputFormat?: InputFormat): IInputFormatsConfig &#x3D;&gt; {
 	switch (inputFormat) {
-		case InputFormat.RICH_TEXT_SIMPLE:
-			return inputFormatsSanitizeConfig.RichTextSimple;
-		case InputFormat.RICH_TEXT:
-			return inputFormatsSanitizeConfig.RichText;
+		case InputFormat.RICH_TEXT_CK5_SIMPLE:
+			return inputFormatsSanitizeConfig.RichTextCk5Simple;
 		case InputFormat.RICH_TEXT_CK4:
 			return inputFormatsSanitizeConfig.RichTextCk4;
 		case InputFormat.RICH_TEXT_CK5:
 			return inputFormatsSanitizeConfig.RichTextCk5;
-		case InputFormat.RICH_TEXT_CK5_SIMPLE:
-			return inputFormatsSanitizeConfig.RichTextCk5Simple;
 		case InputFormat.PLAIN_TEXT:
 		default:
 			return inputFormatsSanitizeConfig.PlainText;
@@ -6802,55 +6798,6 @@ it should ensure an empty result</p>
 		allowedAttributes: {},
 	},
 
-	RichTextSimple: {
-		allowedTags: [&#x27;b&#x27;, &#x27;i&#x27;, &#x27;em&#x27;, &#x27;strong&#x27;, &#x27;small&#x27;, &#x27;s&#x27;, &#x27;u&#x27;],
-		allowedAttributes: {},
-	},
-
-	RichText: {
-		allowedTags: [
-			&#x27;b&#x27;,
-			&#x27;i&#x27;,
-			&#x27;em&#x27;,
-			&#x27;strong&#x27;,
-			&#x27;small&#x27;,
-			&#x27;s&#x27;,
-			&#x27;u&#x27;,
-			&#x27;h1&#x27;,
-			&#x27;h2&#x27;,
-			&#x27;h3&#x27;,
-			&#x27;h4&#x27;,
-			&#x27;h5&#x27;,
-			&#x27;h6&#x27;,
-			&#x27;ul&#x27;,
-			&#x27;li&#x27;,
-			&#x27;ol&#x27;,
-			&#x27;dl&#x27;,
-			&#x27;dt&#x27;,
-			&#x27;dd&#x27;,
-			&#x27;p&#x27;,
-			&#x27;pre&#x27;,
-			&#x27;br&#x27;,
-			&#x27;hr&#x27;,
-			&#x27;table&#x27;,
-			&#x27;tbody&#x27;,
-			&#x27;td&#x27;,
-			&#x27;tfoot&#x27;,
-			&#x27;th&#x27;,
-			&#x27;thead&#x27;,
-			&#x27;tr&#x27;,
-			&#x27;tr&#x27;,
-			&#x27;td&#x27;,
-			&#x27;a&#x27;,
-			&#x27;img&#x27;,
-		],
-		allowedAttributes: {
-			a: [&#x27;href&#x27;, &#x27;name&#x27;, &#x27;target&#x27;],
-			img: [&#x27;src&#x27;, &#x27;srcset&#x27;, &#x27;alt&#x27;, &#x27;title&#x27;, &#x27;width&#x27;, &#x27;height&#x27;, &#x27;loading&#x27;],
-		},
-	},
-
-	// TODO
 	RichTextCk4: {
 		allowedTags: [
 			&#x27;b&#x27;,
@@ -6934,8 +6881,10 @@ it should ensure an empty result</p>
 	},
 
 	RichTextCk5Simple: {
-		allowedTags: [&#x27;p&#x27;, &#x27;br&#x27;, &#x27;b&#x27;, &#x27;strong&#x27;, &#x27;i&#x27;, &#x27;em&#x27;, &#x27;u&#x27;],
-		allowedAttributes: {},
+		allowedTags: [&#x27;p&#x27;, &#x27;br&#x27;, &#x27;strong&#x27;, &#x27;em&#x27;, &#x27;u&#x27;, &#x27;s&#x27;, &#x27;h2&#x27;, &#x27;h3&#x27;, &#x27;h4&#x27;, &#x27;ul&#x27;, &#x27;ol&#x27;, &#x27;li&#x27;, &#x27;img&#x27;, &#x27;src&#x27;],
+		allowedAttributes: {
+			img: [&#x27;src&#x27;, &#x27;srcset&#x27;, &#x27;alt&#x27;, &#x27;title&#x27;, &#x27;width&#x27;, &#x27;height&#x27;, &#x27;loading&#x27;],
+		},
 	},
 }</code>
                     </td>
