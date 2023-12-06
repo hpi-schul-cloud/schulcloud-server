@@ -11,10 +11,12 @@ import { LegacySystemService, SystemDto } from '@modules/system';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ReferencedEntityNotFoundLoggable } from '@shared/common/loggable';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import {
 	groupFactory,
 	legacySchoolDoFactory,
@@ -25,7 +27,6 @@ import {
 	userDoFactory,
 	userFactory,
 } from '@shared/testing';
-import { ReferencedEntityNotFoundLoggable } from '@shared/common/loggable';
 import { Logger } from '@src/core/logger';
 import { SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes } from '../domain';
@@ -34,6 +35,7 @@ import { GroupService } from '../service';
 import { ClassInfoDto, ResolvedGroupDto } from './dto';
 import { ClassRootType } from './dto/class-root-type';
 import { GroupUc } from './group.uc';
+import any = jasmine.any;
 
 describe('GroupUc', () => {
 	let module: TestingModule;
@@ -210,9 +212,9 @@ describe('GroupUc', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				classService.findAllByUserId.mockResolvedValueOnce([clazz, successorClass, classWithoutSchoolYear]);
-				groupService.findByUser.mockResolvedValueOnce([group, groupWithSystem]);
+				groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce([group, groupWithSystem]);
 				classService.findClassesForSchool.mockResolvedValueOnce([clazz, successorClass, classWithoutSchoolYear]);
-				groupService.findClassesForSchool.mockResolvedValueOnce([group, groupWithSystem]);
+				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce([group, groupWithSystem]);
 				systemService.findById.mockResolvedValue(system);
 				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
 					if (userId === teacherUser.id) {
@@ -360,6 +362,17 @@ describe('GroupUc', () => {
 						],
 						total: 5,
 					});
+				});
+
+				it('should call group service with allowed group types', async () => {
+					const { teacherUser } = setup();
+
+					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+
+					expect(groupService.findGroupsByUserAndGroupTypes).toHaveBeenCalledWith<[UserDO, GroupTypes[]]>(
+						expect.any(UserDO),
+						[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER]
+					);
 				});
 			});
 
@@ -568,7 +581,7 @@ describe('GroupUc', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(adminUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
 				classService.findClassesForSchool.mockResolvedValueOnce([clazz]);
-				groupService.findClassesForSchool.mockResolvedValueOnce([group, groupWithSystem]);
+				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce([group, groupWithSystem]);
 				systemService.findById.mockResolvedValue(system);
 
 				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
@@ -688,6 +701,17 @@ describe('GroupUc', () => {
 						],
 						total: 3,
 					});
+				});
+
+				it('should call group service with allowed group types', async () => {
+					const { teacherUser } = setup();
+
+					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+
+					expect(groupService.findGroupsBySchoolIdAndGroupTypes).toHaveBeenCalledWith<[EntityId, GroupTypes[]]>(
+						teacherUser.school.id,
+						[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER]
+					);
 				});
 			});
 
@@ -810,7 +834,7 @@ describe('GroupUc', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				classService.findAllByUserId.mockResolvedValueOnce([clazz]);
-				groupService.findByUser.mockResolvedValueOnce([group]);
+				groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce([group]);
 				systemService.findById.mockResolvedValue(system);
 
 				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
