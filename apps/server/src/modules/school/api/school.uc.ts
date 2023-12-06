@@ -18,13 +18,15 @@ export class SchoolUc {
 	) {}
 
 	public async getSchool(schoolId: EntityId, userId: EntityId): Promise<SchoolResponse> {
-		const school = await this.schoolService.getSchool(schoolId);
+		const [school, user, schoolYears] = await Promise.all([
+			this.schoolService.getSchool(schoolId),
+			this.authorizationService.getUserWithPermissions(userId),
+			this.schoolYearService.getAllSchoolYears(),
+		]);
 
-		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const authContext = AuthorizationContextBuilder.read([]);
 		this.authorizationService.checkPermission(user, school, authContext);
 
-		const schoolYears = await this.schoolYearService.getAllSchoolYears();
 		const yearsResponse = YearsResponseMapper.mapToResponse(school, schoolYears);
 
 		const dto = SchoolResponseMapper.mapToResponse(school, yearsResponse);
