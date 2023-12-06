@@ -2,14 +2,16 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { MailModule } from '@infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
-import { REDIS_CLIENT, RedisModule } from '@infra/redis';
+import { RedisModule, REDIS_CLIENT } from '@infra/redis';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 import { BoardApiModule } from '@modules/board/board-api.module';
+import { ClassEntity } from '@modules/class/entity';
 import { CollaborativeStorageModule } from '@modules/collaborative-storage';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
+import { GroupEntity } from '@modules/group/entity';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
 import { LessonApiModule } from '@modules/lesson/lesson-api.module';
@@ -17,12 +19,18 @@ import { MetaTagExtractorApiModule, MetaTagExtractorModule } from '@modules/meta
 import { NewsModule } from '@modules/news';
 import { OauthProviderApiModule } from '@modules/oauth-provider';
 import { OauthApiModule } from '@modules/oauth/oauth-api.module';
+import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
+import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatModule } from '@modules/rocketchat';
+import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SharingApiModule } from '@modules/sharing/sharing.module';
 import { SystemApiModule } from '@modules/system/system-api.module';
 import { TaskApiModule } from '@modules/task/task-api.module';
 import { TeamsApiModule } from '@modules/teams/teams-api.module';
+import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
+import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
 import { ImportUserModule } from '@modules/user-import';
 import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-login-migration-api.module';
@@ -30,8 +38,53 @@ import { UserApiModule } from '@modules/user/user-api.module';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
 import { DynamicModule, Inject, MiddlewareConsumer, Module, NestModule, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ALL_ENTITIES } from '@shared/domain/entity';
-import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
+import {
+	Account,
+	Board,
+	BoardElement,
+	BoardNode,
+	CardNode,
+	ColumnboardBoardElement,
+	ColumnBoardNode,
+	ColumnBoardTarget,
+	ColumnNode,
+	Course,
+	CourseGroup,
+	CourseNews,
+	DashboardGridElementModel,
+	DashboardModelEntity,
+	ExternalToolElementNodeEntity,
+	FederalStateEntity,
+	FileElementNode,
+	ImportUser,
+	LessonBoardElement,
+	LessonEntity,
+	LinkElementNode,
+	LtiTool,
+	Material,
+	News,
+	RichTextElementNode,
+	Role,
+	SchoolEntity,
+	SchoolNews,
+	SchoolRolePermission,
+	SchoolRoles,
+	SchoolYearEntity,
+	StorageProviderEntity,
+	Submission,
+	SubmissionContainerElementNode,
+	SubmissionItemNode,
+	SystemEntity,
+	Task,
+	TaskBoardElement,
+	TeamEntity,
+	TeamNews,
+	TeamUserEntity,
+	User,
+	UserLoginMigrationEntity,
+	VideoConference,
+} from '@shared/domain/entity';
+import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import connectRedis from 'connect-redis';
@@ -39,6 +92,62 @@ import session from 'express-session';
 import { RedisClient } from 'redis';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
+
+export const entities = [
+	Account,
+	Board,
+	BoardElement,
+	BoardNode,
+	CardNode,
+	ColumnboardBoardElement,
+	ColumnBoardNode,
+	ColumnBoardTarget,
+	ColumnNode,
+	ClassEntity,
+	FileElementNode,
+	LinkElementNode,
+	RichTextElementNode,
+	SubmissionContainerElementNode,
+	SubmissionItemNode,
+	ExternalToolElementNodeEntity,
+	Course,
+	ContextExternalToolEntity,
+	CourseGroup,
+	CourseNews,
+	DashboardGridElementModel,
+	DashboardModelEntity,
+	ExternalToolEntity,
+	FederalStateEntity,
+	ImportUser,
+	LessonEntity,
+	LessonBoardElement,
+	LtiTool,
+	Material,
+	News,
+	PseudonymEntity,
+	ExternalToolPseudonymEntity,
+	Role,
+	SchoolEntity,
+	SchoolExternalToolEntity,
+	SchoolNews,
+	SchoolRolePermission,
+	SchoolRoles,
+	SchoolYearEntity,
+	ShareToken,
+	StorageProviderEntity,
+	Submission,
+	SystemEntity,
+	Task,
+	TaskBoardElement,
+	TeamEntity,
+	TeamNews,
+	TeamUserEntity,
+	User,
+	UserLoginMigrationEntity,
+	VideoConference,
+	GroupEntity,
+	RegistrationPinEntity,
+];
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -135,7 +244,7 @@ const setupSessions = (consumer: MiddlewareConsumer, redisClient: RedisClient | 
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: ALL_ENTITIES,
+			entities,
 
 			// debug: true, // use it for locally debugging of queries
 		}),
