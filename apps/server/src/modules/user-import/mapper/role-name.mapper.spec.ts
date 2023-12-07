@@ -1,4 +1,5 @@
-import { RoleName, IImportUserRoleName } from '@shared/domain';
+import { IImportUserRoleName } from '@shared/domain/entity';
+import { RoleName } from '@shared/domain/interface';
 import { FilterRoleType, UserRole } from '../controller/dto';
 import { RoleNameMapper } from './role-name.mapper';
 

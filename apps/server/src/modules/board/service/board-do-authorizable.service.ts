@@ -1,8 +1,17 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import type { AnyBoardDo, Course, EntityId, UserBoardRoles } from '@shared/domain';
-import { BoardDoAuthorizable, ColumnBoard, BoardExternalReferenceType, BoardRoles, UserRoleEnum } from '@shared/domain';
-import { CourseRepo } from '@shared/repo';
 import { AuthorizationLoaderService } from '@modules/authorization';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+	AnyBoardDo,
+	BoardDoAuthorizable,
+	BoardExternalReferenceType,
+	BoardRoles,
+	ColumnBoard,
+	UserBoardRoles,
+	UserRoleEnum,
+} from '@shared/domain/domainobject';
+import { Course } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
+import { CourseRepo } from '@shared/repo';
 import { BoardDoRepo } from '../repo';
 
 @Injectable()

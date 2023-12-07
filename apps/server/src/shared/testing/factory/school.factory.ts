@@ -1,4 +1,4 @@
-import { SchoolEntity, SchoolProperties } from '@shared/domain';
+import { SchoolEntity, SchoolProperties } from '@shared/domain/entity';
 import { BaseFactory } from './base.factory';
 import { federalStateFactory } from './federal-state.factory';
 import { schoolYearFactory } from './schoolyear.factory';

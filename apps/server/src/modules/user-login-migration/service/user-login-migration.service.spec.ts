@@ -7,8 +7,8 @@ import { SystemDto } from '@modules/system/service';
 import { UserService } from '@modules/user';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain';
-import { SchoolFeature } from '@shared/domain/types';
+import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { legacySchoolDoFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import {

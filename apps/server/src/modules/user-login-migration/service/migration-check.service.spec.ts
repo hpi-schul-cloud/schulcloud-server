@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain';
-import { UserLoginMigrationRepo } from '@shared/repo';
-import { legacySchoolDoFactory, userDoFactory } from '@shared/testing';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
+import { Test, TestingModule } from '@nestjs/testing';
+import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { UserLoginMigrationRepo } from '@shared/repo';
+import { legacySchoolDoFactory, userDoFactory } from '@shared/testing';
 import { MigrationCheckService } from './migration-check.service';
 
 describe('MigrationCheckService', () => {

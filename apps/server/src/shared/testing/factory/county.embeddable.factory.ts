@@ -1,4 +1,4 @@
-import { CountyEmbeddable } from '@shared/domain';
+import { CountyEmbeddable } from '@shared/domain/entity';
 import { ObjectId } from 'bson';
 import { BaseFactory } from './base.factory';
 

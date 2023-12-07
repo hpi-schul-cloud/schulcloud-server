@@ -5,10 +5,10 @@ import {
 	Card,
 	ContentElementFactory,
 	ContentElementType,
-	EntityId,
 	isAnyContentElement,
 	SubmissionItem,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';

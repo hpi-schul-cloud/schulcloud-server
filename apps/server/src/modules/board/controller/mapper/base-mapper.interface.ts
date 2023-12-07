@@ -1,4 +1,4 @@
-import type { AnyBoardDo } from '@shared/domain';
+import type { AnyBoardDo } from '@shared/domain/domainobject';
 import type { AnyContentElementResponse } from '../dto';
 
 export interface BaseResponseMapper<T = AnyBoardDo> {

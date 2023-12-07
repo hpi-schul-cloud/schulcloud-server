@@ -1,4 +1,5 @@
 import { NotImplementedException } from '@nestjs/common';
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { ContentElementFactory } from './content-element.factory';
 import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
@@ -28,6 +29,14 @@ describe(ContentElementFactory.name, () => {
 			const element = contentElementFactory.build(ContentElementType.RICH_TEXT);
 
 			expect(element).toBeInstanceOf(RichTextElement);
+		});
+
+		it('should return element of DRAWING', () => {
+			const { contentElementFactory } = setup();
+
+			const element = contentElementFactory.build(ContentElementType.DRAWING);
+
+			expect(element).toBeInstanceOf(DrawingElement);
 		});
 
 		it('should return element of SUBMISSION_CONTAINER', () => {

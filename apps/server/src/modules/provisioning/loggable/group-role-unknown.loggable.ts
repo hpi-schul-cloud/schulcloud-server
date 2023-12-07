@@ -9,7 +9,7 @@ export class GroupRoleUnknownLoggable implements Loggable {
 			message: 'Unable to add unknown user to group during provisioning.',
 			data: {
 				externalUserId: this.relation.ktid,
-				externalRoleName: this.relation.rollen[0],
+				externalRoleName: this.relation.rollen?.[0],
 			},
 		};
 	}

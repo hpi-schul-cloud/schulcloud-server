@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import { FederalStateEntity, SchoolProperties, SchoolRoles, SchoolYearEntity, SystemEntity } from '@shared/domain';
+import {
+	FederalStateEntity,
+	SchoolProperties,
+	SchoolRoles,
+	SchoolYearEntity,
+	SystemEntity,
+} from '@shared/domain/entity';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { federalStateFactory, schoolFactory } from '@shared/testing';
 import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';

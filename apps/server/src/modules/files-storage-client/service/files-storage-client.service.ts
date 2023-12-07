@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { CopyFileDto, FileDto } from '../dto';
 import { FileRequestInfo } from '../interfaces';

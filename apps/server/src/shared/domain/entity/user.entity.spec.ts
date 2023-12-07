@@ -2,7 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { Role } from '.';
-import { Permission } from '..';
+import { Permission } from '../interface';
 import { User } from './user.entity';
 
 describe('User Entity', () => {

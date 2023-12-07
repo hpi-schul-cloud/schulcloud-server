@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SortOrderMap } from '@shared/domain';
+import { SortOrderMap } from '@shared/domain/interface';
 import {
 	CustomParameterLocation,
 	CustomParameterLocationParams,
@@ -8,6 +8,7 @@ import {
 	CustomParameterType,
 	CustomParameterTypeParams,
 } from '../../common/enum';
+import { ExternalToolSearchQuery } from '../../common/interface';
 import {
 	BasicToolConfigParams,
 	CustomParameterPostParams,
@@ -20,6 +21,7 @@ import {
 	Oauth2ToolConfigUpdateParams,
 	SortExternalToolParams,
 } from '../controller/dto';
+import { ExternalTool } from '../domain';
 import {
 	BasicToolConfigDto,
 	CustomParameterDto,
@@ -30,8 +32,6 @@ import {
 	Oauth2ToolConfigCreate,
 	Oauth2ToolConfigUpdate,
 } from '../uc';
-import { ExternalTool } from '../domain';
-import { ExternalToolSearchQuery } from '../../common/interface';
 
 const scopeMapping: Record<CustomParameterScopeTypeParams, CustomParameterScope> = {
 	[CustomParameterScopeTypeParams.GLOBAL]: CustomParameterScope.GLOBAL,
@@ -81,6 +81,7 @@ export class ExternalToolRequestMapper {
 			isHidden: externalToolUpdateParams.isHidden,
 			openNewTab: externalToolUpdateParams.openNewTab,
 			version,
+			restrictToContexts: externalToolUpdateParams.restrictToContexts,
 		};
 	}
 
@@ -107,6 +108,7 @@ export class ExternalToolRequestMapper {
 			isHidden: externalToolCreateParams.isHidden,
 			openNewTab: externalToolCreateParams.openNewTab,
 			version,
+			restrictToContexts: externalToolCreateParams.restrictToContexts,
 		};
 	}
 

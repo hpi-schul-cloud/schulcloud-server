@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
+import { EntityId } from '@shared/domain/types';
 
 export type CopyStatus = {
 	id?: string;
@@ -22,6 +22,7 @@ export enum CopyElementType {
 	'EXTERNAL_TOOL_ELEMENT' = 'EXTERNAL_TOOL_ELEMENT',
 	'FILE' = 'FILE',
 	'FILE_ELEMENT' = 'FILE_ELEMENT',
+	'DRAWING_ELEMENT' = 'DRAWING_ELEMENT',
 	'FILE_GROUP' = 'FILE_GROUP',
 	'LEAF' = 'LEAF',
 	'LESSON' = 'LESSON',

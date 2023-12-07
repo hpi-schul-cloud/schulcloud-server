@@ -8,19 +8,10 @@ import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
-import {
-	Course,
-	EntityId,
-	Permission,
-	RoleName,
-	TeamEntity,
-	TeamUserEntity,
-	UserDO,
-	VideoConferenceDO,
-	VideoConferenceOptionsDO,
-} from '@shared/domain';
-import { VideoConferenceScope } from '@shared/domain/interface';
-import { SchoolFeature } from '@shared/domain/types';
+import { UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
+import { Course, TeamEntity, TeamUserEntity } from '@shared/domain/entity';
+import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import {

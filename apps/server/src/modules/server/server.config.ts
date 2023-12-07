@@ -1,12 +1,13 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { AccountConfig } from '@modules/account';
+import type { XApiKeyConfig } from '@modules/authentication';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
 import type { CommonCartridgeConfig } from '@modules/learnroom/common-cartridge';
+import type { SchoolConfig } from '@modules/school';
 import type { UserConfig } from '@modules/user';
 import type { CoreModuleConfig } from '@src/core';
 import { MailConfig } from '@src/infra/mail/interfaces/mail-config';
-import { SchoolConfig } from '../school';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -23,7 +24,8 @@ export interface ServerConfig
 		IdentityManagementConfig,
 		CommonCartridgeConfig,
 		SchoolConfig,
-		MailConfig {
+		MailConfig,
+		XApiKeyConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 }
@@ -44,6 +46,9 @@ const config: ServerConfig = {
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
+	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
+		.split(',')
+		.map((apiKey) => apiKey.trim()),
 	ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS: (Configuration.get('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS') as string)
 		.split(',')
 		.map((domain) => domain.trim()),

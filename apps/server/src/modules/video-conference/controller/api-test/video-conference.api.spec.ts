@@ -2,18 +2,8 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Account,
-	Course,
-	Permission,
-	Role,
-	RoleName,
-	SchoolEntity,
-	TargetModels,
-	User,
-	VideoConference,
-	VideoConferenceScope,
-} from '@shared/domain';
+import { Account, Course, Role, SchoolEntity, TargetModels, User, VideoConference } from '@shared/domain/entity';
+import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
 import {
 	accountFactory,

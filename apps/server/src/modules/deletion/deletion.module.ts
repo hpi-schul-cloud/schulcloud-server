@@ -1,11 +1,19 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { ConfigService } from '@nestjs/config';
 import { DeletionRequestService } from './services/deletion-request.service';
 import { DeletionRequestRepo } from './repo/deletion-request.repo';
+import { XApiKeyConfig } from '../authentication/config/x-api-key.config';
+import { DeletionLogService } from './services/deletion-log.service';
+import { DeletionLogRepo } from './repo';
 
 @Module({
-	imports: [LoggerModule],
-	providers: [DeletionRequestService, DeletionRequestRepo],
-	exports: [DeletionRequestService],
+	providers: [
+		DeletionRequestRepo,
+		DeletionLogRepo,
+		ConfigService<XApiKeyConfig, true>,
+		DeletionLogService,
+		DeletionRequestService,
+	],
+	exports: [DeletionRequestService, DeletionLogService],
 })
 export class DeletionModule {}
