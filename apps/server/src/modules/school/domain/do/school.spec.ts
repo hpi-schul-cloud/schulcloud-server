@@ -3,34 +3,53 @@ import { schoolFactory } from '../testing';
 
 describe('School', () => {
 	describe('addFeature', () => {
-		it('should add the given feature to the features set', () => {
+		const setup = () => {
+			const feature = 'test feature' as SchoolFeature;
 			const school = schoolFactory.build();
 
-			school.addFeature('test feature' as SchoolFeature);
+			return { school, feature };
+		};
 
-			expect(school.getProps().features).toContain('test feature');
+		it('should add the given feature to the features set', () => {
+			const { school, feature } = setup();
+
+			school.addFeature(feature);
+
+			expect(school.getProps().features).toContain(feature);
 		});
 	});
 
 	describe('removeFeature', () => {
-		it('should remove the given feature from the features set', () => {
+		const setup = () => {
 			const feature = 'test feature' as SchoolFeature;
 			const school = schoolFactory.build({
 				features: new Set([feature]),
 			});
 
+			return { school, feature };
+		};
+
+		it('should remove the given feature from the features set', () => {
+			const { school, feature } = setup();
+
 			school.removeFeature(feature);
 
-			expect(school.getProps().features).not.toContain('test feature');
+			expect(school.getProps().features).not.toContain(feature);
 		});
 	});
 
 	describe('isInMaintenance', () => {
 		describe('when inMaintenanceSince is in the past', () => {
-			it('should return true', () => {
+			const setup = () => {
 				const school = schoolFactory.build({
 					inMaintenanceSince: new Date('2020-01-01'),
 				});
+
+				return { school };
+			};
+
+			it('should return true', () => {
+				const { school } = setup();
 
 				const result = school.isInMaintenance();
 
@@ -39,10 +58,16 @@ describe('School', () => {
 		});
 
 		describe('when inMaintenanceSince is in the future', () => {
-			it('should return false', () => {
+			const setup = () => {
 				const school = schoolFactory.build({
 					inMaintenanceSince: new Date('2100-01-01'),
 				});
+
+				return { school };
+			};
+
+			it('should return false', () => {
+				const { school } = setup();
 
 				const result = school.isInMaintenance();
 
@@ -51,8 +76,16 @@ describe('School', () => {
 		});
 
 		describe('when inMaintenanceSince is undefined', () => {
+			const setup = () => {
+				const school = schoolFactory.build({
+					inMaintenanceSince: undefined,
+				});
+
+				return { school };
+			};
+
 			it('should return false', () => {
-				const school = schoolFactory.build();
+				const { school } = setup();
 
 				const result = school.isInMaintenance();
 
@@ -63,10 +96,16 @@ describe('School', () => {
 
 	describe('isExternal', () => {
 		describe('when externalId is set', () => {
-			it('should return true', () => {
+			const setup = () => {
 				const school = schoolFactory.build({
 					externalId: 'test',
 				});
+
+				return { school };
+			};
+
+			it('should return true', () => {
+				const { school } = setup();
 
 				const result = school.isExternal();
 
@@ -75,8 +114,16 @@ describe('School', () => {
 		});
 
 		describe('when externalId is undefined', () => {
+			const setup = () => {
+				const school = schoolFactory.build({
+					externalId: undefined,
+				});
+
+				return { school };
+			};
+
 			it('should return false', () => {
-				const school = schoolFactory.build();
+				const { school } = setup();
 
 				const result = school.isExternal();
 
@@ -87,51 +134,71 @@ describe('School', () => {
 
 	describe('isEligibleForExternalInvite', () => {
 		describe('when school has an eligible purpose and is not the own school', () => {
-			it('should return true', () => {
-				const school = schoolFactory.build({
-					id: 'test',
-				});
+			const setup = () => {
+				const school = schoolFactory.build();
+				const otherSchool = schoolFactory.build();
 
-				const result = school.isEligibleForExternalInvite('other school id');
+				return { school, otherSchoolId: otherSchool.id };
+			};
+
+			it('should return true', () => {
+				const { school, otherSchoolId } = setup();
+
+				const result = school.isEligibleForExternalInvite(otherSchoolId);
 
 				expect(result).toBe(true);
 			});
 		});
 
 		describe('when school has purpose "expert"', () => {
-			it('should return false', () => {
+			const setup = () => {
 				const school = schoolFactory.build({
 					purpose: SchoolPurpose.EXPERT,
-					id: 'test',
 				});
+				const otherSchool = schoolFactory.build();
 
-				const result = school.isEligibleForExternalInvite('other school id');
+				return { school, otherSchoolId: otherSchool.id };
+			};
+
+			it('should return false', () => {
+				const { school, otherSchoolId } = setup();
+
+				const result = school.isEligibleForExternalInvite(otherSchoolId);
 
 				expect(result).toBe(false);
 			});
 		});
 
 		describe('when school has purpose "tombstone"', () => {
-			it('should return false', () => {
+			const setup = () => {
 				const school = schoolFactory.build({
 					purpose: SchoolPurpose.TOMBSTONE,
-					id: 'test',
 				});
+				const otherSchool = schoolFactory.build();
 
-				const result = school.isEligibleForExternalInvite('other school id');
+				return { school, otherSchoolId: otherSchool.id };
+			};
+
+			it('should return false', () => {
+				const { school, otherSchoolId } = setup();
+
+				const result = school.isEligibleForExternalInvite(otherSchoolId);
 
 				expect(result).toBe(false);
 			});
 		});
 
 		describe('when school is the own school', () => {
-			it('should return false', () => {
-				const testId = 'test';
-				const school = schoolFactory.build({
-					id: testId,
-				});
+			const setup = () => {
+				const school = schoolFactory.build();
 
-				const result = school.isEligibleForExternalInvite(testId);
+				return { school, id: school.id };
+			};
+
+			it('should return false', () => {
+				const { school, id } = setup();
+
+				const result = school.isEligibleForExternalInvite(id);
 
 				expect(result).toBe(false);
 			});
