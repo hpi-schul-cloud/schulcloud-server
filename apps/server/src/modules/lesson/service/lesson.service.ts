@@ -23,7 +23,9 @@ export class LessonService implements AuthorizationLoaderService {
 			But it is not visible in the entity that files for user can be exists.
 
 			Expected result:
-			filestorage implement a event that listenc "lesson deleted" "user deleted" 
+			filestorage implement a event listener that react on "lesson deleted", "user deleted",..
+			..based on the parents that they know
+
 			!!! each delete of a entity bring us to lost a litte bit more connection, than bring us to situation that is harder to cleanup later !!!
 			"user deleted" -> remove removeUserFromFileRecord() => for each fileRecord.cretor() 
 			"lesson deleted" -> rabbitMQ(apiLayer) > UC no auhtorisation > deletFileRecordsOfParent(lessonId, { deletedAt: Date.now() }) -> delte all fileRecords delete all S3 binary files 
