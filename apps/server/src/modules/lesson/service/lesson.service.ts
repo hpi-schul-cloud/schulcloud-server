@@ -5,6 +5,7 @@ import { Counted, EntityId } from '@shared/domain/types';
 import { AuthorizationLoaderService } from '@src/modules/authorization';
 import { LessonRepo } from '../repository';
 
+//missing interface for dependency inversion over token
 @Injectable()
 export class LessonService implements AuthorizationLoaderService {
 	constructor(
@@ -13,6 +14,23 @@ export class LessonService implements AuthorizationLoaderService {
 	) {}
 
 	async deleteLesson(lesson: LessonEntity): Promise<void> {
+		// shedule the event
+		/*
+			This is wrong! Because if we add more parent to filestorage the developer must know that 
+			they must modified the parent deletion. For example in user. If we add user as possible parent.
+
+			Expected result:
+			filestorage implement a event that listenc "lesson deleted" "user deleted" 
+			"user deleted" -> remove removeUserFromFileRecord() => for each fileRecord.cretor()
+			"lesson deleted" -> rabbitMQ(apiLayer) > UC no auhtorisation > deletFileRecordsOfParent(lessonId, { deletedAt: Date.now() }) -> delte all fileRecords delete all S3 binary files 
+			// -> after 7 days
+
+			!!! important this is the smae between course and lesson for example !!!
+
+			// Question when event "user deleted" event is popup from which instance ? After 14 days this event is shedulled.
+			// for filesstorage execution is zero days -> all fine S3 cleanup data and mongoDB too by it self
+			// console application
+		*/
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(lesson.id);
 
 		await this.lessonRepo.delete(lesson);
@@ -33,6 +51,9 @@ export class LessonService implements AuthorizationLoaderService {
 	}
 
 	async deleteUserDataFromLessons(userId: EntityId): Promise<number> {
+		// lesson
+		//
+		//
 		const lessons = await this.lessonRepo.findByUserId(userId);
 
 		const updatedLessons = lessons.map((lesson: LessonEntity) => {
@@ -46,6 +67,15 @@ export class LessonService implements AuthorizationLoaderService {
 		});
 
 		await this.lessonRepo.save(updatedLessons);
+		/*
+		// 
+		} if(lesson.getUserCound()<=1)  {
+			// we are in conflict with the same operation in course
+			const result = await this.deleteLesson();
+			// required event that external systems can be react on it 
+			...can do by application or a later cleanup job that remove all what have no user anymore
+			// S3 can only came to limits ..deletion request are smaller but 
+		} */
 
 		return updatedLessons.length;
 	}
