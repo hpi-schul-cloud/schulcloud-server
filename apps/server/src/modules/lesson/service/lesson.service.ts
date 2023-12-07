@@ -5,7 +5,7 @@ import { Counted, EntityId } from '@shared/domain/types';
 import { AuthorizationLoaderService } from '@src/modules/authorization';
 import { LessonRepo } from '../repository';
 
-//missing interface for dependency inversion over token
+// missing interface for dependency inversion over token, or maybe we do not need this when the event is used
 @Injectable()
 export class LessonService implements AuthorizationLoaderService {
 	constructor(
@@ -21,7 +21,8 @@ export class LessonService implements AuthorizationLoaderService {
 
 			Expected result:
 			filestorage implement a event that listenc "lesson deleted" "user deleted" 
-			"user deleted" -> remove removeUserFromFileRecord() => for each fileRecord.cretor()
+			!!! each delete of a entity bring us to lost a litte bit more connection, than bring us to situation that is harder to cleanup later !!!
+			"user deleted" -> remove removeUserFromFileRecord() => for each fileRecord.cretor() 
 			"lesson deleted" -> rabbitMQ(apiLayer) > UC no auhtorisation > deletFileRecordsOfParent(lessonId, { deletedAt: Date.now() }) -> delte all fileRecords delete all S3 binary files 
 			// -> after 7 days
 
