@@ -60,7 +60,7 @@ import {
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { ManagementModule } from './management.module';
 
-export const entities = [
+const entities = [
 	Account,
 	Board,
 	BoardElement,

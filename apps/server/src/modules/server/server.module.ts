@@ -93,7 +93,7 @@ import { RedisClient } from 'redis';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
-export const entities = [
+const entities = [
 	Account,
 	Board,
 	BoardElement,

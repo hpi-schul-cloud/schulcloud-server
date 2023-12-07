@@ -64,7 +64,7 @@ import { DeletionApiModule } from '../deletion/deletion-api.module';
 import { serverConfig } from './server.config';
 import { defaultMikroOrmOptions } from './server.module';
 
-export const entities = [
+const entities = [
 	Account,
 	Board,
 	BoardElement,
