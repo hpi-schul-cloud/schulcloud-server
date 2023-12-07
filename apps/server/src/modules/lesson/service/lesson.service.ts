@@ -24,13 +24,13 @@ export class LessonService implements AuthorizationLoaderService {
 			!!! each delete of a entity bring us to lost a litte bit more connection, than bring us to situation that is harder to cleanup later !!!
 			"user deleted" -> remove removeUserFromFileRecord() => for each fileRecord.cretor() 
 			"lesson deleted" -> rabbitMQ(apiLayer) > UC no auhtorisation > deletFileRecordsOfParent(lessonId, { deletedAt: Date.now() }) -> delte all fileRecords delete all S3 binary files 
-			// -> after 7 days
+			// -> default deletedAt is 7 days
 
 			!!! important this is the smae between course and lesson for example !!!
 
 			// Question when event "user deleted" event is popup from which instance ? After 14 days this event is shedulled.
 			// for filesstorage execution is zero days -> all fine S3 cleanup data and mongoDB too by it self
-			// console application
+			// console application sheduled the user deletion event
 		*/
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(lesson.id);
 
@@ -75,7 +75,12 @@ export class LessonService implements AuthorizationLoaderService {
 			const result = await this.deleteLesson();
 			// required event that external systems can be react on it 
 			...can do by application or a later cleanup job that remove all what have no user anymore
-			// S3 can only came to limits ..deletion request are smaller but 
+			// S3 can only came to limits ..deletion request are smaller but should use a batch
+			
+			if we do not implement the "if" now,
+			than the cleanup job for entities without user can only work when events are implemented 
+			and they shedule this events.
+			But if we lost the user before we can not execute the fileRecord.creator event anymore.
 		} */
 
 		return updatedLessons.length;
