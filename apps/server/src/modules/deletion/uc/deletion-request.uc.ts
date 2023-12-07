@@ -1,4 +1,4 @@
-import { AccountService } from '@modules/account/services';
+import { AccountService } from '@modules/account';
 import { ClassService } from '@modules/class';
 import { FilesService } from '@modules/files/service';
 import { CourseGroupService, CourseService } from '@modules/learnroom/service';

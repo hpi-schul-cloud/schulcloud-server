@@ -1,6 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountDto } from '@modules/account/services/dto/account.dto';
+import { AccountDto, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';

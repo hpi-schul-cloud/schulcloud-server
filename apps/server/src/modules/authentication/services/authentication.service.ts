@@ -1,9 +1,8 @@
-import { AccountService } from '@modules/account';
+import { AccountDto, AccountService } from '@modules/account';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 // invalid import
-import { AccountDto } from '@modules/account/services/dto';
 // invalid import, can produce dependency cycles
 import type { ServerConfig } from '@modules/server';
 import { randomUUID } from 'crypto';
