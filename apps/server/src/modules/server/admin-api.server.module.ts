@@ -1,16 +1,125 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { DynamicModule, Module } from '@nestjs/common';
-// import { ALL_ENTITIES } from '@shared/domain';
+import { ClassEntity } from '@modules/class/entity';
 import { FileEntity } from '@modules/files/entity';
+import { GroupEntity } from '@modules/group/entity';
+import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
+import { RegistrationPinEntity } from '@modules/registration-pin/entity';
+import { ShareToken } from '@modules/sharing/entity/share-token.entity';
+import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
+import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ALL_ENTITIES } from '@shared/domain/entity';
-import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
+import {
+	Account,
+	Board,
+	BoardElement,
+	BoardNode,
+	CardNode,
+	ColumnboardBoardElement,
+	ColumnBoardNode,
+	ColumnBoardTarget,
+	ColumnNode,
+	Course,
+	CourseGroup,
+	CourseNews,
+	DashboardGridElementModel,
+	DashboardModelEntity,
+	ExternalToolElementNodeEntity,
+	FederalStateEntity,
+	FileElementNode,
+	ImportUser,
+	LessonBoardElement,
+	LessonEntity,
+	LinkElementNode,
+	LtiTool,
+	Material,
+	News,
+	RichTextElementNode,
+	Role,
+	SchoolEntity,
+	SchoolNews,
+	SchoolRolePermission,
+	SchoolRoles,
+	SchoolYearEntity,
+	StorageProviderEntity,
+	Submission,
+	SubmissionContainerElementNode,
+	SubmissionItemNode,
+	SystemEntity,
+	Task,
+	TaskBoardElement,
+	TeamEntity,
+	TeamNews,
+	TeamUserEntity,
+	User,
+	UserLoginMigrationEntity,
+	VideoConference,
+} from '@shared/domain/entity';
+import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infra/database';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
 import { DeletionApiModule } from '../deletion/deletion-api.module';
 import { serverConfig } from './server.config';
 import { defaultMikroOrmOptions } from './server.module';
+
+export const entities = [
+	Account,
+	Board,
+	BoardElement,
+	BoardNode,
+	CardNode,
+	ColumnboardBoardElement,
+	ColumnBoardNode,
+	ColumnBoardTarget,
+	ColumnNode,
+	ClassEntity,
+	FileElementNode,
+	LinkElementNode,
+	RichTextElementNode,
+	SubmissionContainerElementNode,
+	SubmissionItemNode,
+	ExternalToolElementNodeEntity,
+	Course,
+	ContextExternalToolEntity,
+	CourseGroup,
+	CourseNews,
+	DashboardGridElementModel,
+	DashboardModelEntity,
+	ExternalToolEntity,
+	FederalStateEntity,
+	ImportUser,
+	LessonEntity,
+	LessonBoardElement,
+	LtiTool,
+	Material,
+	News,
+	PseudonymEntity,
+	ExternalToolPseudonymEntity,
+	Role,
+	SchoolEntity,
+	SchoolExternalToolEntity,
+	SchoolNews,
+	SchoolRolePermission,
+	SchoolRoles,
+	SchoolYearEntity,
+	ShareToken,
+	StorageProviderEntity,
+	Submission,
+	SystemEntity,
+	Task,
+	TaskBoardElement,
+	TeamEntity,
+	TeamNews,
+	TeamUserEntity,
+	User,
+	UserLoginMigrationEntity,
+	VideoConference,
+	GroupEntity,
+	RegistrationPinEntity,
+	FileEntity,
+];
 
 const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConfig)), DeletionApiModule];
 
@@ -24,7 +133,7 @@ const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConf
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [...ALL_ENTITIES, FileEntity],
+			entities,
 			debug: true,
 		}),
 		LoggerModule,
