@@ -33,7 +33,9 @@ export class CommonCartridgeElementFactoryV110 extends CommonCartridgeElementFac
 	}
 
 	public createElement(props: CommonCartridgeElementProps): CommonCartridgeElement {
-		switch (props.type) {
+		const { type } = props;
+
+		switch (type) {
 			// AI next 8 lines
 			case CommonCartridgeElementType.METADATA:
 				return new CommonCartridgeMetadataElement(props);
@@ -44,7 +46,7 @@ export class CommonCartridgeElementFactoryV110 extends CommonCartridgeElementFac
 			case CommonCartridgeElementType.RESOURCES_WRAPPER:
 				return new CommonCartridgeResourcesWrapperElement(props);
 			default:
-				throw createElementTypeNotSupportedError((props as { type: string }).type); // FIXME: remove type assertion
+				throw createElementTypeNotSupportedError(type);
 		}
 	}
 }
