@@ -81,6 +81,11 @@ export class LessonService implements AuthorizationLoaderService {
 			than the cleanup job for entities without user can only work when events are implemented 
 			and they shedule this events.
 			But if we lost the user before we can not execute the fileRecord.creator event anymore.
+
+			If we lost the lesson, task, or submission we can not cleanup fileRecords that are placed in this context
+			without implement a cleanup job that make a lookup to parentSource and fileRecords. 
+			This cleanup job must also trigger the S3 binary deletions for S3 files and previews and so on.
+			A lot of work...much more then impplement the amqp queue before and implement the events.
 		} */
 
 		return updatedLessons.length;
