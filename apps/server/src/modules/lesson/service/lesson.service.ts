@@ -16,8 +16,11 @@ export class LessonService implements AuthorizationLoaderService {
 	async deleteLesson(lesson: LessonEntity): Promise<void> {
 		// shedule the event
 		/*
-			This is wrong! Because if we add more parent to filestorage the developer must know that 
-			they must modified the parent deletion. For example in user. If we add user as possible parent.
+			The "await this.filesStorageClientAdapterService.deleteFilesOfParent(lesson.id);" 
+			is wrong! Because if we add more parent to filestorage the developer must know that 
+			they must modified the parent deletion. 
+			For example in user. If we add user as possible parent. The files are not deleted without connection.
+			But it is not visible in the entity that files for user can be exists.
 
 			Expected result:
 			filestorage implement a event that listenc "lesson deleted" "user deleted" 
