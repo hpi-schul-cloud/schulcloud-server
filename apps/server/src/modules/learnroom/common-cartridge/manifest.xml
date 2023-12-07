@@ -1,0 +1,21 @@
+<?xml-model href="http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd"?>
+<manifest identifier="i123" xmlns="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1">
+    <metadata>
+        <schema>IMS Common Cartridge</schema>
+        <schemaversion>1.1.0</schemaversion>
+        <lom>
+
+        </lom>
+    </metadata>
+    <organizations>
+        <organization identifier="i1234" structure="rooted-hierarchy">
+            <title>Org 1</title>
+            <item identifier="i12345"></item>
+        </organization>
+    </organizations>
+    <resources>
+        <resource identifier="i123456" type="imswl_xmlv1p1" href="index.html">
+            <file href="index.html"></file>
+        </resource>
+    </resources>
+</manifest>

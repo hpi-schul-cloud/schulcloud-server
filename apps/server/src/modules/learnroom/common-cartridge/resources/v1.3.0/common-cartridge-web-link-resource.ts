@@ -53,7 +53,7 @@ export class CommonCartridgeWebLinkResourceV130 extends CommonCartridgeResource 
 		return {
 			$: {
 				identifier: this.props.identifier,
-				type: this.props.type,
+				type: 'web',
 			},
 			file: {
 				$: {

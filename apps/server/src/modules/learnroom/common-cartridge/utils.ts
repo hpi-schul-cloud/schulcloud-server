@@ -6,7 +6,7 @@ export type OmitVersion<T> = Omit<T, 'version'>;
 
 export type OmitVersionAndFolder<T> = Omit<T, 'version' | 'folder'>;
 
-const xmlBuilder = new Builder({ headless: true });
+const xmlBuilder = new Builder({ xmldec: { version: '1.0', encoding: 'UTF-8' } });
 
 export function buildXmlString(obj: unknown): string {
 	return xmlBuilder.buildObject(obj);

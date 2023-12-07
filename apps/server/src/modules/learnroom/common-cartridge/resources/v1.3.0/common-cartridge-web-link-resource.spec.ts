@@ -1,27 +1,27 @@
 import { faker } from '@faker-js/faker';
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../../common-cartridge.enums';
 import {
-	CommonCartridgeWebLinkResourcePropsV110,
-	CommonCartridgeWebLinkResourceV110,
+	CommonCartridgeWebLinkResourcePropsV130,
+	CommonCartridgeWebLinkResourceV130,
 } from './common-cartridge-web-link-resource';
 
-describe('CommonCartridgeWebLinkResourceV110', () => {
+describe('CommonCartridgeWebLinkResourceV130', () => {
 	const setup = () => {
-		const props: CommonCartridgeWebLinkResourcePropsV110 = {
+		const props: CommonCartridgeWebLinkResourcePropsV130 = {
 			type: CommonCartridgeResourceType.WEB_LINK,
-			version: CommonCartridgeVersion.V_1_1_0,
+			version: CommonCartridgeVersion.V_1_3_0,
 			identifier: faker.string.uuid(),
 			folder: faker.string.uuid(),
 			title: faker.lorem.words(),
 			url: faker.internet.url(),
 		};
-		const sut = new CommonCartridgeWebLinkResourceV110(props);
+		const sut = new CommonCartridgeWebLinkResourceV130(props);
 
 		return { sut, props };
 	};
 
 	describe('canInline', () => {
-		describe('when using Common Cartridge version 1.1.0', () => {
+		describe('when using Common Cartridge version 1.3.0', () => {
 			it('should return false', () => {
 				const { sut } = setup();
 				const result = sut.canInline();
@@ -32,7 +32,7 @@ describe('CommonCartridgeWebLinkResourceV110', () => {
 	});
 
 	describe('getFilePath', () => {
-		describe('when using Common Cartridge version 1.1.0', () => {
+		describe('when using Common Cartridge version 1.3.0', () => {
 			it('should return the constructed file path', () => {
 				const { sut, props } = setup();
 				const result = sut.getFilePath();
@@ -84,6 +84,7 @@ describe('CommonCartridgeWebLinkResourceV110', () => {
 			expect(result).toContain(`<url href="${props.url}"`);
 		});
 
+		// FIXME: add to props
 		// Skipping these tests because values are hardcoded in the implementation
 		it.skip('should contain correct target', () => {
 			const { sut } = setup();
@@ -92,6 +93,7 @@ describe('CommonCartridgeWebLinkResourceV110', () => {
 			expect(result).toContain(`target="_self"`);
 		});
 
+		// FIXME: add to props
 		// Skipping these tests because values are hardcoded in the implementation
 		it.skip('should contain correct window features', () => {
 			const { sut } = setup();
@@ -102,32 +104,30 @@ describe('CommonCartridgeWebLinkResourceV110', () => {
 	});
 
 	describe('getSupportedVersion', () => {
-		describe('when using Common Cartridge version 1.1.0', () => {
+		describe('when using Common Cartridge version 1.3.0', () => {
 			it('should return the supported version', () => {
 				const { sut } = setup();
 				const result = sut.getSupportedVersion();
 
-				expect(result).toBe(CommonCartridgeVersion.V_1_1_0);
+				expect(result).toBe(CommonCartridgeVersion.V_1_3_0);
 			});
 		});
 	});
 
 	describe('getManifestXmlObject', () => {
-		describe('when using Common Cartridge version 1.1.0', () => {
+		describe('when using Common Cartridge version 1.3.0', () => {
 			it('should return the manifest XML object', () => {
 				const { sut, props } = setup();
 				const result = sut.getManifestXmlObject();
 
 				expect(result).toEqual({
-					resource: {
+					$: {
+						identifier: props.identifier,
+						type: props.type,
+					},
+					file: {
 						$: {
-							identifier: props.identifier,
-							type: 'imswl_xmlv1p1',
-						},
-						file: {
-							$: {
-								href: sut.getFilePath(),
-							},
+							href: sut.getFilePath(),
 						},
 					},
 				});
