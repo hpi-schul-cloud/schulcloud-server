@@ -15,6 +15,7 @@ export interface IDashboardRepo {
 	getUsersDashboard(userId: EntityId): Promise<DashboardEntity>;
 	getDashboardById(id: EntityId): Promise<DashboardEntity>;
 	persistAndFlush(entity: DashboardEntity): Promise<DashboardEntity>;
+	deleteDashboardByUserId(userId: EntityId): Promise<number>;
 }
 
 @Injectable()
