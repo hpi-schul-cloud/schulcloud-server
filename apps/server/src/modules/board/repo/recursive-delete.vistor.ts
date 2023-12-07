@@ -1,12 +1,12 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Injectable } from '@nestjs/common';
 import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
-	BoardNode,
 	Card,
 	Column,
 	ColumnBoard,
@@ -15,15 +15,18 @@ import {
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { BoardNode } from '@shared/domain/entity';
 
 @Injectable()
 export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 	constructor(
 		private readonly em: EntityManager,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
-		private readonly contextExternalToolService: ContextExternalToolService
+		private readonly contextExternalToolService: ContextExternalToolService,
+		private readonly drawingElementAdapterService: DrawingElementAdapterService
 	) {}
 
 	async visitColumnBoardAsync(columnBoard: ColumnBoard): Promise<void> {
@@ -60,6 +63,13 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 		await this.visitChildrenAsync(richTextElement);
 	}
 
+	async visitDrawingElementAsync(drawingElement: DrawingElement): Promise<void> {
+		await this.drawingElementAdapterService.deleteDrawingBinData(drawingElement.id);
+
+		this.deleteNode(drawingElement);
+		await this.visitChildrenAsync(drawingElement);
+	}
+
 	async visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void> {
 		this.deleteNode(submissionContainerElement);
 		await this.visitChildrenAsync(submissionContainerElement);
@@ -72,11 +82,13 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 
 	async visitExternalToolElementAsync(externalToolElement: ExternalToolElement): Promise<void> {
 		if (externalToolElement.contextExternalToolId) {
-			const linkedTool: ContextExternalTool = await this.contextExternalToolService.findById(
+			const linkedTool: ContextExternalTool | null = await this.contextExternalToolService.findById(
 				externalToolElement.contextExternalToolId
 			);
 
-			await this.contextExternalToolService.deleteContextExternalTool(linkedTool);
+			if (linkedTool) {
+				await this.contextExternalToolService.deleteContextExternalTool(linkedTool);
+			}
 		}
 
 		this.deleteNode(externalToolElement);

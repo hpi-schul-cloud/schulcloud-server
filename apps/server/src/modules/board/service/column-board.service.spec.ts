@@ -9,9 +9,9 @@ import {
 	Card,
 	ColumnBoard,
 	ContentElementFactory,
-	InputFormat,
 	RichTextElement,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
+import { InputFormat } from '@shared/domain/types';
 import { columnBoardNodeFactory, setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { ObjectId } from 'bson';

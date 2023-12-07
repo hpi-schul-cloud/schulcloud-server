@@ -8,14 +8,16 @@ import {
 	ColumnBoard,
 	ExternalToolElement,
 	FileElement,
-	InputFormat,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { InputFormat } from '@shared/domain/types';
 import {
 	AnyElementContentBody,
+	DrawingContentBody,
 	ExternalToolContentBody,
 	FileContentBody,
 	LinkContentBody,
@@ -80,6 +82,14 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 			return Promise.resolve();
 		}
 		return this.rejectNotHandled(richTextElement);
+	}
+
+	async visitDrawingElementAsync(drawingElement: DrawingElement): Promise<void> {
+		if (this.content instanceof DrawingContentBody) {
+			drawingElement.description = this.content.description;
+			return Promise.resolve();
+		}
+		return this.rejectNotHandled(drawingElement);
 	}
 
 	async visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void> {

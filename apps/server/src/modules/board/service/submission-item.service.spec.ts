@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SubmissionItem } from '@shared/domain';
 import { ValidationError } from '@shared/common';
+import { SubmissionItem } from '@shared/domain/domainobject';
 import { richTextElementFactory, setupEntities, userFactory } from '@shared/testing';
 import {
 	cardFactory,

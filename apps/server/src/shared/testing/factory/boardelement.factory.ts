@@ -1,12 +1,12 @@
 import {
 	ColumnboardBoardElement,
 	ColumnBoardTarget,
-	EntityId,
-	LessonEntity,
 	LessonBoardElement,
+	LessonEntity,
 	Task,
 	TaskBoardElement,
-} from '@shared/domain';
+} from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { BaseFactory } from './base.factory';
 import { lessonFactory } from './lesson.factory';

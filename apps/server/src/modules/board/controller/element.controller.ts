@@ -19,6 +19,8 @@ import {
 	AnyContentElementResponse,
 	ContentElementUrlParams,
 	CreateSubmissionItemBodyParams,
+	DrawingElementContentBody,
+	DrawingElementResponse,
 	ExternalToolElementContentBody,
 	ExternalToolElementResponse,
 	FileElementContentBody,
@@ -67,7 +69,8 @@ export class ElementController {
 		RichTextElementContentBody,
 		SubmissionContainerElementContentBody,
 		ExternalToolElementContentBody,
-		LinkElementContentBody
+		LinkElementContentBody,
+		DrawingElementContentBody
 	)
 	@ApiResponse({
 		status: 201,
@@ -78,6 +81,7 @@ export class ElementController {
 				{ $ref: getSchemaPath(LinkElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
+				{ $ref: getSchemaPath(DrawingElementResponse) },
 			],
 		},
 	})

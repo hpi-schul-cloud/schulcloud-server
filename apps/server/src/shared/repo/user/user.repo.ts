@@ -2,17 +2,9 @@ import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
-import {
-	Counted,
-	EntityId,
-	IFindOptions,
-	ImportUser,
-	NameMatch,
-	Role,
-	SchoolEntity,
-	SortOrder,
-	User,
-} from '@shared/domain';
+import { ImportUser, Role, SchoolEntity, User } from '@shared/domain/entity';
+import { IFindOptions, SortOrder } from '@shared/domain/interface';
+import { Counted, EntityId, NameMatch } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { MongoPatterns } from '../mongo.patterns';
 
@@ -168,6 +160,13 @@ export class UserRepo extends BaseRepo<User> {
 			id: userId,
 		});
 		return deletedUserNumber;
+	}
+
+	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
+		const user = await this._em.findOneOrFail(User, { id: userId });
+		const parentsEmails = user.parents?.map((parent) => parent.email) ?? [];
+
+		return parentsEmails;
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {

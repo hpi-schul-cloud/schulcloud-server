@@ -21,7 +21,7 @@
 			"@shared/*": ["apps/server/src/shared/*"],
 			"@src/*": ["apps/server/src/*"],
 			"@modules/*": ["apps/server/src/modules/*"],
-			"@infra/*": ["apps/server/src/infra/*"],
-		},
+			"@infra/*": ["apps/server/src/infra/*"]
+		}
 	}
 }
