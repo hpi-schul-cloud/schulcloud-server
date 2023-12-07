@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountDto } from '@modules/account/services/dto/account.dto';
+import { AccountDto } from '@modules/account';
 import { Account } from '@shared/domain/entity';
 import { AccountResponseMapper } from '.';
 

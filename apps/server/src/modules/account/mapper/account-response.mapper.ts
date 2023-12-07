@@ -1,4 +1,4 @@
-import { AccountDto } from '@modules/account/services/dto/account.dto';
+import { AccountDto } from '@modules/account';
 import { Account } from '@shared/domain/entity';
 import { AccountResponse } from '../controller/dto';
 
