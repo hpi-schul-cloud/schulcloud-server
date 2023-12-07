@@ -25,7 +25,9 @@ export class CommonCartridgeResourceFactoryV110 extends CommonCartridgeResourceF
 	}
 
 	public override createResource(props: CommonCartridgeResourceProps): CommonCartridgeResource {
-		switch (props.type) {
+		const { type } = props;
+
+		switch (type) {
 			case CommonCartridgeResourceType.LTI:
 				return new CommonCartridgeLtiResource(props);
 			case CommonCartridgeResourceType.WEB_CONTENT:
@@ -33,7 +35,7 @@ export class CommonCartridgeResourceFactoryV110 extends CommonCartridgeResourceF
 			case CommonCartridgeResourceType.WEB_LINK:
 				return new CommonCartridgeWebLinkResource(props);
 			default:
-				throw createResourceTypeNotSupportedError(props.type);
+				throw createResourceTypeNotSupportedError(type);
 		}
 	}
 }

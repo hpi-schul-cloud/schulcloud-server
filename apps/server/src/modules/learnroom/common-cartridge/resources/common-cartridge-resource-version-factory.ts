@@ -1,5 +1,6 @@
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeResourceFactory } from '../interfaces/common-cartridge-resource-factory.interface';
+import { createVersionNotSupportedError } from '../utils';
 import { CommonCartridgeResourceFactoryV110 } from './v1.1.0/common-cartridge-resource-factory';
 import { CommonCartridgeResourceFactoryV130 } from './v1.3.0/common-cartridge-resource-factory';
 
@@ -11,7 +12,7 @@ export class CommonCartridgeResourceVersionFactory {
 			case CommonCartridgeVersion.V_1_3_0:
 				return CommonCartridgeResourceFactoryV130.getInstance();
 			default:
-				throw new Error(`Common Cartridge version ${version} is not supported`);
+				throw createVersionNotSupportedError(version);
 		}
 	}
 }

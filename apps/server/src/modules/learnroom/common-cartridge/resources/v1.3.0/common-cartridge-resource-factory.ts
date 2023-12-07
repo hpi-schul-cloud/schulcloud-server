@@ -4,6 +4,10 @@ import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resou
 import { createResourceTypeNotSupportedError } from '../../utils';
 import { CommonCartridgeLtiResource, CommonCartridgeLtiResourceProps } from './common-cartridge-lti-resource';
 import {
+	CommonCartridgeManifestResource,
+	CommonCartridgeManifestResourceProps,
+} from './common-cartridge-manifest-resource';
+import {
 	CommonCartridgeWebContentResource,
 	CommonCartridgeWebContentResourceProps,
 } from './common-cartridge-web-content-resource';
@@ -14,6 +18,7 @@ import {
 
 export type CommonCartridgeResourceProps =
 	| CommonCartridgeLtiResourceProps
+	| CommonCartridgeManifestResourceProps
 	| CommonCartridgeWebContentResourceProps
 	| CommonCartridgeWebLinkResourceProps;
 
@@ -25,15 +30,19 @@ export class CommonCartridgeResourceFactoryV130 extends CommonCartridgeResourceF
 	}
 
 	public override createResource(props: CommonCartridgeResourceProps): CommonCartridgeResource {
-		switch (props.type) {
+		const { type } = props;
+
+		switch (type) {
 			case CommonCartridgeResourceType.LTI:
 				return new CommonCartridgeLtiResource(props);
+			case CommonCartridgeResourceType.MANIFEST:
+				return new CommonCartridgeManifestResource(props);
 			case CommonCartridgeResourceType.WEB_CONTENT:
 				return new CommonCartridgeWebContentResource(props);
 			case CommonCartridgeResourceType.WEB_LINK:
 				return new CommonCartridgeWebLinkResource(props);
 			default:
-				throw createResourceTypeNotSupportedError(props.type);
+				throw createResourceTypeNotSupportedError(type as string);
 		}
 	}
 }
