@@ -6,14 +6,15 @@ import {
 	Card,
 	Column,
 	ColumnBoard,
-	EntityId,
+	DrawingElement,
 	ExternalToolElement,
 	FileElement,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 
@@ -121,6 +122,24 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			elements: fileCopyStatus,
 		});
 		this.copyMap.set(original.id, copy);
+	}
+
+	async visitDrawingElementAsync(original: DrawingElement): Promise<void> {
+		const copy = new DrawingElement({
+			id: new ObjectId().toHexString(),
+			description: original.description,
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+		this.resultMap.set(original.id, {
+			copyEntity: copy,
+			type: CopyElementType.DRAWING_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+		});
+		this.copyMap.set(original.id, copy);
+
+		return Promise.resolve();
 	}
 
 	async visitLinkElementAsync(original: LinkElement): Promise<void> {

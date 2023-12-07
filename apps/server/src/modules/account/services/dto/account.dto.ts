@@ -1,4 +1,4 @@
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { AccountSaveDto } from './account-save.dto';
 
 export class AccountDto extends AccountSaveDto {

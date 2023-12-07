@@ -350,5 +350,16 @@
 			"$date": "2023-11-09T11:27:46.062Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "656f15a29ac13a4b78e2e31f"
+		},
+		"state": "up",
+		"name": "system-permissions-update",
+		"createdAt": {
+			"$date": "2023-12-05T12:20:50.147Z"
+		},
+		"__v": 0
 	}
 ]

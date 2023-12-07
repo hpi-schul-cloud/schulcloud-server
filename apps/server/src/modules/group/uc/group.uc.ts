@@ -4,29 +4,35 @@ import { Class } from '@modules/class/domain';
 import { LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
-import { SystemDto, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, Page, Permission, SchoolYearEntity, SortOrder, User, UserDO } from '@shared/domain';
+import { ReferencedEntityNotFoundLoggable } from '@shared/common/loggable';
+import { LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
+import { SchoolYearEntity, User } from '@shared/domain/entity';
+import { Permission, SortOrder } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
+import { Logger } from '@src/core/logger';
+import { LegacySystemService, SystemDto } from '@src/modules/system';
+import { SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupUser } from '../domain';
+import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { SortHelper } from '../util';
 import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from './dto';
 import { GroupUcMapper } from './mapper/group-uc.mapper';
-import { SchoolYearQueryType } from '../controller/dto/interface';
-import { UnknownQueryTypeLoggableException } from '../loggable';
 
 @Injectable()
 export class GroupUc {
 	constructor(
 		private readonly groupService: GroupService,
 		private readonly classService: ClassService,
-		private readonly systemService: SystemService,
+		private readonly systemService: LegacySystemService,
 		private readonly userService: UserService,
 		private readonly roleService: RoleService,
 		private readonly schoolService: LegacySchoolService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolYearService: SchoolYearService
+		private readonly schoolYearService: SchoolYearService,
+		private readonly logger: Logger
 	) {}
 
 	public async findAllClasses(
@@ -140,14 +146,14 @@ export class GroupUc {
 			this.isClassOfQueryType(currentYear, classWithSchoolYear.schoolYear, schoolYearQueryType)
 		);
 
-		const classInfosFromClasses = await this.mapClassInfosFromClasses(filteredClassesForSchoolYear);
+		const classInfosFromClasses: ClassInfoDto[] = await this.mapClassInfosFromClasses(filteredClassesForSchoolYear);
 
 		return classInfosFromClasses;
 	}
 
 	private async addSchoolYearsToClasses(classes: Class[]): Promise<{ clazz: Class; schoolYear?: SchoolYearEntity }[]> {
 		const classesWithSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[] = await Promise.all(
-			classes.map(async (clazz) => {
+			classes.map(async (clazz: Class) => {
 				let schoolYear: SchoolYearEntity | undefined;
 				if (clazz.year) {
 					schoolYear = await this.schoolYearService.findById(clazz.year);
@@ -159,6 +165,7 @@ export class GroupUc {
 				};
 			})
 		);
+
 		return classesWithSchoolYear;
 	}
 
@@ -190,11 +197,10 @@ export class GroupUc {
 	private async mapClassInfosFromClasses(
 		filteredClassesForSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[]
 	): Promise<ClassInfoDto[]> {
-		const classInfosFromClasses = await Promise.all(
+		const classInfosFromClasses: ClassInfoDto[] = await Promise.all(
 			filteredClassesForSchoolYear.map(async (classWithSchoolYear): Promise<ClassInfoDto> => {
-				const teachers: UserDO[] = await Promise.all(
-					classWithSchoolYear.clazz.teacherIds.map((teacherId: EntityId) => this.userService.findById(teacherId))
-				);
+				const { teacherIds } = classWithSchoolYear.clazz;
+				const teachers: UserDO[] = await this.getTeachersByIds(teacherIds, classWithSchoolYear.clazz.id);
 
 				const mapped: ClassInfoDto = GroupUcMapper.mapClassToClassInfoDto(
 					classWithSchoolYear.clazz,
@@ -205,7 +211,26 @@ export class GroupUc {
 				return mapped;
 			})
 		);
+
 		return classInfosFromClasses;
+	}
+
+	private async getTeachersByIds(teacherIds: EntityId[], classId: EntityId): Promise<UserDO[]> {
+		const teacherPromises: Promise<UserDO | null>[] = teacherIds.map(
+			async (teacherId: EntityId): Promise<UserDO | null> => {
+				const teacher: UserDO | null = await this.userService.findByIdOrNull(teacherId);
+				if (!teacher) {
+					this.logger.warning(new ReferencedEntityNotFoundLoggable(Class.name, classId, UserDO.name, teacherId));
+				}
+				return teacher;
+			}
+		);
+
+		const teachers: UserDO[] = (await Promise.all(teacherPromises)).filter(
+			(teacher: UserDO | null): teacher is UserDO => teacher !== null
+		);
+
+		return teachers;
 	}
 
 	private async findGroupsOfTypeClassForSchool(schoolId: EntityId): Promise<ClassInfoDto[]> {
@@ -268,18 +293,31 @@ export class GroupUc {
 	}
 
 	private async findUsersForGroup(group: Group): Promise<ResolvedGroupUser[]> {
-		const resolvedGroupUsers: ResolvedGroupUser[] = await Promise.all(
-			group.users.map(async (groupUser: GroupUser): Promise<ResolvedGroupUser> => {
-				const user: UserDO = await this.userService.findById(groupUser.userId);
-				const role: RoleDto = await this.roleService.findById(groupUser.roleId);
+		const resolvedGroupUsersOrNull: (ResolvedGroupUser | null)[] = await Promise.all(
+			group.users.map(async (groupUser: GroupUser): Promise<ResolvedGroupUser | null> => {
+				const user: UserDO | null = await this.userService.findByIdOrNull(groupUser.userId);
+				let resolvedGroup: ResolvedGroupUser | null = null;
 
-				const resolvedGroups = new ResolvedGroupUser({
-					user,
-					role,
-				});
+				if (!user) {
+					this.logger.warning(
+						new ReferencedEntityNotFoundLoggable(Group.name, group.id, UserDO.name, groupUser.userId)
+					);
+				} else {
+					const role: RoleDto = await this.roleService.findById(groupUser.roleId);
 
-				return resolvedGroups;
+					resolvedGroup = new ResolvedGroupUser({
+						user,
+						role,
+					});
+				}
+
+				return resolvedGroup;
 			})
+		);
+
+		const resolvedGroupUsers: ResolvedGroupUser[] = resolvedGroupUsersOrNull.filter(
+			(resolvedGroupUser: ResolvedGroupUser | null): resolvedGroupUser is ResolvedGroupUser =>
+				resolvedGroupUser !== null
 		);
 
 		return resolvedGroupUsers;

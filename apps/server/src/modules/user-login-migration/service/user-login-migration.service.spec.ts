@@ -2,12 +2,14 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { SystemService } from '@modules/system';
+import { LegacySystemService } from '@modules/system';
 import { SystemDto } from '@modules/system/service';
 import { UserService } from '@modules/user';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, LegacySchoolDo, SchoolFeatures, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { SchoolFeatures } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { legacySchoolDoFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import {
@@ -22,7 +24,7 @@ describe(UserLoginMigrationService.name, () => {
 
 	let userService: DeepMocked<UserService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
-	let systemService: DeepMocked<SystemService>;
+	let systemService: DeepMocked<LegacySystemService>;
 	let userLoginMigrationRepo: DeepMocked<UserLoginMigrationRepo>;
 
 	const mockedDate: Date = new Date('2023-05-02');
@@ -46,8 +48,8 @@ describe(UserLoginMigrationService.name, () => {
 					useValue: createMock<LegacySchoolService>(),
 				},
 				{
-					provide: SystemService,
-					useValue: createMock<SystemService>(),
+					provide: LegacySystemService,
+					useValue: createMock<LegacySystemService>(),
 				},
 				{
 					provide: UserLoginMigrationRepo,
@@ -59,7 +61,7 @@ describe(UserLoginMigrationService.name, () => {
 		service = module.get(UserLoginMigrationService);
 		userService = module.get(UserService);
 		schoolService = module.get(LegacySchoolService);
-		systemService = module.get(SystemService);
+		systemService = module.get(LegacySystemService);
 		userLoginMigrationRepo = module.get(UserLoginMigrationRepo);
 	});
 

@@ -6,18 +6,24 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { ProvisioningService } from '@modules/provisioning';
 import { OauthConfigDto } from '@modules/system/service';
 import { SystemDto } from '@modules/system/service/dto/system.dto';
-import { SystemService } from '@modules/system/service/system.service';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, OauthConfig, SchoolFeatures, SystemEntity, UserDO } from '@shared/domain';
+import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
+import { OauthConfigEntity, SchoolFeatures, SystemEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { legacySchoolDoFactory, setupEntities, systemFactory, userDoFactory } from '@shared/testing';
+import { legacySchoolDoFactory, setupEntities, systemEntityFactory, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
+import { LegacySystemService } from '@src/modules/system';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthTokenDto } from '../interface';
-import { OAuthSSOError, UserNotFoundAfterProvisioningLoggableException } from '../loggable';
+import {
+	AuthCodeFailureLoggableException,
+	IdTokenInvalidLoggableException,
+	OauthConfigMissingLoggableException,
+	UserNotFoundAfterProvisioningLoggableException,
+} from '../loggable';
 import { OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
 import { OAuthService } from './oauth.service';
@@ -44,13 +50,13 @@ describe('OAuthService', () => {
 	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let userService: DeepMocked<UserService>;
-	let systemService: DeepMocked<SystemService>;
+	let systemService: DeepMocked<LegacySystemService>;
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
 	let migrationCheckService: DeepMocked<MigrationCheckService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
 
 	let testSystem: SystemEntity;
-	let testOauthConfig: OauthConfig;
+	let testOauthConfig: OauthConfigEntity;
 
 	const hostUri = 'https://mock.de';
 
@@ -81,8 +87,8 @@ describe('OAuthService', () => {
 					useValue: createMock<ProvisioningService>(),
 				},
 				{
-					provide: SystemService,
-					useValue: createMock<SystemService>(),
+					provide: LegacySystemService,
+					useValue: createMock<LegacySystemService>(),
 				},
 				{
 					provide: OauthAdapterService,
@@ -99,7 +105,7 @@ describe('OAuthService', () => {
 		oAuthEncryptionService = module.get(DefaultEncryptionService);
 		provisioningService = module.get(ProvisioningService);
 		userService = module.get(UserService);
-		systemService = module.get(SystemService);
+		systemService = module.get(LegacySystemService);
 		oauthAdapterService = module.get(OauthAdapterService);
 		migrationCheckService = module.get(MigrationCheckService);
 		schoolService = module.get(LegacySchoolService);
@@ -124,8 +130,8 @@ describe('OAuthService', () => {
 			}
 		});
 
-		testSystem = systemFactory.withOauthConfig().buildWithId();
-		testOauthConfig = testSystem.oauthConfig as OauthConfig;
+		testSystem = systemEntityFactory.withOauthConfig().buildWithId();
+		testOauthConfig = testSystem.oauthConfig as OauthConfigEntity;
 	});
 
 	describe('requestToken', () => {
@@ -185,7 +191,7 @@ describe('OAuthService', () => {
 				jest.spyOn(jwt, 'verify').mockImplementationOnce((): string => 'string');
 
 				await expect(service.validateToken('idToken', testOauthConfig)).rejects.toEqual(
-					new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error')
+					new IdTokenInvalidLoggableException()
 				);
 			});
 		});
@@ -256,9 +262,7 @@ describe('OAuthService', () => {
 
 				const func = () => service.authenticateUser(testSystem.id, 'redirectUri', authCode);
 
-				await expect(func).rejects.toThrow(
-					new OAuthSSOError(`Requested system ${testSystem.id} has no oauth configured`, 'sso_internal_error')
-				);
+				await expect(func).rejects.toThrow(new OauthConfigMissingLoggableException(testSystem.id));
 			});
 		});
 
@@ -266,9 +270,7 @@ describe('OAuthService', () => {
 			it('should throw an error', async () => {
 				const func = () => service.authenticateUser('systemId', 'redirectUri', undefined, 'errorCode');
 
-				await expect(func).rejects.toThrow(
-					new OAuthSSOError('Authorization Query Object has no authorization code or error', 'errorCode')
-				);
+				await expect(func).rejects.toThrow(new AuthCodeFailureLoggableException('errorCode'));
 			});
 		});
 
@@ -276,9 +278,7 @@ describe('OAuthService', () => {
 			it('should throw an error', async () => {
 				const func = () => service.authenticateUser('systemId', 'redirectUri');
 
-				await expect(func).rejects.toThrow(
-					new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step')
-				);
+				await expect(func).rejects.toThrow(new AuthCodeFailureLoggableException());
 			});
 		});
 	});

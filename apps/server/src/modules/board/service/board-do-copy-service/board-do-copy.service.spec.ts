@@ -1,28 +1,32 @@
 import { createMock } from '@golevelup/ts-jest';
+import { FileRecordParentType } from '@infra/rabbitmq';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	Card,
 	Column,
 	ColumnBoard,
+	DrawingElement,
 	ExternalToolElement,
 	FileElement,
+	LinkElement,
+	RichTextElement,
+	SubmissionContainerElement,
 	isCard,
 	isColumn,
 	isColumnBoard,
+	isDrawingElement,
 	isExternalToolElement,
 	isFileElement,
 	isLinkElement,
 	isRichTextElement,
 	isSubmissionContainerElement,
-	LinkElement,
-	RichTextElement,
-	SubmissionContainerElement,
-} from '@shared/domain';
-import { FileRecordParentType } from '@infra/rabbitmq';
+} from '@shared/domain/domainobject';
 import {
 	cardFactory,
 	columnBoardFactory,
 	columnFactory,
+	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
 	linkElementFactory,
@@ -31,7 +35,6 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ObjectId } from 'bson';
 import { BoardDoCopyService } from './board-do-copy.service';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
@@ -434,6 +437,62 @@ describe('recursive board copy visitor', () => {
 			const result = await service.copy({ original, fileCopyService });
 
 			expect(result.type).toEqual(CopyElementType.RICHTEXT_ELEMENT);
+		});
+	});
+
+	describe('when copying a drawing element', () => {
+		const setup = () => {
+			const original = drawingElementFactory.build();
+
+			return { original, ...setupfileCopyService() };
+		};
+
+		const getDrawingElementFromStatus = (status: CopyStatus) => {
+			const copy = status.copyEntity;
+			expect(isDrawingElement(copy)).toEqual(true);
+			return copy as DrawingElement;
+		};
+
+		it('should return a drawing element as copy', async () => {
+			const { original, fileCopyService } = setup();
+
+			const result = await service.copy({ original, fileCopyService });
+
+			expect(isDrawingElement(result.copyEntity)).toEqual(true);
+		});
+
+		it('should copy description', async () => {
+			const { original, fileCopyService } = setup();
+
+			const result = await service.copy({ original, fileCopyService });
+			const copy = getDrawingElementFromStatus(result);
+
+			expect(copy.description).toEqual(original.description);
+		});
+
+		it('should create new id', async () => {
+			const { original, fileCopyService } = setup();
+
+			const result = await service.copy({ original, fileCopyService });
+			const copy = getDrawingElementFromStatus(result);
+
+			expect(copy.id).not.toEqual(original.id);
+		});
+
+		it('should show status successful', async () => {
+			const { original, fileCopyService } = setup();
+
+			const result = await service.copy({ original, fileCopyService });
+
+			expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
+		});
+
+		it('should show type RichTextElement', async () => {
+			const { original, fileCopyService } = setup();
+
+			const result = await service.copy({ original, fileCopyService });
+
+			expect(result.type).toEqual(CopyElementType.DRAWING_ELEMENT);
 		});
 	});
 

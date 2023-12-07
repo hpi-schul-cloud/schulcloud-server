@@ -1,8 +1,9 @@
 import { IdentityManagementModule } from '@infra/identity-management';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PermissionService } from '@shared/domain';
-import { SystemRepo, UserRepo } from '@shared/repo';
+import { PermissionService } from '@shared/domain/service';
+import { LegacySystemRepo, UserRepo } from '@shared/repo';
+
 import { LoggerModule } from '@src/core/logger/logger.module';
 import { ServerConfig } from '../server/server.config';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb, AccountIdmToDtoMapperIdm } from './mapper';
@@ -24,7 +25,7 @@ function accountIdmToDtoMapperFactory(configService: ConfigService<ServerConfig,
 	imports: [IdentityManagementModule, LoggerModule],
 	providers: [
 		UserRepo,
-		SystemRepo,
+		LegacySystemRepo,
 		PermissionService,
 		AccountRepo,
 		AccountServiceDb,

@@ -1,25 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { setupEntities } from '@shared/testing';
-import { AccountService } from '@modules/account/services';
+import { setupEntities, userDoFactory } from '@shared/testing';
+import { AccountService } from '@modules/account';
 import { ClassService } from '@modules/class';
-import { CourseGroupService, CourseService } from '@modules/learnroom/service';
-import { FilesService } from '@modules/files/service';
-import { LessonService } from '@modules/lesson/service';
+import { CourseGroupService, CourseService } from '@modules/learnroom';
+import { FilesService } from '@modules/files';
+import { LessonService } from '@modules/lesson';
 import { PseudonymService } from '@modules/pseudonym';
 import { TeamService } from '@modules/teams';
 import { UserService } from '@modules/user';
 import { RocketChatService } from '@modules/rocketchat';
-import { rocketChatUserFactory } from '@modules/rocketchat-user/domain/testing';
-import { RocketChatUser, RocketChatUserService } from '@modules/rocketchat-user';
-import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
+import { RocketChatUser, RocketChatUserService, rocketChatUserFactory } from '@modules/rocketchat-user';
+import { LegacyLogger } from '@src/core/logger';
+import { ObjectId } from 'bson';
+import { RegistrationPinService } from '@modules/registration-pin';
+import { DeletionDomainModel, DeletionStatusModel } from '../domain/types';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
 import { DeletionRequestUc } from './deletion-request.uc';
 import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
-import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
-import { deletionLogFactory } from '../domain/testing/factory/deletion-log.factory';
-import { DeletionRequestLog, DeletionRequestProps } from './interface';
+import { deletionLogFactory } from '../domain/testing';
+import { DeletionRequestBodyProps } from '../controller/dto';
+import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder, DeletionLogStatisticBuilder } from '../builder';
 
 describe(DeletionRequestUc.name, () => {
 	let module: TestingModule;
@@ -37,6 +39,7 @@ describe(DeletionRequestUc.name, () => {
 	let userService: DeepMocked<UserService>;
 	let rocketChatUserService: DeepMocked<RocketChatUserService>;
 	let rocketChatService: DeepMocked<RocketChatService>;
+	let registrationPinService: DeepMocked<RegistrationPinService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -94,6 +97,14 @@ describe(DeletionRequestUc.name, () => {
 					provide: RocketChatService,
 					useValue: createMock<RocketChatService>(),
 				},
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
+				},
+				{
+					provide: RegistrationPinService,
+					useValue: createMock<RegistrationPinService>(),
+				},
 			],
 		}).compile();
 
@@ -111,17 +122,21 @@ describe(DeletionRequestUc.name, () => {
 		userService = module.get(UserService);
 		rocketChatUserService = module.get(RocketChatUserService);
 		rocketChatService = module.get(RocketChatService);
+		registrationPinService = module.get(RegistrationPinService);
 		await setupEntities();
+	});
+
+	beforeEach(() => {
+		jest.clearAllMocks();
 	});
 
 	describe('createDeletionRequest', () => {
 		describe('when creating a deletionRequest', () => {
 			const setup = () => {
-				jest.clearAllMocks();
-				const deletionRequestToCreate: DeletionRequestProps = {
+				const deletionRequestToCreate: DeletionRequestBodyProps = {
 					targetRef: {
-						targetRefDoamin: DeletionDomainModel.USER,
-						targetRefId: '653e4833cc39e5907a1e18d2',
+						domain: DeletionDomainModel.USER,
+						id: new ObjectId().toHexString(),
 					},
 					deleteInMinutes: 1440,
 				};
@@ -139,8 +154,8 @@ describe(DeletionRequestUc.name, () => {
 				await uc.createDeletionRequest(deletionRequestToCreate);
 
 				expect(deletionRequestService.createDeletionRequest).toHaveBeenCalledWith(
-					deletionRequestToCreate.targetRef.targetRefId,
-					deletionRequestToCreate.targetRef.targetRefDoamin,
+					deletionRequestToCreate.targetRef.id,
+					deletionRequestToCreate.targetRef.domain,
 					deletionRequestToCreate.deleteInMinutes
 				);
 			});
@@ -166,12 +181,14 @@ describe(DeletionRequestUc.name, () => {
 	describe('executeDeletionRequests', () => {
 		describe('when executing deletionRequests', () => {
 			const setup = () => {
-				jest.clearAllMocks();
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
+				const user = userDoFactory.buildWithId();
 				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build({
 					userId: deletionRequestToExecute.targetRefId,
 				});
+				const parentEmail = 'parent@parent.eu';
 
+				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(2);
 				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
 				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(2);
 				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(2);
@@ -186,6 +203,8 @@ describe(DeletionRequestUc.name, () => {
 				return {
 					deletionRequestToExecute,
 					rocketChatUser,
+					user,
+					parentEmail,
 				};
 			};
 
@@ -213,6 +232,29 @@ describe(DeletionRequestUc.name, () => {
 				await uc.executeDeletionRequests();
 
 				expect(accountService.deleteByUserId).toHaveBeenCalled();
+			});
+
+			it('should call registrationPinService.deleteRegistrationPinByEmail to delete user data in registrationPin module', async () => {
+				const { deletionRequestToExecute } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+
+				await uc.executeDeletionRequests();
+
+				expect(registrationPinService.deleteRegistrationPinByEmail).toHaveBeenCalled();
+			});
+
+			it('should call userService.getParentEmailsFromUser to get parentEmails', async () => {
+				const { deletionRequestToExecute, user, parentEmail } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+				userService.findById.mockResolvedValueOnce(user);
+				userService.getParentEmailsFromUser.mockRejectedValue([parentEmail]);
+				registrationPinService.deleteRegistrationPinByEmail.mockRejectedValueOnce(2);
+
+				await uc.executeDeletionRequests();
+
+				expect(userService.getParentEmailsFromUser).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call classService.deleteUserDataFromClasses to delete user data in class module', async () => {
@@ -346,13 +388,12 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(9);
+				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(10);
 			});
 		});
 
 		describe('when an error occurred', () => {
 			const setup = () => {
-				jest.clearAllMocks();
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
 
 				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
@@ -385,41 +426,29 @@ describe(DeletionRequestUc.name, () => {
 	describe('findById', () => {
 		describe('when searching for logs for deletionRequest which was executed', () => {
 			const setup = () => {
-				jest.clearAllMocks();
 				const deletionRequestExecuted = deletionRequestFactory.build({ status: DeletionStatusModel.SUCCESS });
-				const deletionLogExecuted1 = deletionLogFactory.build({ deletionRequestId: deletionRequestExecuted.id });
-				const deletionLogExecuted2 = deletionLogFactory.build({
-					deletionRequestId: deletionRequestExecuted.id,
-					domain: DeletionDomainModel.ACCOUNT,
-					modifiedCount: 0,
-					deletedCount: 1,
-				});
+				const deletionLogExecuted = deletionLogFactory.build({ deletionRequestId: deletionRequestExecuted.id });
 
-				const executedDeletionRequestSummary: DeletionRequestLog = {
-					targetRef: {
-						targetRefDomain: deletionRequestExecuted.targetRefDomain,
-						targetRefId: deletionRequestExecuted.targetRefId,
-					},
-					deletionPlannedAt: deletionRequestExecuted.deleteAfter,
-					statistics: [
-						{
-							domain: deletionLogExecuted1.domain,
-							modifiedCount: deletionLogExecuted1.modifiedCount,
-							deletedCount: deletionLogExecuted1.deletedCount,
-						},
-						{
-							domain: deletionLogExecuted2.domain,
-							modifiedCount: deletionLogExecuted2.modifiedCount,
-							deletedCount: deletionLogExecuted2.deletedCount,
-						},
-					],
-				};
+				const targetRef = DeletionTargetRefBuilder.build(
+					deletionRequestExecuted.targetRefDomain,
+					deletionRequestExecuted.targetRefId
+				);
+				const statistics = DeletionLogStatisticBuilder.build(
+					deletionLogExecuted.domain,
+					deletionLogExecuted.modifiedCount,
+					deletionLogExecuted.deletedCount
+				);
+
+				const executedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
+					targetRef,
+					deletionRequestExecuted.deleteAfter,
+					[statistics]
+				);
 
 				return {
 					deletionRequestExecuted,
 					executedDeletionRequestSummary,
-					deletionLogExecuted1,
-					deletionLogExecuted2,
+					deletionLogExecuted,
 				};
 			};
 
@@ -435,11 +464,10 @@ describe(DeletionRequestUc.name, () => {
 			});
 
 			it('should return object with summary of deletionRequest', async () => {
-				const { deletionRequestExecuted, deletionLogExecuted1, deletionLogExecuted2, executedDeletionRequestSummary } =
-					setup();
+				const { deletionRequestExecuted, deletionLogExecuted, executedDeletionRequestSummary } = setup();
 
 				deletionRequestService.findById.mockResolvedValueOnce(deletionRequestExecuted);
-				deletionLogService.findByDeletionRequestId.mockResolvedValueOnce([deletionLogExecuted1, deletionLogExecuted2]);
+				deletionLogService.findByDeletionRequestId.mockResolvedValueOnce([deletionLogExecuted]);
 
 				const result = await uc.findById(deletionRequestExecuted.id);
 
@@ -449,15 +477,12 @@ describe(DeletionRequestUc.name, () => {
 
 		describe('when searching for logs for deletionRequest which was not executed', () => {
 			const setup = () => {
-				jest.clearAllMocks();
 				const deletionRequest = deletionRequestFactory.build();
-				const notExecutedDeletionRequestSummary: DeletionRequestLog = {
-					targetRef: {
-						targetRefDomain: deletionRequest.targetRefDomain,
-						targetRefId: deletionRequest.targetRefId,
-					},
-					deletionPlannedAt: deletionRequest.deleteAfter,
-				};
+				const targetRef = DeletionTargetRefBuilder.build(deletionRequest.targetRefDomain, deletionRequest.targetRefId);
+				const notExecutedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
+					targetRef,
+					deletionRequest.deleteAfter
+				);
 
 				return {
 					deletionRequest,
@@ -491,7 +516,6 @@ describe(DeletionRequestUc.name, () => {
 	describe('deleteDeletionRequestById', () => {
 		describe('when deleting a deletionRequestId', () => {
 			const setup = () => {
-				jest.clearAllMocks();
 				const deletionRequest = deletionRequestFactory.build();
 
 				return {

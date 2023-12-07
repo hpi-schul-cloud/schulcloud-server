@@ -3,5 +3,8 @@
 	"host": "localhost",
 	"port": "PORT",
 	"mongodb": "MONGO_URI",
-	"public": "./public/"
+	"public": "./public/",
+	"services": {
+		"hydra": "HYDRA_URI"
+	}
 }

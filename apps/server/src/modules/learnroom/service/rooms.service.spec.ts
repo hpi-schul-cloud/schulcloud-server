@@ -6,7 +6,8 @@ import { CardService, ColumnBoardService, ColumnService, ContentElementService }
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReference, BoardExternalReferenceType, EntityId } from '@shared/domain';
+import { BoardExternalReference, BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { BoardRepo } from '@shared/repo';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { ColumnBoardTargetService } from './column-board-target.service';

@@ -22,24 +22,15 @@ import {
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
-import {
-	ImportUser,
-	MatchCreator,
-	Permission,
-	RoleName,
-	SchoolEntity,
-	SchoolFeatures,
-	SortOrder,
-	SystemEntity,
-	User,
-} from '@shared/domain';
+import { ImportUser, MatchCreator, SchoolEntity, SchoolFeatures, SystemEntity, User } from '@shared/domain/entity';
+import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	importUserFactory,
 	mapUserToCurrentUser,
 	roleFactory,
 	schoolFactory,
-	systemFactory,
+	systemEntityFactory,
 	userFactory,
 } from '@shared/testing';
 import { Request } from 'express';
@@ -51,7 +42,7 @@ describe('ImportUser Controller (API)', () => {
 	let currentUser: ICurrentUser;
 
 	const authenticatedUser = async (permissions: Permission[] = [], features: SchoolFeatures[] = []) => {
-		const system = systemFactory.buildWithId(); // TODO no id?
+		const system = systemEntityFactory.buildWithId(); // TODO no id?
 		const school = schoolFactory.build({ officialSchoolNumber: 'foo', features });
 		const roles = [roleFactory.build({ name: RoleName.ADMINISTRATOR, permissions })];
 		await em.persistAndFlush([school, system, ...roles]);

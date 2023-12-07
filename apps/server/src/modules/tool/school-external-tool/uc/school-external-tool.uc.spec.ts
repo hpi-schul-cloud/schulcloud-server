@@ -1,9 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, Permission, User } from '@shared/domain';
-import { schoolExternalToolFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationContextBuilder } from '@modules/authorization';
+import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
+import { schoolExternalToolFactory, setupEntities, userFactory } from '@shared/testing';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { SchoolExternalTool } from '../domain';

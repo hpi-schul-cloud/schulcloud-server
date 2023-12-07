@@ -1,4 +1,4 @@
-import { Page } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject';
 import { GroupTypes } from '../../domain';
 import { ClassInfoDto, ResolvedGroupDto } from '../../uc/dto';
 import {

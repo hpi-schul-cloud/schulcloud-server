@@ -7,7 +7,6 @@ const { Forbidden, MethodNotAllowed } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const Hydra = require('../hydra');
 
-const hydraUri = Configuration.get('HYDRA_URI');
 const webUri = Configuration.get('HOST');
 
 const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';

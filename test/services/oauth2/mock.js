@@ -73,6 +73,14 @@ describe.skip('oauth2 service mock', function oauthTest() {
 		app.unuse('oauth2/introspect');
 		app.unuse('oauth2/auth/sessions/consent');
 
+		app.unuse('oauth2/baseUrl');
+		app.unuse('oauth2/clients');
+		app.unuse('oauth2/loginRequest');
+		app.unuse('oauth2/logoutRequest');
+		app.unuse('oauth2/consentRequest');
+		app.unuse('oauth2/introspect');
+		app.unuse('oauth2/auth/sessions/consent');
+
 		app.configure(oauth2);
 		server = await app.listen();
 		nestServices = await setupNestServices(app);

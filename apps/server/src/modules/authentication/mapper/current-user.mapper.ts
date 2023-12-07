@@ -1,7 +1,7 @@
 import { ValidationError } from '@shared/common';
-import { Role, User } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Role, User } from '@shared/domain/entity';
 import { ICurrentUser, OauthCurrentUser } from '../interface';
 import { CreateJwtPayload, JwtPayload } from '../interface/jwt-payload';
 

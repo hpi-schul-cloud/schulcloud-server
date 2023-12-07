@@ -6,14 +6,14 @@ import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto'
 import { HttpService } from '@nestjs/axios';
 import { Inject, InternalServerErrorException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { OauthConfig } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { OauthConfigEntity } from '@shared/domain/entity';
 import { LtiToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { nanoid } from 'nanoid';
 import QueryString from 'qs';
-import { firstValueFrom, Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class HydraSsoService {
@@ -26,7 +26,7 @@ export class HydraSsoService {
 
 	private readonly HOST: string = Configuration.get('HOST') as string;
 
-	async initAuth(oauthConfig: OauthConfig, axiosConfig: AxiosRequestConfig): Promise<AxiosResponse> {
+	async initAuth(oauthConfig: OauthConfigEntity, axiosConfig: AxiosRequestConfig): Promise<AxiosResponse> {
 		const query = QueryString.stringify({
 			response_type: oauthConfig.responseType,
 			scope: oauthConfig.scope,
@@ -96,7 +96,7 @@ export class HydraSsoService {
 		return cookiesDto;
 	}
 
-	async generateConfig(oauthClientId: string): Promise<OauthConfig> {
+	async generateConfig(oauthClientId: string): Promise<OauthConfigEntity> {
 		const tool: LtiToolDO = await this.ltiRepo.findByOauthClientId(oauthClientId);
 
 		// Needs to be checked, because the fields can be undefined
@@ -105,7 +105,7 @@ export class HydraSsoService {
 		}
 
 		const hydraUri: string = Configuration.get('HYDRA_PUBLIC_URI') as string;
-		const hydraOauthConfig = new OauthConfig({
+		const hydraOauthConfig = new OauthConfigEntity({
 			authEndpoint: `${hydraUri}/oauth2/auth`,
 			clientId: tool.oAuthClientId,
 			clientSecret: this.oAuthEncryptionService.encrypt(tool.secret),
