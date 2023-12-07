@@ -71,6 +71,7 @@ export class DeletionRequestUc {
 		this.logger.debug({ action: 'deletionRequestId', deletionRequestId });
 
 		const deletionRequest: DeletionRequest = await this.deletionRequestService.findById(deletionRequestId);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		let response: DeletionRequestLogResponse = DeletionRequestLogResponseBuilder.build(
 			DeletionTargetRefBuilder.build(deletionRequest.targetRefDomain, deletionRequest.targetRefId),
 			deletionRequest.deleteAfter
