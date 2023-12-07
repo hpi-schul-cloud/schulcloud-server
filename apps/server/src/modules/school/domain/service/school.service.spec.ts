@@ -1,12 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder } from '@shared/domain/interface';
+import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { SchoolPurpose } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { SchoolRepo } from '../interface';
 import { schoolFactory } from '../testing';
 import { SchoolService } from './school.service';
+import { SchoolQuery } from '../query';
+import { SchoolProps } from '../do';
 
 describe('SchoolService', () => {
 	let service: SchoolService;
@@ -42,13 +44,21 @@ describe('SchoolService', () => {
 	});
 
 	describe('getSchool', () => {
-		it('should return school', async () => {
-			const school = schoolFactory.build();
-			schoolRepo.getSchool.mockResolvedValueOnce(school);
+		describe('when school from given id exists', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+				schoolRepo.getSchool.mockResolvedValueOnce(school);
 
-			const result = await service.getSchool('1');
+				return { school, id: school.id };
+			};
 
-			expect(result).toEqual(school);
+			it('should return school', async () => {
+				const { school, id } = setup();
+
+				const result = await service.getSchool(id);
+
+				expect(result).toEqual(school);
+			});
 		});
 
 		describe('when STUDENT_TEAM_CREATION config value is "enabled"', () => {
@@ -93,46 +103,89 @@ describe('SchoolService', () => {
 	});
 
 	describe('getAllSchools', () => {
-		it('should return all schools', async () => {
-			const schools = schoolFactory.buildList(3);
-			schoolRepo.getAllSchools.mockResolvedValueOnce(schools);
+		describe('when schools exists and no query or options are passed', () => {
+			const setup = () => {
+				const query: SchoolQuery = {};
+				const options: IFindOptions<SchoolProps> = {};
 
-			const result = await service.getAllSchools({});
+				const schools = schoolFactory.buildList(3);
+				schoolRepo.getAllSchools.mockResolvedValueOnce(schools);
 
-			expect(result).toEqual(schools);
+				return { query, options, schools };
+			};
+
+			it('should return all schools', async () => {
+				const { query, options, schools } = setup();
+
+				const result = await service.getAllSchools(query, options);
+
+				expect(result).toEqual(schools);
+			});
 		});
 
-		it('should pass query to repo', async () => {
-			const schools = schoolFactory.buildList(3);
-			schoolRepo.getAllSchools.mockResolvedValueOnce(schools);
-			const query = { federalStateId: new ObjectId().toHexString() };
+		describe('when schools exists and query but no options are passed', () => {
+			const setup = () => {
+				const query: SchoolQuery = { federalStateId: new ObjectId().toHexString() };
+				const options = undefined;
 
-			await service.getAllSchools(query);
+				const schools = schoolFactory.buildList(3);
+				schoolRepo.getAllSchools.mockResolvedValueOnce(schools);
 
-			expect(schoolRepo.getAllSchools).toBeCalledWith(query, undefined);
+				return { query, options };
+			};
+
+			it('should pass query to repo', async () => {
+				const { query, options } = setup();
+
+				await service.getAllSchools(query, options);
+
+				expect(schoolRepo.getAllSchools).toBeCalledWith(query, undefined);
+			});
 		});
 
-		it('should pass find options to repo', async () => {
-			const schools = schoolFactory.buildList(3);
-			schoolRepo.getAllSchools.mockResolvedValueOnce(schools);
-			const options = { pagination: { limit: 10, offset: 0 }, order: { name: SortOrder.asc } };
+		describe('when schools exists and query is empty but options are passed', () => {
+			const setup = () => {
+				const query: SchoolQuery = {};
+				const options: IFindOptions<SchoolProps> = {
+					pagination: { limit: 10, skip: 0 },
+					order: { name: SortOrder.asc },
+				};
 
-			await service.getAllSchools({}, options);
+				const schools = schoolFactory.buildList(3);
+				schoolRepo.getAllSchools.mockResolvedValueOnce(schools);
 
-			expect(schoolRepo.getAllSchools).toBeCalledWith(expect.anything(), options);
+				return { query, options };
+			};
+
+			it('should pass find options to repo', async () => {
+				const { query, options } = setup();
+
+				await service.getAllSchools(query, options);
+
+				expect(schoolRepo.getAllSchools).toBeCalledWith(expect.anything(), options);
+			});
 		});
 	});
 
 	describe('getSchoolsForExternalInvite', () => {
-		it('should return all schools for external invite', async () => {
-			const ownSchool = schoolFactory.build();
-			const foreignSchools = schoolFactory.buildList(3);
-			const foreignExpertSchool = schoolFactory.build({ purpose: SchoolPurpose.EXPERT });
-			schoolRepo.getAllSchools.mockResolvedValueOnce([ownSchool, ...foreignSchools, foreignExpertSchool]);
+		describe('....describe is missed', () => {
+			const setup = () => {
+				const query = {};
+				const ownSchool = schoolFactory.build();
+				const foreignSchools = schoolFactory.buildList(3);
+				const foreignExpertSchool = schoolFactory.build({ purpose: SchoolPurpose.EXPERT });
+				schoolRepo.getAllSchools.mockResolvedValueOnce([ownSchool, ...foreignSchools, foreignExpertSchool]);
 
-			const result = await service.getSchoolsForExternalInvite({}, ownSchool.id);
+				return { query, foreignSchools, ownSchoolId: ownSchool.id };
+			};
 
-			expect(result).toEqual(foreignSchools);
+			it('should return all schools for external invite', async () => {
+				const { query, foreignSchools, ownSchoolId } = setup();
+
+				const result = await service.getSchoolsForExternalInvite(query, ownSchoolId);
+
+				expect(result).toEqual(foreignSchools);
+			});
 		});
 	});
 });

@@ -23,7 +23,7 @@ export class SchoolService {
 		return school;
 	}
 
-	public async getAllSchools(query: SchoolQuery, options?: IFindOptions<SchoolProps>): Promise<School[]> {
+	public async getAllSchools(query: SchoolQuery = {}, options?: IFindOptions<SchoolProps>): Promise<School[]> {
 		const schools = await this.schoolRepo.getAllSchools(query, options);
 
 		schools.forEach((school) => this.setStudentTeamCreationFeature(school));
