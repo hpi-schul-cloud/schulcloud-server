@@ -4,7 +4,7 @@ import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '
 import { LessonCopyService } from '@modules/lesson/service';
 import { TaskCopyService } from '@modules/task/service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
 import { Board } from '@shared/domain/entity';
 import { BoardRepo } from '@shared/repo';
 import {

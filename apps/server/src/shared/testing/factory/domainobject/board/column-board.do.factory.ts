@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 import { ColumnBoard, ColumnBoardProps } from '@shared/domain/domainobject';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
 import { ObjectId } from 'bson';
 import { BaseFactory } from '../../base.factory';
 

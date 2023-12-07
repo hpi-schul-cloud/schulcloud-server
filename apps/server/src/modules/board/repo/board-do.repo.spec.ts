@@ -6,7 +6,10 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AnyBoardDo, BoardExternalReferenceType, Card, Column, ColumnBoard } from '@shared/domain/domainobject';
+import { AnyBoardDo, Card, Column, ColumnBoard } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
+
+import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
 import { CardNode, RichTextElementNode } from '@shared/domain/entity';
 import {
 	cardFactory,
@@ -21,7 +24,6 @@ import {
 	richTextElementFactory,
 	richTextElementNodeFactory,
 } from '@shared/testing';
-import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
 import { BoardDoRepo } from './board-do.repo';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';

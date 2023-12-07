@@ -1,4 +1,5 @@
-import { ContentElementType, FileElement } from '@shared/domain/domainobject';
+import { FileElement } from '@shared/domain/domainobject';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
 import { FileElementContent, FileElementResponse, TimestampsResponse } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
 
