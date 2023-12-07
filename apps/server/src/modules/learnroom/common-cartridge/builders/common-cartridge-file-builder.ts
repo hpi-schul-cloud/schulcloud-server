@@ -27,7 +27,7 @@ export class CommonCartridgeFileBuilder {
 
 	private metadata?: CommonCartridgeElement;
 
-	constructor(private readonly props: CommonCartridgeFileBuilderProps) {
+	public constructor(private readonly props: CommonCartridgeFileBuilderProps) {
 		checkCommonCartridgeVersion(props.version);
 	}
 

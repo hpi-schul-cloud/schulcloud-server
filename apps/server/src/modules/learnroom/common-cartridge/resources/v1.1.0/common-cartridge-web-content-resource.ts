@@ -16,7 +16,7 @@ export type CommonCartridgeWebContentResourceProps = {
 };
 
 export class CommonCartridgeWebContentResource extends CommonCartridgeResource {
-	constructor(private readonly props: CommonCartridgeWebContentResourceProps) {
+	public constructor(private readonly props: CommonCartridgeWebContentResourceProps) {
 		super(props);
 	}
 
