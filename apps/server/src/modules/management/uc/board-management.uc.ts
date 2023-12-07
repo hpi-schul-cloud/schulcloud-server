@@ -1,7 +1,7 @@
 import { ConsoleWriterService } from '@infra/console';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
 import { BoardNode, Course } from '@shared/domain/entity';
 import { EntityId, InputFormat } from '@shared/domain/types';
 import {

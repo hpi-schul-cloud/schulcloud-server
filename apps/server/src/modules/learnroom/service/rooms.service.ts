@@ -3,7 +3,7 @@ import { ColumnBoardService } from '@modules/board';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
 import { Board, ColumnBoardTarget } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BoardRepo } from '@shared/repo';

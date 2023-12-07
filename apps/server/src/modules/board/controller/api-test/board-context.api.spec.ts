@@ -2,13 +2,13 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	courseFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { BoardContextResponse } from '../dto/board/board-context.reponse';
 
