@@ -2,7 +2,7 @@ import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../../commo
 import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resource.interface';
 import { buildXmlString } from '../../utils';
 
-export type CommonCartridgeWebLinkResourceProps = {
+export type CommonCartridgeWebLinkResourcePropsV110 = {
 	type: CommonCartridgeResourceType.WEB_LINK;
 	version: CommonCartridgeVersion.V_1_1_0;
 	identifier: string;
@@ -11,8 +11,8 @@ export type CommonCartridgeWebLinkResourceProps = {
 	url: string;
 };
 
-export class CommonCartridgeWebLinkResource extends CommonCartridgeResource {
-	public constructor(private readonly props: CommonCartridgeWebLinkResourceProps) {
+export class CommonCartridgeWebLinkResourceV110 extends CommonCartridgeResource {
+	public constructor(private readonly props: CommonCartridgeWebLinkResourcePropsV110) {
 		super(props);
 	}
 

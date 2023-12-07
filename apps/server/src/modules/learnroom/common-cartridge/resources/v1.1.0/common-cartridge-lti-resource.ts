@@ -2,18 +2,18 @@ import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../../commo
 import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resource.interface';
 import { buildXmlString } from '../../utils';
 
-export type CommonCartridgeLtiResourceProps = {
+export type CommonCartridgeLtiResourcePropsV110 = {
 	type: CommonCartridgeResourceType.LTI;
-	version: CommonCartridgeVersion;
+	version: CommonCartridgeVersion.V_1_1_0;
 	identifier: string;
 	folder: string;
 	title: string;
-	description?: string;
+	description: string;
 	url: string;
 };
 
-export class CommonCartridgeLtiResource extends CommonCartridgeResource {
-	public constructor(private readonly props: CommonCartridgeLtiResourceProps) {
+export class CommonCartridgeLtiResourceV110 extends CommonCartridgeResource {
+	public constructor(private readonly props: CommonCartridgeLtiResourcePropsV110) {
 		super(props);
 	}
 
@@ -34,10 +34,10 @@ export class CommonCartridgeLtiResource extends CommonCartridgeResource {
 					'xmlns:lticm': '/xsd/imslticm_v1p0',
 					'xmlns:lticp': '/xsd/imslticp_v1p0',
 					'xsi:schemaLocation':
-						'/xsd/imslticc_v1p0 /xsd/lti/ltiv1p0/imslticc_v1p0.xsd' +
-						'/xsd/imsbasiclti_v1p0 /xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd' +
-						'/xsd/imslticm_v1p0 /xsd/lti/ltiv1p0/imslticm_v1p0.xsd' +
-						'/xsd/imslticp_v1p0 /xsd/lti/ltiv1p0/imslticp_v1p0.xsd"',
+						'/xsd/imslticc_v1p0 /xsd/lti/ltiv1p0/imslticc_v1p0.xsd ' +
+						'/xsd/imsbasiclti_v1p0 /xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd ' +
+						'/xsd/imslticm_v1p0 /xsd/lti/ltiv1p0/imslticm_v1p0.xsd ' +
+						'/xsd/imslticp_v1p0 /xsd/lti/ltiv1p0/imslticp_v1p0.xsd',
 				},
 				blti: {
 					title: this.props.title,

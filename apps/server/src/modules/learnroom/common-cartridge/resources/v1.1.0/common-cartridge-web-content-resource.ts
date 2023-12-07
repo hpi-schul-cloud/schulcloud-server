@@ -5,7 +5,7 @@ import {
 } from '../../common-cartridge.enums';
 import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resource.interface';
 
-export type CommonCartridgeWebContentResourceProps = {
+export type CommonCartridgeWebContentResourcePropsV110 = {
 	type: CommonCartridgeResourceType.WEB_CONTENT;
 	version: CommonCartridgeVersion.V_1_1_0;
 	identifier: string;
@@ -15,8 +15,8 @@ export type CommonCartridgeWebContentResourceProps = {
 	intendedUse: CommonCartridgeIntendedUseType;
 };
 
-export class CommonCartridgeWebContentResource extends CommonCartridgeResource {
-	public constructor(private readonly props: CommonCartridgeWebContentResourceProps) {
+export class CommonCartridgeWebContentResourceV110 extends CommonCartridgeResource {
+	public constructor(private readonly props: CommonCartridgeWebContentResourcePropsV110) {
 		super(props);
 	}
 

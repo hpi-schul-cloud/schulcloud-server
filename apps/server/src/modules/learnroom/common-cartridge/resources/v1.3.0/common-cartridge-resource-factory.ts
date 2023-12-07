@@ -2,25 +2,25 @@ import { CommonCartridgeResourceType } from '../../common-cartridge.enums';
 import { CommonCartridgeResourceFactory } from '../../interfaces/common-cartridge-resource-factory.interface';
 import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resource.interface';
 import { createResourceTypeNotSupportedError } from '../../utils';
-import { CommonCartridgeLtiResource, CommonCartridgeLtiResourceProps } from './common-cartridge-lti-resource';
+import { CommonCartridgeLtiResourcePropsV130, CommonCartridgeLtiResourceV130 } from './common-cartridge-lti-resource';
 import {
-	CommonCartridgeManifestResource,
-	CommonCartridgeManifestResourceProps,
+	CommonCartridgeManifestResourcePropsV130,
+	CommonCartridgeManifestResourceV130,
 } from './common-cartridge-manifest-resource';
 import {
-	CommonCartridgeWebContentResource,
-	CommonCartridgeWebContentResourceProps,
+	CommonCartridgeWebContentResourcePropsV130,
+	CommonCartridgeWebContentResourceV130,
 } from './common-cartridge-web-content-resource';
 import {
-	CommonCartridgeWebLinkResource,
-	CommonCartridgeWebLinkResourceProps,
+	CommonCartridgeWebLinkResourcePropsV130,
+	CommonCartridgeWebLinkResourceV130,
 } from './common-cartridge-web-link-resource';
 
 export type CommonCartridgeResourcePropsV130 =
-	| CommonCartridgeLtiResourceProps
-	| CommonCartridgeManifestResourceProps
-	| CommonCartridgeWebContentResourceProps
-	| CommonCartridgeWebLinkResourceProps;
+	| CommonCartridgeLtiResourcePropsV130
+	| CommonCartridgeManifestResourcePropsV130
+	| CommonCartridgeWebContentResourcePropsV130
+	| CommonCartridgeWebLinkResourcePropsV130;
 
 export class CommonCartridgeResourceFactoryV130 extends CommonCartridgeResourceFactory {
 	public static readonly instance = new CommonCartridgeResourceFactoryV130();
@@ -34,15 +34,15 @@ export class CommonCartridgeResourceFactoryV130 extends CommonCartridgeResourceF
 
 		switch (type) {
 			case CommonCartridgeResourceType.LTI:
-				return new CommonCartridgeLtiResource(props);
+				return new CommonCartridgeLtiResourceV130(props);
 			case CommonCartridgeResourceType.MANIFEST:
-				return new CommonCartridgeManifestResource(props);
+				return new CommonCartridgeManifestResourceV130(props);
 			case CommonCartridgeResourceType.WEB_CONTENT:
-				return new CommonCartridgeWebContentResource(props);
+				return new CommonCartridgeWebContentResourceV130(props);
 			case CommonCartridgeResourceType.WEB_LINK:
-				return new CommonCartridgeWebLinkResource(props);
+				return new CommonCartridgeWebLinkResourceV130(props);
 			default:
-				throw createResourceTypeNotSupportedError(type as string);
+				throw createResourceTypeNotSupportedError(type);
 		}
 	}
 }

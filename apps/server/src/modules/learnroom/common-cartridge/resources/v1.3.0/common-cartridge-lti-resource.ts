@@ -2,18 +2,18 @@ import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../../commo
 import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resource.interface';
 import { buildXmlString } from '../../utils';
 
-export type CommonCartridgeLtiResourceProps = {
+export type CommonCartridgeLtiResourcePropsV130 = {
 	type: CommonCartridgeResourceType.LTI;
-	version: CommonCartridgeVersion;
+	version: CommonCartridgeVersion.V_1_3_0;
 	identifier: string;
 	folder: string;
 	title: string;
-	description?: string;
+	description: string;
 	url: string;
 };
 
-export class CommonCartridgeLtiResource extends CommonCartridgeResource {
-	public constructor(private readonly props: CommonCartridgeLtiResourceProps) {
+export class CommonCartridgeLtiResourceV130 extends CommonCartridgeResource {
+	public constructor(private readonly props: CommonCartridgeLtiResourcePropsV130) {
 		super(props);
 	}
 
@@ -46,12 +46,12 @@ export class CommonCartridgeLtiResource extends CommonCartridgeResource {
 					secure_launch_url: this.props.url,
 					cartridge_bundle: {
 						$: {
-							identifierref: 'BLTI001_Bundle',
+							identifierref: 'BLTI001_Bundle', // FIXME: is this correct?
 						},
 					},
 					cartridge_icon: {
 						$: {
-							identifierref: 'BLTI001_Icon',
+							identifierref: 'BLTI001_Icon', // FIXME: is this correct?
 						},
 					},
 				},
@@ -67,7 +67,7 @@ export class CommonCartridgeLtiResource extends CommonCartridgeResource {
 		return {
 			$: {
 				identifier: this.props.identifier,
-				type: this.props.type,
+				type: this.props.type, // FIXME: is this correct?
 			},
 			file: {
 				$: {
