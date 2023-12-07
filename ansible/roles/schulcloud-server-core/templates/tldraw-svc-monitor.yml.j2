@@ -1,17 +1,17 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: api-svc-monitor
+  name: tldraw-svc-monitor
   namespace: {{ NAMESPACE }}
   labels:
-    app: api
+    app: tldraw-server
 spec:
   selector:
     matchExpressions:
       - key: app.kubernetes.io/name
         operator: in
         values:
-          - api-svc
+          - tldraw-server-svc
   endpoints:
   - path: /metrics
     port: api-metrics
