@@ -14,7 +14,7 @@ import {
 	VideoConference,
 	VideoConferenceScope,
 } from '@shared/domain';
-import { SchoolFeature } from '@shared/domain/interface';
+import { SchoolFeature } from '@shared/domain/types';
 import {
 	accountFactory,
 	cleanupCollections,

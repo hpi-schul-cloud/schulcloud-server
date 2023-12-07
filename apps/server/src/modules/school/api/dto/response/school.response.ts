@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { SchoolFeature, SchoolPurpose } from '@shared/domain/interface';
+import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { FileStorageType, SchoolPermissions } from '../../../domain';
 import { CountyResponse } from './county.response';
 import { FederalStateResponse } from './federal-state.response';

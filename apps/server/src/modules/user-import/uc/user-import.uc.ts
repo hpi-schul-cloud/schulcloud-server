@@ -20,7 +20,7 @@ import {
 	SystemEntity,
 	User,
 } from '@shared/domain';
-import { SchoolFeature } from '@shared/domain/interface';
+import { SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { AccountSaveDto } from '../../account/services/dto';

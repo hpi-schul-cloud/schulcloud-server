@@ -1,7 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolPurpose, SortOrder } from '@shared/domain/interface';
+import { SortOrder } from '@shared/domain/interface';
+import { SchoolPurpose } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { SchoolRepo } from '../interface';
 import { schoolFactory } from '../testing';

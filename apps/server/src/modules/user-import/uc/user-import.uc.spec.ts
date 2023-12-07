@@ -19,7 +19,7 @@ import {
 	SystemEntity,
 	User,
 } from '@shared/domain';
-import { SchoolFeature } from '@shared/domain/interface';
+import { SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';

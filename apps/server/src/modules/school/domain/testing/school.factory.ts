@@ -1,4 +1,4 @@
-import { SchoolFeature } from '@shared/domain/interface';
+import { SchoolFeature } from '@shared/domain/types';
 import { BaseFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { School, SchoolProps } from '../do';

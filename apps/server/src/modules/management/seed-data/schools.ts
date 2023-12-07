@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import { FederalStateEntity, SchoolProperties, SchoolRoles, SchoolYearEntity, SystemEntity } from '@shared/domain';
-import { SchoolFeature, SchoolPurpose } from '@shared/domain/interface';
+import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { federalStateFactory, schoolFactory } from '@shared/testing';
 import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
 import { ObjectId } from 'bson';

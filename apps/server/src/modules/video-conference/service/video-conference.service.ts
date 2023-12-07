@@ -18,7 +18,7 @@ import {
 	VideoConferenceOptionsDO,
 	VideoConferenceScope,
 } from '@shared/domain';
-import { SchoolFeature } from '@shared/domain/interface';
+import { SchoolFeature } from '@shared/domain/types';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';

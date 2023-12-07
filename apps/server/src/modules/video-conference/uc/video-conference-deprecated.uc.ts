@@ -19,7 +19,8 @@ import {
 	VideoConferenceDO,
 	VideoConferenceOptionsDO,
 } from '@shared/domain';
-import { SchoolFeature, VideoConferenceScope } from '@shared/domain/interface';
+import { VideoConferenceScope } from '@shared/domain/interface';
+import { SchoolFeature } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import {

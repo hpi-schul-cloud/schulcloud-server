@@ -32,7 +32,7 @@ import {
 	SystemEntity,
 	User,
 } from '@shared/domain';
-import { SchoolFeature } from '@shared/domain/interface';
+import { SchoolFeature } from '@shared/domain/types';
 import {
 	cleanupCollections,
 	importUserFactory,

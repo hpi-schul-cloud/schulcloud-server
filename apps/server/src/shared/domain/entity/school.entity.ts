@@ -10,7 +10,7 @@ import {
 	Property,
 } from '@mikro-orm/core';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
-import { SchoolFeature, SchoolPurpose } from '@shared/domain/interface';
+import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';

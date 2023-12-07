@@ -12,7 +12,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, LegacySchoolDo, RoleName, RoleReference } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { SchoolFeature } from '@shared/domain/interface';
+import { SchoolFeature } from '@shared/domain/types';
 import {
 	externalGroupDtoFactory,
 	federalStateFactory,

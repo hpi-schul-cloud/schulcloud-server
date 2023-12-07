@@ -10,7 +10,7 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { EntityId, ExternalSource, FederalStateEntity, SchoolYearEntity } from '@shared/domain';
 import { LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
-import { SchoolFeature } from '@shared/domain/interface';
+import { SchoolFeature } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
 import CryptoJS from 'crypto-js';

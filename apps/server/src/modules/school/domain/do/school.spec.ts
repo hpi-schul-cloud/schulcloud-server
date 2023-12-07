@@ -1,4 +1,4 @@
-import { SchoolFeature, SchoolPurpose } from '@shared/domain/interface';
+import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { schoolFactory } from '../testing';
 
 describe('School', () => {
