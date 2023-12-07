@@ -1,7 +1,7 @@
+import { SchoolFeature } from '@shared/domain/interface';
 import { BaseFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { School, SchoolProps } from '../do';
-import { SchoolFeature } from '../type';
 import { federalStateFactory } from './federal-state.factory';
 
 export const schoolFactory = BaseFactory.define<School, SchoolProps>(School, ({ sequence }) => {

@@ -2,11 +2,11 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
-import { SortOrder } from '@shared/domain/interface';
+import { SchoolFeature, SortOrder } from '@shared/domain/interface';
 import { cleanupCollections, federalStateFactory, schoolFactory, systemEntityFactory } from '@shared/testing';
 import { countyEmbeddableFactory } from '@shared/testing/factory/county.embeddable.factory';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
-import { SchoolFeature, SCHOOL_REPO } from '../../domain';
+import { SCHOOL_REPO } from '../../domain';
 import { SchoolEntityMapper } from './mapper';
 import { SchoolMikroOrmRepo } from './school.repo';
 

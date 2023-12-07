@@ -2,7 +2,6 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
-import { SchoolFeature } from '@modules/school';
 import { ServerTestModule } from '@modules/server/server.module';
 import {
 	FilterImportUserParams,
@@ -33,6 +32,7 @@ import {
 	SystemEntity,
 	User,
 } from '@shared/domain';
+import { SchoolFeature } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	importUserFactory,

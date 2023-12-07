@@ -6,13 +6,13 @@ import { Group, GroupService } from '@modules/group';
 import { FederalStateService, LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
-import { SchoolFeature } from '@modules/school';
 import { UserService } from '@modules/user';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, LegacySchoolDo, RoleName, RoleReference } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { SchoolFeature } from '@shared/domain/interface';
 import {
 	externalGroupDtoFactory,
 	federalStateFactory,

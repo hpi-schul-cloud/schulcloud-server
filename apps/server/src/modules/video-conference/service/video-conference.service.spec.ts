@@ -3,7 +3,6 @@ import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/learnroom/service';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { SchoolFeature } from '@modules/school';
 import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
@@ -18,6 +17,7 @@ import {
 	VideoConferenceDO,
 	VideoConferenceScope,
 } from '@shared/domain';
+import { SchoolFeature } from '@shared/domain/interface';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { courseFactory, roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';

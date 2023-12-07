@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { SchoolFeature } from '@shared/domain/interface';
 import { IFindOptions } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { SchoolConfig } from '../../school.config';
 import { School, SchoolProps } from '../do';
 import { SchoolRepo, SCHOOL_REPO } from '../interface';
 import { SchoolQuery } from '../query';
-import { SchoolFeature } from '../type';
 
 @Injectable()
 export class SchoolService {

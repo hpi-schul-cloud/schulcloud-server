@@ -3,7 +3,6 @@ import { AccountService } from '@modules/account/services/account.service';
 import { AccountDto } from '@modules/account/services/dto/account.dto';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { SchoolFeature } from '@modules/school';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import {
@@ -21,6 +20,7 @@ import {
 	SystemEntity,
 	User,
 } from '@shared/domain';
+import { SchoolFeature } from '@shared/domain/interface';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { AccountSaveDto } from '../../account/services/dto';

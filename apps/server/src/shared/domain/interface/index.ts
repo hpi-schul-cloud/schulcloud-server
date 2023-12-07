@@ -4,4 +4,6 @@ export * from './find-options';
 export * from './learnroom';
 export * from './permission.enum';
 export * from './rolename.enum';
+export * from './school-feature.enum';
+export * from './school-purpose.enum';
 export * from './video-conference-scope.enum';

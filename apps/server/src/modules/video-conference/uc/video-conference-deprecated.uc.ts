@@ -6,7 +6,6 @@ import { Action, AuthorizationContextBuilder } from '@modules/authorization';
 import { AuthorizableReferenceType, AuthorizationReferenceService } from '@modules/authorization/domain';
 import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { SchoolFeature } from '@modules/school';
 import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import {
@@ -20,7 +19,7 @@ import {
 	VideoConferenceDO,
 	VideoConferenceOptionsDO,
 } from '@shared/domain';
-import { VideoConferenceScope } from '@shared/domain/interface';
+import { SchoolFeature, VideoConferenceScope } from '@shared/domain/interface';
 import { TeamsRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import {

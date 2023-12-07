@@ -1,5 +1,4 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { SchoolFeature } from '@modules/school';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -15,6 +14,7 @@ import {
 	VideoConference,
 	VideoConferenceScope,
 } from '@shared/domain';
+import { SchoolFeature } from '@shared/domain/interface';
 import {
 	accountFactory,
 	cleanupCollections,

@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SchoolFeature } from '@modules/school';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain';
+import { SchoolFeature } from '@shared/domain/interface';
 import { LegacySchoolRepo } from '@shared/repo';
 import { legacySchoolDoFactory, setupEntities } from '@shared/testing';
 import { LegacySchoolService } from './legacy-school.service';

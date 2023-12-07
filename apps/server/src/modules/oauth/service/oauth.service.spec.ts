@@ -4,13 +4,13 @@ import { DefaultEncryptionService, EncryptionService, SymetricKeyEncryptionServi
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { ProvisioningService } from '@modules/provisioning';
-import { SchoolFeature } from '@modules/school';
 import { OauthConfigDto } from '@modules/system/service';
 import { SystemDto } from '@modules/system/service/dto/system.dto';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, OauthConfigEntity, SystemEntity, UserDO } from '@shared/domain';
+import { SchoolFeature } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { legacySchoolDoFactory, setupEntities, systemEntityFactory, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';

@@ -1,5 +1,6 @@
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
-import { School, SchoolFeature } from '../../../domain';
+import { SchoolFeature } from '@shared/domain/interface';
+import { School } from '../../../domain';
 import { CountyEmbeddableMapper } from './county.embeddable.mapper';
 import { FederalStateEntityMapper } from './federal-state.entity.mapper';
 import { SchoolYearEntityMapper } from './school-year.entity.mapper';

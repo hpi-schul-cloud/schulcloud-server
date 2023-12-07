@@ -5,7 +5,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account/services/account.service';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { SchoolFeature } from '@modules/school';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -20,6 +19,7 @@ import {
 	SystemEntity,
 	User,
 } from '@shared/domain';
+import { SchoolFeature } from '@shared/domain/interface';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';
