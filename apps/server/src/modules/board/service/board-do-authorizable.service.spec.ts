@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardRoles, UserRoleEnum } from '@shared/domain/domainobject';
+import { BoardRoles, UserRoleEnum } from '@shared/domain/domainobject/board/types/board-do-authorizable';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
 import { CourseRepo } from '@shared/repo';
 import { courseFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';

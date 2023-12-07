@@ -4,10 +4,10 @@ import {
 	AnyContentElementDo,
 	Card,
 	ContentElementFactory,
-	ContentElementType,
 	isAnyContentElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
 import { EntityId } from '@shared/domain/types';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';

@@ -7,7 +7,11 @@ import {
 	UnprocessableEntityException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, UserRoleEnum } from '@shared/domain/domainobject';
+import {
+	BoardDoAuthorizable,
+	BoardRoles,
+	UserRoleEnum,
+} from '@shared/domain/domainobject/board/types/board-do-authorizable';
 import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
 import {
 	fileElementFactory,

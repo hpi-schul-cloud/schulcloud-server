@@ -3,7 +3,7 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable } from '@shared/domain/domainobject';
+import { BoardDoAuthorizable } from '@shared/domain/domainobject/board/types/board-do-authorizable';
 import { InputFormat } from '@shared/domain/types';
 import {
 	drawingElementFactory,

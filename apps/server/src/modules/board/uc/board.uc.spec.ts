@@ -2,7 +2,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, UserRoleEnum } from '@shared/domain/domainobject';
+import {
+	BoardDoAuthorizable,
+	BoardRoles,
+	UserRoleEnum,
+} from '@shared/domain/domainobject/board/types/board-do-authorizable';
 import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
 import { setupEntities, userFactory } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';

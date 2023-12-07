@@ -8,7 +8,6 @@ import {
 	UnprocessableEntityException,
 } from '@nestjs/common';
 import {
-	ContentElementType,
 	FileElement,
 	isFileElement,
 	isRichTextElement,
@@ -16,9 +15,9 @@ import {
 	isSubmissionItem,
 	RichTextElement,
 	SubmissionItem,
-	UserBoardRoles,
-	UserRoleEnum,
 } from '@shared/domain/domainobject';
+import { UserBoardRoles, UserRoleEnum } from '@shared/domain/domainobject/board/types/board-do-authorizable';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
 import { EntityId } from '@shared/domain/types';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { BaseUc } from './base.uc';
