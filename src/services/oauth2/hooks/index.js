@@ -105,7 +105,7 @@ const setIdToken = (hook) => {
 };
 
 const injectLoginRequest = (hook) =>
-	Hydra(hydraUri)
+	Hydra(hook.app.settings.services.hydra)
 		.getLoginRequest(hook.id)
 		.then((loginRequest) => {
 			hook.params.loginRequest = loginRequest;
@@ -113,7 +113,7 @@ const injectLoginRequest = (hook) =>
 		});
 
 const injectConsentRequest = (hook) =>
-	Hydra(hydraUri)
+	Hydra(hook.app.settings.services.hydra)
 		.getConsentRequest(hook.id)
 		.then((consentRequest) => {
 			hook.params.consentRequest = consentRequest;
