@@ -1,6 +1,6 @@
 import { BaseFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { County, CountyProps } from '../do/county';
+import { County, CountyProps } from '../domain';
 
 export const countyFactory = BaseFactory.define<County, CountyProps>(County, ({ sequence }) => {
 	const county = {

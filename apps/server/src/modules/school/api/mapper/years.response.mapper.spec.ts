@@ -1,5 +1,5 @@
 import { SchoolYear } from '../../domain';
-import { schoolFactory, schoolYearFactory } from '../../domain/testing';
+import { schoolFactory, schoolYearFactory } from '../../testing';
 import { MissingYearsLoggableException } from '../error/missing-years.loggable-exception';
 import { YearsResponseMapper } from './years.response.mapper';
 

@@ -5,7 +5,7 @@ import { SortOrder } from '@shared/domain/interface';
 import { SchoolPurpose } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { SchoolRepo } from '../interface';
-import { schoolFactory } from '../testing';
+import { schoolFactory } from '../../testing';
 import { SchoolService } from './school.service';
 
 describe('SchoolService', () => {

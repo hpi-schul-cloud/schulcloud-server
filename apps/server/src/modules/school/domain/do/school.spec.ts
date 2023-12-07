@@ -1,5 +1,5 @@
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
-import { schoolFactory } from '../testing';
+import { schoolFactory } from '../../testing';
 
 describe('School', () => {
 	describe('addFeature', () => {

@@ -1,6 +1,6 @@
 import { BaseFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { FederalState, FederalStateProps } from '../do';
+import { FederalState, FederalStateProps } from '../domain';
 import { countyFactory } from './county.factory';
 
 export const federalStateFactory = BaseFactory.define<FederalState, FederalStateProps>(FederalState, () => {

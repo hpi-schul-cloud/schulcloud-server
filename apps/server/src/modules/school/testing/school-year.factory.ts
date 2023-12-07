@@ -1,6 +1,6 @@
 import { BaseFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { SchoolYear, SchoolYearProps } from '../do';
+import { SchoolYear, SchoolYearProps } from '../domain';
 
 type SchoolYearTransientParams = {
 	startYear: number;

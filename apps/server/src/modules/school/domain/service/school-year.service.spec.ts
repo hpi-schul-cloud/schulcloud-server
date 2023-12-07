@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { schoolYearFactory } from '../testing';
+import { schoolYearFactory } from '../../testing';
 import { SchoolYearRepo, SCHOOL_YEAR_REPO } from '../interface';
 import { SchoolYearService } from './school-year.service';
 
