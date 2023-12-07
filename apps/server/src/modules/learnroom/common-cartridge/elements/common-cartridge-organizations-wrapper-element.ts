@@ -3,7 +3,7 @@ import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.i
 
 export type CommonCartridgeOrganizationsWrapperElementProps = {
 	version: CommonCartridgeVersion;
-	items: CommonCartridgeElement[];
+	organizations: CommonCartridgeElement[];
 };
 
 export class CommonCartridgeOrganizationsWrapperElement extends CommonCartridgeElement {
@@ -28,7 +28,7 @@ export class CommonCartridgeOrganizationsWrapperElement extends CommonCartridgeE
 							$: {
 								identifier: 'LearningModules',
 							},
-							item: this.props.items.map((items) => items.getManifestXmlObject()),
+							item: this.props.organizations.map((items) => items.getManifestXmlObject()),
 						},
 					],
 				},

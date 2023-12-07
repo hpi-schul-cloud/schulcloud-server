@@ -12,7 +12,7 @@ import {
 	CommonCartridgeWebLinkResourceProps,
 } from './common-cartridge-web-link-resource';
 
-export type CommonCartridgeResourceProps =
+export type CommonCartridgeResourcePropsV110 =
 	| CommonCartridgeLtiResourceProps
 	| CommonCartridgeWebContentResourceProps
 	| CommonCartridgeWebLinkResourceProps;
@@ -24,7 +24,7 @@ export class CommonCartridgeResourceFactoryV110 extends CommonCartridgeResourceF
 		return this.instance;
 	}
 
-	public override createResource(props: CommonCartridgeResourceProps): CommonCartridgeResource {
+	public override createResource(props: CommonCartridgeResourcePropsV110): CommonCartridgeResource {
 		const { type } = props;
 
 		switch (type) {
