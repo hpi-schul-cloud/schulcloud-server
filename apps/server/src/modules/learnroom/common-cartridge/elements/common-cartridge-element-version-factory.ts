@@ -1,7 +1,7 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
-import { CommonCartridgeElementFactory as CommonCartridgeElementFactoryV110 } from './v1.1.0/common-cartridge-element-factory';
-import { CommonCartridgeElementFactory as CommonCartridgeElementFactoryV130 } from './v1.3.0/common-cartridge-element-factory';
+import { CommonCartridgeElementFactoryV110 } from './v1.1.0/common-cartridge-element-factory';
+import { CommonCartridgeElementFactoryV130 } from './v1.3.0/common-cartridge-element-factory';
 
 export class CommonCartridgeElementVersionFactory {
 	public static createFactory(version: CommonCartridgeVersion) {
