@@ -75,7 +75,7 @@ export class LessonService implements AuthorizationLoaderService {
 		await this.lessonRepo.save(updatedLessons);
 		/*
 		// 
-		} if(lesson.getUserCound()<=1)  {
+		} if(lesson.getUserCount()<=1)  {
 			// we are in conflict with the same operation in course
 			const result = await this.deleteLesson();
 			// required event that external systems can be react on it 
