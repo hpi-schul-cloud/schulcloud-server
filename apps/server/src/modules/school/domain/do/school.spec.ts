@@ -26,97 +26,115 @@ describe('School', () => {
 	});
 
 	describe('isInMaintenance', () => {
-		it('should return true if inMaintenanceSince is in the past', () => {
-			const school = schoolFactory.build({
-				inMaintenanceSince: new Date('2020-01-01'),
+		describe('when inMaintenanceSince is in the past', () => {
+			it('should return true', () => {
+				const school = schoolFactory.build({
+					inMaintenanceSince: new Date('2020-01-01'),
+				});
+
+				const result = school.isInMaintenance();
+
+				expect(result).toBe(true);
 			});
-
-			const result = school.isInMaintenance();
-
-			expect(result).toBe(true);
 		});
 
-		it('should return false if inMaintenanceSince is in the future', () => {
-			const school = schoolFactory.build({
-				inMaintenanceSince: new Date('2100-01-01'),
+		describe('when inMaintenanceSince is in the future', () => {
+			it('should return false', () => {
+				const school = schoolFactory.build({
+					inMaintenanceSince: new Date('2100-01-01'),
+				});
+
+				const result = school.isInMaintenance();
+
+				expect(result).toBe(false);
 			});
-
-			const result = school.isInMaintenance();
-
-			expect(result).toBe(false);
 		});
 
-		it('should return false if inMaintenanceSince is undefined', () => {
-			const school = schoolFactory.build();
+		describe('when inMaintenanceSince is undefined', () => {
+			it('should return false', () => {
+				const school = schoolFactory.build();
 
-			const result = school.isInMaintenance();
+				const result = school.isInMaintenance();
 
-			expect(result).toBe(false);
+				expect(result).toBe(false);
+			});
 		});
 	});
 
 	describe('isExternal', () => {
-		it('should return true if externalId is set', () => {
-			const school = schoolFactory.build({
-				externalId: 'test',
+		describe('when externalId is set', () => {
+			it('should return true', () => {
+				const school = schoolFactory.build({
+					externalId: 'test',
+				});
+
+				const result = school.isExternal();
+
+				expect(result).toBe(true);
 			});
-
-			const result = school.isExternal();
-
-			expect(result).toBe(true);
 		});
 
-		it('should return false if externalId is undefined', () => {
-			const school = schoolFactory.build();
+		describe('when externalId is undefined', () => {
+			it('should return false', () => {
+				const school = schoolFactory.build();
 
-			const result = school.isExternal();
+				const result = school.isExternal();
 
-			expect(result).toBe(false);
+				expect(result).toBe(false);
+			});
 		});
 	});
 
 	describe('isEligibleForExternalInvite', () => {
-		it('should return true if school has an eligible purpose and is not the own school', () => {
-			const school = schoolFactory.build({
-				id: 'test',
+		describe('when school has an eligible purpose and is not the own school', () => {
+			it('should return true', () => {
+				const school = schoolFactory.build({
+					id: 'test',
+				});
+
+				const result = school.isEligibleForExternalInvite('other school id');
+
+				expect(result).toBe(true);
 			});
-
-			const result = school.isEligibleForExternalInvite('other school id');
-
-			expect(result).toBe(true);
 		});
 
-		it('should return false if school has purpose "expert"', () => {
-			const school = schoolFactory.build({
-				purpose: SchoolPurpose.EXPERT,
-				id: 'test',
+		describe('when school has purpose "expert"', () => {
+			it('should return false', () => {
+				const school = schoolFactory.build({
+					purpose: SchoolPurpose.EXPERT,
+					id: 'test',
+				});
+
+				const result = school.isEligibleForExternalInvite('other school id');
+
+				expect(result).toBe(false);
 			});
-
-			const result = school.isEligibleForExternalInvite('other school id');
-
-			expect(result).toBe(false);
 		});
 
-		it('should return false if school has purpose "tombstone"', () => {
-			const school = schoolFactory.build({
-				purpose: SchoolPurpose.TOMBSTONE,
-				id: 'test',
+		describe('when school has purpose "tombstone"', () => {
+			it('should return false', () => {
+				const school = schoolFactory.build({
+					purpose: SchoolPurpose.TOMBSTONE,
+					id: 'test',
+				});
+
+				const result = school.isEligibleForExternalInvite('other school id');
+
+				expect(result).toBe(false);
 			});
-
-			const result = school.isEligibleForExternalInvite('other school id');
-
-			expect(result).toBe(false);
 		});
 
-		it('should return false if school is the own school', () => {
-			const testId = 'test';
-			const school = schoolFactory.build({
-				id: testId,
+		describe('when school is the own school', () => {
+			it('should return false', () => {
+				const testId = 'test';
+				const school = schoolFactory.build({
+					id: testId,
+				});
+
+				const result = school.isEligibleForExternalInvite(testId);
+
+				expect(result).toBe(false);
 			});
-
-			const result = school.isEligibleForExternalInvite(testId);
-
-			expect(result).toBe(false);
 		});
 	});
 });
