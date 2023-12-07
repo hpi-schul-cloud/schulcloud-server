@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SchulConneXProvisioningOptions } from '../../../interface';
+import { SchulConneXProvisioningOptionsInterface } from '../../../interface';
 
-export class SchulConneXProvisioningOptionsResponse implements SchulConneXProvisioningOptions {
+export class SchulConneXProvisioningOptionsResponse implements SchulConneXProvisioningOptionsInterface {
 	@ApiProperty()
 	groupProvisioningClassesEnabled: boolean;
 

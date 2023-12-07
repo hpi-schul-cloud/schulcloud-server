@@ -1,1 +1,1 @@
-export * from './sort-helper';
+export * from '@shared/common/utils/sort-helper';

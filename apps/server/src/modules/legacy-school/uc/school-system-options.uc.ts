@@ -4,12 +4,13 @@ import { System, SystemService } from '@modules/system';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { EntityId } from '@shared/domain/types';
-import { AnyProvisioningOptions, SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
+import { AnyProvisioningOptions, SchoolSystemOptions, SchoolSystemOptionsBuilder } from '../domain';
 import { ProvisioningOptionsInterface } from '../interface';
+import { MissingProvisioningStrategyLoggableException } from '../loggable';
+import { SchoolSystemOptionsService } from '../service';
 
-@Injectable
+@Injectable()
 export class SchoolSystemOptionsUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
@@ -52,33 +53,17 @@ export class SchoolSystemOptionsUc {
 		}
 
 		if (!system.provisioningStrategy) {
-			throw new Error(); // TODO error
+			throw new MissingProvisioningStrategyLoggableException(systemId);
 		}
 
-		const optionsForStrategy: Map<SystemProvisioningStrategy, new () => AnyProvisioningOptions> = new Map([
-			[SystemProvisioningStrategy.SANIS, SchulConneXProvisioningOptions],
-		]); // TODO extract
-
-		const ProvisioningOptionsConstructor: (new () => AnyProvisioningOptions) | undefined = optionsForStrategy.get(
+		const provisioningOptions: AnyProvisioningOptions = new SchoolSystemOptionsBuilder(
 			system.provisioningStrategy
-		);
+		).buildProvisioningOptions(requestedProvisioningOptions);
 
-		if (!ProvisioningOptionsConstructor) {
-			throw new Error(); // TODO error
-		}
-
-		const provisioningOptions: AnyProvisioningOptions = new ProvisioningOptionsConstructor();
-
-		if (!provisioningOptions.isApplicable(requestedProvisioningOptions)) {
-			throw new Error(); // TODO error
-		}
-
-		provisioningOptions.set(requestedProvisioningOptions);
-
-		const existingSchoolSystemOptions: SchoolSystemOptions<AnyProvisioningOptions> | null =
+		const existingSchoolSystemOptions: SchoolSystemOptions | null =
 			await this.schoolSystemOptionsService.findBySchoolIdAndSystemId(schoolId, systemId);
 
-		const schoolSystemOptions = new SchoolSystemOptions<SchulConneXProvisioningOptions>({
+		const schoolSystemOptions: SchoolSystemOptions = new SchoolSystemOptions<AnyProvisioningOptions>({
 			id: existingSchoolSystemOptions?.id ?? new ObjectId().toHexString(),
 			systemId,
 			schoolId,
@@ -92,8 +77,9 @@ export class SchoolSystemOptionsUc {
 			AuthorizationContextBuilder.read([Permission.SCHOOL_SYSTEM_EDIT])
 		);
 
-		const savedSchoolSystemOptions: SchoolSystemOptions<AnyProvisioningOptions> =
-			await this.schoolSystemOptionsService.save(schoolSystemOptions);
+		const savedSchoolSystemOptions: SchoolSystemOptions = await this.schoolSystemOptionsService.save(
+			schoolSystemOptions
+		);
 
 		return savedSchoolSystemOptions.provisioningOptions;
 	}

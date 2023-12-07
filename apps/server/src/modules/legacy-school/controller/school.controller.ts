@@ -34,7 +34,13 @@ export class SchoolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolSystemParams
 	): Promise<SchulConneXProvisioningOptionsResponse> {
-		await this.schoolSystemOptionsUc.getProvisioningOptions(currentUser.userId, params.schoolId, params.systemId);
+		const options: AnyProvisioningOptions = await this.schoolSystemOptionsUc.getProvisioningOptions(
+			currentUser.userId,
+			params.schoolId,
+			params.systemId
+		);
+
+		return SchoolSystemOptionsMapper.mapXToResponse(options);
 	}
 
 	@Post()
