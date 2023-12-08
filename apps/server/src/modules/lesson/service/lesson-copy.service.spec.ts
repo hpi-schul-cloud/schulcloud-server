@@ -1063,7 +1063,7 @@ describe('lesson copy service', () => {
 
 		it('should not call neXboard service, if copy feature flag is false', async () => {
 			const { user, destinationCourse, originalLesson } = setup();
-			configurationSpy = jest.spyOn(Configuration, 'get').mockImplementationOnce((config: string) => {
+			configurationSpy = jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
 				if (config === 'FEATURE_NEXBOARD_ENABLED') {
 					return true;
 				}
