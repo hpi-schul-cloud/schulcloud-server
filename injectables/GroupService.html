@@ -160,12 +160,12 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#findByUser" >findByUser</a>
+                                <a href="#findGroupsBySchoolIdAndGroupTypes" >findGroupsBySchoolIdAndGroupTypes</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#findClassesForSchool" >findClassesForSchool</a>
+                                <a href="#findGroupsByUserAndGroupTypes" >findGroupsByUserAndGroupTypes</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -469,19 +469,101 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findByUser"></a>
+                    <a name="findGroupsBySchoolIdAndGroupTypes"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>findByUser</b></span>
-                        <a href="#findByUser"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findGroupsBySchoolIdAndGroupTypes</b></span>
+                        <a href="#findGroupsBySchoolIdAndGroupTypes"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findByUser(user: <a href="../classes/UserDO.html" target="_self">UserDO</a>)</code>
+                    <code>findGroupsBySchoolIdAndGroupTypes(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, groupTypes: <a href="../interfaces/Group.html" target="_self">GroupTypes[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:41</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>schoolId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>groupTypes</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Group.html" target="_self" >GroupTypes[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Group.html" target="_self" >Promise&lt;Group[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findGroupsByUserAndGroupTypes"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>findGroupsByUserAndGroupTypes</b></span>
+                        <a href="#findGroupsByUserAndGroupTypes"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findGroupsByUserAndGroupTypes(user: <a href="../classes/UserDO.html" target="_self">UserDO</a>, groupTypes?: <a href="../interfaces/Group.html" target="_self">GroupTypes[]</a>)</code>
                 </td>
             </tr>
 
@@ -521,72 +603,14 @@
 
 
                                         </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/Group.html" target="_self" >Promise&lt;Group[]&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findClassesForSchool"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>findClassesForSchool</b></span>
-                        <a href="#findClassesForSchool"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findClassesForSchool(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="41"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:41</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
                                         <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>schoolId</td>
+                                                <td>groupTypes</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                            <code><a href="../interfaces/Group.html" target="_self" >GroupTypes[]</a></code>
                                             </td>
 
                                             <td>
-                                                    No
+                                                    Yes
                                             </td>
 
 
@@ -756,7 +780,7 @@ import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
 import { type UserDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { Group } from &#x27;../domain&#x27;;
+import { Group, GroupTypes } from &#x27;../domain&#x27;;
 import { GroupRepo } from &#x27;../repo&#x27;;
 
 @Injectable()
@@ -785,14 +809,14 @@ export class GroupService implements AuthorizationLoaderServiceGeneric&lt;Group&
 		return group;
 	}
 
-	public async findByUser(user: UserDO): Promise&lt;Group[]&gt; {
-		const groups: Group[] &#x3D; await this.groupRepo.findByUser(user);
+	public async findGroupsByUserAndGroupTypes(user: UserDO, groupTypes?: GroupTypes[]): Promise&lt;Group[]&gt; {
+		const groups: Group[] &#x3D; await this.groupRepo.findByUserAndGroupTypes(user, groupTypes);
 
 		return groups;
 	}
 
-	public async findClassesForSchool(schoolId: EntityId): Promise&lt;Group[]&gt; {
-		const group: Group[] &#x3D; await this.groupRepo.findClassesForSchool(schoolId);
+	public async findGroupsBySchoolIdAndGroupTypes(schoolId: EntityId, groupTypes: GroupTypes[]): Promise&lt;Group[]&gt; {
+		const group: Group[] &#x3D; await this.groupRepo.findBySchoolIdAndGroupTypes(schoolId, groupTypes);
 
 		return group;
 	}

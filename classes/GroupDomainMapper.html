@@ -212,8 +212,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -293,8 +293,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -362,8 +362,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="77"
+                                    class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:77</a></div>
                         </td>
                     </tr>
 
@@ -431,8 +431,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:61</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -512,8 +512,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="91"
-                                    class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:91</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="95"
+                                    class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:95</a></div>
                         </td>
                     </tr>
 
@@ -581,8 +581,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:82</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:86</a></div>
                         </td>
                     </tr>
 
@@ -658,10 +658,14 @@ import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupUserEntity, Group
 
 const GroupEntityTypesToGroupTypesMapping: Record&lt;GroupEntityTypes, GroupTypes&gt; &#x3D; {
 	[GroupEntityTypes.CLASS]: GroupTypes.CLASS,
+	[GroupEntityTypes.COURSE]: GroupTypes.COURSE,
+	[GroupEntityTypes.OTHER]: GroupTypes.OTHER,
 };
 
-const GroupTypesToGroupEntityTypesMapping: Record&lt;GroupTypes, GroupEntityTypes&gt; &#x3D; {
+export const GroupTypesToGroupEntityTypesMapping: Record&lt;GroupTypes, GroupEntityTypes&gt; &#x3D; {
 	[GroupTypes.CLASS]: GroupEntityTypes.CLASS,
+	[GroupTypes.COURSE]: GroupEntityTypes.COURSE,
+	[GroupTypes.OTHER]: GroupEntityTypes.OTHER,
 };
 
 export class GroupDomainMapper {

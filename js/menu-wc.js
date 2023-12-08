@@ -4096,6 +4096,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/GroupRoleUnknownLoggable.html" data-type="entity-link" >GroupRoleUnknownLoggable</a>
                             </li>
                             <li class="link">
+                                <a href="classes/GroupScope.html" data-type="entity-link" >GroupScope</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/GroupUcMapper.html" data-type="entity-link" >GroupUcMapper</a>
                             </li>
                             <li class="link">
