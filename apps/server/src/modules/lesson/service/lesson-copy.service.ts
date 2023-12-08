@@ -228,7 +228,7 @@ export class LessonCopyService {
 				const nexboardStatus = {
 					title: element.title,
 					type: CopyElementType.LESSON_CONTENT_NEXBOARD,
-					status: CopyStatusEnum.NOT_DOING,
+					status: CopyStatusEnum.FAIL,
 				};
 
 				if (nexboardCopyEnabled) {
@@ -238,8 +238,6 @@ export class LessonCopyService {
 					if (nexboardContent) {
 						copiedContent.push(nexboardContent);
 						nexboardStatus.status = CopyStatusEnum.PARTIAL;
-					} else {
-						nexboardStatus.status = CopyStatusEnum.FAIL;
 					}
 				}
 
