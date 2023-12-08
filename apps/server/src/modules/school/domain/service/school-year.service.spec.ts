@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { schoolYearFactory } from '../../testing';
 import { SchoolYearRepo, SCHOOL_YEAR_REPO } from '../interface';
@@ -25,7 +24,7 @@ describe('SchoolYearService', () => {
 	});
 
 	describe('getAllSchoolYears', () => {
-		describe('when multiple school years exists', () => {
+		describe('when multiple school years exist', () => {
 			const setup = () => {
 				const schoolYears = schoolYearFactory.buildList(3);
 				schoolYearRepo.getAllSchoolYears.mockResolvedValueOnce(schoolYears);
@@ -42,32 +41,30 @@ describe('SchoolYearService', () => {
 			});
 		});
 
-		describe('when no school years exists', () => {
+		describe('when no school years exist', () => {
 			const setup = () => {
 				const schoolYears = [];
 				schoolYearRepo.getAllSchoolYears.mockResolvedValueOnce(schoolYears);
-
-				return { schoolYears };
 			};
 
-			it('should return all school years', async () => {
-				const { schoolYears } = setup();
+			it('should return an empty array', async () => {
+				setup();
 
 				const result = await service.getAllSchoolYears();
 
-				expect(result).toEqual(schoolYears);
+				expect(result).toEqual([]);
 			});
 		});
 
-		describe('when repo throw an error', () => {
+		describe('when repo throws an error', () => {
 			const setup = () => {
-				const error = new InternalServerErrorException('test');
+				const error = new Error('test');
 				schoolYearRepo.getAllSchoolYears.mockRejectedValueOnce(error);
 
 				return { error };
 			};
 
-			it('should return all school years', async () => {
+			it('should pass the error', async () => {
 				const { error } = setup();
 
 				await expect(() => service.getAllSchoolYears()).rejects.toThrowError(error);
