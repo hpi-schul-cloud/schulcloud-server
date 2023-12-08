@@ -1,4 +1,5 @@
 import { FindOptions } from '@mikro-orm/core';
+import { AutoPath } from '@mikro-orm/core/typings';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
@@ -38,13 +39,15 @@ export class SchoolMikroOrmRepo implements SchoolRepo {
 		return school;
 	}
 
-	// TODO: This should probably be a common mapper for all repos.
-	private mapToMikroOrmOptions(options?: IFindOptions<SchoolProps>, populate?: string[]): FindOptions<SchoolEntity> {
-		const findOptions: FindOptions<SchoolEntity> = {
+	private mapToMikroOrmOptions<P extends string = never>(
+		options?: IFindOptions<SchoolProps>,
+		populate?: AutoPath<SchoolEntity, P>[]
+	): FindOptions<SchoolEntity, P> {
+		const findOptions: FindOptions<SchoolEntity, P> = {
 			offset: options?.pagination?.skip,
 			limit: options?.pagination?.limit,
 			orderBy: options?.order,
-			populate: populate as never[],
+			populate,
 		};
 
 		// If no order is specified, a default order is applied here, because pagination can be messed up without order.
