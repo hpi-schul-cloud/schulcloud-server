@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
+import { EventModule } from '@src/infra/event';
 import { CommonToolModule } from '../common';
 import { ExternalToolModule } from '../external-tool';
 import { SchoolExternalToolModule } from '../school-external-tool';
@@ -9,7 +10,14 @@ import { ToolConfigModule } from '../tool-config.module';
 import { ToolVersionService } from './service/tool-version-service';
 
 @Module({
-	imports: [CommonToolModule, ExternalToolModule, SchoolExternalToolModule, LoggerModule, ToolConfigModule],
+	imports: [
+		CommonToolModule,
+		ExternalToolModule,
+		SchoolExternalToolModule,
+		LoggerModule,
+		ToolConfigModule,
+		EventModule,
+	],
 	providers: [
 		ContextExternalToolService,
 		ContextExternalToolValidationService,

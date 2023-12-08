@@ -1,5 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
+import { EventModule } from '@infra/event';
 import { MailModule } from '@infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { REDIS_CLIENT, RedisModule } from '@infra/redis';
@@ -43,6 +44,7 @@ import { serverConfig } from './server.config';
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	CoreModule,
+	EventModule,
 	AuthenticationApiModule,
 	AccountApiModule,
 	CollaborativeStorageModule,

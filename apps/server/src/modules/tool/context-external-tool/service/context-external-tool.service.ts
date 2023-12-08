@@ -1,14 +1,16 @@
+import { EventService } from '@infra/event';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolRepo } from '@shared/repo';
-import { ContextExternalTool, ContextRef } from '../domain';
-import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { CommonToolService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { ContextExternalTool, ContextRef } from '../domain';
+import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
+import { ContextExternalToolDeletedEvent } from './event';
 import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
-import { CommonToolService } from '../../common/service';
 
 @Injectable()
 export class ContextExternalToolService {
@@ -16,7 +18,8 @@ export class ContextExternalToolService {
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
-		private readonly commonToolService: CommonToolService
+		private readonly commonToolService: CommonToolService,
+		private readonly eventService: EventService
 	) {}
 
 	public async findContextExternalTools(query: ContextExternalToolQuery): Promise<ContextExternalTool[]> {
@@ -51,6 +54,15 @@ export class ContextExternalToolService {
 		});
 
 		await this.contextExternalToolRepo.delete(contextExternalTools);
+
+		contextExternalTools.forEach((contextExternalTool: ContextExternalTool) => {
+			this.eventService.emitEvent(
+				new ContextExternalToolDeletedEvent({
+					contextId: contextExternalTool.contextRef.id,
+					contextType: contextExternalTool.contextRef.type,
+				})
+			);
+		});
 	}
 
 	public async deleteContextExternalTool(contextExternalTool: ContextExternalTool): Promise<void> {

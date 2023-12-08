@@ -1,4 +1,5 @@
 import { ConsoleWriterModule } from '@infra/console';
+import { EventModule } from '@infra/event';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
@@ -20,6 +21,7 @@ import {
 } from './service';
 import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './service/board-do-copy-service';
 import { ColumnBoardCopyService } from './service/column-board-copy.service';
+import { ToolDeletedBoardListener } from './service/event/tool-deleted-board-listener.service';
 
 @Module({
 	imports: [
@@ -29,6 +31,7 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		UserModule,
 		ContextExternalToolModule,
 		HttpModule,
+		EventModule,
 	],
 	providers: [
 		BoardDoAuthorizableService,
@@ -47,6 +50,7 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		ColumnBoardCopyService,
 		SchoolSpecificFileCopyServiceFactory,
 		DrawingElementAdapterService,
+		ToolDeletedBoardListener,
 	],
 	exports: [
 		BoardDoAuthorizableService,
