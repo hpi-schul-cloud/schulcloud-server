@@ -281,4 +281,28 @@ describe(ElementUc.name, () => {
 			});
 		});
 	});
+
+	describe('checkDrawingPermission', () => {
+		describe('', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const drawingElement = drawingElementFactory.build();
+
+				return { drawingElement, user };
+			};
+
+			it('should execute properly', async () => {
+				const { drawingElement, user } = setup();
+				elementService.findById.mockResolvedValue(drawingElement);
+				await uc.checkElementReadPermission(user.id, drawingElement.id);
+				expect(elementService.findById).toHaveBeenCalledWith(drawingElement.id);
+			});
+
+			it('should throw', async () => {
+				const { drawingElement, user } = setup();
+				elementService.findById.mockRejectedValue(new Error());
+				await expect(uc.checkElementReadPermission(user.id, drawingElement.id)).rejects.toThrow();
+			});
+		});
+	});
 });
