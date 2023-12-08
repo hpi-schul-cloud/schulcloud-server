@@ -1,14 +1,14 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
 import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
 
-export type CommonCartridgeOrganizationsWrapperElementProps = {
+export type CommonCartridgeOrganizationsWrapperElementPropsV130 = {
 	type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER;
 	version: CommonCartridgeVersion;
 	items: CommonCartridgeElement[];
 };
 
-export class CommonCartridgeOrganizationsWrapperElement extends CommonCartridgeElement {
-	public constructor(private readonly props: CommonCartridgeOrganizationsWrapperElementProps) {
+export class CommonCartridgeOrganizationsWrapperElementV130 extends CommonCartridgeElement {
+	public constructor(private readonly props: CommonCartridgeOrganizationsWrapperElementPropsV130) {
 		super(props);
 	}
 

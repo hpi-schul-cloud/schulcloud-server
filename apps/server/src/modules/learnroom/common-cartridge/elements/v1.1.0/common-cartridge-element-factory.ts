@@ -3,27 +3,27 @@ import { CommonCartridgeElementFactory } from '../../interfaces/common-cartridge
 import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
 import { createElementTypeNotSupportedError } from '../../utils';
 import {
-	CommonCartridgeMetadataElement,
-	CommonCartridgeMetadataElementProps,
+	CommonCartridgeMetadataElementPropsV110,
+	CommonCartridgeMetadataElementV110,
 } from './common-cartridge-metadata-element';
 import {
-	CommonCartridgeOrganizationElement,
-	CommonCartridgeOrganizationElementProps,
+	CommonCartridgeOrganizationElementPropsV110,
+	CommonCartridgeOrganizationElementV110,
 } from './common-cartridge-organization-element';
 import {
-	CommonCartridgeOrganizationsWrapperElement,
-	CommonCartridgeOrganizationsWrapperElementProps,
+	CommonCartridgeOrganizationsWrapperElementPropsV110,
+	CommonCartridgeOrganizationsWrapperElementV110,
 } from './common-cartridge-organizations-wrapper-element';
 import {
-	CommonCartridgeResourcesWrapperElement,
-	CommonCartridgeResourcesWrapperElementProps,
+	CommonCartridgeResourcesWrapperElementPropsV110,
+	CommonCartridgeResourcesWrapperElementV110,
 } from './common-cartridge-resources-wrapper-element';
 
 export type CommonCartridgeElementProps =
-	| CommonCartridgeMetadataElementProps
-	| CommonCartridgeOrganizationElementProps
-	| CommonCartridgeOrganizationsWrapperElementProps
-	| CommonCartridgeResourcesWrapperElementProps;
+	| CommonCartridgeMetadataElementPropsV110
+	| CommonCartridgeOrganizationElementPropsV110
+	| CommonCartridgeOrganizationsWrapperElementPropsV110
+	| CommonCartridgeResourcesWrapperElementPropsV110;
 
 export class CommonCartridgeElementFactoryV110 extends CommonCartridgeElementFactory {
 	public static readonly instance = new CommonCartridgeElementFactoryV110();
@@ -38,13 +38,13 @@ export class CommonCartridgeElementFactoryV110 extends CommonCartridgeElementFac
 		switch (type) {
 			// AI next 8 lines
 			case CommonCartridgeElementType.METADATA:
-				return new CommonCartridgeMetadataElement(props);
+				return new CommonCartridgeMetadataElementV110(props);
 			case CommonCartridgeElementType.ORGANIZATION:
-				return new CommonCartridgeOrganizationElement(props);
+				return new CommonCartridgeOrganizationElementV110(props);
 			case CommonCartridgeElementType.ORGANIZATIONS_WRAPPER:
-				return new CommonCartridgeOrganizationsWrapperElement(props);
+				return new CommonCartridgeOrganizationsWrapperElementV110(props);
 			case CommonCartridgeElementType.RESOURCES_WRAPPER:
-				return new CommonCartridgeResourcesWrapperElement(props);
+				return new CommonCartridgeResourcesWrapperElementV110(props);
 			default:
 				throw createElementTypeNotSupportedError(type);
 		}

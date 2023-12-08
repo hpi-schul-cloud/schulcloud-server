@@ -1,7 +1,7 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
 import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
 
-export type CommonCartridgeMetadataElementProps = {
+export type CommonCartridgeMetadataElementPropsV110 = {
 	type: CommonCartridgeElementType.METADATA;
 	version: CommonCartridgeVersion;
 	title: string;
@@ -9,8 +9,8 @@ export type CommonCartridgeMetadataElementProps = {
 	copyrightOwners: string[];
 };
 
-export class CommonCartridgeMetadataElement extends CommonCartridgeElement {
-	public constructor(private readonly props: CommonCartridgeMetadataElementProps) {
+export class CommonCartridgeMetadataElementV110 extends CommonCartridgeElement {
+	public constructor(private readonly props: CommonCartridgeMetadataElementPropsV110) {
 		super(props);
 	}
 
@@ -20,7 +20,7 @@ export class CommonCartridgeMetadataElement extends CommonCartridgeElement {
 
 	public override getManifestXmlObject(): Record<string, unknown> {
 		return {
-			schema: '1EdTech Common Cartridge',
+			schema: 'IMS Common Cartridge',
 			schemaversion: '1.1.0',
 			'mnf:lom': {
 				'mnf:general': {
