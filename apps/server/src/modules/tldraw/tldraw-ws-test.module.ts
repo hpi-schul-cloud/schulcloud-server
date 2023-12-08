@@ -3,14 +3,14 @@ import { MongoMemoryDatabaseModule, MongoDatabaseModuleOptions } from '@infra/da
 import { CoreModule } from '@src/core';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
-import { HttpModule, HttpService } from '@nestjs/axios';
+import { HttpModule } from '@nestjs/axios';
 import { TldrawBoardRepo } from './repo';
 import { TldrawWsService } from './service';
 import { config } from './config';
 import { TldrawWs } from './controller';
 
 const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config)), HttpModule];
-const providers = [TldrawWs, TldrawBoardRepo, TldrawWsService, HttpService];
+const providers = [TldrawWs, TldrawBoardRepo, TldrawWsService];
 @Module({
 	imports,
 	providers,
