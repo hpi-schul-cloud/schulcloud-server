@@ -1,5 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { SystemEntity } from '@shared/domain/entity';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { EntityId } from '@shared/domain/types';
 import {
 	AnyProvisioningOptions,
@@ -29,7 +31,11 @@ export class SchoolSystemOptionsRepo {
 			return null;
 		}
 
-		const domainObject: SchoolSystemOptions = this.buildDomainObject(entity);
+		if (!entity.system.provisioningStrategy) {
+			throw new MissingProvisioningStrategyLoggableException(entity.system.id);
+		}
+
+		const domainObject: SchoolSystemOptions = this.buildDomainObject(entity, entity.system.provisioningStrategy);
 
 		return domainObject;
 	}
@@ -46,6 +52,19 @@ export class SchoolSystemOptionsRepo {
 			id: domainObject.id,
 		});
 
+		const system: SystemEntity | null = await this.em.findOne(SystemEntity, {
+			id: domainObject.systemId,
+		});
+
+		if (!system?.provisioningStrategy) {
+			throw new MissingProvisioningStrategyLoggableException(domainObject.systemId);
+		}
+
+		// TODO do we need this validation?
+		/* if (!domainObject.getPossibleStrategies().includes(system.provisioningStrategy)) {
+			throw new Error();
+		} */
+
 		let savedEntity: SchoolSystemOptionsEntity;
 		if (existingEntity) {
 			savedEntity = this.em.assign(existingEntity, newEntity);
@@ -57,20 +76,17 @@ export class SchoolSystemOptionsRepo {
 
 		await this.em.flush();
 
-		await this.em.populate(savedEntity, ['system.provisioningStrategy']);
-
-		const savedDomainObject: SchoolSystemOptions = this.buildDomainObject(savedEntity);
+		const savedDomainObject: SchoolSystemOptions = this.buildDomainObject(savedEntity, system.provisioningStrategy);
 
 		return savedDomainObject;
 	}
 
-	private buildDomainObject(entity: SchoolSystemOptionsEntity): SchoolSystemOptions {
-		if (!entity.system.provisioningStrategy) {
-			throw new MissingProvisioningStrategyLoggableException(entity.system.id);
-		}
-
+	private buildDomainObject(
+		entity: SchoolSystemOptionsEntity,
+		provisioningStrategy: SystemProvisioningStrategy
+	): SchoolSystemOptions {
 		const provisioningOptions: AnyProvisioningOptions = new SchoolSystemOptionsBuilder(
-			entity.system.provisioningStrategy
+			provisioningStrategy
 		).buildProvisioningOptions(entity.provisioningOptions);
 
 		const props: SchoolSystemOptionsProps<AnyProvisioningOptions> =

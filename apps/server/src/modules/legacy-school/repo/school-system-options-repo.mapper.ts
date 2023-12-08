@@ -11,6 +11,7 @@ export class SchoolSystemOptionsRepoMapper {
 		const props: SchoolSystemOptionsProps<AnyProvisioningOptions> = schoolSystemOptions.getProps();
 
 		const mapped: SchoolSystemOptionsEntityProps = {
+			id: props.id,
 			school: em.getReference(SchoolEntity, props.schoolId),
 			system: em.getReference(SystemEntity, props.systemId),
 			provisioningOptions: { ...props.provisioningOptions },

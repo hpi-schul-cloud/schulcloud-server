@@ -2,7 +2,7 @@ import { AnyProvisioningOptions, SchulConneXProvisioningOptions } from '../domai
 import { AnyProvisioningOptionsResponse, SchulConneXProvisioningOptionsResponse } from './dto';
 
 export class SchoolSystemOptionsMapper {
-	static mapXToResponse(options: AnyProvisioningOptions): AnyProvisioningOptionsResponse {
+	static mapProvisioningOptionsToResponse(options: AnyProvisioningOptions): AnyProvisioningOptionsResponse {
 		if (options instanceof SchulConneXProvisioningOptions) {
 			return new SchulConneXProvisioningOptionsResponse({
 				groupProvisioningClassesEnabled: options.groupProvisioningClassesEnabled,
@@ -11,6 +11,7 @@ export class SchoolSystemOptionsMapper {
 			});
 		}
 
+		// TODO
 		throw new Error();
 	}
 }

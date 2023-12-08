@@ -1144,7 +1144,7 @@ describe('OidcProvisioningService', () => {
 
 				const func = async () => service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
 
-				await expect(func).rejects.toThrow(new NotFoundLoggableException('User', 'externalId', externalUserId));
+				await expect(func).rejects.toThrow(new NotFoundLoggableException('User', { externalId: externalUserId }));
 			});
 		});
 	});

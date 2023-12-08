@@ -11,6 +11,7 @@ import { LegacySystemService, SystemDto } from '@modules/system';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ReferencedEntityNotFoundLoggable } from '@shared/common/loggable';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
@@ -25,7 +26,6 @@ import {
 	userDoFactory,
 	userFactory,
 } from '@shared/testing';
-import { ReferencedEntityNotFoundLoggable } from '@shared/common/loggable';
 import { Logger } from '@src/core/logger';
 import { SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes } from '../domain';
@@ -921,7 +921,7 @@ describe('GroupUc', () => {
 
 		describe('when the group is not found', () => {
 			const setup = () => {
-				groupService.findById.mockRejectedValue(new NotFoundLoggableException(Group.name, 'id', 'groupId'));
+				groupService.findById.mockRejectedValue(new NotFoundLoggableException(Group.name, { id: 'groupId' }));
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 

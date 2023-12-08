@@ -18,10 +18,10 @@ import { SchoolSystemOptionsMapper } from './school-system-options.mapper';
 export class SchoolController {
 	constructor(private readonly schoolSystemOptionsUc: SchoolSystemOptionsUc) {}
 
-	@Get('/:schoolId/systems/:systemId')
-	@ApiOperation({ description: '' })
+	@Get('/:schoolId/systems/:systemId/provisioning-options')
+	@ApiOperation({ description: 'Gets all provisioning options for a system at a school' })
 	@ApiOkResponse({
-		description: 'Set of all provisioning options for the system with their value',
+		description: 'All provisioning options of the system with their value',
 		schema: {
 			oneOf: [
 				{
@@ -40,22 +40,18 @@ export class SchoolController {
 			params.systemId
 		);
 
-		return SchoolSystemOptionsMapper.mapXToResponse(options);
+		const mapped: AnyProvisioningOptionsResponse = SchoolSystemOptionsMapper.mapProvisioningOptionsToResponse(options);
+
+		return mapped;
 	}
 
-	@Post()
-	@ApiOperation({ description: 'Sets all provisioning options for a system' })
+	@Post('/:schoolId/systems/:systemId/provisioning-options')
+	@ApiOperation({ description: 'Sets all provisioning options for a system at a school' })
 	@ApiBody({
-		schema: {
-			oneOf: [
-				{
-					$ref: getSchemaPath(SchulConneXProvisioningOptionsParams),
-				},
-			],
-		},
+		type: SchulConneXProvisioningOptionsParams,
 	})
 	@ApiOkResponse({
-		description: 'Set of all provisioning options for the system with their value',
+		description: 'All provisioning options of the system with their value',
 		schema: {
 			oneOf: [
 				{
@@ -76,6 +72,8 @@ export class SchoolController {
 			body
 		);
 
-		return SchoolSystemOptionsMapper.mapXToResponse(options);
+		const mapped: AnyProvisioningOptionsResponse = SchoolSystemOptionsMapper.mapProvisioningOptionsToResponse(options);
+
+		return mapped;
 	}
 }

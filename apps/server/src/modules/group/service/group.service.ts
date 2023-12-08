@@ -14,7 +14,7 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		const group: Group | null = await this.groupRepo.findById(id);
 
 		if (!group) {
-			throw new NotFoundLoggableException(Group.name, 'id', id);
+			throw new NotFoundLoggableException(Group.name, { id });
 		}
 
 		return group;

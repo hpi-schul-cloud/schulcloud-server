@@ -27,7 +27,7 @@ export class SchoolSystemOptionsUc {
 			await this.schoolSystemOptionsService.findBySchoolIdAndSystemId(schoolId, systemId);
 
 		if (!schoolSystemOptions) {
-			throw new NotFoundLoggableException(SchoolSystemOptions.name, 'schoolId', schoolId); // TODO multi-id?
+			throw new NotFoundLoggableException(SchoolSystemOptions.name, { schoolId, systemId });
 		}
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -49,7 +49,7 @@ export class SchoolSystemOptionsUc {
 		const system: System | null = await this.systemService.findById(systemId);
 
 		if (!system) {
-			throw new NotFoundLoggableException(System.name, 'id', systemId);
+			throw new NotFoundLoggableException(System.name, { id: systemId });
 		}
 
 		if (!system.provisioningStrategy) {

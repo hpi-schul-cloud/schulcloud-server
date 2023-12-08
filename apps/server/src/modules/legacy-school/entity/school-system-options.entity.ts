@@ -1,9 +1,14 @@
-import { Embedded, Entity, ManyToOne } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps, SchoolEntity, SystemEntity } from '@shared/domain/entity';
+import { Embedded, Entity, ManyToOne, Unique } from '@mikro-orm/core';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { SystemEntity } from '@shared/domain/entity/system.entity';
+import { EntityId } from '@shared/domain/types';
 import { ProvisioningOptionsInterface } from '../interface';
 import { ProvisioningOptionsEntity } from './provisioning-options.entity';
 
 export interface SchoolSystemOptionsEntityProps {
+	id?: EntityId;
+
 	school: SchoolEntity;
 
 	system: SystemEntity;
@@ -12,6 +17,7 @@ export interface SchoolSystemOptionsEntityProps {
 }
 
 @Entity({ tableName: 'school-system-options' })
+@Unique({ properties: ['school', 'system'] })
 export class SchoolSystemOptionsEntity extends BaseEntityWithTimestamps {
 	@ManyToOne(() => SchoolEntity)
 	school: SchoolEntity;
@@ -24,6 +30,9 @@ export class SchoolSystemOptionsEntity extends BaseEntityWithTimestamps {
 
 	constructor(props: SchoolSystemOptionsEntityProps) {
 		super();
+		if (props.id) {
+			this.id = props.id;
+		}
 		this.school = props.school;
 		this.system = props.system;
 		this.provisioningOptions = new ProvisioningOptionsEntity(props.provisioningOptions);
