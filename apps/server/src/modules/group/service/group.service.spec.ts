@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { UserDO } from '@shared/domain/domainobject';
 import { groupFactory, userDoFactory } from '@shared/testing';
-import { Group } from '../domain';
+import { Group, GroupTypes } from '../domain';
 import { GroupRepo } from '../repo';
 import { GroupService } from './group.service';
 
@@ -121,13 +121,13 @@ describe('GroupService', () => {
 		});
 	});
 
-	describe('findByUser', () => {
+	describe('findGroupsByUserAndGroupTypes', () => {
 		describe('when groups with the user exists', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId();
 				const groups: Group[] = groupFactory.buildList(2);
 
-				groupRepo.findByUser.mockResolvedValue(groups);
+				groupRepo.findByUserAndGroupTypes.mockResolvedValue(groups);
 
 				return {
 					user,
@@ -138,9 +138,21 @@ describe('GroupService', () => {
 			it('should return the groups', async () => {
 				const { user, groups } = setup();
 
-				const result: Group[] = await service.findByUser(user);
+				const result: Group[] = await service.findGroupsByUserAndGroupTypes(user, [GroupTypes.CLASS]);
 
 				expect(result).toEqual(groups);
+			});
+
+			it('should call the repo with given group types', async () => {
+				const { user } = setup();
+
+				await service.findGroupsByUserAndGroupTypes(user, [GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER]);
+
+				expect(groupRepo.findByUserAndGroupTypes).toHaveBeenCalledWith(user, [
+					GroupTypes.CLASS,
+					GroupTypes.COURSE,
+					GroupTypes.OTHER,
+				]);
 			});
 		});
 
@@ -148,7 +160,7 @@ describe('GroupService', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId();
 
-				groupRepo.findByUser.mockResolvedValue([]);
+				groupRepo.findByUserAndGroupTypes.mockResolvedValue([]);
 
 				return {
 					user,
@@ -158,20 +170,20 @@ describe('GroupService', () => {
 			it('should return empty array', async () => {
 				const { user } = setup();
 
-				const result: Group[] = await service.findByUser(user);
+				const result: Group[] = await service.findGroupsByUserAndGroupTypes(user, [GroupTypes.CLASS]);
 
 				expect(result).toEqual([]);
 			});
 		});
 	});
 
-	describe('findClassesForSchool', () => {
+	describe('findGroupsBySchoolIdAndGroupTypes', () => {
 		describe('when the school has groups of type class', () => {
 			const setup = () => {
 				const schoolId: string = new ObjectId().toHexString();
 				const groups: Group[] = groupFactory.buildList(3);
 
-				groupRepo.findClassesForSchool.mockResolvedValue(groups);
+				groupRepo.findBySchoolIdAndGroupTypes.mockResolvedValue(groups);
 
 				return {
 					schoolId,
@@ -182,15 +194,23 @@ describe('GroupService', () => {
 			it('should call the repo', async () => {
 				const { schoolId } = setup();
 
-				await service.findClassesForSchool(schoolId);
+				await service.findGroupsBySchoolIdAndGroupTypes(schoolId, [
+					GroupTypes.CLASS,
+					GroupTypes.COURSE,
+					GroupTypes.OTHER,
+				]);
 
-				expect(groupRepo.findClassesForSchool).toHaveBeenCalledWith(schoolId);
+				expect(groupRepo.findBySchoolIdAndGroupTypes).toHaveBeenCalledWith(schoolId, [
+					GroupTypes.CLASS,
+					GroupTypes.COURSE,
+					GroupTypes.OTHER,
+				]);
 			});
 
 			it('should return the groups', async () => {
 				const { schoolId, groups } = setup();
 
-				const result: Group[] = await service.findClassesForSchool(schoolId);
+				const result: Group[] = await service.findGroupsBySchoolIdAndGroupTypes(schoolId, [GroupTypes.CLASS]);
 
 				expect(result).toEqual(groups);
 			});
