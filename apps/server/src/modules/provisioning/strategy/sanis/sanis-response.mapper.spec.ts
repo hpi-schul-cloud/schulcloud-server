@@ -145,7 +145,7 @@ describe('SanisResponseMapper', () => {
 			});
 		});
 
-		describe('when group type is given', () => {
+		describe('when group type class is given', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
 				const personenkontext: SanisPersonenkontextResponse = sanisResponse.personenkontexte[0];
