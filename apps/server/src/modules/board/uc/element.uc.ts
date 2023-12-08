@@ -6,8 +6,8 @@ import {
 	isSubmissionContainerElement,
 	isSubmissionItem,
 	SubmissionItem,
-	UserRoleEnum,
 } from '@shared/domain/domainobject';
+import { UserRoleEnum } from '@shared/domain/domainobject/board/types/board-do-authorizable';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { AnyElementContentBody } from '../controller/dto';
