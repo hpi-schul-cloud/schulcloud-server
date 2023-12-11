@@ -2,11 +2,11 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
 import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
 import {
-	CommonCartridgeResourcesWrapperElementPropsV110,
-	CommonCartridgeResourcesWrapperElementV110,
+	CommonCartridgeResourcesWrapperElementPropsV130,
+	CommonCartridgeResourcesWrapperElementV130,
 } from './common-cartridge-resources-wrapper-element';
 
-describe('CommonCartridgeResourcesWrapperElementV110', () => {
+describe('CommonCartridgeResourcesWrapperElementV130', () => {
 	const setup = () => {
 		const item1: DeepMocked<CommonCartridgeElement> = createMock<CommonCartridgeElement>();
 		const item2: DeepMocked<CommonCartridgeElement> = createMock<CommonCartridgeElement>();
@@ -16,39 +16,39 @@ describe('CommonCartridgeResourcesWrapperElementV110', () => {
 				identifier: 'resource-1',
 			},
 		});
-		item1.getSupportedVersion.mockReturnValueOnce(CommonCartridgeVersion.V_1_1_0);
+		item1.getSupportedVersion.mockReturnValueOnce(CommonCartridgeVersion.V_1_3_0);
 
 		item2.getManifestXmlObject.mockReturnValueOnce({
 			$: {
 				identifier: 'resource-2',
 			},
 		});
-		item2.getSupportedVersion.mockReturnValueOnce(CommonCartridgeVersion.V_1_1_0);
+		item2.getSupportedVersion.mockReturnValueOnce(CommonCartridgeVersion.V_1_3_0);
 
-		const props: CommonCartridgeResourcesWrapperElementPropsV110 = {
+		const props: CommonCartridgeResourcesWrapperElementPropsV130 = {
 			type: CommonCartridgeElementType.RESOURCES_WRAPPER,
-			version: CommonCartridgeVersion.V_1_1_0,
+			version: CommonCartridgeVersion.V_1_3_0,
 			items: [item1, item2],
 		};
 
-		const sut = new CommonCartridgeResourcesWrapperElementV110(props);
+		const sut = new CommonCartridgeResourcesWrapperElementV130(props);
 
 		return { sut, props };
 	};
 
 	describe('getSupportedVersion', () => {
-		describe('when using common cartridge version 1.1.0', () => {
+		describe('when using common cartridge version 1.3.0', () => {
 			it('should return correct version', () => {
 				const { sut } = setup();
 				const result = sut.getSupportedVersion();
 
-				expect(result).toBe(CommonCartridgeVersion.V_1_1_0);
+				expect(result).toBe(CommonCartridgeVersion.V_1_3_0);
 			});
 		});
 	});
 
 	describe('getManifestXmlObject', () => {
-		describe('when using common cartridge version 1.1.0', () => {
+		describe('when using common cartridge version 1.3.0', () => {
 			it('should return correct manifest xml object', () => {
 				const { sut } = setup();
 				const result = sut.getManifestXmlObject();
