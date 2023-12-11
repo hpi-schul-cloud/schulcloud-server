@@ -6,7 +6,7 @@ describe('CommonCartridgeUtils', () => {
 		it('should create xml string', () => {
 			const xml = buildXmlString({ root: { child: 'value' } });
 
-			expect(xml).toBe('<root>\n  <child>value</child>\n</root>');
+			expect(xml).toBe('<?xml version="1.0" encoding="UTF-8"?><root><child>value</child></root>');
 		});
 	});
 
@@ -16,7 +16,7 @@ describe('CommonCartridgeUtils', () => {
 				const error = createVersionNotSupportedError(CommonCartridgeVersion.V_1_0_0);
 
 				expect(error).toBeDefined();
-				expect(error.message).toBe('Version 1.0.0 is not supported');
+				expect(error.message).toBe('Common Cartridge version 1.0.0 is not supported');
 			});
 		});
 	});

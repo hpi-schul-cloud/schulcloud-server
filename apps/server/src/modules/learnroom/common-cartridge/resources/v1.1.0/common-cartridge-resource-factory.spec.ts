@@ -17,7 +17,7 @@ describe('CommonCartridgeResourceFactoryV110', () => {
 
 	describe('createResource', () => {
 		describe('when creating resources from props', () => {
-			it('shoul return web content resource', () => {
+			it('should return web content resource', () => {
 				const { sut } = setup();
 				const result = sut.createResource({
 					type: CommonCartridgeResourceType.WEB_CONTENT,
