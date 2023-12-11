@@ -2,7 +2,6 @@ import { CommonCartridgeResourceType } from '../../common-cartridge.enums';
 import { CommonCartridgeResourceFactory } from '../../interfaces/common-cartridge-resource-factory.interface';
 import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resource.interface';
 import { createResourceTypeNotSupportedError } from '../../utils';
-import { CommonCartridgeLtiResourcePropsV110, CommonCartridgeLtiResourceV110 } from './common-cartridge-lti-resource';
 import {
 	CommonCartridgeManifestResourcePropsV110,
 	CommonCartridgeManifestResourceV110,
@@ -17,7 +16,6 @@ import {
 } from './common-cartridge-web-link-resource';
 
 export type CommonCartridgeResourcePropsV110 =
-	| CommonCartridgeLtiResourcePropsV110
 	| CommonCartridgeManifestResourcePropsV110
 	| CommonCartridgeWebContentResourcePropsV110
 	| CommonCartridgeWebLinkResourcePropsV110;
@@ -33,8 +31,6 @@ export class CommonCartridgeResourceFactoryV110 extends CommonCartridgeResourceF
 		const { type } = props;
 
 		switch (type) {
-			case CommonCartridgeResourceType.LTI:
-				return new CommonCartridgeLtiResourceV110(props);
 			case CommonCartridgeResourceType.MANIFEST:
 				return new CommonCartridgeManifestResourceV110(props);
 			case CommonCartridgeResourceType.WEB_CONTENT:

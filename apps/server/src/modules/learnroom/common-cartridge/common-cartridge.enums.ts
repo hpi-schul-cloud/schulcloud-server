@@ -10,7 +10,6 @@ export enum CommonCartridgeVersion {
 
 export enum CommonCartridgeResourceType {
 	UNKNOWN = 'unknown',
-	LTI = 'lti',
 	MANIFEST = 'manifest',
 	WEB_CONTENT = 'webcontent',
 	WEB_LINK = 'weblink',
