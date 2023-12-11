@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable } from '@nestjs/common';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
-import { OauthDataDto, ProvisioningDto } from '../../dto';
+import { ExternalGroupDto, OauthDataDto, ProvisioningDto } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
 import { OidcProvisioningService } from './service/oidc-provisioning.service';
 
@@ -31,13 +31,15 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 			);
 
 			if (data.externalGroups) {
+				let groups: ExternalGroupDto[] = data.externalGroups;
+
+				if (Configuration.get('FEATURE_VIEW_PROVISIONING_OPTIONS_ENABLED')) {
+					groups = await this.oidcProvisioningService.filterExternalGroups(groups, school?.id, data.system.systemId);
+				}
+
 				await Promise.all(
-					data.externalGroups.map((externalGroup) =>
-						this.oidcProvisioningService.provisionExternalGroup(
-							externalGroup,
-							data.externalSchool,
-							data.system.systemId
-						)
+					groups.map((group: ExternalGroupDto) =>
+						this.oidcProvisioningService.provisionExternalGroup(group, data.externalSchool, data.system.systemId)
 					)
 				);
 			}

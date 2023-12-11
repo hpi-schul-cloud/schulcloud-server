@@ -60,11 +60,6 @@ export class SchoolSystemOptionsRepo {
 			throw new MissingProvisioningStrategyLoggableException(domainObject.systemId);
 		}
 
-		// TODO do we need this validation?
-		/* if (!domainObject.getPossibleStrategies().includes(system.provisioningStrategy)) {
-			throw new Error();
-		} */
-
 		let savedEntity: SchoolSystemOptionsEntity;
 		if (existingEntity) {
 			savedEntity = this.em.assign(existingEntity, newEntity);

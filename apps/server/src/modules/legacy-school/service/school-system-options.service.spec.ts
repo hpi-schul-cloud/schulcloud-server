@@ -2,7 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { schoolSystemOptionsFactory } from '@shared/testing';
-import { SchoolSystemOptions } from '../domain';
+import { SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
+import { SchulConneXProvisioningOptionsInterface } from '../interface';
+import { InvalidProvisioningOptionsTypeLoggableException } from '../loggable';
 import { SchoolSystemOptionsRepo } from '../repo';
 import { SchoolSystemOptionsService } from './school-system-options.service';
 
@@ -73,6 +75,77 @@ describe(SchoolSystemOptionsService.name, () => {
 				);
 
 				expect(result).toBeNull();
+			});
+		});
+	});
+
+	describe('getProvisioningOptions', () => {
+		describe('when there are options', () => {
+			const setup = () => {
+				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build();
+
+				schoolSystemOptionsRepo.findBySchoolIdAndSystemId.mockResolvedValue(schoolSystemOptions);
+
+				return {
+					schoolSystemOptions,
+				};
+			};
+
+			it('should return the options', async () => {
+				const { schoolSystemOptions } = setup();
+
+				const result: SchulConneXProvisioningOptions = await service.getProvisioningOptions(
+					SchulConneXProvisioningOptions,
+					schoolSystemOptions.schoolId,
+					schoolSystemOptions.systemId
+				);
+
+				expect(result).toEqual(schoolSystemOptions.provisioningOptions);
+			});
+		});
+
+		describe('when there are no options', () => {
+			it('should return the default options', async () => {
+				const result: SchulConneXProvisioningOptions = await service.getProvisioningOptions(
+					SchulConneXProvisioningOptions,
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString()
+				);
+
+				expect(result).toEqual<SchulConneXProvisioningOptionsInterface>({
+					groupProvisioningClassesEnabled: true,
+					groupProvisioningCoursesEnabled: false,
+					groupProvisioningOtherEnabled: false,
+				});
+			});
+		});
+
+		describe('when the options are not of the requested type', () => {
+			const setup = () => {
+				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build();
+
+				schoolSystemOptionsRepo.findBySchoolIdAndSystemId.mockResolvedValue(
+					new SchoolSystemOptions({
+						...schoolSystemOptions.getProps(),
+						provisioningOptions: {} as unknown as SchulConneXProvisioningOptions,
+					})
+				);
+
+				return {
+					schoolSystemOptions,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { schoolSystemOptions } = setup();
+
+				await expect(
+					service.getProvisioningOptions(
+						SchulConneXProvisioningOptions,
+						schoolSystemOptions.schoolId,
+						schoolSystemOptions.systemId
+					)
+				).rejects.toThrow(InvalidProvisioningOptionsTypeLoggableException);
 			});
 		});
 	});

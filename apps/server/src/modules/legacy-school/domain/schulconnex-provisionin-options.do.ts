@@ -5,7 +5,7 @@ export class SchulConneXProvisioningOptions
 	extends BaseProvisioningOptions<SchulConneXProvisioningOptionsInterface>
 	implements SchulConneXProvisioningOptionsInterface
 {
-	groupProvisioningClassesEnabled = false;
+	groupProvisioningClassesEnabled = true;
 
 	groupProvisioningCoursesEnabled = false;
 

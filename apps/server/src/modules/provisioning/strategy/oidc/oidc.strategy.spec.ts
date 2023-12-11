@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
@@ -12,6 +13,7 @@ import {
 	userDoFactory,
 } from '@shared/testing';
 import {
+	ExternalGroupDto,
 	ExternalSchoolDto,
 	ExternalUserDto,
 	OauthDataDto,
@@ -179,25 +181,28 @@ describe('OidcStrategy', () => {
 		describe('when group data is provided and the feature is enabled', () => {
 			const setup = () => {
 				Configuration.set('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED', true);
+				Configuration.set('FEATURE_VIEW_PROVISIONING_OPTIONS_ENABLED', true);
 
 				const externalUserId = 'externalUserId';
+				const externalGroups: ExternalGroupDto[] = externalGroupDtoFactory.buildList(2);
 				const oauthData: OauthDataDto = new OauthDataDto({
 					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
+						systemId: new ObjectId().toHexString(),
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
 					}),
 					externalSchool: externalSchoolDtoFactory.build(),
 					externalUser: new ExternalUserDto({
 						externalId: externalUserId,
 					}),
-					externalGroups: externalGroupDtoFactory.buildList(2),
+					externalGroups,
 				});
 
 				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					externalId: externalUserId,
 				});
 
-				oidcProvisioningService.provisionExternalUser.mockResolvedValue(user);
+				oidcProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
+				oidcProvisioningService.filterExternalGroups.mockResolvedValueOnce(externalGroups);
 
 				return {
 					oauthData,
