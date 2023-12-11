@@ -43,7 +43,6 @@ async function bootstrap() {
 
 	// exposed alias mounts
 	rootExpress.use(basePath, nestExpress);
-	rootExpress.listen(port);
 
 	rootExpress.listen(port, () => {
 		logger.info(
