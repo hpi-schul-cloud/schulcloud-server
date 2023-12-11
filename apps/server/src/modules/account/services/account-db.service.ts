@@ -19,16 +19,19 @@ export class AccountServiceDb extends AbstractAccountService {
 	async findById(id: EntityId): Promise<AccountDto> {
 		const internalId = await this.getInternalId(id);
 		const accountEntity = await this.accountRepo.findById(internalId);
+
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
 	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountDto[]> {
 		const accountEntities = await this.accountRepo.findMultipleByUserId(userIds);
+
 		return AccountEntityToDtoMapper.mapAccountsToDto(accountEntities);
 	}
 
 	async findByUserId(userId: EntityId): Promise<AccountDto | null> {
 		const accountEntity = await this.accountRepo.findByUserId(userId);
+
 		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
 	}
 
@@ -37,11 +40,13 @@ export class AccountServiceDb extends AbstractAccountService {
 		if (!accountEntity) {
 			throw new EntityNotFoundError('Account');
 		}
+
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
 	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountDto | null> {
 		const accountEntity = await this.accountRepo.findByUsernameAndSystemId(username, systemId);
+
 		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
 	}
 
@@ -78,6 +83,7 @@ export class AccountServiceDb extends AbstractAccountService {
 
 			await this.accountRepo.save(account);
 		}
+
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
@@ -86,6 +92,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		const account = await this.accountRepo.findById(internalId);
 		account.username = username;
 		await this.accountRepo.save(account);
+
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
@@ -94,6 +101,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		const account = await this.accountRepo.findById(internalId);
 		account.lasttriedFailedLogin = lastTriedFailedLogin;
 		await this.accountRepo.save(account);
+
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
@@ -103,11 +111,13 @@ export class AccountServiceDb extends AbstractAccountService {
 		account.password = await this.encryptPassword(password);
 
 		await this.accountRepo.save(account);
+
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
 	async delete(id: EntityId): Promise<void> {
 		const internalId = await this.getInternalId(id);
+
 		return this.accountRepo.deleteById(internalId);
 	}
 
@@ -117,11 +127,13 @@ export class AccountServiceDb extends AbstractAccountService {
 
 	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>> {
 		const accountEntities = await this.accountRepo.searchByUsernamePartialMatch(userName, skip, limit);
+
 		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
 	}
 
 	async searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>> {
 		const accountEntities = await this.accountRepo.searchByUsernameExactMatch(userName);
+
 		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
 	}
 
@@ -129,6 +141,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		if (!account.password) {
 			return Promise.resolve(false);
 		}
+
 		return bcrypt.compare(comparePassword, account.password);
 	}
 
@@ -137,6 +150,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		if (!internalId) {
 			throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
 		}
+
 		return internalId;
 	}
 
@@ -145,6 +159,8 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	async findMany(offset = 0, limit = 100): Promise<AccountDto[]> {
-		return AccountEntityToDtoMapper.mapAccountsToDto(await this.accountRepo.findMany(offset, limit));
+		const accounts = await this.accountRepo.findMany(offset, limit);
+
+		return AccountEntityToDtoMapper.mapAccountsToDto(accounts);
 	}
 }

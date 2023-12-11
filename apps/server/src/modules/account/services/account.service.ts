@@ -74,6 +74,7 @@ export class AccountService extends AbstractAccountService {
 			this.logger.debug(`Saved account with accountID ${ret.id}`);
 			return account;
 		});
+
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
@@ -119,6 +120,7 @@ export class AccountService extends AbstractAccountService {
 			this.logger.debug(`Updated username for account with accountID ${accountId}`);
 			return account;
 		});
+
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
@@ -130,6 +132,7 @@ export class AccountService extends AbstractAccountService {
 			this.logger.debug(`Updated last tried failed login for account with accountID ${accountId}`);
 			return account;
 		});
+
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
@@ -141,6 +144,7 @@ export class AccountService extends AbstractAccountService {
 			this.logger.debug(`Updated password for account with accountID ${accountId}`);
 			return account;
 		});
+
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
@@ -185,6 +189,7 @@ export class AccountService extends AbstractAccountService {
 				}
 			}
 		}
+
 		return null;
 	}
 }
