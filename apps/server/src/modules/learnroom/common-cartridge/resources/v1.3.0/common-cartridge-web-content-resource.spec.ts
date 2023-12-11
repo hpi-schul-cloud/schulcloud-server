@@ -1,23 +1,26 @@
 import { faker } from '@faker-js/faker';
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../../common-cartridge.enums';
 import {
-	CommonCartridgeWebLinkResourcePropsV130,
-	CommonCartridgeWebLinkResourceV130,
-} from './common-cartridge-web-link-resource';
+	CommonCartridgeIntendedUseType,
+	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
+} from '../../common-cartridge.enums';
+import {
+	CommonCartridgeWebContentResourcePropsV130,
+	CommonCartridgeWebContentResourceV130,
+} from './common-cartridge-web-content-resource';
 
-describe('CommonCartridgeWebLinkResourceV130', () => {
+describe('CommonCartridgeWebContentResourceV130', () => {
 	const setup = () => {
-		const props: CommonCartridgeWebLinkResourcePropsV130 = {
-			type: CommonCartridgeResourceType.WEB_LINK,
+		const props: CommonCartridgeWebContentResourcePropsV130 = {
+			type: CommonCartridgeResourceType.WEB_CONTENT,
 			version: CommonCartridgeVersion.V_1_3_0,
-			identifier: faker.string.uuid(),
 			folder: faker.string.uuid(),
+			identifier: faker.string.uuid(),
 			title: faker.lorem.words(),
-			url: faker.internet.url(),
-			target: faker.lorem.word(),
-			windowFeatures: faker.lorem.words(),
+			html: faker.lorem.words(),
+			intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 		};
-		const sut = new CommonCartridgeWebLinkResourceV130(props);
+		const sut = new CommonCartridgeWebContentResourceV130(props);
 
 		return { sut, props };
 	};
@@ -39,26 +42,18 @@ describe('CommonCartridgeWebLinkResourceV130', () => {
 				const { sut, props } = setup();
 				const result = sut.getFilePath();
 
-				expect(result).toBe(`${props.folder}/${props.identifier}.xml`);
+				expect(result).toBe(`${props.folder}/${props.identifier}.html`);
 			});
 		});
 	});
 
 	describe('getFileContent', () => {
 		describe('when using Common Cartridge version 1.3.0', () => {
-			it('should return correct XML', () => {
+			it('should return the HTML', () => {
 				const { sut, props } = setup();
 				const result = sut.getFileContent();
 
-				expect(result).toEqual(
-					'<?xml version="1.0" encoding="UTF-8"?>' +
-						'<webLink xmlns="http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3 http://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_imswl_v1p3.xsd">' +
-						`<title>${props.title}</title>` +
-						`<url href="${props.url}" target="${props.target as string}" windowFeatures="${
-							props.windowFeatures as string
-						}"/>` +
-						'</webLink>'
-				);
+				expect(result).toBe(props.html);
 			});
 		});
 	});
@@ -83,7 +78,8 @@ describe('CommonCartridgeWebLinkResourceV130', () => {
 				expect(result).toEqual({
 					$: {
 						identifier: props.identifier,
-						type: 'imswl_xmlv1p3',
+						type: props.type,
+						intendeduse: props.intendedUse,
 					},
 					file: {
 						$: {
