@@ -1,23 +1,22 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdentityManagementService } from '@infra/identity-management/identity-management.service';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountDto } from '@modules/account';
-import { AccountEntityToDtoMapper } from '@modules/account/mapper';
-import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, Role, SchoolEntity, User } from '@shared/domain/entity';
-
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import bcrypt from 'bcryptjs';
 import { LegacyLogger } from '../../../core/logger';
+import { AccountConfig } from '../account-config';
+import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
+import { AccountDto } from './dto/account.dto';
 
 describe('AccountDbService', () => {
 	let module: TestingModule;
@@ -120,7 +119,7 @@ describe('AccountDbService', () => {
 				},
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService<ServerConfig, true>>(),
+					useValue: createMock<ConfigService<AccountConfig, true>>(),
 				},
 				{
 					provide: IdentityManagementService,

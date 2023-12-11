@@ -1,12 +1,12 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { AccountConfig } from '@modules/account';
+import type { AuthenticationConfig, XApiKeyConfig } from '@modules/authentication';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
 import type { CommonCartridgeConfig } from '@modules/learnroom/common-cartridge';
 import type { UserConfig } from '@modules/user';
 import type { CoreModuleConfig } from '@src/core';
 import { MailConfig } from '@src/infra/mail/interfaces/mail-config';
-import { XApiKeyConfig } from '@modules/authentication';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -16,7 +16,8 @@ export enum NodeEnvType {
 }
 
 export interface ServerConfig
-	extends CoreModuleConfig,
+	extends AuthenticationConfig,
+		CoreModuleConfig,
 		UserConfig,
 		FilesStorageClientConfig,
 		AccountConfig,

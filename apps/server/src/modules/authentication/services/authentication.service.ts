@@ -2,11 +2,9 @@ import { AccountDto, AccountService } from '@modules/account';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-// invalid import
-// invalid import, can produce dependency cycles
-import type { ServerConfig } from '@modules/server';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { AuthenticationConfig } from '../authentication.config';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { CreateJwtPayload } from '../interface/jwt-payload';
 import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
@@ -18,7 +16,7 @@ export class AuthenticationService {
 		private readonly jwtService: JwtService,
 		private readonly jwtValidationAdapter: JwtValidationAdapter,
 		private readonly accountService: AccountService,
-		private readonly configService: ConfigService<ServerConfig, true>
+		private readonly configService: ConfigService<AuthenticationConfig, true>
 	) {}
 
 	async loadAccount(username: string, systemId?: string): Promise<AccountDto> {

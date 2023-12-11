@@ -1,14 +1,14 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { ConsoleWriterService } from '@infra/console';
 import { DatabaseManagementModule, DatabaseManagementService } from '@infra/database';
 import { EncryptionModule } from '@infra/encryption';
 import { FileSystemModule } from '@infra/file-system';
 import { KeycloakConfigurationModule } from '@infra/identity-management';
+import { serverConfig } from '@modules/server/server.config';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
-import { serverConfig } from '@modules/server';
 import { BoardManagementConsole } from './console/board-management.console';
 import { DatabaseManagementConsole } from './console/database-management.console';
 import { DatabaseManagementController } from './controller/database-management.controller';

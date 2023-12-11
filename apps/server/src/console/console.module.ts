@@ -11,7 +11,7 @@ import { GroupEntity } from '@modules/group/entity';
 import { ManagementModule } from '@modules/management';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
-import { serverConfig } from '@modules/server';
+import { serverConfig } from '@modules/server/server.config';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
