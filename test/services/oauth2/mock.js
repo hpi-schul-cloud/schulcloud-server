@@ -127,7 +127,7 @@ describe('oauth2 service mock', function oauthTest() {
 		expect(result).to.eql({ challenge: null, client: { client_id: 'thethingwearelookingfor' } });
 	});
 
-	it.skip('PATCH Login Request Accept', async () => {
+	it('PATCH Login Request Accept', async () => {
 		const user = await testObjects.createTestUser();
 		const ltiTool = await app.service('ltiTools').create({
 			oAuthClientId: 'thethingwearelookingfor',
@@ -155,7 +155,7 @@ describe('oauth2 service mock', function oauthTest() {
 	});
 
 	/* fix this test, but not sure if the expect result what we want */
-	it.skip('PATCH Login Request Reject', async () => {
+	it('PATCH Login Request Reject', async () => {
 		const id = null;
 		const data = {};
 		const params = {
