@@ -1,5 +1,5 @@
 import { AbstractEvent } from '../abstract-event';
-import { EventProcessingFailedLoggableException } from './event-processing-failed-loggable.exception';
+import { EventProcessingFailedLoggableException } from './event-processing-failed-loggable-exception';
 
 class ExampleEvent extends AbstractEvent<string> {
 	payload: string;
