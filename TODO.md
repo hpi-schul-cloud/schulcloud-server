@@ -93,5 +93,9 @@
 ### EW-539
 
 - tests for CCManifestResource
+- Check test coverage
 - Cleanup FIXMEs
 - Manual tests
+- createIdentifier method
+- merge main
+- review.md and comments
