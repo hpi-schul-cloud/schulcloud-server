@@ -5,17 +5,19 @@ import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount, IdmAccountUpdate } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
+import { ConfigService } from '@nestjs/config';
 import { AccountIdmToDtoMapper } from '../mapper';
-import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
+import { AccountConfig } from '../account-config';
 
 @Injectable()
 export class AccountServiceIdm extends AbstractAccountService {
 	constructor(
 		private readonly identityManager: IdentityManagementService,
 		private readonly accountIdmToDtoMapper: AccountIdmToDtoMapper,
-		private readonly accountLookupService: AccountLookupService,
+		private readonly idmService: IdentityManagementService,
+		private readonly configService: ConfigService<AccountConfig, true>,
 		private readonly idmOauthService: IdentityManagementOauthService,
 		private readonly logger: LegacyLogger
 	) {
@@ -176,12 +178,16 @@ export class AccountServiceIdm extends AbstractAccountService {
 		throw new NotImplementedException();
 	}
 
-	private async getIdmAccountId(accountId: string): Promise<string> {
-		const externalId = await this.accountLookupService.getExternalId(accountId);
-		if (!externalId) {
-			throw new EntityNotFoundError(`Account with id ${accountId} not found`);
+	private async getIdmAccountId(accountId: EntityId | ObjectId): Promise<string> {
+		if (!(accountId instanceof ObjectId) && !ObjectId.isValid(accountId)) {
+			return accountId;
 		}
 
-		return externalId;
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
+			const account = await this.idmService.findAccountByDbcAccountId(accountId.toString());
+			return account.id;
+		}
+
+		throw new EntityNotFoundError(`Account with id ${accountId.toString()} not found`);
 	}
 }

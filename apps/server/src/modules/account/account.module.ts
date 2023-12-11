@@ -3,14 +3,12 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PermissionService } from '@shared/domain/service';
 import { LegacySystemRepo, UserRepo } from '@shared/repo';
-
 import { LoggerModule } from '@src/core/logger/logger.module';
 import { ServerConfig } from '../server/server.config';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb, AccountIdmToDtoMapperIdm } from './mapper';
 import { AccountRepo } from './repo/account.repo';
 import { AccountServiceDb } from './services/account-db.service';
 import { AccountServiceIdm } from './services/account-idm.service';
-import { AccountLookupService } from './services/account-lookup.service';
 import { AccountService } from './services/account.service';
 import { AccountValidationService } from './services/account.validation.service';
 
@@ -31,7 +29,6 @@ function accountIdmToDtoMapperFactory(configService: ConfigService<ServerConfig,
 		AccountServiceDb,
 		AccountServiceIdm,
 		AccountService,
-		AccountLookupService,
 		AccountValidationService,
 		{
 			provide: AccountIdmToDtoMapper,

@@ -4,15 +4,21 @@ import { EntityNotFoundError } from '@shared/common';
 import { Account } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import bcrypt from 'bcryptjs';
+import { IdentityManagementService } from '@src/infra/identity-management';
+import { ConfigService } from '@nestjs/config';
 import { AccountEntityToDtoMapper } from '../mapper';
 import { AccountRepo } from '../repo/account.repo';
-import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
+import { AccountConfig } from '../account-config';
 
 @Injectable()
 export class AccountServiceDb extends AbstractAccountService {
-	constructor(private readonly accountRepo: AccountRepo, private readonly accountLookupService: AccountLookupService) {
+	constructor(
+		private readonly accountRepo: AccountRepo,
+		private readonly idmService: IdentityManagementService,
+		private readonly configService: ConfigService<AccountConfig, true>
+	) {
 		super();
 	}
 
@@ -146,12 +152,15 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	private async getInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
-		const internalId = await this.accountLookupService.getInternalId(id);
-		if (!internalId) {
-			throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
+		if (id instanceof ObjectId || ObjectId.isValid(id)) {
+			return new ObjectId(id);
+		}
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
+			const account = await this.idmService.findAccountById(id);
+			return new ObjectId(account.attDbcAccountId);
 		}
 
-		return internalId;
+		throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
 	}
 
 	private encryptPassword(password: string): Promise<string> {

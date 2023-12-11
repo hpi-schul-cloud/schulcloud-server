@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock } from '@golevelup/ts-jest';
 import { IdentityManagementService } from '@infra/identity-management';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
@@ -14,7 +14,6 @@ import { AccountConfig } from '../account-config';
 import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
-import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto } from './dto/account.dto';
 
@@ -23,7 +22,6 @@ describe('AccountDbService', () => {
 	let accountService: AbstractAccountService;
 	let mockAccounts: Account[];
 	let accountRepo: AccountRepo;
-	let accountLookupServiceMock: DeepMocked<AccountLookupService>;
 
 	const defaultPassword = 'DummyPasswd!1';
 
@@ -46,7 +44,6 @@ describe('AccountDbService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				AccountServiceDb,
-				AccountLookupService,
 				{
 					provide: AccountRepo,
 					useValue: {
@@ -125,22 +122,10 @@ describe('AccountDbService', () => {
 					provide: IdentityManagementService,
 					useValue: createMock<IdentityManagementService>(),
 				},
-				{
-					provide: AccountLookupService,
-					useValue: createMock<AccountLookupService>({
-						getInternalId: (id: EntityId | ObjectId): Promise<ObjectId | null> => {
-							if (ObjectId.isValid(id)) {
-								return Promise.resolve(new ObjectId(id));
-							}
-							return Promise.resolve(null);
-						},
-					}),
-				},
 			],
 		}).compile();
 		accountRepo = module.get(AccountRepo);
 		accountService = module.get(AccountServiceDb);
-		accountLookupServiceMock = module.get(AccountLookupService);
 		await setupEntities();
 	});
 

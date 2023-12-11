@@ -6,9 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain/interface';
 import { LoggerModule } from '@src/core/logger';
 import { v1 } from 'uuid';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
-import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountSaveDto } from './dto';
 
@@ -56,14 +54,7 @@ describe.skip('AccountIdmService Integration', () => {
 				IdentityManagementModule,
 				LoggerModule,
 			],
-			providers: [
-				AccountServiceIdm,
-				AccountLookupService,
-				{
-					provide: AccountIdmToDtoMapper,
-					useClass: AccountIdmToDtoMapperDb,
-				},
-			],
+			providers: [AccountServiceIdm],
 		}).compile();
 		accountIdmService = module.get(AccountServiceIdm);
 		identityManagementService = module.get(IdentityManagementService);
