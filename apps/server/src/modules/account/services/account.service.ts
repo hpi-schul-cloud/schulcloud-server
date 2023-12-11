@@ -4,13 +4,13 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
 import { Counted } from '@shared/domain/types';
 import { isEmail, validateOrReject } from 'class-validator';
-import { LegacyLogger } from '../../../core/logger';
-import { ServerConfig } from '../../server/server.config';
+import { LegacyLogger } from '@src/core/logger';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
 import { AccountDto, AccountSaveDto } from './dto';
+import { AccountConfig } from '../account-config';
 
 @Injectable()
 export class AccountService extends AbstractAccountService {
@@ -19,7 +19,7 @@ export class AccountService extends AbstractAccountService {
 	constructor(
 		private readonly accountDb: AccountServiceDb,
 		private readonly accountIdm: AccountServiceIdm,
-		private readonly configService: ConfigService<ServerConfig, true>,
+		private readonly configService: ConfigService<AccountConfig, true>,
 		private readonly accountValidationService: AccountValidationService,
 		private readonly logger: LegacyLogger
 	) {

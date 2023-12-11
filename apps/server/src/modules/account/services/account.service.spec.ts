@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '../../../core/logger';
@@ -8,6 +7,7 @@ import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AccountValidationService } from './account.validation.service';
 import { AccountDto, AccountSaveDto } from './dto';
+import { AccountConfig } from '../account-config';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -40,7 +40,7 @@ describe('AccountService', () => {
 				},
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService<ServerConfig, true>>(),
+					useValue: createMock<ConfigService<AccountConfig, true>>(),
 				},
 				{
 					provide: AccountValidationService,

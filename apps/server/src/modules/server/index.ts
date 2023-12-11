@@ -1,2 +1,2 @@
-export * from './server.config';
-export * from './server.module';
+// export * from './server.config';
+export { ServerModule, ServerTestModule } from './server.module';

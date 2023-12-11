@@ -26,6 +26,7 @@ export interface ServerConfig
 		XApiKeyConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
+	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: boolean; // should be moved to the module that use it
 }
 
 const config: ServerConfig = {
