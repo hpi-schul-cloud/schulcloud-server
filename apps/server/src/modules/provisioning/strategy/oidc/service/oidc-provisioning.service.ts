@@ -231,7 +231,7 @@ export class OidcProvisioningService {
 			throw new NotFoundLoggableException(UserDO.name, { externalId: externalUserId });
 		}
 
-		const existingGroupsOfUser: Group[] = await this.groupService.findByUser(user);
+		const existingGroupsOfUser: Group[] = await this.groupService.findGroupsByUserAndGroupTypes(user);
 
 		const groupsFromSystem: Group[] = existingGroupsOfUser.filter(
 			(existingGroup: Group) => existingGroup.externalSource?.systemId === systemId

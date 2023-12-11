@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { type UserDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { Group } from '../domain';
+import { Group, GroupTypes } from '../domain';
 import { GroupRepo } from '../repo';
 
 @Injectable()
@@ -32,14 +32,14 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		return group;
 	}
 
-	public async findByUser(user: UserDO): Promise<Group[]> {
-		const groups: Group[] = await this.groupRepo.findByUser(user);
+	public async findGroupsByUserAndGroupTypes(user: UserDO, groupTypes?: GroupTypes[]): Promise<Group[]> {
+		const groups: Group[] = await this.groupRepo.findByUserAndGroupTypes(user, groupTypes);
 
 		return groups;
 	}
 
-	public async findClassesForSchool(schoolId: EntityId): Promise<Group[]> {
-		const group: Group[] = await this.groupRepo.findClassesForSchool(schoolId);
+	public async findGroupsBySchoolIdAndGroupTypes(schoolId: EntityId, groupTypes: GroupTypes[]): Promise<Group[]> {
+		const group: Group[] = await this.groupRepo.findBySchoolIdAndGroupTypes(schoolId, groupTypes);
 
 		return group;
 	}
