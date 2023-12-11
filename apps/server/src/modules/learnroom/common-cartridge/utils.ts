@@ -6,7 +6,10 @@ export type OmitVersion<T> = Omit<T, 'version'>;
 
 export type OmitVersionAndFolder<T> = Omit<T, 'version' | 'folder'>;
 
-const xmlBuilder = new Builder({ xmldec: { version: '1.0', encoding: 'UTF-8' }, renderOpts: { indent: '\t' } });
+const xmlBuilder = new Builder({
+	xmldec: { version: '1.0', encoding: 'UTF-8' },
+	renderOpts: { pretty: true, indent: '\t', newline: '\n' },
+});
 
 export function buildXmlString(obj: unknown): string {
 	return xmlBuilder.buildObject(obj);
