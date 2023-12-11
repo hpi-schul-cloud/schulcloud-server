@@ -12,6 +12,8 @@ import {
 
 const typeMapping: Record<GroupTypes, GroupTypeResponse> = {
 	[GroupTypes.CLASS]: GroupTypeResponse.CLASS,
+	[GroupTypes.COURSE]: GroupTypeResponse.COURSE,
+	[GroupTypes.OTHER]: GroupTypeResponse.OTHER,
 };
 
 export class GroupResponseMapper {
