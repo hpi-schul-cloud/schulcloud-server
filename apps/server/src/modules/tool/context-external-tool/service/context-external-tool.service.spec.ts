@@ -1,6 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { EventService } from '@infra/event';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface';
 import { ContextExternalToolRepo } from '@shared/repo';
 import {
 	contextExternalToolFactory,
@@ -8,18 +12,16 @@ import {
 	legacySchoolDoFactory,
 	schoolExternalToolFactory,
 } from '@shared/testing/factory/domainobject';
-import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { Permission } from '@shared/domain/interface';
 import { ToolContextType } from '../../common/enum';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ContextExternalTool, ContextRef } from '../domain';
-import { ContextExternalToolService } from './context-external-tool.service';
+import { CommonToolService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { ContextExternalTool, ContextRef } from '../domain';
+import { ContextExternalToolService } from './context-external-tool.service';
+import { ContextExternalToolsDeletedEvent } from './event';
 import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
-import { CommonToolService } from '../../common/service';
 
 describe('ContextExternalToolService', () => {
 	let module: TestingModule;
@@ -27,6 +29,7 @@ describe('ContextExternalToolService', () => {
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let commonToolService: DeepMocked<CommonToolService>;
+	let eventService: DeepMocked<EventService>;
 
 	let contextExternalToolRepo: DeepMocked<ContextExternalToolRepo>;
 
@@ -54,6 +57,10 @@ describe('ContextExternalToolService', () => {
 					provide: CommonToolService,
 					useValue: createMock<CommonToolService>(),
 				},
+				{
+					provide: EventService,
+					useValue: createMock<EventService>(),
+				},
 			],
 		}).compile();
 
@@ -62,6 +69,7 @@ describe('ContextExternalToolService', () => {
 		externalToolService = module.get(ExternalToolService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		commonToolService = module.get(CommonToolService);
+		eventService = module.get(EventService);
 	});
 
 	afterAll(async () => {
@@ -131,6 +139,25 @@ describe('ContextExternalToolService', () => {
 				await service.deleteBySchoolExternalToolId(schoolExternalToolId);
 
 				expect(contextExternalToolRepo.delete).toHaveBeenCalledWith([contextExternalTool1, contextExternalTool2]);
+			});
+
+			it('should dispatch event', async () => {
+				const { schoolExternalToolId, contextExternalTool1, contextExternalTool2 } = setup();
+
+				await service.deleteBySchoolExternalToolId(schoolExternalToolId);
+
+				expect(eventService.emitEvent).toHaveBeenCalledWith(
+					new ContextExternalToolsDeletedEvent([
+						{
+							contextId: contextExternalTool1.contextRef.id,
+							contextType: contextExternalTool1.contextRef.type,
+						},
+						{
+							contextId: contextExternalTool2.contextRef.id,
+							contextType: contextExternalTool2.contextRef.type,
+						},
+					])
+				);
 			});
 		});
 	});
