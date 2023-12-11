@@ -1,5 +1,4 @@
 import { CommonCartridgeResourceType } from '../../common-cartridge.enums';
-import { CommonCartridgeResourceFactory } from '../../interfaces/common-cartridge-resource-factory.interface';
 import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resource.interface';
 import { createResourceTypeNotSupportedError } from '../../utils';
 import {
@@ -20,14 +19,14 @@ export type CommonCartridgeResourcePropsV110 =
 	| CommonCartridgeWebContentResourcePropsV110
 	| CommonCartridgeWebLinkResourcePropsV110;
 
-export class CommonCartridgeResourceFactoryV110 extends CommonCartridgeResourceFactory {
+export class CommonCartridgeResourceFactoryV110 {
 	public static readonly instance = new CommonCartridgeResourceFactoryV110();
 
-	public static getInstance(): CommonCartridgeResourceFactory {
+	public static getInstance(): CommonCartridgeResourceFactoryV110 {
 		return this.instance;
 	}
 
-	public override createResource(props: CommonCartridgeResourcePropsV110): CommonCartridgeResource {
+	public createResource(props: CommonCartridgeResourcePropsV110): CommonCartridgeResource {
 		const { type } = props;
 
 		switch (type) {
