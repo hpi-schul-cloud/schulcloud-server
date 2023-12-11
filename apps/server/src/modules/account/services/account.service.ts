@@ -14,7 +14,7 @@ import { AccountConfig } from '../account-config';
 
 @Injectable()
 export class AccountService extends AbstractAccountService {
-	private readonly accountImpl: AbstractAccountService;
+	// private readonly accountImpl: AbstractAccountService;
 
 	constructor(
 		private readonly accountDb: AccountServiceDb,
@@ -25,11 +25,18 @@ export class AccountService extends AbstractAccountService {
 	) {
 		super();
 		this.logger.setContext(AccountService.name);
+	}
+
+	private get accountImpl(): AbstractAccountService {
+		let primaryPersistence: AbstractAccountService;
+
 		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
-			this.accountImpl = accountIdm;
+			primaryPersistence = this.accountIdm;
 		} else {
-			this.accountImpl = accountDb;
+			primaryPersistence = this.accountDb;
 		}
+
+		return primaryPersistence;
 	}
 
 	async findById(id: string): Promise<AccountDto> {
