@@ -5,6 +5,6 @@
 	"mongodb": "MONGO_URI",
 	"public": "./public/",
 	"services": {
-		"hydra": "HYDRA_URI"
+		"hydra": "HYDRA_URI" // maybe not needed
 	}
 }
