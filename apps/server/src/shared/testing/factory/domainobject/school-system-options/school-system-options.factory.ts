@@ -15,6 +15,10 @@ export const schoolSystemOptionsFactory = DomainObjectFactory.define<
 		id: new ObjectId().toHexString(),
 		schoolId: new ObjectId().toHexString(),
 		systemId: new ObjectId().toHexString(),
-		provisioningOptions: new SchulConneXProvisioningOptions(),
+		provisioningOptions: new SchulConneXProvisioningOptions().set({
+			groupProvisioningClassesEnabled: true,
+			groupProvisioningCoursesEnabled: false,
+			groupProvisioningOtherEnabled: false,
+		}),
 	};
 });

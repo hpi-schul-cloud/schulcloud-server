@@ -156,9 +156,9 @@ describe(SchoolSystemOptionsRepo.name, () => {
 					schoolId: schoolSystemOptions.schoolId,
 					systemId: schoolSystemOptions.systemId,
 					provisioningOptions: {
-						groupProvisioningOtherEnabled: false,
+						groupProvisioningClassesEnabled: true,
 						groupProvisioningCoursesEnabled: false,
-						groupProvisioningClassesEnabled: false,
+						groupProvisioningOtherEnabled: false,
 					},
 				});
 			});
