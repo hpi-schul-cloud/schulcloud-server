@@ -1,20 +1,26 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { EventService } from '@infra/event';
 import { OauthProviderService } from '@infra/oauth-provider';
 import { ProviderOauthClient } from '@infra/oauth-provider/dto';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { contextExternalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import {
 	externalToolFactory,
 	lti11ToolConfigFactory,
 	oauth2ToolConfigFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { LegacyLogger } from '@src/core/logger';
+import { ToolContextType } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
+import { ContextExternalToolsDeletedEvent } from '../../context-external-tool';
+import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
@@ -26,12 +32,13 @@ describe('ExternalToolService', () => {
 	let service: ExternalToolService;
 
 	let externalToolRepo: DeepMocked<ExternalToolRepo>;
-	let schoolToolRepo: DeepMocked<SchoolExternalToolRepo>;
-	let courseToolRepo: DeepMocked<ContextExternalToolRepo>;
+	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
+	let contextExternalToolRepo: DeepMocked<ContextExternalToolRepo>;
 	let oauthProviderService: DeepMocked<OauthProviderService>;
 	let mapper: DeepMocked<ExternalToolServiceMapper>;
 	let encryptionService: DeepMocked<EncryptionService>;
 	let versionService: DeepMocked<ExternalToolVersionIncrementService>;
+	let eventService: DeepMocked<EventService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -69,17 +76,22 @@ describe('ExternalToolService', () => {
 					provide: ExternalToolVersionIncrementService,
 					useValue: createMock<ExternalToolVersionIncrementService>(),
 				},
+				{
+					provide: EventService,
+					useValue: createMock<EventService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(ExternalToolService);
 		externalToolRepo = module.get(ExternalToolRepo);
-		schoolToolRepo = module.get(SchoolExternalToolRepo);
-		courseToolRepo = module.get(ContextExternalToolRepo);
+		schoolExternalToolRepo = module.get(SchoolExternalToolRepo);
+		contextExternalToolRepo = module.get(ContextExternalToolRepo);
 		oauthProviderService = module.get(OauthProviderService);
 		mapper = module.get(ExternalToolServiceMapper);
 		encryptionService = module.get(DefaultEncryptionService);
 		versionService = module.get(ExternalToolVersionIncrementService);
+		eventService = module.get(EventService);
 	});
 
 	afterAll(async () => {
@@ -375,26 +387,50 @@ describe('ExternalToolService', () => {
 		const setup = () => {
 			createTools();
 
-			const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool({
-				id: 'schoolTool1',
-				toolId: 'tool1',
-				schoolId: 'school1',
+			const schoolExternalToolId = new ObjectId().toHexString();
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				id: schoolExternalToolId,
+				toolId: new ObjectId().toHexString(),
+				schoolId: new ObjectId().toHexString(),
 				parameters: [],
 				toolVersion: 1,
 			});
 
-			schoolToolRepo.findByExternalToolId.mockResolvedValue([schoolExternalTool]);
+			const contextExternalTool: ContextExternalTool = contextExternalToolFactory
+				.withSchoolExternalToolRef(schoolExternalToolId, schoolExternalTool.schoolId)
+				.withContextRef(new ObjectId().toHexString(), ToolContextType.COURSE)
+				.buildWithId();
 
-			return { schoolExternalTool };
+			schoolExternalToolRepo.findByExternalToolId.mockResolvedValueOnce([schoolExternalTool]);
+			contextExternalToolRepo.find.mockResolvedValueOnce([contextExternalTool]);
+
+			return { schoolExternalTool, contextExternalTool };
 		};
 
 		describe('when tool id is set', () => {
-			it('should delete all related CourseExternalTools', async () => {
-				const { schoolExternalTool } = setup();
+			describe('when deleting context external tools', () => {
+				it('should delete all related ContextExternalTools', async () => {
+					const { schoolExternalTool } = setup();
 
-				await service.deleteExternalTool(schoolExternalTool.toolId);
+					await service.deleteExternalTool(schoolExternalTool.toolId);
 
-				expect(courseToolRepo.deleteBySchoolExternalToolIds).toHaveBeenCalledWith([schoolExternalTool.id]);
+					expect(contextExternalToolRepo.deleteBySchoolExternalToolIds).toHaveBeenCalledWith([schoolExternalTool.id]);
+				});
+
+				it('should dispatch events', async () => {
+					const { schoolExternalTool, contextExternalTool } = setup();
+
+					await service.deleteExternalTool(schoolExternalTool.toolId);
+
+					expect(eventService.emitEvent).toHaveBeenCalledWith(
+						new ContextExternalToolsDeletedEvent([
+							{
+								contextId: contextExternalTool.contextRef.id,
+								contextType: contextExternalTool.contextRef.type,
+							},
+						])
+					);
+				});
 			});
 
 			it('should delete all related SchoolExternalTools', async () => {
@@ -402,7 +438,7 @@ describe('ExternalToolService', () => {
 
 				await service.deleteExternalTool(schoolExternalTool.toolId);
 
-				expect(schoolToolRepo.deleteByExternalToolId).toHaveBeenCalledWith(schoolExternalTool.toolId);
+				expect(schoolExternalToolRepo.deleteByExternalToolId).toHaveBeenCalledWith(schoolExternalTool.toolId);
 			});
 
 			it('should delete the ExternalTool', async () => {

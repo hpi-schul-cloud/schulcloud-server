@@ -1,4 +1,5 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { EventService } from '@infra/event';
 import { OauthProviderService } from '@infra/oauth-provider';
 import { ProviderOauthClient } from '@infra/oauth-provider/dto';
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
@@ -9,6 +10,11 @@ import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } fro
 import { LegacyLogger } from '@src/core/logger';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
+import {
+	ContextExternalToolDeletedEventContent,
+	ContextExternalToolsDeletedEvent,
+} from '../../context-external-tool/service/event';
+import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
@@ -24,7 +30,8 @@ export class ExternalToolService {
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
 		private readonly legacyLogger: LegacyLogger,
-		private readonly externalToolVersionService: ExternalToolVersionIncrementService
+		private readonly externalToolVersionService: ExternalToolVersionIncrementService,
+		private readonly eventService: EventService
 	) {}
 
 	async createExternalTool(externalTool: ExternalTool): Promise<ExternalTool> {
@@ -110,11 +117,34 @@ export class ExternalToolService {
 				schoolExternalTool.id as string
 		);
 
+		// TODO: N21-1591 Use ContexteExternalToolService for deletion and event dispatching
+		const contextExternalToolPromises: Promise<void>[] = schoolExternalToolIds.map(async (schoolExternalToolId) => {
+			const contexExternalToolEntities: ContextExternalTool[] = await this.contextExternalToolRepo.find({
+				schoolToolRef: { schoolToolId: schoolExternalToolId },
+			});
+			this.dispatchEvent(contexExternalToolEntities);
+		});
+
+		// TODO: N21-1591 Remove all repos and use services instead
 		await Promise.all([
+			contextExternalToolPromises,
 			this.contextExternalToolRepo.deleteBySchoolExternalToolIds(schoolExternalToolIds),
 			this.schoolExternalToolRepo.deleteByExternalToolId(toolId),
 			this.externalToolRepo.deleteById(toolId),
 		]);
+	}
+
+	private dispatchEvent(externalToolsToDelete: ContextExternalTool[]): void {
+		const eventContent: ContextExternalToolDeletedEventContent[] = externalToolsToDelete.map(
+			(contextExternalTool: ContextExternalTool): ContextExternalToolDeletedEventContent => {
+				return {
+					contextId: contextExternalTool.contextRef.id,
+					contextType: contextExternalTool.contextRef.type,
+				};
+			}
+		);
+
+		this.eventService.emitEvent(new ContextExternalToolsDeletedEvent(eventContent));
 	}
 
 	private async updateOauth2ToolConfig(toUpdate: ExternalTool) {

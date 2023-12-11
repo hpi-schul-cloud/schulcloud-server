@@ -1,3 +1,4 @@
+import { EventModule } from '@infra/event';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
@@ -20,7 +21,15 @@ import {
 import { CommonToolModule } from '../common';
 
 @Module({
-	imports: [CommonToolModule, ToolConfigModule, LoggerModule, OauthProviderServiceModule, EncryptionModule, HttpModule],
+	imports: [
+		CommonToolModule,
+		ToolConfigModule,
+		LoggerModule,
+		OauthProviderServiceModule,
+		EncryptionModule,
+		HttpModule,
+		EventModule,
+	],
 	providers: [
 		ExternalToolService,
 		ExternalToolServiceMapper,
