@@ -9,6 +9,8 @@ export type CommonCartridgeWebLinkResourcePropsV110 = {
 	folder: string;
 	title: string;
 	url: string;
+	target?: string;
+	windowFeatures?: string;
 };
 
 export class CommonCartridgeWebLinkResourceV110 extends CommonCartridgeResource {
@@ -37,8 +39,8 @@ export class CommonCartridgeWebLinkResourceV110 extends CommonCartridgeResource 
 				url: {
 					$: {
 						href: this.props.url,
-						target: '_self',
-						windowFeatures: 'width=100, height=100',
+						target: this.props.target,
+						windowFeatures: this.props.windowFeatures,
 					},
 				},
 			},
@@ -51,7 +53,7 @@ export class CommonCartridgeWebLinkResourceV110 extends CommonCartridgeResource 
 
 	public getManifestXmlObject(): Record<string, unknown> {
 		return {
-			resoucec: {
+			resource: {
 				$: {
 					identifier: this.props.identifier,
 					type: 'imswl_xmlv1p1',

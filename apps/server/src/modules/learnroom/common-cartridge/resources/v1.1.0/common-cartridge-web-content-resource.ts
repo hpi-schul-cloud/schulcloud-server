@@ -12,7 +12,10 @@ export type CommonCartridgeWebContentResourcePropsV110 = {
 	folder: string;
 	title: string;
 	html: string;
-	intendedUse: CommonCartridgeIntendedUseType;
+	intendedUse:
+		| CommonCartridgeIntendedUseType.UNSPECIFIED
+		| CommonCartridgeIntendedUseType.LESSON_PLAN
+		| CommonCartridgeIntendedUseType.SYLLABUS;
 };
 
 export class CommonCartridgeWebContentResourceV110 extends CommonCartridgeResource {
