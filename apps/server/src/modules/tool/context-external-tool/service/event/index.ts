@@ -1,1 +1,2 @@
-export { ContextExternalToolDeletedEvent } from './context-external-tool-deleted-event';
+export { ContextExternalToolsDeletedEvent } from './context-external-tools-deleted-event';
+export { ContextExternalToolDeletedEventContent } from './context-external-tool-deleted-event-content';

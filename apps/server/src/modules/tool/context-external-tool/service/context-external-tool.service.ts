@@ -9,7 +9,7 @@ import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ContextExternalTool, ContextRef } from '../domain';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
-import { ContextExternalToolDeletedEvent } from './event';
+import { ContextExternalToolDeletedEventContent, ContextExternalToolsDeletedEvent } from './event';
 import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
 
 @Injectable()
@@ -46,7 +46,7 @@ export class ContextExternalToolService {
 		return savedContextExternalTool;
 	}
 
-	public async deleteBySchoolExternalToolId(schoolExternalToolId: EntityId) {
+	public async deleteBySchoolExternalToolId(schoolExternalToolId: EntityId): Promise<void> {
 		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find({
 			schoolToolRef: {
 				schoolToolId: schoolExternalToolId,
@@ -55,14 +55,20 @@ export class ContextExternalToolService {
 
 		await this.contextExternalToolRepo.delete(contextExternalTools);
 
-		contextExternalTools.forEach((contextExternalTool: ContextExternalTool) => {
-			this.eventService.emitEvent(
-				new ContextExternalToolDeletedEvent({
+		this.dispatchEvent(contextExternalTools);
+	}
+
+	private dispatchEvent(externalToolsToDelete: ContextExternalTool[]): void {
+		const eventContent: ContextExternalToolDeletedEventContent[] = externalToolsToDelete.map(
+			(contextExternalTool: ContextExternalTool): ContextExternalToolDeletedEventContent => {
+				return {
 					contextId: contextExternalTool.contextRef.id,
 					contextType: contextExternalTool.contextRef.type,
-				})
-			);
-		});
+				};
+			}
+		);
+
+		this.eventService.emitEvent(new ContextExternalToolsDeletedEvent(eventContent));
 	}
 
 	public async deleteContextExternalTool(contextExternalTool: ContextExternalTool): Promise<void> {

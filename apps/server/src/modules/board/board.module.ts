@@ -21,7 +21,7 @@ import {
 } from './service';
 import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './service/board-do-copy-service';
 import { ColumnBoardCopyService } from './service/column-board-copy.service';
-import { ToolDeletedBoardListener } from './service/event/tool-deleted-board-listener.service';
+import { ToolsDeletedBoardListener } from './service/event/tools-deleted-board-listener.service';
 
 @Module({
 	imports: [
@@ -50,7 +50,7 @@ import { ToolDeletedBoardListener } from './service/event/tool-deleted-board-lis
 		ColumnBoardCopyService,
 		SchoolSpecificFileCopyServiceFactory,
 		DrawingElementAdapterService,
-		ToolDeletedBoardListener,
+		ToolsDeletedBoardListener,
 	],
 	exports: [
 		BoardDoAuthorizableService,

@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+	AnyContentElementDo,
 	ContentElementFactory,
 	ContentElementType,
 	FileElement,
@@ -9,7 +10,7 @@ import {
 	SubmissionContainerElement,
 } from '@shared/domain/domainobject';
 import { InputFormat } from '@shared/domain/types';
-import { drawingElementFactory, setupEntities } from '@shared/testing';
+import { drawingElementFactory, externalToolElementFactory, setupEntities } from '@shared/testing';
 import {
 	cardFactory,
 	fileElementFactory,
@@ -113,6 +114,39 @@ describe(ContentElementService.name, () => {
 				const { cardElement } = setup();
 
 				await expect(service.findById(cardElement.id)).rejects.toThrowError(NotFoundException);
+			});
+		});
+	});
+
+	describe('findByIds', () => {
+		const setup = () => {
+			const richTextElement = richTextElementFactory.build();
+			const externalToolElement = externalToolElementFactory.build();
+
+			boardDoRepo.findByIds.mockResolvedValue([richTextElement, externalToolElement]);
+
+			return { richTextElement, externalToolElement };
+		};
+
+		describe('when trying get any content elements', () => {
+			it('should return a list of content elements', async () => {
+				const { richTextElement, externalToolElement } = setup();
+
+				const result: AnyContentElementDo[] = await service.findByIds([richTextElement.id, externalToolElement.id]);
+
+				expect(result).toEqual([richTextElement, externalToolElement]);
+			});
+		});
+
+		describe('when trying to get elements where one id is not a any content element', () => {
+			it('should throw NotFoundException', async () => {
+				const { richTextElement, externalToolElement } = setup();
+
+				boardDoRepo.findByIds.mockResolvedValue([richTextElement, externalToolElement, cardFactory.build()]);
+
+				await expect(
+					service.findByIds([richTextElement.id, externalToolElement.id, cardFactory.build().id])
+				).rejects.toThrowError(NotFoundException);
 			});
 		});
 	});

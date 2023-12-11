@@ -32,6 +32,19 @@ export class ContentElementService {
 		return element;
 	}
 
+	async findByIds(elementIds: EntityId[]): Promise<AnyContentElementDo[]> {
+		const elements: AnyBoardDo[] = await this.boardDoRepo.findByIds(elementIds);
+
+		const anyContentElements: AnyContentElementDo[] = elements.map((element) => {
+			if (!isAnyContentElement(element)) {
+				throw new NotFoundException(`There is no '${element.constructor.name}' with this id`);
+			}
+			return element;
+		});
+
+		return anyContentElements;
+	}
+
 	async findParentOfId(elementId: EntityId): Promise<AnyBoardDo> {
 		const parent = await this.boardDoRepo.findParentOfId(elementId);
 		if (!parent) {

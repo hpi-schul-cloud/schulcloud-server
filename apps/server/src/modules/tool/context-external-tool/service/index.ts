@@ -1,4 +1,4 @@
 export * from './context-external-tool.service';
 export * from './context-external-tool-authorizable.service';
 export * from './tool-reference.service';
-export { ContextExternalToolDeletedEvent } from './event';
+export { ContextExternalToolsDeletedEvent, ContextExternalToolDeletedEventContent } from './event';
