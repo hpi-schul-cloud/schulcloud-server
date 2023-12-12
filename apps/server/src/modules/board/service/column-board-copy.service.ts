@@ -11,6 +11,7 @@ import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
 import { BoardDoRepo } from '../repo';
 import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './board-do-copy-service';
+import { SwapInternalLinksVisitor } from './board-do-copy-service/swap-internal-links.visitor';
 
 @Injectable()
 export class ColumnBoardCopyService {
@@ -53,5 +54,15 @@ export class ColumnBoardCopyService {
 		await this.boardDoRepo.save(copyStatus.copyEntity);
 
 		return copyStatus;
+	}
+
+	public async swapLinkedIds(boardId: EntityId, idMap: Map<EntityId, EntityId>) {
+		const board = await this.boardDoRepo.findById(boardId);
+
+		const visitor = new SwapInternalLinksVisitor(idMap);
+
+		board.accept(visitor);
+
+		await this.boardDoRepo.save(board);
 	}
 }
