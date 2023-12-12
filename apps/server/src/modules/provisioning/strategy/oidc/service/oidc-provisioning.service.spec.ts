@@ -244,7 +244,7 @@ describe('OidcProvisioningService', () => {
 			});
 		});
 
-		describe('when external school already exist', () => {
+		describe('when external school already exists', () => {
 			describe('when successful', () => {
 				const setup = () => {
 					const systemId = new ObjectId().toHexString();
@@ -327,6 +327,7 @@ describe('OidcProvisioningService', () => {
 						systems: [systemId],
 						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 						schoolYear,
+						federalState,
 					});
 
 					schoolService.save.mockResolvedValue(savedSchoolDO);
@@ -380,6 +381,7 @@ describe('OidcProvisioningService', () => {
 						systems: [systemId],
 						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 						schoolYear,
+						federalState,
 					});
 
 					schoolService.save.mockResolvedValue(savedSchoolDO);
@@ -434,6 +436,7 @@ describe('OidcProvisioningService', () => {
 						systems: [otherSystemId],
 						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 						schoolYear,
+						federalState,
 					});
 
 					schoolService.save.mockResolvedValue(savedSchoolDO);
@@ -494,6 +497,7 @@ describe('OidcProvisioningService', () => {
 						systems: undefined,
 						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 						schoolYear,
+						federalState,
 					});
 
 					schoolService.save.mockResolvedValue(savedSchoolDO);
