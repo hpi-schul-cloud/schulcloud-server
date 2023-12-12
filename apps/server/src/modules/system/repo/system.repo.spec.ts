@@ -1,7 +1,7 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from '@shared/domain';
+import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { cleanupCollections, systemEntityFactory } from '@shared/testing';
 import { System, SystemProps } from '../domain';

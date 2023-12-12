@@ -7,8 +7,10 @@ import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { RoleService } from '@modules/role/service/role.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId, IFindOptions, LanguageType, User } from '@shared/domain';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { LanguageType, User } from '@shared/domain/entity';
+import { IFindOptions } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { UserConfig } from '../interfaces';
@@ -54,6 +56,12 @@ export class UserService {
 
 	async findById(id: string): Promise<UserDO> {
 		const userDO = await this.userDORepo.findById(id, true);
+
+		return userDO;
+	}
+
+	public async findByIdOrNull(id: string): Promise<UserDO | null> {
+		const userDO: UserDO | null = await this.userDORepo.findByIdOrNull(id, true);
 
 		return userDO;
 	}

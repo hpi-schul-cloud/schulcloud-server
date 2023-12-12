@@ -1,5 +1,5 @@
-import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
-import { DeletionLogStatistic } from '../uc/interface';
+import { DeletionDomainModel } from '../domain/types';
+import { DeletionLogStatistic } from '../interface';
 
 export class DeletionLogStatisticBuilder {
 	static build(domain: DeletionDomainModel, modifiedCount?: number, deletedCount?: number): DeletionLogStatistic {

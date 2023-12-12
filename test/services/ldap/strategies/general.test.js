@@ -37,16 +37,18 @@ const mockLDAPConfig = {
 	},
 };
 
-const createLDAPUserResult = (props) => ({
-	dn: 'uid=max.mustermann.1,ou=users,o=school0,dc=de,dc=example,dc=org',
-	givenName: 'Max',
-	sn: 'Mustermann',
-	uid: 'max.mustermann.1',
-	uuid: 'ZDg0Y2ZlMjMtZGYwNi00MWNjLTg3YmUtZjI3NjA1NDJhY2Y0',
-	mail: 'max.mustermann.1@example.org',
-	memberOf: 'cn=ROLE_STUDENT,ou=roles,o=school0,dc=de,dc=example,dc=org',
-	...props,
-});
+const createLDAPUserResult = (props) => {
+	return {
+		dn: 'uid=max.mustermann.1,ou=users,o=school0,dc=de,dc=example,dc=org',
+		givenName: 'Max',
+		sn: 'Mustermann',
+		uid: 'max.mustermann.1',
+		uuid: 'ZDg0Y2ZlMjMtZGYwNi00MWNjLTg3YmUtZjI3NjA1NDJhY2Y0',
+		mail: 'max.mustermann.1@example.org',
+		memberOf: 'cn=ROLE_STUDENT,ou=roles,o=school0,dc=de,dc=example,dc=org',
+		...props,
+	};
+};
 
 describe('GeneralLDAPStrategy', () => {
 	it('implements AbstractLDAPStrategy', () => {
@@ -64,6 +66,7 @@ describe('GeneralLDAPStrategy', () => {
 	});
 
 	after(() => {
+		app.unuse('/ldap');
 		app.use('/ldap', originalLdapService);
 	});
 
@@ -89,6 +92,7 @@ describe('GeneralLDAPStrategy', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
+				get: () => {},
 				searchCollection: sinon.fake.resolves([
 					{
 						dn: 'uid=max.mustermann.1,ou=users,o=school0,dc=de,dc=example,dc=org',
@@ -139,11 +143,13 @@ describe('GeneralLDAPStrategy', () => {
 
 		beforeEach(() => {
 			ldapServiceMock = new MockLdapService();
+			app.unuse('/ldap');
 			app.use('/ldap', ldapServiceMock);
 		});
 
 		it('should return all users', async () => {
-			const users = await new GeneralLDAPStrategy(app, mockLDAPConfig).getUsers();
+			const instance = new GeneralLDAPStrategy(app, mockLDAPConfig);
+			const users = await instance.getUsers();
 			expect(users.length).to.equal(4);
 		});
 
@@ -184,8 +190,10 @@ describe('GeneralLDAPStrategy', () => {
 				...mockLDAPConfig,
 				providerOptions: { ...mockLDAPConfig.providerOptions, roleType: 'non-group' },
 			};
+			app.unuse('/ldap');
 			app.use('/ldap', {
 				setup: () => {},
+				get: () => {},
 				searchCollection: sinon.fake.resolves([
 					createLDAPUserResult({ role: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleStudent }),
 					createLDAPUserResult({ role: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleTeacher }),
@@ -199,23 +207,32 @@ describe('GeneralLDAPStrategy', () => {
 		});
 
 		it('should assign name defaults if entities lack first names', async () => {
-			app.use('/ldap', {
-				setup: () => {},
-				searchCollection: sinon.fake.resolves([
-					createLDAPUserResult({
-						givenName: '',
-						memberOf: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleStudent,
-					}),
-					createLDAPUserResult({
-						givenName: '',
-						memberOf: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleTeacher,
-					}),
-					createLDAPUserResult({
-						givenName: '',
-						memberOf: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleAdmin,
-					}),
-				]),
-			});
+			app.unuse('/ldap');
+			app.use(
+				'/ldap',
+				{
+					setup: () => {},
+					get: () => {},
+					searchCollection: sinon.fake.resolves([
+						createLDAPUserResult({
+							givenName: '',
+							memberOf: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleStudent,
+						}),
+						createLDAPUserResult({
+							givenName: '',
+							memberOf: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleTeacher,
+						}),
+						createLDAPUserResult({
+							givenName: '',
+							memberOf: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleAdmin,
+						}),
+					]),
+				},
+				{
+					// Pass all methods you want to expose
+					methods: ['searchCollection'],
+				}
+			);
 			const [student, teacher, admin] = await new GeneralLDAPStrategy(app, mockLDAPConfig).getUsers();
 			expect(student.firstName).to.equal('Schüler:in');
 			expect(teacher.firstName).to.equal('Lehrkraft');
@@ -227,6 +244,7 @@ describe('GeneralLDAPStrategy', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
+				get: () => {},
 				searchCollection: sinon.fake.returns(
 					Promise.resolve([
 						{
@@ -253,6 +271,7 @@ describe('GeneralLDAPStrategy', () => {
 
 		beforeEach(() => {
 			ldapServiceMock = new MockLdapService();
+			app.unuse('/ldap');
 			app.use('/ldap', ldapServiceMock);
 		});
 

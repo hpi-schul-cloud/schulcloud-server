@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { FileElement, FileElementProps } from '@shared/domain';
+import { FileElement, FileElementProps } from '@shared/domain/domainobject';
 import { ObjectId } from 'bson';
 import { BaseFactory } from '../../base.factory';
 

@@ -1,11 +1,12 @@
-import { DeletionLogStatistic, DeletionRequestLog, DeletionTargetRef } from '../uc/interface';
+import { DeletionRequestLogResponse } from '../controller/dto';
+import { DeletionLogStatistic, DeletionTargetRef } from '../interface';
 
 export class DeletionRequestLogResponseBuilder {
 	static build(
 		targetRef: DeletionTargetRef,
 		deletionPlannedAt: Date,
 		statistics?: DeletionLogStatistic[]
-	): DeletionRequestLog {
+	): DeletionRequestLogResponse {
 		const deletionRequestLog = { targetRef, deletionPlannedAt, statistics };
 
 		return deletionRequestLog;

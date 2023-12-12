@@ -5,8 +5,7 @@ import { setupEntities } from '@shared/testing';
 import { DeletionRequestService } from './deletion-request.service';
 import { DeletionRequestRepo } from '../repo';
 import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
-import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
-import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
+import { DeletionDomainModel, DeletionStatusModel } from '../domain/types';
 
 describe(DeletionRequestService.name, () => {
 	let module: TestingModule;

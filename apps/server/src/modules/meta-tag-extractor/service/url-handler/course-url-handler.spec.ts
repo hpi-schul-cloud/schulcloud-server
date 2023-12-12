@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CourseService } from '@modules/learnroom';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course } from '@shared/domain';
+import { Course } from '@shared/domain/entity';
 import { setupEntities } from '@shared/testing';
 import { CourseUrlHandler } from './course-url-handler';
 

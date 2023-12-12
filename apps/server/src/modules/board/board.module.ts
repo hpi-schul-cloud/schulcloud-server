@@ -1,9 +1,9 @@
+import { ConsoleWriterModule } from '@infra/console';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
-import { ContentElementFactory } from '@shared/domain';
-import { ConsoleWriterModule } from '@infra/console';
+import { ContentElementFactory } from '@shared/domain/domainobject';
 import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';

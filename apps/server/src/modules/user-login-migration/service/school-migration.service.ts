@@ -1,7 +1,7 @@
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { LegacyLogger, Logger } from '@src/core/logger';
 import { performance } from 'perf_hooks';
