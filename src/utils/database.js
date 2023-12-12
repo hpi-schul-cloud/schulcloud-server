@@ -94,6 +94,7 @@ function connect() {
 
 	addAuthenticationToMongooseOptions(options.username, options.password, mongooseOptions);
 	// https://mongoosejs.com/docs/6.x/docs/migrating_to_6.html#strictquery-is-removed-and-replaced-by-strict
+	// https://mongoosejs.com/docs/7.x/docs/migrating_to_7.html#strictquery
 	mongoose.set('strictQuery', false);
 	return mongoose.connect(encodeMongoURI(options.url), mongooseOptions).then((resolved) => {
 		// handle errors that appear after connection setup
