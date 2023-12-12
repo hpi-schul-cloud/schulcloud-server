@@ -333,7 +333,7 @@ data:
         # Perform the final Bettermarks config data init if client secret and URL has been properly set.
         if [ -n "$BETTERMARKS_CLIENT_SECRET" ] && [ -n "$BETTERMARKS_URL" ]; then
             # Add document to the 'ltitools' collection with Bettermarks tool configuration.
-            mongosh $DATABASE__URL --eval 'db.ltitools.replaceOne(
+            mongosh $DATABASE__URL --eval 'db.getCollection("ltitools").replaceOne(
                 {
                   "name": "bettermarks",
                   "isTemplate": true
@@ -391,7 +391,7 @@ data:
 
             # Add Bettermarks' tools configuration as an external tool
             # (stored in the 'external-tools' collection) that uses OAuth.
-            mongosh $DATABASE__URL --eval 'db.external-tools.replaceOne(
+            mongosh $DATABASE__URL --eval 'db.getCollection("external-tools").replaceOne(
                 {
                   "name": "bettermarks",
                   "config_type": "oauth2"
@@ -428,7 +428,7 @@ data:
     if [ -n "$NEXTCLOUD_CLIENT_SECRET" ] && [ -n "$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME" ]; then
          echo "Inserting nextcloud to ltitools..."
          # Add document to the 'ltitools' collection
-         mongosh $DATABASE__URL --eval 'db.ltitools.update(
+         mongosh $DATABASE__URL --eval 'db.getCollection("ltitools").update(
              {
                "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
                "isTemplate": true
@@ -488,7 +488,7 @@ data:
          # Add Nextcloud' tools configuration as an external tool
          # (stored in the 'external-tools' collection) that uses OAuth.
          echo "Inserting nextcloud to external-tools..."
-         mongosh $DATABASE__URL --eval 'db.external-tools.update(
+         mongosh $DATABASE__URL --eval 'db.getCollection("external-tools").update(
              {
                "name": "nextcloud",
                "config_type": "oauth2"
