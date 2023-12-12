@@ -171,6 +171,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                <a href="#remapProtectedEntityFields" >remapProtectedEntityFields</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#removeProtectedEntityFields" >removeProtectedEntityFields</a>
                             </li>
                             <li>
@@ -296,8 +300,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/shared/repo/base.do.repo.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">apps/server/src/shared/repo/base.do.repo.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -333,7 +337,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;DO&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -365,8 +369,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">apps/server/src/shared/repo/base.do.repo.ts:61</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="55"
+                                    class="link-to-prism">apps/server/src/shared/repo/base.do.repo.ts:55</a></div>
                         </td>
                     </tr>
 
@@ -439,8 +443,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="78"
-                                    class="link-to-prism">apps/server/src/shared/repo/base.do.repo.ts:78</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/shared/repo/base.do.repo.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -508,8 +512,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="90"
-                                    class="link-to-prism">apps/server/src/shared/repo/base.do.repo.ts:90</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">apps/server/src/shared/repo/base.do.repo.ts:84</a></div>
                         </td>
                     </tr>
 
@@ -699,6 +703,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="remapProtectedEntityFields"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>remapProtectedEntityFields</b></span>
+                        <a href="#remapProtectedEntityFields"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>remapProtectedEntityFields(domainObject: DO, persistedEntity: E)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="100"
+                                    class="link-to-prism">apps/server/src/shared/repo/base.do.repo.ts:100</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>domainObject</td>
+                                            <td>
+                                                        <code>DO</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>persistedEntity</td>
+                                            <td>
+                                                        <code>E</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>DO</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="removeProtectedEntityFields"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -717,8 +802,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="98"
-                                    class="link-to-prism">apps/server/src/shared/repo/base.do.repo.ts:98</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/shared/repo/base.do.repo.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -963,12 +1048,18 @@ export abstract class BaseDORepo&lt;DO extends BaseDO, E extends BaseEntity&gt; 
 	async saveAll(domainObjects: DO[]): Promise&lt;DO[]&gt; {
 		const promises &#x3D; domainObjects.map(async (dob) &#x3D;&gt; this.createOrUpdateEntity(dob));
 
-		const savedDomainObjects &#x3D; await Promise.all(promises);
+		const results &#x3D; await Promise.all(promises);
+
+		await this._em.flush();
+
+		const savedDomainObjects &#x3D; results.map(({ domainObject, persistedEntity }) &#x3D;&gt;
+			this.remapProtectedEntityFields(domainObject, persistedEntity)
+		);
 
 		return savedDomainObjects;
 	}
 
-	private async createOrUpdateEntity(domainObject: DO): Promise&lt;DO&gt; {
+	private async createOrUpdateEntity(domainObject: DO): Promise&lt;{ domainObject: DO; persistedEntity: E }&gt; {
 		const entityData &#x3D; this.mapDOToEntityProperties(domainObject);
 		this.removeProtectedEntityFields(entityData);
 
@@ -982,19 +1073,7 @@ export abstract class BaseDORepo&lt;DO extends BaseDO, E extends BaseEntity&gt; 
 			? this._em.assign(existingEntity, entityData)
 			: this._em.create(entityName, entityData as RequiredEntityData&lt;E&gt;);
 
-		await this._em.flush();
-
-		if (!domainObject.id) {
-			domainObject.id &#x3D; persistedEntity.id;
-		}
-		if (&#x27;createdAt&#x27; in domainObject &amp;&amp; &#x27;createdAt&#x27; in persistedEntity) {
-			domainObject.createdAt &#x3D; persistedEntity.createdAt;
-		}
-		if (&#x27;updatedAt&#x27; in domainObject &amp;&amp; &#x27;updatedAt&#x27; in persistedEntity) {
-			domainObject.updatedAt &#x3D; persistedEntity.updatedAt;
-		}
-
-		return domainObject;
+		return { domainObject, persistedEntity };
 	}
 
 	async delete(domainObjects: DO[] | DO): Promise&lt;void&gt; {
@@ -1040,6 +1119,19 @@ export abstract class BaseDORepo&lt;DO extends BaseDO, E extends BaseEntity&gt; 
 				delete entityData[key];
 			}
 		});
+	}
+
+	private remapProtectedEntityFields(domainObject: DO, persistedEntity: E) {
+		if (!domainObject.id) {
+			domainObject.id &#x3D; persistedEntity.id;
+		}
+		if (&#x27;createdAt&#x27; in domainObject &amp;&amp; &#x27;createdAt&#x27; in persistedEntity) {
+			domainObject.createdAt &#x3D; persistedEntity.createdAt;
+		}
+		if (&#x27;updatedAt&#x27; in domainObject &amp;&amp; &#x27;updatedAt&#x27; in persistedEntity) {
+			domainObject.updatedAt &#x3D; persistedEntity.updatedAt;
+		}
+		return domainObject;
 	}
 }
 </code></pre>

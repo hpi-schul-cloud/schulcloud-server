@@ -24,13 +24,13 @@
 <title>cluster_LearnroomModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 2869,-268 2869,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_LearnroomModule_providers</title>
-<polygon fill="none" stroke="black" points="620,-78 620,-130 2861,-130 2861,-78 620,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_LearnroomModule_exports</title>
 <polygon fill="none" stroke="black" points="884,-208 884,-260 1647,-260 1647,-208 884,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_LearnroomModule_providers</title>
+<polygon fill="none" stroke="black" points="620,-78 620,-130 2861,-130 2861,-78 620,-78"/>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_LearnroomModule_imports</title>
