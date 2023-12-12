@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { accountFactory } from '@shared/testing';
+import { accountDtoFactory, accountFactory } from '@shared/testing';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
@@ -53,7 +53,7 @@ describe('AccountService', () => {
 			],
 		}).compile();
 		accountServiceDb = module.get(AccountServiceDb);
-		// accountServiceIdm = module.get(AccountServiceIdm);
+		accountServiceIdm = module.get(AccountServiceIdm);
 		accountService = module.get(AccountService);
 		// accountValidationService = module.get(AccountValidationService);
 		configService = module.get(ConfigService);
@@ -64,18 +64,17 @@ describe('AccountService', () => {
 		jest.clearAllMocks();
 	});
 
+	afterEach(() => {
+		configService.get.mockReset();
+	});
+
 	describe('findById', () => {
 		describe('when FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED true', () => {
 			const setup = () => {
-				const account = accountFactory.buildWithId();
-				const dto: AccountDto = {
-					id: account.id,
-					username: account.username,
-					createdAt: account.createdAt,
-					updatedAt: account.updatedAt,
-				}; // -> factory !
+				const dto = accountDtoFactory.build();
+
+				configService.get.mockReturnValueOnce(true);
 				accountServiceIdm.findById.mockResolvedValueOnce(dto);
-				configService.get.mockImplementationOnce(() => true);
 
 				return { dto, id: dto.id };
 			};
@@ -99,15 +98,10 @@ describe('AccountService', () => {
 
 		describe('when FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED false', () => {
 			const setup = () => {
-				const account = accountFactory.buildWithId();
-				const dto: AccountDto = {
-					id: account.id,
-					username: account.username,
-					createdAt: account.createdAt,
-					updatedAt: account.updatedAt,
-				}; // -> factory !
+				const dto = accountDtoFactory.build();
+
+				configService.get.mockReturnValueOnce(false);
 				accountServiceDb.findById.mockResolvedValueOnce(dto);
-				configService.get.mockImplementationOnce(() => false);
 
 				return { dto, id: dto.id };
 			};
@@ -129,6 +123,7 @@ describe('AccountService', () => {
 			});
 		});
 	});
+
 	/*
 	describe('findByUserId', () => {
 		it('should call findByUserId in accountServiceDb', async () => {

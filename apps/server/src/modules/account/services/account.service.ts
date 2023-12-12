@@ -14,8 +14,6 @@ import { AccountConfig } from '../account-config';
 
 @Injectable()
 export class AccountService extends AbstractAccountService {
-	// private readonly accountImpl: AbstractAccountService;
-
 	constructor(
 		private readonly accountDb: AccountServiceDb,
 		private readonly accountIdm: AccountServiceIdm,
@@ -29,8 +27,9 @@ export class AccountService extends AbstractAccountService {
 
 	private get accountImpl(): AbstractAccountService {
 		let primaryPersistence: AbstractAccountService;
+		const identityLogin = this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED');
 
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
+		if (identityLogin) {
 			primaryPersistence = this.accountIdm;
 		} else {
 			primaryPersistence = this.accountDb;
@@ -40,7 +39,9 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	async findById(id: string): Promise<AccountDto> {
-		return this.accountImpl.findById(id);
+		const accountDto = await this.accountImpl.findById(id);
+
+		return accountDto;
 	}
 
 	async findMultipleByUserId(userIds: string[]): Promise<AccountDto[]> {
