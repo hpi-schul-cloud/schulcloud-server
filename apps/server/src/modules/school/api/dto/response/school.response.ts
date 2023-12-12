@@ -8,16 +8,16 @@ import { YearsResponse } from './years.response';
 
 export class SchoolResponse {
 	@ApiProperty()
-	id!: string;
+	id: string;
 
 	@ApiProperty()
-	createdAt!: Date;
+	createdAt: Date;
 
 	@ApiProperty()
-	updatedAt!: Date;
+	updatedAt: Date;
 
 	@ApiProperty()
-	name!: string;
+	name: string;
 
 	@ApiPropertyOptional()
 	officialSchoolNumber?: string;
@@ -26,7 +26,7 @@ export class SchoolResponse {
 	currentYear?: SchoolYearResponse;
 
 	@ApiProperty({ type: () => FederalStateResponse })
-	federalState!: FederalStateResponse;
+	federalState: FederalStateResponse;
 
 	@ApiPropertyOptional()
 	county?: CountyResponse;
@@ -35,16 +35,16 @@ export class SchoolResponse {
 	purpose?: SchoolPurpose;
 
 	@ApiProperty({ enum: SchoolFeature, enumName: 'SchoolFeature', isArray: true })
-	features!: SchoolFeature[];
+	features: SchoolFeature[];
 
 	@ApiProperty()
-	systemIds!: string[];
+	systemIds: string[];
 
 	@ApiProperty()
-	inMaintenance!: boolean;
+	inMaintenance: boolean;
 
 	@ApiProperty()
-	isExternal!: boolean;
+	isExternal: boolean;
 
 	@ApiPropertyOptional()
 	logo_dataUrl?: string;
@@ -65,5 +65,28 @@ export class SchoolResponse {
 	permissions?: SchoolPermissions;
 
 	@ApiProperty({ type: () => YearsResponse })
-	years!: YearsResponse;
+	years: YearsResponse;
+
+	constructor(props: SchoolResponse) {
+		this.id = props.id;
+		this.createdAt = props.createdAt;
+		this.updatedAt = props.updatedAt;
+		this.name = props.name;
+		this.officialSchoolNumber = props.officialSchoolNumber;
+		this.federalState = props.federalState;
+		this.currentYear = props.currentYear;
+		this.purpose = props.purpose;
+		this.features = props.features;
+		this.county = props.county;
+		this.systemIds = props.systemIds;
+		this.inMaintenance = props.inMaintenance;
+		this.isExternal = props.isExternal;
+		this.logo_dataUrl = props.logo_dataUrl;
+		this.logo_name = props.logo_name;
+		this.fileStorageType = props.fileStorageType;
+		this.language = props.language;
+		this.timezone = props.timezone;
+		this.permissions = props.permissions;
+		this.years = props.years;
+	}
 }

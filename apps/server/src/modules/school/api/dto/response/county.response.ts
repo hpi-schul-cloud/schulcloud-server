@@ -2,14 +2,21 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CountyResponse {
 	@ApiProperty()
-	id!: string;
+	id: string;
 
 	@ApiProperty()
-	name!: string;
+	name: string;
 
 	@ApiProperty()
-	countyId!: number;
+	countyId: number;
 
 	@ApiProperty()
-	antaresKey!: string;
+	antaresKey: string;
+
+	constructor(props: CountyResponse) {
+		this.id = props.id;
+		this.name = props.name;
+		this.countyId = props.countyId;
+		this.antaresKey = props.antaresKey;
+	}
 }
