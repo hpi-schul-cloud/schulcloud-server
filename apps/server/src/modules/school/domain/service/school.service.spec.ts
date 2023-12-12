@@ -168,6 +168,7 @@ describe('SchoolService', () => {
 	});
 
 	describe('getSchoolsForExternalInvite', () => {
+		// TODO: Update tests!
 		describe('....describe is missed', () => {
 			const setup = () => {
 				const query = {};
