@@ -16,9 +16,9 @@ export class SchoolUc {
 		private readonly schoolYearService: SchoolYearService
 	) {}
 
-	public async getSchool(schoolId: EntityId, userId: EntityId): Promise<SchoolResponse> {
+	public async getSchoolById(schoolId: EntityId, userId: EntityId): Promise<SchoolResponse> {
 		const [school, user, schoolYears] = await Promise.all([
-			this.schoolService.getSchool(schoolId),
+			this.schoolService.getSchoolById(schoolId),
 			this.authorizationService.getUserWithPermissions(userId),
 			this.schoolYearService.getAllSchoolYears(),
 		]);

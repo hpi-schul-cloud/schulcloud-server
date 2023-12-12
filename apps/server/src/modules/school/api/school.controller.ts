@@ -16,11 +16,11 @@ export class SchoolController {
 	// because any route parameter would be catched by /:schoolId, e.g. "list-for-external-invite".
 	// It seems safer to not need to worry about the order of the actions.
 	@Get('/id/:schoolId')
-	public async getSchool(
+	public async getSchoolById(
 		@Param() urlParams: SchoolUrlParams,
 		@CurrentUser() user: ICurrentUser
 	): Promise<SchoolResponse> {
-		const res = await this.schoolUc.getSchool(urlParams.schoolId, user.userId);
+		const res = await this.schoolUc.getSchoolById(urlParams.schoolId, user.userId);
 
 		return res;
 	}

@@ -35,7 +35,7 @@ describe('SchoolMikroOrmRepo', () => {
 		await module.close();
 	});
 
-	describe('getAllSchools', () => {
+	describe('getSchools', () => {
 		describe('when no query and options are given', () => {
 			const setup = async () => {
 				const entities = schoolFactory.buildList(3);
@@ -49,7 +49,7 @@ describe('SchoolMikroOrmRepo', () => {
 			it('should return all schools', async () => {
 				const { schools } = await setup();
 
-				const result = await repo.getAllSchools({});
+				const result = await repo.getSchools({});
 
 				expect(result).toEqual(schools);
 			});
@@ -73,7 +73,7 @@ describe('SchoolMikroOrmRepo', () => {
 			it('should return all schools matching query', async () => {
 				const { schoolDo1, schoolDo2, query } = await setup();
 
-				const result = await repo.getAllSchools(query);
+				const result = await repo.getSchools(query);
 
 				expect(result).toContainEqual(schoolDo1);
 				expect(result).not.toContainEqual(schoolDo2);
@@ -100,7 +100,7 @@ describe('SchoolMikroOrmRepo', () => {
 			it('should return schools matching pagination', async () => {
 				const { schoolDos, options } = await setup();
 
-				const result = await repo.getAllSchools({}, options);
+				const result = await repo.getSchools({}, options);
 
 				expect(result).toEqual([schoolDos[1]]);
 			});
@@ -127,19 +127,19 @@ describe('SchoolMikroOrmRepo', () => {
 			it('should return schools in given order', async () => {
 				const { schoolDo1, schoolDo2, options } = await setup();
 
-				const result = await repo.getAllSchools({}, options);
+				const result = await repo.getSchools({}, options);
 
 				expect(result).toEqual([schoolDo2, schoolDo1]);
 			});
 		});
 	});
 
-	describe('getSchool', () => {
+	describe('getSchoolById', () => {
 		describe('when entity is not found', () => {
 			it('should throw NotFound', async () => {
 				const someId = new ObjectId().toHexString();
 
-				await expect(() => repo.getSchool(someId)).rejects.toThrow(NotFoundError);
+				await expect(() => repo.getSchoolById(someId)).rejects.toThrow(NotFoundError);
 			});
 		});
 
@@ -159,7 +159,7 @@ describe('SchoolMikroOrmRepo', () => {
 			it('should return school with all refs populated', async () => {
 				const { schoolDo, schoolId } = await setup();
 
-				const result = await repo.getSchool(schoolId);
+				const result = await repo.getSchoolById(schoolId);
 
 				expect(result).toEqual(schoolDo);
 			});
@@ -178,7 +178,7 @@ describe('SchoolMikroOrmRepo', () => {
 			it('should add IS_TEAM_CREATION_BY_STUDENTS_ENABLED to features', async () => {
 				const { schoolId } = await setupWithEnableStudentTeamCreation();
 
-				const result = await repo.getSchool(schoolId);
+				const result = await repo.getSchoolById(schoolId);
 
 				expect(result.getProps().features?.has(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED)).toBe(true);
 			});

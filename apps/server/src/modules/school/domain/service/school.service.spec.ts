@@ -43,11 +43,11 @@ describe('SchoolService', () => {
 		expect(service).toBeDefined();
 	});
 
-	describe('getSchool', () => {
+	describe('getSchoolById', () => {
 		describe('when school from given id exists', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
-				schoolRepo.getSchool.mockResolvedValueOnce(school);
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
 
 				return { school, id: school.id };
 			};
@@ -55,7 +55,7 @@ describe('SchoolService', () => {
 			it('should return school', async () => {
 				const { school, id } = setup();
 
-				const result = await service.getSchool(id);
+				const result = await service.getSchoolById(id);
 
 				expect(result).toEqual(school);
 			});
@@ -64,7 +64,7 @@ describe('SchoolService', () => {
 		describe('when STUDENT_TEAM_CREATION config value is "enabled"', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
-				schoolRepo.getSchool.mockResolvedValueOnce(school);
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
 
 				configService.get.mockReturnValueOnce('enabled');
 
@@ -74,7 +74,7 @@ describe('SchoolService', () => {
 			it('should add IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', async () => {
 				const { school } = setup();
 
-				const result = await service.getSchool('1');
+				const result = await service.getSchoolById('1');
 
 				expect(result).toEqual(school);
 				expect(result.getProps().features).toContain('isTeamCreationByStudentsEnabled');
@@ -84,7 +84,7 @@ describe('SchoolService', () => {
 		describe('when STUDENT_TEAM_CREATION config value is "disabled"', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
-				schoolRepo.getSchool.mockResolvedValueOnce(school);
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
 
 				configService.get.mockReturnValueOnce('disabled');
 
@@ -94,7 +94,7 @@ describe('SchoolService', () => {
 			it('should remove IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', async () => {
 				const { school } = setup();
 
-				const result = await service.getSchool('1');
+				const result = await service.getSchoolById('1');
 
 				expect(result).toEqual(school);
 				expect(result.getProps().features).not.toContain('isTeamCreationByStudentsEnabled');
@@ -102,14 +102,14 @@ describe('SchoolService', () => {
 		});
 	});
 
-	describe('getAllSchools', () => {
+	describe('getSchools', () => {
 		describe('when schools exists and no query or options are passed', () => {
 			const setup = () => {
 				const query: SchoolQuery = {};
 				const options: IFindOptions<SchoolProps> = {};
 
 				const schools = schoolFactory.buildList(3);
-				schoolRepo.getAllSchools.mockResolvedValueOnce(schools);
+				schoolRepo.getSchools.mockResolvedValueOnce(schools);
 
 				return { query, options, schools };
 			};
@@ -117,7 +117,7 @@ describe('SchoolService', () => {
 			it('should return all schools', async () => {
 				const { query, options, schools } = setup();
 
-				const result = await service.getAllSchools(query, options);
+				const result = await service.getSchools(query, options);
 
 				expect(result).toEqual(schools);
 			});
@@ -129,7 +129,7 @@ describe('SchoolService', () => {
 				const options = undefined;
 
 				const schools = schoolFactory.buildList(3);
-				schoolRepo.getAllSchools.mockResolvedValueOnce(schools);
+				schoolRepo.getSchools.mockResolvedValueOnce(schools);
 
 				return { query, options };
 			};
@@ -137,9 +137,9 @@ describe('SchoolService', () => {
 			it('should pass query to repo', async () => {
 				const { query, options } = setup();
 
-				await service.getAllSchools(query, options);
+				await service.getSchools(query, options);
 
-				expect(schoolRepo.getAllSchools).toBeCalledWith(query, undefined);
+				expect(schoolRepo.getSchools).toBeCalledWith(query, undefined);
 			});
 		});
 
@@ -152,7 +152,7 @@ describe('SchoolService', () => {
 				};
 
 				const schools = schoolFactory.buildList(3);
-				schoolRepo.getAllSchools.mockResolvedValueOnce(schools);
+				schoolRepo.getSchools.mockResolvedValueOnce(schools);
 
 				return { query, options };
 			};
@@ -160,9 +160,9 @@ describe('SchoolService', () => {
 			it('should pass find options to repo', async () => {
 				const { query, options } = setup();
 
-				await service.getAllSchools(query, options);
+				await service.getSchools(query, options);
 
-				expect(schoolRepo.getAllSchools).toBeCalledWith(expect.anything(), options);
+				expect(schoolRepo.getSchools).toBeCalledWith(expect.anything(), options);
 			});
 		});
 	});
@@ -175,7 +175,7 @@ describe('SchoolService', () => {
 				const ownSchool = schoolFactory.build();
 				const foreignSchools = schoolFactory.buildList(3);
 				const foreignExpertSchool = schoolFactory.build({ purpose: SchoolPurpose.EXPERT });
-				schoolRepo.getAllSchools.mockResolvedValueOnce([ownSchool, ...foreignSchools, foreignExpertSchool]);
+				schoolRepo.getSchools.mockResolvedValueOnce([ownSchool, ...foreignSchools, foreignExpertSchool]);
 
 				return { query, foreignSchools, ownSchoolId: ownSchool.id };
 			};

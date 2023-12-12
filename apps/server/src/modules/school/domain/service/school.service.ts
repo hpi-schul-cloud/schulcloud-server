@@ -15,16 +15,16 @@ export class SchoolService {
 		private readonly configService: ConfigService<SchoolConfig, true>
 	) {}
 
-	public async getSchool(schoolId: EntityId): Promise<School> {
-		const school = await this.schoolRepo.getSchool(schoolId);
+	public async getSchoolById(schoolId: EntityId): Promise<School> {
+		const school = await this.schoolRepo.getSchoolById(schoolId);
 
 		this.setStudentTeamCreationFeature(school);
 
 		return school;
 	}
 
-	public async getAllSchools(query: SchoolQuery = {}, options?: IFindOptions<SchoolProps>): Promise<School[]> {
-		const schools = await this.schoolRepo.getAllSchools(query, options);
+	public async getSchools(query: SchoolQuery = {}, options?: IFindOptions<SchoolProps>): Promise<School[]> {
+		const schools = await this.schoolRepo.getSchools(query, options);
 
 		schools.forEach((school) => this.setStudentTeamCreationFeature(school));
 
@@ -36,7 +36,7 @@ export class SchoolService {
 		ownSchoolId: EntityId,
 		options?: IFindOptions<SchoolProps>
 	): Promise<School[]> {
-		const schools = await this.getAllSchools(query, options);
+		const schools = await this.getSchools(query, options);
 
 		const schoolsForExternalInvite = schools.filter((school) => school.isEligibleForExternalInvite(ownSchoolId));
 

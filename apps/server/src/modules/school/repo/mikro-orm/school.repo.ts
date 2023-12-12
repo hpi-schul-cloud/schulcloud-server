@@ -13,7 +13,7 @@ import { SchoolScope } from './scope/school.scope';
 export class SchoolMikroOrmRepo implements SchoolRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	public async getAllSchools(query: SchoolQuery, options?: IFindOptions<SchoolProps>): Promise<School[]> {
+	public async getSchools(query: SchoolQuery, options?: IFindOptions<SchoolProps>): Promise<School[]> {
 		const scope = new SchoolScope();
 		scope.allowEmptyQuery(true);
 		scope.byFederalState(query.federalStateId);
@@ -27,7 +27,7 @@ export class SchoolMikroOrmRepo implements SchoolRepo {
 		return schools;
 	}
 
-	public async getSchool(schoolId: EntityId): Promise<School> {
+	public async getSchoolById(schoolId: EntityId): Promise<School> {
 		const entity = await this.em.findOneOrFail(
 			SchoolEntity,
 			{ id: schoolId },
