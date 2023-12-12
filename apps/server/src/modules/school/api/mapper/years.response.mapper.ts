@@ -9,12 +9,12 @@ export class YearsResponseMapper {
 		lastYear: SchoolYear,
 		nextYear: SchoolYear
 	): YearsResponse {
-		const res = {
+		const res = new YearsResponse({
 			schoolYears: SchoolYearResponseMapper.mapToResponses(schoolYears),
 			activeYear: SchoolYearResponseMapper.mapToResponse(activeYear),
 			lastYear: SchoolYearResponseMapper.mapToResponse(lastYear),
 			nextYear: SchoolYearResponseMapper.mapToResponse(nextYear),
-		};
+		});
 
 		return res;
 	}

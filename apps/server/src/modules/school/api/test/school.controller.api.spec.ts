@@ -9,6 +9,7 @@ import {
 	systemEntityFactory,
 	UserAndAccountTestFactory,
 } from '@shared/testing/factory';
+import { countyEmbeddableFactory } from '@shared/testing/factory/county.embeddable.factory';
 import { ServerTestModule } from '@src/modules/server';
 
 describe('School Controller (API)', () => {
@@ -120,8 +121,9 @@ describe('School Controller (API)', () => {
 				const schoolYears = schoolYearFactory.withStartYear(2002).buildList(3);
 				const currentYear = schoolYears[1];
 				const federalState = federalStateFactory.build();
+				const county = countyEmbeddableFactory.build();
 				const systems = systemEntityFactory.buildList(3);
-				const school = schoolFactory.build({ currentYear, federalState, systems });
+				const school = schoolFactory.build({ currentYear, federalState, systems, county });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 
 				await em.persistAndFlush([...schoolYears, federalState, school, studentAccount, studentUser]);
@@ -146,6 +148,20 @@ describe('School Controller (API)', () => {
 						name: federalState.name,
 						abbreviation: federalState.abbreviation,
 						logoUrl: federalState.logoUrl,
+						counties: federalState.counties?.map((item) => {
+							return {
+								id: item._id.toHexString(),
+								name: item.name,
+								countyId: item.countyId,
+								antaresKey: item.antaresKey,
+							};
+						}),
+					},
+					county: {
+						id: county._id.toHexString(),
+						name: county.name,
+						countyId: county.countyId,
+						antaresKey: county.antaresKey,
 					},
 					inMaintenance: false,
 					isExternal: false,

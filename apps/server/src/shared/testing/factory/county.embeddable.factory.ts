@@ -9,7 +9,7 @@ export const countyEmbeddableFactory = BaseFactory.define<CountyEmbeddable, Coun
 			_id: new ObjectId(),
 			name: `County ${sequence}`,
 			countyId: sequence,
-			antaresKey: `antey ${sequence}`,
+			antaresKey: `antaresKey ${sequence}`,
 		};
 
 		return county;
