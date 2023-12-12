@@ -2,8 +2,7 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { SchoolQuery } from '../domain/query';
-import { SchoolService, SchoolYearService } from '../domain/service';
+import { SchoolQuery, SchoolService, SchoolYearService, SchoolYearUtils } from '../domain';
 import { SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
 import { SchoolResponseMapper } from './mapper';
 import { YearsResponseMapper } from './mapper/years.response.mapper';
@@ -26,7 +25,8 @@ export class SchoolUc {
 		const authContext = AuthorizationContextBuilder.read([]);
 		this.authorizationService.checkPermission(user, school, authContext);
 
-		const yearsResponse = YearsResponseMapper.mapToResponse(school, schoolYears);
+		const { activeYear, lastYear, nextYear } = SchoolYearUtils.computeActiveAndLastAndNextYear(school, schoolYears);
+		const yearsResponse = YearsResponseMapper.mapToResponse(schoolYears, activeYear, lastYear, nextYear);
 
 		const dto = SchoolResponseMapper.mapToResponse(school, yearsResponse);
 
