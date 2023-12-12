@@ -69,7 +69,7 @@ const testSuite = adapterTests([
 	'.find + $limit',
 	'.find + $limit 0',
 	'.find + $skip',
-	//'.find + $select', // not possible, because other fields are required
+	'.find + $select',
 	'.find + $or',
 	'.find + $and',
 	'.find + $in',
@@ -87,7 +87,7 @@ const testSuite = adapterTests([
 	'.find + paginate + $limit 0',
 	'.find + paginate + params',
 	'params.adapter + paginate',
-	//'params.adapter + multi',
+	'params.adapter + multi',
 ]);
 
 const { User, Pet, Peeps, CustomPeeps, Post, TextPost } = require('./models');
@@ -100,7 +100,6 @@ const app = feathers()
 		adapter({
 			Model: Peeps,
 			events: ['testing'],
-			multi: false,
 		})
 	)
 	.use(
@@ -109,7 +108,6 @@ const app = feathers()
 			id: 'customid',
 			Model: CustomPeeps,
 			events: ['testing'],
-			multi: false,
 		})
 	)
 	.use(
@@ -239,7 +237,7 @@ describe('Feathers Mongoose Service', () => {
 		});
 
 		// This appears to be a flaky test for some reason
-		it.skip('sorts using collation param if present', async () => {
+		it('sorts using collation param if present', async () => {
 			const r = await people.find({
 				query: { $sort: { name: -1 } },
 				collation: { locale: 'en', strength: 1 },
@@ -257,7 +255,7 @@ describe('Feathers Mongoose Service', () => {
 			expect(r[0].name).to.equal('AAA');
 		});
 
-		it.skip('removes using collation param if present', async () => {
+		it('removes using collation param if present', async () => {
 			await people.remove(null, {
 				query: { name: { $gt: 'AAA' } },
 				collation: { locale: 'en', strength: 1 },
@@ -506,7 +504,7 @@ describe('Feathers Mongoose Service', () => {
 			} catch (error) {
 				expect(error.name).to.equal('BadRequest');
 				expect(error.message).to.equal(
-					'User validation failed: age: Cast to Number failed for value "wrong" (type string) at path "age"'
+					'TestUser validation failed: age: Cast to Number failed for value "wrong" (type string) at path "age"'
 				);
 			}
 		});
