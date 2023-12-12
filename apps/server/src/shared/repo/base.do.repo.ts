@@ -24,12 +24,18 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
 	async saveAll(domainObjects: DO[]): Promise<DO[]> {
 		const promises = domainObjects.map(async (dob) => this.createOrUpdateEntity(dob));
 
-		const savedDomainObjects = await Promise.all(promises);
+		const results = await Promise.all(promises);
+
+		await this._em.flush();
+
+		const savedDomainObjects = results.map(({ domainObject, persistedEntity }) =>
+			this.remapProtectedEntityFields(domainObject, persistedEntity)
+		);
 
 		return savedDomainObjects;
 	}
 
-	private async createOrUpdateEntity(domainObject: DO): Promise<DO> {
+	private async createOrUpdateEntity(domainObject: DO): Promise<{ domainObject: DO; persistedEntity: E }> {
 		const entityData = this.mapDOToEntityProperties(domainObject);
 		this.removeProtectedEntityFields(entityData);
 
@@ -43,19 +49,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
 			? this._em.assign(existingEntity, entityData)
 			: this._em.create(entityName, entityData as RequiredEntityData<E>);
 
-		await this._em.flush();
-
-		if (!domainObject.id) {
-			domainObject.id = persistedEntity.id;
-		}
-		if ('createdAt' in domainObject && 'createdAt' in persistedEntity) {
-			domainObject.createdAt = persistedEntity.createdAt;
-		}
-		if ('updatedAt' in domainObject && 'updatedAt' in persistedEntity) {
-			domainObject.updatedAt = persistedEntity.updatedAt;
-		}
-
-		return domainObject;
+		return { domainObject, persistedEntity };
 	}
 
 	async delete(domainObjects: DO[] | DO): Promise<void> {
@@ -101,5 +95,18 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
 				delete entityData[key];
 			}
 		});
+	}
+
+	private remapProtectedEntityFields(domainObject: DO, persistedEntity: E) {
+		if (!domainObject.id) {
+			domainObject.id = persistedEntity.id;
+		}
+		if ('createdAt' in domainObject && 'createdAt' in persistedEntity) {
+			domainObject.createdAt = persistedEntity.createdAt;
+		}
+		if ('updatedAt' in domainObject && 'updatedAt' in persistedEntity) {
+			domainObject.updatedAt = persistedEntity.updatedAt;
+		}
+		return domainObject;
 	}
 }
