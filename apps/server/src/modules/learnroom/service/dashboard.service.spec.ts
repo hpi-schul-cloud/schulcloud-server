@@ -1,13 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IDashboardRepo, UserRepo } from '@shared/repo';
+import { DashboardElementRepo, IDashboardRepo, UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { DashboardService } from '.';
 
 describe(DashboardService.name, () => {
 	let module: TestingModule;
 	let userRepo: DeepMocked<UserRepo>;
-	let repo: IDashboardRepo;
+	let dashboardRepo: IDashboardRepo;
+	let dashboardElementRepo: DeepMocked<DashboardElementRepo>;
 	let dashboardService: DeepMocked<DashboardService>;
 
 	beforeAll(async () => {
@@ -23,11 +24,16 @@ describe(DashboardService.name, () => {
 					provide: 'DASHBOARD_REPO',
 					useValue: createMock<DashboardService>(),
 				},
+				{
+					provide: DashboardElementRepo,
+					useValue: createMock<DashboardElementRepo>(),
+				},
 			],
 		}).compile();
 		dashboardService = module.get(DashboardService);
 		userRepo = module.get(UserRepo);
-		repo = module.get('DASHBOARD_REPO');
+		dashboardRepo = module.get('DASHBOARD_REPO');
+		dashboardElementRepo = module.get(DashboardElementRepo);
 	});
 
 	afterAll(async () => {
@@ -46,9 +52,18 @@ describe(DashboardService.name, () => {
 			return { user };
 		};
 
+		it('should call dashboardRepo.getUsersDashboard', async () => {
+			const { user } = setup();
+			const spy = jest.spyOn(dashboardRepo, 'getUsersDashboard');
+
+			await dashboardService.deleteDashboardByUserId(user.id);
+
+			expect(spy).toHaveBeenCalledWith(user.id);
+		});
+
 		it('should call dashboardRepo.deleteDashboardByUserId', async () => {
 			const { user } = setup();
-			const spy = jest.spyOn(repo, 'deleteDashboardByUserId');
+			const spy = jest.spyOn(dashboardRepo, 'deleteDashboardByUserId');
 
 			await dashboardService.deleteDashboardByUserId(user.id);
 
@@ -57,7 +72,7 @@ describe(DashboardService.name, () => {
 
 		it('should delete users dashboard', async () => {
 			const { user } = setup();
-			jest.spyOn(repo, 'deleteDashboardByUserId').mockImplementation(() => Promise.resolve(1));
+			jest.spyOn(dashboardRepo, 'deleteDashboardByUserId').mockImplementation(() => Promise.resolve(1));
 
 			const result = await dashboardService.deleteDashboardByUserId(user.id);
 

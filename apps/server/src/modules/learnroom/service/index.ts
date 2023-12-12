@@ -5,4 +5,4 @@ export * from './common-cartridge-export.service';
 export * from './course.service';
 export * from './rooms.service';
 export * from './coursegroup.service';
-export { DashboardService } from './dasboard.service';
+export * from './dashboard.service';
