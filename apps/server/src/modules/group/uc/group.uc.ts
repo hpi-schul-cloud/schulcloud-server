@@ -14,7 +14,7 @@ import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { LegacySystemService, SystemDto } from '@src/modules/system';
 import { SchoolYearQueryType } from '../controller/dto/interface';
-import { Group, GroupUser } from '../domain';
+import { Group, GroupTypes, GroupUser } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { SortHelper } from '../util';
@@ -34,6 +34,8 @@ export class GroupUc {
 		private readonly schoolYearService: SchoolYearService,
 		private readonly logger: Logger
 	) {}
+
+	private ALLOWED_GROUP_TYPES: GroupTypes[] = [GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER];
 
 	public async findAllClasses(
 		userId: EntityId,
@@ -85,7 +87,7 @@ export class GroupUc {
 		const classInfosFromClasses = await this.findClassesForSchool(schoolId, schoolYearQueryType);
 
 		if (!schoolYearQueryType || schoolYearQueryType === SchoolYearQueryType.CURRENT_YEAR) {
-			classInfosFromGroups = await this.findGroupsOfTypeClassForSchool(schoolId);
+			classInfosFromGroups = await this.findGroupsForSchool(schoolId);
 		}
 
 		const combinedClassInfo: ClassInfoDto[] = [...classInfosFromClasses, ...classInfosFromGroups];
@@ -102,7 +104,7 @@ export class GroupUc {
 		const classInfosFromClasses = await this.findClassesForUser(userId, schoolYearQueryType);
 
 		if (!schoolYearQueryType || schoolYearQueryType === SchoolYearQueryType.CURRENT_YEAR) {
-			classInfosFromGroups = await this.findGroupsOfTypeClassForUser(userId);
+			classInfosFromGroups = await this.findGroupsForUser(userId);
 		}
 
 		const combinedClassInfo: ClassInfoDto[] = [...classInfosFromClasses, ...classInfosFromGroups];
@@ -233,22 +235,28 @@ export class GroupUc {
 		return teachers;
 	}
 
-	private async findGroupsOfTypeClassForSchool(schoolId: EntityId): Promise<ClassInfoDto[]> {
-		const groupsOfTypeClass: Group[] = await this.groupService.findClassesForSchool(schoolId);
+	private async findGroupsForSchool(schoolId: EntityId): Promise<ClassInfoDto[]> {
+		const groups: Group[] = await this.groupService.findGroupsBySchoolIdAndGroupTypes(
+			schoolId,
+			this.ALLOWED_GROUP_TYPES
+		);
 
-		const systemMap: Map<EntityId, SystemDto> = await this.findSystemNamesForGroups(groupsOfTypeClass);
+		const systemMap: Map<EntityId, SystemDto> = await this.findSystemNamesForGroups(groups);
 
 		const classInfosFromGroups: ClassInfoDto[] = await Promise.all(
-			groupsOfTypeClass.map(async (group: Group): Promise<ClassInfoDto> => this.getClassInfoFromGroup(group, systemMap))
+			groups.map(async (group: Group): Promise<ClassInfoDto> => this.getClassInfoFromGroup(group, systemMap))
 		);
 
 		return classInfosFromGroups;
 	}
 
-	private async findGroupsOfTypeClassForUser(userId: EntityId): Promise<ClassInfoDto[]> {
+	private async findGroupsForUser(userId: EntityId): Promise<ClassInfoDto[]> {
 		const user: UserDO = await this.userService.findById(userId);
 
-		const groupsOfTypeClass: Group[] = await this.groupService.findByUser(user);
+		const groupsOfTypeClass: Group[] = await this.groupService.findGroupsByUserAndGroupTypes(
+			user,
+			this.ALLOWED_GROUP_TYPES
+		);
 
 		const systemMap: Map<EntityId, SystemDto> = await this.findSystemNamesForGroups(groupsOfTypeClass);
 
