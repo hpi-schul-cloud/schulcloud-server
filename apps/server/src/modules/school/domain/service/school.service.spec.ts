@@ -2,13 +2,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
-import { SchoolPurpose } from '@shared/domain/types';
-import { ObjectId } from 'bson';
-import { SchoolRepo } from '../interface';
 import { schoolFactory } from '../../testing';
-import { SchoolService } from './school.service';
-import { SchoolQuery } from '../query';
 import { SchoolProps } from '../do';
+import { SchoolRepo } from '../interface';
+import { SchoolQuery } from '../query';
+import { SchoolService } from './school.service';
 
 describe('SchoolService', () => {
 	let service: SchoolService;
@@ -44,18 +42,18 @@ describe('SchoolService', () => {
 	});
 
 	describe('getSchoolById', () => {
-		describe('when school from given id exists', () => {
+		describe('when repo returns a school', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
 				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
 
-				return { school, id: school.id };
+				return { school };
 			};
 
-			it('should return school', async () => {
-				const { school, id } = setup();
+			it('should return this school', async () => {
+				const { school } = setup();
 
-				const result = await service.getSchoolById(id);
+				const result = await service.getSchoolById('1');
 
 				expect(result).toEqual(school);
 			});
@@ -103,47 +101,45 @@ describe('SchoolService', () => {
 	});
 
 	describe('getSchools', () => {
-		describe('when schools exists and no query or options are passed', () => {
+		describe('when repo returns schools', () => {
 			const setup = () => {
 				const query: SchoolQuery = {};
-				const options: IFindOptions<SchoolProps> = {};
 
 				const schools = schoolFactory.buildList(3);
 				schoolRepo.getSchools.mockResolvedValueOnce(schools);
 
-				return { query, options, schools };
+				return { query, schools };
 			};
 
-			it('should return all schools', async () => {
-				const { query, options, schools } = setup();
+			it('should return these schools', async () => {
+				const { query, schools } = setup();
 
-				const result = await service.getSchools(query, options);
+				const result = await service.getSchools(query);
 
 				expect(result).toEqual(schools);
 			});
 		});
 
-		describe('when schools exists and query but no options are passed', () => {
+		describe('when schools exist and query but no options are passed', () => {
 			const setup = () => {
-				const query: SchoolQuery = { federalStateId: new ObjectId().toHexString() };
-				const options = undefined;
+				const query: SchoolQuery = { federalStateId: '1' };
 
 				const schools = schoolFactory.buildList(3);
 				schoolRepo.getSchools.mockResolvedValueOnce(schools);
 
-				return { query, options };
+				return { query };
 			};
 
 			it('should pass query to repo', async () => {
-				const { query, options } = setup();
+				const { query } = setup();
 
-				await service.getSchools(query, options);
+				await service.getSchools(query);
 
 				expect(schoolRepo.getSchools).toBeCalledWith(query, undefined);
 			});
 		});
 
-		describe('when schools exists and query is empty but options are passed', () => {
+		describe('when schools exist and query and options are passed', () => {
 			const setup = () => {
 				const query: SchoolQuery = {};
 				const options: IFindOptions<SchoolProps> = {
@@ -157,35 +153,54 @@ describe('SchoolService', () => {
 				return { query, options };
 			};
 
-			it('should pass find options to repo', async () => {
+			it('should pass query and options to repo', async () => {
 				const { query, options } = setup();
 
 				await service.getSchools(query, options);
 
-				expect(schoolRepo.getSchools).toBeCalledWith(expect.anything(), options);
+				expect(schoolRepo.getSchools).toBeCalledWith(query, options);
+			});
+		});
+
+		describe('when no schools exist', () => {
+			const setup = () => {
+				const query: SchoolQuery = {};
+
+				const schools = [];
+				schoolRepo.getSchools.mockResolvedValueOnce(schools);
+
+				return { query, schools };
+			};
+
+			it('should return empty array', async () => {
+				const { query, schools } = setup();
+
+				const result = await service.getSchools(query);
+
+				expect(result).toEqual(schools);
 			});
 		});
 	});
 
 	describe('getSchoolsForExternalInvite', () => {
-		// TODO: Update tests!
-		describe('....describe is missed', () => {
+		describe('when some schools exist that are eligible for external invite', () => {
 			const setup = () => {
 				const query = {};
-				const ownSchool = schoolFactory.build();
-				const foreignSchools = schoolFactory.buildList(3);
-				const foreignExpertSchool = schoolFactory.build({ purpose: SchoolPurpose.EXPERT });
-				schoolRepo.getSchools.mockResolvedValueOnce([ownSchool, ...foreignSchools, foreignExpertSchool]);
+				const schools = schoolFactory.buildList(2);
+				jest.spyOn(schools[0], 'isEligibleForExternalInvite').mockReturnValueOnce(true);
+				jest.spyOn(schools[1], 'isEligibleForExternalInvite').mockReturnValueOnce(false);
 
-				return { query, foreignSchools, ownSchoolId: ownSchool.id };
+				schoolRepo.getSchools.mockResolvedValueOnce(schools);
+
+				return { query, schools };
 			};
 
-			it('should return all schools for external invite', async () => {
-				const { query, foreignSchools, ownSchoolId } = setup();
+			it('should return these schools', async () => {
+				const { query, schools } = setup();
 
-				const result = await service.getSchoolsForExternalInvite(query, ownSchoolId);
+				const result = await service.getSchoolsForExternalInvite(query, 'ownSchoolId');
 
-				expect(result).toEqual(foreignSchools);
+				expect(result).toEqual([schools[0]]);
 			});
 		});
 	});
