@@ -980,7 +980,7 @@ describe('OidcProvisioningService', () => {
 				const externalGroups: ExternalGroupDto[] = [firstExternalGroup, secondExternalGroup];
 
 				userService.findByExternalId.mockResolvedValue(user);
-				groupService.findByUser.mockResolvedValue(existingGroups);
+				groupService.findGroupsByUserAndGroupTypes.mockResolvedValue(existingGroups);
 
 				return {
 					externalGroups,
@@ -1037,7 +1037,7 @@ describe('OidcProvisioningService', () => {
 					const externalGroups: ExternalGroupDto[] = [firstExternalGroup];
 
 					userService.findByExternalId.mockResolvedValue(user);
-					groupService.findByUser.mockResolvedValue(existingGroups);
+					groupService.findGroupsByUserAndGroupTypes.mockResolvedValue(existingGroups);
 
 					return {
 						externalGroups,
@@ -1104,7 +1104,7 @@ describe('OidcProvisioningService', () => {
 					const externalGroups: ExternalGroupDto[] = [firstExternalGroup];
 
 					userService.findByExternalId.mockResolvedValue(user);
-					groupService.findByUser.mockResolvedValue(existingGroups);
+					groupService.findGroupsByUserAndGroupTypes.mockResolvedValue(existingGroups);
 
 					return {
 						externalGroups,
