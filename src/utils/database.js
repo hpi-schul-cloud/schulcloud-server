@@ -93,8 +93,6 @@ function connect() {
 	};
 
 	addAuthenticationToMongooseOptions(options.username, options.password, mongooseOptions);
-	// https://mongoosejs.com/docs/6.x/docs/migrating_to_6.html#strictpopulate
-	mongoose.set('strictPopulate', false);
 	// https://mongoosejs.com/docs/6.x/docs/migrating_to_6.html#strictquery-is-removed-and-replaced-by-strict
 	mongoose.set('strictQuery', false);
 	return mongoose.connect(encodeMongoURI(options.url), mongooseOptions).then((resolved) => {
