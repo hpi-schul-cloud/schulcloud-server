@@ -28,7 +28,7 @@ data:
     {% if KEDA_NAMESPACE_ACTIVATOR_ENABLED is defined %}
     curl -XPUT -H 'Content-Type: application/json'  -Lv 'https://activate.cd.dbildungscloud.dev/namespace' -d '{"name" : "{{ NAMESPACE }}"}'
     {% endif %}
-    curl --retry 360 --retry-connrefused --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/database/seed?with-indexes=true'
+    curl --retry 360 --retry-all-errors --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/database/seed?with-indexes=true'
 
     # Below is a series of a MongoDB-data initializations, meant for the development and testing
     # purposes on various dev environments - most of them will only work there.
@@ -37,7 +37,7 @@ data:
     OIDCMOCK_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $OIDCMOCK__CLIENT_SECRET)
     # Test LDAP server (deployed in the sc-common namespace) configuration (stored in the 'systems' collection).
     SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $LDAP_PASSWORD_ENCRYPTION_KEY -e $SC_COMMON_LDAP_PASSWORD)
-    mongosh $DATABASE__URL --eval 'db.systems.insert([
+    mongosh $DATABASE__URL --eval 'db.systems.insertMany([
     {
       "type" : "ldap",
       "alias" : "schoolOne0",
@@ -131,13 +131,13 @@ data:
     IDM_ACTIVE={{ WITH_ERWINIDM }}
     if [[ ${IDM_ACTIVE,,} == true ]]
     then
-      curl --retry 360 --retry-connrefused --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/idm/seed'
+      curl --retry 360 --retry-all-errors --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/idm/seed'
     else
       echo "Skip IDM initialization"
     fi
 
     # AWS S3 storage configuration (stored in the 'storageproviders' collection).
-    mongosh $DATABASE__URL --eval 'db.storageproviders.insert( {
+    mongosh $DATABASE__URL --eval 'db.storageproviders.insertOne( {
                                        "isShared" : true,
                                        "region" : "eu-central-1",
                                        "type" : "S3",
@@ -162,7 +162,7 @@ data:
             $set: { "systems" : [ ObjectId("'$SANIS_SYSTEM_ID'") ] }
           }
       );'
-      mongosh $DATABASE__URL --eval 'db.systems.insert([
+      mongosh $DATABASE__URL --eval 'db.systems.insertOne(
           {
             "_id": ObjectId("'$SANIS_SYSTEM_ID'"),
             "alias" : "SANIS",
@@ -184,7 +184,7 @@ data:
               "issuer": "https://auth.stage.niedersachsen-login.schule/realms/SANIS"
             }
           }
-      ]);'
+      );'
     fi
 
     # Re-assign the k8s namespace name to a shorter variable to make the code a little bit more readable.
@@ -370,7 +370,7 @@ data:
             # the server when Bettermarks' OAuth client configuration is added manually in SuperHero Dashboard.
 
             # Add Bettermarks' OAuth client configuration in Hydra.
-            curl --retry 360 --retry-connrefused --retry-delay 10 \
+            curl --retry 360 --retry-all-errors --retry-delay 10 \
                   -H 'X-Forwarded-Proto: https' \
                   -X POST $HYDRA_URI/clients \
                   -d '{
@@ -428,7 +428,7 @@ data:
     if [ -n "$NEXTCLOUD_CLIENT_SECRET" ] && [ -n "$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME" ]; then
          echo "Inserting nextcloud to ltitools..."
          # Add document to the 'ltitools' collection
-         mongosh $DATABASE__URL --eval 'db.getCollection("ltitools").update(
+         mongosh $DATABASE__URL --eval 'db.getCollection("ltitools").updateOne(
              {
                "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
                "isTemplate": true
@@ -464,7 +464,7 @@ data:
 
          # Add Nextcloud client in hydra
          echo "POSTing nextcloud to hydra..."
-         curl --retry 10 --retry-connrefused --retry-delay 10 \
+         curl --retry 10 --retry-all-errors --retry-delay 10 \
                -H 'X-Forwarded-Proto: https' \
                -X POST $HYDRA_URI/clients \
                -d '{
@@ -488,7 +488,7 @@ data:
          # Add Nextcloud' tools configuration as an external tool
          # (stored in the 'external-tools' collection) that uses OAuth.
          echo "Inserting nextcloud to external-tools..."
-         mongosh $DATABASE__URL --eval 'db.getCollection("external-tools").update(
+         mongosh $DATABASE__URL --eval 'db.getCollection("external-tools").updateOne(
              {
                "name": "nextcloud",
                "config_type": "oauth2"
