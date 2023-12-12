@@ -5,18 +5,6 @@ import { CourseGroupService, CourseService } from '@modules/learnroom/service';
 import { LessonService } from '@modules/lesson/service';
 import { PseudonymService } from '@modules/pseudonym';
 import { RegistrationPinService } from '@modules/registration-pin';
-<<<<<<< HEAD
-import { DeletionRequestService, DeletionLogService } from '../services';
-import { DeletionDomainModel, DeletionOperationModel, DeletionStatusModel } from '../domain/types';
-import { DeletionRequest, DeletionLog } from '../domain';
-import {
-	DeletionRequestProps,
-	DeletionRequestLog,
-	DeletionLogStatistic,
-	DeletionRequestCreateAnswer,
-} from './interface/interfaces';
-import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder, DeletionRequestLogResponseBuilder } from '../builder';
-=======
 import { RocketChatService } from '@modules/rocketchat';
 import { RocketChatUserService } from '@modules/rocketchat-user';
 import { TeamService } from '@modules/teams';
@@ -24,15 +12,12 @@ import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
-import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
-import { DeletionLog } from '../domain/deletion-log.do';
-import { DeletionRequest } from '../domain/deletion-request.do';
+import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder, DeletionRequestLogResponseBuilder } from '../builder';
+import { DeletionLogStatistic } from './interface/interfaces';
+import { DeletionRequest, DeletionLog } from '../domain';
 import { DeletionDomainModel, DeletionOperationModel, DeletionStatusModel } from '../domain/types';
-import { DeletionLogStatistic } from '../interface/interfaces';
-import { DeletionLogService } from '../services/deletion-log.service';
-import { DeletionRequestService } from '../services/deletion-request.service';
->>>>>>> origin
+import { DeletionRequestService, DeletionLogService } from '../services';
+import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 
 @Injectable()
 export class DeletionRequestUc {
@@ -84,11 +69,7 @@ export class DeletionRequestUc {
 		this.logger.debug({ action: 'deletionRequestId', deletionRequestId });
 
 		const deletionRequest: DeletionRequest = await this.deletionRequestService.findById(deletionRequestId);
-<<<<<<< HEAD
-		let response: DeletionRequestLog = DeletionRequestLogResponseBuilder.build(
-=======
 		let response: DeletionRequestLogResponse = DeletionRequestLogResponseBuilder.build(
->>>>>>> origin
 			DeletionTargetRefBuilder.build(deletionRequest.targetRefDomain, deletionRequest.targetRefId),
 			deletionRequest.deleteAfter
 		);
