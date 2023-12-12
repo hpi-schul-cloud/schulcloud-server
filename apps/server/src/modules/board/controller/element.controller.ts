@@ -145,11 +145,11 @@ export class ElementController {
 	}
 
 	@ApiOperation({ summary: 'Check permission for a drawing element.' })
-	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 201 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@HttpCode(204)
+	@HttpCode(201)
 	@Get(':drawingName/permission')
 	async checkDrawingPermission(
 		@Param() urlParams: DrawingPermissionUrlParams,
