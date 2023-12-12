@@ -7,11 +7,18 @@ import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { EntityId, LegacySchoolDo, OauthConfigEntity, SchoolFeatures, UserDO } from '@shared/domain';
+import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
+import { OauthConfigEntity, SchoolFeatures } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthTokenDto } from '../interface';
-import { OAuthSSOError, SSOErrorCode, UserNotFoundAfterProvisioningLoggableException } from '../loggable';
+import {
+	AuthCodeFailureLoggableException,
+	IdTokenInvalidLoggableException,
+	OauthConfigMissingLoggableException,
+	UserNotFoundAfterProvisioningLoggableException,
+} from '../loggable';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
@@ -38,15 +45,12 @@ export class OAuthService {
 		errorCode?: string
 	): Promise<OAuthTokenDto> {
 		if (errorCode || !authCode) {
-			throw new OAuthSSOError(
-				'Authorization Query Object has no authorization code or error',
-				errorCode || 'sso_auth_code_step'
-			);
+			throw new AuthCodeFailureLoggableException(errorCode);
 		}
 
 		const system: SystemDto = await this.systemService.findById(systemId);
 		if (!system.oauthConfig) {
-			throw new OAuthSSOError(`Requested system ${systemId} has no oauth configured`, 'sso_internal_error');
+			throw new OauthConfigMissingLoggableException(systemId);
 		}
 		const { oauthConfig } = system;
 
@@ -139,7 +143,7 @@ export class OAuthService {
 		});
 
 		if (typeof decodedJWT === 'string') {
-			throw new OAuthSSOError('Failed to validate idToken', SSOErrorCode.SSO_JWT_PROBLEM);
+			throw new IdTokenInvalidLoggableException();
 		}
 
 		return decodedJWT;

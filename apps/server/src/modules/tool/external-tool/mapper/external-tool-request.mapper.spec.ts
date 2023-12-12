@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder, SortOrderMap } from '@shared/domain';
 
+import { SortOrder, SortOrderMap } from '@shared/domain/interface';
 import {
 	basicToolConfigFactory,
 	customParameterFactory,

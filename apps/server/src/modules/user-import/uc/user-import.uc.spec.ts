@@ -9,17 +9,10 @@ import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
-import {
-	ImportUser,
-	LegacySchoolDo,
-	MatchCreator,
-	MatchCreatorScope,
-	Permission,
-	SchoolEntity,
-	SchoolFeatures,
-	SystemEntity,
-	User,
-} from '@shared/domain';
+import { LegacySchoolDo } from '@shared/domain/domainobject';
+import { ImportUser, MatchCreator, SchoolEntity, SchoolFeatures, SystemEntity, User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
+import { MatchCreatorScope } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';

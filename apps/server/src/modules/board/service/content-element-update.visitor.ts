@@ -8,13 +8,13 @@ import {
 	ColumnBoard,
 	ExternalToolElement,
 	FileElement,
-	InputFormat,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { InputFormat } from '@shared/domain/types';
 import {
 	AnyElementContentBody,
 	DrawingContentBody,

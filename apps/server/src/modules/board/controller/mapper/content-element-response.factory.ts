@@ -1,11 +1,11 @@
 import { NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
-import { AnyBoardDo, FileElement, RichTextElement } from '@shared/domain';
+import { AnyBoardDo, FileElement, RichTextElement } from '@shared/domain/domainobject';
 import {
 	AnyContentElementResponse,
 	FileElementResponse,
-	RichTextElementResponse,
 	isFileElementResponse,
 	isRichTextElementResponse,
+	RichTextElementResponse,
 } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
 import { DrawingElementResponseMapper } from './drawing-element-response.mapper';

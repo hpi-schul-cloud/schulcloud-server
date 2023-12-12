@@ -1,26 +1,28 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, Permission, SchoolEntity } from '@shared/domain';
+import { Course, SchoolEntity } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	basicToolConfigFactory,
-	contextExternalToolFactory,
 	contextExternalToolEntityFactory,
+	contextExternalToolFactory,
 	courseFactory,
 	externalToolEntityFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
+	customParameterFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@modules/server';
 import { Response } from 'supertest';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
-import { LaunchRequestMethod } from '../../types';
-import { ToolLaunchRequestResponse, ToolLaunchParams } from '../dto';
+import { CustomParameterLocation, CustomParameterScope, ToolConfigType } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { ExternalToolEntity } from '../../../external-tool/entity';
-import { ToolConfigType } from '../../../common/enum';
+import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
+import { LaunchRequestMethod } from '../../types';
+import { ToolLaunchParams, ToolLaunchRequestResponse } from '../dto';
 
 describe('ToolLaunchController (API)', () => {
 	let app: INestApplication;
@@ -64,6 +66,18 @@ describe('ToolLaunchController (API)', () => {
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
 					version: 0,
+					parameters: [
+						customParameterFactory.build({
+							name: 'schoolMockParameter',
+							scope: CustomParameterScope.SCHOOL,
+							location: CustomParameterLocation.PATH,
+						}),
+						customParameterFactory.build({
+							name: 'contextMockParameter',
+							scope: CustomParameterScope.CONTEXT,
+							location: CustomParameterLocation.PATH,
+						}),
+					],
 				});
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					tool: externalToolEntity,
