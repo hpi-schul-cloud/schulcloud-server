@@ -1,5 +1,6 @@
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const hooks = require('./hooks');
 const Hydra = require('./hydra.js');
@@ -13,8 +14,10 @@ const setClientDefaults = (data) => {
 };
 
 module.exports = function oauth2() {
+	const hydraUri = Configuration.get('HYDRA_URI');
+
 	const app = this;
-	const hydraAdmin = Hydra(app.settings.services.hydra);
+	const hydraAdmin = Hydra(hydraUri);
 
 	// hydra.isInstanceAlive()
 	// 	.then(res => { logger.log('info', 'Hydra status is: ' + res.statusText) })
@@ -24,7 +27,7 @@ module.exports = function oauth2() {
 
 	app.use('/oauth2/baseUrl', {
 		find() {
-			return Promise.resolve(app.settings.services.hydra);
+			return Promise.resolve(hydraUri);
 		},
 	});
 
