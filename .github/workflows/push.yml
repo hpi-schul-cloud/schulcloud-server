@@ -138,8 +138,14 @@ jobs:
       branch: ${{ needs.branch_meta.outputs.branch }}
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
-      DEV_VAULT: ${{ secrets.DEV_VAULT }}
-      DEV_KUBE_CONFIG: ${{ secrets.DEV_KUBE_CONFIG }}
+      DEV_VAULT_BRB: ${{ secrets.DEV_VAULT_BRB }}
+      DEV_VAULT_NBC: ${{ secrets.DEV_VAULT_NBC }}
+      DEV_VAULT_THR: ${{ secrets.DEV_VAULT_THR }}
+      DEV_VAULT_DBC: ${{ secrets.DEV_VAULT_DBC }}
+      DEV_KUBE_CONFIG_BRB: ${{ secrets.DEV_KUBE_CONFIG_BRB }}
+      DEV_KUBE_CONFIG_NBC: ${{ secrets.DEV_KUBE_CONFIG_NBC }}
+      DEV_KUBE_CONFIG_THR: ${{ secrets.DEV_KUBE_CONFIG_THR }}
+      DEV_KUBE_CONFIG_DBC: ${{ secrets.DEV_KUBE_CONFIG_DBC }}
       BINGO_REPO_TOKEN: ${{ secrets.BINGO_REPO_TOKEN }}
 
   deploy-successful:
