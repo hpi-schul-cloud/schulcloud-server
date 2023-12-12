@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
 import { DashboardGridElementModel } from '@shared/domain/entity';
-import { Counted, EntityId } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class DashboardElementRepo {
 		return DashboardGridElementModel;
 	}
 
-	async deleteByDasboardId(id: EntityId): Promise<number> {
+	async deleteByDashboardId(id: EntityId): Promise<number> {
 		const promise = this.em.nativeDelete(DashboardGridElementModel, {
 			dashboard: new ObjectId(id),
 		});

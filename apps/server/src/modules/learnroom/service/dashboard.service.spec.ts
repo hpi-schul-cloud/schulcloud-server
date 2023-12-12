@@ -2,7 +2,23 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardElementRepo, IDashboardRepo, UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
+import { EntityId, LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
+import { DashboardEntity, GridElement } from '@shared/domain/entity';
 import { DashboardService } from '.';
+
+const learnroomMock = (id: string, name: string) => {
+	return {
+		getMetadata(): LearnroomMetadata {
+			return {
+				id,
+				type: LearnroomTypes.Course,
+				title: name,
+				shortTitle: name.substr(0, 2),
+				displayColor: '#ACACAC',
+			};
+		},
+	};
+};
 
 describe(DashboardService.name, () => {
 	let module: TestingModule;
@@ -59,6 +75,26 @@ describe(DashboardService.name, () => {
 			await dashboardService.deleteDashboardByUserId(user.id);
 
 			expect(spy).toHaveBeenCalledWith(user.id);
+		});
+
+		it('should call dashboardElementRepo.deleteByDashboardId', async () => {
+			const { user } = setup();
+			jest.spyOn(dashboardRepo, 'getUsersDashboard').mockResolvedValueOnce(
+				new DashboardEntity('dashboardId', {
+					grid: [
+						{
+							pos: { x: 1, y: 2 },
+							gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
+						},
+					],
+					userId: 'userId',
+				})
+			);
+			const spy = jest.spyOn(dashboardElementRepo, 'deleteByDashboardId');
+
+			await dashboardService.deleteDashboardByUserId(user.id);
+
+			expect(spy).toHaveBeenCalledWith('dashboardId');
 		});
 
 		it('should call dashboardRepo.deleteDashboardByUserId', async () => {
