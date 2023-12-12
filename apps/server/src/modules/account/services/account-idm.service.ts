@@ -144,7 +144,9 @@ export class AccountServiceIdm extends AbstractAccountService {
 		await this.identityManager.updateAccount(id, { username });
 		const updatedAccount = await this.identityManager.findAccountById(id);
 
-		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
+		const accountDto = this.accountIdmToDtoMapper.mapToDto(updatedAccount);
+
+		return accountDto;
 	}
 
 	async updatePassword(accountRefId: EntityId, password: string): Promise<AccountDto> {
@@ -177,10 +179,34 @@ export class AccountServiceIdm extends AbstractAccountService {
 	async findMany(_offset: number, _limit: number): Promise<AccountDto[]> {
 		throw new NotImplementedException();
 	}
+	/*
+		private async getExternalId(id: EntityId): Promise<string | null> {
+		if (!ObjectId.isValid(id)) {
+			return id;
+		}
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
+			const account = await this.idmService.findAccountByDbcAccountId(id.toString());
+			return account.id;
+		}
 
-	private async getIdmAccountId(accountId: EntityId | ObjectId): Promise<string> {
-		if (!(accountId instanceof ObjectId) && !ObjectId.isValid(accountId)) {
-			return accountId;
+		return null;
+	}
+
+	private async getIdmAccountId(accountId: EntityId): Promise<string> {
+		const externalId = await this.getExternalId(accountId);
+
+		if (!externalId) {
+			throw new EntityNotFoundError(`Account with id ${accountId} not found`);
+		}
+
+		return externalId;
+	}
+	*/
+
+	/*
+	private async getIdmAccountId(accountId: EntityId): Promise<string> {
+		if (!ObjectId.isValid(accountId)) {
+			throw new EntityNotFoundError(`Account with id ${accountId} not found`);
 		}
 
 		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
@@ -188,6 +214,22 @@ export class AccountServiceIdm extends AbstractAccountService {
 			return account.id;
 		}
 
-		throw new EntityNotFoundError(`Account with id ${accountId.toString()} not found`);
+		throw new EntityNotFoundError(`Account with id ${accountId} not found`);
+	}
+	*/
+	// See deleteByUserId method, without any of this checks... make this sense?
+	// Check account.service updateUsername if FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED=false than this method throw always a error
+	// ...we must speak and clarify this point
+	private async getIdmAccountId(accountId: EntityId): Promise<EntityId> {
+		const isEnabled = this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true;
+		const isValidObjectId = ObjectId.isValid(accountId);
+
+		if (!isValidObjectId || !isEnabled) {
+			throw new EntityNotFoundError(`Account with id ${accountId} not found`);
+		}
+
+		const account = await this.idmService.findAccountByDbcAccountId(accountId.toString());
+
+		return account.id;
 	}
 }

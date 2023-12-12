@@ -150,8 +150,8 @@ export class AccountServiceDb extends AbstractAccountService {
 
 		return bcrypt.compare(comparePassword, account.password);
 	}
-
-	private async getInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
+	/*
+	private async getInternalId2(id: EntityId | ObjectId): Promise<ObjectId | null> {
 		if (id instanceof ObjectId || ObjectId.isValid(id)) {
 			return new ObjectId(id);
 		}
@@ -159,8 +159,29 @@ export class AccountServiceDb extends AbstractAccountService {
 			const account = await this.idmService.findAccountById(id);
 			return new ObjectId(account.attDbcAccountId);
 		}
+		return null;
+	}
 
-		throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
+	private async getInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
+		const internalId = await this.getInternalId2(id);
+		if (!internalId) {
+			throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
+		}
+
+		return internalId;
+	}
+	*/
+
+	private async getInternalId(id: EntityId): Promise<ObjectId> {
+		const isEnabled = this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true;
+		const isValidObjectId = ObjectId.isValid(id);
+
+		if (!isValidObjectId || !isEnabled) {
+			throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
+		}
+
+		const account = await this.idmService.findAccountById(id);
+		return new ObjectId(account.attDbcAccountId);
 	}
 
 	private encryptPassword(password: string): Promise<string> {
