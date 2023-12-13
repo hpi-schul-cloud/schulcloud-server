@@ -1,24 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain/interface';
-import { AccountDto } from '../../services';
-import { AccountIdmToDtoMapper } from './account-idm-to-dto.mapper.abstract';
-import { AccountIdmToDtoMapperDb } from './account-idm-to-dto.mapper.db';
+import { AccountDto } from '../../services/dto';
+import { AccountIdmToDoMapper } from './account-idm-to-do.mapper.abstract';
+import { AccountIdmToDoMapperDb } from './account-idm-to-do.mapper.db';
 
 describe('AccountIdmToDtoMapperDb', () => {
 	let module: TestingModule;
-	let mapper: AccountIdmToDtoMapper;
+	let mapper: AccountIdmToDoMapper;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				{
-					provide: AccountIdmToDtoMapper,
-					useClass: AccountIdmToDtoMapperDb,
+					provide: AccountIdmToDoMapper,
+					useClass: AccountIdmToDoMapperDb,
 				},
 			],
 		}).compile();
 
-		mapper = module.get(AccountIdmToDtoMapper);
+		mapper = module.get(AccountIdmToDoMapper);
 	});
 
 	afterAll(async () => {
@@ -38,7 +38,7 @@ describe('AccountIdmToDtoMapperDb', () => {
 					attDbcUserId: 'attDbcUserId',
 					attDbcSystemId: 'attDbcSystemId',
 				};
-				const ret = mapper.mapToDto(testIdmEntity);
+				const ret = mapper.mapToDo(testIdmEntity);
 
 				expect(ret).toEqual(
 					expect.objectContaining<Partial<AccountDto>>({
@@ -69,7 +69,7 @@ describe('AccountIdmToDtoMapperDb', () => {
 				it('should use actual date', () => {
 					const { testIdmEntity, dateMock } = setup();
 
-					const ret = mapper.mapToDto(testIdmEntity);
+					const ret = mapper.mapToDo(testIdmEntity);
 
 					expect(ret.createdAt).toEqual(dateMock);
 					expect(ret.updatedAt).toEqual(dateMock);
@@ -83,7 +83,7 @@ describe('AccountIdmToDtoMapperDb', () => {
 					const testIdmEntity: IdmAccount = {
 						id: 'id',
 					};
-					const ret = mapper.mapToDto(testIdmEntity);
+					const ret = mapper.mapToDo(testIdmEntity);
 
 					expect(ret.id).toBe('');
 					expect(ret.username).toBe('');

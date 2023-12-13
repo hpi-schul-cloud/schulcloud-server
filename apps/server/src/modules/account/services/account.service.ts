@@ -11,9 +11,10 @@ import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
 import { AccountDto, AccountSaveDto } from './dto';
+import { Account } from '../domain/account';
 
 @Injectable()
-export class AccountService extends AbstractAccountService {
+export class AccountService {
 	private readonly accountImpl: AbstractAccountService;
 
 	constructor(
@@ -23,7 +24,6 @@ export class AccountService extends AbstractAccountService {
 		private readonly accountValidationService: AccountValidationService,
 		private readonly logger: LegacyLogger
 	) {
-		super();
 		this.logger.setContext(AccountService.name);
 		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
 			this.accountImpl = accountIdm;
@@ -32,35 +32,35 @@ export class AccountService extends AbstractAccountService {
 		}
 	}
 
-	async findById(id: string): Promise<AccountDto> {
+	async findById(id: string): Promise<Account> {
 		return this.accountImpl.findById(id);
 	}
 
-	async findMultipleByUserId(userIds: string[]): Promise<AccountDto[]> {
+	async findMultipleByUserId(userIds: string[]): Promise<Account[]> {
 		return this.accountImpl.findMultipleByUserId(userIds);
 	}
 
-	async findByUserId(userId: string): Promise<AccountDto | null> {
+	async findByUserId(userId: string): Promise<Account | null> {
 		return this.accountImpl.findByUserId(userId);
 	}
 
-	async findByUserIdOrFail(userId: string): Promise<AccountDto> {
+	async findByUserIdOrFail(userId: string): Promise<Account> {
 		return this.accountImpl.findByUserIdOrFail(userId);
 	}
 
-	async findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<AccountDto | null> {
+	async findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<Account | null> {
 		return this.accountImpl.findByUsernameAndSystemId(username, systemId);
 	}
 
-	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>> {
+	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
 		return this.accountImpl.searchByUsernamePartialMatch(userName, skip, limit);
 	}
 
-	async searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>> {
+	async searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
 		return this.accountImpl.searchByUsernameExactMatch(userName);
 	}
 
-	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
+	async save(accountDto: AccountSaveDto): Promise<Account> {
 		const ret = await this.accountDb.save(accountDto);
 		const newAccount: AccountSaveDto = {
 			...accountDto,
@@ -74,7 +74,9 @@ export class AccountService extends AbstractAccountService {
 			this.logger.debug(`Saved account with accountID ${ret.id}`);
 			return account;
 		});
-		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
+		const account = new Account(ret);
+		account.idmReferenceId = idmAccount?.idmReferenceId;
+		return account;
 	}
 
 	async saveWithValidation(dto: AccountSaveDto): Promise<void> {
@@ -111,7 +113,7 @@ export class AccountService extends AbstractAccountService {
 		await this.save(dto);
 	}
 
-	async updateUsername(accountId: string, username: string): Promise<AccountDto> {
+	async updateUsername(accountId: string, username: string): Promise<Account> {
 		const ret = await this.accountDb.updateUsername(accountId, username);
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(`Updating username for account with accountID ${accountId} ...`);
@@ -119,10 +121,12 @@ export class AccountService extends AbstractAccountService {
 			this.logger.debug(`Updated username for account with accountID ${accountId}`);
 			return account;
 		});
-		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
+		const account = new Account(ret);
+		account.idmReferenceId = idmAccount?.idmReferenceId;
+		return account;
 	}
 
-	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<AccountDto> {
+	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<Account> {
 		const ret = await this.accountDb.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(`Updating last tried failed login for account with accountID ${accountId} ...`);
@@ -130,10 +134,12 @@ export class AccountService extends AbstractAccountService {
 			this.logger.debug(`Updated last tried failed login for account with accountID ${accountId}`);
 			return account;
 		});
-		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
+		const account = new Account(ret);
+		account.idmReferenceId = idmAccount?.idmReferenceId;
+		return account;
 	}
 
-	async updatePassword(accountId: string, password: string): Promise<AccountDto> {
+	async updatePassword(accountId: string, password: string): Promise<Account> {
 		const ret = await this.accountDb.updatePassword(accountId, password);
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(`Updating password for account with accountID ${accountId} ...`);
@@ -141,7 +147,10 @@ export class AccountService extends AbstractAccountService {
 			this.logger.debug(`Updated password for account with accountID ${accountId}`);
 			return account;
 		});
-		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
+		// TODO: create mapper
+		const account = new Account(ret);
+		account.idmReferenceId = idmAccount?.idmReferenceId;
+		return account;
 	}
 
 	async validatePassword(account: AccountDto, comparePassword: string): Promise<boolean> {
@@ -169,7 +178,7 @@ export class AccountService extends AbstractAccountService {
 	/**
 	 * @deprecated For migration purpose only
 	 */
-	async findMany(offset = 0, limit = 100): Promise<AccountDto[]> {
+	async findMany(offset = 0, limit = 100): Promise<Account[]> {
 		return this.accountDb.findMany(offset, limit);
 	}
 

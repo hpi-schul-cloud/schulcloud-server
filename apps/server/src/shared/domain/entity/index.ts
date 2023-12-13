@@ -1,4 +1,4 @@
-export * from './account.entity';
+export * from '../../../modules/account/entity/account.entity';
 export * from './all-entities';
 export * from './base.entity';
 export * from './boardnode';

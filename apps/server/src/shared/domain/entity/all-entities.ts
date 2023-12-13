@@ -7,7 +7,7 @@ import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
 import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
 import { ContextExternalToolEntity, SchoolExternalToolEntity } from '@src/modules/tool';
 import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
-import { AccountEntity } from './account.entity';
+import { AccountEntity } from '../../../modules/account/entity/account.entity';
 import {
 	BoardNode,
 	CardNode,

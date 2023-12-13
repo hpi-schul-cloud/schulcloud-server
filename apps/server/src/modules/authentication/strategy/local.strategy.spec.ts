@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdentityManagementOauthService } from '@infra/identity-management';
-import { AccountEntityToDtoMapper } from '@src/modules/account/repo/mapper';
+import { AccountEntityToDoMapper } from '@src/modules/account/repo/mapper';
 import { AccountDto } from '@modules/account/services/dto';
 import { ServerConfig } from '@modules/server';
 import { UnauthorizedException } from '@nestjs/common';
@@ -33,7 +33,7 @@ describe('LocalStrategy', () => {
 		userRepoMock = createMock<UserRepo>();
 		strategy = new LocalStrategy(authenticationServiceMock, idmOauthServiceMock, configServiceMock, userRepoMock);
 		mockUser = userFactory.withRoleByName(RoleName.STUDENT).buildWithId();
-		mockAccount = AccountEntityToDtoMapper.mapToDto(
+		mockAccount = AccountEntityToDoMapper.mapToDo(
 			accountFactory.buildWithId({ userId: mockUser.id, password: mockPasswordHash })
 		);
 	});

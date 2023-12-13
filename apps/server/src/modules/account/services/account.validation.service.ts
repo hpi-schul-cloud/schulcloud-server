@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
-import { AccountEntityToDtoMapper } from '../repo/mapper/account-entity-to-dto.mapper';
+import { AccountEntityToDoMapper } from '../repo/mapper/account-entity-to-do.mapper';
 import { AccountRepo } from '../repo/account.repo';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class AccountValidationService {
 		const [foundUsers, [accounts]] = await Promise.all([
 			// Test coverage: Missing branch null check; unreachable
 			this.userRepo.findByEmail(email),
-			AccountEntityToDtoMapper.mapSearchResult(await this.accountRepo.searchByUsernameExactMatch(email)),
+			AccountEntityToDoMapper.mapSearchResult(await this.accountRepo.searchByUsernameExactMatch(email)),
 		]);
 
 		const filteredAccounts = accounts.filter((foundAccount) => foundAccount.systemId === systemId);

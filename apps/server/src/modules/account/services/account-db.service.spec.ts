@@ -12,7 +12,7 @@ import { Counted, EntityId } from '@shared/domain/types';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import bcrypt from 'bcryptjs';
 import { LegacyLogger } from '../../../core/logger';
-import { AccountEntityToDtoMapper } from '../repo/mapper';
+import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountLookupService } from './account-lookup.service';
@@ -183,7 +183,7 @@ describe('AccountDbService', () => {
 			'should return accountDto',
 			async () => {
 				const resultAccount = await accountService.findById(mockTeacherAccount.id);
-				expect(resultAccount).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+				expect(resultAccount).toEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccount));
 			},
 			10 * 60 * 1000
 		);
@@ -192,7 +192,7 @@ describe('AccountDbService', () => {
 	describe('findByUserId', () => {
 		it('should return accountDto', async () => {
 			const resultAccount = await accountService.findByUserId(mockTeacherUser.id);
-			expect(resultAccount).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+			expect(resultAccount).toEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccount));
 		});
 		it('should return null', async () => {
 			const resultAccount = await accountService.findByUserId('nonExistentId');
@@ -227,8 +227,8 @@ describe('AccountDbService', () => {
 	describe('findMultipleByUserId', () => {
 		it('should return multiple accountDtos', async () => {
 			const resultAccounts = await accountService.findMultipleByUserId([mockTeacherUser.id, mockStudentUser.id]);
-			expect(resultAccounts).toContainEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
-			expect(resultAccounts).toContainEqual(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+			expect(resultAccounts).toContainEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccount));
+			expect(resultAccounts).toContainEqual(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
 			expect(resultAccounts).toHaveLength(2);
 		});
 		it('should return empty array on mismatch', async () => {
@@ -240,7 +240,7 @@ describe('AccountDbService', () => {
 	describe('findByUserIdOrFail', () => {
 		it('should return accountDto', async () => {
 			const resultAccount = await accountService.findByUserIdOrFail(mockTeacherUser.id);
-			expect(resultAccount).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+			expect(resultAccount).toEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccount));
 		});
 		it('should throw EntityNotFoundError', async () => {
 			await expect(accountService.findByUserIdOrFail('nonExistentId')).rejects.toThrow(EntityNotFoundError);
@@ -249,7 +249,7 @@ describe('AccountDbService', () => {
 
 	describe('save', () => {
 		it('should update an existing account', async () => {
-			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+			const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDo(mockTeacherAccount);
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
 			mockTeacherAccountDto.activated = false;
 			const ret = await accountService.save(mockTeacherAccountDto);
@@ -265,7 +265,7 @@ describe('AccountDbService', () => {
 		});
 
 		it("should update an existing account's system", async () => {
-			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+			const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDo(mockTeacherAccount);
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
 			mockTeacherAccountDto.systemId = '123456789012';
 			const ret = await accountService.save(mockTeacherAccountDto);
@@ -279,7 +279,7 @@ describe('AccountDbService', () => {
 			});
 		});
 		it("should update an existing account's user", async () => {
-			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+			const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDo(mockTeacherAccount);
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
 			mockTeacherAccountDto.userId = mockStudentUser.id;
 			const ret = await accountService.save(mockTeacherAccountDto);
@@ -294,7 +294,7 @@ describe('AccountDbService', () => {
 		});
 
 		it("should keep existing account's system undefined on update", async () => {
-			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+			const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDo(mockTeacherAccount);
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
 			mockTeacherAccountDto.systemId = undefined;
 			const ret = await accountService.save(mockTeacherAccountDto);
@@ -403,7 +403,7 @@ describe('AccountDbService', () => {
 
 	describe('updateUsername', () => {
 		it('should update an existing account but no other information', async () => {
-			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+			const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDo(mockTeacherAccount);
 			const newUsername = 'newUsername';
 			const ret = await accountService.updateUsername(mockTeacherAccount.id, newUsername);
 
@@ -417,7 +417,7 @@ describe('AccountDbService', () => {
 
 	describe('updateLastTriedFailedLogin', () => {
 		it('should update last tried failed login', async () => {
-			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+			const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDo(mockTeacherAccount);
 			const theNewDate = new Date();
 			const ret = await accountService.updateLastTriedFailedLogin(mockTeacherAccount.id, theNewDate);
 
@@ -500,7 +500,7 @@ describe('AccountDbService', () => {
 			expect(accountRepo.searchByUsernamePartialMatch).toHaveBeenCalledWith(partialUserName, skip, limit);
 			expect(total).toBe(mockAccounts.length);
 
-			expect(accounts[0]).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+			expect(accounts[0]).toEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccount));
 		});
 	});
 	describe('searchByUsernameExactMatch', () => {
@@ -509,7 +509,7 @@ describe('AccountDbService', () => {
 			const [accounts, total] = await accountService.searchByUsernameExactMatch(partialUserName);
 			expect(accountRepo.searchByUsernameExactMatch).toHaveBeenCalledWith(partialUserName);
 			expect(total).toBe(1);
-			expect(accounts[0]).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+			expect(accounts[0]).toEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccount));
 		});
 	});
 

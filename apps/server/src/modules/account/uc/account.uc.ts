@@ -27,8 +27,10 @@ import {
 	AccountSearchType,
 	PatchMyAccountParams,
 } from '../controller/dto';
-import { AccountResponseMapper } from '../repo/mapper';
+
 import { AccountValidationService } from '../services/account.validation.service';
+import { AccountUcMapper } from './mapper/account-uc.mapper';
+import { Account } from '../domain';
 
 type UserPreferences = {
 	// first login completed
@@ -62,7 +64,7 @@ export class AccountUc {
 				throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
 			}
 			const [accounts, total] = await this.accountService.searchByUsernamePartialMatch(query.value, skip, limit);
-			const accountList = accounts.map((tempAccount) => AccountResponseMapper.mapToResponse(tempAccount));
+			const accountList = accounts.map((tempAccount) => AccountUcMapper.mapToResolvedAccountDto(tempAccount));
 			return new AccountSearchListResponse(accountList, total, skip, limit);
 		}
 		if (query.type === AccountSearchType.USER_ID) {
@@ -74,7 +76,7 @@ export class AccountUc {
 			}
 			const account = await this.accountService.findByUserId(query.value);
 			if (account) {
-				return new AccountSearchListResponse([AccountResponseMapper.mapToResponse(account)], 1, 0, 1);
+				return new AccountSearchListResponse([AccountUcMapper.mapToResolvedAccountDto(account)], 1, 0, 1);
 			}
 			return new AccountSearchListResponse([], 0, 0, 0);
 		}
@@ -95,7 +97,7 @@ export class AccountUc {
 			throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
 		}
 		const account = await this.accountService.findById(params.id);
-		return AccountResponseMapper.mapToResponse(account);
+		return AccountUcMapper.mapToResolvedAccountDto(account);
 	}
 
 	async saveAccount(dto: AccountSaveDto): Promise<void> {
@@ -141,7 +143,7 @@ export class AccountUc {
 			const newMail = body.username.toLowerCase();
 			await this.checkUniqueEmail(targetAccount, targetUser, newMail);
 			targetUser.email = newMail;
-			targetAccount.username = newMail;
+			targetAccount.setUsername(newMail);
 			updateUser = true;
 			updateAccount = true;
 		}
@@ -164,7 +166,7 @@ export class AccountUc {
 				throw new EntityNotFoundError(AccountEntity.name);
 			}
 		}
-		return AccountResponseMapper.mapToResponse(targetAccount);
+		return AccountUcMapper.mapToResolvedAccountDto(targetAccount);
 	}
 
 	/**
@@ -181,7 +183,7 @@ export class AccountUc {
 		}
 		const account: AccountDto = await this.accountService.findById(params.id);
 		await this.accountService.delete(account.id);
-		return AccountResponseMapper.mapToResponse(account);
+		return account;
 	}
 
 	/**
@@ -192,7 +194,7 @@ export class AccountUc {
 	 */
 	async updateMyAccount(currentUserId: EntityId, params: PatchMyAccountParams) {
 		const user = await this.userRepo.findById(currentUserId, true);
-		const account: AccountDto = await this.accountService.findByUserIdOrFail(currentUserId);
+		const account: Account = await this.accountService.findByUserIdOrFail(currentUserId);
 
 		if (account.systemId) {
 			throw new ForbiddenOperationError('External account details can not be changed.');
@@ -215,7 +217,7 @@ export class AccountUc {
 			const newMail = params.email.toLowerCase();
 			await this.checkUniqueEmail(account, user, newMail);
 			user.email = newMail;
-			account.username = newMail;
+			account.setUsername(newMail);
 			updateUser = true;
 			updateAccount = true;
 		}

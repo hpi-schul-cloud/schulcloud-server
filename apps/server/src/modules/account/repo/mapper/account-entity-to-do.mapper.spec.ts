@@ -1,6 +1,6 @@
 import { AccountEntity } from '@shared/domain/entity';
 import { ObjectId } from 'bson';
-import { AccountEntityToDtoMapper } from './account-entity-to-dto.mapper';
+import { AccountEntityToDoMapper } from './account-entity-to-do.mapper';
 
 describe('AccountEntityToDtoMapper', () => {
 	beforeEach(() => {
@@ -30,7 +30,7 @@ describe('AccountEntityToDtoMapper', () => {
 				systemId: new ObjectId(),
 				token: 'token',
 			};
-			const ret = AccountEntityToDtoMapper.mapToDto(testEntity);
+			const ret = AccountEntityToDoMapper.mapToDo(testEntity);
 
 			expect(ret.id).toBe(testEntity.id);
 			expect(ret.createdAt).toEqual(testEntity.createdAt);
@@ -54,7 +54,7 @@ describe('AccountEntityToDtoMapper', () => {
 				createdAt: new Date(),
 				updatedAt: new Date(),
 			};
-			const ret = AccountEntityToDtoMapper.mapToDto(testEntity);
+			const ret = AccountEntityToDoMapper.mapToDo(testEntity);
 
 			expect(ret.userId).toBeUndefined();
 			expect(ret.systemId).toBeUndefined();
@@ -79,7 +79,7 @@ describe('AccountEntityToDtoMapper', () => {
 			};
 			const testAmount = 10;
 
-			const [accounts, total] = AccountEntityToDtoMapper.mapSearchResult([[testEntity1, testEntity2], testAmount]);
+			const [accounts, total] = AccountEntityToDoMapper.mapSearchResult([[testEntity1, testEntity2], testAmount]);
 
 			expect(total).toBe(testAmount);
 			expect(accounts).toHaveLength(2);
@@ -104,7 +104,7 @@ describe('AccountEntityToDtoMapper', () => {
 				createdAt: new Date(),
 				updatedAt: new Date(),
 			};
-			const ret = AccountEntityToDtoMapper.mapAccountsToDto([testEntity1, testEntity2]);
+			const ret = AccountEntityToDoMapper.mapAccountsToDo([testEntity1, testEntity2]);
 
 			expect(ret).toHaveLength(2);
 			expect(ret).toContainEqual(expect.objectContaining({ id: '1' }));

@@ -7,7 +7,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount } from '@shared/domain/interface';
 import { LoggerModule } from '@src/core/logger';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../repo/mapper';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AccountDto, AccountSaveDto } from './dto';
@@ -15,7 +15,7 @@ import { AccountDto, AccountSaveDto } from './dto';
 describe('AccountIdmService', () => {
 	let module: TestingModule;
 	let accountIdmService: AccountServiceIdm;
-	let mapper: AccountIdmToDtoMapper;
+	let mapper: AccountIdmToDoMapper;
 	let idmServiceMock: DeepMocked<IdentityManagementService>;
 	let accountLookupServiceMock: DeepMocked<AccountLookupService>;
 	let idmOauthServiceMock: DeepMocked<IdentityManagementOauthService>;
@@ -43,8 +43,8 @@ describe('AccountIdmService', () => {
 			providers: [
 				AccountServiceIdm,
 				{
-					provide: AccountIdmToDtoMapper,
-					useValue: new AccountIdmToDtoMapperDb(),
+					provide: AccountIdmToDoMapper,
+					useValue: new AccountIdmToDoMapperDb(),
 				},
 				{
 					provide: IdentityManagementService,
@@ -61,7 +61,7 @@ describe('AccountIdmService', () => {
 			],
 		}).compile();
 		accountIdmService = module.get(AccountServiceIdm);
-		mapper = module.get(AccountIdmToDtoMapper);
+		mapper = module.get(AccountIdmToDoMapper);
 		idmServiceMock = module.get(IdentityManagementService);
 		accountLookupServiceMock = module.get(AccountLookupService);
 		idmOauthServiceMock = module.get(IdentityManagementOauthService);
@@ -278,7 +278,7 @@ describe('AccountIdmService', () => {
 			it('should return the account', async () => {
 				setup();
 				const result = await accountIdmService.findById(mockIdmAccountRefId);
-				expect(result).toStrictEqual<AccountDto>(mapper.mapToDto(mockIdmAccount));
+				expect(result).toStrictEqual<AccountDto>(mapper.mapToDo(mockIdmAccount));
 			});
 		});
 
@@ -310,7 +310,7 @@ describe('AccountIdmService', () => {
 			it('should return the accounts', async () => {
 				setup();
 				const result = await accountIdmService.findMultipleByUserId(['id', 'id1', 'id2']);
-				expect(result).toStrictEqual<AccountDto[]>([mapper.mapToDto(mockIdmAccount)]);
+				expect(result).toStrictEqual<AccountDto[]>([mapper.mapToDo(mockIdmAccount)]);
 			});
 		});
 	});
@@ -324,7 +324,7 @@ describe('AccountIdmService', () => {
 			it('should return the account', async () => {
 				setup();
 				const result = await accountIdmService.findByUserId(mockIdmAccount.attDbcUserId ?? '');
-				expect(result).toStrictEqual<AccountDto>(mapper.mapToDto(mockIdmAccount));
+				expect(result).toStrictEqual<AccountDto>(mapper.mapToDo(mockIdmAccount));
 			});
 		});
 
@@ -350,7 +350,7 @@ describe('AccountIdmService', () => {
 			it('should return the account', async () => {
 				setup();
 				const result = await accountIdmService.findByUserIdOrFail(mockIdmAccountRefId);
-				expect(result).toStrictEqual<AccountDto>(mapper.mapToDto(mockIdmAccount));
+				expect(result).toStrictEqual<AccountDto>(mapper.mapToDo(mockIdmAccount));
 			});
 		});
 
@@ -375,7 +375,7 @@ describe('AccountIdmService', () => {
 			it('should return the account', async () => {
 				setup();
 				const result = await accountIdmService.findByUsernameAndSystemId('username', 'attDbcSystemId');
-				expect(result).toStrictEqual<AccountDto>(mapper.mapToDto(mockIdmAccount));
+				expect(result).toStrictEqual<AccountDto>(mapper.mapToDo(mockIdmAccount));
 			});
 		});
 
@@ -401,7 +401,7 @@ describe('AccountIdmService', () => {
 			it('should return the account', async () => {
 				setup();
 				const [result] = await accountIdmService.searchByUsernamePartialMatch('username', 0, 10);
-				expect(result).toStrictEqual<AccountDto[]>([mapper.mapToDto(mockIdmAccount)]);
+				expect(result).toStrictEqual<AccountDto[]>([mapper.mapToDo(mockIdmAccount)]);
 			});
 		});
 
@@ -427,7 +427,7 @@ describe('AccountIdmService', () => {
 			it('should return the account', async () => {
 				setup();
 				const [result] = await accountIdmService.searchByUsernameExactMatch('username');
-				expect(result).toStrictEqual<AccountDto[]>([mapper.mapToDto(mockIdmAccount)]);
+				expect(result).toStrictEqual<AccountDto[]>([mapper.mapToDo(mockIdmAccount)]);
 			});
 		});
 
@@ -455,7 +455,7 @@ describe('AccountIdmService', () => {
 			it('should return the account', async () => {
 				setup();
 				const result = await accountIdmService.updateLastTriedFailedLogin('id', new Date());
-				expect(result).toStrictEqual<AccountDto>(mapper.mapToDto(mockIdmAccount));
+				expect(result).toStrictEqual<AccountDto>(mapper.mapToDo(mockIdmAccount));
 			});
 
 			it('should set an user attribute', async () => {

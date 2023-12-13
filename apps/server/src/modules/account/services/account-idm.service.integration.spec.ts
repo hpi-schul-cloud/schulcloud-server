@@ -7,7 +7,7 @@ import { IdmAccount } from '@shared/domain/interface';
 import { LoggerModule } from '@src/core/logger';
 import { KeycloakAdministrationService } from '@src/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { v1 } from 'uuid';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../repo/mapper';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
@@ -62,8 +62,8 @@ describe('AccountIdmService Integration', () => {
 				AccountServiceIdm,
 				AccountLookupService,
 				{
-					provide: AccountIdmToDtoMapper,
-					useClass: AccountIdmToDtoMapperDb,
+					provide: AccountIdmToDoMapper,
+					useClass: AccountIdmToDoMapperDb,
 				},
 			],
 		}).compile();
@@ -103,8 +103,8 @@ describe('AccountIdmService Integration', () => {
 				id: createdAccount.idmReferenceId ?? '',
 				username: createdAccount.username,
 				attDbcAccountId: testDbcAccountId,
-				attDbcUserId: createdAccount.userId,
-				attDbcSystemId: createdAccount.systemId,
+				attDbcUserId: createdAccount.userId as string,
+				attDbcSystemId: createdAccount.systemId as string,
 			})
 		);
 	});

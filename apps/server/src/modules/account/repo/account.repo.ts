@@ -1,10 +1,11 @@
-import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { AccountEntity } from '@shared/domain/entity/account.entity';
+import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import { SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
+import { Account, AccountProps } from '../domain';
+import { AccountEntityToDoMapper } from './mapper/account-entity-to-do.mapper';
 
 @Injectable()
 export class AccountRepo extends BaseRepo<AccountEntity> {
@@ -16,28 +17,51 @@ export class AccountRepo extends BaseRepo<AccountEntity> {
 	 * Finds an account by user id.
 	 * @param userId the user id
 	 */
-	async findByUserId(userId: EntityId | ObjectId): Promise<AccountEntity | null> {
-		return this._em.findOne(AccountEntity, { userId: new ObjectId(userId) });
+	async findByUserId(userId: EntityId | ObjectId): Promise<Account | null> {
+		const entity: AccountEntity | null = await this._em.findOne(AccountEntity, { userId: new ObjectId(userId) });
+		if (!entity) {
+			return null;
+		}
+
+		const props: AccountProps = AccountEntityToDoMapper.mapToDo(entity);
+
+		const domainObject: Account = new Account(props);
+
+		return domainObject;
 	}
 
-	async findMultipleByUserId(userIds: EntityId[] | ObjectId[]): Promise<AccountEntity[]> {
+	async findMultipleByUserId(userIds: EntityId[] | ObjectId[]): Promise<Account[]> {
 		const objectIds = userIds.map((id: EntityId | ObjectId) => new ObjectId(id));
-		return this._em.find(AccountEntity, { userId: objectIds });
+		const entities: AccountEntity[] = await this._em.find(AccountEntity, { userId: objectIds });
+		const domainObjects = entities.map((entity) => {
+			const props: AccountProps = AccountEntityToDoMapper.mapToDo(entity);
+			return new Account(props);
+		});
+
+		return domainObjects;
 	}
 
-	async findByUserIdOrFail(userId: EntityId | ObjectId): Promise<AccountEntity> {
-		return this._em.findOneOrFail(AccountEntity, { userId: new ObjectId(userId) });
+	async findByUserIdOrFail(userId: EntityId | ObjectId): Promise<Account> {
+		const entity: AccountEntity = await this._em.findOneOrFail(AccountEntity, { userId: new ObjectId(userId) });
+		const props: AccountProps = AccountEntityToDoMapper.mapToDo(entity);
+		const domainObject: Account = new Account(props);
+		return domainObject;
 	}
 
-	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountEntity | null> {
-		return this._em.findOne(AccountEntity, { username, systemId: new ObjectId(systemId) });
-	}
+	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
+		const entity: AccountEntity | null = await this._em.findOne(AccountEntity, {
+			username,
+			systemId: new ObjectId(systemId),
+		});
+		if (!entity) {
+			return null;
+		}
 
-	getObjectReference<Entity extends AnyEntity<Entity>>(
-		entityName: EntityName<Entity>,
-		id: Primary<Entity> | Primary<Entity>[]
-	): Entity {
-		return this._em.getReference(entityName, id);
+		const props: AccountProps = AccountEntityToDoMapper.mapToDo(entity);
+
+		const domainObject: Account = new Account(props);
+
+		return domainObject;
 	}
 
 	saveWithoutFlush(account: AccountEntity): void {
@@ -72,7 +96,7 @@ export class AccountRepo extends BaseRepo<AccountEntity> {
 	 * @deprecated For migration purpose only
 	 */
 	async findMany(offset = 0, limit = 100): Promise<AccountEntity[]> {
-		const result = await this._em.find(this.entityName, {}, { offset, limit, orderBy: { _id: SortOrder.asc } });
+		const result = await this._em.find(AccountEntity, {}, { offset, limit, orderBy: { _id: SortOrder.asc } });
 		this._em.clear();
 		return result;
 	}
@@ -87,7 +111,7 @@ export class AccountRepo extends BaseRepo<AccountEntity> {
 		const escapedUsername = username.replace(/[^(\p{L}\p{N})]/gu, '\\$&');
 		const searchUsername = exactMatch ? `^${escapedUsername}$` : escapedUsername;
 		return this._em.findAndCount(
-			this.entityName,
+			AccountEntity,
 			{
 				// NOTE: The default behavior of the MongoDB driver allows
 				// to pass regular expressions directly into the where clause

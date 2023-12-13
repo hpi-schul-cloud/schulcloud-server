@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain/interface';
-import { AccountDto } from '../../services';
-import { AccountIdmToDtoMapper } from './account-idm-to-dto.mapper.abstract';
-import { AccountIdmToDtoMapperIdm } from './account-idm-to-dto.mapper.idm';
+import { AccountDto } from '../../services/dto';
+import { AccountIdmToDoMapper } from './account-idm-to-do.mapper.abstract';
+import { AccountIdmToDoMapperIdm } from './account-idm-to-do.mapper.idm';
 
 describe('AccountIdmToDtoMapperIdm', () => {
 	let module: TestingModule;
-	let mapper: AccountIdmToDtoMapper;
+	let mapper: AccountIdmToDoMapper;
 
 	const now: Date = new Date(2022, 1, 22);
 
@@ -14,13 +14,13 @@ describe('AccountIdmToDtoMapperIdm', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				{
-					provide: AccountIdmToDtoMapper,
-					useClass: AccountIdmToDtoMapperIdm,
+					provide: AccountIdmToDoMapper,
+					useClass: AccountIdmToDoMapperIdm,
 				},
 			],
 		}).compile();
 
-		mapper = module.get(AccountIdmToDtoMapper);
+		mapper = module.get(AccountIdmToDoMapper);
 
 		jest.useFakeTimers();
 		jest.setSystemTime(now);
@@ -43,7 +43,7 @@ describe('AccountIdmToDtoMapperIdm', () => {
 				attDbcUserId: 'attDbcUserId',
 				attDbcSystemId: 'attDbcSystemId',
 			};
-			const ret = mapper.mapToDto(testIdmEntity);
+			const ret = mapper.mapToDo(testIdmEntity);
 
 			expect(ret).toEqual(
 				expect.objectContaining<Partial<AccountDto>>({
@@ -63,7 +63,7 @@ describe('AccountIdmToDtoMapperIdm', () => {
 				const testIdmEntity: IdmAccount = {
 					id: 'id',
 				};
-				const ret = mapper.mapToDto(testIdmEntity);
+				const ret = mapper.mapToDo(testIdmEntity);
 
 				expect(ret.createdAt).toEqual(now);
 				expect(ret.updatedAt).toEqual(now);
@@ -75,7 +75,7 @@ describe('AccountIdmToDtoMapperIdm', () => {
 				const testIdmEntity: IdmAccount = {
 					id: 'id',
 				};
-				const ret = mapper.mapToDto(testIdmEntity);
+				const ret = mapper.mapToDo(testIdmEntity);
 
 				expect(ret.username).toBe('');
 			});

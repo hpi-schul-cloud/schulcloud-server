@@ -13,8 +13,8 @@ import { KeycloakAdministrationService } from '@src/infra/identity-management/ke
 import { ObjectId } from 'bson';
 import { v1 } from 'uuid';
 import { LegacyLogger } from '../../../core/logger';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
 import { AccountRepo } from '../repo/account.repo';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../repo/mapper';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountLookupService } from './account-lookup.service';
@@ -96,8 +96,8 @@ describe('AccountService Integration', () => {
 				AccountValidationService,
 				AccountLookupService,
 				{
-					provide: AccountIdmToDtoMapper,
-					useValue: new AccountIdmToDtoMapperDb(),
+					provide: AccountIdmToDoMapper,
+					useValue: new AccountIdmToDoMapperDb(),
 				},
 				{
 					provide: LegacyLogger,
@@ -161,7 +161,7 @@ describe('AccountService Integration', () => {
 	it('save should create a new account', async () => {
 		if (!isIdmReachable) return;
 		const account = await accountService.save(testAccount);
-		await compareDbAccount(account.id, account);
+		await compareDbAccount(account.id as string, account);
 		await compareIdmAccount(account.idmReferenceId ?? '', account);
 	});
 
