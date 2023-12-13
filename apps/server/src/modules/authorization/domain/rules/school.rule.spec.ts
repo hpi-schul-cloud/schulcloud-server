@@ -7,7 +7,7 @@ import { AuthorizationHelper } from '../service/authorization.helper';
 import { SchoolRule } from './school.rule';
 
 describe('SchoolRule', () => {
-	let service: SchoolRule;
+	let rule: SchoolRule;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -16,7 +16,7 @@ describe('SchoolRule', () => {
 			providers: [AuthorizationHelper, SchoolRule],
 		}).compile();
 
-		service = await module.get(SchoolRule);
+		rule = await module.get(SchoolRule);
 	});
 
 	afterEach(() => {
@@ -39,22 +39,34 @@ describe('SchoolRule', () => {
 
 	describe('isApplicable', () => {
 		describe('when object is instance of School', () => {
-			it('should return true', () => {
+			const setup = () => {
 				const { user, school } = setupSchoolAndUser();
 
-				const result = service.isApplicable(user, school);
+				return { user, school };
+			};
+
+			it('should return true', () => {
+				const { user, school } = setup();
+
+				const result = rule.isApplicable(user, school);
 
 				expect(result).toBe(true);
 			});
 		});
 
 		describe('when object is not instance of School', () => {
-			it('should return false', () => {
+			const setup = () => {
 				const { user } = setupSchoolAndUser();
 				const someRandomObject = { foo: 'bar' };
 
+				return { user, someRandomObject };
+			};
+
+			it('should return false', () => {
+				const { user, someRandomObject } = setup();
+
 				// @ts-expect-error Testcase
-				const result = service.isApplicable(user, someRandomObject);
+				const result = rule.isApplicable(user, someRandomObject);
 
 				expect(result).toBe(false);
 			});
@@ -63,34 +75,52 @@ describe('SchoolRule', () => {
 
 	describe('hasPermission', () => {
 		describe('when user has required permissions and it is her school', () => {
-			it('should return true', () => {
+			const setup = () => {
 				const { user, school } = setupSchoolAndUser();
 				const context = AuthorizationContextBuilder.read([permissionA]);
 
-				const result = service.hasPermission(user, school, context);
+				return { user, school, context };
+			};
+
+			it('should return true', () => {
+				const { user, school, context } = setup();
+
+				const result = rule.hasPermission(user, school, context);
 
 				expect(result).toBe(true);
 			});
 		});
 
 		describe('when user does not have required permissions', () => {
-			it('should return false', () => {
+			const setup = () => {
 				const { user, school } = setupSchoolAndUser();
 				const context = AuthorizationContextBuilder.read([permissionB]);
 
-				const result = service.hasPermission(user, school, context);
+				return { user, school, context };
+			};
+
+			it('should return false', () => {
+				const { user, school, context } = setup();
+
+				const result = rule.hasPermission(user, school, context);
 
 				expect(result).toBe(false);
 			});
 		});
 
 		describe('when it is not the users school', () => {
-			it('should return false', () => {
+			const setup = () => {
 				const { user } = setupSchoolAndUser();
 				const someOtherSchool = schoolFactory.build();
 				const context = AuthorizationContextBuilder.read([]);
 
-				const result = service.hasPermission(user, someOtherSchool, context);
+				return { user, someOtherSchool, context };
+			};
+
+			it('should return false', () => {
+				const { user, someOtherSchool, context } = setup();
+
+				const result = rule.hasPermission(user, someOtherSchool, context);
 
 				expect(result).toBe(false);
 			});
