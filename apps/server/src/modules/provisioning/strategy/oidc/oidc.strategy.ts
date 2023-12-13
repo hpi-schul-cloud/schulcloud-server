@@ -8,8 +8,8 @@ import { OidcProvisioningService } from './service/oidc-provisioning.service';
 @Injectable()
 export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 	constructor(
-		protected readonly oidcProvisioningService: OidcProvisioningService,
-		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures
+		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
+		protected readonly oidcProvisioningService: OidcProvisioningService
 	) {
 		super();
 	}

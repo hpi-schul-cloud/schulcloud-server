@@ -28,7 +28,7 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 		private readonly responseMapper: SanisResponseMapper,
 		private readonly httpService: HttpService
 	) {
-		super(oidcProvisioningService, provisioningFeatures);
+		super(provisioningFeatures, oidcProvisioningService);
 	}
 
 	getType(): SystemProvisioningStrategy {
