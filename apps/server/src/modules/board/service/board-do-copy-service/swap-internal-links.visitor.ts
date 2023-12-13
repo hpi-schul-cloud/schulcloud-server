@@ -55,6 +55,6 @@ export class SwapInternalLinksVisitor implements BoardCompositeVisitor {
 	}
 
 	private visitChildrenOf(boardDo: AnyBoardDo) {
-		boardDo.children.map((child) => child.accept(this));
+		boardDo.children.forEach((child) => child.accept(this));
 	}
 }
