@@ -31,8 +31,10 @@ export class SchoolYearUtils {
 	}
 
 	public static computeLastYear(schoolYears: SchoolYear[], activeYear: SchoolYear): SchoolYear {
-		const yearBefore = activeYear.getProps().startDate.getFullYear() - 1;
-		const lastYear = schoolYears.find((schoolYear) => schoolYear.getProps().startDate.getFullYear() === yearBefore);
+		const yearOfLastStartDate = activeYear.getProps().startDate.getFullYear() - 1;
+		const lastYear = schoolYears.find(
+			(schoolYear) => schoolYear.getProps().startDate.getFullYear() === yearOfLastStartDate
+		);
 
 		if (!lastYear) {
 			throw new MissingYearsLoggableException();
@@ -42,8 +44,10 @@ export class SchoolYearUtils {
 	}
 
 	public static computeNextYear(schoolYears: SchoolYear[], activeYear: SchoolYear): SchoolYear {
-		const yearAfter = activeYear.getProps().startDate.getFullYear() + 1;
-		const nextYear = schoolYears.find((schoolYear) => schoolYear.getProps().startDate.getFullYear() === yearAfter);
+		const yearOfNextStartDate = activeYear.getProps().startDate.getFullYear() + 1;
+		const nextYear = schoolYears.find(
+			(schoolYear) => schoolYear.getProps().startDate.getFullYear() === yearOfNextStartDate
+		);
 
 		if (!nextYear) {
 			throw new MissingYearsLoggableException();
