@@ -11,8 +11,6 @@ export class FederalStateEntityMapper {
 			name: entity.name,
 			abbreviation: entity.abbreviation,
 			logoUrl: entity.logoUrl,
-			createdAt: entity.createdAt,
-			updatedAt: entity.updatedAt,
 			counties,
 		});
 
