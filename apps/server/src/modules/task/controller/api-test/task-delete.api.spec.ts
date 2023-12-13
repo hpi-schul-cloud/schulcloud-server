@@ -1,17 +1,17 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	cleanupCollections,
 	courseFactory,
 	taskFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { ServerTestModule } from '@modules/server';
 
 const createStudent = () => {
 	const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({}, [

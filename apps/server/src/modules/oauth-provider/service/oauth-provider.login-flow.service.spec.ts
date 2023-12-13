@@ -5,7 +5,7 @@ import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LtiToolDO } from '@shared/domain';
+import { LtiToolDO } from '@shared/domain/domainobject';
 import { externalToolFactory, ltiToolDOFactory, setupEntities } from '@shared/testing';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 

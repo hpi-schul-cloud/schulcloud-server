@@ -1,8 +1,8 @@
-import { BaseEntity } from '@shared/domain';
+import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { BaseEntity } from '@shared/domain/entity';
 import { Collection, Db } from 'mongodb';
-import { MikroORM } from '@mikro-orm/core';
 
 @Injectable()
 export class DatabaseManagementService {

@@ -1,9 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { LtiToolDO, Permission, Pseudonym, UserDO } from '@shared/domain';
 import { OauthProviderService } from '@infra/oauth-provider';
 import { ProviderLoginResponse, ProviderRedirectResponse } from '@infra/oauth-provider/dto';
+import { AuthorizationService } from '@modules/authorization';
+import { PseudonymService } from '@modules/pseudonym';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { UserService } from '@modules/user';
+import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { Permission } from '@shared/domain/interface';
 import {
 	externalToolFactory,
 	ltiToolDOFactory,
@@ -12,10 +17,6 @@ import {
 	userDoFactory,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationService } from '@modules/authorization';
-import { PseudonymService } from '@modules/pseudonym';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { UserService } from '@modules/user';
 import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '../controller/dto';
 import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
 import { OauthProviderLoginFlowUc } from './oauth-provider.login-flow.uc';

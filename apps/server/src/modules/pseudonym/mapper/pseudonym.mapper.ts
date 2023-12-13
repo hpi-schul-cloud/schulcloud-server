@@ -1,4 +1,4 @@
-import { Pseudonym } from '@shared/domain';
+import { Pseudonym } from '@shared/domain/domainobject';
 import { PseudonymResponse } from '../controller/dto';
 
 export class PseudonymMapper {

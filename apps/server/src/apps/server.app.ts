@@ -49,7 +49,7 @@ async function bootstrap() {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const feathersExpress = await legacyAppPromise(orm);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-	feathersExpress.setup();
+	await feathersExpress.setup();
 
 	// set reference to legacy app as an express setting so we can
 	// access it over the current request within FeathersServiceProvider

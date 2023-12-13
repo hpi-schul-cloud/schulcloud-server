@@ -1,8 +1,9 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { IFindOptions, LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { IFindOptions } from '@shared/domain/interface';
 import { v4 as uuidv4 } from 'uuid';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';

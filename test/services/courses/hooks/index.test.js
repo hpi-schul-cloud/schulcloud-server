@@ -11,7 +11,7 @@ describe('course hooks', () => {
 	let server;
 	before(async () => {
 		app = await appPromise();
-		server = app.listen(0);
+		server = await app.listen(0);
 	});
 
 	after(() => {
