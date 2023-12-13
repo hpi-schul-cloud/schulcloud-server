@@ -34,7 +34,7 @@ describe('legacy forward', () => {
 		// eslint-disable-next-line global-require
 		app = await appPromise();
 
-		server = app.listen(0);
+		server = await app.listen(0);
 		return server;
 	});
 

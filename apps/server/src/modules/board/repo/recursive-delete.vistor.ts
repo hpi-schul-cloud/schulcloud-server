@@ -7,7 +7,6 @@ import { Injectable } from '@nestjs/common';
 import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
-	BoardNode,
 	Card,
 	Column,
 	ColumnBoard,
@@ -16,9 +15,10 @@ import {
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { BoardNode } from '@shared/domain/entity';
 
 @Injectable()
 export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {

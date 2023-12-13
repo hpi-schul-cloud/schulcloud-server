@@ -1,5 +1,5 @@
 import { IUser } from '@lumieducation/h5p-server';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { H5PContentParentType } from '../entity';
 
 export interface H5PContentParentParams {

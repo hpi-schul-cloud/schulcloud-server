@@ -5,6 +5,8 @@ import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { DeletionLogEntity, DeletionRequestEntity } from '@src/modules/deletion/entity';
+import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { Account } from './account.entity';
 import {
@@ -60,6 +62,8 @@ export const ALL_ENTITIES = [
 	ColumnBoardTarget,
 	ColumnNode,
 	ClassEntity,
+	DeletionRequestEntity,
+	DeletionLogEntity,
 	FileElementNode,
 	LinkElementNode,
 	RichTextElementNode,
@@ -83,6 +87,7 @@ export const ALL_ENTITIES = [
 	News,
 	PseudonymEntity,
 	ExternalToolPseudonymEntity,
+	RocketChatUserEntity,
 	Role,
 	SchoolEntity,
 	SchoolExternalToolEntity,

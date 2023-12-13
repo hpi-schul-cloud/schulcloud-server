@@ -1,8 +1,10 @@
-import { AuthorizationContext, AuthorizationContextBuilder } from '@modules/authorization';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { EntityId, Permission } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
+import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
+import { User } from '@shared/domain/entity';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -22,8 +24,18 @@ export class ExternalToolConfigurationUc {
 		@Inject(forwardRef(() => ToolPermissionHelper))
 		private readonly toolPermissionHelper: ToolPermissionHelper,
 		private readonly externalToolConfigurationService: ExternalToolConfigurationService,
-		private readonly externalToolLogoService: ExternalToolLogoService
+		private readonly externalToolLogoService: ExternalToolLogoService,
+		private readonly authorizationService: AuthorizationService
 	) {}
+
+	public async getToolContextTypes(userId: EntityId): Promise<ToolContextType[]> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
+
+		const toolContextTypes: ToolContextType[] = this.externalToolConfigurationService.getToolContextTypes();
+
+		return toolContextTypes;
+	}
 
 	public async getAvailableToolsForSchool(userId: EntityId, schoolId: EntityId): Promise<ExternalTool[]> {
 		const externalTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({});
@@ -90,11 +102,16 @@ export class ExternalToolConfigurationUc {
 				contextExternalToolsInUse
 			);
 
-		const availableToolsForContext: ContextExternalToolTemplateInfo[] =
+		let availableToolsForContext: ContextExternalToolTemplateInfo[] =
 			this.externalToolConfigurationService.filterForAvailableExternalTools(
 				externalTools.data,
 				availableSchoolExternalTools
 			);
+
+		availableToolsForContext = this.externalToolConfigurationService.filterForContextRestrictions(
+			availableToolsForContext,
+			contextType
+		);
 
 		availableToolsForContext.forEach((toolTemplateInfo) => {
 			this.externalToolConfigurationService.filterParametersForScope(
