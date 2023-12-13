@@ -49,7 +49,7 @@ describe('SchoolYearUtils', () => {
 	});
 
 	describe('computeActiveYear', () => {
-		describe('when school has current year', () => {
+		describe('when school has a current year', () => {
 			const setup = () => {
 				const schoolYears = schoolYearFactory.withStartYear(2019).buildList(3);
 				const school = schoolFactory.build({ currentYear: schoolYears[1] });
@@ -66,7 +66,7 @@ describe('SchoolYearUtils', () => {
 			});
 		});
 
-		describe('when school does not have current year', () => {
+		describe('when school does not have a current year', () => {
 			describe('when there exists a fitting year', () => {
 				const setup = () => {
 					const schoolYears = schoolYearFactory.withStartYear(2019).buildList(3);
@@ -75,7 +75,7 @@ describe('SchoolYearUtils', () => {
 					return { school, schoolYears };
 				};
 
-				it('should return years response according to current date', () => {
+				it('should return active year according to current date', () => {
 					const { school, schoolYears } = setup();
 
 					const result = SchoolYearUtils.computeActiveYear(school, schoolYears);
