@@ -2,6 +2,11 @@ import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { schoolFactory } from '../../testing';
 
 describe('School', () => {
+	beforeAll(() => {
+		jest.useFakeTimers();
+		jest.setSystemTime(new Date('2022-02-22'));
+	});
+
 	describe('addFeature', () => {
 		const setup = () => {
 			const feature = 'test feature' as SchoolFeature;
@@ -192,13 +197,13 @@ describe('School', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
 
-				return { school, id: school.id };
+				return { school };
 			};
 
 			it('should return false', () => {
-				const { school, id } = setup();
+				const { school } = setup();
 
-				const result = school.isEligibleForExternalInvite(id);
+				const result = school.isEligibleForExternalInvite(school.id);
 
 				expect(result).toBe(false);
 			});
