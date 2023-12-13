@@ -47,13 +47,13 @@ describe('SchoolService', () => {
 				const school = schoolFactory.build();
 				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
 
-				return { school };
+				return { school, id: school.id };
 			};
 
 			it('should return this school', async () => {
-				const { school } = setup();
+				const { school, id } = setup();
 
-				const result = await service.getSchoolById('1');
+				const result = await service.getSchoolById(id);
 
 				expect(result).toEqual(school);
 			});
@@ -66,13 +66,13 @@ describe('SchoolService', () => {
 
 				configService.get.mockReturnValueOnce('enabled');
 
-				return { school };
+				return { school, id: school.id };
 			};
 
 			it('should add IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', async () => {
-				const { school } = setup();
+				const { school, id } = setup();
 
-				const result = await service.getSchoolById('1');
+				const result = await service.getSchoolById(id);
 
 				expect(result).toEqual(school);
 				expect(result.getProps().features).toContain('isTeamCreationByStudentsEnabled');
@@ -86,13 +86,13 @@ describe('SchoolService', () => {
 
 				configService.get.mockReturnValueOnce('disabled');
 
-				return { school };
+				return { school, id: school.id };
 			};
 
 			it('should remove IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', async () => {
-				const { school } = setup();
+				const { school, id } = setup();
 
-				const result = await service.getSchoolById('1');
+				const result = await service.getSchoolById(id);
 
 				expect(result).toEqual(school);
 				expect(result.getProps().features).not.toContain('isTeamCreationByStudentsEnabled');
