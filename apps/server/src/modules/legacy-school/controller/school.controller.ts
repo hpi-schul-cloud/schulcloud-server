@@ -1,6 +1,17 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ApiBody, ApiOkResponse, ApiOperation, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import {
+	ApiBody,
+	ApiCreatedResponse,
+	ApiForbiddenResponse,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
+	ApiUnprocessableEntityResponse,
+	getSchemaPath,
+} from '@nestjs/swagger';
 import { AnyProvisioningOptions } from '../domain';
 import { SchoolSystemOptionsUc } from '../uc';
 import {
@@ -30,6 +41,10 @@ export class SchoolController {
 			],
 		},
 	})
+	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
+	@ApiUnprocessableEntityResponse()
+	@ApiNotFoundResponse()
 	public async getProvisioningOptions(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolSystemParams
@@ -50,7 +65,7 @@ export class SchoolController {
 	@ApiBody({
 		type: SchulConneXProvisioningOptionsParams,
 	})
-	@ApiOkResponse({
+	@ApiCreatedResponse({
 		description: 'All provisioning options of the system with their value',
 		schema: {
 			oneOf: [
@@ -60,6 +75,10 @@ export class SchoolController {
 			],
 		},
 	})
+	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
+	@ApiUnprocessableEntityResponse()
+	@ApiNotFoundResponse()
 	public async setProvisioningOptions(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolSystemParams,

@@ -1,6 +1,6 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ProvisioningOptionsInterface } from '../interface';
-import { InvalidProvisioningStrategyOptionsLoggableException } from '../loggable';
+import { ProvisioningStrategyInvalidOptionsLoggableException } from '../loggable';
 import { SchoolSystemOptionsBuilder } from './school-system-options.builder';
 import { AnyProvisioningOptions } from './school-system-options.do';
 import { SchulConneXProvisioningOptions } from './schulconnex-provisionin-options.do';
@@ -42,19 +42,19 @@ describe(SchoolSystemOptionsBuilder.name, () => {
 		});
 
 		describe('when the provided options do not fit the strategy', () => {
-			it('should have the correct options instance', () => {
+			it('should throw an error', () => {
 				const builder: SchoolSystemOptionsBuilder = new SchoolSystemOptionsBuilder(SystemProvisioningStrategy.SANIS);
 
 				expect(() =>
 					builder.buildProvisioningOptions({
 						groupProvisioningClassesEnabled: true,
 					})
-				).toThrow(InvalidProvisioningStrategyOptionsLoggableException);
+				).toThrow(ProvisioningStrategyInvalidOptionsLoggableException);
 			});
 		});
 
 		describe('when the provisioning strategy has no options', () => {
-			it('should have the correct options instance', () => {
+			it('should throw an error', () => {
 				const builder: SchoolSystemOptionsBuilder = new SchoolSystemOptionsBuilder(
 					SystemProvisioningStrategy.UNDEFINED
 				);
@@ -65,7 +65,7 @@ describe(SchoolSystemOptionsBuilder.name, () => {
 						groupProvisioningCoursesEnabled: true,
 						groupProvisioningOtherEnabled: true,
 					})
-				).toThrow(InvalidProvisioningStrategyOptionsLoggableException);
+				).toThrow(ProvisioningStrategyInvalidOptionsLoggableException);
 			});
 		});
 	});

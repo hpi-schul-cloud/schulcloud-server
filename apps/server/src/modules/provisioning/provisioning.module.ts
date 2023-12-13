@@ -7,6 +7,7 @@ import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
+import { ProvisioningConfigModule } from './provisioning-config.module';
 import { ProvisioningService } from './service/provisioning.service';
 import {
 	IservProvisioningStrategy,
@@ -18,6 +19,7 @@ import { OidcProvisioningService } from './strategy/oidc/service/oidc-provisioni
 
 @Module({
 	imports: [
+		ProvisioningConfigModule,
 		AccountModule,
 		LegacySchoolModule,
 		UserModule,

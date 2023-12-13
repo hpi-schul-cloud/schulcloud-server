@@ -3,7 +3,7 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import { ProvisioningOptionsInterface } from '../interface';
 
-export class InvalidProvisioningStrategyOptionsLoggableException
+export class ProvisioningStrategyInvalidOptionsLoggableException
 	extends UnprocessableEntityException
 	implements Loggable
 {
@@ -16,7 +16,7 @@ export class InvalidProvisioningStrategyOptionsLoggableException
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			type: 'INVALID_PROVISIONING_STRATEGY_OPTIONS',
+			type: 'PROVISIONING_STRATEGY_INVALID_OPTIONS',
 			message: 'The provisioning options are invalid for this strategy type.',
 			stack: this.stack,
 			data: {

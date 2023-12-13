@@ -1,13 +1,13 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
-import { MissingProvisioningStrategyLoggableException } from './missing-provisioning-strategy.loggable-exception';
+import { ProvisioningStrategyMissingLoggableException } from './provisioning-strategy-missing.loggable-exception';
 
-describe(MissingProvisioningStrategyLoggableException.name, () => {
+describe(ProvisioningStrategyMissingLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const systemId: EntityId = new ObjectId().toHexString();
 
-			const exception = new MissingProvisioningStrategyLoggableException(systemId);
+			const exception = new ProvisioningStrategyMissingLoggableException(systemId);
 
 			return {
 				exception,
@@ -21,7 +21,7 @@ describe(MissingProvisioningStrategyLoggableException.name, () => {
 			const result = exception.getLogMessage();
 
 			expect(result).toEqual({
-				type: 'MISSING_PROVISIONING_STRATEGY',
+				type: 'PROVISIONING_STRATEGY_MISSING',
 				message: expect.any(String),
 				stack: expect.any(String),
 				data: {

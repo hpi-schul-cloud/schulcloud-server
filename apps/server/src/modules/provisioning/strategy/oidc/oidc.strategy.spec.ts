@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -12,6 +11,7 @@ import {
 	legacySchoolDoFactory,
 	userDoFactory,
 } from '@shared/testing';
+import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import {
 	ExternalGroupDto,
 	ExternalSchoolDto,
@@ -40,6 +40,7 @@ describe('OidcStrategy', () => {
 	let strategy: TestOidcStrategy;
 
 	let oidcProvisioningService: DeepMocked<OidcProvisioningService>;
+	let provisioningFeatures: IProvisioningFeatures;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -49,11 +50,23 @@ describe('OidcStrategy', () => {
 					provide: OidcProvisioningService,
 					useValue: createMock<OidcProvisioningService>(),
 				},
+				{
+					provide: ProvisioningFeatures,
+					useValue: {},
+				},
 			],
 		}).compile();
 
 		strategy = module.get(TestOidcStrategy);
 		oidcProvisioningService = module.get(OidcProvisioningService);
+		provisioningFeatures = module.get(ProvisioningFeatures);
+	});
+
+	beforeEach(() => {
+		Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
+			schulconnexGroupProvisioningEnabled: false,
+			provisioningOptionsEnabled: false,
+		});
 	});
 
 	afterAll(async () => {
@@ -180,8 +193,8 @@ describe('OidcStrategy', () => {
 
 		describe('when group data is provided and the feature is enabled', () => {
 			const setup = () => {
-				Configuration.set('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED', true);
-				Configuration.set('FEATURE_VIEW_PROVISIONING_OPTIONS_ENABLED', true);
+				provisioningFeatures.schulconnexGroupProvisioningEnabled = true;
+				provisioningFeatures.provisioningOptionsEnabled = true;
 
 				const externalUserId = 'externalUserId';
 				const externalGroups: ExternalGroupDto[] = externalGroupDtoFactory.buildList(2);
@@ -241,7 +254,7 @@ describe('OidcStrategy', () => {
 
 		describe('when group data is provided, but the feature is disabled', () => {
 			const setup = () => {
-				Configuration.set('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED', false);
+				provisioningFeatures.schulconnexGroupProvisioningEnabled = false;
 
 				const externalUserId = 'externalUserId';
 				const oauthData: OauthDataDto = new OauthDataDto({
@@ -285,7 +298,7 @@ describe('OidcStrategy', () => {
 
 		describe('when group data is not provided', () => {
 			const setup = () => {
-				Configuration.set('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED', true);
+				provisioningFeatures.schulconnexGroupProvisioningEnabled = true;
 
 				const externalUserId = 'externalUserId';
 				const oauthData: OauthDataDto = new OauthDataDto({

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { AnyProvisioningOptions, SchoolSystemOptions } from '../domain';
-import { InvalidProvisioningOptionsTypeLoggableException } from '../loggable';
+import { ProvisioningOptionsInvalidTypeLoggableException } from '../loggable';
 import { SchoolSystemOptionsRepo } from '../repo';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class SchoolSystemOptionsService {
 		let options: T;
 		if (schoolSystemOptions) {
 			if (!(schoolSystemOptions.provisioningOptions instanceof ProvisioningOptionsConstructor)) {
-				throw new InvalidProvisioningOptionsTypeLoggableException(ProvisioningOptionsConstructor, schoolId, systemId);
+				throw new ProvisioningOptionsInvalidTypeLoggableException(ProvisioningOptionsConstructor, schoolId, systemId);
 			}
 
 			options = schoolSystemOptions.provisioningOptions;

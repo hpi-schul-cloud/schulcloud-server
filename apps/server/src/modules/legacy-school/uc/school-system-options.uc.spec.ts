@@ -8,7 +8,7 @@ import { Permission } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { schoolSystemOptionsFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import { AnyProvisioningOptions, SchoolSystemOptions } from '../domain';
-import { MissingProvisioningStrategyLoggableException } from '../loggable';
+import { ProvisioningStrategyMissingLoggableException } from '../loggable';
 import { SchoolSystemOptionsService } from '../service';
 import { SchoolSystemOptionsUc } from './school-system-options.uc';
 
@@ -282,7 +282,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 						new ObjectId().toHexString(),
 						{}
 					)
-				).rejects.toThrow(MissingProvisioningStrategyLoggableException);
+				).rejects.toThrow(ProvisioningStrategyMissingLoggableException);
 			});
 		});
 

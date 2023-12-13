@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { schoolSystemOptionsFactory } from '@shared/testing';
 import { SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { SchulConneXProvisioningOptionsInterface } from '../interface';
-import { InvalidProvisioningOptionsTypeLoggableException } from '../loggable';
+import { ProvisioningOptionsInvalidTypeLoggableException } from '../loggable';
 import { SchoolSystemOptionsRepo } from '../repo';
 import { SchoolSystemOptionsService } from './school-system-options.service';
 
@@ -145,7 +145,7 @@ describe(SchoolSystemOptionsService.name, () => {
 						schoolSystemOptions.schoolId,
 						schoolSystemOptions.systemId
 					)
-				).rejects.toThrow(InvalidProvisioningOptionsTypeLoggableException);
+				).rejects.toThrow(ProvisioningOptionsInvalidTypeLoggableException);
 			});
 		});
 	});

@@ -3,7 +3,7 @@ import { EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import { type AnyProvisioningOptions } from '../domain';
 
-export class InvalidProvisioningOptionsTypeLoggableException extends UnprocessableEntityException implements Loggable {
+export class ProvisioningOptionsInvalidTypeLoggableException extends UnprocessableEntityException implements Loggable {
 	constructor(
 		private readonly expectedType: new () => AnyProvisioningOptions,
 		private readonly schoolId: EntityId,
@@ -14,7 +14,7 @@ export class InvalidProvisioningOptionsTypeLoggableException extends Unprocessab
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			type: 'INVALID_PROVISIONING_OPTIONS_TYPE',
+			type: 'PROVISIONING_OPTIONS_INVALID_TYPE',
 			message: 'The provisioning options are not of the expected type.',
 			stack: this.stack,
 			data: {

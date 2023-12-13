@@ -11,7 +11,7 @@ import {
 } from '@shared/testing';
 import { SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { SchoolSystemOptionsEntity } from '../entity';
-import { MissingProvisioningStrategyLoggableException } from '../loggable';
+import { ProvisioningStrategyMissingLoggableException } from '../loggable';
 import { SchoolSystemOptionsRepo } from './school-system-options.repo';
 
 describe(SchoolSystemOptionsRepo.name, () => {
@@ -112,7 +112,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 
 				await expect(
 					repo.findBySchoolIdAndSystemId(schoolSystemOptionsEntity.school.id, schoolSystemOptionsEntity.system.id)
-				).rejects.toThrow(MissingProvisioningStrategyLoggableException);
+				).rejects.toThrow(ProvisioningStrategyMissingLoggableException);
 			});
 		});
 	});
@@ -264,7 +264,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 			it('should throw an error', async () => {
 				const { schoolSystemOptions } = await setup();
 
-				await expect(repo.save(schoolSystemOptions)).rejects.toThrow(MissingProvisioningStrategyLoggableException);
+				await expect(repo.save(schoolSystemOptions)).rejects.toThrow(ProvisioningStrategyMissingLoggableException);
 			});
 		});
 	});

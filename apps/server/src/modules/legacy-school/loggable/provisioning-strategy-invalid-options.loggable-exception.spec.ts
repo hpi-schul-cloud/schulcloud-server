@@ -1,15 +1,15 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ProvisioningOptionsInterface } from '../interface';
-import { InvalidProvisioningStrategyOptionsLoggableException } from './invalid-provisioning-strategy-options.loggable-exception';
+import { ProvisioningStrategyInvalidOptionsLoggableException } from './provisioning-strategy-invalid-options.loggable-exception';
 
-describe(InvalidProvisioningStrategyOptionsLoggableException.name, () => {
+describe(ProvisioningStrategyInvalidOptionsLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const provisioningOptions: ProvisioningOptionsInterface = {
 				groupProvisioningOtherEnabled: true,
 			};
 
-			const exception = new InvalidProvisioningStrategyOptionsLoggableException(
+			const exception = new ProvisioningStrategyInvalidOptionsLoggableException(
 				SystemProvisioningStrategy.SANIS,
 				provisioningOptions
 			);
@@ -26,7 +26,7 @@ describe(InvalidProvisioningStrategyOptionsLoggableException.name, () => {
 			const result = exception.getLogMessage();
 
 			expect(result).toEqual({
-				type: 'INVALID_PROVISIONING_STRATEGY_OPTIONS',
+				type: 'PROVISIONING_STRATEGY_INVALID_OPTIONS',
 				message: expect.any(String),
 				stack: expect.any(String),
 				data: {

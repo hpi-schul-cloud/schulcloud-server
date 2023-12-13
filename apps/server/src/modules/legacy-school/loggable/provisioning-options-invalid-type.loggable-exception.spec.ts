@@ -1,15 +1,15 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { SchulConneXProvisioningOptions } from '../domain';
-import { InvalidProvisioningOptionsTypeLoggableException } from './invalid-provisioning-options-type.loggable-exception';
+import { ProvisioningOptionsInvalidTypeLoggableException } from './provisioning-options-invalid-type.loggable-exception';
 
-describe(InvalidProvisioningOptionsTypeLoggableException.name, () => {
+describe(ProvisioningOptionsInvalidTypeLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const schoolId: EntityId = new ObjectId().toHexString();
 			const systemId: EntityId = new ObjectId().toHexString();
 
-			const exception = new InvalidProvisioningOptionsTypeLoggableException(
+			const exception = new ProvisioningOptionsInvalidTypeLoggableException(
 				SchulConneXProvisioningOptions,
 				schoolId,
 				systemId
@@ -28,7 +28,7 @@ describe(InvalidProvisioningOptionsTypeLoggableException.name, () => {
 			const result = exception.getLogMessage();
 
 			expect(result).toEqual({
-				type: 'INVALID_PROVISIONING_OPTIONS_TYPE',
+				type: 'PROVISIONING_OPTIONS_INVALID_TYPE',
 				message: expect.any(String),
 				stack: expect.any(String),
 				data: {

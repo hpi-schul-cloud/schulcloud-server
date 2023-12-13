@@ -1359,7 +1359,7 @@
 			"default": false,
 			"description": "Enables external tools on the column board"
 		},
-		"FEATURE_VIEW_PROVISIONING_OPTIONS_ENABLED": {
+		"FEATURE_PROVISIONING_OPTIONS_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "enables to view the page to set group provisioning options for a school and system pair"

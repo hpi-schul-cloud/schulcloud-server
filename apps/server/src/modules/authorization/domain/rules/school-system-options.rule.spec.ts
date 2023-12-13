@@ -160,7 +160,7 @@ describe(SchoolSystemOptionsRule.name, () => {
 			});
 		});
 
-		describe('when the user accesses a system that is not at his school', () => {
+		describe('when the system is not part of the users school', () => {
 			const setup = () => {
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId();
 				const school: SchoolEntity = schoolFactory.buildWithId({

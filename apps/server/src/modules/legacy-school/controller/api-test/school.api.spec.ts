@@ -73,6 +73,7 @@ describe('School (API)', () => {
 
 				const response = await adminClient.get(`/${school.id}/systems/${system.id}/provisioning-options`);
 
+				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual<SchulConneXProvisioningOptionsResponse>({
 					groupProvisioningClassesEnabled: true,
 					groupProvisioningOtherEnabled: true,
@@ -186,6 +187,7 @@ describe('School (API)', () => {
 					groupProvisioningCoursesEnabled: true,
 				});
 
+				expect(response.status).toEqual(HttpStatus.CREATED);
 				expect(response.body).toEqual<SchulConneXProvisioningOptionsResponse>({
 					groupProvisioningClassesEnabled: true,
 					groupProvisioningOtherEnabled: true,

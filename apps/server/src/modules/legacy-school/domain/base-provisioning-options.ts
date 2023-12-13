@@ -1,12 +1,12 @@
-import { SortHelper } from '@shared/common';
 import { ProvisioningOptionsInterface } from '../interface';
 
 export abstract class BaseProvisioningOptions<T extends ProvisioningOptionsInterface> {
 	public isApplicable(provisioningOptions: ProvisioningOptionsInterface): provisioningOptions is T {
-		const expectedKeys: string[] = Object.keys(this).sort((a, b) => SortHelper.genericSortFunction(a, b));
-		const actualKeys: string[] = Object.keys(provisioningOptions).sort((a, b) => SortHelper.genericSortFunction(a, b));
+		const expectedKeys: Set<string> = new Set(Object.keys(this));
+		const actualKeys: Set<string> = new Set(Object.keys(provisioningOptions));
 
-		const hasProperties: boolean = JSON.stringify(expectedKeys) === JSON.stringify(actualKeys);
+		const hasProperties: boolean =
+			expectedKeys.size === actualKeys.size && [...expectedKeys].every((key: string) => actualKeys.has(key));
 
 		return hasProperties;
 	}

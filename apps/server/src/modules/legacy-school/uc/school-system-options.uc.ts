@@ -7,7 +7,7 @@ import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { AnyProvisioningOptions, SchoolSystemOptions, SchoolSystemOptionsBuilder } from '../domain';
 import { ProvisioningOptionsInterface } from '../interface';
-import { MissingProvisioningStrategyLoggableException } from '../loggable';
+import { ProvisioningStrategyMissingLoggableException } from '../loggable';
 import { SchoolSystemOptionsService } from '../service';
 
 @Injectable()
@@ -53,7 +53,7 @@ export class SchoolSystemOptionsUc {
 		}
 
 		if (!system.provisioningStrategy) {
-			throw new MissingProvisioningStrategyLoggableException(systemId);
+			throw new ProvisioningStrategyMissingLoggableException(systemId);
 		}
 
 		const provisioningOptions: AnyProvisioningOptions = new SchoolSystemOptionsBuilder(

@@ -1,6 +1,6 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ProvisioningOptionsInterface } from '../interface';
-import { InvalidProvisioningStrategyOptionsLoggableException } from '../loggable';
+import { ProvisioningStrategyInvalidOptionsLoggableException } from '../loggable';
 import { provisioningStrategyOptions } from './provisioning-strategy-options';
 import { AnyProvisioningOptions } from './school-system-options.do';
 
@@ -12,13 +12,13 @@ export class SchoolSystemOptionsBuilder {
 			provisioningStrategyOptions.get(this.provisioningStrategy);
 
 		if (!ProvisioningOptionsConstructor) {
-			throw new InvalidProvisioningStrategyOptionsLoggableException(this.provisioningStrategy, provisioningOptions);
+			throw new ProvisioningStrategyInvalidOptionsLoggableException(this.provisioningStrategy, provisioningOptions);
 		}
 
 		const createdProvisioningOptions: AnyProvisioningOptions = new ProvisioningOptionsConstructor();
 
 		if (!createdProvisioningOptions.isApplicable(provisioningOptions)) {
-			throw new InvalidProvisioningStrategyOptionsLoggableException(this.provisioningStrategy, provisioningOptions);
+			throw new ProvisioningStrategyInvalidOptionsLoggableException(this.provisioningStrategy, provisioningOptions);
 		}
 
 		createdProvisioningOptions.set(provisioningOptions);

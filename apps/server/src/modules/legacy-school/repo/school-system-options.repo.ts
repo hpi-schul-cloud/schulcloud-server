@@ -10,7 +10,7 @@ import {
 	SchoolSystemOptionsProps,
 } from '../domain';
 import { SchoolSystemOptionsEntity, SchoolSystemOptionsEntityProps } from '../entity';
-import { MissingProvisioningStrategyLoggableException } from '../loggable';
+import { ProvisioningStrategyMissingLoggableException } from '../loggable';
 import { SchoolSystemOptionsRepoMapper } from './school-system-options-repo.mapper';
 
 @Injectable()
@@ -32,7 +32,7 @@ export class SchoolSystemOptionsRepo {
 		}
 
 		if (!entity.system.provisioningStrategy) {
-			throw new MissingProvisioningStrategyLoggableException(entity.system.id);
+			throw new ProvisioningStrategyMissingLoggableException(entity.system.id);
 		}
 
 		const domainObject: SchoolSystemOptions = this.buildDomainObject(entity, entity.system.provisioningStrategy);
@@ -57,7 +57,7 @@ export class SchoolSystemOptionsRepo {
 		});
 
 		if (!system?.provisioningStrategy) {
-			throw new MissingProvisioningStrategyLoggableException(domainObject.systemId);
+			throw new ProvisioningStrategyMissingLoggableException(domainObject.systemId);
 		}
 
 		let savedEntity: SchoolSystemOptionsEntity;

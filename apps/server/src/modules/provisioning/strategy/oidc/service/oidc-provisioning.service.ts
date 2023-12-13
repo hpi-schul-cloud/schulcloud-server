@@ -147,16 +147,10 @@ export class OidcProvisioningService {
 	): Promise<ExternalGroupDto[]> {
 		let filteredGroups: ExternalGroupDto[] = externalGroups;
 
-		let provisioningOptions: SchulConneXProvisioningOptions;
-		if (schoolId) {
-			provisioningOptions = await this.schoolSystemOptionsService.getProvisioningOptions(
-				SchulConneXProvisioningOptions,
-				schoolId,
-				systemId
-			);
-		} else {
-			provisioningOptions = new SchulConneXProvisioningOptions();
-		}
+		const provisioningOptions: SchulConneXProvisioningOptions = await this.getProvisioningOptionsOrDefault(
+			schoolId,
+			systemId
+		);
 
 		if (!provisioningOptions.groupProvisioningClassesEnabled) {
 			filteredGroups = filteredGroups.filter((group: ExternalGroupDto) => group.type !== GroupTypes.CLASS);
@@ -171,6 +165,25 @@ export class OidcProvisioningService {
 		}
 
 		return filteredGroups;
+	}
+
+	private async getProvisioningOptionsOrDefault(
+		schoolId: string | undefined,
+		systemId: string
+	): Promise<SchulConneXProvisioningOptions> {
+		let provisioningOptions: SchulConneXProvisioningOptions;
+
+		if (schoolId) {
+			provisioningOptions = await this.schoolSystemOptionsService.getProvisioningOptions(
+				SchulConneXProvisioningOptions,
+				schoolId,
+				systemId
+			);
+		} else {
+			provisioningOptions = new SchulConneXProvisioningOptions();
+		}
+
+		return provisioningOptions;
 	}
 
 	public async provisionExternalGroup(
