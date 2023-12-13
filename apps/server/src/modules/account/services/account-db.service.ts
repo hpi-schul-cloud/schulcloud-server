@@ -12,8 +12,7 @@ import { AccountDto, AccountSaveDto } from './dto';
 
 @Injectable()
 export class AccountServiceDb {
-	constructor(private readonly accountRepo: AccountRepo, private readonly accountLookupService: AccountLookupService) {
-}
+	constructor(private readonly accountRepo: AccountRepo, private readonly accountLookupService: AccountLookupService) {}
 
 	async findById(id: EntityId): Promise<Account> {
 		const internalId = await this.getInternalId(id);
