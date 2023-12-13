@@ -40,7 +40,7 @@ export class SchoolSystemOptionsUc {
 		return schoolSystemOptions.provisioningOptions;
 	}
 
-	public async setProvisioningOptions(
+	public async createOrUpdateProvisioningOptions(
 		userId: EntityId,
 		schoolId: EntityId,
 		systemId: EntityId,
