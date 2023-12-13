@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Module } from '@nestjs/common';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';
-import { createClient, RedisClient } from 'redis';
+import { createClient, createCluster, RedisClient } from 'redis';
 import { REDIS_CLIENT } from './interface/redis.constants';
 
 @Module({
@@ -13,13 +13,28 @@ import { REDIS_CLIENT } from './interface/redis.constants';
 				logger.setContext(RedisModule.name);
 
 				if (Configuration.has('REDIS_URI')) {
-					const redisUrl: string = Configuration.get('REDIS_URI') as string;
-					const client: RedisClient = createClient({ url: redisUrl });
+					if (Configuration.has('REDIS_CLUSTER_ENABLED') === true) {
+						const redisUrl: string = Configuration.get('REDIS_URI') as string;
+						const client: RedisClient = createCluster({
+							rootNodes: [{
+							  url: Configuration.get('REDIS_URI')
+							}]
+						  });
 
-					client.on('error', (error) => logger.error(error));
-					client.on('connect', (msg) => logger.log(msg));
+						  client.on('error', (error) => logger.error(error));
+						  client.on('connect', (msg) => logger.log(msg));
+  
+						  return client;
+					}
+					else {
+						const redisUrl: string = Configuration.get('REDIS_URI') as string;
+						const client: RedisClient = createClient({ url: redisUrl });
 
-					return client;
+						client.on('error', (error) => logger.error(error));
+						client.on('connect', (msg) => logger.log(msg));
+
+						return client;
+					}
 				}
 
 				return undefined;
