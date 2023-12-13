@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
-import { tldrawEntityFactory } from '@src/modules/tldraw/factory';
+import { tldrawEntityFactory } from '../factory';
 import { TldrawDrawing } from '../entities';
 import { TldrawRepo } from './tldraw.repo';
 import { TldrawWsTestModule } from '../tldraw-ws-test.module';
