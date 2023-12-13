@@ -8,48 +8,62 @@ import { SchoolEntityMapper } from './school.entity.mapper';
 
 describe('SchoolEntityMapper', () => {
 	describe('mapToDo', () => {
-		it('should return an instance of school', () => {
-			const entity = schoolFactory.build();
+		describe('when school entity is passed', () => {
+			const setup = () => {
+				const entity = schoolFactory.build();
+				const expected = new School({
+					id: entity.id,
+					createdAt: entity.createdAt,
+					updatedAt: entity.updatedAt,
+					name: entity.name,
+					officialSchoolNumber: entity.officialSchoolNumber,
+					externalId: entity.externalId,
+					previousExternalId: entity.previousExternalId,
+					inMaintenanceSince: entity.inMaintenanceSince,
+					inUserMigration: entity.inUserMigration,
+					purpose: entity.purpose,
+					logo_dataUrl: entity.logo_dataUrl,
+					logo_name: entity.logo_name,
+					fileStorageType: entity.fileStorageType,
+					language: entity.language,
+					timezone: entity.timezone,
+					permissions: entity.permissions,
+					features: new Set(entity.features),
+					federalState: FederalStateEntityMapper.mapToDo(entity.federalState),
+					county: entity.county && CountyEmbeddableMapper.mapToDo(entity.county),
+					currentYear: entity.currentYear && SchoolYearEntityMapper.mapToDo(entity.currentYear),
+					systemIds: entity.systems.getItems().map((system) => system.id),
+				});
 
-			const result = SchoolEntityMapper.mapToDo(entity);
+				return { entity, expected };
+			};
 
-			expect(result).toBeInstanceOf(School);
-		});
+			it('should return an instance of school', () => {
+				const { entity } = setup();
 
-		it('should return a school with all properties', () => {
-			const entity = schoolFactory.build();
-			const expected = new School({
-				id: entity.id,
-				createdAt: entity.createdAt,
-				updatedAt: entity.updatedAt,
-				name: entity.name,
-				officialSchoolNumber: entity.officialSchoolNumber,
-				externalId: entity.externalId,
-				previousExternalId: entity.previousExternalId,
-				inMaintenanceSince: entity.inMaintenanceSince,
-				inUserMigration: entity.inUserMigration,
-				purpose: entity.purpose,
-				logo_dataUrl: entity.logo_dataUrl,
-				logo_name: entity.logo_name,
-				fileStorageType: entity.fileStorageType,
-				language: entity.language,
-				timezone: entity.timezone,
-				permissions: entity.permissions,
-				features: new Set(entity.features),
-				federalState: FederalStateEntityMapper.mapToDo(entity.federalState),
-				county: entity.county && CountyEmbeddableMapper.mapToDo(entity.county),
-				currentYear: entity.currentYear && SchoolYearEntityMapper.mapToDo(entity.currentYear),
-				systemIds: entity.systems.getItems().map((system) => system.id),
+				const result = SchoolEntityMapper.mapToDo(entity);
+
+				expect(result).toBeInstanceOf(School);
 			});
 
-			const result = SchoolEntityMapper.mapToDo(entity);
+			it('should return a school with all properties', () => {
+				const { entity, expected } = setup();
 
-			expect(result).toEqual(expected);
+				const result = SchoolEntityMapper.mapToDo(entity);
+
+				expect(result).toEqual(expected);
+			});
 		});
 
 		describe('when enableStudentTeamCreation on entity is false', () => {
-			it('should return a school without IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', () => {
+			const setup = () => {
 				const entity = schoolFactory.build({ enableStudentTeamCreation: false });
+
+				return { entity };
+			};
+
+			it('should return a school without IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', () => {
+				const { entity } = setup();
 
 				const result = SchoolEntityMapper.mapToDo(entity);
 
@@ -58,8 +72,14 @@ describe('SchoolEntityMapper', () => {
 		});
 
 		describe('when enableStudentTeamCreation on entity is true', () => {
-			it('should return a school with IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', () => {
+			const setup = () => {
 				const entity = schoolFactory.build({ enableStudentTeamCreation: true });
+
+				return { entity };
+			};
+
+			it('should return a school with IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', () => {
+				const { entity } = setup();
 
 				const result = SchoolEntityMapper.mapToDo(entity);
 
