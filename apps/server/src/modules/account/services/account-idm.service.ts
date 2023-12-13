@@ -5,17 +5,19 @@ import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount, IdmAccountUpdate } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
+import { ConfigService } from '@nestjs/config';
 import { AccountIdmToDtoMapper } from '../mapper';
-import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
+import { AccountConfig } from '../account-config';
 
 @Injectable()
 export class AccountServiceIdm extends AbstractAccountService {
 	constructor(
 		private readonly identityManager: IdentityManagementService,
 		private readonly accountIdmToDtoMapper: AccountIdmToDtoMapper,
-		private readonly accountLookupService: AccountLookupService,
+		private readonly idmService: IdentityManagementService,
+		private readonly configService: ConfigService<AccountConfig, true>,
 		private readonly idmOauthService: IdentityManagementOauthService,
 		private readonly logger: LegacyLogger
 	) {
@@ -35,6 +37,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 				// eslint-disable-next-line no-await-in-loop
 				results.push(await this.identityManager.findAccountByDbcUserId(userId));
 			} catch {
+				// Fix me!
 				// ignore entry
 			}
 		}
@@ -47,6 +50,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 			const result = await this.identityManager.findAccountByDbcUserId(userId);
 			return this.accountIdmToDtoMapper.mapToDto(result);
 		} catch {
+			// Fix me!
 			return null;
 		}
 	}
@@ -63,18 +67,21 @@ export class AccountServiceIdm extends AbstractAccountService {
 	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountDto | null> {
 		const [accounts] = await this.searchByUsernameExactMatch(username);
 		const account = accounts.find((tempAccount) => tempAccount.systemId === systemId) || null;
+
 		return account;
 	}
 
 	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>> {
 		const [results, total] = await this.identityManager.findAccountsByUsername(userName, { skip, limit, exact: false });
 		const accounts = results.map((result) => this.accountIdmToDtoMapper.mapToDto(result));
+
 		return [accounts, total];
 	}
 
 	async searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>> {
 		const [results, total] = await this.identityManager.findAccountsByUsername(userName, { exact: true });
 		const accounts = results.map((result) => this.accountIdmToDtoMapper.mapToDto(result));
+
 		return [accounts, total];
 	}
 
@@ -83,6 +90,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		const id = await this.getIdmAccountId(accountId);
 		await this.identityManager.setUserAttribute(id, attributeName, lastTriedFailedLogin.toISOString());
 		const updatedAccount = await this.identityManager.findAccountById(id);
+
 		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
@@ -112,6 +120,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		}
 
 		const updatedAccount = await this.identityManager.findAccountById(accountId);
+
 		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
@@ -120,11 +129,13 @@ export class AccountServiceIdm extends AbstractAccountService {
 		if (password) {
 			await this.identityManager.updateAccountPassword(idmAccountId, password);
 		}
+
 		return updatedAccountId;
 	}
 
 	private async createAccount(idmAccount: IdmAccountUpdate, password?: string): Promise<string> {
 		const accountId = await this.identityManager.createAccount(idmAccount, password);
+
 		return accountId;
 	}
 
@@ -132,28 +143,35 @@ export class AccountServiceIdm extends AbstractAccountService {
 		const id = await this.getIdmAccountId(accountRefId);
 		await this.identityManager.updateAccount(id, { username });
 		const updatedAccount = await this.identityManager.findAccountById(id);
-		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
+
+		const accountDto = this.accountIdmToDtoMapper.mapToDto(updatedAccount);
+
+		return accountDto;
 	}
 
 	async updatePassword(accountRefId: EntityId, password: string): Promise<AccountDto> {
 		const id = await this.getIdmAccountId(accountRefId);
 		await this.identityManager.updateAccountPassword(id, password);
 		const updatedAccount = await this.identityManager.findAccountById(id);
+
 		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
 	async validatePassword(account: AccountDto, comparePassword: string): Promise<boolean> {
 		const jwt = await this.idmOauthService.resourceOwnerPasswordGrant(account.username, comparePassword);
+
 		return jwt !== undefined;
 	}
 
 	async delete(accountRefId: EntityId): Promise<void> {
 		const id = await this.getIdmAccountId(accountRefId);
+
 		await this.identityManager.deleteAccountById(id);
 	}
 
 	async deleteByUserId(userId: EntityId): Promise<void> {
 		const idmAccount = await this.identityManager.findAccountByDbcUserId(userId);
+
 		await this.identityManager.deleteAccountById(idmAccount.id);
 	}
 
@@ -161,12 +179,57 @@ export class AccountServiceIdm extends AbstractAccountService {
 	async findMany(_offset: number, _limit: number): Promise<AccountDto[]> {
 		throw new NotImplementedException();
 	}
+	/*
+		private async getExternalId(id: EntityId): Promise<string | null> {
+		if (!ObjectId.isValid(id)) {
+			return id;
+		}
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
+			const account = await this.idmService.findAccountByDbcAccountId(id.toString());
+			return account.id;
+		}
 
-	private async getIdmAccountId(accountId: string): Promise<string> {
-		const externalId = await this.accountLookupService.getExternalId(accountId);
+		return null;
+	}
+
+	private async getIdmAccountId(accountId: EntityId): Promise<string> {
+		const externalId = await this.getExternalId(accountId);
+
 		if (!externalId) {
 			throw new EntityNotFoundError(`Account with id ${accountId} not found`);
 		}
+
 		return externalId;
+	}
+	*/
+
+	/*
+	private async getIdmAccountId(accountId: EntityId): Promise<string> {
+		if (!ObjectId.isValid(accountId)) {
+			throw new EntityNotFoundError(`Account with id ${accountId} not found`);
+		}
+
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
+			const account = await this.idmService.findAccountByDbcAccountId(accountId.toString());
+			return account.id;
+		}
+
+		throw new EntityNotFoundError(`Account with id ${accountId} not found`);
+	}
+	*/
+	// See deleteByUserId method, without any of this checks... make this sense?
+	// Check account.service updateUsername if FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED=false than this method throw always a error
+	// ...we must speak and clarify this point
+	private async getIdmAccountId(accountId: EntityId): Promise<EntityId> {
+		const isEnabled = this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true;
+		const isValidObjectId = ObjectId.isValid(accountId);
+
+		if (!isValidObjectId || !isEnabled) {
+			throw new EntityNotFoundError(`Account with id ${accountId} not found`);
+		}
+
+		const account = await this.idmService.findAccountByDbcAccountId(accountId.toString());
+
+		return account.id;
 	}
 }

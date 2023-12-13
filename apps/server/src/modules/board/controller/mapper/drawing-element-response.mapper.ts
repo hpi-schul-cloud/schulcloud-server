@@ -1,7 +1,7 @@
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
-import { ContentElementType } from '@shared/domain/domainobject';
-import { DrawingElementContent, DrawingElementResponse } from '../dto/element/drawing-element.response';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
 import { TimestampsResponse } from '../dto';
+import { DrawingElementContent, DrawingElementResponse } from '../dto/element/drawing-element.response';
 import { BaseResponseMapper } from './base-mapper.interface';
 
 export class DrawingElementResponseMapper implements BaseResponseMapper {

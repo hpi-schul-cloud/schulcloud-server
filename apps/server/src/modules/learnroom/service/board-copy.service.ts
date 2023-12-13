@@ -5,22 +5,22 @@ import { LessonCopyService } from '@modules/lesson/service';
 import { TaskCopyService } from '@modules/task/service';
 import { Injectable } from '@nestjs/common';
 import { ColumnBoard } from '@shared/domain/domainobject';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
 import {
 	Board,
 	BoardElement,
 	BoardElementType,
-	ColumnBoardTarget,
 	ColumnboardBoardElement,
+	ColumnBoardTarget,
 	Course,
+	isColumnBoardTarget,
+	isLesson,
+	isTask,
 	LessonBoardElement,
 	LessonEntity,
 	Task,
 	TaskBoardElement,
 	User,
-	isColumnBoardTarget,
-	isLesson,
-	isTask,
 } from '@shared/domain/entity';
 import { BoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';

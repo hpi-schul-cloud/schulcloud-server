@@ -4,31 +4,40 @@ import { EntityNotFoundError } from '@shared/common';
 import { Account } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import bcrypt from 'bcryptjs';
+import { IdentityManagementService } from '@src/infra/identity-management';
+import { ConfigService } from '@nestjs/config';
 import { AccountEntityToDtoMapper } from '../mapper';
 import { AccountRepo } from '../repo/account.repo';
-import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
+import { AccountConfig } from '../account-config';
 
 @Injectable()
 export class AccountServiceDb extends AbstractAccountService {
-	constructor(private readonly accountRepo: AccountRepo, private readonly accountLookupService: AccountLookupService) {
+	constructor(
+		private readonly accountRepo: AccountRepo,
+		private readonly idmService: IdentityManagementService,
+		private readonly configService: ConfigService<AccountConfig, true>
+	) {
 		super();
 	}
 
 	async findById(id: EntityId): Promise<AccountDto> {
 		const internalId = await this.getInternalId(id);
 		const accountEntity = await this.accountRepo.findById(internalId);
+
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
 	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountDto[]> {
 		const accountEntities = await this.accountRepo.findMultipleByUserId(userIds);
+
 		return AccountEntityToDtoMapper.mapAccountsToDto(accountEntities);
 	}
 
 	async findByUserId(userId: EntityId): Promise<AccountDto | null> {
 		const accountEntity = await this.accountRepo.findByUserId(userId);
+
 		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
 	}
 
@@ -37,11 +46,13 @@ export class AccountServiceDb extends AbstractAccountService {
 		if (!accountEntity) {
 			throw new EntityNotFoundError('Account');
 		}
+
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
 	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountDto | null> {
 		const accountEntity = await this.accountRepo.findByUsernameAndSystemId(username, systemId);
+
 		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
 	}
 
@@ -78,6 +89,7 @@ export class AccountServiceDb extends AbstractAccountService {
 
 			await this.accountRepo.save(account);
 		}
+
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
@@ -86,6 +98,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		const account = await this.accountRepo.findById(internalId);
 		account.username = username;
 		await this.accountRepo.save(account);
+
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
@@ -94,6 +107,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		const account = await this.accountRepo.findById(internalId);
 		account.lasttriedFailedLogin = lastTriedFailedLogin;
 		await this.accountRepo.save(account);
+
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
@@ -103,11 +117,13 @@ export class AccountServiceDb extends AbstractAccountService {
 		account.password = await this.encryptPassword(password);
 
 		await this.accountRepo.save(account);
+
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
 	async delete(id: EntityId): Promise<void> {
 		const internalId = await this.getInternalId(id);
+
 		return this.accountRepo.deleteById(internalId);
 	}
 
@@ -117,11 +133,13 @@ export class AccountServiceDb extends AbstractAccountService {
 
 	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>> {
 		const accountEntities = await this.accountRepo.searchByUsernamePartialMatch(userName, skip, limit);
+
 		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
 	}
 
 	async searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>> {
 		const accountEntities = await this.accountRepo.searchByUsernameExactMatch(userName);
+
 		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
 	}
 
@@ -129,15 +147,41 @@ export class AccountServiceDb extends AbstractAccountService {
 		if (!account.password) {
 			return Promise.resolve(false);
 		}
+
 		return bcrypt.compare(comparePassword, account.password);
+	}
+	/*
+	private async getInternalId2(id: EntityId | ObjectId): Promise<ObjectId | null> {
+		if (id instanceof ObjectId || ObjectId.isValid(id)) {
+			return new ObjectId(id);
+		}
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
+			const account = await this.idmService.findAccountById(id);
+			return new ObjectId(account.attDbcAccountId);
+		}
+		return null;
 	}
 
 	private async getInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
-		const internalId = await this.accountLookupService.getInternalId(id);
+		const internalId = await this.getInternalId2(id);
 		if (!internalId) {
 			throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
 		}
+
 		return internalId;
+	}
+	*/
+
+	private async getInternalId(id: EntityId): Promise<ObjectId> {
+		const isEnabled = this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true;
+		const isValidObjectId = ObjectId.isValid(id);
+
+		if (!isValidObjectId || !isEnabled) {
+			throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
+		}
+
+		const account = await this.idmService.findAccountById(id);
+		return new ObjectId(account.attDbcAccountId);
 	}
 
 	private encryptPassword(password: string): Promise<string> {
@@ -145,6 +189,8 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	async findMany(offset = 0, limit = 100): Promise<AccountDto[]> {
-		return AccountEntityToDtoMapper.mapAccountsToDto(await this.accountRepo.findMany(offset, limit));
+		const accounts = await this.accountRepo.findMany(offset, limit);
+
+		return AccountEntityToDtoMapper.mapAccountsToDto(accounts);
 	}
 }

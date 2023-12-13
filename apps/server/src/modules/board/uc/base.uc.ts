@@ -1,6 +1,7 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { ForbiddenException } from '@nestjs/common';
-import { AnyBoardDo, SubmissionItem, UserRoleEnum } from '@shared/domain/domainobject';
+import { AnyBoardDo, SubmissionItem } from '@shared/domain/domainobject';
+import { UserRoleEnum } from '@shared/domain/domainobject/board/types/board-do-authorizable';
 import { EntityId } from '@shared/domain/types';
 import { BoardDoAuthorizableService } from '../service';
 

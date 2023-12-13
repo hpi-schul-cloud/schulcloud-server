@@ -1,14 +1,14 @@
 import { AuthorizationLoaderService } from '@modules/authorization';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { ColumnBoard } from '@shared/domain/domainobject/board/column-board.do';
+import { AnyBoardDo } from '@shared/domain/domainobject/board/types/any-board-do';
 import {
-	AnyBoardDo,
 	BoardDoAuthorizable,
-	BoardExternalReferenceType,
 	BoardRoles,
-	ColumnBoard,
 	UserBoardRoles,
 	UserRoleEnum,
-} from '@shared/domain/domainobject';
+} from '@shared/domain/domainobject/board/types/board-do-authorizable';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
 import { Course } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';

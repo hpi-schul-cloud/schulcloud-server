@@ -1,4 +1,4 @@
-import { AccountDto } from '@modules/account/services/dto';
+import { AccountDto } from '@modules/account';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { LegacySchoolDo } from '@shared/domain/domainobject';

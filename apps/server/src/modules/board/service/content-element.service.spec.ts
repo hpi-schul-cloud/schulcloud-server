@@ -3,11 +3,11 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	ContentElementFactory,
-	ContentElementType,
 	FileElement,
 	RichTextElement,
 	SubmissionContainerElement,
 } from '@shared/domain/domainobject';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
 import { InputFormat } from '@shared/domain/types';
 import { drawingElementFactory, setupEntities } from '@shared/testing';
 import {

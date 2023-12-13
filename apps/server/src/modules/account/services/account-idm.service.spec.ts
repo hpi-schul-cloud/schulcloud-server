@@ -2,22 +2,22 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { IdentityManagementOauthService, IdentityManagementService } from '@infra/identity-management';
 import { NotImplementedException } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount } from '@shared/domain/interface';
 import { LoggerModule } from '@src/core/logger';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
-import { AccountLookupService } from './account-lookup.service';
 import { AccountDto, AccountSaveDto } from './dto';
+import { AccountConfig } from '../account-config';
 
 describe('AccountIdmService', () => {
 	let module: TestingModule;
 	let accountIdmService: AccountServiceIdm;
 	let mapper: AccountIdmToDtoMapper;
 	let idmServiceMock: DeepMocked<IdentityManagementService>;
-	let accountLookupServiceMock: DeepMocked<AccountLookupService>;
+	let configService: DeepMocked<ConfigService>;
 	let idmOauthServiceMock: DeepMocked<IdentityManagementOauthService>;
 
 	const mockIdmAccountRefId = 'dbcAccountId';
@@ -50,20 +50,21 @@ describe('AccountIdmService', () => {
 					provide: IdentityManagementService,
 					useValue: createMock<IdentityManagementService>(),
 				},
-				{
-					provide: AccountLookupService,
-					useValue: createMock<AccountLookupService>(),
-				},
+
 				{
 					provide: IdentityManagementOauthService,
 					useValue: createMock<IdentityManagementOauthService>(),
+				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService<AccountConfig, true>>(),
 				},
 			],
 		}).compile();
 		accountIdmService = module.get(AccountServiceIdm);
 		mapper = module.get(AccountIdmToDtoMapper);
 		idmServiceMock = module.get(IdentityManagementService);
-		accountLookupServiceMock = module.get(AccountLookupService);
+		configService = module.get(ConfigService);
 		idmOauthServiceMock = module.get(IdentityManagementOauthService);
 	});
 
@@ -173,6 +174,20 @@ describe('AccountIdmService', () => {
 	});
 
 	describe('updateUsername', () => {
+		describe('when FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED=true and a account exists', () => {
+
+		});
+
+		describe('when FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED=false', () => {
+
+		});
+
+		// id is invalid
+
+		// updateAccount throw errror
+
+		// findAccountById throw error
+
 		it('should map result correctly', async () => {
 			accountLookupServiceMock.getExternalId.mockResolvedValue(mockIdmAccount.id);
 			const ret = await accountIdmService.updateUsername(mockIdmAccountRefId, 'any');

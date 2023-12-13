@@ -4,36 +4,44 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
 import { Counted } from '@shared/domain/types';
 import { isEmail, validateOrReject } from 'class-validator';
-import { LegacyLogger } from '../../../core/logger';
-import { ServerConfig } from '../../server/server.config';
+import { LegacyLogger } from '@src/core/logger';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
 import { AccountDto, AccountSaveDto } from './dto';
+import { AccountConfig } from '../account-config';
 
 @Injectable()
 export class AccountService extends AbstractAccountService {
-	private readonly accountImpl: AbstractAccountService;
-
 	constructor(
 		private readonly accountDb: AccountServiceDb,
 		private readonly accountIdm: AccountServiceIdm,
-		private readonly configService: ConfigService<ServerConfig, true>,
+		private readonly configService: ConfigService<AccountConfig, true>,
 		private readonly accountValidationService: AccountValidationService,
 		private readonly logger: LegacyLogger
 	) {
 		super();
 		this.logger.setContext(AccountService.name);
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
-			this.accountImpl = accountIdm;
+	}
+
+	private get accountImpl(): AbstractAccountService {
+		let primaryPersistence: AbstractAccountService;
+		const identityLogin = this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED');
+
+		if (identityLogin) {
+			primaryPersistence = this.accountIdm;
 		} else {
-			this.accountImpl = accountDb;
+			primaryPersistence = this.accountDb;
 		}
+
+		return primaryPersistence;
 	}
 
 	async findById(id: string): Promise<AccountDto> {
-		return this.accountImpl.findById(id);
+		const accountDto = await this.accountImpl.findById(id);
+
+		return accountDto;
 	}
 
 	async findMultipleByUserId(userIds: string[]): Promise<AccountDto[]> {
@@ -74,6 +82,7 @@ export class AccountService extends AbstractAccountService {
 			this.logger.debug(`Saved account with accountID ${ret.id}`);
 			return account;
 		});
+
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
@@ -119,6 +128,7 @@ export class AccountService extends AbstractAccountService {
 			this.logger.debug(`Updated username for account with accountID ${accountId}`);
 			return account;
 		});
+
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
@@ -130,6 +140,7 @@ export class AccountService extends AbstractAccountService {
 			this.logger.debug(`Updated last tried failed login for account with accountID ${accountId}`);
 			return account;
 		});
+
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
@@ -141,6 +152,7 @@ export class AccountService extends AbstractAccountService {
 			this.logger.debug(`Updated password for account with accountID ${accountId}`);
 			return account;
 		});
+
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
@@ -185,6 +197,7 @@ export class AccountService extends AbstractAccountService {
 				}
 			}
 		}
+
 		return null;
 	}
 }

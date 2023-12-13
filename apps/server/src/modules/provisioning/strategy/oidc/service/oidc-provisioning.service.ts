@@ -1,4 +1,4 @@
-import { AccountService } from '@modules/account/services/account.service';
+import { AccountService } from '@modules/account';
 import { AccountSaveDto } from '@modules/account/services/dto';
 import { Group, GroupService, GroupUser } from '@modules/group';
 import { FederalStateService, LegacySchoolService, SchoolYearService } from '@modules/legacy-school';

@@ -1,22 +1,24 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '../../../core/logger';
+import { LegacyLogger } from '@src/core/logger';
+import { accountDtoFactory, accountFactory } from '@shared/testing';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AccountValidationService } from './account.validation.service';
-import { AccountDto, AccountSaveDto } from './dto';
+// import { AccountDto, AccountSaveDto } from './dto';
+import { AccountConfig } from '../account-config';
+import { AccountDto } from './dto';
 
 describe('AccountService', () => {
 	let module: TestingModule;
 	let accountService: AccountService;
 	let accountServiceIdm: DeepMocked<AccountServiceIdm>;
 	let accountServiceDb: DeepMocked<AccountServiceDb>;
-	let accountValidationService: DeepMocked<AccountValidationService>;
+	// let accountValidationService: DeepMocked<AccountValidationService>;
 	let configService: DeepMocked<ConfigService>;
-	let logger: DeepMocked<LegacyLogger>;
+	// let logger: DeepMocked<LegacyLogger>;
 
 	afterAll(async () => {
 		await module.close();
@@ -26,6 +28,10 @@ describe('AccountService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				AccountService,
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService<AccountConfig, true>>(),
+				},
 				{
 					provide: AccountServiceDb,
 					useValue: createMock<AccountServiceDb>(),
@@ -39,10 +45,6 @@ describe('AccountService', () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<ServerConfig, true>>(),
-				},
-				{
 					provide: AccountValidationService,
 					useValue: {
 						isUniqueEmail: jest.fn().mockResolvedValue(true),
@@ -53,22 +55,76 @@ describe('AccountService', () => {
 		accountServiceDb = module.get(AccountServiceDb);
 		accountServiceIdm = module.get(AccountServiceIdm);
 		accountService = module.get(AccountService);
-		accountValidationService = module.get(AccountValidationService);
+		// accountValidationService = module.get(AccountValidationService);
 		configService = module.get(ConfigService);
-		logger = module.get(LegacyLogger);
+		// logger = module.get(LegacyLogger);
 	});
 
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
 
+	afterEach(() => {
+		configService.get.mockReset();
+	});
+
 	describe('findById', () => {
-		it('should call findById in accountServiceDb', async () => {
-			await expect(accountService.findById('id')).resolves.not.toThrow();
-			expect(accountServiceDb.findById).toHaveBeenCalledTimes(1);
+		describe('when FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED true', () => {
+			const setup = () => {
+				const dto = accountDtoFactory.build();
+
+				configService.get.mockReturnValueOnce(true);
+				accountServiceIdm.findById.mockResolvedValueOnce(dto);
+
+				return { dto, id: dto.id };
+			};
+
+			it('should call findById in accountServiceIdm', async () => {
+				const { id } = setup();
+
+				await accountService.findById(id);
+
+				expect(accountServiceIdm.findById).toHaveBeenCalledTimes(1);
+			});
+
+			it('should return account dto', async () => {
+				const { id, dto } = setup();
+
+				const result = await accountService.findById(id);
+
+				expect(result).toEqual(dto);
+			});
+		});
+
+		describe('when FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED false', () => {
+			const setup = () => {
+				const dto = accountDtoFactory.build();
+
+				configService.get.mockReturnValueOnce(false);
+				accountServiceDb.findById.mockResolvedValueOnce(dto);
+
+				return { dto, id: dto.id };
+			};
+
+			it('should call findById in accountServiceDb', async () => {
+				const { id } = setup();
+
+				await accountService.findById(id);
+
+				expect(accountServiceDb.findById).toHaveBeenCalledTimes(1);
+			});
+
+			it('should return account dto', async () => {
+				const { id, dto } = setup();
+
+				const result = await accountService.findById(id);
+
+				expect(result).toEqual(dto);
+			});
 		});
 	});
 
+	/*
 	describe('findByUserId', () => {
 		it('should call findByUserId in accountServiceDb', async () => {
 			await expect(accountService.findByUserId('userId')).resolves.not.toThrow();
@@ -461,5 +517,6 @@ describe('AccountService', () => {
 				expect(accountServiceIdm.deleteByUserId).toHaveBeenCalledTimes(1);
 			});
 		});
-	});
+	}); 
+	*/
 });

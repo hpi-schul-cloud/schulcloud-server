@@ -1,5 +1,4 @@
-import { AccountService } from '@modules/account';
-import { AccountDto } from '@modules/account/services/dto';
+import { AccountDto, AccountService } from '@modules/account';
 // invalid import
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { CurrentUserMapper } from '@modules/authentication/mapper';

@@ -3,12 +3,11 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { sanitizeRichText } from '@shared/controller';
-import { BoardExternalReferenceType, ContentElementType } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
 import { FileElementNode, RichTextElementNode, SubmissionContainerElementNode } from '@shared/domain/entity';
 import { InputFormat } from '@shared/domain/types';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
@@ -17,6 +16,8 @@ import {
 	fileElementNodeFactory,
 	richTextElementNodeFactory,
 	submissionContainerElementNodeFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 
 describe(`content element update content (api)`, () => {

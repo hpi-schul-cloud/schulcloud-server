@@ -3,7 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ColumnBoardService, ContentElementService } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, ColumnBoard, ExternalToolElement } from '@shared/domain/domainobject';
+import { ColumnBoard, ExternalToolElement } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
 import { Course } from '@shared/domain/entity';
 import {
 	columnBoardFactory,

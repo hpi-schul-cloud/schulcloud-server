@@ -8,9 +8,9 @@ import {
 	Column,
 	ColumnBoard,
 	ContentElementFactory,
-	ContentElementType,
 	RichTextElement,
 } from '@shared/domain/domainobject';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';

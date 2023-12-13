@@ -1,5 +1,5 @@
 import { IdentityManagementConfig, IdentityManagementOauthService } from '@infra/identity-management';
-import { AccountDto } from '@modules/account/services/dto';
+import { AccountDto } from '@modules/account';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';

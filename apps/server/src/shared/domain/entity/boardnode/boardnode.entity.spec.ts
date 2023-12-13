@@ -1,4 +1,4 @@
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types/board-external-reference';
 import { cardNodeFactory, columnBoardNodeFactory, setupEntities } from '@shared/testing';
 import { BoardNode } from './boardnode.entity';
 import { ColumnBoardNode } from './column-board-node.entity';

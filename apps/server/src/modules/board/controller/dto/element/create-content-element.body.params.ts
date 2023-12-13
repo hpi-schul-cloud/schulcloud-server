@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ContentElementType } from '@shared/domain/domainobject';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
 import { IsEnum, IsInt, IsOptional, Min } from 'class-validator';
 
 export class CreateContentElementBodyParams {

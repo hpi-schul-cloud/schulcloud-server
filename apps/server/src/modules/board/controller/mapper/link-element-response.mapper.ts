@@ -1,4 +1,5 @@
-import { ContentElementType, LinkElement } from '@shared/domain/domainobject';
+import { LinkElement } from '@shared/domain/domainobject';
+import { ContentElementType } from '@shared/domain/domainobject/board/types/content-elements.enum';
 import { LinkElementContent, LinkElementResponse, TimestampsResponse } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
 

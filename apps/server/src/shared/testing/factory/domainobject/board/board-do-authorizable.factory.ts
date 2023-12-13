@@ -1,4 +1,5 @@
-import { BoardDoAuthorizable, BoardDoAuthorizableProps, UserRoleEnum } from '@shared/domain/domainobject/board';
+import { BoardDoAuthorizableProps } from '@shared/domain/domainobject/board';
+import { BoardDoAuthorizable, UserRoleEnum } from '@shared/domain/domainobject/board/types/board-do-authorizable';
 import { ObjectId } from 'bson';
 import { DomainObjectFactory } from '../domain-object.factory';
 

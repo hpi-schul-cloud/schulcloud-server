@@ -1,4 +1,4 @@
-import { AccountService } from '@modules/account/services/account.service';
+import { AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { ConfigModule } from '@nestjs/config';
