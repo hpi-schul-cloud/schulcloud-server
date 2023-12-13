@@ -145,7 +145,7 @@ describe('SanisResponseMapper', () => {
 			});
 		});
 
-		describe('when group type is given', () => {
+		describe('when group type class is given', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
 				const personenkontext: SanisPersonenkontextResponse = sanisResponse.personenkontexte[0];
@@ -183,7 +183,7 @@ describe('SanisResponseMapper', () => {
 			});
 		});
 
-		describe('when no group type is provided', () => {
+		describe('when group type other is provided', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
 				sanisResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SanisGroupType.OTHER;
@@ -193,12 +193,39 @@ describe('SanisResponseMapper', () => {
 				};
 			};
 
-			it('should not map the group', () => {
+			it('should map the group', () => {
 				const { sanisResponse } = setup();
 
 				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
 
-				expect(result).toHaveLength(0);
+				expect(result).toEqual([
+					expect.objectContaining<Partial<ExternalGroupDto>>({
+						type: GroupTypes.OTHER,
+					}),
+				]);
+			});
+		});
+
+		describe('when group type course is provided', () => {
+			const setup = () => {
+				const { sanisResponse } = setupSanisResponse();
+				sanisResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SanisGroupType.COURSE;
+
+				return {
+					sanisResponse,
+				};
+			};
+
+			it('should map the group', () => {
+				const { sanisResponse } = setup();
+
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
+
+				expect(result).toEqual([
+					expect.objectContaining<Partial<ExternalGroupDto>>({
+						type: GroupTypes.COURSE,
+					}),
+				]);
 			});
 		});
 

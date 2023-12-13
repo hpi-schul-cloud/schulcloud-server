@@ -6,10 +6,14 @@ import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupUserEntity, Group
 
 const GroupEntityTypesToGroupTypesMapping: Record<GroupEntityTypes, GroupTypes> = {
 	[GroupEntityTypes.CLASS]: GroupTypes.CLASS,
+	[GroupEntityTypes.COURSE]: GroupTypes.COURSE,
+	[GroupEntityTypes.OTHER]: GroupTypes.OTHER,
 };
 
-const GroupTypesToGroupEntityTypesMapping: Record<GroupTypes, GroupEntityTypes> = {
+export const GroupTypesToGroupEntityTypesMapping: Record<GroupTypes, GroupEntityTypes> = {
 	[GroupTypes.CLASS]: GroupEntityTypes.CLASS,
+	[GroupTypes.COURSE]: GroupEntityTypes.COURSE,
+	[GroupTypes.OTHER]: GroupEntityTypes.OTHER,
 };
 
 export class GroupDomainMapper {

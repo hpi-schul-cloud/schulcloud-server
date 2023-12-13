@@ -27,6 +27,8 @@ const GroupRoleMapping: Partial<Record<SanisGroupRole, RoleName>> = {
 
 const GroupTypeMapping: Partial<Record<SanisGroupType, GroupTypes>> = {
 	[SanisGroupType.CLASS]: GroupTypes.CLASS,
+	[SanisGroupType.COURSE]: GroupTypes.COURSE,
+	[SanisGroupType.OTHER]: GroupTypes.OTHER,
 };
 
 @Injectable()
