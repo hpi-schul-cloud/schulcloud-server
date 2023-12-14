@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { readFile } from 'node:fs/promises';
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../../common-cartridge.enums';
 import {
 	CommonCartridgeWebLinkResourcePropsV130,
@@ -12,10 +13,10 @@ describe('CommonCartridgeWebLinkResourceV130', () => {
 			version: CommonCartridgeVersion.V_1_3_0,
 			identifier: faker.string.uuid(),
 			folder: faker.string.uuid(),
-			title: faker.lorem.words(),
-			url: faker.internet.url(),
-			target: faker.lorem.word(),
-			windowFeatures: faker.lorem.words(),
+			title: 'Title',
+			url: 'http://www.example.tld',
+			target: '_self',
+			windowFeatures: 'width=100;height=100;', // FIXME: Is this a valid value?
 		};
 		const sut = new CommonCartridgeWebLinkResourceV130(props);
 
@@ -45,21 +46,12 @@ describe('CommonCartridgeWebLinkResourceV130', () => {
 	});
 
 	describe('getFileContent', () => {
-		describe('when using Common Cartridge version 1.3.0', () => {
-			it('should return correct XML', () => {
-				const { sut, props } = setup();
-				const result = sut.getFileContent();
+		it('should contain correct XML', async () => {
+			const { sut } = setup();
+			const expected = await readFile('./apps/server/test/assets/common-cartridge/v1.3.0/weblink.xml', 'utf8');
+			const result = sut.getFileContent();
 
-				expect(result).toEqual(
-					'<?xml version="1.0" encoding="UTF-8"?>' +
-						'<webLink xmlns="http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3 http://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_imswl_v1p3.xsd">' +
-						`<title>${props.title}</title>` +
-						`<url href="${props.url}" target="${props.target as string}" windowFeatures="${
-							props.windowFeatures as string
-						}"/>` +
-						'</webLink>'
-				);
-			});
+			expect(result).toEqual(expected);
 		});
 	});
 
