@@ -4,7 +4,7 @@ import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import cookie from 'cookie';
 import { TldrawConfig, SOCKET_PORT } from '../config';
-import { WsCloseCodeEnum } from '../types';
+import { WsCloseCodeEnum, WsCloseMessageEnum } from '../types';
 import { TldrawWsService } from '../service';
 
 @WebSocketGateway(SOCKET_PORT)
@@ -19,25 +19,32 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 
 	async handleConnection(client: WebSocket, request: Request): Promise<void> {
 		const docName = this.getDocNameFromRequest(request);
-		const cookies = cookie.parse(request.headers.cookie || '');
+		const cookies = this.parseCookiesFromHeader(request);
 		if (!cookies?.jwt) {
-			client.close(WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE, 'Unauthorised connection.');
-		}
-		try {
-			await this.tldrawWsService.authorizeConnection(docName, cookies.jwt);
-		} catch (e) {
-			client.close(
+			this.closeClient(
+				client,
 				WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
-				"Unauthorised connection - you don't have permission to this drawing."
+				WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_JWT_NOT_PROVIDED_MESSAGE
 			);
-		}
-		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
-			this.tldrawWsService.setupWSConnection(client, docName);
 		} else {
-			client.close(
-				WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
-				'Document name is mandatory in url or Tldraw Tool is turned off.'
-			);
+			try {
+				await this.tldrawWsService.authorizeConnection(docName, cookies.jwt);
+				if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
+					this.tldrawWsService.setupWSConnection(client, docName);
+				} else {
+					this.closeClient(
+						client,
+						WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
+						WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE
+					);
+				}
+			} catch (e) {
+				this.closeClient(
+					client,
+					WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
+					WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_LACK_PERMISSION_MESSAGE
+				);
+			}
 		}
 	}
 
@@ -57,5 +64,14 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 	private getDocNameFromRequest(request: Request): string {
 		const urlStripped = request.url.replace(/(\/)|(tldraw-server)/g, '');
 		return urlStripped;
+	}
+
+	public parseCookiesFromHeader(request: Request): { [p: string]: string } {
+		const parsedCookies: { [p: string]: string } = cookie.parse(request.headers.cookie || '');
+		return parsedCookies;
+	}
+
+	public closeClient(client: WebSocket, code: WsCloseCodeEnum, data: string): void {
+		client.close(code, data);
 	}
 }
