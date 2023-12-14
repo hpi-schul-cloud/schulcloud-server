@@ -37,7 +37,14 @@
       template: onepassword.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
 
-  - name: Admin API server secret (from 1Password)
+  - name: Admin API server ConfigMap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-configmap.yml.j2
+      apply: yes
+
+  - name: Admin API server Secret (from 1Password)
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"

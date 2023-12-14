@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: admin-api-server-configmap
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-admin
+data:
+  NODE_ENV: "production"
+  NODE_OPTIONS: "--max-old-space-size=2048"
+  TZ: "Europe/Berlin"
+  NEST_LOG_LEVEL: "info"
