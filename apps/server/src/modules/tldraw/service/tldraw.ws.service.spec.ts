@@ -465,20 +465,22 @@ describe('TldrawWSService', () => {
 
 	describe('authorizeConnection', () => {
 		it('should call properly method', async () => {
+			const params = { drawingName: 'drawingName', token: 'token' };
 			const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
 				status: 200,
 			});
 
 			httpService.get.mockReturnValueOnce(of(response));
 
-			await expect(service.authorizeConnection('drawingName', 'token')).resolves.not.toThrow();
+			await expect(service.authorizeConnection(params.drawingName, params.token)).resolves.not.toThrow();
 		});
 
 		it('should throw error', async () => {
+			const params = { drawingName: 'drawingName', token: 'token' };
 			const error = new Error('unknown error');
 			httpService.get.mockReturnValueOnce(throwError(() => error));
 
-			await expect(service.authorizeConnection('drawingName', 'token')).rejects.toThrow();
+			await expect(service.authorizeConnection(params.drawingName, params.token)).rejects.toThrow();
 		});
 	});
 });
