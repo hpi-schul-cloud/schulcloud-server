@@ -192,6 +192,7 @@ class AdminUsers {
 			await this.updateAccount(email, _id);
 		}
 
+		params.adapter = { multi: ['patch'] };
 		// _id is part of params and will be combined with the schoolId
 		const createdUsers = await this.prepareRoleback(email, _id, () =>
 			this.app.service('usersModel').patch(null, _data, params)
