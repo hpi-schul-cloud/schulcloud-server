@@ -6,7 +6,14 @@ import { encoding, decoding, map } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
 import { Buffer } from 'node:buffer';
 import { Redis } from 'ioredis';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
+import {
+	RedisGeneralError,
+	RedisPublishError,
+	WebsocketMessageErrorLoggable,
+	WebsocketCloseErrorLoggable,
+	WsshareddocErrorLoggable,
+} from '../loggable';
 import { TldrawConfig } from '../config';
 import { WSConnectionState, WSMessageType } from '../types';
 import { WsSharedDocDo } from '../domain';
@@ -25,7 +32,7 @@ export class TldrawWsService {
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
-		private readonly logger: LegacyLogger
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(TldrawWsService.name);
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
@@ -34,12 +41,12 @@ export class TldrawWsService {
 		this.sub = new Redis(redisUrl, {
 			maxRetriesPerRequest: null,
 		});
-		this.sub.on('error', (err) => this.logger.error('Redis SUB error', err));
+		this.sub.on('error', (err) => this.logger.warning(new RedisGeneralError('SUB', err)));
 
 		this.pub = new Redis(redisUrl, {
 			maxRetriesPerRequest: null,
 		});
-		this.pub.on('error', (err) => this.logger.error('Redis PUB error', err));
+		this.pub.on('error', (err) => this.logger.warning(new RedisGeneralError('PUB', err)));
 	}
 
 	/**
@@ -59,7 +66,7 @@ export class TldrawWsService {
 						doc.destroy();
 						return null;
 					})
-					.catch((err) => this.logger.error('Error while flushing doc', err));
+					.catch((err) => this.logYDocError(doc.name, 'Error while flushing doc', err as Error));
 				this.docs.delete(doc.name);
 			}
 		}
@@ -67,7 +74,7 @@ export class TldrawWsService {
 		try {
 			ws.close();
 		} catch (err) {
-			this.logger.error('Could not close the connection - it may already be closed');
+			this.logger.warning(new WebsocketCloseErrorLoggable(err as Error));
 		}
 	}
 
@@ -101,7 +108,7 @@ export class TldrawWsService {
 		if (isOriginWSConn) {
 			this.pub
 				.publish(doc.name, Buffer.from(update))
-				.catch((err) => this.logger.error('Error while publishing doc state to Redis', err));
+				.catch((err) => this.logger.warning(new RedisPublishError('document', err as Error)));
 		}
 
 		this.propagateUpdate(update, doc);
@@ -120,14 +127,14 @@ export class TldrawWsService {
 
 			this.tldrawBoardRepo
 				.updateDocument(docName, doc)
-				.catch((err) => this.logger.error('Error while updating document', err));
+				.catch((err) => this.logYDocError(docName, 'Error while updating document', err as Error));
 			this.docs.set(docName, doc);
 			return doc;
 		});
 	}
 
 	public logYDocError(docName: string, message: string, error: Error): void {
-		this.logger.error(`Error in doc ${docName}: ${message}`, error);
+		this.logger.warning(new WsshareddocErrorLoggable(docName, message, error));
 	}
 
 	public async createDbIndex(): Promise<void> {
@@ -155,7 +162,7 @@ export class TldrawWsService {
 					const update = decoding.readVarUint8Array(decoder);
 					this.pub
 						.publish(doc.awarenessChannel, Buffer.from(update))
-						.catch((err) => this.logger.error('Error while publishing awareness state to Redis', err));
+						.catch((err) => this.logger.warning(new RedisPublishError('awareness', err as Error)));
 					applyAwarenessUpdate(doc.awareness, update, conn);
 					break;
 				}
@@ -163,7 +170,7 @@ export class TldrawWsService {
 					break;
 			}
 		} catch (err) {
-			this.logger.error('Error while handling message', err);
+			this.logger.warning(new WebsocketMessageErrorLoggable(err as Error));
 		}
 	}
 

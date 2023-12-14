@@ -8,7 +8,7 @@ import * as AwarenessProtocol from 'y-protocols/awareness';
 import * as Ioredis from 'ioredis';
 import { encoding } from 'lib0';
 import { TldrawWsFactory } from '@shared/testing/factory/tldraw.ws.factory';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
@@ -41,7 +41,7 @@ describe('TldrawWSService', () => {
 	let ws: WebSocket;
 	let service: TldrawWsService;
 	let boardRepo: TldrawBoardRepo;
-	let logger: DeepMocked<LegacyLogger>;
+	let logger: DeepMocked<Logger>;
 
 	const gatewayPort = 3346;
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
@@ -66,15 +66,15 @@ describe('TldrawWSService', () => {
 				TldrawRepo,
 				YMongodb,
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
 
 		service = testingModule.get<TldrawWsService>(TldrawWsService);
 		boardRepo = testingModule.get<TldrawBoardRepo>(TldrawBoardRepo);
-		logger = testingModule.get(LegacyLogger);
+		logger = testingModule.get(Logger);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
@@ -286,9 +286,8 @@ describe('TldrawWSService', () => {
 
 			it('should not call send method', async () => {
 				const { sendSpy, doc, msg } = await setup();
-
 				service.messageHandler(ws, doc, msg);
-				await delay(200);
+
 				expect(sendSpy).toHaveBeenCalledTimes(0);
 
 				ws.close();
@@ -392,7 +391,7 @@ describe('TldrawWSService', () => {
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
 				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument').mockRejectedValueOnce(() => new Error('error'));
-				const errorLogSpy = jest.spyOn(logger, 'error');
+				const errorLogSpy = jest.spyOn(logger, 'warning');
 
 				return {
 					flushDocumentSpy,
@@ -419,7 +418,7 @@ describe('TldrawWSService', () => {
 			ws = await TestConnection.setupWs(wsUrl);
 
 			const sendSpy = jest.spyOn(service, 'send').mockReturnValueOnce();
-			const errorLogSpy = jest.spyOn(logger, 'error');
+			const errorLogSpy = jest.spyOn(logger, 'warning');
 
 			const doc = TldrawWsFactory.createWsSharedDocDo();
 			const socketMock = TldrawWsFactory.createWebsocket(0);
@@ -460,7 +459,7 @@ describe('TldrawWSService', () => {
 			const setup = async (messageValues: number[]) => {
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
-				const errorLogSpy = jest.spyOn(logger, 'error');
+				const errorLogSpy = jest.spyOn(logger, 'warning');
 				const messageHandlerSpy = jest.spyOn(service, 'messageHandler');
 				const readSyncMessageSpy = jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementationOnce((dec, enc) => {
 					enc.bufs = [new Uint8Array(2), new Uint8Array(2)];

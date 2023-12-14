@@ -2,11 +2,12 @@ import { ConfigService } from '@nestjs/config';
 import * as promise from 'lib0/promise';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
 import { Injectable } from '@nestjs/common';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { Buffer } from 'buffer';
 import * as binary from 'lib0/binary';
 import * as encoding from 'lib0/encoding';
 import { BulkWriteResult } from 'mongodb';
+import { MongoTransactionError } from '../loggable';
 import { TldrawDrawing } from '../entities';
 import { TldrawConfig } from '../config';
 import { YTransaction } from '../types';
@@ -27,7 +28,7 @@ export class YMongodb {
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly repo: TldrawRepo,
-		private readonly logger: LegacyLogger
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(YMongodb.name);
 
@@ -50,7 +51,7 @@ export class YMongodb {
 				try {
 					res = await fn();
 				} catch (err) {
-					this.logger.error('Error while saving transaction', err);
+					this.logger.warning(new MongoTransactionError(err as Error));
 				}
 
 				// once the last transaction for a given docName resolves, remove it from the queue

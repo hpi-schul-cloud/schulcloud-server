@@ -3,32 +3,62 @@ import { INestApplication } from '@nestjs/common';
 import WebSocket from 'ws';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { Doc } from 'yjs';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@src/core/logger';
 import * as YjsUtils from '../utils/ydoc-utils';
 import { TldrawBoardRepo } from './tldraw-board.repo';
 import { WsSharedDocDo } from '../domain';
 import { TldrawWsService } from '../service';
 import { TestConnection } from '../testing/test-connection';
-import { TldrawWsTestModule } from '../tldraw-ws-test.module';
+import { MongoMemoryDatabaseModule } from '@infra/database';
+import { TldrawDrawing } from '@modules/tldraw/entities';
+import { ConfigModule } from '@nestjs/config';
+import { createConfigModuleOptions } from '@src/config';
+import { config } from '@modules/tldraw/config';
+import { TldrawWs } from '@modules/tldraw/controller';
+import { TldrawRepo } from '@modules/tldraw/repo/tldraw.repo';
+import { YMongodb } from '@modules/tldraw/repo/y-mongodb';
 
 describe('TldrawBoardRepo', () => {
 	let app: INestApplication;
 	let repo: TldrawBoardRepo;
 	let ws: WebSocket;
 	let service: TldrawWsService;
+	let logger: DeepMocked<Logger>;
 
 	const gatewayPort = 3346;
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
+
+	const delay = (ms: number) =>
+		new Promise((resolve) => {
+			setTimeout(resolve, ms);
+		});
 
 	jest.useFakeTimers();
 
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
-			imports: [TldrawWsTestModule],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({ entities: [TldrawDrawing] }),
+				ConfigModule.forRoot(createConfigModuleOptions(config)),
+			],
+			providers: [
+				TldrawWs,
+				TldrawWsService,
+				TldrawBoardRepo,
+				TldrawRepo,
+				YMongodb,
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+			],
 		}).compile();
 
 		service = testingModule.get<TldrawWsService>(TldrawWsService);
 		repo = testingModule.get<TldrawBoardRepo>(TldrawBoardRepo);
 		app = testingModule.createNestApplication();
+		logger = testingModule.get(Logger);
 		app.useWebSocketAdapter(new WsAdapter(app));
 		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
 		await app.init();
@@ -83,10 +113,8 @@ describe('TldrawBoardRepo', () => {
 				const clientMessageMock = 'test-message';
 				const doc = new WsSharedDocDo('TEST', service);
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
-				const wsSet = new Set();
-				wsSet.add(ws);
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
+				const wsSet: Set<number> = new Set();
+				wsSet.add(0);
 				doc.conns.set(ws, wsSet);
 				const storeUpdateSpy = jest
 					.spyOn(repo.mdb, 'storeUpdateTransactional')
@@ -95,12 +123,14 @@ describe('TldrawBoardRepo', () => {
 					.spyOn(repo.mdb, 'getYDoc')
 					.mockImplementation(() => Promise.resolve(new WsSharedDocDo('TEST', service)));
 				const byteArray = new TextEncoder().encode(clientMessageMock);
+				const errorLogSpy = jest.spyOn(logger, 'warning');
 
 				return {
 					doc,
 					byteArray,
 					storeUpdateSpy,
 					storeGetYDocSpy,
+					errorLogSpy,
 				};
 			};
 
@@ -111,6 +141,24 @@ describe('TldrawBoardRepo', () => {
 				doc.emit('update', [byteArray, undefined, doc]);
 				expect(storeUpdateSpy).toHaveBeenCalled();
 				expect(storeUpdateSpy).toHaveBeenCalledTimes(1);
+				storeUpdateSpy.mockRestore();
+				storeGetYDocSpy.mockRestore();
+				ws.close();
+			});
+
+			it('should log error if update fails', async () => {
+				const { doc, byteArray, storeGetYDocSpy, errorLogSpy } = await setup();
+
+				const storeUpdateSpy = jest
+					.spyOn(repo.mdb, 'storeUpdateTransactional')
+					.mockImplementation(() => Promise.reject());
+
+				await repo.updateDocument('TEST', doc);
+				doc.emit('update', [byteArray, undefined, doc]);
+				await delay(10);
+				expect(storeUpdateSpy).toHaveBeenCalled();
+				expect(storeUpdateSpy).toHaveBeenCalledTimes(1);
+				expect(errorLogSpy).toHaveBeenCalled();
 				storeUpdateSpy.mockRestore();
 				storeGetYDocSpy.mockRestore();
 				ws.close();

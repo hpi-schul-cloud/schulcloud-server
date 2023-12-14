@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { ConfigModule } from '@nestjs/config';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import * as Yjs from 'yjs';
 import { tldrawEntityFactory } from '../factory';
@@ -49,8 +49,8 @@ describe('YMongoDb', () => {
 				TldrawRepo,
 				YMongodb,
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
