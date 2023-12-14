@@ -8,7 +8,6 @@ import { Account } from '../domain/account';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountLookupService } from './account-lookup.service';
-import { AccountDto, AccountSaveDto } from './dto';
 
 @Injectable()
 export class AccountServiceDb {
@@ -43,40 +42,40 @@ export class AccountServiceDb {
 		return account;
 	}
 
-	async save(accountDto: AccountSaveDto): Promise<Account> {
-		let account: AccountEntity;
-		if (accountDto.id) {
-			const internalId = await this.getInternalId(accountDto.id);
-			account = await this.accountRepo.findById(internalId);
-			account.userId = new ObjectId(accountDto.userId);
-			account.systemId = accountDto.systemId ? new ObjectId(accountDto.systemId) : undefined;
-			account.username = accountDto.username;
-			account.activated = accountDto.activated;
-			account.expiresAt = accountDto.expiresAt;
-			account.lasttriedFailedLogin = accountDto.lasttriedFailedLogin;
-			if (accountDto.password) {
-				account.password = await this.encryptPassword(accountDto.password);
+	async save(account: Account): Promise<Account> {
+		let accountEntity: AccountEntity;
+		if (account.id) {
+			const internalId = await this.getInternalId(account.id);
+			accountEntity = await this.accountRepo.findById(internalId);
+			accountEntity.userId = new ObjectId(account.userId);
+			accountEntity.systemId = account.systemId ? new ObjectId(account.systemId) : undefined;
+			accountEntity.username = account.username;
+			accountEntity.activated = account.activated;
+			accountEntity.expiresAt = account.expiresAt;
+			accountEntity.lasttriedFailedLogin = account.lasttriedFailedLogin;
+			if (account.password) {
+				accountEntity.password = await this.encryptPassword(account.password);
 			}
-			account.credentialHash = accountDto.credentialHash;
-			account.token = accountDto.token;
+			accountEntity.credentialHash = account.credentialHash;
+			accountEntity.token = account.token;
 
-			await this.accountRepo.save(account);
+			await this.accountRepo.save(accountEntity);
 		} else {
-			account = new AccountEntity({
-				userId: new ObjectId(accountDto.userId),
-				systemId: accountDto.systemId ? new ObjectId(accountDto.systemId) : undefined,
-				username: accountDto.username,
-				activated: accountDto.activated,
-				expiresAt: accountDto.expiresAt,
-				lasttriedFailedLogin: accountDto.lasttriedFailedLogin,
-				password: accountDto.password ? await this.encryptPassword(accountDto.password) : undefined,
-				token: accountDto.token,
-				credentialHash: accountDto.credentialHash,
+			accountEntity = new AccountEntity({
+				userId: new ObjectId(account.userId),
+				systemId: account.systemId ? new ObjectId(account.systemId) : undefined,
+				username: account.username,
+				activated: account.activated,
+				expiresAt: account.expiresAt,
+				lasttriedFailedLogin: account.lasttriedFailedLogin,
+				password: account.password ? await this.encryptPassword(account.password) : undefined,
+				token: account.token,
+				credentialHash: account.credentialHash,
 			});
 
-			await this.accountRepo.save(account);
+			await this.accountRepo.save(accountEntity);
 		}
-		return AccountEntityToDoMapper.mapToDo(account);
+		return AccountEntityToDoMapper.mapToDo(accountEntity);
 	}
 
 	async updateUsername(accountId: EntityId, username: string): Promise<Account> {
@@ -123,7 +122,7 @@ export class AccountServiceDb {
 		return AccountEntityToDoMapper.mapSearchResult(accountEntities);
 	}
 
-	validatePassword(account: AccountDto, comparePassword: string): Promise<boolean> {
+	validatePassword(account: Account, comparePassword: string): Promise<boolean> {
 		if (!account.password) {
 			return Promise.resolve(false);
 		}

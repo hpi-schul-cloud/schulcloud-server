@@ -1,6 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Counted, EntityId } from '@shared/domain/types';
-import { AccountDto, AccountSaveDto } from './dto';
 import { Account } from '../domain/account';
 
 export abstract class AbstractAccountService {
@@ -14,7 +13,7 @@ export abstract class AbstractAccountService {
 
 	abstract findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null>;
 
-	abstract save(accountDto: AccountSaveDto): Promise<Account>;
+	abstract save(account: Account): Promise<Account>;
 
 	abstract updateUsername(accountId: EntityId, username: string): Promise<Account>;
 
@@ -33,7 +32,7 @@ export abstract class AbstractAccountService {
 
 	abstract searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>>;
 
-	abstract validatePassword(account: AccountDto, comparePassword: string): Promise<boolean>;
+	abstract validatePassword(account: Account, comparePassword: string): Promise<boolean>;
 	/**
 	 * @deprecated For migration purpose only
 	 */

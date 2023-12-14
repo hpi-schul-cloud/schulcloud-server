@@ -6,7 +6,6 @@ import { IdmAccount, IdmAccountUpdate } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { AccountIdmToDoMapper } from '../repo/mapper';
-import { AccountDto, AccountSaveDto } from './dto';
 import { AccountLookupService } from './account-lookup.service';
 import { Account } from '../domain/account';
 
@@ -92,29 +91,29 @@ export class AccountServiceIdm {
 		return account;
 	}
 
-	async save(accountDto: AccountSaveDto): Promise<Account> {
+	async save(accountDo: Account): Promise<Account> {
 		let accountId: string;
 		const idmAccount: IdmAccountUpdate = {
-			username: accountDto.username,
-			attDbcAccountId: accountDto.idmReferenceId,
-			attDbcUserId: accountDto.userId,
-			attDbcSystemId: accountDto.systemId,
+			username: accountDo.username,
+			attDbcAccountId: accountDo.idmReferenceId,
+			attDbcUserId: accountDo.userId,
+			attDbcSystemId: accountDo.systemId,
 		};
-		if (accountDto.id) {
+		if (accountDo.id) {
 			let idmId: string | undefined;
 			try {
-				idmId = await this.getIdmAccountId(accountDto.id);
+				idmId = await this.getIdmAccountId(accountDo.id);
 			} catch {
-				this.logger.log(`Account ID ${accountDto.id} could not be resolved. Creating new account and ID ...`);
+				this.logger.log(`Account ID ${accountDo.id} could not be resolved. Creating new account and ID ...`);
 				idmId = undefined;
 			}
 			if (idmId) {
-				accountId = await this.updateAccount(idmId, idmAccount, accountDto.password);
+				accountId = await this.updateAccount(idmId, idmAccount, accountDo.password);
 			} else {
-				accountId = await this.createAccount(idmAccount, accountDto.password);
+				accountId = await this.createAccount(idmAccount, accountDo.password);
 			}
 		} else {
-			accountId = await this.createAccount(idmAccount, accountDto.password);
+			accountId = await this.createAccount(idmAccount, accountDo.password);
 		}
 
 		const updatedAccount = await this.identityManager.findAccountById(accountId);
@@ -154,7 +153,7 @@ export class AccountServiceIdm {
 		return account;
 	}
 
-	async validatePassword(account: AccountDto, comparePassword: string): Promise<boolean> {
+	async validatePassword(account: Account, comparePassword: string): Promise<boolean> {
 		const jwt = await this.idmOauthService.resourceOwnerPasswordGrant(account.username, comparePassword);
 		return jwt !== undefined;
 	}

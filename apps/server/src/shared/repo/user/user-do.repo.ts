@@ -1,5 +1,5 @@
 import { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
-import { UserQuery } from '@modules/user/service/user-query.type';
+import { UserQuery } from '@src/modules/user/service/user-query.type';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { Page, RoleReference } from '@shared/domain/domainobject';

@@ -10,7 +10,6 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
-import { AccountDto, AccountSaveDto } from './dto';
 import { Account } from '../domain/account';
 
 @Injectable()
@@ -60,30 +59,26 @@ export class AccountService {
 		return this.accountImpl.searchByUsernameExactMatch(userName);
 	}
 
-	async save(accountDto: AccountSaveDto): Promise<Account> {
-		const ret = await this.accountDb.save(accountDto);
-		const newAccount: AccountSaveDto = {
-			...accountDto,
-			id: accountDto.id,
-			idmReferenceId: ret.id,
-			password: accountDto.password,
-		};
+	async save(account: Account): Promise<Account> {
+		const ret = await this.accountDb.save(account);
+		const newAccount = new Account(ret);
+		newAccount.idmReferenceId = newAccount?.idmReferenceId;
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(`Saving account with accountID ${ret.id} ...`);
-			const account = await this.accountIdm.save(newAccount);
+			const accountIdm = await this.accountIdm.save(newAccount);
 			this.logger.debug(`Saved account with accountID ${ret.id}`);
-			return account;
+			return accountIdm;
 		});
-		const account = new Account(ret);
-		account.idmReferenceId = idmAccount?.idmReferenceId;
+		const accountdo = new Account(ret);
+		accountdo.idmReferenceId = idmAccount?.idmReferenceId;
 		return account;
 	}
 
-	async saveWithValidation(dto: AccountSaveDto): Promise<void> {
+	async saveWithValidation(dto: Account): Promise<void> {
 		await validateOrReject(dto);
 		// sanatizeUsername ✔
 		if (!dto.systemId) {
-			dto.username = dto.username.trim().toLowerCase();
+			dto.setUsername(dto.username.trim().toLowerCase());
 		}
 		if (!dto.systemId && !dto.password) {
 			throw new ValidationError('No password provided');
@@ -153,7 +148,7 @@ export class AccountService {
 		return account;
 	}
 
-	async validatePassword(account: AccountDto, comparePassword: string): Promise<boolean> {
+	async validatePassword(account: Account, comparePassword: string): Promise<boolean> {
 		return this.accountImpl.validatePassword(account, comparePassword);
 	}
 

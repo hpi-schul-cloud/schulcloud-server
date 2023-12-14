@@ -1,9 +1,8 @@
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountDto } from '@modules/account/services/dto';
 import { OAuthService, OAuthTokenDto } from '@modules/oauth';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Account, AccountService } from '@src/modules/account';
 import { Strategy } from 'passport-custom';
 import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
 import { ICurrentUser, OauthCurrentUser } from '../interface';
@@ -27,7 +26,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 			throw new SchoolInMigrationLoggableException();
 		}
 
-		const account: AccountDto | null = await this.accountService.findByUserId(user.id);
+		const account: Account | null = await this.accountService.findByUserId(user.id);
 		if (!account) {
 			throw new UnauthorizedException('no account found');
 		}

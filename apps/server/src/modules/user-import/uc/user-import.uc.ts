@@ -1,5 +1,4 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { AccountService } from '@src/modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -10,7 +9,7 @@ import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { AccountDto, AccountSaveDto } from '../../account/services/dto';
+import { Account, AccountProps, AccountService } from '@src/modules/account';
 import {
 	MigrationMayBeCompleted,
 	MigrationMayNotBeCompleted,
@@ -269,24 +268,26 @@ export class UserImportUc {
 		user.ldapDn = importUser.ldapDn;
 		user.externalId = importUser.externalId;
 
-		const account: AccountDto = await this.getAccount(user);
+		const account: Account = await this.getAccount(user);
 
 		account.systemId = importUser.system.id;
 		account.password = undefined;
-		account.username = `${school.externalId}/${importUser.loginName}`.toLowerCase();
+		account.setUsername(`${school.externalId}/${importUser.loginName}`.toLowerCase());
 
 		await this.userRepo.save(user);
 		await this.accountService.save(account);
 		await this.importUserRepo.delete(importUser);
 	}
 
-	private async getAccount(user: User): Promise<AccountDto> {
-		let account: AccountDto | null = await this.accountService.findByUserId(user.id);
+	private async getAccount(user: User): Promise<Account> {
+		let account: Account | null = await this.accountService.findByUserId(user.id);
 
 		if (!account) {
-			const newAccount: AccountSaveDto = new AccountSaveDto({
+			const newAccount: Account = new Account({
 				userId: user.id,
 				username: user.email,
+				createdAt: user.createdAt,
+				updatedAt: user.updatedAt,
 			});
 
 			await this.accountService.saveWithValidation(newAccount);
