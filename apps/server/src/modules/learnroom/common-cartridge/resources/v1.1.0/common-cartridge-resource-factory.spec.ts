@@ -9,17 +9,10 @@ import { CommonCartridgeWebContentResourceV110 } from './common-cartridge-web-co
 import { CommonCartridgeWebLinkResourceV110 } from './common-cartridge-web-link-resource';
 
 describe('CommonCartridgeResourceFactoryV110', () => {
-	const setup = () => {
-		const sut = new CommonCartridgeResourceFactoryV110();
-
-		return { sut };
-	};
-
 	describe('createResource', () => {
 		describe('when creating resources from props', () => {
 			it('should return web content resource', () => {
-				const { sut } = setup();
-				const result = sut.createResource({
+				const result = CommonCartridgeResourceFactoryV110.createResource({
 					type: CommonCartridgeResourceType.WEB_CONTENT,
 					version: CommonCartridgeVersion.V_1_1_0,
 					folder: faker.string.uuid(),
@@ -34,8 +27,7 @@ describe('CommonCartridgeResourceFactoryV110', () => {
 			});
 
 			it('should return web link resource', () => {
-				const { sut } = setup();
-				const result = sut.createResource({
+				const result = CommonCartridgeResourceFactoryV110.createResource({
 					type: CommonCartridgeResourceType.WEB_LINK,
 					version: CommonCartridgeVersion.V_1_1_0,
 					folder: faker.string.uuid(),

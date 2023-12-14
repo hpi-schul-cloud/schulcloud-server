@@ -5,7 +5,10 @@ import {
 	CommonCartridgeManifestElementProps,
 	CommonCartridgeManifestResource,
 } from './common-cartridge-manifest-resource';
-import { CommonCartridgeResourceFactory, CommonCartridgeResourceProps } from './common-cartridge-resource-factory';
+import {
+	CommonCartridgeResourceFactory,
+	CommonCartridgeResourcePropsInternal,
+} from './common-cartridge-resource-factory';
 
 describe('CommonCartridgeManifestResource', () => {
 	const metadataElementPropsVersion1 = {
@@ -21,7 +24,7 @@ describe('CommonCartridgeManifestResource', () => {
 		items: [],
 	};
 
-	const webcontentResourcePropsVersion1: CommonCartridgeResourceProps = {
+	const webcontentResourcePropsVersion1: CommonCartridgeResourcePropsInternal = {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		identifier: 'webcontent-v1',
 		title: 'Webcontent Version 1',
@@ -55,7 +58,7 @@ describe('CommonCartridgeManifestResource', () => {
 		items: [],
 	};
 
-	const webcontentResourcePropsVersion3: CommonCartridgeResourceProps = {
+	const webcontentResourcePropsVersion3: CommonCartridgeResourcePropsInternal = {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		identifier: 'webcontent-v3',
 		title: 'Webcontent Version 3',

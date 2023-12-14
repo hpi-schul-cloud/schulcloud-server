@@ -9,17 +9,10 @@ import { CommonCartridgeWebContentResourceV130 } from './common-cartridge-web-co
 import { CommonCartridgeWebLinkResourceV130 } from './common-cartridge-web-link-resource';
 
 describe('CommonCartridgeResourceFactoryV130', () => {
-	const setup = () => {
-		const sut = new CommonCartridgeResourceFactoryV130();
-
-		return { sut };
-	};
-
 	describe('createResource', () => {
 		describe('when creating resources from props', () => {
 			it('shoul return web content resource', () => {
-				const { sut } = setup();
-				const result = sut.createResource({
+				const result = CommonCartridgeResourceFactoryV130.createResource({
 					type: CommonCartridgeResourceType.WEB_CONTENT,
 					version: CommonCartridgeVersion.V_1_3_0,
 					folder: faker.string.uuid(),
@@ -33,8 +26,7 @@ describe('CommonCartridgeResourceFactoryV130', () => {
 			});
 
 			it('shoul return web link resource', () => {
-				const { sut } = setup();
-				const result = sut.createResource({
+				const result = CommonCartridgeResourceFactoryV130.createResource({
 					type: CommonCartridgeResourceType.WEB_LINK,
 					version: CommonCartridgeVersion.V_1_3_0,
 					folder: faker.string.uuid(),
@@ -45,7 +37,6 @@ describe('CommonCartridgeResourceFactoryV130', () => {
 					windowFeatures: faker.lorem.words(),
 				});
 
-				expect(result).toBeDefined();
 				expect(result).toBeInstanceOf(CommonCartridgeWebLinkResourceV130);
 			});
 		});

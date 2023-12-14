@@ -1,5 +1,9 @@
 import AdmZip from 'adm-zip';
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
+import {
+	CommonCartridgeIntendedUseType,
+	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
+} from '../common-cartridge.enums';
 import { CommonCartridgeMetadataElementProps } from '../elements/common-cartridge-metadata-element';
 import { CommonCartridgeResourceProps } from '../resources/common-cartridge-resource-factory';
 import { OmitVersion } from '../utils';
@@ -38,18 +42,21 @@ describe('CommonCartridgeFileBuilder', () => {
 		identifier: 'resource-1-identifier',
 		title: 'resource-1-title',
 		html: '<p>resource-1-html</p>',
+		intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 	};
 	const resource2Props: CommonCartridgeResourceProps = {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		identifier: 'resource-2-identifier',
 		title: 'resource-2-title',
 		html: '<p>resource-2-html</p>',
+		intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 	};
 	const resource3Props: CommonCartridgeResourceProps = {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		identifier: 'resource-3-identifier',
 		title: 'resource-3-title',
 		html: '<p>resource-3-html</p>',
+		intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 	};
 
 	describe('build', () => {

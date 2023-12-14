@@ -14,19 +14,13 @@ import {
 	CommonCartridgeWebLinkResourceV130,
 } from './common-cartridge-web-link-resource';
 
-export type CommonCartridgeResourcePropsV130 =
+type CommonCartridgeResourcePropsV130 =
 	| CommonCartridgeManifestResourcePropsV130
 	| CommonCartridgeWebContentResourcePropsV130
 	| CommonCartridgeWebLinkResourcePropsV130;
 
 export class CommonCartridgeResourceFactoryV130 {
-	public static readonly instance = new CommonCartridgeResourceFactoryV130();
-
-	public static getInstance(): CommonCartridgeResourceFactoryV130 {
-		return this.instance;
-	}
-
-	public createResource(props: CommonCartridgeResourcePropsV130): CommonCartridgeResource {
+	public static createResource(props: CommonCartridgeResourcePropsV130): CommonCartridgeResource {
 		const { type } = props;
 
 		switch (type) {

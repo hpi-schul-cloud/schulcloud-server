@@ -1,7 +1,7 @@
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeOrganizationElement } from '../elements/common-cartridge-organization-element';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
-import { CommonCartridgeResourceProps } from '../resources/common-cartridge-resource-factory';
+import { CommonCartridgeResourcePropsInternal } from '../resources/common-cartridge-resource-factory';
 import {
 	CommonCartridgeOrganizationBuilder,
 	CommonCartridgeOrganizationBuilderOptions,
@@ -27,19 +27,19 @@ describe('CommonCartridgeOrganizationBuilder', () => {
 		identifier: 'sub-sub-organization-identifier',
 		version: CommonCartridgeVersion.V_1_1_0,
 	};
-	const resource1Props: CommonCartridgeResourceProps = {
+	const resource1Props: CommonCartridgeResourcePropsInternal = {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		identifier: 'resource-1-identifier',
 		title: 'resource-1-title',
 		html: '<p>resource-1-html</p>',
 	};
-	const resource2Props: CommonCartridgeResourceProps = {
+	const resource2Props: CommonCartridgeResourcePropsInternal = {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		identifier: 'resource-2-identifier',
 		title: 'resource-2-title',
 		html: '<p>resource-2-html</p>',
 	};
-	const resource3Props: CommonCartridgeResourceProps = {
+	const resource3Props: CommonCartridgeResourcePropsInternal = {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		identifier: 'resource-3-identifier',
 		title: 'resource-3-title',
