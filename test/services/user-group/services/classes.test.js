@@ -258,7 +258,6 @@ describe('classes service', () => {
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
-				// hier ist ein problem
 				expect(err.code).to.equal(404);
 			}
 		});
