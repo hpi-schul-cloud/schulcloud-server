@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const queryString = require('qs');
-const service = require('feathers-mongoose');
+const service = require('../../utils/feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 const { BadRequest } = require('@feathersjs/errors');
@@ -27,7 +27,8 @@ module.exports = function setup() {
 	function redirectToTarget(req, res, next) {
 		if (req.method === 'GET' && !req.query.target) {
 			// capture these requests and issue a redirect
-			const linkId = req.params.__feathersId;
+			// const linkId = req.params.__feathersId;
+			const linkId = req.lookup.params.__id;
 			linkService
 				.get(linkId)
 				.then((data) => {
@@ -137,7 +138,7 @@ module.exports = function setup() {
 				const { teamId } = data;
 
 				if (email) {
-					const { data: userData } = await app.service('users').find({ query: { email: email } });
+					const { data: userData } = await app.service('users').find({ query: { email } });
 					if (userData && userData[0] && userData[0].importHash) {
 						linkInfo.hash = userData[0].importHash;
 					} else {

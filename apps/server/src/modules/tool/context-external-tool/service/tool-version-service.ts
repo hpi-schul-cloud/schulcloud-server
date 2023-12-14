@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { ToolConfigurationStatus } from '../../common/enum';
+import { ContextExternalToolConfigurationStatus } from '../../common/domain';
 import { CommonToolService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -22,18 +22,29 @@ export class ToolVersionService {
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
-	): Promise<ToolConfigurationStatus> {
+	): Promise<ContextExternalToolConfigurationStatus> {
 		// TODO N21-1337 remove if statement, when feature flag is removed
 		if (this.toolFeatures.toolStatusWithoutVersions) {
+			const configurationStatus: ContextExternalToolConfigurationStatus = new ContextExternalToolConfigurationStatus({
+				isOutdatedOnScopeContext: false,
+				isOutdatedOnScopeSchool: false,
+			});
+
 			try {
 				await this.schoolExternalToolValidationService.validate(schoolExternalTool);
-				await this.contextExternalToolValidationService.validate(contextExternalTool);
-				return ToolConfigurationStatus.LATEST;
 			} catch (err) {
-				return ToolConfigurationStatus.OUTDATED;
+				configurationStatus.isOutdatedOnScopeSchool = true;
 			}
+
+			try {
+				await this.contextExternalToolValidationService.validate(contextExternalTool);
+			} catch (err) {
+				configurationStatus.isOutdatedOnScopeContext = true;
+			}
+
+			return configurationStatus;
 		}
-		const status: ToolConfigurationStatus = this.commonToolService.determineToolConfigurationStatus(
+		const status: ContextExternalToolConfigurationStatus = this.commonToolService.determineToolConfigurationStatus(
 			externalTool,
 			schoolExternalTool,
 			contextExternalTool

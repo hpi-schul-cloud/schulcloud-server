@@ -1,4 +1,4 @@
-import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from '@shared/domain';
+import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
 import { LdapConfig, OauthConfig, SystemProps } from '../domain';
 
 export class SystemDomainMapper {

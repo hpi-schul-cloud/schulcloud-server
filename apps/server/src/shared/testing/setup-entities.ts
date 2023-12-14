@@ -1,5 +1,5 @@
 import { AnyEntity, EntityClass, MikroORM } from '@mikro-orm/core';
-import { ALL_ENTITIES } from '@shared/domain';
+import { ALL_ENTITIES } from '@shared/domain/entity';
 
 /**
  * Test-Setup to make all entities available without a database connection.

@@ -4,13 +4,11 @@ const { consentTypes } = require('../model');
 const { restrictToCurrentUser } = require('../hooks/consentCheck');
 const { userToConsent } = require('../utils/consent');
 
-const removeQuery = (context) => ({
-	...context,
-	params: {
-		...context.params,
-		query: {},
-	},
-});
+const removeQuery = (context) => {
+	context.params.query = {};
+
+	return context;
+};
 
 const consentCheckHooks = {
 	before: {
