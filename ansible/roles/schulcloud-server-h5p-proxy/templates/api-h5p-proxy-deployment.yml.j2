@@ -42,7 +42,7 @@ spec:
         #fsGroup: 1000
         #runAsNonRoot: true
       containers:
-      - name: etherpad-nginx
+      - name: h5p-proxy-nginx
         image: {{ H5P_PROXY_IMAGE_NAME }}:{{ H5P_PROXY_IMAGE_TAG }}
         imagePullPolicy: Always
         ports:
