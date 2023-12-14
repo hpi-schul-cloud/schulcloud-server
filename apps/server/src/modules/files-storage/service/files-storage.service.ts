@@ -76,6 +76,12 @@ export class FilesStorageService {
 		return countedFileRecords;
 	}
 
+	public async getFileRecordsByCreatorId(creatorId: EntityId): Promise<Counted<FileRecord[]>> {
+		const countedFileRecords = await this.fileRecordRepo.findByCreatorId(creatorId);
+
+		return countedFileRecords;
+	}
+
 	// upload
 	public async uploadFile(userId: EntityId, params: FileRecordParams, file: FileDto): Promise<FileRecord> {
 		const { fileRecord, stream } = await this.createFileRecord(file, params, userId);
@@ -311,18 +317,13 @@ export class FilesStorageService {
 		}
 	}
 
-	public async removeCreatorIdFromFileRecord(userId: EntityId): Promise<number> {
-		const [fileRecords] = await this.fileRecordRepo.findByCreatorId(userId);
-
-		if (fileRecords.length === 0) {
-			return 0;
+	public async removeCreatorIdFromFileRecords(fileRecords: FileRecord[]): Promise<FileRecord[]> {
+		if (fileRecords.length > 0) {
+			fileRecords.forEach((entity: FileRecord) => entity.removeCreatorId());
+			await this.fileRecordRepo.save(fileRecords);
 		}
 
-		fileRecords.forEach((entity) => entity.removeCreatorId());
-
-		await this.fileRecordRepo.save(fileRecords);
-
-		return fileRecords.length;
+		return fileRecords;
 	}
 
 	// restore

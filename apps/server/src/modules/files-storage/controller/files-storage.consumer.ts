@@ -72,4 +72,22 @@ export class FilesStorageConsumer {
 
 		return { message: response.data };
 	}
+
+	@RabbitRPC({
+		exchange: FilesStorageExchange,
+		routingKey: FilesStorageEvents.REMOVE_CREATORID_OF_FILES,
+		queue: FilesStorageEvents.REMOVE_CREATORID_OF_FILES,
+	})
+	@UseRequestContext()
+	public async removeCreatorIdFromFileRecords(@RabbitPayload() payload: EntityId): Promise<RpcMessage<FileDO[]>> {
+		this.logger.debug({ action: 'removeCreatorIdFromFileRecords', payload });
+
+		const [fileRecords] = await this.filesStorageService.getFileRecordsByCreatorId(payload);
+
+		const updatedFileRecords = await this.filesStorageService.removeCreatorIdFromFileRecords(fileRecords);
+
+		const response = FilesStorageMapper.mapToFileRecordListResponse(updatedFileRecords, updatedFileRecords.length);
+
+		return { message: response.data };
+	}
 }

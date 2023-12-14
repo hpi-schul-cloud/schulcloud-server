@@ -86,21 +86,10 @@ describe('FilesStorageService delete methods', () => {
 
 	describe('removeCreatorIdFromFileRecord is called', () => {
 		describe('WHEN valid files does not exist', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-				fileRecordRepo.findByCreatorId.mockResolvedValueOnce([[], 0]);
-
-				return { userId };
-			};
-
 			it('should not modify any filescall repo save with undefined creatorId', async () => {
-				const { userId } = setup();
+				fileRecordRepo.findByCreatorId.mockResolvedValueOnce([[], 0]);
+				await service.removeCreatorIdFromFileRecords([]);
 
-				const result = await service.removeCreatorIdFromFileRecord(userId);
-
-				expect(result).toEqual(0);
-
-				expect(fileRecordRepo.findByCreatorId).toBeCalledWith(userId);
 				expect(fileRecordRepo.save).not.toBeCalled();
 			});
 		});
@@ -115,9 +104,9 @@ describe('FilesStorageService delete methods', () => {
 			};
 
 			it('should call repo save with undefined creatorId', async () => {
-				const { fileRecords, creatorId } = setup();
+				const { fileRecords } = setup();
 
-				await service.removeCreatorIdFromFileRecord(creatorId);
+				await service.removeCreatorIdFromFileRecords(fileRecords);
 
 				expect(fileRecordRepo.save).toHaveBeenCalledWith(
 					expect.arrayContaining([
@@ -129,11 +118,13 @@ describe('FilesStorageService delete methods', () => {
 			});
 
 			it('should getnumber of updated fileRecords', async () => {
-				const { creatorId } = setup();
+				const { fileRecords } = setup();
 
-				const result = await service.removeCreatorIdFromFileRecord(creatorId);
+				const result = await service.removeCreatorIdFromFileRecords(fileRecords);
 
-				expect(result).toEqual(3);
+				result.forEach((entity) => {
+					expect(entity.creatorId).toBe(undefined);
+				});
 			});
 		});
 
