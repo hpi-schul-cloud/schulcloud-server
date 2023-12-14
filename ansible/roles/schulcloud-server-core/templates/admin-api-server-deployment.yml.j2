@@ -51,9 +51,9 @@ spec:
           protocol: TCP
         envFrom:
         - configMapRef:
-            name: api-configmap
+            name: admin-api-configmap
         - secretRef:
-            name: api-secret
+            name: admin-api-secret
         command: ['npm', 'run', 'nest:start:admin-api-server:prod']
         resources:
           limits:
