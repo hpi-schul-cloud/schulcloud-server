@@ -1,4 +1,4 @@
-const feathersMongooseService = require('feathers-mongoose');
+const feathersMongooseService = require('../../../utils/feathers-mongoose');
 const auth = require('@feathersjs/authentication');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { activationModel } = require('../model');
