@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const { Configuration } = require('@hpi-schul-cloud/commons/lib');
-const { service } = require('feathers-mongoose');
+const { service } = require('../../../utils/feathers-mongoose');
 
 const { BadRequest } = require('../../../errors');
 const globalHooks = require('../../../hooks');
