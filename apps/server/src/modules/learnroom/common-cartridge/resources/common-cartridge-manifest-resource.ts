@@ -1,4 +1,3 @@
-import { Builder } from 'xml2js';
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeOrganizationsWrapperElement } from '../elements/common-cartridge-organizations-wrapper-element';
 import { CommonCartridgeResourcesWrapperElement } from '../elements/common-cartridge-resources-wrapper-element';
@@ -15,8 +14,6 @@ export type CommonCartridgeManifestElementProps = {
 };
 
 export class CommonCartridgeManifestResource implements CommonCartridgeResource {
-	private readonly xmlBuilder = new Builder();
-
 	constructor(private readonly props: CommonCartridgeManifestElementProps) {}
 
 	public canInline(): boolean {

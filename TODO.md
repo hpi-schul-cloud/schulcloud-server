@@ -100,3 +100,5 @@
 - merge main
 - review.md and comments
 - move in separate module
+- check index.ts
+- move xml files into test-assets folder
