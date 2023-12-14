@@ -122,7 +122,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/deletion/uc/batch-deletion.uc.ts</code>
+            <code>apps/server/src/modules/deletion-console/uc/batch-deletion.uc.ts</code>
         </p>
 
 
@@ -169,7 +169,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/deletion/uc/batch-deletion.uc.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/deletion-console/uc/batch-deletion.uc.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -234,8 +234,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/batch-deletion.uc.ts:15</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="12"
+                                    class="link-to-prism">apps/server/src/modules/deletion-console/uc/batch-deletion.uc.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -336,13 +336,10 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { BatchDeletionSummaryBuilder, BatchDeletionSummaryDetailBuilder } from &#x27;../builder&#x27;;
-import {
-	ReferencesService,
-	BatchDeletionService,
-	QueueDeletionRequestInput,
-	QueueDeletionRequestInputBuilder,
-} from &#x27;../services&#x27;;
-import { BatchDeletionSummary, BatchDeletionSummaryOverallStatus } from &#x27;../interface&#x27;;
+import { BatchDeletionService, ReferencesService } from &#x27;../services&#x27;;
+import { QueueDeletionRequestInputBuilder } from &#x27;../services/builder&#x27;;
+import { QueueDeletionRequestInput } from &#x27;../services/interface&#x27;;
+import { BatchDeletionSummary, BatchDeletionSummaryOverallStatus } from &#x27;./interface&#x27;;
 
 @Injectable()
 export class BatchDeletionUc {

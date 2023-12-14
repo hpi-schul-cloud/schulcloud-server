@@ -810,13 +810,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/DeletionConsoleModule.html" data-type="entity-link" >DeletionConsoleModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-DeletionConsoleModule-ec7c3fbb8dcdb0309226789406e370424312dcdb465c8e8640af85fbd9d8757f8c5d68f607fc633d2ed4d03d88da689260e52f2ed1697b2650cf1eabbb8c6a76"' : 'data-bs-target="#xs-injectables-links-module-DeletionConsoleModule-ec7c3fbb8dcdb0309226789406e370424312dcdb465c8e8640af85fbd9d8757f8c5d68f607fc633d2ed4d03d88da689260e52f2ed1697b2650cf1eabbb8c6a76"' }>
+                                        'data-bs-target="#injectables-links-module-DeletionConsoleModule-3b263a0ebeb14485112045603ca67e9c7709545a1e2eaf682efb648c0a5b513d5a9c32f6e7fafcb7dff59d86f42b505ca677be692aee1198c8d9fb3157802acb"' : 'data-bs-target="#xs-injectables-links-module-DeletionConsoleModule-3b263a0ebeb14485112045603ca67e9c7709545a1e2eaf682efb648c0a5b513d5a9c32f6e7fafcb7dff59d86f42b505ca677be692aee1198c8d9fb3157802acb"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-DeletionConsoleModule-ec7c3fbb8dcdb0309226789406e370424312dcdb465c8e8640af85fbd9d8757f8c5d68f607fc633d2ed4d03d88da689260e52f2ed1697b2650cf1eabbb8c6a76"' :
-                                        'id="xs-injectables-links-module-DeletionConsoleModule-ec7c3fbb8dcdb0309226789406e370424312dcdb465c8e8640af85fbd9d8757f8c5d68f607fc633d2ed4d03d88da689260e52f2ed1697b2650cf1eabbb8c6a76"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-DeletionConsoleModule-3b263a0ebeb14485112045603ca67e9c7709545a1e2eaf682efb648c0a5b513d5a9c32f6e7fafcb7dff59d86f42b505ca677be692aee1198c8d9fb3157802acb"' :
+                                        'id="xs-injectables-links-module-DeletionConsoleModule-3b263a0ebeb14485112045603ca67e9c7709545a1e2eaf682efb648c0a5b513d5a9c32f6e7fafcb7dff59d86f42b505ca677be692aee1198c8d9fb3157802acb"' }>
                                         <li class="link">
                                             <a href="injectables/BatchDeletionService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BatchDeletionService</a>
                                         </li>
@@ -825,9 +825,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/DeletionClient.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >DeletionClient</a>
-                                        </li>
-                                        <li class="link">
-                                            <a href="injectables/DeletionExecutionUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >DeletionExecutionUc</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -3773,9 +3770,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/DeletionTargetRefBuilder.html" data-type="entity-link" >DeletionTargetRefBuilder</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/DeletionTargetRefBuilder-1.html" data-type="entity-link" >DeletionTargetRefBuilder</a>
                             </li>
                             <li class="link">
                                 <a href="classes/DeprecatedVideoConferenceInfoResponse.html" data-type="entity-link" class="deprecated-name">DeprecatedVideoConferenceInfoResponse</a>
