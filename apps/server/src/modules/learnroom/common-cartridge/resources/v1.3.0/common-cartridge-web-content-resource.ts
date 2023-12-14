@@ -7,7 +7,7 @@ import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resou
 
 export type CommonCartridgeWebContentResourcePropsV130 = {
 	type: CommonCartridgeResourceType.WEB_CONTENT;
-	version: CommonCartridgeVersion.V_1_3_0;
+	version: CommonCartridgeVersion;
 	identifier: string;
 	folder: string;
 	title: string;

@@ -1,20 +1,59 @@
 import { faker } from '@faker-js/faker';
 import { createMock } from '@golevelup/ts-jest';
 import { readFile } from 'fs/promises';
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../../common-cartridge.enums';
+import {
+	CommonCartridgeElementType,
+	CommonCartridgeIntendedUseType,
+	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
+} from '../../common-cartridge.enums';
+import { CommonCartridgeElementFactoryV110 } from '../../elements/v1.1.0/common-cartridge-element-factory';
 import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
 import { CommonCartridgeManifestResourceV110 } from './common-cartridge-manifest-resource';
+import { CommonCartridgeResourceFactoryV110 } from './common-cartridge-resource-factory';
 
 describe('CommonCartridgeManifestResourceV110', () => {
 	const setup = () => {
+		const resource1 = CommonCartridgeResourceFactoryV110.getInstance().createResource({
+			type: CommonCartridgeResourceType.WEB_CONTENT,
+			version: CommonCartridgeVersion.V_1_1_0,
+			title: 'Title',
+			identifier: 'r1',
+			folder: 'i1',
+			html: '<p>HTML</p>',
+			intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
+		});
+		const resource2 = CommonCartridgeResourceFactoryV110.getInstance().createResource({
+			type: CommonCartridgeResourceType.WEB_CONTENT,
+			version: CommonCartridgeVersion.V_1_1_0,
+			title: 'Title',
+			identifier: 'r2',
+			folder: 'i2',
+			html: '<p>HTML</p>',
+			intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
+		});
+		const organization1 = CommonCartridgeElementFactoryV110.getInstance().createElement({
+			type: CommonCartridgeElementType.ORGANIZATION,
+			version: CommonCartridgeVersion.V_1_1_0,
+			title: 'Title',
+			identifier: 'o1',
+			items: [resource1],
+		});
+		const organization2 = CommonCartridgeElementFactoryV110.getInstance().createElement({
+			type: CommonCartridgeElementType.ORGANIZATION,
+			version: CommonCartridgeVersion.V_1_1_0,
+			title: 'Title',
+			identifier: 'o2',
+			items: [resource2],
+		});
 		const metadataMock = createMock<CommonCartridgeElement>();
 		const sut = new CommonCartridgeManifestResourceV110({
 			type: CommonCartridgeResourceType.MANIFEST,
 			version: CommonCartridgeVersion.V_1_1_0,
 			identifier: faker.string.uuid(),
 			metadata: metadataMock,
-			organizations: [],
-			resources: [],
+			organizations: [organization1, organization2],
+			resources: [resource1, resource2],
 		});
 
 		return { sut, metadataMock };
@@ -46,13 +85,13 @@ describe('CommonCartridgeManifestResourceV110', () => {
 		describe('when using Common Cartridge version 1.1.0', () => {
 			it('should return constructed file content', async () => {
 				const { sut } = setup();
-				const manifest = await readFile(
-					'./apps/server/src/modules/learnroom/common-cartridge/resources/v1.1.0/imsmanifest.xml',
+				const expected = await readFile(
+					'./apps/server/test/assets/common-cartridge/v1.1.0/manifest.xml',
 					'utf-8'
 				);
 				const result = sut.getFileContent();
 
-				expect(result).toEqual(manifest);
+				expect(result).toEqual(expected);
 			});
 		});
 	});

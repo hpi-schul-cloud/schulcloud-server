@@ -11,7 +11,7 @@ import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resou
 
 export type CommonCartridgeManifestResourcePropsV130 = {
 	type: CommonCartridgeResourceType.MANIFEST;
-	version: CommonCartridgeVersion.V_1_3_0;
+	version: CommonCartridgeVersion;
 	identifier: string;
 	metadata: CommonCartridgeElement;
 	organizations: CommonCartridgeElement[];

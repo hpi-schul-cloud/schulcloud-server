@@ -7,15 +7,12 @@ import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resou
 
 export type CommonCartridgeWebContentResourcePropsV110 = {
 	type: CommonCartridgeResourceType.WEB_CONTENT;
-	version: CommonCartridgeVersion.V_1_1_0;
+	version: CommonCartridgeVersion;
 	identifier: string;
 	folder: string;
 	title: string;
 	html: string;
-	intendedUse:
-		| CommonCartridgeIntendedUseType.UNSPECIFIED
-		| CommonCartridgeIntendedUseType.LESSON_PLAN
-		| CommonCartridgeIntendedUseType.SYLLABUS;
+	intendedUse: CommonCartridgeIntendedUseType;
 };
 
 export class CommonCartridgeWebContentResourceV110 extends CommonCartridgeResource {

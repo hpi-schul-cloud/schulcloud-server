@@ -1,4 +1,3 @@
-import { Builder } from 'xml2js';
 import {
 	CommonCartridgeElementType,
 	CommonCartridgeResourceType,
@@ -8,10 +7,11 @@ import { CommonCartridgeOrganizationsWrapperElementV110 } from '../../elements/v
 import { CommonCartridgeResourcesWrapperElementV110 } from '../../elements/v1.1.0/common-cartridge-resources-wrapper-element';
 import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
 import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resource.interface';
+import { buildXmlString } from '../../utils';
 
 export type CommonCartridgeManifestResourcePropsV110 = {
 	type: CommonCartridgeResourceType.MANIFEST;
-	version: CommonCartridgeVersion.V_1_1_0;
+	version: CommonCartridgeVersion;
 	identifier: string;
 	metadata: CommonCartridgeElement;
 	organizations: CommonCartridgeElement[];
@@ -19,8 +19,6 @@ export type CommonCartridgeManifestResourcePropsV110 = {
 };
 
 export class CommonCartridgeManifestResourceV110 extends CommonCartridgeResource {
-	private readonly xmlBuilder = new Builder();
-
 	public constructor(private readonly props: CommonCartridgeManifestResourcePropsV110) {
 		super(props);
 	}
@@ -34,7 +32,7 @@ export class CommonCartridgeManifestResourceV110 extends CommonCartridgeResource
 	}
 
 	public override getFileContent(): string {
-		return this.xmlBuilder.buildObject(this.getManifestXmlObject());
+		return buildXmlString(this.getManifestXmlObject());
 	}
 
 	public override getSupportedVersion(): CommonCartridgeVersion {
@@ -51,18 +49,18 @@ export class CommonCartridgeManifestResourceV110 extends CommonCartridgeResource
 					'xmlns:res': 'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource',
 					'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
 					'xsi:schemaLocation':
-						'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lomresource_v1p0.xsd ' +
 						'http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd ' +
-						'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lommanifest_v1p0.xsd ',
+						'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lommanifest_v1p0.xsd ' +
+						'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lomresource_v1p0.xsd ',
 				},
 				metadata: this.props.metadata.getManifestXmlObject(),
 				organizations: new CommonCartridgeOrganizationsWrapperElementV110({
-					type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER,
+					type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER, // FIXME: Is this necessary?
 					version: this.props.version,
 					items: this.props.organizations,
 				}).getManifestXmlObject(),
 				resources: new CommonCartridgeResourcesWrapperElementV110({
-					type: CommonCartridgeElementType.RESOURCES_WRAPPER,
+					type: CommonCartridgeElementType.RESOURCES_WRAPPER, // FIXME: Is this necessary?
 					version: this.props.version,
 					items: this.props.resources,
 				}).getManifestXmlObject(),

@@ -4,7 +4,7 @@ import { buildXmlString } from '../../utils';
 
 export type CommonCartridgeWebLinkResourcePropsV110 = {
 	type: CommonCartridgeResourceType.WEB_LINK;
-	version: CommonCartridgeVersion.V_1_1_0;
+	version: CommonCartridgeVersion;
 	identifier: string;
 	folder: string;
 	title: string;

@@ -1,11 +1,10 @@
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
-import { CommonCartridgeOrganizationElement } from '../elements/common-cartridge-organization-element';
 import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
 import {
-	CommonCartridgeResourceFactory,
 	CommonCartridgeResourceProps,
-} from '../resources/common-cartridge-resource-factory';
+	CommonCartridgeResourceVersionFactory,
+} from '../resources/common-cartridge-resource-version-factory';
 import { OmitVersionAndFolder } from '../utils';
 
 export type CommonCartridgeOrganizationBuilderOptions = {
@@ -42,8 +41,8 @@ export class CommonCartridgeOrganizationBuilder {
 		return child;
 	}
 
-	public addResource(props: CommonCartridgeResourceProps): CommonCartridgeOrganizationBuilder {
-		const resource = CommonCartridgeResourceFactory.create({
+	public addResource(props: OmitVersionAndFolder<CommonCartridgeResourceProps>): CommonCartridgeOrganizationBuilder {
+		const resource = CommonCartridgeResourceVersionFactory.createFactory({
 			...props,
 			version: this.options.version,
 			folder: this.folder,
