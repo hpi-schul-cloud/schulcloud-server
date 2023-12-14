@@ -1,3 +1,3 @@
 export * from './deletion-request.uc';
 export * from '../builder';
-export * from './deletion-execution.uc';
+export * from '../../deletion-console/deletion-execution.uc';

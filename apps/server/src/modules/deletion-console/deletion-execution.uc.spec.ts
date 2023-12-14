@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { DeletionClient } from '@modules/deletion-console/deletion-client';
 import { DeletionExecutionUc } from './deletion-execution.uc';
+import { DeletionClient } from './deletion-client';
 
 describe(DeletionExecutionUc.name, () => {
 	let module: TestingModule;
