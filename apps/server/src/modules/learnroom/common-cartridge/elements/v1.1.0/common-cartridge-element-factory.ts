@@ -1,5 +1,4 @@
 import { CommonCartridgeElementType } from '../../common-cartridge.enums';
-import { CommonCartridgeElementFactory } from '../../interfaces/common-cartridge-element-factory.interface';
 import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
 import { createElementTypeNotSupportedError } from '../../utils';
 import {
@@ -19,20 +18,20 @@ import {
 	CommonCartridgeResourcesWrapperElementV110,
 } from './common-cartridge-resources-wrapper-element';
 
-export type CommonCartridgeElementProps =
+export type CommonCartridgeElementPropsV110 =
 	| CommonCartridgeMetadataElementPropsV110
 	| CommonCartridgeOrganizationElementPropsV110
 	| CommonCartridgeOrganizationsWrapperElementPropsV110
 	| CommonCartridgeResourcesWrapperElementPropsV110;
 
-export class CommonCartridgeElementFactoryV110 extends CommonCartridgeElementFactory {
+export class CommonCartridgeElementFactoryV110 {
 	public static readonly instance = new CommonCartridgeElementFactoryV110();
 
-	public static getInstance(): CommonCartridgeElementFactory {
+	public static getInstance(): CommonCartridgeElementFactoryV110 {
 		return this.instance;
 	}
 
-	public createElement(props: CommonCartridgeElementProps): CommonCartridgeElement {
+	public createElement(props: CommonCartridgeElementPropsV110): CommonCartridgeElement {
 		const { type } = props;
 
 		switch (type) {
