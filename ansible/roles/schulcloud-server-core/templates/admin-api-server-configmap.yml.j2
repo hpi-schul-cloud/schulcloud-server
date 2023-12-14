@@ -6,8 +6,9 @@ metadata:
   labels:
     app: api-admin
 data:
-  NODE_ENV: "production"
-  NODE_OPTIONS: "--max-old-space-size=2048"
-  TZ: "Europe/Berlin"
+  NODE_OPTIONS: "--max-old-space-size=3072"
   NEST_LOG_LEVEL: "info"
   ADMIN_API__PORT: "4030"
+  FEATURE_PROMETHEUS_METRICS_ENABLED: "true"
+  ROCKET_CHAT_URI: "http://rocketchat-svc:5000"
+  SC_DOMAIN: "{{ DOMAIN }}"
