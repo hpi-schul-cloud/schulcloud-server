@@ -5,19 +5,19 @@ import { WsAdapter } from '@nestjs/platform-ws';
 import { Doc } from 'yjs';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@src/core/logger';
+import { ConfigModule } from '@nestjs/config';
+import { MongoMemoryDatabaseModule } from '@infra/database';
+import { createConfigModuleOptions } from '@src/config';
 import * as YjsUtils from '../utils/ydoc-utils';
 import { TldrawBoardRepo } from './tldraw-board.repo';
 import { WsSharedDocDo } from '../domain';
 import { TldrawWsService } from '../service';
 import { TestConnection } from '../testing/test-connection';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { TldrawDrawing } from '@modules/tldraw/entities';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@src/config';
-import { config } from '@modules/tldraw/config';
-import { TldrawWs } from '@modules/tldraw/controller';
-import { TldrawRepo } from '@modules/tldraw/repo/tldraw.repo';
-import { YMongodb } from '@modules/tldraw/repo/y-mongodb';
+import { TldrawDrawing } from '../entities';
+import { config } from '../config';
+import { TldrawWs } from '../controller';
+import { TldrawRepo } from './tldraw.repo';
+import { YMongodb } from './y-mongodb';
 
 describe('TldrawBoardRepo', () => {
 	let app: INestApplication;
