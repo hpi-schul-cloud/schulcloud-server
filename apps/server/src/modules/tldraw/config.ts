@@ -25,7 +25,7 @@ const tldrawConfig = {
 	CONNECTION_STRING: tldrawConnectionString,
 	TLDRAW_PING_TIMEOUT: Configuration.get('TLDRAW__PING_TIMEOUT') as number,
 	TLDRAW_GC_ENABLED: Configuration.get('TLDRAW__GC_ENABLED') as boolean,
-	REDIS_URI: Configuration.get('REDIS_URI') as string,
+	REDIS_URI: Configuration.has('REDIS_URI') ? (Configuration.get('REDIS_URI') as string) : 'redis://127.0.0.1:6379',
 };
 
 export const SOCKET_PORT = Configuration.get('TLDRAW__SOCKET_PORT') as number;

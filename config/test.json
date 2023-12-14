@@ -72,6 +72,5 @@
 		"DB_COLLECTION_NAME": "drawings",
 		"DB_FLUSH_SIZE": 400,
 		"DB_MULTIPLE_COLLECTIONS": false
-	},
-	"REDIS_URI": "redis://127.0.0.1:6379"
+	}
 }
