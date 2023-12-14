@@ -12,7 +12,7 @@ import * as YjsUtils from '../utils/ydoc-utils';
 import { TldrawBoardRepo } from './tldraw-board.repo';
 import { WsSharedDocDo } from '../domain';
 import { TldrawWsService } from '../service';
-import { TestConnection } from '../testing/test-connection';
+import { TestConnection } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { config } from '../config';
 import { TldrawWs } from '../controller';

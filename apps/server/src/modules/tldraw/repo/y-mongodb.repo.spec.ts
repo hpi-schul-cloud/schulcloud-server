@@ -6,7 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Logger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import * as Yjs from 'yjs';
-import { tldrawEntityFactory } from '../factory';
+import { tldrawEntityFactory } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawWs } from '../controller';
 import { TldrawWsService } from '../service';

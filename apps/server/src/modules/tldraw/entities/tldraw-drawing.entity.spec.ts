@@ -1,4 +1,5 @@
 import { setupEntities } from '@shared/testing';
+import { tldrawEntityFactory } from '../testing';
 import { TldrawDrawing } from './tldraw-drawing.entity';
 
 describe('tldraw entity', () => {
@@ -9,27 +10,13 @@ describe('tldraw entity', () => {
 	describe('constructor', () => {
 		describe('when creating a tldraw doc', () => {
 			it('should create drawing', () => {
-				const tldraw = new TldrawDrawing({
-					docName: 'test',
-					version: 'v1_tst',
-					value: Buffer.from('bindatamock'),
-					_id: 'test-id',
-					clock: 0,
-					action: 'update',
-					part: 1,
-				});
+				const tldraw = tldrawEntityFactory.build();
+
 				expect(tldraw).toBeInstanceOf(TldrawDrawing);
 			});
 
 			it('should throw with empty docName', () => {
-				const call = () =>
-					new TldrawDrawing({
-						docName: '',
-						version: 'v1_tst',
-						value: Buffer.from('bindatamock'),
-						_id: 'test-id',
-						part: 1,
-					});
+				const call = () => tldrawEntityFactory.build({ docName: '' });
 				expect(call).toThrow();
 			});
 		});

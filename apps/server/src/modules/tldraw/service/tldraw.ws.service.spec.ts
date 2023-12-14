@@ -17,7 +17,7 @@ import { TldrawWs } from '../controller';
 import { config } from '../config';
 import { TldrawDrawing } from '../entities';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../repo';
-import { TestConnection } from '../testing/test-connection';
+import { TestConnection } from '../testing';
 import { WsSharedDocDo } from '../domain';
 import { TldrawWsService } from '.';
 

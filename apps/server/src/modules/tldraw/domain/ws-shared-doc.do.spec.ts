@@ -7,7 +7,7 @@ import * as Yjs from 'yjs';
 import * as Ioredis from 'ioredis';
 import { TldrawWsService } from '../service';
 import { WsSharedDocDo } from './ws-shared-doc.do';
-import { TestConnection } from '../testing/test-connection';
+import { TestConnection } from '../testing';
 import { TldrawWsTestModule } from '../tldraw-ws-test.module';
 
 jest.mock('y-protocols/awareness', () => {

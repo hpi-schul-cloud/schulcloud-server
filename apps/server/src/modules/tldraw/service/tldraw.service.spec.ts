@@ -5,7 +5,7 @@ import { cleanupCollections } from '@shared/testing';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { TldrawDrawing } from '../entities';
-import { tldrawEntityFactory } from '../factory';
+import { tldrawEntityFactory } from '../testing';
 import { TldrawRepo } from '../repo/tldraw.repo';
 import { TldrawService } from './tldraw.service';
 import { config } from '../config';
