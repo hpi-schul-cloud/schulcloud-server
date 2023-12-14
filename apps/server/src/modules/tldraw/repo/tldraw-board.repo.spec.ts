@@ -78,10 +78,8 @@ describe('TldrawBoardRepo', () => {
 			const setup = async () => {
 				const doc = new WsSharedDocDo('TEST2', service);
 				ws = await TestConnection.setupWs(wsUrl, 'TEST2');
-				const wsSet = new Set();
-				wsSet.add(ws);
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
+				const wsSet: Set<number> = new Set();
+				wsSet.add(0);
 				doc.conns.set(ws, wsSet);
 				const storeGetYDocSpy = jest
 					.spyOn(repo.mdb, 'getYDoc')
