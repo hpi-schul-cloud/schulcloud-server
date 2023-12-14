@@ -8,9 +8,9 @@ metadata:
 data:
   default.conf: |
     server {
-      listen       80;
+      listen      80;
       server_name  _;
-      location /api/v3/h5p-editor/ {
+      location /api/v3/h5p-editor {
         proxy_hide_header 'Access-Control-Allow-Origin';
         add_header 'Access-Control-Allow-Origin' $http_origin;
         proxy_ssl_server_name on;
