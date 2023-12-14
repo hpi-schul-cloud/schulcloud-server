@@ -1422,7 +1422,7 @@
 		"TLDRAW": {
 			"type": "object",
 			"description": "Tldraw managing variables.",
-			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_COLLECTION_NAME", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS"],
+			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS"],
 			"properties": {
 				"SOCKET_PORT": {
 					"type": "number",
@@ -1435,10 +1435,6 @@
 				"GC_ENABLED": {
 					"type": "boolean",
 					"description": "If tldraw garbage collector should be enabled"
-				},
-				"DB_COLLECTION_NAME": {
-					"type": "string",
-					"description": "Collection name in which tldraw drawing are stored"
 				},
 				"DB_FLUSH_SIZE": {
 					"type": "integer",
@@ -1453,7 +1449,6 @@
 				"SOCKET_PORT": 3345,
 				"PING_TIMEOUT": 10000,
 				"GC_ENABLED": true,
-				"DB_COLLECTION_NAME": "drawings",
 				"DB_FLUSH_SIZE": 400,
 				"DB_MULTIPLE_COLLECTIONS": false
 			}

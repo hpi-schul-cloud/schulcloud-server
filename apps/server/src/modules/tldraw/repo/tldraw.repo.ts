@@ -1,17 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { BulkWriteResult, Collection, Sort } from 'mongodb';
-import { TldrawConfig } from '../config';
 import { TldrawDrawing } from '../entities';
 
 @Injectable()
 export class TldrawRepo {
-	private readonly collectionName: string;
-
-	constructor(private readonly configService: ConfigService<TldrawConfig, true>, private readonly _em: EntityManager) {
-		this.collectionName = this.configService.get<string>('TLDRAW_DB_COLLECTION_NAME') ?? 'drawings';
-	}
+	constructor(private readonly _em: EntityManager) {}
 
 	public async create(entity: TldrawDrawing): Promise<void> {
 		await this._em.persistAndFlush(entity);
@@ -54,6 +48,6 @@ export class TldrawRepo {
 	}
 
 	public getCollection(): Collection<TldrawDrawing> {
-		return this._em.getCollection(this.collectionName);
+		return this._em.getCollection(TldrawDrawing);
 	}
 }
