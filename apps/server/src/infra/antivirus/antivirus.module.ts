@@ -29,7 +29,7 @@ export class AntivirusModule {
 							clamdscan: {
 								host: options.hostname,
 								port: options.port,
-								bypassTest: isLocalhost,
+								bypassTest: true,
 								localFallback: false,
 							},
 						});
