@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConsoleWriterService } from '@infra/console';
 import { DeletionExecutionConsole } from './deletion-execution.console';
 import { DeletionExecutionTriggerResultBuilder, TriggerDeletionExecutionOptionsBuilder } from './builder';
-import { DeletionExecutionUc } from '../deletion/uc';
+import { DeletionExecutionUc } from './uc';
 
 describe(DeletionExecutionConsole.name, () => {
 	let module: TestingModule;
