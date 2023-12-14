@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { IDashboardRepo } from '@shared/repo';
-import { DashboardElementRepo } from '@shared/repo/dashboard/dashboardElement.repo';
+import { IDashboardRepo, DashboardElementRepo } from '@shared/repo';
 
 @Injectable()
 export class DashboardService {
