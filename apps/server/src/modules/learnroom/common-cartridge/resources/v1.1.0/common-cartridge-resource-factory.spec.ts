@@ -29,10 +29,11 @@ describe('CommonCartridgeResourceFactoryV110', () => {
 					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				});
 
+				expect(result).toBeDefined();
 				expect(result).toBeInstanceOf(CommonCartridgeWebContentResourceV110);
 			});
 
-			it('shoul return web link resource', () => {
+			it('should return web link resource', () => {
 				const { sut } = setup();
 				const result = sut.createResource({
 					type: CommonCartridgeResourceType.WEB_LINK,
