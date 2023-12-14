@@ -10,7 +10,12 @@ import * as SyncProtocols from 'y-protocols/sync';
 import * as AwarenessProtocol from 'y-protocols/awareness';
 import { encoding } from 'lib0';
 import { TldrawWsFactory } from '@shared/testing/factory/tldraw.ws.factory';
-import { HttpModule } from '@nestjs/axios';
+import { HttpService } from '@nestjs/axios';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { of, throwError } from 'rxjs';
+import { AxiosResponse } from 'axios';
+import { DeletionRequestOutput } from '@modules/deletion';
+import { axiosResponseFactory } from '@shared/testing';
 import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
 import { config } from '../config';
 import { TldrawBoardRepo } from '../repo';
@@ -37,6 +42,7 @@ describe('TldrawWSService', () => {
 	let app: INestApplication;
 	let ws: WebSocket;
 	let service: TldrawWsService;
+	let httpService: DeepMocked<HttpService>;
 
 	const gatewayPort = 3346;
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
@@ -49,13 +55,22 @@ describe('TldrawWSService', () => {
 	jest.useFakeTimers();
 
 	beforeAll(async () => {
-		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config)), HttpModule];
+		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
 			imports,
-			providers: [TldrawWs, TldrawBoardRepo, TldrawWsService],
+			providers: [
+				TldrawWs,
+				TldrawBoardRepo,
+				TldrawWsService,
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
+				},
+			],
 		}).compile();
 
 		service = testingModule.get<TldrawWsService>(TldrawWsService);
+		httpService = testingModule.get(HttpService);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
@@ -445,6 +460,25 @@ describe('TldrawWSService', () => {
 			expect(flushDocumentSpy).toHaveBeenCalled();
 
 			flushDocumentSpy.mockRestore();
+		});
+	});
+
+	describe('authorizeConnection', () => {
+		it('should call properly method', async () => {
+			const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
+				status: 200,
+			});
+
+			httpService.get.mockReturnValueOnce(of(response));
+
+			await expect(service.authorizeConnection('drawingName', 'token')).resolves.not.toThrow();
+		});
+
+		it('should throw error', async () => {
+			const error = new Error('unknown error');
+			httpService.get.mockReturnValueOnce(throwError(() => error));
+
+			await expect(service.authorizeConnection('drawingName', 'token')).rejects.toThrow();
 		});
 	});
 });

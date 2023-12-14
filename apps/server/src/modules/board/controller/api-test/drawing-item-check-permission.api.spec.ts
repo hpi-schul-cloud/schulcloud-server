@@ -61,12 +61,12 @@ describe('drawing permission check (api)', () => {
 			return { loggedInClient, teacherUser, columnBoardNode, columnNode, cardNode, drawingItemNode };
 		};
 
-		it('should return status 201', async () => {
+		it('should return status 200', async () => {
 			const { loggedInClient, drawingItemNode } = await setup();
 
 			const response = await loggedInClient.get(`${drawingItemNode.id}/permission`);
 
-			expect(response.status).toEqual(201);
+			expect(response.status).toEqual(200);
 		});
 	});
 
@@ -98,13 +98,28 @@ describe('drawing permission check (api)', () => {
 			return { loggedInClient, studentUser, columnBoardNode, columnNode, cardNode, drawingItemNode };
 		};
 
-		it('should return status 401 for student not assigned to course', async () => {
+		it('should return status 403 for student not assigned to course', async () => {
 			const { loggedInClient, drawingItemNode } = await setup();
 
 			const response = await loggedInClient.get(`${drawingItemNode.id}/permission`);
 
 			expect(response.status).toEqual(403);
 		});
+	});
+
+	describe('when asking for non-existing resource', () => {
+		const setup = async () => {
+			await cleanupCollections(em);
+
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+			await em.persistAndFlush([teacherAccount, teacherUser]);
+
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(teacherAccount);
+
+			return { loggedInClient };
+		};
 
 		it('should return status 404 for wrong id', async () => {
 			const { loggedInClient } = await setup();

@@ -282,27 +282,35 @@ describe(ElementUc.name, () => {
 		});
 	});
 
-	describe('checkDrawingPermission', () => {
-		describe('', () => {
-			const setup = () => {
-				const user = userFactory.build();
-				const drawingElement = drawingElementFactory.build();
+	describe('checkElementReadPermission', () => {
+		const setup = () => {
+			const user = userFactory.build();
+			const drawingElement = drawingElementFactory.build();
 
-				return { drawingElement, user };
-			};
+			return { drawingElement, user };
+		};
 
-			it('should execute properly', async () => {
-				const { drawingElement, user } = setup();
-				elementService.findById.mockResolvedValue(drawingElement);
-				await uc.checkElementReadPermission(user.id, drawingElement.id);
-				expect(elementService.findById).toHaveBeenCalledWith(drawingElement.id);
-			});
+		it('should execute properly', async () => {
+			const { drawingElement, user } = setup();
+			elementService.findById.mockResolvedValue(drawingElement);
 
-			it('should throw', async () => {
-				const { drawingElement, user } = setup();
-				elementService.findById.mockRejectedValue(new Error());
-				await expect(uc.checkElementReadPermission(user.id, drawingElement.id)).rejects.toThrow();
-			});
+			await uc.checkElementReadPermission(user.id, drawingElement.id);
+
+			expect(elementService.findById).toHaveBeenCalledWith(drawingElement.id);
+		});
+
+		it('should throw at find element by Id', async () => {
+			const { drawingElement, user } = setup();
+			elementService.findById.mockRejectedValue(new Error());
+
+			await expect(uc.checkElementReadPermission(user.id, drawingElement.id)).rejects.toThrow();
+		});
+
+		it('should throw at check permission', async () => {
+			const { drawingElement, user } = setup();
+			authorizationService.hasPermission.mockReturnValueOnce(false);
+
+			await expect(uc.checkElementReadPermission(user.id, drawingElement.id)).rejects.toThrow();
 		});
 	});
 });
