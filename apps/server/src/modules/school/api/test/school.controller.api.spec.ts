@@ -172,7 +172,9 @@ describe('School Controller (API)', () => {
 						lastYear: schoolYearResponses[0],
 						nextYear: schoolYearResponses[2],
 					},
-					features: [],
+					// TODO: The feature isTeamCreationByStudentsEnabled is set based on the config value STUDENT_TEAM_CREATION.
+					// We need to discuss how to go about the config in API tests!
+					features: ['isTeamCreationByStudentsEnabled'],
 					systemIds: systems.map((system) => system.id),
 				};
 

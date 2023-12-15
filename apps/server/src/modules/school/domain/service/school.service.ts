@@ -43,15 +43,19 @@ export class SchoolService {
 		return schoolsForExternalInvite;
 	}
 
+	// TODO: The logic for setting this feature should better be part of the creation of a school object.
+	// But it has to be discussed, how to implement that. Thus we leave the logic here for now.
 	private setStudentTeamCreationFeature(school: School): School {
 		const configValue = this.configService.get<string>('STUDENT_TEAM_CREATION');
 
-		if (configValue === 'enabled') {
+		if (
+			configValue === 'enabled' ||
+			(configValue === 'opt-in' && school.getProps().enableStudentTeamCreation) ||
+			// It is necessary to check enableStudentTeamCreation to be not false here,
+			// because it being undefined means that the school has not opted out yet.
+			(configValue === 'opt-out' && school.getProps().enableStudentTeamCreation !== false)
+		) {
 			school.addFeature(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
-		}
-
-		if (configValue === 'disabled') {
-			school.removeFeature(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
 		}
 
 		return school;

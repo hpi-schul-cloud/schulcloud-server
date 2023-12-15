@@ -89,13 +89,133 @@ describe('SchoolService', () => {
 				return { school, id: school.id };
 			};
 
-			it('should remove IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', async () => {
+			it('should not add IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', async () => {
 				const { school, id } = setup();
 
 				const result = await service.getSchoolById(id);
 
 				expect(result).toEqual(school);
 				expect(result.getProps().features).not.toContain('isTeamCreationByStudentsEnabled');
+			});
+		});
+
+		describe('when STUDENT_TEAM_CREATION config value is "opt-in" and enableStudentTeamCreation is true', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ enableStudentTeamCreation: true });
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+
+				configService.get.mockReturnValueOnce('opt-in');
+
+				return { school, id: school.id };
+			};
+
+			it('should add IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', async () => {
+				const { school, id } = setup();
+
+				const result = await service.getSchoolById(id);
+
+				expect(result).toEqual(school);
+				expect(result.getProps().features).toContain('isTeamCreationByStudentsEnabled');
+			});
+		});
+
+		describe('when STUDENT_TEAM_CREATION config value is "opt-in" and enableStudentTeamCreation is false', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ enableStudentTeamCreation: false });
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+
+				configService.get.mockReturnValueOnce('opt-in');
+
+				return { school, id: school.id };
+			};
+
+			it('should not add IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', async () => {
+				const { school, id } = setup();
+
+				const result = await service.getSchoolById(id);
+
+				expect(result).toEqual(school);
+				expect(result.getProps().features).not.toContain('isTeamCreationByStudentsEnabled');
+			});
+		});
+
+		describe('when STUDENT_TEAM_CREATION config value is "opt-in" and enableStudentTeamCreation is undefined', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ enableStudentTeamCreation: undefined });
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+
+				configService.get.mockReturnValueOnce('opt-in');
+
+				return { school, id: school.id };
+			};
+
+			it('should not add IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', async () => {
+				const { school, id } = setup();
+
+				const result = await service.getSchoolById(id);
+
+				expect(result).toEqual(school);
+				expect(result.getProps().features).not.toContain('isTeamCreationByStudentsEnabled');
+			});
+		});
+
+		describe('when STUDENT_TEAM_CREATION config value is "opt-out" and enableStudentTeamCreation is true', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ enableStudentTeamCreation: true });
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+
+				configService.get.mockReturnValueOnce('opt-out');
+
+				return { school, id: school.id };
+			};
+
+			it('should add IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', async () => {
+				const { school, id } = setup();
+
+				const result = await service.getSchoolById(id);
+
+				expect(result).toEqual(school);
+				expect(result.getProps().features).toContain('isTeamCreationByStudentsEnabled');
+			});
+		});
+
+		describe('when STUDENT_TEAM_CREATION config value is "opt-out" and enableStudentTeamCreation is false', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ enableStudentTeamCreation: false });
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+
+				configService.get.mockReturnValueOnce('opt-out');
+
+				return { school, id: school.id };
+			};
+
+			it('should not add IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', async () => {
+				const { school, id } = setup();
+
+				const result = await service.getSchoolById(id);
+
+				expect(result).toEqual(school);
+				expect(result.getProps().features).not.toContain('isTeamCreationByStudentsEnabled');
+			});
+		});
+
+		describe('when STUDENT_TEAM_CREATION config value is "opt-out" and enableStudentTeamCreation is undefined', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ enableStudentTeamCreation: undefined });
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+
+				configService.get.mockReturnValueOnce('opt-out');
+
+				return { school, id: school.id };
+			};
+
+			it('should add IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', async () => {
+				const { school, id } = setup();
+
+				const result = await service.getSchoolById(id);
+
+				expect(result).toEqual(school);
+				expect(result.getProps().features).toContain('isTeamCreationByStudentsEnabled');
 			});
 		});
 	});

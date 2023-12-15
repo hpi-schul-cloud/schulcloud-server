@@ -1,5 +1,4 @@
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
-import { SchoolFeature } from '@shared/domain/types';
 import { School } from '../../../domain';
 import { CountyEmbeddableMapper } from './county.embeddable.mapper';
 import { FederalStateEntityMapper } from './federal-state.entity.mapper';
@@ -9,7 +8,7 @@ export class SchoolEntityMapper {
 	public static mapToDo(entity: SchoolEntity): School {
 		const currentYear = entity.currentYear && SchoolYearEntityMapper.mapToDo(entity.currentYear);
 		const federalState = FederalStateEntityMapper.mapToDo(entity.federalState);
-		const features = SchoolEntityMapper.mapFeatures(entity);
+		const features = new Set(entity.features);
 		const county = entity.county && CountyEmbeddableMapper.mapToDo(entity.county);
 		const systemIds = entity.systems.getItems().map((system) => system.id);
 
@@ -30,6 +29,7 @@ export class SchoolEntityMapper {
 			language: entity.language,
 			timezone: entity.timezone,
 			permissions: entity.permissions,
+			enableStudentTeamCreation: entity.enableStudentTeamCreation,
 			systemIds,
 			currentYear,
 			federalState,
@@ -44,15 +44,5 @@ export class SchoolEntityMapper {
 		const schools = schoolEntities.map((entity) => SchoolEntityMapper.mapToDo(entity));
 
 		return schools;
-	}
-
-	private static mapFeatures(entity: SchoolEntity): Set<SchoolFeature> {
-		const features = new Set(entity.features);
-
-		if (entity.enableStudentTeamCreation) {
-			features.add(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
-		}
-
-		return features;
 	}
 }

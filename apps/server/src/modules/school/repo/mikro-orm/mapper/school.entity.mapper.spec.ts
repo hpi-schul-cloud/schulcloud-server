@@ -1,4 +1,3 @@
-import { SchoolFeature } from '@shared/domain/types';
 import { schoolFactory } from '@shared/testing';
 import { School } from '../../../domain';
 import { CountyEmbeddableMapper } from './county.embeddable.mapper';
@@ -28,6 +27,7 @@ describe('SchoolEntityMapper', () => {
 					language: entity.language,
 					timezone: entity.timezone,
 					permissions: entity.permissions,
+					enableStudentTeamCreation: entity.enableStudentTeamCreation,
 					features: new Set(entity.features),
 					federalState: FederalStateEntityMapper.mapToDo(entity.federalState),
 					county: entity.county && CountyEmbeddableMapper.mapToDo(entity.county),
@@ -52,38 +52,6 @@ describe('SchoolEntityMapper', () => {
 				const result = SchoolEntityMapper.mapToDo(entity);
 
 				expect(result).toEqual(expected);
-			});
-		});
-
-		describe('when enableStudentTeamCreation on entity is false', () => {
-			const setup = () => {
-				const entity = schoolFactory.build({ enableStudentTeamCreation: false });
-
-				return { entity };
-			};
-
-			it('should return a school without IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', () => {
-				const { entity } = setup();
-
-				const result = SchoolEntityMapper.mapToDo(entity);
-
-				expect(result.getProps().features.has(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED)).toBe(false);
-			});
-		});
-
-		describe('when enableStudentTeamCreation on entity is true', () => {
-			const setup = () => {
-				const entity = schoolFactory.build({ enableStudentTeamCreation: true });
-
-				return { entity };
-			};
-
-			it('should return a school with IS_TEAM_CREATION_BY_STUDENTS_ENABLED feature', () => {
-				const { entity } = setup();
-
-				const result = SchoolEntityMapper.mapToDo(entity);
-
-				expect(result.getProps().features.has(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED)).toBe(true);
 			});
 		});
 	});
