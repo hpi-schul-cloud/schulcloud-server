@@ -1,11 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ColumnBoardCopyService } from '@modules/board/service/column-board-copy.service';
+import { ColumnBoardCopyService } from '@modules/board';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { LessonCopyService } from '@modules/lesson/service';
-import { TaskCopyService } from '@modules/task/service';
+import { LessonCopyService } from '@modules/lesson';
+import { TaskCopyService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
+import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
 import { Board } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { BoardRepo } from '@shared/repo';
 import {
 	boardFactory,
@@ -289,6 +291,93 @@ describe('board copy service', () => {
 				const lessonStatus = status.elements?.find((el) => el.type === CopyElementType.COLUMNBOARD);
 
 				expect(lessonStatus).toBeDefined();
+			});
+		});
+
+		describe('when different elements have been copied', () => {
+			const setup = () => {
+				const originalTask = taskFactory.build();
+				const taskElement = taskBoardElementFactory.build({ target: originalTask });
+				const taskCopy = taskFactory.build({ name: originalTask.name });
+				taskCopyService.copyTask.mockResolvedValue({
+					title: taskCopy.name,
+					type: CopyElementType.TASK,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: taskCopy,
+				});
+
+				const originalLesson = lessonFactory.build();
+				const lessonElement = lessonBoardElementFactory.build({ target: originalLesson });
+				const lessonCopy = lessonFactory.build({ name: originalLesson.name });
+				lessonCopyService.copyLesson.mockResolvedValue({
+					title: originalLesson.name,
+					type: CopyElementType.LESSON,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: lessonCopy,
+				});
+				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
+
+				const originalColumnBoard = columnBoardFactory.build();
+				const columnBoardTarget = columnBoardTargetFactory.build({
+					columnBoardId: originalColumnBoard.id,
+					title: originalColumnBoard.title,
+				});
+				const columnBoardElement = columnboardBoardElementFactory.build({ target: columnBoardTarget });
+				const columnBoardCopy = columnBoardFactory.build();
+				columnBoardCopyService.copyColumnBoard.mockResolvedValue({
+					type: CopyElementType.COLUMNBOARD,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: columnBoardCopy,
+					originalEntity: originalColumnBoard,
+					title: columnBoardCopy.title,
+				});
+
+				const copyDict = new Map<EntityId, AuthorizableObject>()
+					.set(originalLesson.id, lessonCopy)
+					.set(originalTask.id, taskCopy)
+					.set(originalColumnBoard.id, columnBoardCopy);
+				copyHelperService.buildCopyEntityDict.mockReturnValue(copyDict);
+
+				const destinationCourse = courseFactory.build();
+				const originalBoard = boardFactory.build({
+					references: [lessonElement, taskElement, columnBoardElement],
+					course: destinationCourse,
+				});
+				const user = userFactory.build();
+
+				return {
+					destinationCourse,
+					originalBoard,
+					user,
+					lessonCopy,
+					columnBoardCopy,
+					originalTask,
+					taskCopy,
+					originalLesson,
+				};
+			};
+
+			it('should trigger swapping ids for board', async () => {
+				const { destinationCourse, originalBoard, user, columnBoardCopy } = setup();
+				await copyService.copyBoard({ originalBoard, user, destinationCourse });
+
+				expect(columnBoardCopyService.swapLinkedIds).toHaveBeenCalledWith(columnBoardCopy.id, expect.anything());
+			});
+
+			it('should pass task for swapping ids', async () => {
+				const { destinationCourse, originalBoard, user, originalTask, taskCopy } = setup();
+				await copyService.copyBoard({ originalBoard, user, destinationCourse });
+
+				const map = columnBoardCopyService.swapLinkedIds.mock.calls[0][1];
+				expect(map.get(originalTask.id)).toEqual(taskCopy.id);
+			});
+
+			it('should pass lesson for swapping ids', async () => {
+				const { destinationCourse, originalBoard, user, originalLesson, lessonCopy } = setup();
+				await copyService.copyBoard({ originalBoard, user, destinationCourse });
+
+				const map = columnBoardCopyService.swapLinkedIds.mock.calls[0][1];
+				expect(map.get(originalLesson.id)).toEqual(lessonCopy.id);
 			});
 		});
 

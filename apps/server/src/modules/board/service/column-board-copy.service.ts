@@ -64,5 +64,7 @@ export class ColumnBoardCopyService {
 		board.accept(visitor);
 
 		await this.boardDoRepo.save(board);
+
+		return board;
 	}
 }
