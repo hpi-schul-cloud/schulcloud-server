@@ -692,6 +692,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+	Cascade,
 	Collection,
 	Embeddable,
 	Embedded,
@@ -699,9 +700,11 @@
 	Index,
 	ManyToMany,
 	ManyToOne,
+	OneToMany,
 	OneToOne,
 	Property,
 } from &#x27;@mikro-orm/core&#x27;;
+import { SchoolSystemOptionsEntity } from &#x27;@modules/legacy-school/entity&#x27;;
 import { UserLoginMigrationEntity } from &#x27;@shared/domain/entity/user-login-migration.entity&#x27;;
 import { BaseEntity } from &#x27;./base.entity&#x27;;
 import { FederalStateEntity } from &#x27;./federal-state.entity&#x27;;
@@ -796,6 +799,9 @@ export class SchoolEntity extends BaseEntity {
 
 	@ManyToOne(() &#x3D;&gt; FederalStateEntity, { fieldName: &#x27;federalState&#x27;, nullable: false })
 	federalState: FederalStateEntity;
+
+	@OneToMany(() &#x3D;&gt; SchoolSystemOptionsEntity, (options) &#x3D;&gt; options.school, { cascade: [Cascade.REMOVE] })
+	schoolSystemOptions &#x3D; new Collection&lt;SchoolSystemOptionsEntity&gt;(this);
 
 	constructor(props: SchoolProperties) {
 		super();

@@ -1962,6 +1962,7 @@ import { RoleService } from &#x27;@modules/role&#x27;;
 import { RoleDto } from &#x27;@modules/role/service/dto/role.dto&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { SortHelper } from &#x27;@shared/common&#x27;;
 import { ReferencedEntityNotFoundLoggable } from &#x27;@shared/common/loggable&#x27;;
 import { LegacySchoolDo, Page, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { SchoolYearEntity, User } from &#x27;@shared/domain/entity&#x27;;
@@ -1973,7 +1974,6 @@ import { SchoolYearQueryType } from &#x27;../controller/dto/interface&#x27;;
 import { Group, GroupTypes, GroupUser } from &#x27;../domain&#x27;;
 import { UnknownQueryTypeLoggableException } from &#x27;../loggable&#x27;;
 import { GroupService } from &#x27;../service&#x27;;
-import { SortHelper } from &#x27;../util&#x27;;
 import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from &#x27;./dto&#x27;;
 import { GroupUcMapper } from &#x27;./mapper/group-uc.mapper&#x27;;
 

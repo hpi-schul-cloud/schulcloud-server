@@ -184,12 +184,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>, courseGroupRule: <a href="../injectables/CourseGroupRule.html" target="_self">CourseGroupRule</a>, lessonRule: <a href="../injectables/LessonRule.html" target="_self">LessonRule</a>, legaySchoolRule: <a href="../injectables/LegacySchoolRule.html" target="_self">LegacySchoolRule</a>, taskRule: <a href="../injectables/TaskRule.html" target="_self">TaskRule</a>, userRule: <a href="../injectables/UserRule.html" target="_self">UserRule</a>, teamRule: <a href="../injectables/TeamRule.html" target="_self">TeamRule</a>, submissionRule: <a href="../injectables/SubmissionRule.html" target="_self">SubmissionRule</a>, schoolExternalToolRule: <a href="../injectables/SchoolExternalToolRule.html" target="_self">SchoolExternalToolRule</a>, boardDoRule: <a href="../injectables/BoardDoRule.html" target="_self">BoardDoRule</a>, contextExternalToolRule: <a href="../injectables/ContextExternalToolRule.html" target="_self">ContextExternalToolRule</a>, userLoginMigrationRule: <a href="../injectables/UserLoginMigrationRule.html" target="_self">UserLoginMigrationRule</a>, groupRule: <a href="../injectables/GroupRule.html" target="_self">GroupRule</a>, systemRule: <a href="../injectables/SystemRule.html" target="_self">SystemRule</a>)</code>
+<code>constructor(courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>, courseGroupRule: <a href="../injectables/CourseGroupRule.html" target="_self">CourseGroupRule</a>, lessonRule: <a href="../injectables/LessonRule.html" target="_self">LessonRule</a>, legaySchoolRule: <a href="../injectables/LegacySchoolRule.html" target="_self">LegacySchoolRule</a>, taskRule: <a href="../injectables/TaskRule.html" target="_self">TaskRule</a>, userRule: <a href="../injectables/UserRule.html" target="_self">UserRule</a>, teamRule: <a href="../injectables/TeamRule.html" target="_self">TeamRule</a>, submissionRule: <a href="../injectables/SubmissionRule.html" target="_self">SubmissionRule</a>, schoolExternalToolRule: <a href="../injectables/SchoolExternalToolRule.html" target="_self">SchoolExternalToolRule</a>, boardDoRule: <a href="../injectables/BoardDoRule.html" target="_self">BoardDoRule</a>, contextExternalToolRule: <a href="../injectables/ContextExternalToolRule.html" target="_self">ContextExternalToolRule</a>, userLoginMigrationRule: <a href="../injectables/UserLoginMigrationRule.html" target="_self">UserLoginMigrationRule</a>, groupRule: <a href="../injectables/GroupRule.html" target="_self">GroupRule</a>, systemRule: <a href="../injectables/SystemRule.html" target="_self">SystemRule</a>, schoolSystemOptionsRule: <a href="../injectables/SchoolSystemOptionsRule.html" target="_self">SchoolSystemOptionsRule</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/authorization/domain/service/rule-manager.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/authorization/domain/service/rule-manager.ts:26</a></div>
                             </td>
                         </tr>
 
@@ -374,6 +374,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>schoolSystemOptionsRule</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SchoolSystemOptionsRule.html" target="_self" >SchoolSystemOptionsRule</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -410,8 +422,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/rule-manager.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/rule-manager.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -479,8 +491,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/rule-manager.ts:61</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="64"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/rule-manager.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -577,7 +589,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/authorization/domain/service/rule-manager.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/authorization/domain/service/rule-manager.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -603,6 +615,7 @@ import {
 	LegacySchoolRule,
 	LessonRule,
 	SchoolExternalToolRule,
+	SchoolSystemOptionsRule,
 	SubmissionRule,
 	SystemRule,
 	TaskRule,
@@ -630,7 +643,8 @@ export class RuleManager {
 		private readonly contextExternalToolRule: ContextExternalToolRule,
 		private readonly userLoginMigrationRule: UserLoginMigrationRule,
 		private readonly groupRule: GroupRule,
-		private readonly systemRule: SystemRule
+		private readonly systemRule: SystemRule,
+		private readonly schoolSystemOptionsRule: SchoolSystemOptionsRule
 	) {
 		this.rules &#x3D; [
 			this.courseRule,
@@ -647,6 +661,7 @@ export class RuleManager {
 			this.userLoginMigrationRule,
 			this.groupRule,
 			this.systemRule,
+			this.schoolSystemOptionsRule,
 		];
 	}
 

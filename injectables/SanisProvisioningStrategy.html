@@ -196,7 +196,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(responseMapper: <a href="../injectables/SanisResponseMapper.html" target="_self">SanisResponseMapper</a>, httpService: HttpService, oidcProvisioningService: <a href="../injectables/OidcProvisioningService.html" target="_self">OidcProvisioningService</a>)</code>
+<code>constructor(provisioningFeatures: <a href="../interfaces/IProvisioningFeatures.html" target="_self">IProvisioningFeatures</a>, oidcProvisioningService: <a href="../injectables/OidcProvisioningService.html" target="_self">OidcProvisioningService</a>, responseMapper: <a href="../injectables/SanisResponseMapper.html" target="_self">SanisResponseMapper</a>, httpService: HttpService)</code>
                     </td>
                 </tr>
                         <tr>
@@ -219,6 +219,30 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
+                                                        <td>provisioningFeatures</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/IProvisioningFeatures.html" target="_self" >IProvisioningFeatures</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>oidcProvisioningService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/OidcProvisioningService.html" target="_self" >OidcProvisioningService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>responseMapper</td>
                                                   
                                                         <td>
@@ -235,18 +259,6 @@
                                                   
                                                         <td>
                                                                     <code>HttpService</code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>oidcProvisioningService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/OidcProvisioningService.html" target="_self" >OidcProvisioningService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -290,8 +302,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="129"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:129</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="130"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:130</a></div>
                         </td>
                     </tr>
 
@@ -360,8 +372,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="117"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:117</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="118"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:118</a></div>
                         </td>
                     </tr>
 
@@ -448,7 +460,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:37</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:38</a></code>
 </div>
                         </td>
                     </tr>
@@ -521,7 +533,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:33</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:34</a></code>
 </div>
                         </td>
                     </tr>
@@ -560,8 +572,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="113"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:113</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="114"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:114</a></div>
                         </td>
                     </tr>
 
@@ -625,8 +637,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="87"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:87</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -701,7 +713,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:14</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:17</a></code>
 </div>
                         </td>
                     </tr>
@@ -754,9 +766,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
-import { HttpService } from &#x27;@nestjs/axios&#x27;;
-import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpService } from &#x27;@nestjs/axios&#x27;;
+import { Inject, Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { ValidationErrorLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
 import { RoleName } from &#x27;@shared/domain/interface&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
@@ -764,6 +775,7 @@ import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
 import { plainToClass } from &#x27;class-transformer&#x27;;
 import { validate, ValidationError } from &#x27;class-validator&#x27;;
 import { firstValueFrom } from &#x27;rxjs&#x27;;
+import { IProvisioningFeatures, ProvisioningFeatures } from &#x27;../../config&#x27;;
 import {
 	ExternalGroupDto,
 	ExternalSchoolDto,
@@ -779,11 +791,12 @@ import { SanisResponseMapper } from &#x27;./sanis-response.mapper&#x27;;
 @Injectable()
 export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 	constructor(
+		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
+		protected readonly oidcProvisioningService: OidcProvisioningService,
 		private readonly responseMapper: SanisResponseMapper,
-		private readonly httpService: HttpService,
-		protected readonly oidcProvisioningService: OidcProvisioningService
+		private readonly httpService: HttpService
 	) {
-		super(oidcProvisioningService);
+		super(provisioningFeatures, oidcProvisioningService);
 	}
 
 	getType(): SystemProvisioningStrategy {
@@ -823,7 +836,7 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 		const externalSchool: ExternalSchoolDto &#x3D; this.responseMapper.mapToExternalSchoolDto(axiosResponse.data);
 
 		let externalGroups: ExternalGroupDto[] | undefined;
-		if (Configuration.get(&#x27;FEATURE_SANIS_GROUP_PROVISIONING_ENABLED&#x27;)) {
+		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
 			await this.checkResponseValidation(response, [SanisResponseValidationGroups.GROUPS]);
 
 			externalGroups &#x3D; this.responseMapper.mapToExternalGroupDtos(axiosResponse.data);

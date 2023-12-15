@@ -179,7 +179,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(oidcProvisioningService: <a href="../injectables/OidcProvisioningService.html" target="_self">OidcProvisioningService</a>)</code>
+<code>constructor(provisioningFeatures: <a href="../interfaces/IProvisioningFeatures.html" target="_self">IProvisioningFeatures</a>, oidcProvisioningService: <a href="../injectables/OidcProvisioningService.html" target="_self">OidcProvisioningService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -201,6 +201,18 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                                <tr>
+                                                        <td>provisioningFeatures</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/IProvisioningFeatures.html" target="_self" >IProvisioningFeatures</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                                 <tr>
                                                         <td>oidcProvisioningService</td>
                                                   
@@ -256,7 +268,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:14</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:17</a></code>
 </div>
                         </td>
                     </tr>
@@ -429,16 +441,19 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { LegacySchoolDo, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
-import { OauthDataDto, ProvisioningDto } from &#x27;../../dto&#x27;;
+import { IProvisioningFeatures, ProvisioningFeatures } from &#x27;../../config&#x27;;
+import { ExternalGroupDto, OauthDataDto, ProvisioningDto } from &#x27;../../dto&#x27;;
 import { ProvisioningStrategy } from &#x27;../base.strategy&#x27;;
 import { OidcProvisioningService } from &#x27;./service/oidc-provisioning.service&#x27;;
 
 @Injectable()
 export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
-	constructor(protected readonly oidcProvisioningService: OidcProvisioningService) {
+	constructor(
+		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
+		protected readonly oidcProvisioningService: OidcProvisioningService
+	) {
 		super();
 	}
 
@@ -454,7 +469,7 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 			school?.id
 		);
 
-		if (Configuration.get(&#x27;FEATURE_SANIS_GROUP_PROVISIONING_ENABLED&#x27;)) {
+		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
 			await this.oidcProvisioningService.removeExternalGroupsAndAffiliation(
 				data.externalUser.externalId,
 				data.externalGroups ?? [],
@@ -462,13 +477,15 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 			);
 
 			if (data.externalGroups) {
+				let groups: ExternalGroupDto[] &#x3D; data.externalGroups;
+
+				if (this.provisioningFeatures.provisioningOptionsEnabled) {
+					groups &#x3D; await this.oidcProvisioningService.filterExternalGroups(groups, school?.id, data.system.systemId);
+				}
+
 				await Promise.all(
-					data.externalGroups.map((externalGroup) &#x3D;&gt;
-						this.oidcProvisioningService.provisionExternalGroup(
-							externalGroup,
-							data.externalSchool,
-							data.system.systemId
-						)
+					groups.map((group: ExternalGroupDto) &#x3D;&gt;
+						this.oidcProvisioningService.provisionExternalGroup(group, data.externalSchool, data.system.systemId)
 					)
 				);
 			}

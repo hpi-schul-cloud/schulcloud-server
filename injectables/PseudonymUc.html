@@ -346,7 +346,7 @@ export class PseudonymUc {
 		const foundPseudonym: Pseudonym | null &#x3D; await this.pseudonymService.findPseudonymByPseudonym(pseudonym);
 
 		if (foundPseudonym &#x3D;&#x3D;&#x3D; null) {
-			throw new NotFoundLoggableException(Pseudonym.name, &#x27;pseudonym&#x27;, pseudonym);
+			throw new NotFoundLoggableException(Pseudonym.name, { pseudonym });
 		}
 
 		const pseudonymUserId: string &#x3D; foundPseudonym.userId;

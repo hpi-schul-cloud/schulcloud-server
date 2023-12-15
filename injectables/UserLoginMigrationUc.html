@@ -649,7 +649,7 @@ export class UserLoginMigrationUc {
 		);
 
 		if (!userLoginMigration) {
-			throw new NotFoundLoggableException(&#x27;UserLoginMigration&#x27;, &#x27;schoolId&#x27;, schoolId);
+			throw new NotFoundLoggableException(&#x27;UserLoginMigration&#x27;, { schoolId });
 		}
 
 		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);

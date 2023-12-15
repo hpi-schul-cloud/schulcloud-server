@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/group/util/sort-helper.ts</code>
+            <code>apps/server/src/shared/common/utils/sort-helper.ts</code>
         </p>
 
 
@@ -193,7 +193,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="4"
-                                    class="link-to-prism">apps/server/src/modules/group/util/sort-helper.ts:4</a></div>
+                                    class="link-to-prism">apps/server/src/shared/common/utils/sort-helper.ts:4</a></div>
                         </td>
                     </tr>
 
@@ -218,6 +218,7 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
+                                                <td>Default value</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -231,6 +232,8 @@
                                                     No
                                             </td>
 
+                                            <td>
+                                            </td>
 
                                         </tr>
                                         <tr>
@@ -243,6 +246,8 @@
                                                     No
                                             </td>
 
+                                            <td>
+                                            </td>
 
                                         </tr>
                                         <tr>
@@ -255,6 +260,9 @@
                                                     No
                                             </td>
 
+                                            <td>
+                                                    <code>SortOrder.asc</code>
+                                            </td>
 
                                         </tr>
                                     </tbody>
@@ -281,10 +289,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SortOrder } from &#x27;@shared/domain/interface&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SortOrder } from &#x27;../../domain/interface&#x27;;
 
 export class SortHelper {
-	public static genericSortFunction&lt;T&gt;(a: T, b: T, sortOrder: SortOrder): number {
+	public static genericSortFunction&lt;T&gt;(a: T, b: T, sortOrder: SortOrder &#x3D; SortOrder.asc): number {
 		let order: number;
 
 		if (typeof a !&#x3D;&#x3D; &#x27;undefined&#x27; &amp;&amp; typeof b &#x3D;&#x3D;&#x3D; &#x27;undefined&#x27;) {

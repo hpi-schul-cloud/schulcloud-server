@@ -202,7 +202,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="153" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:153</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="154" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:154</a></div>
                             </td>
                         </tr>
 
@@ -274,7 +274,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="175" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:175</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="176" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:176</a></div>
                         </td>
                     </tr>
 
@@ -310,7 +310,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="166" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:166</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="167" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:167</a></div>
                         </td>
                     </tr>
 
@@ -346,7 +346,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="169" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:169</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="170" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:170</a></div>
                         </td>
                     </tr>
 
@@ -382,7 +382,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="187" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:187</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="188" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:188</a></div>
                         </td>
                     </tr>
 
@@ -418,7 +418,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="172" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:172</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="173" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:173</a></div>
                         </td>
                     </tr>
 
@@ -454,7 +454,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="181" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:181</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="182" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:182</a></div>
                         </td>
                     </tr>
 
@@ -490,7 +490,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="178" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:178</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="179" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:179</a></div>
                         </td>
                     </tr>
 
@@ -526,7 +526,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="184" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:184</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="185" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:185</a></div>
                         </td>
                     </tr>
 
@@ -545,7 +545,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Embeddable, Embedded, Entity, Enum, Property } from &#x27;@mikro-orm/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Cascade, Collection, Embeddable, Embedded, Entity, Enum, OneToMany, Property } from &#x27;@mikro-orm/core&#x27;;
+import { SchoolSystemOptionsEntity } from &#x27;@modules/legacy-school/entity&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
 import { EntityId } from &#x27;../types&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
@@ -736,19 +737,6 @@ export class OidcConfigEntity {
 
 @Entity({ tableName: &#x27;systems&#x27; })
 export class SystemEntity extends BaseEntityWithTimestamps {
-	constructor(props: SystemEntityProps) {
-		super();
-		this.type &#x3D; props.type;
-		this.url &#x3D; props.url;
-		this.alias &#x3D; props.alias;
-		this.displayName &#x3D; props.displayName;
-		this.oauthConfig &#x3D; props.oauthConfig;
-		this.oidcConfig &#x3D; props.oidcConfig;
-		this.ldapConfig &#x3D; props.ldapConfig;
-		this.provisioningStrategy &#x3D; props.provisioningStrategy;
-		this.provisioningUrl &#x3D; props.provisioningUrl;
-	}
-
 	@Property({ nullable: false })
 	type: string; // see legacy enum for valid values
 
@@ -776,6 +764,22 @@ export class SystemEntity extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	provisioningUrl?: string;
+
+	@OneToMany(() &#x3D;&gt; SchoolSystemOptionsEntity, (options) &#x3D;&gt; options.system, { cascade: [Cascade.REMOVE] })
+	schoolSystemOptions &#x3D; new Collection&lt;SchoolSystemOptionsEntity&gt;(this);
+
+	constructor(props: SystemEntityProps) {
+		super();
+		this.type &#x3D; props.type;
+		this.url &#x3D; props.url;
+		this.alias &#x3D; props.alias;
+		this.displayName &#x3D; props.displayName;
+		this.oauthConfig &#x3D; props.oauthConfig;
+		this.oidcConfig &#x3D; props.oidcConfig;
+		this.ldapConfig &#x3D; props.ldapConfig;
+		this.provisioningStrategy &#x3D; props.provisioningStrategy;
+		this.provisioningUrl &#x3D; props.provisioningUrl;
+	}
 }
 </code></pre>
     </div>

@@ -291,8 +291,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="155"
-                                    class="link-to-prism">apps/server/src/modules/server/server.module.ts:155</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="157"
+                                    class="link-to-prism">apps/server/src/modules/server/server.module.ts:157</a></div>
                         </td>
                     </tr>
 
@@ -357,6 +357,7 @@ import { CollaborativeStorageModule } from &#x27;@modules/collaborative-storage&
 import { FilesStorageClientModule } from &#x27;@modules/files-storage-client&#x27;;
 import { GroupApiModule } from &#x27;@modules/group/group-api.module&#x27;;
 import { LearnroomApiModule } from &#x27;@modules/learnroom/learnroom-api.module&#x27;;
+import { LegacySchoolApiModule } from &#x27;@modules/legacy-school/legacy-school.api-module&#x27;;
 import { LessonApiModule } from &#x27;@modules/lesson/lesson-api.module&#x27;;
 import { MetaTagExtractorApiModule, MetaTagExtractorModule } from &#x27;@modules/meta-tag-extractor&#x27;;
 import { NewsModule } from &#x27;@modules/news&#x27;;
@@ -376,7 +377,7 @@ import { VideoConferenceApiModule } from &#x27;@modules/video-conference/video-c
 import { DynamicModule, Inject, MiddlewareConsumer, Module, NestModule, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { ConfigModule } from &#x27;@nestjs/config&#x27;;
 import { ALL_ENTITIES } from &#x27;@shared/domain/entity&#x27;;
-import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from &#x27;@src/config&#x27;;
+import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from &#x27;@src/config&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
 import { LegacyLogger, LoggerModule } from &#x27;@src/core/logger&#x27;;
 import connectRedis from &#x27;connect-redis&#x27;;
@@ -422,6 +423,7 @@ const serverModules &#x3D; [
 	TeamsApiModule,
 	MetaTagExtractorApiModule,
 	PseudonymApiModule,
+	LegacySchoolApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions &#x3D; {

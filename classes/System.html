@@ -191,6 +191,9 @@
                                 <li>
                                     <a href="#ldapConfig" >ldapConfig</a>
                                 </li>
+                                <li>
+                                    <a href="#provisioningStrategy" >provisioningStrategy</a>
+                                </li>
                             </ul>
                         </td>
                     </tr>
@@ -322,6 +325,28 @@
 
             </tbody>
         </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="provisioningStrategy"></a>
+                        <span class="name"><b>provisioningStrategy</b><a href="#provisioningStrategy"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>provisioningStrategy()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/modules/system/domain/system.do.ts:29</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
 </section>
     </div>
 
@@ -353,6 +378,10 @@ export interface SystemProps extends AuthorizableObject {
 export class System extends DomainObject&lt;SystemProps&gt; {
 	get ldapConfig(): LdapConfig | undefined {
 		return this.props.ldapConfig;
+	}
+
+	get provisioningStrategy(): SystemProvisioningStrategy | undefined {
+		return this.props.provisioningStrategy;
 	}
 }
 </code></pre>

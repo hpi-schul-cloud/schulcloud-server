@@ -180,7 +180,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(resourceName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, identifierName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, resourceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>constructor(resourceName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, identifiers: Record<string | string>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -215,22 +215,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>identifierName</td>
+                                                        <td>identifiers</td>
                                                   
                                                         <td>
-                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>resourceId</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                                    <code>Record&lt;string | string&gt;</code>
                                                         </td>
                                                   
                                                     <td>
@@ -273,8 +261,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="14"
-                                    class="link-to-prism">apps/server/src/shared/common/loggable-exception/not-found.loggable-exception.ts:14</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="10"
+                                    class="link-to-prism">apps/server/src/shared/common/loggable-exception/not-found.loggable-exception.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -305,11 +293,7 @@ import { Loggable } from &#x27;@src/core/logger/interfaces&#x27;;
 import { ErrorLogMessage } from &#x27;@src/core/logger/types&#x27;;
 
 export class NotFoundLoggableException extends NotFoundException implements Loggable {
-	constructor(
-		private readonly resourceName: string,
-		private readonly identifierName: string,
-		private readonly resourceId: string
-	) {
+	constructor(private readonly resourceName: string, private readonly identifiers: Record&lt;string, string&gt;) {
 		super();
 	}
 
@@ -319,7 +303,7 @@ export class NotFoundLoggableException extends NotFoundException implements Logg
 			stack: this.stack,
 			data: {
 				resourceName: this.resourceName,
-				[this.identifierName]: this.resourceId,
+				...this.identifiers,
 			},
 		};
 

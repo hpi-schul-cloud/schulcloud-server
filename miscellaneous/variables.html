@@ -719,6 +719,12 @@
                             <a href="#providers" title="apps/server/src/modules/tldraw/tldraw-ws-test.module.ts" ><b>providers</b>&nbsp;&nbsp;&nbsp;(apps/.../tldraw-ws-test.module.ts)</a>
                         </li>
                         <li>
+                            <a href="#ProvisioningFeatures" title="apps/server/src/modules/provisioning/config/provisioning-config.ts" ><b>ProvisioningFeatures</b>&nbsp;&nbsp;&nbsp;(apps/.../provisioning-config.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#provisioningStrategyOptions" title="apps/server/src/modules/legacy-school/domain/provisioning-strategy-options.ts" ><b>provisioningStrategyOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../provisioning-strategy-options.ts)</a>
+                        </li>
+                        <li>
                             <a href="#pseudonymEntityFactory" title="apps/server/src/shared/testing/factory/pseudonym.factory.ts" ><b>pseudonymEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../pseudonym.factory.ts)</a>
                         </li>
                         <li>
@@ -798,6 +804,12 @@
                         </li>
                         <li>
                             <a href="#schoolNewsFactory" title="apps/server/src/shared/testing/factory/news.factory.ts" ><b>schoolNewsFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../news.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#schoolSystemOptionsEntityFactory" title="apps/server/src/shared/testing/factory/school-system-options-entity.factory.ts" ><b>schoolSystemOptionsEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school-system-options-entity.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#schoolSystemOptionsFactory" title="apps/server/src/shared/testing/factory/domainobject/school-system-options/school-system-options.factory.ts" ><b>schoolSystemOptionsFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school-system-options.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#schoolToolConfigurationStatusFactory" title="apps/server/src/shared/testing/factory/domainobject/tool/school-external-tool-configuration-status.factory.ts" ><b>schoolToolConfigurationStatusFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school-external-tool-configuration-status.factory.ts)</a>
@@ -1281,6 +1293,8 @@
 	Permission.SCHOOL_LOGO_MANAGE,
 	Permission.SCHOOL_CHAT_MANAGE,
 	Permission.SCHOOL_STUDENT_TEAM_MANAGE,
+	Permission.SCHOOL_SYSTEM_EDIT,
+	Permission.SCHOOL_SYSTEM_VIEW,
 	Permission.SYSTEM_EDIT,
 	Permission.SYNC_START,
 	Permission.SCHOOL_PERMISSION_VIEW,
@@ -1667,6 +1681,7 @@
 	SchoolNews,
 	SchoolRolePermission,
 	SchoolRoles,
+	SchoolSystemOptionsEntity,
 	SchoolYearEntity,
 	ShareToken,
 	StorageProviderEntity,
@@ -5652,6 +5667,7 @@ must use</p>
 	TeamsApiModule,
 	MetaTagExtractorApiModule,
 	PseudonymApiModule,
+	LegacySchoolApiModule,
 ]</code>
                     </td>
                 </tr>
@@ -8876,6 +8892,60 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/modules/provisioning/config/provisioning-config.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ProvisioningFeatures"></a>
+                    <span class="name">
+                        <span ><b>ProvisioningFeatures</b></span>
+                        <a href="#ProvisioningFeatures"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Symbol(&#x27;ProvisioningFeatures&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/legacy-school/domain/provisioning-strategy-options.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="provisioningStrategyOptions"></a>
+                    <span class="name">
+                        <span ><b>provisioningStrategyOptions</b></span>
+                        <a href="#provisioningStrategyOptions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Options.html" target="_self" >Map&lt;SystemProvisioningStrategy, AnyProvisioningOptions&gt;</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Map([
+	[SystemProvisioningStrategy.SANIS, SchulConneXProvisioningOptions],
+])</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/pseudonym.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -9880,6 +9950,79 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		name: &#x60;school #${sequence}&#x60;,
 		schoolYear: schoolYearFactory.build(),
 		federalState: federalStateFactory.build(),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/school-system-options-entity.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="schoolSystemOptionsEntityFactory"></a>
+                    <span class="name">
+                        <span ><b>schoolSystemOptionsEntityFactory</b></span>
+                        <a href="#schoolSystemOptionsEntityFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;
+	SchoolSystemOptionsEntity,
+	SchoolSystemOptionsEntityProps
+&gt;(SchoolSystemOptionsEntity, () &#x3D;&gt; {
+	return {
+		school: schoolFactory.buildWithId(),
+		system: systemEntityFactory.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }),
+		provisioningOptions: {
+			groupProvisioningOtherEnabled: false,
+			groupProvisioningCoursesEnabled: false,
+			groupProvisioningClassesEnabled: false,
+		},
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/domainobject/school-system-options/school-system-options.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="schoolSystemOptionsFactory"></a>
+                    <span class="name">
+                        <span ><b>schoolSystemOptionsFactory</b></span>
+                        <a href="#schoolSystemOptionsFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>DomainObjectFactory.define&lt;
+	SchoolSystemOptions,
+	SchoolSystemOptionsProps&lt;AnyProvisioningOptions&gt;
+&gt;(SchoolSystemOptions&lt;AnyProvisioningOptions&gt;, () &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		schoolId: new ObjectId().toHexString(),
+		systemId: new ObjectId().toHexString(),
+		provisioningOptions: new SchulConneXProvisioningOptions().set({
+			groupProvisioningClassesEnabled: true,
+			groupProvisioningCoursesEnabled: false,
+			groupProvisioningOtherEnabled: false,
+		}),
 	};
 })</code>
                     </td>

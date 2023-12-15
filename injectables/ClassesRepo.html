@@ -477,7 +477,7 @@ export class ClassesRepo {
 				(classId) &#x3D;&gt; !existingEntities.find((entity) &#x3D;&gt; entity.id &#x3D;&#x3D;&#x3D; classId)
 			);
 
-			throw new NotFoundLoggableException(Class.name, &#x27;id&#x27;, missingEntityIds.toString());
+			throw new NotFoundLoggableException(Class.name, { id: missingEntityIds.toString() });
 		}
 
 		existingEntities.forEach((entity) &#x3D;&gt; {

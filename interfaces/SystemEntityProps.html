@@ -562,7 +562,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Embeddable, Embedded, Entity, Enum, Property } from &#x27;@mikro-orm/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Cascade, Collection, Embeddable, Embedded, Entity, Enum, OneToMany, Property } from &#x27;@mikro-orm/core&#x27;;
+import { SchoolSystemOptionsEntity } from &#x27;@modules/legacy-school/entity&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
 import { EntityId } from &#x27;../types&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
@@ -753,19 +754,6 @@ export class OidcConfigEntity {
 
 @Entity({ tableName: &#x27;systems&#x27; })
 export class SystemEntity extends BaseEntityWithTimestamps {
-	constructor(props: SystemEntityProps) {
-		super();
-		this.type &#x3D; props.type;
-		this.url &#x3D; props.url;
-		this.alias &#x3D; props.alias;
-		this.displayName &#x3D; props.displayName;
-		this.oauthConfig &#x3D; props.oauthConfig;
-		this.oidcConfig &#x3D; props.oidcConfig;
-		this.ldapConfig &#x3D; props.ldapConfig;
-		this.provisioningStrategy &#x3D; props.provisioningStrategy;
-		this.provisioningUrl &#x3D; props.provisioningUrl;
-	}
-
 	@Property({ nullable: false })
 	type: string; // see legacy enum for valid values
 
@@ -793,6 +781,22 @@ export class SystemEntity extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	provisioningUrl?: string;
+
+	@OneToMany(() &#x3D;&gt; SchoolSystemOptionsEntity, (options) &#x3D;&gt; options.system, { cascade: [Cascade.REMOVE] })
+	schoolSystemOptions &#x3D; new Collection&lt;SchoolSystemOptionsEntity&gt;(this);
+
+	constructor(props: SystemEntityProps) {
+		super();
+		this.type &#x3D; props.type;
+		this.url &#x3D; props.url;
+		this.alias &#x3D; props.alias;
+		this.displayName &#x3D; props.displayName;
+		this.oauthConfig &#x3D; props.oauthConfig;
+		this.oidcConfig &#x3D; props.oidcConfig;
+		this.ldapConfig &#x3D; props.ldapConfig;
+		this.provisioningStrategy &#x3D; props.provisioningStrategy;
+		this.provisioningUrl &#x3D; props.provisioningUrl;
+	}
 }
 </code></pre>
     </div>
