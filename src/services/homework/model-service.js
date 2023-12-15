@@ -1,4 +1,4 @@
-const service = require('feathers-mongoose');
+const service = require('../../utils/feathers-mongoose');
 const { homeworkModel, submissionModel } = require('./model');
 const hooks = require('./hooks');
 const submissionHooks = require('./hooks/submissions');

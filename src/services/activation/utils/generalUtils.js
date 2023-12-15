@@ -25,7 +25,7 @@ const STATE = {
  */
 const deleteEntry = async (ref, entryId) => {
 	try {
-		const res = await (ref.app || ref).service('activationModel').remove({ _id: entryId });
+		const res = await (ref.app || ref).service('activationModel').remove(entryId);
 		return res;
 	} catch (error) {
 		/* eslint-disable-next-line */
@@ -42,14 +42,11 @@ const deleteEntry = async (ref, entryId) => {
  * @returns	{Object}			changed entry
  */
 const setEntryState = async (ref, entryId, state) => {
-	const entry = await (ref.app || ref).service('activationModel').patch(
-		{ _id: entryId },
-		{
-			$set: {
-				state,
-			},
-		}
-	);
+	const entry = await (ref.app || ref).service('activationModel').patch(entryId, {
+		$set: {
+			state,
+		},
+	});
 	return entry;
 };
 
@@ -166,14 +163,11 @@ const sendMail = async (ref, mail, entry) => {
 			content: mail.content,
 		});
 
-		await ref.app.service('activationModel').patch(
-			{ _id: entry._id },
-			{
-				$push: {
-					mailSent: Date.now(),
-				},
-			}
-		);
+		await ref.app.service('activationModel').patch(entry._id, {
+			$push: {
+				mailSent: Date.now(),
+			},
+		});
 	} catch (error) {
 		if (entry.mailSent.length === 0) await deleteEntry(ref, entry._id);
 		throw new Error('Can not send mail with activation link');

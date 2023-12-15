@@ -98,7 +98,7 @@ describe('roster service', function oauth() {
 
 	after(() =>
 		Promise.all([
-			pseudonymService.remove(null, { query: {} }),
+			pseudonymService.remove(null, { query: {}, adapter: { multi: ['remove'] } }),
 			toolService.remove(testTool1),
 			toolService.remove(testToolTemplate),
 			courseService.remove(testCourse._id),

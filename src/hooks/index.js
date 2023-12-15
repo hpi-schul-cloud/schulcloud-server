@@ -396,6 +396,7 @@ exports.enableQuery = (context) => {
 	if (context.id) {
 		context.params.query = context.params.query || {};
 		context.params.query._id = context.id;
+		context.params.adapter = { multi: ['patch', 'remove'] };
 		context.id = null;
 	}
 };
