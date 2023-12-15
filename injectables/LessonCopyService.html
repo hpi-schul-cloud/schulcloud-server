@@ -370,8 +370,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="388"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:388</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="393"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:393</a></div>
                         </td>
                     </tr>
 
@@ -440,8 +440,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="294"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:294</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="299"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:299</a></div>
                         </td>
                     </tr>
 
@@ -522,8 +522,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="287"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:287</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="292"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:292</a></div>
                         </td>
                     </tr>
 
@@ -591,8 +591,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="258"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:258</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="263"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:263</a></div>
                         </td>
                     </tr>
 
@@ -811,8 +811,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="358"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:358</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="363"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:363</a></div>
                         </td>
                     </tr>
 
@@ -881,8 +881,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="335"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:335</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="340"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:340</a></div>
                         </td>
                     </tr>
 
@@ -975,8 +975,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="317"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:317</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="322"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:322</a></div>
                         </td>
                     </tr>
 
@@ -1056,8 +1056,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="246"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:246</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="251"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:251</a></div>
                         </td>
                     </tr>
 
@@ -1242,8 +1242,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="403"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:403</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="408"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:408</a></div>
                         </td>
                     </tr>
 
@@ -1312,8 +1312,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="394"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:394</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="399"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson-copy.service.ts:399</a></div>
                         </td>
                     </tr>
 
@@ -1696,6 +1696,7 @@ export class LessonCopyService {
 	}&gt; {
 		const etherpadEnabled &#x3D; Configuration.get(&#x27;FEATURE_ETHERPAD_ENABLED&#x27;) as boolean;
 		const nexboardEnabled &#x3D; Configuration.get(&#x27;FEATURE_NEXBOARD_ENABLED&#x27;) as boolean;
+		const nexboardCopyEnabled &#x3D; Configuration.get(&#x27;FEATURE_NEXBOARD_COPY_ENABLED&#x27;) as boolean;
 		const copiedContent: ComponentProperties[] &#x3D; [];
 		const copiedContentStatus: CopyStatus[] &#x3D; [];
 		for (let i &#x3D; 0; i &lt; content.length; i +&#x3D; 1) {
@@ -1753,18 +1754,22 @@ export class LessonCopyService {
 				copiedContentStatus.push(embeddedTaskStatus);
 			}
 			if (element.component &#x3D;&#x3D;&#x3D; ComponentType.NEXBOARD &amp;&amp; nexboardEnabled) {
-				// eslint-disable-next-line no-await-in-loop
-				const nexboardContent &#x3D; await this.copyNexboard(element, params);
 				const nexboardStatus &#x3D; {
 					title: element.title,
 					type: CopyElementType.LESSON_CONTENT_NEXBOARD,
-					status: CopyStatusEnum.PARTIAL,
+					status: CopyStatusEnum.FAIL,
 				};
-				if (nexboardContent) {
-					copiedContent.push(nexboardContent);
-				} else {
-					nexboardStatus.status &#x3D; CopyStatusEnum.FAIL;
+
+				if (nexboardCopyEnabled) {
+					// eslint-disable-next-line no-await-in-loop
+					const nexboardContent &#x3D; await this.copyNexboard(element, params);
+
+					if (nexboardContent) {
+						copiedContent.push(nexboardContent);
+						nexboardStatus.status &#x3D; CopyStatusEnum.PARTIAL;
+					}
 				}
+
 				copiedContentStatus.push(nexboardStatus);
 			}
 		}
