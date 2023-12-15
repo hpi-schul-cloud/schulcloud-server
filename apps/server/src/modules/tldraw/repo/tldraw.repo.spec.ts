@@ -4,7 +4,7 @@ import { cleanupCollections } from '@shared/testing';
 import { tldrawEntityFactory } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawRepo } from './tldraw.repo';
-import { TldrawWsTestModule } from '../tldraw-ws-test.module';
+import { TldrawWsTestModule } from '..';
 
 describe('TldrawRepo', () => {
 	let testingModule: TestingModule;

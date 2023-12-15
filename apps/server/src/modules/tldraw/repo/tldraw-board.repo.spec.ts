@@ -28,13 +28,6 @@ describe('TldrawBoardRepo', () => {
 	const gatewayPort = 3346;
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
 
-	const delay = (ms: number) =>
-		new Promise((resolve) => {
-			setTimeout(resolve, ms);
-		});
-
-	jest.useFakeTimers();
-
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
 			imports: [
@@ -45,8 +38,11 @@ describe('TldrawBoardRepo', () => {
 				TldrawWs,
 				TldrawWsService,
 				TldrawBoardRepo,
-				TldrawRepo,
 				YMongodb,
+				{
+					provide: TldrawRepo,
+					useValue: createMock<TldrawRepo>(),
+				},
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
@@ -54,12 +50,13 @@ describe('TldrawBoardRepo', () => {
 			],
 		}).compile();
 
-		repo = testingModule.get<TldrawBoardRepo>(TldrawBoardRepo);
-		app = testingModule.createNestApplication();
+		repo = testingModule.get(TldrawBoardRepo);
 		logger = testingModule.get(Logger);
+		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
-		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
 		await app.init();
+
+		jest.useFakeTimers();
 	});
 
 	afterAll(async () => {
@@ -144,7 +141,6 @@ describe('TldrawBoardRepo', () => {
 
 				await repo.updateDocument('TEST', doc);
 				doc.emit('update', [byteArray, undefined, doc]);
-				await delay(10);
 
 				expect(storeUpdateSpy).toHaveBeenCalled();
 				expect(storeUpdateSpy).toHaveBeenCalledTimes(1);

@@ -36,7 +36,7 @@ describe('TldrawService', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
-		jest.resetAllMocks();
+		jest.clearAllMocks();
 	});
 
 	describe('delete', () => {

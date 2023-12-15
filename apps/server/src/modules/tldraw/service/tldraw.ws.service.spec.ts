@@ -59,8 +59,6 @@ describe('TldrawWSService', () => {
 			setTimeout(resolve, ms);
 		});
 
-	jest.useFakeTimers();
-
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
 			imports: [
@@ -71,8 +69,11 @@ describe('TldrawWSService', () => {
 				TldrawWs,
 				TldrawWsService,
 				TldrawBoardRepo,
-				TldrawRepo,
 				YMongodb,
+				{
+					provide: TldrawRepo,
+					useValue: createMock<TldrawRepo>(),
+				},
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
@@ -85,7 +86,6 @@ describe('TldrawWSService', () => {
 		logger = testingModule.get(Logger);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
-		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
 		await app.init();
 	});
 

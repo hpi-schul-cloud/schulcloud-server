@@ -48,18 +48,16 @@ describe('WebSocketController (WsAdapter)', () => {
 			],
 		}).compile();
 
-		gateway = testingModule.get<TldrawWs>(TldrawWs);
+		gateway = testingModule.get(TldrawWs);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		await app.init();
+
+		jest.useFakeTimers();
 	});
 
 	afterAll(async () => {
 		await app.close();
-	});
-
-	beforeEach(() => {
-		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
 	});
 
 	afterEach(() => {

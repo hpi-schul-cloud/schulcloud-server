@@ -1,6 +1,10 @@
 import { WsSharedDocDo } from './ws-shared-doc.do';
 
 describe('WsSharedDocDo', () => {
+	beforeAll(() => {
+		jest.useFakeTimers();
+	});
+
 	describe('constructor', () => {
 		describe('when constructor is called', () => {
 			it('should create a new object with correct properties', () => {
