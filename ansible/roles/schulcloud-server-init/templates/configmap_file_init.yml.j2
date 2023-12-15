@@ -38,7 +38,6 @@ data:
     OIDCMOCK_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $OIDCMOCK__CLIENT_SECRET)
     # Test LDAP server (deployed in the sc-common namespace) configuration (stored in the 'systems' collection).
     SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $LDAP_PASSWORD_ENCRYPTION_KEY -e $SC_COMMON_LDAP_PASSWORD)
-    SCHOOL_ONE_1_SYSTEM_ID=646b3b342b2e1b2df4ebadba
     mongosh $DATABASE__URL --quiet --eval 'db.systems.insertMany([
     {
       "type" : "ldap",
@@ -92,7 +91,6 @@ data:
       }
     },
     {
-      "_id": ObjectId("'$SCHOOL_ONE_1_SYSTEM_ID'"),
       "type" : "ldap",
       "alias" : "schoolOne1",
       "ldapConfig" : {
@@ -170,9 +168,15 @@ data:
             $set: { "systems" : [ ObjectId("'$SANIS_SYSTEM_ID'") ] }
           }
       );'
+      SCHOOL_ONE_1=mongosh $DATABASE__URL --quiet --eval 'db.systems.findOne(
+          {
+              "alias": "schoolOne1"
+          }
+      );'
+      SCHOOL_ONE_1_SYSTEM_ID=$SCHOOL_ONE_1._id
       mongosh $DATABASE__URL --quiet --eval 'db.schools.updateOne(
                 {
-                    _"id": ObjectId("5fa2c5ccb229544f2c69666c")
+                    "_id": ObjectId("5fa2c5ccb229544f2c69666c")
                 },
                 {
                   $set: { "systems" : [ ObjectId("'$SCHOOL_ONE_1_SYSTEM_ID'") ] }
