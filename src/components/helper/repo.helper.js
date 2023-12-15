@@ -1,30 +1,31 @@
 const { error } = require('../../logger');
 
 /**
+ * https://mongoosejs.com/docs/6.x/docs/migrating_to_6.html#mongodb-driver-40
  * Converts an mongoose update many result to an internal TO
- * @param {*} param0
- * @param {1|0} param0.ok 0 for error
- * @param {Integer} param0.n Number of elements matched the given filter
- * @param {Integer} param0.nModified Number of elements updated
+ * @param {Integer} matchedCount; // Number of documents matched
+ * @param {Integer} modifiedCount; // Number of documents modified
+ * @param {Boolean} acknowledged; // Boolean indicating everything went smoothly.
+ * @param {null|string} upsertedId; // null or an id containing a document that had to be upserted.
+ * @param {Integer} upsertedCount; // Number indicating how many documents had to be upserted. Will either be 0 or 1.
  */
-const updateManyResult = ({ ok, n, nModified }) => {
-	if (ok !== 1) {
-		error('mongoose updateMany has failed', { ok, n, nModified });
+const updateManyResult = ({ acknowledged, matchedCount, modifiedCount }) => {
+	if (acknowledged) {
+		error('mongoose updateMany has failed', { acknowledged, matchedCount, modifiedCount });
 	}
-	return { success: ok === 1, modifiedDocuments: nModified };
+	return { success: acknowledged, modifiedDocuments: modifiedCount };
 };
 
 /**
+ * https://mongoosejs.com/docs/6.x/docs/migrating_to_6.html#mongodb-driver-40
  * Converts an mongoose delete many result to an internal TO
- * @param {*} param0
- * @param {1|0} param0.ok 0 for error
- * @param {Integer} param0.n Number of elements matched the given filter
- * @param {Integer} param0.deletedCount Number of elements deleted
+ * @param {Boolean} acknowledged; // Boolean indicating everything went smoothly.
+ * @param {Integer} deletedCount Number of elements deleted
  */
-const deleteManyResult = ({ ok, n, deletedCount }) => {
-	if (ok !== 1) {
-		error('mongoose deleteMany has failed', { ok, n, deletedCount });
+const deleteManyResult = ({ acknowledged, deletedCount }) => {
+	if (!acknowledged) {
+		error('mongoose deleteMany has failed', { acknowledged, deletedCount });
 	}
-	return { success: ok === 1, deletedDocuments: deletedCount };
+	return { success: acknowledged, deletedDocuments: deletedCount };
 };
 module.exports = { updateManyResult, deleteManyResult };
