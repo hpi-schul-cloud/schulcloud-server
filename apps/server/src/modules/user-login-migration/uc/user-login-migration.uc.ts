@@ -58,7 +58,7 @@ export class UserLoginMigrationUc {
 		);
 
 		if (!userLoginMigration) {
-			throw new NotFoundLoggableException('UserLoginMigration', 'schoolId', schoolId);
+			throw new NotFoundLoggableException('UserLoginMigration', { schoolId });
 		}
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);

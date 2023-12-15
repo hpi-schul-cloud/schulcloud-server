@@ -44,7 +44,7 @@ export class SystemUc {
 		const system: System | null = await this.systemService.findById(systemId);
 
 		if (!system) {
-			throw new NotFoundLoggableException(System.name, 'id', systemId);
+			throw new NotFoundLoggableException(System.name, { id: systemId });
 		}
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
