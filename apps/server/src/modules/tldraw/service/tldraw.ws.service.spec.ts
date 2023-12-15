@@ -14,7 +14,6 @@ import { HttpService } from '@nestjs/axios';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { of, throwError } from 'rxjs';
 import { AxiosResponse } from 'axios';
-import { DeletionRequestOutput } from '@modules/deletion';
 import { axiosResponseFactory } from '@shared/testing';
 import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
 import { config } from '../config';
@@ -466,7 +465,7 @@ describe('TldrawWSService', () => {
 	describe('authorizeConnection', () => {
 		it('should call properly method', async () => {
 			const params = { drawingName: 'drawingName', token: 'token' };
-			const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
+			const response: AxiosResponse<null> = axiosResponseFactory.build({
 				status: 200,
 			});
 
