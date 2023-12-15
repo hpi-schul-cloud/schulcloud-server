@@ -12,11 +12,7 @@ import { DrawingElement } from '@shared/domain/domainobject/board/drawing-elemen
 import { EntityId } from '@shared/domain/types';
 
 export class SwapInternalLinksVisitor implements BoardCompositeVisitor {
-	constructor(map: Map<EntityId, EntityId>) {
-		this.idMap = map;
-	}
-
-	private idMap: Map<EntityId, EntityId>;
+	constructor(private readonly idMap: Map<EntityId, EntityId>) {}
 
 	visitDrawingElement(drawingElement: DrawingElement): void {
 		this.visitChildrenOf(drawingElement);
@@ -34,9 +30,13 @@ export class SwapInternalLinksVisitor implements BoardCompositeVisitor {
 		this.visitChildrenOf(columnBoard);
 	}
 
-	visitExternalToolElement(): void {}
+	visitExternalToolElement(): void {
+		this.doNothing();
+	}
 
-	visitFileElement(): void {}
+	visitFileElement(): void {
+		this.doNothing();
+	}
 
 	visitLinkElement(linkElement: LinkElement): void {
 		this.idMap.forEach((value, key) => {
@@ -44,7 +44,9 @@ export class SwapInternalLinksVisitor implements BoardCompositeVisitor {
 		});
 	}
 
-	visitRichTextElement(): void {}
+	visitRichTextElement(): void {
+		this.doNothing();
+	}
 
 	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {
 		this.visitChildrenOf(submissionContainerElement);
@@ -57,4 +59,6 @@ export class SwapInternalLinksVisitor implements BoardCompositeVisitor {
 	private visitChildrenOf(boardDo: AnyBoardDo) {
 		boardDo.children.forEach((child) => child.accept(this));
 	}
+
+	private doNothing() {}
 }
