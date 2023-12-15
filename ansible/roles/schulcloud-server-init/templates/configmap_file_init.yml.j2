@@ -168,20 +168,6 @@ data:
             $set: { "systems" : [ ObjectId("'$SANIS_SYSTEM_ID'") ] }
           }
       );'
-      SCHOOL_ONE_1=mongosh $DATABASE__URL --quiet --eval 'db.systems.findOne(
-          {
-              "alias": "schoolOne1"
-          }
-      );'
-      SCHOOL_ONE_1_SYSTEM_ID=$SCHOOL_ONE_1._id
-      mongosh $DATABASE__URL --quiet --eval 'db.schools.updateOne(
-                {
-                    "_id": ObjectId("5fa2c5ccb229544f2c69666c")
-                },
-                {
-                  $set: { "systems" : [ ObjectId("'$SCHOOL_ONE_1_SYSTEM_ID'") ] }
-                }
-            );'
       mongosh $DATABASE__URL --quiet --eval 'db.systems.insertOne(
           {
             "_id": ObjectId("'$SANIS_SYSTEM_ID'"),
