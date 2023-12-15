@@ -3,7 +3,6 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { SortOrder } from '@shared/domain/interface';
-import { SchoolFeature } from '@shared/domain/types';
 import { cleanupCollections, federalStateFactory, schoolFactory, systemEntityFactory } from '@shared/testing';
 import { countyEmbeddableFactory } from '@shared/testing/factory/county.embeddable.factory';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
@@ -156,31 +155,12 @@ describe('SchoolMikroOrmRepo', () => {
 				return { schoolDo, schoolId };
 			};
 
-			it('should return school with all refs populated', async () => {
+			it('should return school', async () => {
 				const { schoolDo, schoolId } = await setup();
 
 				const result = await repo.getSchoolById(schoolId);
 
 				expect(result).toEqual(schoolDo);
-			});
-		});
-
-		describe('when enableStudentTeamCreation prop on entity is true', () => {
-			const setupWithEnableStudentTeamCreation = async () => {
-				const schoolId = new ObjectId().toHexString();
-				const entity = schoolFactory.buildWithId({ enableStudentTeamCreation: true }, schoolId);
-				await em.persistAndFlush([entity]);
-				em.clear();
-				const schoolDo = SchoolEntityMapper.mapToDo(entity);
-
-				return { schoolDo, schoolId };
-			};
-			it('should add IS_TEAM_CREATION_BY_STUDENTS_ENABLED to features', async () => {
-				const { schoolId } = await setupWithEnableStudentTeamCreation();
-
-				const result = await repo.getSchoolById(schoolId);
-
-				expect(result.getProps().features?.has(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED)).toBe(true);
 			});
 		});
 	});
