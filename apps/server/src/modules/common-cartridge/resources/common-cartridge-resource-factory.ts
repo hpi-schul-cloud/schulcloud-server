@@ -13,7 +13,7 @@ import { CommonCartridgeWebLinkResourcePropsV130 } from './v1.3.0/common-cartrid
 export type CommonCartridgeResourceProps =
 	| OmitVersionAndFolder<CommonCartridgeWebContentResourcePropsV110>
 	| OmitVersionAndFolder<CommonCartridgeWebLinkResourcePropsV110>
-	| OmitVersionAndFolder<CommonCartridgeWebContentResourcePropsV110>
+	| OmitVersionAndFolder<CommonCartridgeWebContentResourcePropsV130>
 	| OmitVersionAndFolder<CommonCartridgeWebLinkResourcePropsV130>;
 
 type CommonCartridgeResourcePropsInternal =
