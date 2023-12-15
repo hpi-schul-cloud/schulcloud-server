@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { GroupTypes } from '@modules/group/domain';
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
@@ -11,6 +10,7 @@ import { axiosResponseFactory } from '@shared/testing';
 import { UUID } from 'bson';
 import * as classValidator from 'class-validator';
 import { of } from 'rxjs';
+import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import {
 	ExternalGroupDto,
 	ExternalSchoolDto,
@@ -50,6 +50,8 @@ describe('SanisStrategy', () => {
 		ArgsType<typeof classValidator.validate>
 	>;
 
+	let provisioningFeatures: IProvisioningFeatures;
+
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
@@ -66,19 +68,29 @@ describe('SanisStrategy', () => {
 					provide: OidcProvisioningService,
 					useValue: createMock<OidcProvisioningService>(),
 				},
+				{
+					provide: ProvisioningFeatures,
+					useValue: {},
+				},
 			],
 		}).compile();
 
 		strategy = module.get(SanisProvisioningStrategy);
 		mapper = module.get(SanisResponseMapper);
 		httpService = module.get(HttpService);
+		provisioningFeatures = module.get(ProvisioningFeatures);
 
 		validationFunction = jest.spyOn(classValidator, 'validate');
 	});
 
+	beforeEach(() => {
+		Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
+			schulconnexGroupProvisioningEnabled: true,
+		});
+	});
+
 	afterEach(() => {
 		jest.resetAllMocks();
-		Configuration.set('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED', 'true');
 	});
 
 	const setupSanisResponse = (): SanisResponse => {
@@ -281,7 +293,7 @@ describe('SanisStrategy', () => {
 				mapper.mapToExternalSchoolDto.mockReturnValue(school);
 				validationFunction.mockResolvedValueOnce([]);
 
-				Configuration.set('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED', 'false');
+				provisioningFeatures.schulconnexGroupProvisioningEnabled = false;
 
 				return {
 					input,

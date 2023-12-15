@@ -1,6 +1,5 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -8,6 +7,7 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import { firstValueFrom } from 'rxjs';
+import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import {
 	ExternalGroupDto,
 	ExternalSchoolDto,
@@ -23,11 +23,12 @@ import { SanisResponseMapper } from './sanis-response.mapper';
 @Injectable()
 export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 	constructor(
+		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
+		protected readonly oidcProvisioningService: OidcProvisioningService,
 		private readonly responseMapper: SanisResponseMapper,
-		private readonly httpService: HttpService,
-		protected readonly oidcProvisioningService: OidcProvisioningService
+		private readonly httpService: HttpService
 	) {
-		super(oidcProvisioningService);
+		super(provisioningFeatures, oidcProvisioningService);
 	}
 
 	getType(): SystemProvisioningStrategy {
@@ -67,7 +68,7 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(axiosResponse.data);
 
 		let externalGroups: ExternalGroupDto[] | undefined;
-		if (Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED')) {
+		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
 			await this.checkResponseValidation(response, [SanisResponseValidationGroups.GROUPS]);
 
 			externalGroups = this.responseMapper.mapToExternalGroupDtos(axiosResponse.data);

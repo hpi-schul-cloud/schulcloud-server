@@ -21,7 +21,7 @@ export class PseudonymUc {
 		const foundPseudonym: Pseudonym | null = await this.pseudonymService.findPseudonymByPseudonym(pseudonym);
 
 		if (foundPseudonym === null) {
-			throw new NotFoundLoggableException(Pseudonym.name, 'pseudonym', pseudonym);
+			throw new NotFoundLoggableException(Pseudonym.name, { pseudonym });
 		}
 
 		const pseudonymUserId: string = foundPseudonym.userId;

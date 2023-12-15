@@ -1369,6 +1369,11 @@
 			"default": false,
 			"description": "Enables external tools on the column board"
 		},
+		"FEATURE_PROVISIONING_OPTIONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "enables to view the page to set group provisioning options for a school and system pair"
+		},
 		"CTL_TOOLS": {
 			"type": "object",
 			"description": "CTL Tools properties",
