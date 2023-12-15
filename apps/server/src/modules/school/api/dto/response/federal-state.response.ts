@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { CountyResponse } from './county.response';
 
 export class FederalStateResponse {
@@ -14,8 +14,8 @@ export class FederalStateResponse {
 	@ApiProperty()
 	logoUrl: string;
 
-	@ApiPropertyOptional({ type: () => [CountyResponse] })
-	counties?: CountyResponse[];
+	@ApiProperty({ type: () => [CountyResponse] })
+	counties: CountyResponse[];
 
 	constructor(props: FederalStateResponse) {
 		this.id = props.id;
