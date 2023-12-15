@@ -54,6 +54,7 @@ export class FilesStorageProducer extends RpcMessageProducer {
 
 	async removeCreatorIdFromFileRecords(payload: EntityId): Promise<FileDO[]> {
 		this.logger.debug({ action: 'removeCreatorIdFromFileRecords:started', payload });
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		const response = await this.request<FileDO[]>(FilesStorageEvents.REMOVE_CREATORID_OF_FILES, payload);
 
 		this.logger.debug({ action: 'removeCreatorIdFromFileRecords:finished', payload });
