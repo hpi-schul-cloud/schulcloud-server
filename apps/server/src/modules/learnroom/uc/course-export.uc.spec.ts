@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CommonCartridgeExportService } from '@modules/learnroom/service/common-cartridge-export.service';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
-import { ObjectId } from 'bson';
+import { CommonCartridgeExportService } from '@modules/learnroom/service/common-cartridge-export.service';
 import { ForbiddenException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ObjectId } from 'bson';
+import { CommonCartridgeVersion } from '../../common-cartridge';
 import { CourseExportUc } from './course-export.uc';
-import { CommonCartridgeVersion } from '../common-cartridge';
 
 describe('CourseExportUc', () => {
 	let module: TestingModule;

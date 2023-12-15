@@ -1,9 +1,9 @@
-import { CommonCartridgeVersion } from '../common-cartridge.enums';
+import { CommonCartridgeVersion } from '../../../common-cartridge/common-cartridge.enums';
+import { CommonCartridgeElement } from '../../../common-cartridge/interfaces/common-cartridge-element.interface';
+import { CommonCartridgeResource } from '../../../common-cartridge/interfaces/common-cartridge-resource.interface';
+import { createVersionNotSupportedError } from '../../../common-cartridge/utils';
 import { CommonCartridgeOrganizationsWrapperElement } from '../elements/common-cartridge-organizations-wrapper-element';
 import { CommonCartridgeResourcesWrapperElement } from '../elements/common-cartridge-resources-wrapper-element';
-import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
-import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
-import { createVersionNotSupportedError } from '../utils';
 
 export type CommonCartridgeManifestElementProps = {
 	version: CommonCartridgeVersion;

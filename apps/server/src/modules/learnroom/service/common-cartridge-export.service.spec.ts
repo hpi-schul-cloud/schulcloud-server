@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType, Course, LessonEntity, Task } from '@shared/domain';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import AdmZip from 'adm-zip';
-import { CommonCartridgeVersion } from '../common-cartridge';
+import { CommonCartridgeVersion } from '../../common-cartridge';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;

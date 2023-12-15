@@ -1,14 +1,14 @@
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
+import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../../../common-cartridge/common-cartridge.enums';
+import {
+	CommonCartridgeResourceFactory,
+	CommonCartridgeResourcePropsInternal,
+} from '../../../common-cartridge/resources/common-cartridge-resource-factory';
 import { CommonCartridgeMetadataElement } from '../elements/common-cartridge-metadata-element';
 import { CommonCartridgeOrganizationElement } from '../elements/common-cartridge-organization-element';
 import {
 	CommonCartridgeManifestElementProps,
 	CommonCartridgeManifestResource,
 } from './common-cartridge-manifest-resource';
-import {
-	CommonCartridgeResourceFactory,
-	CommonCartridgeResourcePropsInternal,
-} from './common-cartridge-resource-factory';
 
 describe('CommonCartridgeManifestResource', () => {
 	const metadataElementPropsVersion1 = {

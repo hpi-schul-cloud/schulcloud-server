@@ -6,7 +6,7 @@ import {
 	CommonCartridgeFileBuilder,
 	CommonCartridgeOrganizationBuilder,
 	CommonCartridgeVersion,
-} from '../common-cartridge';
+} from '../../common-cartridge';
 import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
 import { CourseService } from './course.service';
 

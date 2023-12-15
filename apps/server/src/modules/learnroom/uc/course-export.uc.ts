@@ -1,8 +1,8 @@
+import { AuthorizationContextBuilder } from '@modules/authorization';
+import { AuthorizableReferenceType, AuthorizationReferenceService } from '@modules/authorization/domain';
 import { Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
-import { AuthorizationContextBuilder } from '@modules/authorization';
-import { AuthorizationReferenceService, AuthorizableReferenceType } from '@modules/authorization/domain';
-import { CommonCartridgeVersion } from '../common-cartridge';
+import { CommonCartridgeVersion } from '../../common-cartridge';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 
 @Injectable()

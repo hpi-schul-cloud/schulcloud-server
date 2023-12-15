@@ -10,7 +10,7 @@ import {
 	CommonCartridgeResourceProps,
 	CommonCartridgeResourceType,
 	OmitVersion,
-} from '../common-cartridge';
+} from '../../common-cartridge';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeMapper } from './common-cartridge.mapper';
 

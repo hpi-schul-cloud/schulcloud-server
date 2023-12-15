@@ -3,7 +3,7 @@ import {
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
-} from '../../common-cartridge.enums';
+} from '../../../learnroom/common-cartridge/common-cartridge.enums';
 import {
 	CommonCartridgeWebContentResourcePropsV110,
 	CommonCartridgeWebContentResourceV110,
