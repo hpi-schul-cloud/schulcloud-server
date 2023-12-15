@@ -16,7 +16,7 @@ describe('CommonCartridgeWebLinkResourceV130', () => {
 			title: 'Title',
 			url: 'http://www.example.tld',
 			target: '_self',
-			windowFeatures: 'width=100;height=100;', // FIXME: Is this a valid value?
+			windowFeatures: 'width=100;height=100;',
 		};
 		const sut = new CommonCartridgeWebLinkResourceV130(props);
 

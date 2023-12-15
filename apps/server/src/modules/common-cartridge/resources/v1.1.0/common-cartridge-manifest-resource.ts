@@ -3,8 +3,7 @@ import {
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
-import { CommonCartridgeOrganizationsWrapperElementV110 } from '../../elements/v1.1.0/common-cartridge-organizations-wrapper-element';
-import { CommonCartridgeResourcesWrapperElementV110 } from '../../elements/v1.1.0/common-cartridge-resources-wrapper-element';
+import { CommonCartridgeElementFactory } from '../../elements/common-cartridge-element-factory';
 import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
 import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resource.interface';
 import { buildXmlString } from '../../utils';
@@ -54,13 +53,13 @@ export class CommonCartridgeManifestResourceV110 extends CommonCartridgeResource
 						'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lomresource_v1p0.xsd',
 				},
 				metadata: this.props.metadata.getManifestXmlObject(),
-				organizations: new CommonCartridgeOrganizationsWrapperElementV110({
-					type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER, // FIXME: Is this necessary?
+				organizations: CommonCartridgeElementFactory.createElement({
+					type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER,
 					version: this.props.version,
 					items: this.props.organizations,
 				}).getManifestXmlObject(),
-				...new CommonCartridgeResourcesWrapperElementV110({
-					type: CommonCartridgeElementType.RESOURCES_WRAPPER, // FIXME: Is this necessary?
+				...CommonCartridgeElementFactory.createElement({
+					type: CommonCartridgeElementType.RESOURCES_WRAPPER,
 					version: this.props.version,
 					items: this.props.resources,
 				}).getManifestXmlObject(),
