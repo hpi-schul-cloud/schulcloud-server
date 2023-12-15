@@ -1,7 +1,12 @@
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountSaveDto } from '@modules/account/services/dto';
-import { Group, GroupService, GroupUser } from '@modules/group';
-import { FederalStateService, LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
+import { AccountSaveDto, AccountService } from '@modules/account';
+import { Group, GroupService, GroupTypes, GroupUser } from '@modules/group';
+import {
+	FederalStateService,
+	LegacySchoolService,
+	SchoolSystemOptionsService,
+	SchoolYearService,
+	SchulConneXProvisioningOptions,
+} from '@modules/legacy-school';
 import { FederalStateNames } from '@modules/legacy-school/types';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
@@ -27,10 +32,11 @@ export class OidcProvisioningService {
 		private readonly accountService: AccountService,
 		private readonly schoolYearService: SchoolYearService,
 		private readonly federalStateService: FederalStateService,
+		private readonly schoolSystemOptionsService: SchoolSystemOptionsService,
 		private readonly logger: Logger
 	) {}
 
-	async provisionExternalSchool(externalSchool: ExternalSchoolDto, systemId: EntityId): Promise<LegacySchoolDo> {
+	public async provisionExternalSchool(externalSchool: ExternalSchoolDto, systemId: EntityId): Promise<LegacySchoolDo> {
 		const existingSchool: LegacySchoolDo | null = await this.schoolService.getSchoolByExternalId(
 			externalSchool.externalId,
 			systemId
@@ -76,7 +82,11 @@ export class OidcProvisioningService {
 		return schoolName;
 	}
 
-	async provisionExternalUser(externalUser: ExternalUserDto, systemId: EntityId, schoolId?: string): Promise<UserDO> {
+	public async provisionExternalUser(
+		externalUser: ExternalUserDto,
+		systemId: EntityId,
+		schoolId?: string
+	): Promise<UserDO> {
 		let roleRefs: RoleReference[] | undefined;
 		if (externalUser.roles) {
 			const roles: RoleDto[] = await this.roleService.findByNames(externalUser.roles);
@@ -130,7 +140,53 @@ export class OidcProvisioningService {
 		return savedUser;
 	}
 
-	async provisionExternalGroup(
+	public async filterExternalGroups(
+		externalGroups: ExternalGroupDto[],
+		schoolId: EntityId | undefined,
+		systemId: EntityId
+	): Promise<ExternalGroupDto[]> {
+		let filteredGroups: ExternalGroupDto[] = externalGroups;
+
+		const provisioningOptions: SchulConneXProvisioningOptions = await this.getProvisioningOptionsOrDefault(
+			schoolId,
+			systemId
+		);
+
+		if (!provisioningOptions.groupProvisioningClassesEnabled) {
+			filteredGroups = filteredGroups.filter((group: ExternalGroupDto) => group.type !== GroupTypes.CLASS);
+		}
+
+		if (!provisioningOptions.groupProvisioningCoursesEnabled) {
+			filteredGroups = filteredGroups.filter((group: ExternalGroupDto) => group.type !== GroupTypes.COURSE);
+		}
+
+		if (!provisioningOptions.groupProvisioningOtherEnabled) {
+			filteredGroups = filteredGroups.filter((group: ExternalGroupDto) => group.type !== GroupTypes.OTHER);
+		}
+
+		return filteredGroups;
+	}
+
+	private async getProvisioningOptionsOrDefault(
+		schoolId: string | undefined,
+		systemId: string
+	): Promise<SchulConneXProvisioningOptions> {
+		let provisioningOptions: SchulConneXProvisioningOptions;
+
+		if (schoolId) {
+			provisioningOptions = await this.schoolSystemOptionsService.getProvisioningOptions(
+				SchulConneXProvisioningOptions,
+				schoolId,
+				systemId
+			);
+		} else {
+			provisioningOptions = new SchulConneXProvisioningOptions();
+		}
+
+		return provisioningOptions;
+	}
+
+	public async provisionExternalGroup(
 		externalGroup: ExternalGroupDto,
 		externalSchool: ExternalSchoolDto | undefined,
 		systemId: EntityId
@@ -178,7 +234,7 @@ export class OidcProvisioningService {
 		const self: GroupUser | null = await this.getGroupUser(externalGroup.user, systemId);
 
 		if (!self) {
-			throw new NotFoundLoggableException(UserDO.name, 'externalId', externalGroup.user.externalUserId);
+			throw new NotFoundLoggableException(UserDO.name, { externalId: externalGroup.user.externalUserId });
 		}
 
 		group.addUser(self);
@@ -220,7 +276,7 @@ export class OidcProvisioningService {
 		return groupUser;
 	}
 
-	async removeExternalGroupsAndAffiliation(
+	public async removeExternalGroupsAndAffiliation(
 		externalUserId: string,
 		externalGroups: ExternalGroupDto[],
 		systemId: EntityId
@@ -228,7 +284,7 @@ export class OidcProvisioningService {
 		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 
 		if (!user) {
-			throw new NotFoundLoggableException(UserDO.name, 'externalId', externalUserId);
+			throw new NotFoundLoggableException(UserDO.name, { externalId: externalUserId });
 		}
 
 		const existingGroupsOfUser: Group[] = await this.groupService.findGroupsByUserAndGroupTypes(user);

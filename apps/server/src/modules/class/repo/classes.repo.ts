@@ -42,7 +42,7 @@ export class ClassesRepo {
 				(classId) => !existingEntities.find((entity) => entity.id === classId)
 			);
 
-			throw new NotFoundLoggableException(Class.name, 'id', missingEntityIds.toString());
+			throw new NotFoundLoggableException(Class.name, { id: missingEntityIds.toString() });
 		}
 
 		existingEntities.forEach((entity) => {

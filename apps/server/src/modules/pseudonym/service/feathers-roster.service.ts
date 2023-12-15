@@ -157,7 +157,7 @@ export class FeathersRosterService {
 		const loadedPseudonym: Pseudonym | null = await this.pseudonymService.findPseudonymByPseudonym(pseudonym);
 
 		if (!loadedPseudonym) {
-			throw new NotFoundLoggableException(Pseudonym.name, 'pseudonym', pseudonym);
+			throw new NotFoundLoggableException(Pseudonym.name, { pseudonym });
 		}
 
 		return loadedPseudonym;
@@ -205,7 +205,7 @@ export class FeathersRosterService {
 		);
 
 		if (!externalTool || !externalTool.id) {
-			throw new NotFoundLoggableException(ExternalTool.name, 'config.clientId', oauth2ClientId);
+			throw new NotFoundLoggableException(ExternalTool.name, { 'config.clientId': oauth2ClientId });
 		}
 
 		return externalTool;
@@ -218,7 +218,7 @@ export class FeathersRosterService {
 		});
 
 		if (schoolExternalTools.length === 0) {
-			throw new NotFoundLoggableException(SchoolExternalTool.name, 'toolId', toolId);
+			throw new NotFoundLoggableException(SchoolExternalTool.name, { toolId });
 		}
 	}
 
@@ -228,7 +228,7 @@ export class FeathersRosterService {
 		);
 
 		if (contextExternalTools.length === 0) {
-			throw new NotFoundLoggableException(ContextExternalTool.name, 'contextRef.id', courseId);
+			throw new NotFoundLoggableException(ContextExternalTool.name, { 'contextRef.id': courseId });
 		}
 	}
 
