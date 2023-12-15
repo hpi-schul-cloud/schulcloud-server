@@ -181,8 +181,9 @@ export class BoardCopyService {
 		const map = new Map<EntityId, EntityId>();
 		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
 		copyDict.forEach((value, key) => map.set(key, value.id));
+
 		const elements = copyStatus.elements ?? [];
-		const updated = await Promise.all(
+		const updatedElements = await Promise.all(
 			elements.map(async (el) => {
 				if (el.type === CopyElementType.COLUMNBOARD && el.copyEntity) {
 					el.copyEntity = await this.columnBoardCopyService.swapLinkedIds(el.copyEntity?.id, map);
@@ -190,7 +191,8 @@ export class BoardCopyService {
 				return el;
 			})
 		);
-		copyStatus.elements = updated;
+
+		copyStatus.elements = updatedElements;
 		return copyStatus;
 	}
 
