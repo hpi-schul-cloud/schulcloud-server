@@ -683,6 +683,7 @@ describe('user service', () => {
 			const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });
 			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = { _id: { $in: userIds } };
+			params.adapter = { multi: ['remove'] };
 
 			let result;
 			try {
@@ -709,6 +710,7 @@ describe('user service', () => {
 			const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });
 			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = { _id: { $in: userIds } };
+			params.adapter = { multi: ['remove'] };
 
 			let result;
 			try {
