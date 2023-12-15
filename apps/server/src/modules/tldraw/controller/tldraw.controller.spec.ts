@@ -39,7 +39,7 @@ describe('TldrawController', () => {
 					docName: 'test-name',
 				};
 
-				const ucSpy = jest.spyOn(service, 'deleteByDocName').mockImplementation(() => Promise.resolve());
+				const ucSpy = jest.spyOn(service, 'deleteByDocName').mockResolvedValueOnce();
 				return { params, ucSpy };
 			};
 

@@ -109,7 +109,7 @@ describe('TldrawWSService', () => {
 				ws = await TestConnection.setupWs(wsUrl);
 				const clientMessageMock = 'test-message';
 
-				const closeConSpy = jest.spyOn(service, 'closeConn').mockImplementationOnce(() => {});
+				const closeConSpy = jest.spyOn(service, 'closeConn').mockReturnValueOnce();
 				const sendSpy = jest.spyOn(service, 'send');
 				const doc = TldrawWsFactory.createWsSharedDocDo();
 				const byteArray = new TextEncoder().encode(clientMessageMock);
@@ -304,11 +304,11 @@ describe('TldrawWSService', () => {
 				doc.awareness.states.set(1, ['test1']);
 				doc.awareness.states.set(2, ['test2']);
 
-				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockImplementationOnce(() => {});
+				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockReturnValueOnce();
 				const sendSpy = jest.spyOn(service, 'send');
-				const getYDocSpy = jest.spyOn(service, 'getYDoc').mockImplementationOnce(() => doc);
+				const getYDocSpy = jest.spyOn(service, 'getYDoc').mockReturnValueOnce(doc);
 				const { msg } = createMessage([0]);
-				jest.spyOn(AwarenessProtocol, 'encodeAwarenessUpdate').mockImplementationOnce(() => msg);
+				jest.spyOn(AwarenessProtocol, 'encodeAwarenessUpdate').mockReturnValueOnce(msg);
 
 				return {
 					messageHandlerSpy,
@@ -359,7 +359,7 @@ describe('TldrawWSService', () => {
 			const setup = async () => {
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
-				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockImplementationOnce(() => {});
+				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockReturnValueOnce();
 				const closeConnSpy = jest.spyOn(service, 'closeConn');
 				jest.spyOn(ws, 'ping').mockImplementationOnce(() => {
 					throw new Error('error');
