@@ -1,4 +1,4 @@
-import { BatchDeletionSummary, BatchDeletionSummaryOverallStatus } from '../interface';
+import { BatchDeletionSummary, BatchDeletionSummaryOverallStatus } from '../uc/interface';
 import { BatchDeletionSummaryBuilder } from './batch-deletion-summary.builder';
 
 describe(BatchDeletionSummaryBuilder.name, () => {
