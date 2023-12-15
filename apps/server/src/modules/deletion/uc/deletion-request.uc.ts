@@ -15,12 +15,10 @@ import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
-import { DeletionLog } from '../domain/deletion-log.do';
-import { DeletionRequest } from '../domain/deletion-request.do';
+import { DeletionLogStatistic } from './interface/interfaces';
+import { DeletionRequest, DeletionLog } from '../domain';
 import { DeletionDomainModel, DeletionOperationModel, DeletionStatusModel } from '../domain/types';
-import { DeletionLogStatistic } from '../interface/interfaces';
-import { DeletionLogService } from '../services/deletion-log.service';
-import { DeletionRequestService } from '../services/deletion-request.service';
+import { DeletionRequestService, DeletionLogService } from '../services';
 
 @Injectable()
 export class DeletionRequestUc {
@@ -222,7 +220,7 @@ export class DeletionRequestUc {
 	private async removeUsersDataFromFileRecords(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: 'removeUsersDataFromFileRecords', deletionRequest });
 
-		const fileRecorsUpdated = await this.filesStorageClientAdapterService.removeCreatorIdFromFileRecords(
+		const fileRecordsUpdated = await this.filesStorageClientAdapterService.removeCreatorIdFromFileRecords(
 			deletionRequest.targetRefId
 		);
 
@@ -230,7 +228,7 @@ export class DeletionRequestUc {
 			deletionRequest,
 			DeletionDomainModel.FILERECORDS,
 			DeletionOperationModel.UPDATE,
-			fileRecorsUpdated,
+			fileRecordsUpdated.length,
 			0
 		);
 	}
