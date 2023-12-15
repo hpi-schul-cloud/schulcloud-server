@@ -212,12 +212,13 @@ export class TldrawWsService {
 	}
 
 	async authorizeConnection(drawingName: string, token: string) {
+		const headers = {
+			Accept: 'Application/json',
+			Authorization: `Bearer ${token}`,
+		};
 		await firstValueFrom(
 			this.httpService.get(`${Configuration.get('HOST') as string}/api/v3/elements/${drawingName}/permission`, {
-				headers: {
-					Accept: 'Application/json',
-					Authorization: `Bearer ${token}`,
-				},
+				headers,
 			})
 		);
 	}

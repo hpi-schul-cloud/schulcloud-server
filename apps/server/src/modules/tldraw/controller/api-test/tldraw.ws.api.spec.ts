@@ -55,7 +55,7 @@ describe('WebSocketController (WsAdapter)', () => {
 		jest.clearAllMocks();
 	});
 
-	describe('when tldraw is correctly setup', () => {
+	describe('when tldraw connection is established', () => {
 		const setup = async () => {
 			const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
 			jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValueOnce(1);
@@ -67,7 +67,7 @@ describe('WebSocketController (WsAdapter)', () => {
 			return { handleConnectionSpy, buffer };
 		};
 
-		it(`should handle connection and data transfer`, async () => {
+		it(`should handle connection`, async () => {
 			const { handleConnectionSpy, buffer } = await setup();
 			ws.send(buffer, () => {});
 
@@ -94,8 +94,8 @@ describe('WebSocketController (WsAdapter)', () => {
 	describe('when tldraw doc has multiple clients', () => {
 		const setup = async () => {
 			const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-			ws = await TestConnection.setupWs(wsUrl, 'TEST2');
-			const ws2 = await TestConnection.setupWs(wsUrl, 'TEST2');
+			ws = await TestConnection.setupWs(wsUrl, 'TEST');
+			const ws2 = await TestConnection.setupWs(wsUrl, 'TEST');
 
 			const { buffer } = getMessage();
 
@@ -120,54 +120,27 @@ describe('WebSocketController (WsAdapter)', () => {
 		});
 	});
 
-	describe('when tldraw is not correctly setup', () => {
-		const setup = async () => {
-			const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-			const setupConnectionSpy = jest.spyOn(wsService, 'setupWSConnection');
-
-			ws = await TestConnection.setupWs(wsUrl);
-
-			return {
-				handleConnectionSpy,
-				setupConnectionSpy,
-			};
-		};
-
-		it(`should refuse connection if there is no docName`, async () => {
-			const { handleConnectionSpy, setupConnectionSpy } = await setup();
-
-			const { buffer } = getMessage();
-			ws.send(buffer);
-
-			expect(gateway.server).toBeDefined();
-			expect(setupConnectionSpy).not.toHaveBeenCalled();
-			expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
-
-			handleConnectionSpy.mockRestore();
-			ws.close();
-		});
-	});
-
 	describe('when checking cookie', () => {
-		const setup = async () => {
+		const setup = () => {
 			const setupConnectionSpy = jest.spyOn(wsService, 'setupWSConnection');
 			const closeClientSpy = jest.spyOn(gateway, 'closeClient');
 			const httpGetCallSpy = jest.spyOn(httpService, 'get');
-
-			ws = await TestConnection.setupWs(wsUrl);
+			const parseCookieSpy = jest.spyOn(gateway, 'parseCookiesFromHeader').mockReturnValueOnce({});
 
 			return {
 				setupConnectionSpy,
 				closeClientSpy,
 				httpGetCallSpy,
+				parseCookieSpy,
 			};
 		};
 
 		it(`should refuse connection if there is no jwt in cookie`, async () => {
-			const { setupConnectionSpy, closeClientSpy, httpGetCallSpy } = await setup();
-
+			const { setupConnectionSpy, closeClientSpy, httpGetCallSpy, parseCookieSpy } = setup();
 			const { buffer } = getMessage();
+
 			jest.spyOn(gateway, 'parseCookiesFromHeader').mockReturnValueOnce({});
+			ws = await TestConnection.setupWs(wsUrl, 'TEST');
 			ws.send(buffer);
 
 			expect(closeClientSpy).toHaveBeenCalledWith(
@@ -179,16 +152,18 @@ describe('WebSocketController (WsAdapter)', () => {
 			setupConnectionSpy.mockRestore();
 			closeClientSpy.mockRestore();
 			httpGetCallSpy.mockRestore();
+			parseCookieSpy.mockRestore();
 			ws.close();
 		});
 
 		it(`should refuse connection if jwt is wrong`, async () => {
-			const { setupConnectionSpy, closeClientSpy, httpGetCallSpy } = await setup();
+			const { setupConnectionSpy, closeClientSpy, httpGetCallSpy, parseCookieSpy } = setup();
 			const { buffer } = getMessage();
 			const error = new Error('unknown error');
-			httpGetCallSpy.mockReturnValueOnce(throwError(() => error));
 
-			jest.spyOn(gateway, 'parseCookiesFromHeader').mockReturnValueOnce({});
+			httpGetCallSpy.mockReturnValueOnce(throwError(() => error));
+			jest.spyOn(gateway, 'parseCookiesFromHeader').mockReturnValueOnce({ jwt: 'mock-wrong-jwt' });
+			ws = await TestConnection.setupWs(wsUrl, 'TEST');
 			ws.send(buffer);
 
 			expect(closeClientSpy).toHaveBeenCalledWith(
@@ -200,6 +175,42 @@ describe('WebSocketController (WsAdapter)', () => {
 			httpGetCallSpy.mockRestore();
 			setupConnectionSpy.mockRestore();
 			closeClientSpy.mockRestore();
+			parseCookieSpy.mockRestore();
+			ws.close();
+		});
+	});
+
+	describe('when checking docName', () => {
+		const setup = () => {
+			const parseCookieSpy = jest.spyOn(gateway, 'parseCookiesFromHeader');
+			const closeClientSpy = jest.spyOn(gateway, 'closeClient');
+			const setupConnectionSpy = jest.spyOn(wsService, 'setupWSConnection');
+
+			return {
+				parseCookieSpy,
+				setupConnectionSpy,
+				closeClientSpy,
+			};
+		};
+
+		it(`should close for existing cookie and not existing docName`, async () => {
+			const { parseCookieSpy, setupConnectionSpy, closeClientSpy } = setup();
+			const { buffer } = getMessage();
+
+			parseCookieSpy.mockReturnValueOnce({ jwt: 'jwt-mocked' });
+
+			ws = await TestConnection.setupWs(wsUrl);
+			ws.send(buffer);
+
+			expect(closeClientSpy).toHaveBeenCalledWith(
+				expect.anything(),
+				WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
+				WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE
+			);
+
+			closeClientSpy.mockRestore();
+			setupConnectionSpy.mockRestore();
+			parseCookieSpy.mockRestore();
 			ws.close();
 		});
 	});

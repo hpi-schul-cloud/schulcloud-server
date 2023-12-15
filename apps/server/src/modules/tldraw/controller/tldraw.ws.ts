@@ -28,8 +28,8 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 			);
 		} else {
 			try {
-				await this.tldrawWsService.authorizeConnection(docName, cookies.jwt);
 				if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
+					await this.tldrawWsService.authorizeConnection(docName, cookies.jwt);
 					this.tldrawWsService.setupWSConnection(client, docName);
 				} else {
 					this.closeClient(
