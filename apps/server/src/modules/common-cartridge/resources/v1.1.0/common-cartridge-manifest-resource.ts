@@ -51,7 +51,7 @@ export class CommonCartridgeManifestResourceV110 extends CommonCartridgeResource
 					'xsi:schemaLocation':
 						'http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd ' +
 						'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lommanifest_v1p0.xsd ' +
-						'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lomresource_v1p0.xsd ',
+						'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lomresource_v1p0.xsd',
 				},
 				metadata: this.props.metadata.getManifestXmlObject(),
 				organizations: new CommonCartridgeOrganizationsWrapperElementV110({
@@ -59,7 +59,7 @@ export class CommonCartridgeManifestResourceV110 extends CommonCartridgeResource
 					version: this.props.version,
 					items: this.props.organizations,
 				}).getManifestXmlObject(),
-				resources: new CommonCartridgeResourcesWrapperElementV110({
+				...new CommonCartridgeResourcesWrapperElementV110({
 					type: CommonCartridgeElementType.RESOURCES_WRAPPER, // FIXME: Is this necessary?
 					version: this.props.version,
 					items: this.props.resources,

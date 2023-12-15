@@ -22,9 +22,10 @@ export class CommonCartridgeOrganizationElementV110 extends CommonCartridgeEleme
 		return {
 			$: {
 				identifier: this.props.identifier,
+				identifierref: this.props.items.length === 1 ? this.props.items[0].identifier : undefined,
 			},
 			title: this.props.title,
-			item: this.props.items.map((item) => item.getManifestXmlObject()),
+			// item: this.props.items.map((item) => item.getManifestXmlObject()),
 		};
 	}
 }

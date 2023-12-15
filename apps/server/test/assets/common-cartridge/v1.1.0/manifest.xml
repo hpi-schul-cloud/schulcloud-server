@@ -6,32 +6,37 @@
         <mnf:lom>
             <mnf:general>
                 <mnf:title>
-                    <mnf:string>Common Cartridge Example</mnf:string>
+                    <mnf:string>Common Cartridge Manifest</mnf:string>
                 </mnf:title>
-                <mnf:description>
-                    <mnf:string>This is an example of a Common Cartridge manifest.</mnf:string>
-                </mnf:description>
             </mnf:general>
+            <mnf:rights>
+                <mnf:copyrightAndOtherRestrictions>
+                    <mnf:value>yes</mnf:value>
+                </mnf:copyrightAndOtherRestrictions>
+                <mnf:description>
+                    <mnf:string>2023 John Doe, Jane Doe</mnf:string>
+                </mnf:description>
+            </mnf:rights>
         </mnf:lom>
     </metadata>
     <organizations>
         <organization identifier="org-1" structure="rooted-hierarchy">
             <item identifier="LearningModules">
-                <item identifier="i1" identifierref="r1">
+                <item identifier="o1" identifierref="r1">
                     <title>Title 1</title>
                 </item>
-                <item identifier="i2" identifierref="r2">
+                <item identifier="o2" identifierref="r2">
                     <title>Title 2</title>
                 </item>
             </item>
         </organization>
     </organizations>
     <resources>
-        <resource identifier="r1" type="webcontent" href="i1/r1.html">
-            <file href="i1/r1.html"/>
+        <resource identifier="r1" type="webcontent" intendeduse="unspecified">
+            <file href="o1/r1.html"/>
         </resource>
-        <resource identifier="r2" type="imswl_xmlv1p1" href="i2/r2.xml">
-            <file href="i2/r2.xml"/>
+        <resource identifier="r2" type="imswl_xmlv1p1">
+            <file href="o2/r2.xml"/>
         </resource>
     </resources>
 </manifest>

@@ -1,12 +1,21 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
 
+type CommonCartridgeElementProps = {
+	version: CommonCartridgeVersion;
+	identifier?: string;
+};
+
 /**
  * Every element which should be listed in the Common Cartridge manifest must implement this interface.
  */
 export abstract class CommonCartridgeElement {
-	protected constructor(args: { version: CommonCartridgeVersion }) {
-		this.checkVersion(args.version);
+	protected constructor(private readonly baseProps: CommonCartridgeElementProps) {
+		this.checkVersion(baseProps.version);
+	}
+
+	public get identifier(): string | undefined {
+		return this.baseProps.identifier;
 	}
 
 	/**

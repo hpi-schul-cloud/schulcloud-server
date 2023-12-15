@@ -53,15 +53,13 @@ export class CommonCartridgeWebLinkResourceV110 extends CommonCartridgeResource 
 
 	public getManifestXmlObject(): Record<string, unknown> {
 		return {
-			resource: {
+			$: {
+				identifier: this.props.identifier,
+				type: 'imswl_xmlv1p1',
+			},
+			file: {
 				$: {
-					identifier: this.props.identifier,
-					type: 'imswl_xmlv1p1',
-				},
-				file: {
-					$: {
-						href: this.getFilePath(),
-					},
+					href: this.getFilePath(),
 				},
 			},
 		};
