@@ -1,4 +1,5 @@
-import { Embeddable, Embedded, Entity, Enum, Property } from '@mikro-orm/core';
+import { Cascade, Collection, Embeddable, Embedded, Entity, Enum, OneToMany, Property } from '@mikro-orm/core';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
@@ -189,19 +190,6 @@ export class OidcConfigEntity {
 
 @Entity({ tableName: 'systems' })
 export class SystemEntity extends BaseEntityWithTimestamps {
-	constructor(props: SystemEntityProps) {
-		super();
-		this.type = props.type;
-		this.url = props.url;
-		this.alias = props.alias;
-		this.displayName = props.displayName;
-		this.oauthConfig = props.oauthConfig;
-		this.oidcConfig = props.oidcConfig;
-		this.ldapConfig = props.ldapConfig;
-		this.provisioningStrategy = props.provisioningStrategy;
-		this.provisioningUrl = props.provisioningUrl;
-	}
-
 	@Property({ nullable: false })
 	type: string; // see legacy enum for valid values
 
@@ -229,4 +217,20 @@ export class SystemEntity extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	provisioningUrl?: string;
+
+	@OneToMany(() => SchoolSystemOptionsEntity, (options) => options.system, { cascade: [Cascade.REMOVE] })
+	schoolSystemOptions = new Collection<SchoolSystemOptionsEntity>(this);
+
+	constructor(props: SystemEntityProps) {
+		super();
+		this.type = props.type;
+		this.url = props.url;
+		this.alias = props.alias;
+		this.displayName = props.displayName;
+		this.oauthConfig = props.oauthConfig;
+		this.oidcConfig = props.oidcConfig;
+		this.ldapConfig = props.ldapConfig;
+		this.provisioningStrategy = props.provisioningStrategy;
+		this.provisioningUrl = props.provisioningUrl;
+	}
 }
