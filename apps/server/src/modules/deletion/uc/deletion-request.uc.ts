@@ -12,14 +12,12 @@ import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
-import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
-import { DeletionLog } from '../domain/deletion-log.do';
-import { DeletionRequest } from '../domain/deletion-request.do';
+import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder, DeletionRequestLogResponseBuilder } from '../builder';
+import { DeletionLogStatistic } from './interface/interfaces';
+import { DeletionRequest, DeletionLog } from '../domain';
 import { DeletionDomainModel, DeletionOperationModel, DeletionStatusModel } from '../domain/types';
-import { DeletionLogStatistic } from '../interface/interfaces';
-import { DeletionLogService } from '../services/deletion-log.service';
-import { DeletionRequestService } from '../services/deletion-request.service';
+import { DeletionRequestService, DeletionLogService } from '../services';
+import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 
 @Injectable()
 export class DeletionRequestUc {

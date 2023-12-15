@@ -1,7 +1,7 @@
 import { DeletionDomainModel } from '../domain/types';
-import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from './index';
+import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '.';
 
-describe(DeletionRequestLogResponseBuilder.name, () => {
+describe(DeletionRequestLogResponseBuilder, () => {
 	afterAll(() => {
 		jest.clearAllMocks();
 	});
