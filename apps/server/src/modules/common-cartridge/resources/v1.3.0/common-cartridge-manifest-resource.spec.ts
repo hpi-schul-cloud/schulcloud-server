@@ -5,6 +5,7 @@ import {
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
+import { CommonCartridgeElementFactory } from '../../elements/common-cartridge-element-factory';
 import { CommonCartridgeElementFactoryV130 } from '../../elements/v1.3.0/common-cartridge-element-factory';
 import { CommonCartridgeResourceFactory } from '../common-cartridge-resource-factory';
 import { CommonCartridgeManifestResourceV130 } from './common-cartridge-manifest-resource';
@@ -28,21 +29,21 @@ describe('CommonCartridgeManifestResourceV110', () => {
 			folder: 'o2',
 			url: 'https://www.example.tld',
 		});
-		const organization1 = CommonCartridgeElementFactoryV130.getInstance().createElement({
+		const organization1 = CommonCartridgeElementFactoryV130.createElement({
 			type: CommonCartridgeElementType.ORGANIZATION,
 			version: CommonCartridgeVersion.V_1_3_0,
 			title: 'Title 1',
 			identifier: 'o1',
 			items: [resource1],
 		});
-		const organization2 = CommonCartridgeElementFactoryV130.getInstance().createElement({
+		const organization2 = CommonCartridgeElementFactory.createElement({
 			type: CommonCartridgeElementType.ORGANIZATION,
 			version: CommonCartridgeVersion.V_1_3_0,
 			title: 'Title 2',
 			identifier: 'o2',
 			items: [resource2],
 		});
-		const metadata = CommonCartridgeElementFactoryV130.getInstance().createElement({
+		const metadata = CommonCartridgeElementFactoryV130.createElement({
 			type: CommonCartridgeElementType.METADATA,
 			version: CommonCartridgeVersion.V_1_3_0,
 			title: 'Common Cartridge Manifest',
