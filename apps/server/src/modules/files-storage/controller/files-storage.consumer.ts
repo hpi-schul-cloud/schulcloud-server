@@ -9,7 +9,6 @@ import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
 import { CopyFilesOfParentPayload, FileRecordParams } from './dto';
-import { FileRecord } from '../entity';
 
 @Injectable()
 export class FilesStorageConsumer {
