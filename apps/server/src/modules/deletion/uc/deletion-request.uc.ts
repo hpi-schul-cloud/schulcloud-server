@@ -1,7 +1,7 @@
 import { AccountService } from '@modules/account/services';
 import { ClassService } from '@modules/class';
 import { FilesService } from '@modules/files/service';
-import { CourseGroupService, CourseService, DashboardService } from '@modules/learnroom/service';
+import { CourseGroupService, CourseService, DashboardService } from '@modules/learnroom';
 import { LessonService } from '@modules/lesson/service';
 import { PseudonymService } from '@modules/pseudonym';
 import { RegistrationPinService } from '@modules/registration-pin';
