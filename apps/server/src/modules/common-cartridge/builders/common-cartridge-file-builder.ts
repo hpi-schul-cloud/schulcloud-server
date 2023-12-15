@@ -1,5 +1,5 @@
 import AdmZip from 'adm-zip';
-import { CommonCartridgeVersion } from '../common-cartridge.enums';
+import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import {
 	CommonCartridgeMetadataElementPropsV110,
 	CommonCartridgeMetadataElementV110,
@@ -10,7 +10,7 @@ import {
 } from '../elements/v1.3.0/common-cartridge-metadata-element';
 import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
-import { CommonCartridgeManifestResource } from '../resources/common-cartridge-manifest-resource';
+import { CommonCartridgeResourceFactory } from '../resources/common-cartridge-resource-factory';
 import { OmitVersion, checkCommonCartridgeVersion, checkDefined } from '../utils';
 import {
 	CommonCartridgeOrganizationBuilder,
@@ -69,7 +69,8 @@ export class CommonCartridgeFileBuilder {
 	public build(): Promise<Buffer> {
 		const metadata = checkDefined(this.metadata, 'metadata');
 		const organizations = this.organizationBuilders.map((builder) => builder.build());
-		const manifest = new CommonCartridgeManifestResource({
+		const manifest = CommonCartridgeResourceFactory.createResource({
+			type: CommonCartridgeResourceType.MANIFEST,
 			version: this.props.version,
 			identifier: this.props.identifier,
 			metadata,
