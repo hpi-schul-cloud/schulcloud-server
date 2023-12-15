@@ -9,6 +9,7 @@ import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
 import { CopyFilesOfParentPayload, FileRecordParams } from './dto';
+import { FileRecord } from '../entity';
 
 @Injectable()
 export class FilesStorageConsumer {
@@ -82,11 +83,11 @@ export class FilesStorageConsumer {
 	public async removeCreatorIdFromFileRecords(@RabbitPayload() payload: EntityId): Promise<RpcMessage<FileDO[]>> {
 		this.logger.debug({ action: 'removeCreatorIdFromFileRecords', payload });
 
-		const [fileRecords] = await this.filesStorageService.getFileRecordsByCreatorId(payload);
+		const [fileRecords, total] = await this.filesStorageService.getFileRecordsByCreatorId(payload);
+		let updatedFileRecords = await this.filesStorageService.removeCreatorIdFromFileRecords(fileRecords);
+		updatedFileRecords = updatedFileRecords ?? [];
 
-		const updatedFileRecords = await this.filesStorageService.removeCreatorIdFromFileRecords(fileRecords);
-
-		const response = FilesStorageMapper.mapToFileRecordListResponse(updatedFileRecords, updatedFileRecords.length);
+		const response = FilesStorageMapper.mapToFileRecordListResponse(updatedFileRecords, total);
 
 		return { message: response.data };
 	}

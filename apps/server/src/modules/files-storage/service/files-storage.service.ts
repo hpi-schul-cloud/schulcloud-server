@@ -318,10 +318,8 @@ export class FilesStorageService {
 	}
 
 	public async removeCreatorIdFromFileRecords(fileRecords: FileRecord[]): Promise<FileRecord[]> {
-		if (fileRecords.length > 0) {
-			fileRecords.forEach((entity: FileRecord) => entity.removeCreatorId());
-			await this.fileRecordRepo.save(fileRecords);
-		}
+		fileRecords.forEach((entity: FileRecord) => entity.removeCreatorId());
+		await this.fileRecordRepo.save(fileRecords);
 
 		return fileRecords;
 	}
