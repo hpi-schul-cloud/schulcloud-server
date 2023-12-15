@@ -12,8 +12,8 @@ export class DashboardService {
 	async deleteDashboardByUserId(userId: EntityId): Promise<number> {
 		const usersDashboard = await this.dashboardRepo.getUsersDashboard(userId);
 		await this.dashboardElementRepo.deleteByDashboardId(usersDashboard.id);
-		const deletedUsersDashboard = await this.dashboardRepo.deleteDashboardByUserId(userId);
+		const result = await this.dashboardRepo.deleteDashboardByUserId(userId);
 
-		return deletedUsersDashboard;
+		return result;
 	}
 }
