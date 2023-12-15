@@ -108,6 +108,4 @@ describe('CommonCartridgeManifestResourceV110', () => {
 			});
 		});
 	});
-
-	describe('getManifestXmlObject', () => {});
 });
