@@ -1,4 +1,4 @@
-const service = require('feathers-mongoose');
+const service = require('../../utils/feathers-mongoose');
 const { authenticate } = require('@feathersjs/authentication');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
