@@ -1,13 +1,14 @@
 import { ClassEntity } from '@modules/class/entity';
 import { GroupEntity } from '@modules/group/entity';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
+import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { DeletionLogEntity, DeletionRequestEntity } from '@src/modules/deletion/entity';
 import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
-import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { Account } from './account.entity';
 import {
 	BoardNode,
@@ -95,6 +96,7 @@ export const ALL_ENTITIES = [
 	SchoolNews,
 	SchoolRolePermission,
 	SchoolRoles,
+	SchoolSystemOptionsEntity,
 	SchoolYearEntity,
 	ShareToken,
 	StorageProviderEntity,

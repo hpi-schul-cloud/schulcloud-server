@@ -155,9 +155,14 @@ data:
     SANIS_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $SANIS_CLIENT_SECRET)
     SANIS_SYSTEM_ID=0000d186816abba584714c93
     if [[ $SC_THEME == "n21" ]]; then
-      mongosh $DATABASE__URL --quiet --eval 'db.schools.updateOne(
+      mongosh $DATABASE__URL --quiet --eval 'db.schools.updateMany(
           {
-            "_id": ObjectId("5f2987e020834114b8efd6f8")
+              "_id": {
+                  $in: [
+                      ObjectId("5f2987e020834114b8efd6f8"),
+                      ObjectId("5fa2c5ccb229544f2c69666c")
+                  ]
+              }
           },
           {
             $set: { "systems" : [ ObjectId("'$SANIS_SYSTEM_ID'") ] }

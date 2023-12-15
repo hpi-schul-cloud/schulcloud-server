@@ -1,4 +1,5 @@
 import {
+	Cascade,
 	Collection,
 	Embeddable,
 	Embedded,
@@ -6,9 +7,11 @@ import {
 	Index,
 	ManyToMany,
 	ManyToOne,
+	OneToMany,
 	OneToOne,
 	Property,
 } from '@mikro-orm/core';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
@@ -127,6 +130,9 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	timezone?: string;
+
+	@OneToMany(() => SchoolSystemOptionsEntity, (options) => options.school, { cascade: [Cascade.REMOVE] })
+	schoolSystemOptions = new Collection<SchoolSystemOptionsEntity>(this);
 
 	constructor(props: SchoolProperties) {
 		super();

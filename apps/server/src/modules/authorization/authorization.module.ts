@@ -13,6 +13,7 @@ import {
 	LessonRule,
 	SchoolExternalToolRule,
 	SchoolRule,
+	SchoolSystemOptionsRule,
 	SubmissionRule,
 	SystemRule,
 	TaskRule,
@@ -47,6 +48,7 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 		UserLoginMigrationRule,
 		LegacySchoolRule,
 		SystemRule,
+		SchoolSystemOptionsRule,
 	],
 	exports: [FeathersAuthorizationService, AuthorizationService, SystemRule],
 })

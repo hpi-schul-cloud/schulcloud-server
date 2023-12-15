@@ -2,8 +2,14 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account/services/account.service';
 import { AccountSaveDto } from '@modules/account/services/dto';
-import { Group, GroupService } from '@modules/group';
-import { FederalStateService, LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
+import { Group, GroupService, GroupTypes } from '@modules/group';
+import {
+	FederalStateService,
+	LegacySchoolService,
+	SchoolSystemOptionsService,
+	SchoolYearService,
+	SchulConneXProvisioningOptions,
+} from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { UserService } from '@modules/user';
@@ -12,7 +18,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
-import { SchoolFeature } from '@shared/domain/types';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import {
 	externalGroupDtoFactory,
 	externalSchoolDtoFactory,
@@ -43,6 +49,7 @@ describe('OidcProvisioningService', () => {
 	let schoolYearService: DeepMocked<SchoolYearService>;
 	let federalStateService: DeepMocked<FederalStateService>;
 	let groupService: DeepMocked<GroupService>;
+	let schoolSystemOptionsService: DeepMocked<SchoolSystemOptionsService>;
 	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
@@ -78,6 +85,10 @@ describe('OidcProvisioningService', () => {
 					useValue: createMock<GroupService>(),
 				},
 				{
+					provide: SchoolSystemOptionsService,
+					useValue: createMock<SchoolSystemOptionsService>(),
+				},
+				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
@@ -92,6 +103,7 @@ describe('OidcProvisioningService', () => {
 		schoolYearService = module.get(SchoolYearService);
 		federalStateService = module.get(FederalStateService);
 		groupService = module.get(GroupService);
+		schoolSystemOptionsService = module.get(SchoolSystemOptionsService);
 		logger = module.get(Logger);
 	});
 
@@ -670,6 +682,215 @@ describe('OidcProvisioningService', () => {
 		});
 	});
 
+	describe('filterExternalGroups', () => {
+		describe('when all options are on', () => {
+			const setup = () => {
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const systemId: EntityId = new ObjectId().toHexString();
+
+				const classGroup: ExternalGroupDto = externalGroupDtoFactory.build({
+					type: GroupTypes.CLASS,
+				});
+				const courseGroup: ExternalGroupDto = externalGroupDtoFactory.build({
+					type: GroupTypes.COURSE,
+				});
+				const otherGroup: ExternalGroupDto = externalGroupDtoFactory.build({
+					type: GroupTypes.OTHER,
+				});
+
+				schoolSystemOptionsService.getProvisioningOptions.mockResolvedValueOnce(
+					new SchulConneXProvisioningOptions().set({
+						groupProvisioningClassesEnabled: true,
+						groupProvisioningCoursesEnabled: true,
+						groupProvisioningOtherEnabled: true,
+					})
+				);
+
+				return {
+					schoolId,
+					systemId,
+					classGroup,
+					courseGroup,
+					otherGroup,
+				};
+			};
+
+			it('should load the configured options from the school', async () => {
+				const { schoolId, systemId, classGroup, courseGroup, otherGroup } = setup();
+
+				await service.filterExternalGroups([classGroup, courseGroup, otherGroup], schoolId, systemId);
+
+				expect(schoolSystemOptionsService.getProvisioningOptions).toHaveBeenCalledWith(
+					SchulConneXProvisioningOptions,
+					schoolId,
+					systemId
+				);
+			});
+
+			it('should not filter', async () => {
+				const { schoolId, systemId, classGroup, courseGroup, otherGroup } = setup();
+
+				const result = await service.filterExternalGroups([classGroup, courseGroup, otherGroup], schoolId, systemId);
+
+				expect(result).toEqual([classGroup, courseGroup, otherGroup]);
+			});
+		});
+
+		describe('when only classes are active', () => {
+			const setup = () => {
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const systemId: EntityId = new ObjectId().toHexString();
+
+				const classGroup: ExternalGroupDto = externalGroupDtoFactory.build({
+					type: GroupTypes.CLASS,
+				});
+				const courseGroup: ExternalGroupDto = externalGroupDtoFactory.build({
+					type: GroupTypes.COURSE,
+				});
+				const otherGroup: ExternalGroupDto = externalGroupDtoFactory.build({
+					type: GroupTypes.OTHER,
+				});
+
+				schoolSystemOptionsService.getProvisioningOptions.mockResolvedValueOnce(
+					new SchulConneXProvisioningOptions().set({
+						groupProvisioningClassesEnabled: true,
+						groupProvisioningCoursesEnabled: false,
+						groupProvisioningOtherEnabled: false,
+					})
+				);
+
+				return {
+					schoolId,
+					systemId,
+					classGroup,
+					courseGroup,
+					otherGroup,
+				};
+			};
+
+			it('should filter for classes', async () => {
+				const { schoolId, systemId, classGroup, courseGroup, otherGroup } = setup();
+
+				const result = await service.filterExternalGroups([classGroup, courseGroup, otherGroup], schoolId, systemId);
+
+				expect(result).toEqual([classGroup]);
+			});
+		});
+
+		describe('when only courses are active', () => {
+			const setup = () => {
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const systemId: EntityId = new ObjectId().toHexString();
+
+				const classGroup: ExternalGroupDto = externalGroupDtoFactory.build({
+					type: GroupTypes.CLASS,
+				});
+				const courseGroup: ExternalGroupDto = externalGroupDtoFactory.build({
+					type: GroupTypes.COURSE,
+				});
+				const otherGroup: ExternalGroupDto = externalGroupDtoFactory.build({
+					type: GroupTypes.OTHER,
+				});
+
+				schoolSystemOptionsService.getProvisioningOptions.mockResolvedValueOnce(
+					new SchulConneXProvisioningOptions().set({
+						groupProvisioningClassesEnabled: false,
+						groupProvisioningCoursesEnabled: true,
+						groupProvisioningOtherEnabled: false,
+					})
+				);
+
+				return {
+					schoolId,
+					systemId,
+					classGroup,
+					courseGroup,
+					otherGroup,
+				};
+			};
+
+			it('should filter for courses', async () => {
+				const { schoolId, systemId, classGroup, courseGroup, otherGroup } = setup();
+
+				const result = await service.filterExternalGroups([classGroup, courseGroup, otherGroup], schoolId, systemId);
+
+				expect(result).toEqual([courseGroup]);
+			});
+		});
+
+		describe('when only other groups are active', () => {
+			const setup = () => {
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const systemId: EntityId = new ObjectId().toHexString();
+
+				const classGroup: ExternalGroupDto = externalGroupDtoFactory.build({
+					type: GroupTypes.CLASS,
+				});
+				const courseGroup: ExternalGroupDto = externalGroupDtoFactory.build({
+					type: GroupTypes.COURSE,
+				});
+				const otherGroup: ExternalGroupDto = externalGroupDtoFactory.build({
+					type: GroupTypes.OTHER,
+				});
+
+				schoolSystemOptionsService.getProvisioningOptions.mockResolvedValueOnce(
+					new SchulConneXProvisioningOptions().set({
+						groupProvisioningClassesEnabled: false,
+						groupProvisioningCoursesEnabled: false,
+						groupProvisioningOtherEnabled: true,
+					})
+				);
+
+				return {
+					schoolId,
+					systemId,
+					classGroup,
+					courseGroup,
+					otherGroup,
+				};
+			};
+
+			it('should filter for other groups', async () => {
+				const { schoolId, systemId, classGroup, courseGroup, otherGroup } = setup();
+
+				const result = await service.filterExternalGroups([classGroup, courseGroup, otherGroup], schoolId, systemId);
+
+				expect(result).toEqual([otherGroup]);
+			});
+		});
+
+		describe('when no schoolId was provided', () => {
+			const setup = () => {
+				const systemId: EntityId = new ObjectId().toHexString();
+
+				const classGroup: ExternalGroupDto = externalGroupDtoFactory.build({
+					type: GroupTypes.CLASS,
+				});
+				const courseGroup: ExternalGroupDto = externalGroupDtoFactory.build({
+					type: GroupTypes.COURSE,
+				});
+				const otherGroup: ExternalGroupDto = externalGroupDtoFactory.build({
+					type: GroupTypes.OTHER,
+				});
+
+				return {
+					systemId,
+					classGroup,
+					courseGroup,
+					otherGroup,
+				};
+			};
+
+			it('should use the default option', async () => {
+				const { systemId, classGroup, courseGroup, otherGroup } = setup();
+
+				const result = await service.filterExternalGroups([classGroup, courseGroup, otherGroup], undefined, systemId);
+
+				expect(result).toEqual([classGroup]);
+			});
+		});
+	});
+
 	describe('provisionExternalGroup', () => {
 		describe('when school for group could not be found', () => {
 			const setup = () => {
@@ -1152,7 +1373,7 @@ describe('OidcProvisioningService', () => {
 
 				const func = async () => service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
 
-				await expect(func).rejects.toThrow(new NotFoundLoggableException('User', 'externalId', externalUserId));
+				await expect(func).rejects.toThrow(new NotFoundLoggableException('User', { externalId: externalUserId }));
 			});
 		});
 	});
