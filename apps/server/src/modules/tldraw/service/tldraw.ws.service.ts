@@ -159,6 +159,7 @@ export class TldrawWsService {
 				.catch((err) =>
 					this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while updating document', err as Error))
 				);
+
 			this.docs.set(docName, doc);
 			return doc;
 		});

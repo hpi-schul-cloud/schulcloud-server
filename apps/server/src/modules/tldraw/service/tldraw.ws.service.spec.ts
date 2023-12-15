@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import WebSocket from 'ws';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { TextEncoder } from 'util';
+import * as Yjs from 'yjs';
 import * as SyncProtocols from 'y-protocols/sync';
 import * as AwarenessProtocol from 'y-protocols/awareness';
 import * as Ioredis from 'ioredis';
@@ -21,6 +22,13 @@ import { TestConnection } from '../testing';
 import { WsSharedDocDo } from '../domain';
 import { TldrawWsService } from '.';
 
+jest.mock('yjs', () => {
+	const moduleMock: unknown = {
+		__esModule: true,
+		...jest.requireActual('yjs'),
+	};
+	return moduleMock;
+});
 jest.mock('y-protocols/awareness', () => {
 	const moduleMock: unknown = {
 		__esModule: true,
@@ -330,6 +338,33 @@ describe('TldrawWSService', () => {
 	});
 
 	describe('closeConn', () => {
+		describe('when there is no error', () => {
+			const setup = async () => {
+				ws = await TestConnection.setupWs(wsUrl);
+
+				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument').mockResolvedValueOnce();
+				const redisUnsubscribeSpy = jest.spyOn(Ioredis.Redis.prototype, 'unsubscribe').mockResolvedValueOnce(1);
+				const closeConnSpy = jest.spyOn(service, 'closeConn');
+
+				return {
+					flushDocumentSpy,
+					redisUnsubscribeSpy,
+					closeConnSpy,
+				};
+			};
+
+			it('should close connection', async () => {
+				const { closeConnSpy } = await setup();
+
+				service.setupWSConnection(ws);
+				await delay(10);
+
+				expect(closeConnSpy).toHaveBeenCalled();
+				ws.close();
+				closeConnSpy.mockRestore();
+			});
+		});
+
 		describe('when trying to close already closed connection', () => {
 			const setup = async () => {
 				ws = await TestConnection.setupWs(wsUrl);
@@ -385,7 +420,7 @@ describe('TldrawWSService', () => {
 			const setup = async () => {
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
-				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument').mockRejectedValueOnce(() => new Error('error'));
+				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument').mockRejectedValueOnce(new Error('error'));
 				const errorLogSpy = jest.spyOn(logger, 'warning');
 
 				return {
@@ -438,7 +473,7 @@ describe('TldrawWSService', () => {
 		});
 
 		it('should log error when publish to Redis throws', async () => {
-			jest.spyOn(Ioredis.Redis.prototype, 'publish').mockRejectedValueOnce(() => new Error('error'));
+			jest.spyOn(Ioredis.Redis.prototype, 'publish').mockRejectedValueOnce(new Error('error'));
 			const { doc, socketMock, msg, errorLogSpy } = await setup();
 
 			service.updateHandler(msg, socketMock, doc);
@@ -483,7 +518,7 @@ describe('TldrawWSService', () => {
 			});
 
 			it('should log error when publish to Redis throws', async () => {
-				jest.spyOn(Ioredis.Redis.prototype, 'publish').mockRejectedValueOnce(() => new Error('error'));
+				jest.spyOn(Ioredis.Redis.prototype, 'publish').mockRejectedValueOnce(new Error('error'));
 				const { msg, errorLogSpy } = await setup([1, 1]);
 
 				service.setupWSConnection(ws);
@@ -498,12 +533,194 @@ describe('TldrawWSService', () => {
 
 	describe('getYDoc', () => {
 		describe('when getting yDoc by name', () => {
-			it('should assign to service.doc and return instance', () => {
+			it('should assign to service docs map and return instance', () => {
 				const docName = 'get-test';
 				const doc = service.getYDoc(docName);
 
 				expect(doc).toBeInstanceOf(WsSharedDocDo);
 				expect(service.docs.get(docName)).not.toBeUndefined();
+			});
+
+			describe('when subscribing to redis channel', () => {
+				const setup = () => {
+					const redisSubscribeSpy = jest.spyOn(Ioredis.Redis.prototype, 'subscribe');
+					const redisOnSpy = jest.spyOn(Ioredis.Redis.prototype, 'on');
+					const errorLogSpy = jest.spyOn(logger, 'warning');
+
+					return {
+						redisOnSpy,
+						redisSubscribeSpy,
+						errorLogSpy,
+					};
+				};
+
+				it('should register new listener', async () => {
+					const { redisOnSpy, redisSubscribeSpy } = setup();
+					redisSubscribeSpy.mockResolvedValueOnce(1);
+
+					const doc = service.getYDoc('test');
+					await delay(20);
+
+					expect(doc).toBeDefined();
+					expect(redisOnSpy).toHaveBeenCalled();
+				});
+
+				it('should log error when failed', async () => {
+					const { errorLogSpy, redisSubscribeSpy } = setup();
+					redisSubscribeSpy.mockRejectedValueOnce(new Error('error'));
+
+					const doc = service.getYDoc('testfail');
+					await delay(20);
+
+					expect(doc).toBeDefined();
+					expect(errorLogSpy).toHaveBeenCalled();
+				});
+			});
+		});
+	});
+
+	describe('redisMessageHandler', () => {
+		const setup = () => {
+			const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValueOnce();
+			const applyAwarenessUpdateSpy = jest.spyOn(AwarenessProtocol, 'applyAwarenessUpdate').mockReturnValueOnce();
+
+			const doc = new WsSharedDocDo('TEST');
+			doc.awarenessChannel = 'TEST-AWARENESS';
+
+			return {
+				doc,
+				applyUpdateSpy,
+				applyAwarenessUpdateSpy,
+			};
+		};
+
+		describe('when channel name is the same as docName', () => {
+			it('should call applyUpdate', () => {
+				const { doc, applyUpdateSpy } = setup();
+
+				service.redisMessageHandler(Buffer.from('TEST'), Buffer.from('message'), doc);
+
+				expect(applyUpdateSpy).toHaveBeenCalled();
+			});
+		});
+
+		describe('when channel name is the same as docAwarenessChannel name', () => {
+			it('should call applyAwarenessUpdate', () => {
+				const { doc, applyAwarenessUpdateSpy } = setup();
+
+				service.redisMessageHandler(Buffer.from('TEST-AWARENESS'), Buffer.from('message'), doc);
+
+				expect(applyAwarenessUpdateSpy).toHaveBeenCalled();
+			});
+		});
+	});
+
+	describe('awarenessUpdateHandler', () => {
+		const setup = async () => {
+			ws = await TestConnection.setupWs(wsUrl);
+
+			class MockAwareness {
+				on = jest.fn();
+			}
+
+			const doc = new WsSharedDocDo('TEST');
+			doc.awareness = new MockAwareness() as unknown as AwarenessProtocol.Awareness;
+			const awarenessMetaMock = new Map<number, { clock: number; lastUpdated: number }>();
+			awarenessMetaMock.set(1, { clock: 11, lastUpdated: 21 });
+			awarenessMetaMock.set(2, { clock: 12, lastUpdated: 22 });
+			awarenessMetaMock.set(3, { clock: 13, lastUpdated: 23 });
+			const awarenessStatesMock = new Map<number, { [x: string]: unknown }>();
+			awarenessStatesMock.set(1, { updating: '21' });
+			awarenessStatesMock.set(2, { updating: '22' });
+			awarenessStatesMock.set(3, { updating: '23' });
+			doc.awareness.states = awarenessStatesMock;
+			doc.awareness.meta = awarenessMetaMock;
+
+			const sendSpy = jest.spyOn(service, 'send').mockReturnValue();
+
+			const mockIDs = new Set<number>();
+			const mockConns = new Map<WebSocket, Set<number>>();
+			mockConns.set(ws, mockIDs);
+			doc.connections = mockConns;
+
+			return {
+				sendSpy,
+				doc,
+				mockIDs,
+				mockConns,
+			};
+		};
+
+		describe('when adding two clients states', () => {
+			it('should have two registered clients states', async () => {
+				const { sendSpy, doc, mockIDs } = await setup();
+				const awarenessUpdate = {
+					added: [1, 3],
+					updated: [],
+					removed: [],
+				};
+
+				service.awarenessUpdateHandler(awarenessUpdate, ws, doc);
+
+				expect(mockIDs.size).toBe(2);
+				expect(mockIDs.has(1)).toBe(true);
+				expect(mockIDs.has(3)).toBe(true);
+				expect(mockIDs.has(2)).toBe(false);
+				expect(sendSpy).toBeCalled();
+				ws.close();
+				sendSpy.mockRestore();
+			});
+		});
+
+		describe('when removing one of two existing clients states', () => {
+			it('should have one registered client state', async () => {
+				const { sendSpy, doc, mockIDs } = await setup();
+				let awarenessUpdate: { added: number[]; updated: number[]; removed: number[] } = {
+					added: [1, 3],
+					updated: [],
+					removed: [],
+				};
+
+				service.awarenessUpdateHandler(awarenessUpdate, ws, doc);
+				awarenessUpdate = {
+					added: [],
+					updated: [],
+					removed: [1],
+				};
+				service.awarenessUpdateHandler(awarenessUpdate, ws, doc);
+
+				expect(mockIDs.size).toBe(1);
+				expect(mockIDs.has(1)).toBe(false);
+				expect(mockIDs.has(3)).toBe(true);
+				expect(sendSpy).toBeCalled();
+				ws.close();
+				sendSpy.mockRestore();
+			});
+		});
+
+		describe('when updating client state', () => {
+			it('should not change number of states', async () => {
+				const { sendSpy, doc, mockIDs } = await setup();
+				let awarenessUpdate: { added: number[]; updated: number[]; removed: number[] } = {
+					added: [1],
+					updated: [],
+					removed: [],
+				};
+
+				service.awarenessUpdateHandler(awarenessUpdate, ws, doc);
+				awarenessUpdate = {
+					added: [],
+					updated: [1],
+					removed: [],
+				};
+				service.awarenessUpdateHandler(awarenessUpdate, ws, doc);
+
+				expect(mockIDs.size).toBe(1);
+				expect(mockIDs.has(1)).toBe(true);
+				expect(sendSpy).toBeCalled();
+
+				ws.close();
+				sendSpy.mockRestore();
 			});
 		});
 	});
