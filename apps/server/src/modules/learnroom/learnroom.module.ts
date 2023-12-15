@@ -12,6 +12,7 @@ import {
 	CourseCopyService,
 	CourseGroupService,
 	CourseService,
+	DashboardService,
 	RoomsService,
 } from './service';
 
@@ -34,7 +35,15 @@ import {
 		ColumnBoardTargetService,
 		CourseGroupService,
 		CourseGroupRepo,
+		DashboardService,
 	],
-	exports: [CourseCopyService, CourseService, RoomsService, CommonCartridgeExportService, CourseGroupService],
+	exports: [
+		CourseCopyService,
+		CourseService,
+		RoomsService,
+		CommonCartridgeExportService,
+		CourseGroupService,
+		DashboardService,
+	],
 })
 export class LearnroomModule {}
