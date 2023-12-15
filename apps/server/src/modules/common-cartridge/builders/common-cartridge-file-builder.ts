@@ -1,17 +1,16 @@
 import AdmZip from 'adm-zip';
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import {
-	CommonCartridgeMetadataElementPropsV110,
-	CommonCartridgeMetadataElementV110,
-} from '../elements/v1.1.0/common-cartridge-metadata-element';
-import {
-	CommonCartridgeMetadataElementPropsV130,
-	CommonCartridgeMetadataElementV130,
-} from '../elements/v1.3.0/common-cartridge-metadata-element';
+	CommonCartridgeElementType,
+	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
+} from '../common-cartridge.enums';
+import { CommonCartridgeElementFactory } from '../elements/common-cartridge-element-factory';
+import { CommonCartridgeMetadataElementPropsV110 } from '../elements/v1.1.0/common-cartridge-metadata-element';
+import { CommonCartridgeMetadataElementPropsV130 } from '../elements/v1.3.0/common-cartridge-metadata-element';
 import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
 import { CommonCartridgeResourceFactory } from '../resources/common-cartridge-resource-factory';
-import { OmitVersion, checkCommonCartridgeVersion, checkDefined } from '../utils';
+import { OmitVersion, OmitVersionAndType, checkDefined } from '../utils';
 import {
 	CommonCartridgeOrganizationBuilder,
 	CommonCartridgeOrganizationBuilderOptions,
@@ -31,24 +30,16 @@ export class CommonCartridgeFileBuilder {
 
 	private metadata?: CommonCartridgeElement;
 
-	public constructor(private readonly props: CommonCartridgeFileBuilderProps) {
-		checkCommonCartridgeVersion(props.version);
-	}
+	public constructor(private readonly props: CommonCartridgeFileBuilderProps) {}
 
 	public addMetadata(
-		props: OmitVersion<CommonCartridgeMetadataElementPropsV110 | CommonCartridgeMetadataElementPropsV130>
+		props: OmitVersionAndType<CommonCartridgeMetadataElementPropsV110 | CommonCartridgeMetadataElementPropsV130>
 	): CommonCartridgeFileBuilder {
-		switch (this.props.version) {
-			case CommonCartridgeVersion.V_1_1_0:
-				this.metadata = new CommonCartridgeMetadataElementV110({ ...props, version: this.props.version });
-				break;
-			case CommonCartridgeVersion.V_1_3_0:
-				this.metadata = new CommonCartridgeMetadataElementV130({ ...props, version: this.props.version });
-				break;
-			default:
-				throw new Error('Version not supported');
-		}
-		// this.metadata = new CommonCartridgeMetadataElement({ ...props, version: this.props.version });
+		this.metadata = CommonCartridgeElementFactory.createElement({
+			type: CommonCartridgeElementType.METADATA,
+			version: this.props.version,
+			...props,
+		});
 
 		return this;
 	}
