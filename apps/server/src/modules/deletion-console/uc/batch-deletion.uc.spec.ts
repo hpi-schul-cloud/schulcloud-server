@@ -1,16 +1,12 @@
 import { ObjectId } from 'bson';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import {
-	BatchDeletionService,
-	QueueDeletionRequestInputBuilder,
-	QueueDeletionRequestOutput,
-	QueueDeletionRequestOutputBuilder,
-	ReferencesService,
-} from '../services';
-import { BatchDeletionSummaryDetail, BatchDeletionSummaryOverallStatus } from '../interface';
-import { BatchDeletionSummaryDetailBuilder } from '../builder';
 import { BatchDeletionUc } from './batch-deletion.uc';
+import { BatchDeletionService, ReferencesService } from '../services';
+import { QueueDeletionRequestOutput } from '../services/interface';
+import { QueueDeletionRequestInputBuilder, QueueDeletionRequestOutputBuilder } from '../services/builder';
+import { BatchDeletionSummary, BatchDeletionSummaryDetail, BatchDeletionSummaryOverallStatus } from './interface';
+import { BatchDeletionSummaryDetailBuilder } from '../builder';
 
 describe(BatchDeletionUc.name, () => {
 	let module: TestingModule;
@@ -92,7 +88,11 @@ describe(BatchDeletionUc.name, () => {
 					it('should return proper summary with all the successes and a successful overall status', async () => {
 						const { refsFilePath, targetRefDomain, deleteInMinutes, expectedSummaryFields } = setup();
 
-						const summary = await uc.deleteRefsFromTxtFile(refsFilePath, targetRefDomain, deleteInMinutes);
+						const summary: BatchDeletionSummary = await uc.deleteRefsFromTxtFile(
+							refsFilePath,
+							targetRefDomain,
+							deleteInMinutes
+						);
 
 						expect(summary.executionTimeMilliseconds).toBeGreaterThan(0);
 						expect(summary).toMatchObject(expectedSummaryFields);
@@ -148,7 +148,11 @@ describe(BatchDeletionUc.name, () => {
 					it('should return proper summary with all the successes and failures', async () => {
 						const { refsFilePath, targetRefDomain, deleteInMinutes, expectedSummaryFields } = setup();
 
-						const summary = await uc.deleteRefsFromTxtFile(refsFilePath, targetRefDomain, deleteInMinutes);
+						const summary: BatchDeletionSummary = await uc.deleteRefsFromTxtFile(
+							refsFilePath,
+							targetRefDomain,
+							deleteInMinutes
+						);
 
 						expect(summary.executionTimeMilliseconds).toBeGreaterThan(0);
 						expect(summary).toMatchObject(expectedSummaryFields);
