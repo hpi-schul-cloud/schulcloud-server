@@ -261,7 +261,7 @@ export class MailService {
 		@Inject(&#x27;MAIL_SERVICE_OPTIONS&#x27;) private readonly options: MailServiceOptions,
 		private readonly configService: ConfigService&lt;MailConfig, true&gt;
 	) {
-		this.domainBlacklist &#x3D; this.configService.get&lt;string[]&gt;(&#x27;ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS&#x27;);
+		this.domainBlacklist &#x3D; this.configService.get&lt;string[]&gt;(&#x27;BLOCKLIST_OF_EMAIL_DOMAINS&#x27;);
 	}
 
 	public async send(data: Mail): Promise&lt;void&gt; {

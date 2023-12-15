@@ -302,7 +302,7 @@ const config: ServerConfig &#x3D; {
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get(&#x27;ADMIN_API__ALLOWED_API_KEYS&#x27;) as string)
 		.split(&#x27;,&#x27;)
 		.map((apiKey) &#x3D;&gt; apiKey.trim()),
-	ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS: (Configuration.get(&#x27;ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS&#x27;) as string)
+	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get(&#x27;BLOCKLIST_OF_EMAIL_DOMAINS&#x27;) as string)
 		.split(&#x27;,&#x27;)
 		.map((domain) &#x3D;&gt; domain.trim()),
 };
