@@ -944,7 +944,7 @@ describe('GroupUc', () => {
 
 		describe('when the group is not found', () => {
 			const setup = () => {
-				groupService.findById.mockRejectedValue(new NotFoundLoggableException(Group.name, 'id', 'groupId'));
+				groupService.findById.mockRejectedValue(new NotFoundLoggableException(Group.name, { id: 'groupId' }));
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 

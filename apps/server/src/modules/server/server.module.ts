@@ -12,6 +12,7 @@ import { CollaborativeStorageModule } from '@modules/collaborative-storage';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
+import { LegacySchoolApiModule } from '@modules/legacy-school/legacy-school.api-module';
 import { LessonApiModule } from '@modules/lesson/lesson-api.module';
 import { MetaTagExtractorApiModule, MetaTagExtractorModule } from '@modules/meta-tag-extractor';
 import { NewsModule } from '@modules/news';
@@ -77,6 +78,7 @@ const serverModules = [
 	TeamsApiModule,
 	MetaTagExtractorApiModule,
 	PseudonymApiModule,
+	LegacySchoolApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

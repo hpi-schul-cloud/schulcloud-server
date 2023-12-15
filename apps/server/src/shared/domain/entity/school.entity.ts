@@ -1,4 +1,5 @@
 import {
+	Cascade,
 	Collection,
 	Embeddable,
 	Embedded,
@@ -6,9 +7,11 @@ import {
 	Index,
 	ManyToMany,
 	ManyToOne,
+	OneToMany,
 	OneToOne,
 	Property,
 } from '@mikro-orm/core';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { BaseEntity } from './base.entity';
 import { FederalStateEntity } from './federal-state.entity';
@@ -103,6 +106,9 @@ export class SchoolEntity extends BaseEntity {
 
 	@ManyToOne(() => FederalStateEntity, { fieldName: 'federalState', nullable: false })
 	federalState: FederalStateEntity;
+
+	@OneToMany(() => SchoolSystemOptionsEntity, (options) => options.school, { cascade: [Cascade.REMOVE] })
+	schoolSystemOptions = new Collection<SchoolSystemOptionsEntity>(this);
 
 	constructor(props: SchoolProperties) {
 		super();

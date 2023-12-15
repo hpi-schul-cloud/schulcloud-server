@@ -18,7 +18,7 @@
 	"bugs": {},
 	"engines": {
 		"node": "18",
-		"npm": "9"
+		"npm": ">=9"
 	},
 	"scripts": {
 		"lint-fix": "eslint . --fix --ignore-path .gitignore",
