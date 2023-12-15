@@ -47,7 +47,6 @@ describe('WebSocketController (WsAdapter)', () => {
 			jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValueOnce(1);
 
 			ws = await TestConnection.setupWs(wsUrl, 'TEST');
-
 			const { buffer } = getMessage();
 
 			return { handleConnectionSpy, buffer };
@@ -55,6 +54,7 @@ describe('WebSocketController (WsAdapter)', () => {
 
 		it(`should handle connection and data transfer`, async () => {
 			const { handleConnectionSpy, buffer } = await setup();
+
 			ws.send(buffer, () => {});
 
 			expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
@@ -63,6 +63,7 @@ describe('WebSocketController (WsAdapter)', () => {
 
 		it(`check if client will receive message`, async () => {
 			const { buffer } = await setup();
+
 			ws.send(buffer, () => {});
 
 			gateway.server.on('connection', (client) => {
@@ -70,7 +71,6 @@ describe('WebSocketController (WsAdapter)', () => {
 					expect(payload).toBeInstanceOf(ArrayBuffer);
 				});
 			});
-
 			ws.close();
 		});
 	});
@@ -92,12 +92,11 @@ describe('WebSocketController (WsAdapter)', () => {
 
 		it(`should handle 2 connections at same doc and data transfer`, async () => {
 			const { handleConnectionSpy, ws2, buffer } = await setup();
+
 			ws.send(buffer);
 			ws2.send(buffer);
 
-			expect(handleConnectionSpy).toHaveBeenCalled();
 			expect(handleConnectionSpy).toHaveBeenCalledTimes(2);
-
 			ws.close();
 			ws2.close();
 		});
@@ -116,14 +115,12 @@ describe('WebSocketController (WsAdapter)', () => {
 
 		it(`should refuse connection if there is no docName`, async () => {
 			const { handleConnectionSpy } = await setup();
-
 			const { buffer } = getMessage();
+
 			ws.send(buffer);
 
 			expect(gateway.server).toBeDefined();
-			expect(handleConnectionSpy).toHaveBeenCalled();
 			expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
-
 			ws.close();
 		});
 	});

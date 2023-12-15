@@ -93,6 +93,7 @@ describe('TldrawWSService', () => {
 		encoding.writeVarUint(encoder, 0);
 		encoding.writeVarUint(encoder, 1);
 		const msg = encoding.toUint8Array(encoder);
+
 		return {
 			msg,
 		};
@@ -130,7 +131,6 @@ describe('TldrawWSService', () => {
 				expect(sendSpy).toThrow();
 				expect(sendSpy).toHaveBeenCalledWith(doc, ws, byteArray);
 				expect(closeConSpy).toHaveBeenCalled();
-
 				ws.close();
 				sendSpy.mockRestore();
 			});
@@ -162,7 +162,6 @@ describe('TldrawWSService', () => {
 				expect(sendSpy).toHaveBeenCalledWith(doc, socketMock, byteArray);
 				expect(sendSpy).toHaveBeenCalledTimes(1);
 				expect(closeConSpy).toHaveBeenCalled();
-
 				closeConSpy.mockRestore();
 				sendSpy.mockRestore();
 			});
@@ -176,12 +175,13 @@ describe('TldrawWSService', () => {
 				const sendSpy = jest.spyOn(service, 'send');
 				const doc = TldrawWsFactory.createWsSharedDocDo();
 				const socketMock = TldrawWsFactory.createWebsocket(0);
-				doc.conns.set(socketMock, new Set());
+				doc.connections.set(socketMock, new Set());
 				const encoder = encoding.createEncoder();
 				encoding.writeVarUint(encoder, 2);
 				const updateByteArray = new TextEncoder().encode(clientMessageMock);
 				encoding.writeVarUint8Array(encoder, updateByteArray);
 				const msg = encoding.toUint8Array(encoder);
+
 				return {
 					sendSpy,
 					doc,
@@ -196,7 +196,6 @@ describe('TldrawWSService', () => {
 				service.updateHandler(msg, socketMock, doc);
 
 				expect(sendSpy).toHaveBeenCalled();
-
 				ws.close();
 				sendSpy.mockRestore();
 			});
@@ -214,7 +213,7 @@ describe('TldrawWSService', () => {
 						enc.bufs = [new Uint8Array(2), new Uint8Array(2)];
 						return 1;
 					});
-				const doc = new WsSharedDocDo('TEST', service);
+				const doc = new WsSharedDocDo('TEST');
 				const { msg } = createMessage(messageValues);
 
 				return {
@@ -232,7 +231,6 @@ describe('TldrawWSService', () => {
 				service.messageHandler(ws, doc, msg);
 
 				expect(sendSpy).toHaveBeenCalledTimes(1);
-
 				ws.close();
 				sendSpy.mockRestore();
 				applyAwarenessUpdateSpy.mockRestore();
@@ -243,9 +241,9 @@ describe('TldrawWSService', () => {
 				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([1, 1, 0]);
 
 				service.messageHandler(ws, doc, msg);
+
 				expect(sendSpy).toHaveBeenCalledTimes(0);
 				expect(applyAwarenessUpdateSpy).toHaveBeenCalledTimes(1);
-
 				ws.close();
 				sendSpy.mockRestore();
 				applyAwarenessUpdateSpy.mockRestore();
@@ -254,11 +252,11 @@ describe('TldrawWSService', () => {
 
 			it('should do nothing when received message unknown type', async () => {
 				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([2]);
+
 				service.messageHandler(ws, doc, msg);
 
 				expect(sendSpy).toHaveBeenCalledTimes(0);
 				expect(applyAwarenessUpdateSpy).toHaveBeenCalledTimes(0);
-
 				ws.close();
 				sendSpy.mockRestore();
 				applyAwarenessUpdateSpy.mockRestore();
@@ -274,7 +272,7 @@ describe('TldrawWSService', () => {
 				jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementationOnce(() => {
 					throw new Error('error');
 				});
-				const doc = new WsSharedDocDo('TEST', service);
+				const doc = new WsSharedDocDo('TEST');
 				const { msg } = createMessage([0]);
 
 				return {
@@ -286,10 +284,10 @@ describe('TldrawWSService', () => {
 
 			it('should not call send method', async () => {
 				const { sendSpy, doc, msg } = await setup();
+
 				service.messageHandler(ws, doc, msg);
 
 				expect(sendSpy).toHaveBeenCalledTimes(0);
-
 				ws.close();
 				sendSpy.mockRestore();
 			});
@@ -299,7 +297,7 @@ describe('TldrawWSService', () => {
 			const setup = async () => {
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
-				const doc = new WsSharedDocDo('TEST', service);
+				const doc = new WsSharedDocDo('TEST');
 				doc.awareness.states = new Map();
 				doc.awareness.states.set(1, ['test1']);
 				doc.awareness.states.set(2, ['test2']);
@@ -323,7 +321,6 @@ describe('TldrawWSService', () => {
 				service.setupWSConnection(ws);
 
 				expect(sendSpy).toHaveBeenCalledTimes(2);
-
 				ws.close();
 				messageHandlerSpy.mockRestore();
 				sendSpy.mockRestore();
@@ -375,11 +372,9 @@ describe('TldrawWSService', () => {
 				const { messageHandlerSpy, closeConnSpy } = await setup();
 
 				service.setupWSConnection(ws);
-
 				await delay(10);
 
 				expect(closeConnSpy).toHaveBeenCalled();
-
 				ws.close();
 				messageHandlerSpy.mockRestore();
 				closeConnSpy.mockRestore();
@@ -403,11 +398,10 @@ describe('TldrawWSService', () => {
 				const { flushDocumentSpy, errorLogSpy } = await setup();
 
 				service.setupWSConnection(ws);
-
 				await delay(10);
+
 				expect(flushDocumentSpy).toHaveBeenCalled();
 				expect(errorLogSpy).toHaveBeenCalled();
-
 				ws.close();
 			});
 		});
@@ -422,7 +416,7 @@ describe('TldrawWSService', () => {
 
 			const doc = TldrawWsFactory.createWsSharedDocDo();
 			const socketMock = TldrawWsFactory.createWebsocket(0);
-			doc.conns.set(socketMock, new Set());
+			doc.connections.set(socketMock, new Set());
 			const msg = new Uint8Array([0]);
 
 			return {
@@ -436,6 +430,7 @@ describe('TldrawWSService', () => {
 
 		it('should call send method', async () => {
 			const { sendSpy, doc, socketMock, msg } = await setup();
+
 			service.updateHandler(msg, socketMock, doc);
 
 			expect(sendSpy).toHaveBeenCalled();
@@ -447,8 +442,8 @@ describe('TldrawWSService', () => {
 			const { doc, socketMock, msg, errorLogSpy } = await setup();
 
 			service.updateHandler(msg, socketMock, doc);
-
 			await delay(10);
+
 			expect(errorLogSpy).toHaveBeenCalled();
 			ws.close();
 		});
@@ -482,7 +477,6 @@ describe('TldrawWSService', () => {
 				ws.emit('message', msg);
 
 				expect(messageHandlerSpy).toHaveBeenCalledTimes(1);
-
 				ws.close();
 				messageHandlerSpy.mockRestore();
 				readSyncMessageSpy.mockRestore();
@@ -494,8 +488,8 @@ describe('TldrawWSService', () => {
 
 				service.setupWSConnection(ws);
 				ws.emit('message', msg);
-
 				await delay(10);
+
 				expect(errorLogSpy).toHaveBeenCalled();
 				ws.close();
 			});
@@ -507,6 +501,7 @@ describe('TldrawWSService', () => {
 			it('should assign to service.doc and return instance', () => {
 				const docName = 'get-test';
 				const doc = service.getYDoc(docName);
+
 				expect(doc).toBeInstanceOf(WsSharedDocDo);
 				expect(service.docs.get(docName)).not.toBeUndefined();
 			});

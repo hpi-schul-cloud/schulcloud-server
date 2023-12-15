@@ -7,7 +7,7 @@ import { Buffer } from 'buffer';
 import * as binary from 'lib0/binary';
 import * as encoding from 'lib0/encoding';
 import { BulkWriteResult } from 'mongodb';
-import { MongoTransactionError } from '../loggable';
+import { MongoTransactionErrorLoggable } from '../loggable';
 import { TldrawDrawing } from '../entities';
 import { TldrawConfig } from '../config';
 import { YTransaction } from '../types';
@@ -51,7 +51,7 @@ export class YMongodb {
 				try {
 					res = await fn();
 				} catch (err) {
-					this.logger.warning(new MongoTransactionError(err as Error));
+					this.logger.warning(new MongoTransactionErrorLoggable(err as Error));
 				}
 
 				// once the last transaction for a given docName resolves, remove it from the queue

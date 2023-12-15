@@ -79,13 +79,12 @@ describe('YMongoDb', () => {
 
 			it('should return ydoc from the database', async () => {
 				const { applyUpdateSpy } = setup();
-
 				const drawing1 = tldrawEntityFactory.build({ clock: 1, part: 1 });
 				const drawing2 = tldrawEntityFactory.build({ clock: 1, part: 2 });
 				const drawing3 = tldrawEntityFactory.build({ clock: 2, part: 1 });
+
 				await em.persistAndFlush([drawing1, drawing2, drawing3]);
 				em.clear();
-
 				const doc = await mdb.getYDoc('test-name');
 
 				expect(doc).toBeDefined();
@@ -94,13 +93,12 @@ describe('YMongoDb', () => {
 
 			it('should not return ydoc if part is missing', async () => {
 				const { applyUpdateSpy } = setup();
-
 				const drawing1 = tldrawEntityFactory.build({ clock: 1, part: 1 });
 				const drawing2 = tldrawEntityFactory.build({ clock: 1, part: 3 });
 				const drawing3 = tldrawEntityFactory.build({ clock: 1, part: 4 });
+
 				await em.persistAndFlush([drawing1, drawing2, drawing3]);
 				em.clear();
-
 				const doc = await mdb.getYDoc('test-name');
 
 				expect(doc).toBeUndefined();
@@ -111,10 +109,10 @@ describe('YMongoDb', () => {
 		describe('when getting document with part undefined', () => {
 			const setup = async () => {
 				const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValue();
-
 				const drawing1 = tldrawEntityFactory.build({ part: undefined });
 				const drawing2 = tldrawEntityFactory.build({ part: undefined });
 				const drawing3 = tldrawEntityFactory.build({ part: undefined });
+
 				await em.persistAndFlush([drawing1, drawing2, drawing3]);
 				em.clear();
 
@@ -125,6 +123,7 @@ describe('YMongoDb', () => {
 
 			it('should return ydoc from the database', async () => {
 				const { applyUpdateSpy } = await setup();
+
 				const doc = await mdb.getYDoc('test-name');
 
 				expect(doc).toBeDefined();
@@ -137,12 +136,13 @@ describe('YMongoDb', () => {
 					// eslint-disable-next-line @typescript-eslint/dot-notation
 					mdb['MAX_DOCUMENT_SIZE'] = 1;
 					const { applyUpdateSpy } = await setup();
+
 					const doc = await mdb.getYDoc('test-name');
 
 					expect(doc).toBeDefined();
-					applyUpdateSpy.mockRestore();
 					// eslint-disable-next-line @typescript-eslint/dot-notation
 					mdb['MAX_DOCUMENT_SIZE'] = 15000000;
+					applyUpdateSpy.mockRestore();
 				});
 			});
 		});

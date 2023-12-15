@@ -2,20 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
-import { encoding, decoding, map } from 'lib0';
+import { decoding, encoding, map } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
 import { Buffer } from 'node:buffer';
 import { Redis } from 'ioredis';
 import { Logger } from '@src/core/logger';
+import { applyUpdate } from 'yjs';
 import {
-	RedisGeneralError,
-	RedisPublishError,
-	WebsocketMessageErrorLoggable,
+	RedisGeneralErrorLoggable,
+	RedisPublishErrorLoggable,
 	WebsocketCloseErrorLoggable,
-	WsshareddocErrorLoggable,
+	WebsocketMessageErrorLoggable,
+	WsSharedDocErrorLoggable,
 } from '../loggable';
 import { TldrawConfig } from '../config';
-import { WSConnectionState, WSMessageType } from '../types';
+import { AwarenessConnectionsUpdate, WSConnectionState, WSMessageType } from '../types';
 import { WsSharedDocDo } from '../domain';
 import { TldrawBoardRepo } from '../repo';
 
@@ -36,17 +37,17 @@ export class TldrawWsService {
 	) {
 		this.logger.setContext(TldrawWsService.name);
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
-		const redisUrl: string = this.configService.get<string>('REDIS_URI');
+		const redisUri: string = this.configService.get<string>('REDIS_URI');
 
-		this.sub = new Redis(redisUrl, {
+		this.sub = new Redis(redisUri, {
 			maxRetriesPerRequest: null,
 		});
-		this.sub.on('error', (err) => this.logger.warning(new RedisGeneralError('SUB', err)));
+		this.sub.on('error', (err) => this.logger.warning(new RedisGeneralErrorLoggable('SUB', err)));
 
-		this.pub = new Redis(redisUrl, {
+		this.pub = new Redis(redisUri, {
 			maxRetriesPerRequest: null,
 		});
-		this.pub.on('error', (err) => this.logger.warning(new RedisGeneralError('PUB', err)));
+		this.pub.on('error', (err) => this.logger.warning(new RedisGeneralErrorLoggable('PUB', err)));
 	}
 
 	/**
@@ -54,19 +55,19 @@ export class TldrawWsService {
 	 * @param {WebSocket} ws
 	 */
 	public closeConn(doc: WsSharedDocDo, ws: WebSocket): void {
-		if (doc.conns.has(ws)) {
-			const controlledIds = doc.conns.get(ws) as Set<number>;
-			doc.conns.delete(ws);
+		if (doc.connections.has(ws)) {
+			const controlledIds = doc.connections.get(ws) as Set<number>;
+			doc.connections.delete(ws);
 			removeAwarenessStates(doc.awareness, Array.from(controlledIds), null);
-			if (doc.conns.size === 0) {
+			if (doc.connections.size === 0) {
 				// if persisted, we store state and destroy ydocument
 				this.tldrawBoardRepo
 					.flushDocument(doc.name)
-					.then(() => {
-						doc.destroy();
-						return null;
-					})
-					.catch((err) => this.logYDocError(doc.name, 'Error while flushing doc', err as Error));
+					.then(() => this.sub.unsubscribe(doc.name, doc.awarenessChannel))
+					.then(() => doc.destroy())
+					.catch((err) =>
+						this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while flushing doc', err as Error))
+					);
 				this.docs.delete(doc.name);
 			}
 		}
@@ -104,15 +105,30 @@ export class TldrawWsService {
 	 * @param {WsSharedDocDo} doc
 	 */
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
-		const isOriginWSConn = doc.conns.has(origin as WebSocket);
+		const isOriginWSConn = doc.connections.has(origin as WebSocket);
 		if (isOriginWSConn) {
 			this.pub
 				.publish(doc.name, Buffer.from(update))
-				.catch((err) => this.logger.warning(new RedisPublishError('document', err as Error)));
+				.catch((err) => this.logger.warning(new RedisPublishErrorLoggable('document', err as Error)));
 		}
 
 		this.propagateUpdate(update, doc);
 	}
+
+	/**
+	 * @param {AwarenessConnectionsUpdate} connectionsUpdate
+	 * @param {WebSocket | null} wsConnection Origin is the connection that made the change
+	 * @param {WsSharedDocDo} doc
+	 */
+	public awarenessUpdateHandler = (
+		connectionsUpdate: AwarenessConnectionsUpdate,
+		wsConnection: WebSocket | null,
+		doc: WsSharedDocDo
+	): void => {
+		const changedClients = this.manageClientsConnections(connectionsUpdate, wsConnection, doc);
+		const buff = this.prepareAwarenessMessage(changedClients, doc);
+		this.sendAwarenessMessage(buff, doc);
+	};
 
 	/**
 	 * Gets a Y.Doc by name, whether in memory or on disk
@@ -123,18 +139,29 @@ export class TldrawWsService {
 	 */
 	public getYDoc(docName: string, gc = true): WsSharedDocDo {
 		return map.setIfUndefined(this.docs, docName, () => {
-			const doc = new WsSharedDocDo(docName, this, gc);
+			const doc = new WsSharedDocDo(docName, gc);
+			doc.awareness.on('update', (connectionsUpdate: AwarenessConnectionsUpdate, wsConnection: WebSocket | null) =>
+				this.awarenessUpdateHandler(connectionsUpdate, wsConnection, doc)
+			);
+			doc.on('update', (update: Uint8Array, origin) => this.updateHandler(update, origin, doc));
+
+			this.sub
+				.subscribe(doc.name, doc.awarenessChannel)
+				.then(() => this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message, doc)))
+				.catch((err) =>
+					this.logger.warning(
+						new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err as Error)
+					)
+				);
 
 			this.tldrawBoardRepo
 				.updateDocument(docName, doc)
-				.catch((err) => this.logYDocError(docName, 'Error while updating document', err as Error));
+				.catch((err) =>
+					this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while updating document', err as Error))
+				);
 			this.docs.set(docName, doc);
 			return doc;
 		});
-	}
-
-	public logYDocError(docName: string, message: string, error: Error): void {
-		this.logger.warning(new WsshareddocErrorLoggable(docName, message, error));
 	}
 
 	public async createDbIndex(): Promise<void> {
@@ -162,7 +189,7 @@ export class TldrawWsService {
 					const update = decoding.readVarUint8Array(decoder);
 					this.pub
 						.publish(doc.awarenessChannel, Buffer.from(update))
-						.catch((err) => this.logger.warning(new RedisPublishError('awareness', err as Error)));
+						.catch((err) => this.logger.warning(new RedisPublishErrorLoggable('awareness', err as Error)));
 					applyAwarenessUpdate(doc.awareness, update, conn);
 					break;
 				}
@@ -175,6 +202,23 @@ export class TldrawWsService {
 	}
 
 	/**
+	 * @param {{ Buffer }} channel redis channel
+	 * @param {{ Buffer }} update update message
+	 * @param {{ WsSharedDocDo }} doc ydoc
+	 */
+	public redisMessageHandler = (channel: Buffer, update: Buffer, doc: WsSharedDocDo): void => {
+		const channelId = channel.toString();
+
+		if (channelId === doc.name) {
+			applyUpdate(doc, update, this.sub);
+		}
+
+		if (channelId === doc.awarenessChannel) {
+			applyAwarenessUpdate(doc.awareness, update, this.sub);
+		}
+	};
+
+	/**
 	 * @param {WebSocket} ws
 	 * @param {string} docName
 	 */
@@ -182,7 +226,7 @@ export class TldrawWsService {
 		ws.binaryType = 'arraybuffer';
 		// get doc, initialize if it does not exist yet
 		const doc = this.getYDoc(docName, true);
-		doc.conns.set(ws, new Set());
+		doc.connections.set(ws, new Set());
 
 		// listen and reply to events
 		ws.on('message', (message: ArrayBufferLike) => {
@@ -192,7 +236,7 @@ export class TldrawWsService {
 		// Check if connection is still alive
 		let pongReceived = true;
 		const pingInterval = setInterval(() => {
-			const hasConn = doc.conns.has(ws);
+			const hasConn = doc.connections.has(ws);
 
 			if (pongReceived) {
 				if (!hasConn) return;
@@ -245,8 +289,55 @@ export class TldrawWsService {
 		encoding.writeVarUint(encoder, WSMessageType.SYNC);
 		writeUpdate(encoder, update);
 		const message = encoding.toUint8Array(encoder);
-		doc.conns.forEach((_, conn) => {
+		doc.connections.forEach((_, conn) => {
 			this.send(doc, conn, message);
 		});
+	}
+
+	/**
+	 * @param changedClients array of changed clients
+	 * @param {WsSharedDocDo} doc
+	 */
+	private prepareAwarenessMessage(changedClients: number[], doc: WsSharedDocDo): Uint8Array {
+		const encoder = encoding.createEncoder();
+		encoding.writeVarUint(encoder, WSMessageType.AWARENESS);
+		encoding.writeVarUint8Array(encoder, encodeAwarenessUpdate(doc.awareness, changedClients));
+		const message = encoding.toUint8Array(encoder);
+		return message;
+	}
+
+	/**
+	 * @param {{ Uint8Array }} buff encoded message about changes
+	 * @param {WsSharedDocDo} doc
+	 */
+	private sendAwarenessMessage(buff: Uint8Array, doc: WsSharedDocDo): void {
+		doc.connections.forEach((_, c) => {
+			this.send(doc, c, buff);
+		});
+	}
+
+	/**
+	 * @param connectionsUpdate
+	 * @param {WebSocket | null} wsConnection Origin is the connection that made the change
+	 * @param {WsSharedDocDo} doc
+	 */
+	private manageClientsConnections(
+		connectionsUpdate: AwarenessConnectionsUpdate,
+		wsConnection: WebSocket | null,
+		doc: WsSharedDocDo
+	): number[] {
+		const changedClients = connectionsUpdate.added.concat(connectionsUpdate.updated, connectionsUpdate.removed);
+		if (wsConnection !== null) {
+			const connControlledIDs = doc.connections.get(wsConnection);
+			if (connControlledIDs !== undefined) {
+				connectionsUpdate.added.forEach((clientID) => {
+					connControlledIDs.add(clientID);
+				});
+				connectionsUpdate.removed.forEach((clientID) => {
+					connControlledIDs.delete(clientID);
+				});
+			}
+		}
+		return changedClients;
 	}
 }

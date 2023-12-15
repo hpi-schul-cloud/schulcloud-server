@@ -1,6 +1,6 @@
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
-export class MongoTransactionError implements Loggable {
+export class MongoTransactionErrorLoggable implements Loggable {
 	constructor(private readonly error: Error) {}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
