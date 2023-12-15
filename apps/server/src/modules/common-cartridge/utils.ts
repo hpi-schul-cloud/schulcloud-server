@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
+import { ObjectID } from 'bson';
 import { Builder } from 'xml2js';
-import { CommonCartridgeVersion } from './common-cartridge.enums';
 
 export type OmitVersion<T> = Omit<T, 'version'>;
 
@@ -28,18 +28,12 @@ export function createElementTypeNotSupportedError(type: string): Error {
 	return new InternalServerErrorException(`Common Cartridge element type ${type} is not supported`);
 }
 
-export function checkCommonCartridgeVersion(version: CommonCartridgeVersion): void | never {
-	const supportedVersions = [
-		CommonCartridgeVersion.V_1_1_0,
-		CommonCartridgeVersion.V_1_2_0,
-		CommonCartridgeVersion.V_1_3_0,
-	];
-
-	if (supportedVersions.includes(version)) {
-		return;
+export function createIdentifier(identifier: string | ObjectID | undefined): string {
+	if (!identifier) {
+		return `i${new ObjectID().toString()}`;
 	}
 
-	throw createVersionNotSupportedError(version);
+	return `i${identifier.toString()}`;
 }
 
 export function checkDefined<T>(value: T | undefined | null, name: string): T | never {
