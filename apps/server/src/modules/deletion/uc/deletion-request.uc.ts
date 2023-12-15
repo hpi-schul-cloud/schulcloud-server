@@ -228,7 +228,7 @@ export class DeletionRequestUc {
 			deletionRequest,
 			DeletionDomainModel.FILERECORDS,
 			DeletionOperationModel.UPDATE,
-			fileRecordsUpdated.length,
+			fileRecordsUpdated,
 			0
 		);
 	}
