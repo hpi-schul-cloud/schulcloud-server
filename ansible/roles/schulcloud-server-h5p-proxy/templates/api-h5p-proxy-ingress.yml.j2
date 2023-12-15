@@ -39,3 +39,13 @@ spec:
             port:
               number: 80
         pathType: Prefix
+  - host: {{ DOMAIN }}
+    http:
+      paths:
+      - path: /api/v3/h5p-editor/
+        backend:
+          service:
+            name: api-h5p-proxy-svc
+            port:
+              number: 80
+        pathType: Prefix
