@@ -1,4 +1,5 @@
-import { CommonCartridgeVersion } from '../common-cartridge.enums';
+import { CommonCartridgeElementType, CommonCartridgeVersion } from '../common-cartridge.enums';
+import { CommonCartridgeElementFactory } from '../elements/common-cartridge-element-factory';
 import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
 import {
@@ -55,10 +56,14 @@ export class CommonCartridgeOrganizationBuilder {
 	}
 
 	public build(): CommonCartridgeElement {
-		return new CommonCartridgeOrganizationElement({
+		const organizationElement = CommonCartridgeElementFactory.createElement({
+			type: CommonCartridgeElementType.ORGANIZATION,
+			version: this.options.version,
 			identifier: this.options.identifier,
 			title: this.options.title,
 			items: this.items,
 		});
+
+		return organizationElement;
 	}
 }

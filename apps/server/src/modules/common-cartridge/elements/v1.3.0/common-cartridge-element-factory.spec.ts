@@ -7,16 +7,10 @@ import { CommonCartridgeOrganizationsWrapperElementV130 } from './common-cartrid
 import { CommonCartridgeResourcesWrapperElementV130 } from './common-cartridge-resources-wrapper-element';
 
 describe('CommonCartridgeElementFactoryV130', () => {
-	const setup = () => {
-		const sut = new CommonCartridgeElementFactoryV130();
-		return { sut };
-	};
-
 	describe('createElement', () => {
 		describe('when creating elements from props', () => {
 			it('should return metadata element', () => {
-				const { sut } = setup();
-				const result = sut.createElement({
+				const result = CommonCartridgeElementFactoryV130.createElement({
 					type: CommonCartridgeElementType.METADATA,
 					version: CommonCartridgeVersion.V_1_3_0,
 					title: faker.lorem.words(),
@@ -29,8 +23,7 @@ describe('CommonCartridgeElementFactoryV130', () => {
 			});
 
 			it('should return organization element', () => {
-				const { sut } = setup();
-				const result = sut.createElement({
+				const result = CommonCartridgeElementFactoryV130.createElement({
 					type: CommonCartridgeElementType.ORGANIZATION,
 					version: CommonCartridgeVersion.V_1_3_0,
 					identifier: faker.string.uuid(),
@@ -43,8 +36,7 @@ describe('CommonCartridgeElementFactoryV130', () => {
 			});
 
 			it('should return organization wrapper element', () => {
-				const { sut } = setup();
-				const result = sut.createElement({
+				const result = CommonCartridgeElementFactoryV130.createElement({
 					type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER,
 					version: CommonCartridgeVersion.V_1_3_0,
 					items: [],
@@ -55,8 +47,7 @@ describe('CommonCartridgeElementFactoryV130', () => {
 			});
 
 			it('should return resources wrapper element', () => {
-				const { sut } = setup();
-				const result = sut.createElement({
+				const result = CommonCartridgeElementFactoryV130.createElement({
 					type: CommonCartridgeElementType.RESOURCES_WRAPPER,
 					version: CommonCartridgeVersion.V_1_3_0,
 					items: [],

@@ -18,20 +18,14 @@ import {
 	CommonCartridgeResourcesWrapperElementV110,
 } from './common-cartridge-resources-wrapper-element';
 
-export type CommonCartridgeElementPropsV110 =
+type CommonCartridgeElementPropsV110 =
 	| CommonCartridgeMetadataElementPropsV110
 	| CommonCartridgeOrganizationElementPropsV110
 	| CommonCartridgeOrganizationsWrapperElementPropsV110
 	| CommonCartridgeResourcesWrapperElementPropsV110;
 
 export class CommonCartridgeElementFactoryV110 {
-	public static readonly instance = new CommonCartridgeElementFactoryV110();
-
-	public static getInstance(): CommonCartridgeElementFactoryV110 {
-		return this.instance;
-	}
-
-	public createElement(props: CommonCartridgeElementPropsV110): CommonCartridgeElement {
+	public static createElement(props: CommonCartridgeElementPropsV110): CommonCartridgeElement {
 		const { type } = props;
 
 		switch (type) {
