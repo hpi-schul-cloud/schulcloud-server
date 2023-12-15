@@ -3,9 +3,17 @@ import { Test } from '@nestjs/testing';
 import WebSocket from 'ws';
 import { TextEncoder } from 'util';
 import { INestApplication } from '@nestjs/common';
-import { TldrawWsTestModule } from '@src/modules/tldraw/tldraw-ws-test.module';
-import { TldrawWs } from '../tldraw.ws';
+import { MongoMemoryDatabaseModule } from '@infra/database';
+import { createConfigModuleOptions } from '@src/config';
+import { Logger } from '@src/core/logger';
+import { createMock } from '@golevelup/ts-jest';
+import { ConfigModule } from '@nestjs/config';
+import { TldrawDrawing } from '../../entities';
+import { config } from '../../config';
+import { TldrawWsService } from '../../service';
+import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../../repo';
 import { TestConnection } from '../../testing';
+import { TldrawWs } from '..';
 
 describe('WebSocketController (WsAdapter)', () => {
 	let app: INestApplication;
@@ -20,7 +28,24 @@ describe('WebSocketController (WsAdapter)', () => {
 
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
-			imports: [TldrawWsTestModule],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({ entities: [TldrawDrawing] }),
+				ConfigModule.forRoot(createConfigModuleOptions(config)),
+			],
+			providers: [
+				TldrawWs,
+				TldrawWsService,
+				TldrawBoardRepo,
+				YMongodb,
+				{
+					provide: TldrawRepo,
+					useValue: createMock<TldrawRepo>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+			],
 		}).compile();
 
 		gateway = testingModule.get<TldrawWs>(TldrawWs);
