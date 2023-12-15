@@ -179,13 +179,13 @@ describe('TldrawBoardRepo', () => {
 		describe('when the difference between update and current drawing is more than 0', () => {
 			const setup = () => {
 				const calculateDiffSpy = jest.spyOn(YjsUtils, 'calculateDiff').mockReturnValueOnce(1);
-				const storeUpdateSpy = jest
-					.spyOn(repo.mdb, 'storeUpdateTransactional')
-					.mockResolvedValueOnce(Promise.resolve(1));
+				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional').mockResolvedValueOnce(1);
+				const errorLogSpy = jest.spyOn(logger, 'warning');
 
 				return {
 					calculateDiffSpy,
 					storeUpdateSpy,
+					errorLogSpy,
 				};
 			};
 
@@ -196,6 +196,21 @@ describe('TldrawBoardRepo', () => {
 				repo.updateStoredDocWithDiff('test', diffArray);
 
 				expect(storeUpdateSpy).toHaveBeenCalled();
+				calculateDiffSpy.mockRestore();
+				storeUpdateSpy.mockRestore();
+			});
+
+			it('should log error if update fails', () => {
+				const storeUpdateSpy = jest
+					.spyOn(repo.mdb, 'storeUpdateTransactional')
+					.mockRejectedValueOnce(new Error('test error'));
+				const { calculateDiffSpy, errorLogSpy } = setup();
+				const diffArray = new Uint8Array();
+
+				repo.updateStoredDocWithDiff('test', diffArray);
+
+				expect(storeUpdateSpy).toHaveBeenCalled();
+				expect(errorLogSpy).toHaveBeenCalled();
 				calculateDiffSpy.mockRestore();
 				storeUpdateSpy.mockRestore();
 			});
@@ -227,9 +242,7 @@ describe('TldrawBoardRepo', () => {
 
 	describe('flushDocument', () => {
 		const setup = () => {
-			const flushDocumentSpy = jest
-				.spyOn(repo.mdb, 'flushDocumentTransactional')
-				.mockResolvedValueOnce(Promise.resolve());
+			const flushDocumentSpy = jest.spyOn(repo.mdb, 'flushDocumentTransactional').mockResolvedValueOnce();
 
 			return { flushDocumentSpy };
 		};

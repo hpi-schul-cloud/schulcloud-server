@@ -25,6 +25,7 @@ jest.mock('yjs', () => {
 describe('YMongoDb', () => {
 	let testingModule: TestingModule;
 	let mdb: YMongodb;
+	let repo: TldrawRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
@@ -56,6 +57,7 @@ describe('YMongoDb', () => {
 		}).compile();
 
 		mdb = testingModule.get(YMongodb);
+		repo = testingModule.get(TldrawRepo);
 		em = testingModule.get(EntityManager);
 	});
 
@@ -65,6 +67,63 @@ describe('YMongoDb', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
+	});
+
+	describe('storeUpdateTransactional', () => {
+		it('should create new document with updates in the database', async () => {
+			const drawing = tldrawEntityFactory.build({ clock: 1 });
+
+			await em.persistAndFlush(drawing);
+			em.clear();
+			await mdb.storeUpdateTransactional(drawing.docName, new Uint8Array([2, 2]));
+			const docs = await em.findAndCount(TldrawDrawing, { docName: drawing.docName });
+
+			expect(docs.length).toEqual(2);
+		});
+	});
+
+	describe('flushDocumentTransactional', () => {
+		const setup = () => {
+			const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValue();
+
+			return {
+				applyUpdateSpy,
+			};
+		};
+
+		it('should merge multiple documents with the same name in the database into two (one main document and one with update)', async () => {
+			const { applyUpdateSpy } = setup();
+			const drawing1 = tldrawEntityFactory.build({ clock: 1 });
+			const drawing2 = tldrawEntityFactory.build({ clock: 2 });
+			const drawing3 = tldrawEntityFactory.build({ clock: 3 });
+			const drawing4 = tldrawEntityFactory.build({ clock: 4 });
+
+			await em.persistAndFlush([drawing1, drawing2, drawing3, drawing4]);
+			em.clear();
+			await mdb.flushDocumentTransactional(drawing1.docName);
+			const docs = await em.findAndCount(TldrawDrawing, { docName: drawing1.docName });
+
+			expect(docs.length).toEqual(2);
+			applyUpdateSpy.mockRestore();
+		});
+	});
+
+	describe('createIndex', () => {
+		const setup = () => {
+			const ensureIndexesSpy = jest.spyOn(repo, 'ensureIndexes').mockResolvedValueOnce();
+
+			return {
+				ensureIndexesSpy,
+			};
+		};
+
+		it('should create index', async () => {
+			const { ensureIndexesSpy } = setup();
+
+			await mdb.createIndex();
+
+			expect(ensureIndexesSpy).toHaveBeenCalled();
+		});
 	});
 
 	describe('getYDoc', () => {
