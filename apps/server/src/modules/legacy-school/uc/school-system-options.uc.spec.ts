@@ -117,7 +117,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 		});
 	});
 
-	describe('setProvisioningOptions', () => {
+	describe('createOrUpdateProvisioningOptions', () => {
 		describe('when saving new options to a system at the school', () => {
 			const setup = () => {
 				const user = userFactory.asAdmin().buildWithId();
@@ -140,7 +140,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 			it('should check the permissions', async () => {
 				const { user, schoolSystemOptions } = setup();
 
-				await uc.setProvisioningOptions(
+				await uc.createOrUpdateProvisioningOptions(
 					user.id,
 					schoolSystemOptions.schoolId,
 					schoolSystemOptions.systemId,
@@ -157,7 +157,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 			it('should save the options', async () => {
 				const { user, schoolSystemOptions } = setup();
 
-				await uc.setProvisioningOptions(
+				await uc.createOrUpdateProvisioningOptions(
 					user.id,
 					schoolSystemOptions.schoolId,
 					schoolSystemOptions.systemId,
@@ -172,7 +172,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 			it('should return the options', async () => {
 				const { user, schoolSystemOptions } = setup();
 
-				const result: AnyProvisioningOptions = await uc.setProvisioningOptions(
+				const result: AnyProvisioningOptions = await uc.createOrUpdateProvisioningOptions(
 					user.id,
 					schoolSystemOptions.schoolId,
 					schoolSystemOptions.systemId,
@@ -205,7 +205,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 			it('should check the permissions', async () => {
 				const { user, schoolSystemOptions } = setup();
 
-				await uc.setProvisioningOptions(
+				await uc.createOrUpdateProvisioningOptions(
 					user.id,
 					schoolSystemOptions.schoolId,
 					schoolSystemOptions.systemId,
@@ -222,7 +222,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 			it('should save the options', async () => {
 				const { user, schoolSystemOptions } = setup();
 
-				await uc.setProvisioningOptions(
+				await uc.createOrUpdateProvisioningOptions(
 					user.id,
 					schoolSystemOptions.schoolId,
 					schoolSystemOptions.systemId,
@@ -235,7 +235,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 			it('should return the options', async () => {
 				const { user, schoolSystemOptions } = setup();
 
-				const result: AnyProvisioningOptions = await uc.setProvisioningOptions(
+				const result: AnyProvisioningOptions = await uc.createOrUpdateProvisioningOptions(
 					user.id,
 					schoolSystemOptions.schoolId,
 					schoolSystemOptions.systemId,
@@ -255,7 +255,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 				setup();
 
 				await expect(
-					uc.setProvisioningOptions(
+					uc.createOrUpdateProvisioningOptions(
 						new ObjectId().toHexString(),
 						new ObjectId().toHexString(),
 						new ObjectId().toHexString(),
@@ -276,7 +276,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 				setup();
 
 				await expect(
-					uc.setProvisioningOptions(
+					uc.createOrUpdateProvisioningOptions(
 						new ObjectId().toHexString(),
 						new ObjectId().toHexString(),
 						new ObjectId().toHexString(),
@@ -314,7 +314,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 				const { user, schoolSystemOptions } = setup();
 
 				await expect(
-					uc.setProvisioningOptions(
+					uc.createOrUpdateProvisioningOptions(
 						user.id,
 						schoolSystemOptions.schoolId,
 						schoolSystemOptions.systemId,
@@ -329,7 +329,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 				const { user, schoolSystemOptions, error } = setup();
 
 				await expect(
-					uc.setProvisioningOptions(
+					uc.createOrUpdateProvisioningOptions(
 						user.id,
 						schoolSystemOptions.schoolId,
 						schoolSystemOptions.systemId,

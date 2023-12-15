@@ -84,7 +84,7 @@ export class SchoolController {
 		@Param() params: SchoolSystemParams,
 		@Body() body: ProvisioningOptionsParams
 	): Promise<AnyProvisioningOptionsResponse> {
-		const options: AnyProvisioningOptions = await this.schoolSystemOptionsUc.setProvisioningOptions(
+		const options: AnyProvisioningOptions = await this.schoolSystemOptionsUc.createOrUpdateProvisioningOptions(
 			currentUser.userId,
 			params.schoolId,
 			params.systemId,
