@@ -69,14 +69,7 @@ export class YMongodb {
 	}
 
 	public async createIndex(): Promise<void> {
-		const collection = this.repo.getCollection();
-		await collection.createIndex({
-			version: 1,
-			docName: 1,
-			action: 1,
-			clock: 1,
-			part: 1,
-		});
+		await this.repo.ensureIndexes();
 	}
 
 	public getYDoc(docName: string): Promise<Doc> {

@@ -1,10 +1,40 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, Index, Property } from '@mikro-orm/core';
 import { BadRequestException } from '@nestjs/common';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { BaseEntity } from '@shared/domain/entity';
+
+export interface TldrawDrawingProps {
+	_id?: string;
+	docName: string;
+	version: string;
+	clock?: number;
+	action?: string;
+	value: Buffer;
+	part?: number;
+}
 
 @Entity({ tableName: 'drawings' })
-export class TldrawDrawing {
+@Index({ properties: ['version', 'docName', 'action', 'clock', 'part'] })
+export class TldrawDrawing extends BaseEntity {
+	@Property({ nullable: false })
+	docName: string;
+
+	@Property({ nullable: false })
+	version: string;
+
+	@Property({ nullable: false })
+	value: Buffer;
+
+	@Property({ nullable: true })
+	clock?: number;
+
+	@Property({ nullable: true })
+	action?: string;
+
+	@Property({ nullable: true })
+	part?: number;
+
 	constructor(props: TldrawDrawingProps) {
+		super();
 		if (!props.docName) throw new BadRequestException('Tldraw element should have name.');
 		this.docName = props.docName;
 		this.version = props.version;
@@ -19,35 +49,4 @@ export class TldrawDrawing {
 			this.part = props.part;
 		}
 	}
-
-	@PrimaryKey()
-	_id!: ObjectId;
-
-	@Property({ nullable: false })
-	docName: string;
-
-	@Property({ nullable: false })
-	version: string;
-
-	@Property({ nullable: false })
-	value: Buffer;
-
-	@Property({ nullable: true })
-	clock?: number;
-
-	@Property({ nullable: true })
-	action?: string;
-
-	@Property({ nullable: true })
-	part?: number;
-}
-
-export interface TldrawDrawingProps {
-	_id?: string;
-	docName: string;
-	version: string;
-	clock?: number;
-	action?: string;
-	value: Buffer;
-	part?: number;
 }

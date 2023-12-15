@@ -1,22 +1,23 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BulkWriteResult, Collection, Sort } from 'mongodb';
+import { MikroORM } from '@mikro-orm/core';
 import { TldrawDrawing } from '../entities';
 
 @Injectable()
 export class TldrawRepo {
-	constructor(private readonly _em: EntityManager) {}
+	constructor(private readonly em: EntityManager, private readonly orm: MikroORM) {}
 
 	public async create(entity: TldrawDrawing): Promise<void> {
-		await this._em.persistAndFlush(entity);
+		await this.em.persistAndFlush(entity);
 	}
 
 	public async findByDocName(docName: string): Promise<TldrawDrawing[]> {
-		return this._em.find(TldrawDrawing, { docName });
+		return this.em.find(TldrawDrawing, { docName });
 	}
 
 	public async delete(entity: TldrawDrawing | TldrawDrawing[]): Promise<void> {
-		await this._em.removeAndFlush(entity);
+		await this.em.removeAndFlush(entity);
 	}
 
 	public get(query: object): Promise<TldrawDrawing | null> {
@@ -48,6 +49,10 @@ export class TldrawRepo {
 	}
 
 	public getCollection(): Collection<TldrawDrawing> {
-		return this._em.getCollection(TldrawDrawing);
+		return this.em.getCollection(TldrawDrawing);
+	}
+
+	public async ensureIndexes(): Promise<void> {
+		await this.orm.getSchemaGenerator().ensureIndexes();
 	}
 }
