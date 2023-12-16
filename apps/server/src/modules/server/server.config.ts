@@ -46,7 +46,7 @@ const config: ServerConfig = {
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
 		.split(',')
 		.map((apiKey) => apiKey.trim()),
-	ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS: (Configuration.get('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS') as string)
+	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
 		.split(',')
 		.map((domain) => domain.trim()),
 };

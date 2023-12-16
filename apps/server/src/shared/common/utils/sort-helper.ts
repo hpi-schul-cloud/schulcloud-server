@@ -1,7 +1,7 @@
-import { SortOrder } from '@shared/domain/interface';
+import { SortOrder } from '../../domain/interface';
 
 export class SortHelper {
-	public static genericSortFunction<T>(a: T, b: T, sortOrder: SortOrder): number {
+	public static genericSortFunction<T>(a: T, b: T, sortOrder: SortOrder = SortOrder.asc): number {
 		let order: number;
 
 		if (typeof a !== 'undefined' && typeof b === 'undefined') {
