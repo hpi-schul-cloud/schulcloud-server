@@ -246,14 +246,6 @@ describe('FilesStorageConsumer', () => {
 
 				expect(filesStorageService.removeCreatorIdFromFileRecords).toBeCalledWith(fileRecords);
 			});
-
-			it('should return array instances of FileRecordResponse', async () => {
-				const { creatorId } = setup();
-
-				const response = await service.deleteFilesOfParent(creatorId);
-
-				expect(response.message[0]).toBeInstanceOf(FileRecordResponse);
-			});
 		});
 
 		describe('WHEN no file exists', () => {

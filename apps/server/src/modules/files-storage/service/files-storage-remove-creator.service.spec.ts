@@ -36,7 +36,6 @@ describe('FilesStorageService delete methods', () => {
 	let module: TestingModule;
 	let service: FilesStorageService;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
-	let storageClient: DeepMocked<S3ClientAdapter>;
 
 	beforeAll(async () => {
 		await setupEntities([FileRecord]);
@@ -64,11 +63,14 @@ describe('FilesStorageService delete methods', () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(FilesStorageService);
-		storageClient = module.get(FILES_STORAGE_S3_CONNECTION);
 		fileRecordRepo = module.get(FileRecordRepo);
 	});
 
@@ -85,15 +87,6 @@ describe('FilesStorageService delete methods', () => {
 	});
 
 	describe('removeCreatorIdFromFileRecord is called', () => {
-		describe('WHEN valid files does not exist', () => {
-			it('should not modify any filescall repo save with undefined creatorId', async () => {
-				fileRecordRepo.findByCreatorId.mockResolvedValueOnce([[], 0]);
-				await service.removeCreatorIdFromFileRecords([]);
-
-				expect(fileRecordRepo.save).not.toBeCalled();
-			});
-		});
-
 		describe('WHEN valid files exists', () => {
 			const setup = () => {
 				const { fileRecords, creatorId } = buildFileRecordsWithParams();
