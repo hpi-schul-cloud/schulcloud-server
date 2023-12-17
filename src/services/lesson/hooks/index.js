@@ -3,7 +3,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { nanoid } = require('nanoid');
 const { iff, isProvider } = require('feathers-hooks-common');
-const { NotFound, BadRequest } = require('../../../errors');
+const { NotFound, BadRequest, ForbiddenError } = require('../../../errors');
 const { equal } = require('../../../helper/compare').ObjectId;
 const {
 	injectUserId,
@@ -37,6 +37,16 @@ const addShareTokenIfCourseShareable = async (context) => {
 	}
 
 	return LessonModel.findByIdAndUpdate(_id, { shareToken: nanoid(12) }).then(() => context);
+};
+
+// Only teachers have permissions to access to draft topics view.
+/**
+ * @afterHook
+ */
+const restrictDraftTopicAccess = async (user) => {
+	if (user.roles !== 'teacher') {
+		throw new Error("You don't have permission.");
+	}
 };
 
 // Generate a new url for material that have merlin as source.
@@ -277,7 +287,7 @@ exports.before = () => {
 exports.after = {
 	all: [],
 	find: [],
-	get: [convertMerlinUrl],
+	get: [convertMerlinUrl, restrictDraftTopicAccess],
 	create: [addShareTokenIfCourseShareable],
 	update: [],
 	patch: [],
