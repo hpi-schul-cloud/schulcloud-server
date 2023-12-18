@@ -560,7 +560,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>{}</code>
+                            <b>Returns : </b>    <code>ClassInfoDto[]</code>
 
                         </div>
                             <div class="io-description">
@@ -593,8 +593,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="351"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:351</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="357"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:357</a></div>
                         </td>
                     </tr>
 
@@ -1606,8 +1606,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="340"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:340</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="346"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:346</a></div>
                         </td>
                     </tr>
 
@@ -2287,8 +2287,14 @@ export class GroupUc {
 		return resolvedGroupUsers;
 	}
 
-	private applyPagination(combinedClassInfo: ClassInfoDto[], skip: number, limit: number | undefined) {
-		const page: ClassInfoDto[] &#x3D; combinedClassInfo.slice(skip, limit ? skip + limit : combinedClassInfo.length);
+	private applyPagination(combinedClassInfo: ClassInfoDto[], skip: number, limit: number | undefined): ClassInfoDto[] {
+		let page: ClassInfoDto[];
+
+		if (limit &#x3D;&#x3D;&#x3D; -1) {
+			page &#x3D; combinedClassInfo.slice(skip);
+		} else {
+			page &#x3D; combinedClassInfo.slice(skip, limit ? skip + limit : combinedClassInfo.length);
+		}
 
 		return page;
 	}

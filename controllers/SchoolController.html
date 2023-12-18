@@ -155,11 +155,13 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getProvisioningOptions" >getProvisioningOptions</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
@@ -202,6 +204,7 @@
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>getProvisioningOptions</b></span>
@@ -220,14 +223,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;/:schoolId/systems/:systemId/provisioning-options&#x27;)<br />@ApiOperation({description: &#x27;Gets all provisioning options for a system at a school&#x27;})<br />@ApiOkResponse({description: &#x27;All provisioning options of the system with their value&#x27;, schema: undefined})<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br />@ApiUnprocessableEntityResponse()<br />@ApiNotFoundResponse()<br /></code>
+                    <code>@Get(&#x27;/:schoolId/systems/:systemId/provisioning-options&#x27;)<br />@ApiOperation({description: &#x27;Gets all provisioning options for a system at a school&#x27;})<br />@ApiOkResponse({description: &#x27;All provisioning options of the system with their value&#x27;, schema: undefined})<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br />@ApiUnprocessableEntityResponse()<br />@ApiNotFoundResponse()<br />@ApiExtraModels(SchulConneXProvisioningOptionsResponse)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/controller/school.controller.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="50"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/controller/school.controller.ts:50</a></div>
                         </td>
                     </tr>
 
@@ -299,6 +302,7 @@
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>setProvisioningOptions</b></span>
@@ -317,14 +321,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;/:schoolId/systems/:systemId/provisioning-options&#x27;)<br />@ApiOperation({description: &#x27;Sets all provisioning options for a system at a school&#x27;})<br />@ApiBody({type: SchulConneXProvisioningOptionsParams})<br />@ApiCreatedResponse({description: &#x27;All provisioning options of the system with their value&#x27;, schema: undefined})<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br />@ApiUnprocessableEntityResponse()<br />@ApiNotFoundResponse()<br /></code>
+                    <code>@Post(&#x27;/:schoolId/systems/:systemId/provisioning-options&#x27;)<br />@ApiOperation({description: &#x27;Sets all provisioning options for a system at a school&#x27;})<br />@ApiBody({type: SchulConneXProvisioningOptionsParams})<br />@ApiCreatedResponse({description: &#x27;All provisioning options of the system with their value&#x27;, schema: undefined})<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br />@ApiUnprocessableEntityResponse()<br />@ApiNotFoundResponse()<br />@ApiExtraModels(SchulConneXProvisioningOptionsResponse)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/controller/school.controller.ts:82</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="85"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/controller/school.controller.ts:85</a></div>
                         </td>
                     </tr>
 
@@ -403,6 +407,7 @@ import { Body, Controller, Get, Param, Post } from &#x27;@nestjs/common&#x27;;
 import {
 	ApiBody,
 	ApiCreatedResponse,
+	ApiExtraModels,
 	ApiForbiddenResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
@@ -445,6 +450,7 @@ export class SchoolController {
 	@ApiForbiddenResponse()
 	@ApiUnprocessableEntityResponse()
 	@ApiNotFoundResponse()
+	@ApiExtraModels(SchulConneXProvisioningOptionsResponse)
 	public async getProvisioningOptions(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolSystemParams
@@ -479,6 +485,7 @@ export class SchoolController {
 	@ApiForbiddenResponse()
 	@ApiUnprocessableEntityResponse()
 	@ApiNotFoundResponse()
+	@ApiExtraModels(SchulConneXProvisioningOptionsResponse)
 	public async setProvisioningOptions(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolSystemParams,

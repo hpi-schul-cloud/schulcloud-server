@@ -205,7 +205,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findClasses(pagination: <a href="../classes/PaginationParams.html" target="_self">PaginationParams</a>, sortingQuery: <a href="../classes/ClassSortParams.html" target="_self">ClassSortParams</a>, filterParams: <a href="../classes/ClassFilterParams.html" target="_self">ClassFilterParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                    <code>findClasses(pagination: <a href="../classes/GroupPaginationParams.html" target="_self">GroupPaginationParams</a>, sortingQuery: <a href="../classes/ClassSortParams.html" target="_self">ClassSortParams</a>, filterParams: <a href="../classes/ClassFilterParams.html" target="_self">ClassFilterParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
                 </td>
             </tr>
 
@@ -219,8 +219,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/group/controller/group.controller.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/group/controller/group.controller.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -243,7 +243,7 @@
                                         <tr>
                                                 <td>pagination</td>
                                             <td>
-                                                            <code><a href="../classes/PaginationParams.html" target="_self" >PaginationParams</a></code>
+                                                            <code><a href="../classes/GroupPaginationParams.html" target="_self" >GroupPaginationParams</a></code>
                                             </td>
 
                                             <td>
@@ -337,8 +337,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">apps/server/src/modules/group/controller/group.controller.ts:53</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">apps/server/src/modules/group/controller/group.controller.ts:59</a></div>
                         </td>
                     </tr>
 
@@ -403,12 +403,18 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
 import { Controller, Get, HttpStatus, Param, Query } from &#x27;@nestjs/common&#x27;;
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { PaginationParams } from &#x27;@shared/controller&#x27;;
 import { Page } from &#x27;@shared/domain/domainobject&#x27;;
 import { ErrorResponse } from &#x27;@src/core/error/dto&#x27;;
 import { GroupUc } from &#x27;../uc&#x27;;
 import { ClassInfoDto, ResolvedGroupDto } from &#x27;../uc/dto&#x27;;
-import { ClassFilterParams, ClassInfoSearchListResponse, ClassSortParams, GroupIdParams, GroupResponse } from &#x27;./dto&#x27;;
+import {
+	ClassFilterParams,
+	ClassInfoSearchListResponse,
+	ClassSortParams,
+	GroupIdParams,
+	GroupResponse,
+	GroupPaginationParams,
+} from &#x27;./dto&#x27;;
 import { GroupResponseMapper } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Group&#x27;)
@@ -423,7 +429,7 @@ export class GroupController {
 	@ApiResponse({ status: &#x27;5XX&#x27;, type: ErrorResponse })
 	@Get(&#x27;/class&#x27;)
 	public async findClasses(
-		@Query() pagination: PaginationParams,
+		@Query() pagination: GroupPaginationParams,
 		@Query() sortingQuery: ClassSortParams,
 		@Query() filterParams: ClassFilterParams,
 		@CurrentUser() currentUser: ICurrentUser

@@ -4139,6 +4139,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/GroupIdParams.html" data-type="entity-link" >GroupIdParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/GroupPaginationParams.html" data-type="entity-link" >GroupPaginationParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/GroupResponse.html" data-type="entity-link" >GroupResponse</a>
                             </li>
                             <li class="link">
