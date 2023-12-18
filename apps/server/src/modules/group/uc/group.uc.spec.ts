@@ -522,7 +522,7 @@ describe('GroupUc', () => {
 		});
 
 		describe('when accessing as a user with elevated permission', () => {
-			const setup = () => {
+			const setup = (generateClasses = false) => {
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
@@ -551,6 +551,15 @@ describe('GroupUc', () => {
 					roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
 				});
 				const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
+				let clazzes: Class[] = [];
+				if (generateClasses) {
+					clazzes = classFactory.buildList(11, {
+						name: 'A',
+						teacherIds: [teacherUser.id],
+						source: 'LDAP',
+						year: schoolYear.id,
+					});
+				}
 				const clazz: Class = classFactory.build({
 					name: 'A',
 					teacherIds: [teacherUser.id],
@@ -579,7 +588,7 @@ describe('GroupUc', () => {
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(adminUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
-				classService.findClassesForSchool.mockResolvedValueOnce([clazz]);
+				classService.findClassesForSchool.mockResolvedValueOnce([...clazzes, clazz]);
 				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce([group, groupWithSystem]);
 				systemService.findById.mockResolvedValue(system);
 
@@ -787,6 +796,34 @@ describe('GroupUc', () => {
 						],
 						total: 3,
 					});
+				});
+
+				it('should return classes with expected limit', async () => {
+					const { adminUser } = setup(true);
+
+					const result: Page<ClassInfoDto> = await uc.findAllClasses(
+						adminUser.id,
+						adminUser.school.id,
+						undefined,
+						0,
+						5
+					);
+
+					expect(result.data.length).toEqual(5);
+				});
+
+				it('should return all classes without limit', async () => {
+					const { adminUser } = setup(true);
+
+					const result: Page<ClassInfoDto> = await uc.findAllClasses(
+						adminUser.id,
+						adminUser.school.id,
+						undefined,
+						0,
+						-1
+					);
+
+					expect(result.data.length).toEqual(14);
 				});
 			});
 		});
