@@ -3,7 +3,7 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { setupEntities, userDoFactory } from '@shared/testing';
 import { AccountService } from '@modules/account';
 import { ClassService } from '@modules/class';
-import { CourseGroupService, CourseService } from '@modules/learnroom';
+import { CourseGroupService, CourseService, DashboardService } from '@modules/learnroom';
 import { FilesService } from '@modules/files';
 import { LessonService } from '@modules/lesson';
 import { PseudonymService } from '@modules/pseudonym';
@@ -40,6 +40,7 @@ describe(DeletionRequestUc.name, () => {
 	let rocketChatUserService: DeepMocked<RocketChatUserService>;
 	let rocketChatService: DeepMocked<RocketChatService>;
 	let registrationPinService: DeepMocked<RegistrationPinService>;
+	let dashboardService: DeepMocked<DashboardService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -105,6 +106,10 @@ describe(DeletionRequestUc.name, () => {
 					provide: RegistrationPinService,
 					useValue: createMock<RegistrationPinService>(),
 				},
+				{
+					provide: DashboardService,
+					useValue: createMock<DashboardService>(),
+				},
 			],
 		}).compile();
 
@@ -123,6 +128,7 @@ describe(DeletionRequestUc.name, () => {
 		rocketChatUserService = module.get(RocketChatUserService);
 		rocketChatService = module.get(RocketChatService);
 		registrationPinService = module.get(RegistrationPinService);
+		dashboardService = module.get(DashboardService);
 		await setupEntities();
 	});
 
@@ -199,6 +205,7 @@ describe(DeletionRequestUc.name, () => {
 				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(2);
 				userService.deleteUser.mockResolvedValueOnce(1);
 				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(1);
+				dashboardService.deleteDashboardByUserId.mockResolvedValueOnce(1);
 
 				return {
 					deletionRequestToExecute,
@@ -381,6 +388,16 @@ describe(DeletionRequestUc.name, () => {
 				expect(rocketChatService.deleteUser).toHaveBeenCalledWith(rocketChatUser.username);
 			});
 
+			it('should call dashboardService.deleteDashboardByUserId to delete USERS DASHBOARD', async () => {
+				const { deletionRequestToExecute } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+
+				await uc.executeDeletionRequests();
+
+				expect(dashboardService.deleteDashboardByUserId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+			});
+
 			it('should call deletionLogService.createDeletionLog to create logs for deletionRequest', async () => {
 				const { deletionRequestToExecute } = setup();
 
@@ -388,7 +405,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(10);
+				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(11);
 			});
 		});
 
