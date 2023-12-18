@@ -118,10 +118,10 @@ describe('YMongoDb', () => {
 
 		it('should merge multiple documents with the same name in the database into two (one main document and one with update)', async () => {
 			const { applyUpdateSpy } = setup();
-			const drawing1 = tldrawEntityFactory.build({ clock: 1 });
-			const drawing2 = tldrawEntityFactory.build({ clock: 2 });
-			const drawing3 = tldrawEntityFactory.build({ clock: 3 });
-			const drawing4 = tldrawEntityFactory.build({ clock: 4 });
+			const drawing1 = tldrawEntityFactory.build({ clock: 1, part: undefined });
+			const drawing2 = tldrawEntityFactory.build({ clock: 2, part: undefined });
+			const drawing3 = tldrawEntityFactory.build({ clock: 3, part: undefined });
+			const drawing4 = tldrawEntityFactory.build({ clock: 4, part: undefined });
 
 			await em.persistAndFlush([drawing1, drawing2, drawing3, drawing4]);
 			em.clear();
