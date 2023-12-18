@@ -3,6 +3,7 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import {
 	ApiBody,
 	ApiCreatedResponse,
+	ApiExtraModels,
 	ApiForbiddenResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
@@ -45,6 +46,7 @@ export class SchoolController {
 	@ApiForbiddenResponse()
 	@ApiUnprocessableEntityResponse()
 	@ApiNotFoundResponse()
+	@ApiExtraModels(SchulConneXProvisioningOptionsResponse)
 	public async getProvisioningOptions(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolSystemParams
@@ -79,6 +81,7 @@ export class SchoolController {
 	@ApiForbiddenResponse()
 	@ApiUnprocessableEntityResponse()
 	@ApiNotFoundResponse()
+	@ApiExtraModels(SchulConneXProvisioningOptionsResponse)
 	public async setProvisioningOptions(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolSystemParams,
