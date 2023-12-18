@@ -63,6 +63,13 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		return fileRecord;
 	}
 
+	async findByCreatorId(creatorId: EntityId): Promise<Counted<FileRecord[]>> {
+		const scope = new FileRecordScope().byCreatorId(creatorId);
+		const result = await this.findAndCount(scope);
+
+		return result;
+	}
+
 	private async findAndCount(
 		scope: FileRecordScope,
 		options?: IFindOptions<FileRecord>

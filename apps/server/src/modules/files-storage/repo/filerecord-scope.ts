@@ -34,4 +34,10 @@ export class FileRecordScope extends Scope<FileRecord> {
 
 		return this;
 	}
+
+	byCreatorId(creatorId: EntityId): FileRecordScope {
+		this.addQuery({ _creatorId: new ObjectId(creatorId) });
+
+		return this;
+	}
 }
