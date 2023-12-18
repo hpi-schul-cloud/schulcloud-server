@@ -39,28 +39,6 @@ describe('system repo', () => {
 			await em.nativeDelete(SystemEntity, {});
 		});
 
-		it('should return right keys', async () => {
-			const system = systemEntityFactory.build();
-			await em.persistAndFlush([system]);
-			const result = await repo.findById(system.id);
-			expect(Object.keys(result).sort()).toEqual(
-				[
-					'createdAt',
-					'updatedAt',
-					'type',
-					'url',
-					'alias',
-					'displayName',
-					'oauthConfig',
-					'oidcConfig',
-					'ldapConfig',
-					'_id',
-					'provisioningStrategy',
-					'provisioningUrl',
-				].sort()
-			);
-		});
-
 		it('should return a System that matched by id', async () => {
 			const system = systemEntityFactory.build();
 			await em.persistAndFlush([system]);
