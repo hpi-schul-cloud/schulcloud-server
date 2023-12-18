@@ -122,13 +122,11 @@ describe('WebSocketController (WsAdapter)', () => {
 
 	describe('when checking cookie', () => {
 		const setup = () => {
-			const setupConnectionSpy = jest.spyOn(wsService, 'setupWSConnection');
 			const closeClientSpy = jest.spyOn(gateway, 'closeClient');
 			const httpGetCallSpy = jest.spyOn(httpService, 'get');
 			const parseCookieSpy = jest.spyOn(gateway, 'parseCookiesFromHeader').mockReturnValueOnce({});
 
 			return {
-				setupConnectionSpy,
 				closeClientSpy,
 				httpGetCallSpy,
 				parseCookieSpy,
@@ -136,7 +134,7 @@ describe('WebSocketController (WsAdapter)', () => {
 		};
 
 		it(`should refuse connection if there is no jwt in cookie`, async () => {
-			const { setupConnectionSpy, closeClientSpy, httpGetCallSpy, parseCookieSpy } = setup();
+			const { closeClientSpy, httpGetCallSpy, parseCookieSpy } = setup();
 			const { buffer } = getMessage();
 
 			jest.spyOn(gateway, 'parseCookiesFromHeader').mockReturnValueOnce({});
@@ -149,7 +147,6 @@ describe('WebSocketController (WsAdapter)', () => {
 				WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_JWT_NOT_PROVIDED_MESSAGE
 			);
 
-			setupConnectionSpy.mockRestore();
 			closeClientSpy.mockRestore();
 			httpGetCallSpy.mockRestore();
 			parseCookieSpy.mockRestore();
@@ -157,7 +154,7 @@ describe('WebSocketController (WsAdapter)', () => {
 		});
 
 		it(`should refuse connection if jwt is wrong`, async () => {
-			const { setupConnectionSpy, closeClientSpy, httpGetCallSpy, parseCookieSpy } = setup();
+			const { closeClientSpy, httpGetCallSpy, parseCookieSpy } = setup();
 			const { buffer } = getMessage();
 			const error = new Error('unknown error');
 
@@ -173,14 +170,13 @@ describe('WebSocketController (WsAdapter)', () => {
 			);
 
 			httpGetCallSpy.mockRestore();
-			setupConnectionSpy.mockRestore();
 			closeClientSpy.mockRestore();
 			parseCookieSpy.mockRestore();
 			ws.close();
 		});
 	});
 
-	describe('when checking docName', () => {
+	describe('when checking docName and cookie', () => {
 		const setup = () => {
 			const parseCookieSpy = jest.spyOn(gateway, 'parseCookiesFromHeader');
 			const closeClientSpy = jest.spyOn(gateway, 'closeClient');
@@ -211,6 +207,52 @@ describe('WebSocketController (WsAdapter)', () => {
 			closeClientSpy.mockRestore();
 			setupConnectionSpy.mockRestore();
 			parseCookieSpy.mockRestore();
+			ws.close();
+		});
+
+		it(`should close for not authorizing connection`, async () => {
+			const { parseCookieSpy, setupConnectionSpy, closeClientSpy } = setup();
+			const { buffer } = getMessage();
+
+			const httpGetCallSpy = jest.spyOn(httpService, 'get');
+			const error = new Error('unknown error');
+			httpGetCallSpy.mockReturnValueOnce(throwError(() => error));
+			parseCookieSpy.mockReturnValueOnce({ jwt: 'jwt-mocked' });
+
+			ws = await TestConnection.setupWs(wsUrl, 'TEST');
+			ws.send(buffer);
+
+			expect(closeClientSpy).toHaveBeenCalledWith(
+				expect.anything(),
+				WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
+				WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_LACK_PERMISSION_MESSAGE
+			);
+
+			closeClientSpy.mockRestore();
+			setupConnectionSpy.mockRestore();
+			parseCookieSpy.mockRestore();
+			httpGetCallSpy.mockRestore();
+			ws.close();
+		});
+
+		it(`should setup connection for proper data`, async () => {
+			const { parseCookieSpy, setupConnectionSpy, closeClientSpy } = setup();
+			const { buffer } = getMessage();
+
+			parseCookieSpy.mockReturnValueOnce({ jwt: 'jwt-mocked' });
+			const httpGetCallSpy = jest
+				.spyOn(wsService, 'authorizeConnection')
+				.mockImplementationOnce(() => Promise.resolve());
+
+			ws = await TestConnection.setupWs(wsUrl, 'TEST');
+			ws.send(buffer);
+
+			expect(setupConnectionSpy).toHaveBeenCalledWith(expect.anything(), 'TEST');
+
+			closeClientSpy.mockRestore();
+			setupConnectionSpy.mockRestore();
+			parseCookieSpy.mockRestore();
+			httpGetCallSpy.mockRestore();
 			ws.close();
 		});
 	});
