@@ -331,8 +331,14 @@ export class GroupUc {
 		return resolvedGroupUsers;
 	}
 
-	private applyPagination(combinedClassInfo: ClassInfoDto[], skip: number, limit: number | undefined) {
-		const page: ClassInfoDto[] = combinedClassInfo.slice(skip, limit ? skip + limit : combinedClassInfo.length);
+	private applyPagination(combinedClassInfo: ClassInfoDto[], skip: number, limit: number | undefined): ClassInfoDto[] {
+		let page: ClassInfoDto[];
+
+		if (limit === -1) {
+			page = combinedClassInfo.slice(skip);
+		} else {
+			page = combinedClassInfo.slice(skip, limit ? skip + limit : combinedClassInfo.length);
+		}
 
 		return page;
 	}
