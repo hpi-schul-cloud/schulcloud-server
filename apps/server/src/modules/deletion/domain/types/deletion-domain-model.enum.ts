@@ -3,6 +3,7 @@ export const enum DeletionDomainModel {
 	CLASS = 'class',
 	COURSEGROUP = 'courseGroup',
 	COURSE = 'course',
+	DASHBOARD = 'dashboard',
 	FILE = 'file',
 	FILERECORDS = 'fileRecords',
 	LESSONS = 'lessons',
