@@ -25,4 +25,8 @@ export class System extends DomainObject<SystemProps> {
 	get ldapConfig(): LdapConfig | undefined {
 		return this.props.ldapConfig;
 	}
+
+	get provisioningStrategy(): SystemProvisioningStrategy | undefined {
+		return this.props.provisioningStrategy;
+	}
 }

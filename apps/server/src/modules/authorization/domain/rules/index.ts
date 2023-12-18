@@ -16,3 +16,4 @@ export * from './user-login-migration.rule';
 export * from './user.rule';
 export * from './group.rule';
 export { SystemRule } from './system.rule';
+export { SchoolSystemOptionsRule } from './school-system-options.rule';
