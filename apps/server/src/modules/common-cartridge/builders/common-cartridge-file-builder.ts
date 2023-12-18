@@ -1,16 +1,13 @@
 import AdmZip from 'adm-zip';
+import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import {
-	CommonCartridgeElementType,
-	CommonCartridgeResourceType,
-	CommonCartridgeVersion,
-} from '../common-cartridge.enums';
-import { CommonCartridgeElementFactory } from '../elements/common-cartridge-element-factory';
-import { CommonCartridgeMetadataElementPropsV110 } from '../elements/v1.1.0/common-cartridge-metadata-element';
-import { CommonCartridgeMetadataElementPropsV130 } from '../elements/v1.3.0/common-cartridge-metadata-element';
+	CommonCartridgeElementFactory,
+	CommonCartridgeElementProps,
+} from '../elements/common-cartridge-element-factory';
 import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
 import { CommonCartridgeResourceFactory } from '../resources/common-cartridge-resource-factory';
-import { OmitVersion, OmitVersionAndType, checkDefined } from '../utils';
+import { OmitVersion, checkDefined } from '../utils';
 import {
 	CommonCartridgeOrganizationBuilder,
 	CommonCartridgeOrganizationBuilderOptions,
@@ -32,11 +29,8 @@ export class CommonCartridgeFileBuilder {
 
 	public constructor(private readonly props: CommonCartridgeFileBuilderProps) {}
 
-	public addMetadata(
-		props: OmitVersionAndType<CommonCartridgeMetadataElementPropsV110 | CommonCartridgeMetadataElementPropsV130>
-	): CommonCartridgeFileBuilder {
+	public addMetadata(props: CommonCartridgeElementProps): CommonCartridgeFileBuilder {
 		this.metadata = CommonCartridgeElementFactory.createElement({
-			type: CommonCartridgeElementType.METADATA,
 			version: this.props.version,
 			...props,
 		});

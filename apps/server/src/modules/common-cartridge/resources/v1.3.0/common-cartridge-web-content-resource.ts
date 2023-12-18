@@ -4,6 +4,7 @@ import {
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
 import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resource.interface';
+import { checkIntendedUse } from '../../utils';
 
 export type CommonCartridgeWebContentResourcePropsV130 = {
 	type: CommonCartridgeResourceType.WEB_CONTENT;
@@ -16,8 +17,16 @@ export type CommonCartridgeWebContentResourcePropsV130 = {
 };
 
 export class CommonCartridgeWebContentResourceV130 extends CommonCartridgeResource {
+	private static readonly SUPPORTED_INTENDED_USES = [
+		CommonCartridgeIntendedUseType.ASSIGNMENT,
+		CommonCartridgeIntendedUseType.LESSON_PLAN,
+		CommonCartridgeIntendedUseType.SYLLABUS,
+		CommonCartridgeIntendedUseType.UNSPECIFIED,
+	];
+
 	public constructor(private readonly props: CommonCartridgeWebContentResourcePropsV130) {
 		super(props);
+		checkIntendedUse(props.intendedUse, CommonCartridgeWebContentResourceV130.SUPPORTED_INTENDED_USES);
 	}
 
 	public override canInline(): boolean {

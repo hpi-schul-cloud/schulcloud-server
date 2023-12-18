@@ -38,6 +38,12 @@ export function createIdentifier(identifier: string | ObjectID | undefined): str
 	return `i${identifier.toString()}`;
 }
 
+export function checkIntendedUse(intendedUse: string, supportedIntendedUses: string[]): void | never {
+	if (!supportedIntendedUses.includes(intendedUse)) {
+		throw new Error(`Intended use ${intendedUse} is not supported`);
+	}
+}
+
 export function checkDefined<T>(value: T | undefined | null, name: string): T | never {
 	if (value) {
 		return value;

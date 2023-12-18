@@ -3,11 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { ComponentProperties, ComponentType, Course, LessonEntity, Task } from '@shared/domain';
 import { ObjectId } from 'bson';
 import {
-	CommonCartridgeMetadataElementProps,
+	CommonCartridgeElementProps,
+	CommonCartridgeElementType,
+	CommonCartridgeIntendedUseType,
 	CommonCartridgeOrganizationBuilderOptions,
 	CommonCartridgeResourceProps,
 	CommonCartridgeResourceType,
-	OmitVersion,
 } from '../../common-cartridge';
 import { LearnroomConfig } from '../learnroom.config';
 
@@ -15,31 +16,30 @@ import { LearnroomConfig } from '../learnroom.config';
 export class CommonCartridgeMapper {
 	public constructor(private readonly configService: ConfigService<LearnroomConfig, true>) {}
 
-	public mapCourseToMetadata(course: Course): OmitVersion<CommonCartridgeMetadataElementProps> {
+	public mapCourseToMetadata(course: Course): CommonCartridgeElementProps {
 		return {
+			type: CommonCartridgeElementType.METADATA,
 			title: course.name,
 			copyrightOwners: course.teachers.toArray().map((teacher) => `${teacher.firstName} ${teacher.lastName}`),
 			creationDate: course.createdAt,
 		};
 	}
 
-	public mapLessonToOrganization(lesson: LessonEntity): OmitVersion<CommonCartridgeOrganizationBuilderOptions> {
+	public mapLessonToOrganization(lesson: LessonEntity): CommonCartridgeOrganizationBuilderOptions {
 		return {
 			identifier: lesson.id,
 			title: lesson.name,
 		};
 	}
 
-	public mapContentToOrganization(
-		content: ComponentProperties
-	): OmitVersion<CommonCartridgeOrganizationBuilderOptions> {
+	public mapContentToOrganization(content: ComponentProperties): CommonCartridgeOrganizationBuilderOptions {
 		return {
 			identifier: new ObjectId(content._id).toHexString(),
 			title: content.title,
 		};
 	}
 
-	public mapTaskToOrganization(task: Task): OmitVersion<CommonCartridgeOrganizationBuilderOptions> {
+	public mapTaskToOrganization(task: Task): CommonCartridgeOrganizationBuilderOptions {
 		return {
 			identifier: task.id,
 			title: task.name,
@@ -52,6 +52,7 @@ export class CommonCartridgeMapper {
 			identifier: task.id,
 			title: task.name,
 			html: `<h1>${task.name}</h1><p>${task.description}</p>`,
+			intendedUse: CommonCartridgeIntendedUseType.ASSIGNMENT,
 		};
 	}
 
@@ -65,6 +66,7 @@ export class CommonCartridgeMapper {
 					identifier: new ObjectId(content._id).toHexString(),
 					title: content.title,
 					html: `<h1>${content.title}</h1><p>${content.content.text}</p>`,
+					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				};
 			case ComponentType.GEOGEBRA:
 				return {
