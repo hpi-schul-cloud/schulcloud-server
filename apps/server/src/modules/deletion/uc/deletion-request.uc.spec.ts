@@ -14,6 +14,7 @@ import { RocketChatUser, RocketChatUserService, rocketChatUserFactory } from '@m
 import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from 'bson';
 import { RegistrationPinService } from '@modules/registration-pin';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { DeletionDomainModel, DeletionStatusModel } from '../domain/types';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
@@ -40,6 +41,7 @@ describe(DeletionRequestUc.name, () => {
 	let rocketChatUserService: DeepMocked<RocketChatUserService>;
 	let rocketChatService: DeepMocked<RocketChatService>;
 	let registrationPinService: DeepMocked<RegistrationPinService>;
+	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 	let dashboardService: DeepMocked<DashboardService>;
 
 	beforeAll(async () => {
@@ -107,6 +109,10 @@ describe(DeletionRequestUc.name, () => {
 					useValue: createMock<RegistrationPinService>(),
 				},
 				{
+					provide: FilesStorageClientAdapterService,
+					useValue: createMock<FilesStorageClientAdapterService>(),
+				},
+				{
 					provide: DashboardService,
 					useValue: createMock<DashboardService>(),
 				},
@@ -128,6 +134,7 @@ describe(DeletionRequestUc.name, () => {
 		rocketChatUserService = module.get(RocketChatUserService);
 		rocketChatService = module.get(RocketChatService);
 		registrationPinService = module.get(RegistrationPinService);
+		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 		dashboardService = module.get(DashboardService);
 		await setupEntities();
 	});
@@ -205,6 +212,7 @@ describe(DeletionRequestUc.name, () => {
 				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(2);
 				userService.deleteUser.mockResolvedValueOnce(1);
 				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(1);
+				filesStorageClientAdapterService.removeCreatorIdFromFileRecords.mockResolvedValueOnce(5);
 				dashboardService.deleteDashboardByUserId.mockResolvedValueOnce(1);
 
 				return {
@@ -316,6 +324,18 @@ describe(DeletionRequestUc.name, () => {
 				expect(filesService.removeUserPermissionsToAnyFiles).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
+			it('should call filesStorageClientAdapterService.removeCreatorIdFromFileRecords to remove cratorId to any files in fileRecords module', async () => {
+				const { deletionRequestToExecute } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+
+				await uc.executeDeletionRequests();
+
+				expect(filesStorageClientAdapterService.removeCreatorIdFromFileRecords).toHaveBeenCalledWith(
+					deletionRequestToExecute.targetRefId
+				);
+			});
+
 			it('should call lessonService.deleteUserDataFromLessons to delete users data in lesson module', async () => {
 				const { deletionRequestToExecute } = setup();
 
@@ -405,7 +425,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(11);
+				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(12);
 			});
 		});
 
