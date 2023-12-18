@@ -8,7 +8,10 @@ import {
 } from '../resources/common-cartridge-resource-factory';
 import { OmitVersionAndFolder } from '../utils';
 
-export type CommonCartridgeOrganizationBuilderOptions = {
+export type CommonCartridgeOrganizationBuilderOptions =
+	OmitVersionAndFolder<CommonCartridgeOrganizationBuilderOptionsInternal>;
+
+type CommonCartridgeOrganizationBuilderOptionsInternal = {
 	version: CommonCartridgeVersion;
 	identifier: string;
 	title: string;
@@ -21,7 +24,7 @@ export class CommonCartridgeOrganizationBuilder {
 	private readonly children = new Array<CommonCartridgeOrganizationBuilder>();
 
 	public constructor(
-		protected readonly options: CommonCartridgeOrganizationBuilderOptions,
+		protected readonly options: CommonCartridgeOrganizationBuilderOptionsInternal,
 		private readonly addResourceToFileBuilder: (resource: CommonCartridgeResource) => void
 	) {}
 
