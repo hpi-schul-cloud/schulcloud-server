@@ -12,12 +12,13 @@ import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder, DeletionRequestLogResponseBuilder } from '../builder';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
+import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionLogStatistic } from './interface/interfaces';
 import { DeletionRequest, DeletionLog } from '../domain';
 import { DeletionDomainModel, DeletionOperationModel, DeletionStatusModel } from '../domain/types';
 import { DeletionRequestService, DeletionLogService } from '../services';
-import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 
 @Injectable()
 export class DeletionRequestUc {
@@ -37,6 +38,7 @@ export class DeletionRequestUc {
 		private readonly rocketChatService: RocketChatService,
 		private readonly logger: LegacyLogger,
 		private readonly registrationPinService: RegistrationPinService,
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly dashboardService: DashboardService
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
@@ -100,6 +102,7 @@ export class DeletionRequestUc {
 				this.removeUserFromCourseGroup(deletionRequest),
 				this.removeUserFromCourse(deletionRequest),
 				this.removeUsersFilesAndPermissions(deletionRequest),
+				this.removeUsersDataFromFileRecords(deletionRequest),
 				this.removeUserFromLessons(deletionRequest),
 				this.removeUsersPseudonyms(deletionRequest),
 				this.removeUserFromTeams(deletionRequest),
@@ -225,6 +228,22 @@ export class DeletionRequestUc {
 			DeletionDomainModel.FILE,
 			DeletionOperationModel.UPDATE,
 			filesDeleted + filePermissionsUpdated,
+			0
+		);
+	}
+
+	private async removeUsersDataFromFileRecords(deletionRequest: DeletionRequest) {
+		this.logger.debug({ action: 'removeUsersDataFromFileRecords', deletionRequest });
+
+		const fileRecordsUpdated = await this.filesStorageClientAdapterService.removeCreatorIdFromFileRecords(
+			deletionRequest.targetRefId
+		);
+
+		await this.logDeletion(
+			deletionRequest,
+			DeletionDomainModel.FILERECORDS,
+			DeletionOperationModel.UPDATE,
+			fileRecordsUpdated,
 			0
 		);
 	}

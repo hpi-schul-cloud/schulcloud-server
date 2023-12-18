@@ -35,4 +35,10 @@ export class FilesStorageClientAdapterService {
 
 		return fileInfos;
 	}
+
+	async removeCreatorIdFromFileRecords(creatorId: EntityId): Promise<number> {
+		const response = await this.fileStorageMQProducer.removeCreatorIdFromFileRecords(creatorId);
+
+		return response.length;
+	}
 }
