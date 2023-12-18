@@ -815,7 +815,13 @@ describe('GroupUc', () => {
 				it('should return all classes without limit', async () => {
 					const { adminUser } = setup(true);
 
-					const result: Page<ClassInfoDto> = await uc.findAllClasses(adminUser.id, adminUser.school.id);
+					const result: Page<ClassInfoDto> = await uc.findAllClasses(
+						adminUser.id,
+						adminUser.school.id,
+						undefined,
+						0,
+						-1
+					);
 
 					expect(result.data.length).toEqual(14);
 				});
