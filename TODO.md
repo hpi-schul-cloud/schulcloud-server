@@ -89,17 +89,3 @@
   e.g.
   api: <PaginationParams, pagination.params.ts>, <CreatNewsParams, create-news.params.ts>, <NewsResponse, news.response.ts>
   domain: <CreateNews, create-news.interface.ts>, <News, news.entity.ts>
-
-### EW-539
-
-- tests for CCManifestResource
-- Check test coverage
-- Cleanup FIXMEs
-- Manual tests
-- createIdentifier method
-- merge main
-- review.md and comments
-- ~~move in separate module~~
-- check index.ts
-- move xml files into test-assets folder
-- Adjust export-service
