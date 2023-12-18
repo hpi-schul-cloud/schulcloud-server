@@ -177,6 +177,9 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                <a href="#byCreatorId" >byCreatorId</a>
+                            </li>
+                            <li>
                                 <a href="#byFileRecordId" >byFileRecordId</a>
                             </li>
                             <li>
@@ -329,6 +332,73 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="byCreatorId"></a>
+                    <span class="name">
+                        <span ><b>byCreatorId</b></span>
+                        <a href="#byCreatorId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>byCreatorId(creatorId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/repo/filerecord-scope.ts:38</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>creatorId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/FileRecordScope.html" target="_self" >FileRecordScope</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -853,6 +923,12 @@ export class FileRecordScope extends Scope&lt;FileRecord&gt; {
 	byMarkedForDelete(isMarked &#x3D; true): FileRecordScope {
 		const query &#x3D; isMarked ? { deletedSince: { $ne: null } } : { deletedSince: null };
 		this.addQuery(query);
+
+		return this;
+	}
+
+	byCreatorId(creatorId: EntityId): FileRecordScope {
+		this.addQuery({ _creatorId: new ObjectId(creatorId) });
 
 		return this;
 	}

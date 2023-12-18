@@ -163,6 +163,13 @@
                                     <span class="modifier">Async</span>
                                 <a href="#getFilesOfParent" >getFilesOfParent</a>
                             </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#removeCreatorIdFromFileRecords" >removeCreatorIdFromFileRecords</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -502,6 +509,85 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removeCreatorIdFromFileRecords"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>removeCreatorIdFromFileRecords</b></span>
+                        <a href="#removeCreatorIdFromFileRecords"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>removeCreatorIdFromFileRecords(payload: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@RabbitRPC({exchange: FilesStorageExchange, routingKey: undefined, queue: undefined})<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.consumer.ts:82</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>payload</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;RpcMessage&lt;FileDO[]&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -579,6 +665,24 @@ export class FilesStorageConsumer {
 		await this.filesStorageService.deleteFilesOfParent(fileRecords);
 
 		const response &#x3D; FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
+
+		return { message: response.data };
+	}
+
+	@RabbitRPC({
+		exchange: FilesStorageExchange,
+		routingKey: FilesStorageEvents.REMOVE_CREATORID_OF_FILES,
+		queue: FilesStorageEvents.REMOVE_CREATORID_OF_FILES,
+	})
+	@UseRequestContext()
+	public async removeCreatorIdFromFileRecords(@RabbitPayload() payload: EntityId): Promise&lt;RpcMessage&lt;FileDO[]&gt;&gt; {
+		this.logger.debug({ action: &#x27;removeCreatorIdFromFileRecords&#x27;, payload });
+
+		const [fileRecords, total] &#x3D; await this.filesStorageService.getFileRecordsByCreatorId(payload);
+		let updatedFileRecords &#x3D; await this.filesStorageService.removeCreatorIdFromFileRecords(fileRecords);
+		updatedFileRecords &#x3D; updatedFileRecords ?? [];
+
+		const response &#x3D; FilesStorageMapper.mapToFileRecordListResponse(updatedFileRecords, total);
 
 		return { message: response.data };
 	}

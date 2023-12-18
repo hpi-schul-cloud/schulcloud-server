@@ -148,6 +148,7 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#creatorId" 
 >
                                             creatorId
@@ -240,6 +241,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -529,6 +535,7 @@ export enum FilesStorageEvents {
 	&#x27;COPY_FILES_OF_PARENT&#x27; &#x3D; &#x27;copy-files-of-parent&#x27;,
 	&#x27;LIST_FILES_OF_PARENT&#x27; &#x3D; &#x27;list-files-of-parent&#x27;,
 	&#x27;DELETE_FILES_OF_PARENT&#x27; &#x3D; &#x27;delete-files-of-parent&#x27;,
+	&#x27;REMOVE_CREATORID_OF_FILES&#x27; &#x3D; &#x27;remove-creatorId-of-files&#x27;,
 }
 
 export enum ScanStatus {
@@ -573,7 +580,7 @@ export interface FileDO {
 	parentId: string;
 	securityCheckStatus: ScanStatus;
 	size: number;
-	creatorId: string;
+	creatorId?: string;
 	mimeType: string;
 	parentType: FileRecordParentType;
 	deletedSince?: Date;

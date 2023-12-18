@@ -28,13 +28,13 @@
 <title>cluster_OauthModule_imports</title>
 <polygon fill="none" stroke="black" points="694,-78 694,-130 1991,-130 1991,-78 694,-78"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_OauthModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 686,-130 686,-78 16,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_OauthModule_exports</title>
 <polygon fill="none" stroke="black" points="929,-208 929,-260 1179,-260 1179,-208 929,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_OauthModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 686,-130 686,-78 16,-78"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node1" class="node">

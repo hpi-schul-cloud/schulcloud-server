@@ -779,13 +779,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/DeletionApiModule.html" data-type="entity-link" >DeletionApiModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-DeletionApiModule-df6dbeded67d597211dd187ed74269f6741c06203f1e3792abca2dd4b237b465ae4341539bd1b8d4ce7dde9e37ff9c182aeee9adb882733bc707cc22904b5747"' : 'data-bs-target="#xs-controllers-links-module-DeletionApiModule-df6dbeded67d597211dd187ed74269f6741c06203f1e3792abca2dd4b237b465ae4341539bd1b8d4ce7dde9e37ff9c182aeee9adb882733bc707cc22904b5747"' }>
+                                            'data-bs-target="#controllers-links-module-DeletionApiModule-7a4203d63aeb30596a777c516137bcc3bf1933ed0bc81701e21d2f0a7f6d27c2f01a67e68f79ba3ef22920d631d9a098c0c510d9e817f59a5a0b7dfde29bd75b"' : 'data-bs-target="#xs-controllers-links-module-DeletionApiModule-7a4203d63aeb30596a777c516137bcc3bf1933ed0bc81701e21d2f0a7f6d27c2f01a67e68f79ba3ef22920d631d9a098c0c510d9e817f59a5a0b7dfde29bd75b"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-DeletionApiModule-df6dbeded67d597211dd187ed74269f6741c06203f1e3792abca2dd4b237b465ae4341539bd1b8d4ce7dde9e37ff9c182aeee9adb882733bc707cc22904b5747"' :
-                                            'id="xs-controllers-links-module-DeletionApiModule-df6dbeded67d597211dd187ed74269f6741c06203f1e3792abca2dd4b237b465ae4341539bd1b8d4ce7dde9e37ff9c182aeee9adb882733bc707cc22904b5747"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-DeletionApiModule-7a4203d63aeb30596a777c516137bcc3bf1933ed0bc81701e21d2f0a7f6d27c2f01a67e68f79ba3ef22920d631d9a098c0c510d9e817f59a5a0b7dfde29bd75b"' :
+                                            'id="xs-controllers-links-module-DeletionApiModule-7a4203d63aeb30596a777c516137bcc3bf1933ed0bc81701e21d2f0a7f6d27c2f01a67e68f79ba3ef22920d631d9a098c0c510d9e817f59a5a0b7dfde29bd75b"' }>
                                             <li class="link">
                                                 <a href="controllers/DeletionExecutionsController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >DeletionExecutionsController</a>
                                             </li>
@@ -796,13 +796,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-DeletionApiModule-df6dbeded67d597211dd187ed74269f6741c06203f1e3792abca2dd4b237b465ae4341539bd1b8d4ce7dde9e37ff9c182aeee9adb882733bc707cc22904b5747"' : 'data-bs-target="#xs-injectables-links-module-DeletionApiModule-df6dbeded67d597211dd187ed74269f6741c06203f1e3792abca2dd4b237b465ae4341539bd1b8d4ce7dde9e37ff9c182aeee9adb882733bc707cc22904b5747"' }>
+                                        'data-bs-target="#injectables-links-module-DeletionApiModule-7a4203d63aeb30596a777c516137bcc3bf1933ed0bc81701e21d2f0a7f6d27c2f01a67e68f79ba3ef22920d631d9a098c0c510d9e817f59a5a0b7dfde29bd75b"' : 'data-bs-target="#xs-injectables-links-module-DeletionApiModule-7a4203d63aeb30596a777c516137bcc3bf1933ed0bc81701e21d2f0a7f6d27c2f01a67e68f79ba3ef22920d631d9a098c0c510d9e817f59a5a0b7dfde29bd75b"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-DeletionApiModule-df6dbeded67d597211dd187ed74269f6741c06203f1e3792abca2dd4b237b465ae4341539bd1b8d4ce7dde9e37ff9c182aeee9adb882733bc707cc22904b5747"' :
-                                        'id="xs-injectables-links-module-DeletionApiModule-df6dbeded67d597211dd187ed74269f6741c06203f1e3792abca2dd4b237b465ae4341539bd1b8d4ce7dde9e37ff9c182aeee9adb882733bc707cc22904b5747"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-DeletionApiModule-7a4203d63aeb30596a777c516137bcc3bf1933ed0bc81701e21d2f0a7f6d27c2f01a67e68f79ba3ef22920d631d9a098c0c510d9e817f59a5a0b7dfde29bd75b"' :
+                                        'id="xs-injectables-links-module-DeletionApiModule-7a4203d63aeb30596a777c516137bcc3bf1933ed0bc81701e21d2f0a7f6d27c2f01a67e68f79ba3ef22920d631d9a098c0c510d9e817f59a5a0b7dfde29bd75b"' }>
                                         <li class="link">
                                             <a href="injectables/DeletionRequestUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >DeletionRequestUc</a>
                                         </li>

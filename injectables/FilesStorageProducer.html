@@ -161,6 +161,10 @@
                                 <a href="#listFilesOfParent" >listFilesOfParent</a>
                             </li>
                             <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#removeCreatorIdFromFileRecords" >removeCreatorIdFromFileRecords</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Protected</span>
                                 <a href="#checkError" >checkError</a>
                             </li>
@@ -448,6 +452,75 @@
                                                 <td>payload</td>
                                             <td>
                                                             <code><a href="../interfaces/FileRecordParams.html" target="_self" >FileRecordParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;FileDO[]&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removeCreatorIdFromFileRecords"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>removeCreatorIdFromFileRecords</b></span>
+                        <a href="#removeCreatorIdFromFileRecords"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>removeCreatorIdFromFileRecords(payload: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="55"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:55</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>payload</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
 
                                             <td>
@@ -790,6 +863,16 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		const response &#x3D; await this.request&lt;FileDO[]&gt;(FilesStorageEvents.DELETE_FILES_OF_PARENT, payload);
 
 		this.logger.debug({ action: &#x27;deleteFilesOfParent:finished&#x27;, payload });
+
+		return response;
+	}
+
+	async removeCreatorIdFromFileRecords(payload: EntityId): Promise&lt;FileDO[]&gt; {
+		this.logger.debug({ action: &#x27;removeCreatorIdFromFileRecords:started&#x27;, payload });
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+		const response &#x3D; await this.request&lt;FileDO[]&gt;(FilesStorageEvents.REMOVE_CREATORID_OF_FILES, payload);
+
+		this.logger.debug({ action: &#x27;removeCreatorIdFromFileRecords:finished&#x27;, payload });
 
 		return response;
 	}

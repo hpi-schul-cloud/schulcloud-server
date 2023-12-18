@@ -155,6 +155,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findByCreatorId" >findByCreatorId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findByParentId" >findByParentId</a>
                             </li>
                             <li>
@@ -252,8 +256,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="66"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/repo/filerecord.repo.ts:66</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/repo/filerecord.repo.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -293,6 +297,75 @@
 
                                             <td>
                                                     Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;Counted&lt;FileRecord[]&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findByCreatorId"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findByCreatorId</b></span>
+                        <a href="#findByCreatorId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByCreatorId(creatorId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/repo/filerecord.repo.ts:66</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>creatorId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
                                             </td>
 
 
@@ -808,8 +881,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/repo/filerecord.repo.ts:82</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="89"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/repo/filerecord.repo.ts:89</a></div>
                         </td>
                     </tr>
 
@@ -1249,6 +1322,13 @@ export class FileRecordRepo extends BaseRepo&lt;FileRecord&gt; {
 		const fileRecord &#x3D; await this.findOneOrFail(scope);
 
 		return fileRecord;
+	}
+
+	async findByCreatorId(creatorId: EntityId): Promise&lt;Counted&lt;FileRecord[]&gt;&gt; {
+		const scope &#x3D; new FileRecordScope().byCreatorId(creatorId);
+		const result &#x3D; await this.findAndCount(scope);
+
+		return result;
 	}
 
 	private async findAndCount(

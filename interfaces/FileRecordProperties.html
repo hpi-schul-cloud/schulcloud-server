@@ -148,6 +148,7 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#creatorId" 
 >
                                             creatorId
@@ -241,6 +242,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -604,7 +610,7 @@ export interface FileRecordProperties {
 	mimeType: string;
 	parentType: FileRecordParentType;
 	parentId: EntityId;
-	creatorId: EntityId;
+	creatorId?: EntityId;
 	schoolId: EntityId;
 	deletedSince?: Date;
 	isCopyFrom?: EntityId;
@@ -656,11 +662,15 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return this._parentId.toHexString();
 	}
 
-	@Property({ fieldName: &#x27;creator&#x27; })
-	_creatorId: ObjectId;
+	@Property({ fieldName: &#x27;creator&#x27;, nullable: true })
+	_creatorId?: ObjectId;
 
-	get creatorId(): EntityId {
-		return this._creatorId.toHexString();
+	get creatorId(): EntityId | undefined {
+		return this._creatorId?.toHexString();
+	}
+
+	set creatorId(userId: EntityId | undefined) {
+		this._creatorId &#x3D; userId !&#x3D;&#x3D; undefined ? new ObjectId(userId) : undefined;
 	}
 
 	@Property({ fieldName: &#x27;school&#x27; })
@@ -686,7 +696,9 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this.mimeType &#x3D; props.mimeType;
 		this.parentType &#x3D; props.parentType;
 		this._parentId &#x3D; new ObjectId(props.parentId);
-		this._creatorId &#x3D; new ObjectId(props.creatorId);
+		if (props.creatorId !&#x3D;&#x3D; undefined) {
+			this._creatorId &#x3D; new ObjectId(props.creatorId);
+		}
 		this._schoolId &#x3D; new ObjectId(props.schoolId);
 		if (props.isCopyFrom) {
 			this._isCopyFrom &#x3D; new ObjectId(props.isCopyFrom);
@@ -828,6 +840,10 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		const filenameObj &#x3D; path.parse(this.name);
 
 		return filenameObj.name;
+	}
+
+	public removeCreatorId(): void {
+		this.creatorId &#x3D; undefined;
 	}
 }
 </code></pre>

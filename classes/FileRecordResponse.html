@@ -148,6 +148,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
                                 <a href="#creatorId" >creatorId</a>
                             </li>
                             <li>
@@ -266,6 +267,7 @@
                     <a name="creatorId"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
                         <span ><b>creatorId</b></span>
                         <a href="#creatorId"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -709,7 +711,7 @@ export class FileRecordResponse {
 	size: number;
 
 	@ApiProperty()
-	creatorId: string;
+	creatorId?: string;
 
 	@ApiProperty()
 	mimeType: string;
