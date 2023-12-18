@@ -24,6 +24,21 @@ describe(DashboardElementRepo.name, () => {
 		await module.close();
 	});
 
+	describe('defined', () => {
+		it('repo should be defined', () => {
+			expect(repo).toBeDefined();
+			expect(typeof repo.deleteByDashboardId).toEqual('function');
+		});
+
+		it('entity manager should be defined', () => {
+			expect(em).toBeDefined();
+		});
+
+		it('should implement entityName getter', () => {
+			expect(repo.entityName).toBe(DashboardGridElementModel);
+		});
+	});
+
 	describe('deleteByDasboardId', () => {
 		const setup = async () => {
 			const user1 = userFactory.build();
