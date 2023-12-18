@@ -5084,6 +5084,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SuccessfulResponse.html" data-type="entity-link" >SuccessfulResponse</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SwapInternalLinksVisitor.html" data-type="entity-link" >SwapInternalLinksVisitor</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/System.html" data-type="entity-link" >System</a>
                             </li>
                             <li class="link">

@@ -146,6 +146,11 @@
                                     <span class="modifier">Async</span>
                                 <a href="#copyColumnBoard" >copyColumnBoard</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#swapLinkedIds" >swapLinkedIds</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -169,7 +174,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/service/column-board-copy.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/board/service/column-board-copy.service.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -282,8 +287,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column-board-copy.service.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">apps/server/src/modules/board/service/column-board-copy.service.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -329,6 +334,88 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="swapLinkedIds"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>swapLinkedIds</b></span>
+                        <a href="#swapLinkedIds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>swapLinkedIds(boardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, idMap: <a href="../undefineds/EntityId.html" target="_self">Map&lt;EntityId | EntityId&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">apps/server/src/modules/board/service/column-board-copy.service.ts:59</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>idMap</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Map&lt;EntityId | EntityId&gt;</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -348,6 +435,7 @@ import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { CourseRepo } from &#x27;@shared/repo&#x27;;
 import { BoardDoRepo } from &#x27;../repo&#x27;;
 import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from &#x27;./board-do-copy-service&#x27;;
+import { SwapInternalLinksVisitor } from &#x27;./board-do-copy-service/swap-internal-links.visitor&#x27;;
 
 @Injectable()
 export class ColumnBoardCopyService {
@@ -390,6 +478,18 @@ export class ColumnBoardCopyService {
 		await this.boardDoRepo.save(copyStatus.copyEntity);
 
 		return copyStatus;
+	}
+
+	public async swapLinkedIds(boardId: EntityId, idMap: Map&lt;EntityId, EntityId&gt;) {
+		const board &#x3D; await this.boardDoRepo.findById(boardId);
+
+		const visitor &#x3D; new SwapInternalLinksVisitor(idMap);
+
+		board.accept(visitor);
+
+		await this.boardDoRepo.save(board);
+
+		return board;
 	}
 }
 </code></pre>
