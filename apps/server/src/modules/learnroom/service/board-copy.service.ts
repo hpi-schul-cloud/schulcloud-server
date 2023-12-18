@@ -182,6 +182,10 @@ export class BoardCopyService {
 		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
 		copyDict.forEach((value, key) => map.set(key, value.id));
 
+		if (copyStatus.copyEntity instanceof Board && copyStatus.originalEntity instanceof Board) {
+			map.set(copyStatus.originalEntity.course.id, copyStatus.copyEntity.course.id);
+		}
+
 		const elements = copyStatus.elements ?? [];
 		const updatedElements = await Promise.all(
 			elements.map(async (el) => {
