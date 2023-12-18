@@ -1,6 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
+import { MikroORM } from '@mikro-orm/core';
 import { tldrawEntityFactory } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawRepo } from './tldraw.repo';
@@ -10,6 +11,7 @@ describe('TldrawRepo', () => {
 	let testingModule: TestingModule;
 	let repo: TldrawRepo;
 	let em: EntityManager;
+	let orm: MikroORM;
 
 	beforeAll(async () => {
 		testingModule = await Test.createTestingModule({
@@ -18,6 +20,7 @@ describe('TldrawRepo', () => {
 
 		repo = testingModule.get(TldrawRepo);
 		em = testingModule.get(EntityManager);
+		orm = testingModule.get(MikroORM);
 	});
 
 	afterAll(async () => {
@@ -90,6 +93,16 @@ describe('TldrawRepo', () => {
 
 				expect(emptyResults.length).toEqual(0);
 			});
+		});
+	});
+
+	describe('ensureIndexes', () => {
+		it('should call getSchemaGenerator().ensureIndexes()', async () => {
+			const ormSpy = jest.spyOn(orm, 'getSchemaGenerator');
+
+			await repo.ensureIndexes();
+
+			expect(ormSpy).toHaveBeenCalled();
 		});
 	});
 });

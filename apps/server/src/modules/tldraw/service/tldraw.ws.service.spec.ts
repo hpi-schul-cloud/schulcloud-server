@@ -81,8 +81,8 @@ describe('TldrawWSService', () => {
 			],
 		}).compile();
 
-		service = testingModule.get<TldrawWsService>(TldrawWsService);
-		boardRepo = testingModule.get<TldrawBoardRepo>(TldrawBoardRepo);
+		service = testingModule.get(TldrawWsService);
+		boardRepo = testingModule.get(TldrawBoardRepo);
 		logger = testingModule.get(Logger);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
@@ -558,7 +558,7 @@ describe('TldrawWSService', () => {
 					const { redisOnSpy, redisSubscribeSpy } = setup();
 					redisSubscribeSpy.mockResolvedValueOnce(1);
 
-					const doc = service.getYDoc('test');
+					const doc = service.getYDoc('test-redis');
 					await delay(20);
 
 					expect(doc).toBeDefined();
@@ -569,7 +569,30 @@ describe('TldrawWSService', () => {
 					const { errorLogSpy, redisSubscribeSpy } = setup();
 					redisSubscribeSpy.mockRejectedValueOnce(new Error('error'));
 
-					const doc = service.getYDoc('testfail');
+					const doc = service.getYDoc('test-redis-fail');
+					await delay(20);
+
+					expect(doc).toBeDefined();
+					expect(errorLogSpy).toHaveBeenCalled();
+				});
+			});
+
+			describe('when updating document', () => {
+				const setup = () => {
+					const updateDocSpy = jest.spyOn(boardRepo, 'updateDocument');
+					const errorLogSpy = jest.spyOn(logger, 'warning');
+
+					return {
+						updateDocSpy,
+						errorLogSpy,
+					};
+				};
+
+				it('should log error when failed', async () => {
+					const { errorLogSpy, updateDocSpy } = setup();
+					updateDocSpy.mockRejectedValueOnce(new Error('error'));
+
+					const doc = service.getYDoc('test-update-fail');
 					await delay(20);
 
 					expect(doc).toBeDefined();
