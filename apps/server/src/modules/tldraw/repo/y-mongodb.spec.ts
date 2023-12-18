@@ -70,15 +70,40 @@ describe('YMongoDb', () => {
 	});
 
 	describe('storeUpdateTransactional', () => {
-		it('should create new document with updates in the database', async () => {
-			const drawing = tldrawEntityFactory.build({ clock: 1 });
+		describe('when clock is defined', () => {
+			it('should create new document with updates in the database', async () => {
+				const drawing = tldrawEntityFactory.build({ clock: 1 });
 
-			await em.persistAndFlush(drawing);
-			em.clear();
-			await mdb.storeUpdateTransactional(drawing.docName, new Uint8Array([2, 2]));
-			const docs = await em.findAndCount(TldrawDrawing, { docName: drawing.docName });
+				await em.persistAndFlush(drawing);
+				em.clear();
+				await mdb.storeUpdateTransactional(drawing.docName, new Uint8Array([2, 2]));
+				const docs = await em.findAndCount(TldrawDrawing, { docName: drawing.docName });
 
-			expect(docs.length).toEqual(2);
+				expect(docs.length).toEqual(2);
+			});
+		});
+
+		describe('when clock is undefined', () => {
+			const setup = () => {
+				const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValueOnce();
+
+				return {
+					applyUpdateSpy,
+				};
+			};
+
+			it('should call applyUpdate and create new document with updates in the database', async () => {
+				const { applyUpdateSpy } = setup();
+				const drawing = tldrawEntityFactory.build({ clock: undefined });
+
+				await em.persistAndFlush(drawing);
+				em.clear();
+				await mdb.storeUpdateTransactional(drawing.docName, new Uint8Array([2, 2]));
+				const docs = await em.findAndCount(TldrawDrawing, { docName: drawing.docName });
+
+				expect(applyUpdateSpy).toHaveBeenCalled();
+				expect(docs.length).toEqual(2);
+			});
 		});
 	});
 
