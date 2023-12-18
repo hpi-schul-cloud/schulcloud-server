@@ -1,5 +1,15 @@
+import { InternalServerErrorException } from '@nestjs/common';
+import { ObjectID } from 'bson';
 import { CommonCartridgeVersion } from './common-cartridge.enums';
-import { buildXmlString, checkDefined, checkIntendedUse, createVersionNotSupportedError } from './utils';
+import {
+	buildXmlString,
+	checkDefined,
+	checkIntendedUse,
+	createElementTypeNotSupportedError,
+	createIdentifier,
+	createResourceTypeNotSupportedError,
+	createVersionNotSupportedError,
+} from './utils';
 
 describe('CommonCartridgeUtils', () => {
 	describe('buildXmlString', () => {
@@ -15,7 +25,7 @@ describe('CommonCartridgeUtils', () => {
 			it('should return error with message', () => {
 				const error = createVersionNotSupportedError(CommonCartridgeVersion.V_1_0_0);
 
-				expect(error).toBeDefined();
+				expect(error).toBeInstanceOf(InternalServerErrorException);
 				expect(error.message).toBe('Common Cartridge version 1.0.0 is not supported');
 			});
 		});
@@ -52,6 +62,44 @@ describe('CommonCartridgeUtils', () => {
 				const intendedUse = 'unsupported';
 
 				expect(() => checkIntendedUse(intendedUse, [])).toThrow(`Intended use ${intendedUse} is not supported`);
+			});
+		});
+	});
+
+	describe('createIdentifier', () => {
+		describe('when creating identifier', () => {
+			it('should return identifier with prefix', () => {
+				const identifier = new ObjectID();
+
+				expect(createIdentifier(identifier)).toBe(`i${identifier.toHexString()}`);
+			});
+
+			it('should return identifier with prefix when identifier is undefined', () => {
+				expect(createIdentifier(undefined)).toMatch(/^i[0-9a-f]{24}$/);
+			});
+		});
+	});
+
+	describe('createResourceTypeNotSupportedError', () => {
+		describe('when creating error', () => {
+			it('should return error with message', () => {
+				const resourceType = 'unsupported';
+				const error = createResourceTypeNotSupportedError(resourceType);
+
+				expect(error).toBeInstanceOf(InternalServerErrorException);
+				expect(error.message).toBe(`Common Cartridge resource type ${resourceType} is not supported`);
+			});
+		});
+	});
+
+	describe('createElementTypeNotSupportedError', () => {
+		describe('when creating error', () => {
+			it('should return error with message', () => {
+				const elementType = 'unsupported';
+				const error = createElementTypeNotSupportedError(elementType);
+
+				expect(error).toBeInstanceOf(InternalServerErrorException);
+				expect(error.message).toBe(`Common Cartridge element type ${elementType} is not supported`);
 			});
 		});
 	});
