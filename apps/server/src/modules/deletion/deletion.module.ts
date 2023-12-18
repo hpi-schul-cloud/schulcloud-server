@@ -16,6 +16,6 @@ import { DeletionLogRepo } from './repo';
 		DeletionLogService,
 		DeletionRequestService,
 	],
-	exports: [DeletionRequestService, DeletionLogService],
+	exports: [DeletionRequestService, DeletionLogService, FilesStorageClientModule],
 })
 export class DeletionModule {}
