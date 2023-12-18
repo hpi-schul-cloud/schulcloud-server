@@ -244,4 +244,46 @@ describe('dashboard repo', () => {
 			});
 		});
 	});
+
+	describe('deleteDashboardByUserId', () => {
+		const setup = async () => {
+			const userWithoutDashoard = userFactory.build();
+			const user = userFactory.build();
+			const course = courseFactory.build({ students: [user], name: 'Mathe' });
+			await em.persistAndFlush([userWithoutDashoard, user, course]);
+			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+				grid: [
+					{
+						pos: { x: 1, y: 3 },
+						gridElement: GridElement.FromSingleReference(course),
+					},
+				],
+				userId: user.id,
+			});
+			await repo.persistAndFlush(dashboard);
+
+			return { userWithoutDashoard, user };
+		};
+		describe('when user has no dashboard ', () => {
+			it('should return 0', async () => {
+				const { userWithoutDashoard } = await setup();
+
+				const result = await repo.deleteDashboardByUserId(userWithoutDashoard.id);
+				expect(result).toEqual(0);
+			});
+		});
+
+		describe('when user has dashboard ', () => {
+			it('should return 1', async () => {
+				const { user } = await setup();
+
+				const result1 = await repo.deleteDashboardByUserId(user.id);
+				expect(result1).toEqual(1);
+
+				const result2 = await repo.getUsersDashboard(user.id);
+				expect(result2 instanceof DashboardEntity).toEqual(true);
+				expect(result2.getGrid().length).toEqual(0);
+			});
+		});
+	});
 });
