@@ -1,5 +1,5 @@
-import { IsInt, Max, Min } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsInt, Min } from 'class-validator';
 
 export class PaginationParams {
 	@IsInt()
@@ -8,8 +8,6 @@ export class PaginationParams {
 	skip?: number = 0;
 
 	@IsInt()
-	@Min(1)
-	@Max(100)
-	@ApiPropertyOptional({ description: 'Page limit, defaults to 10.', minimum: 1, maximum: 99 })
+	@ApiPropertyOptional({ description: 'Page limit, defaults to 10.' })
 	limit?: number = 10;
 }
