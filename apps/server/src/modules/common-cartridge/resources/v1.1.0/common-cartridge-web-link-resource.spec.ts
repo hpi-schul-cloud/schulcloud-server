@@ -73,15 +73,13 @@ describe('CommonCartridgeWebLinkResourceV110', () => {
 				const result = sut.getManifestXmlObject();
 
 				expect(result).toEqual({
-					resource: {
+					$: {
+						identifier: props.identifier,
+						type: 'imswl_xmlv1p1',
+					},
+					file: {
 						$: {
-							identifier: props.identifier,
-							type: 'imswl_xmlv1p1',
-						},
-						file: {
-							$: {
-								href: sut.getFilePath(),
-							},
+							href: sut.getFilePath(),
 						},
 					},
 				});

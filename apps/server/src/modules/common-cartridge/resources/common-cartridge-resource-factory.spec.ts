@@ -1,5 +1,9 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
+import {
+	CommonCartridgeIntendedUseType,
+	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
+} from '../common-cartridge.enums';
 import { CommonCartridgeResourceFactory } from './common-cartridge-resource-factory';
 import {
 	CommonCartridgeWebContentResourcePropsV110,
@@ -17,6 +21,7 @@ describe('CommonCartridgeResourceVersion', () => {
 				const result = CommonCartridgeResourceFactory.createResource({
 					version: CommonCartridgeVersion.V_1_1_0,
 					type: CommonCartridgeResourceType.WEB_CONTENT,
+					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				} as CommonCartridgeWebContentResourcePropsV110);
 
 				expect(result).toBeInstanceOf(CommonCartridgeWebContentResourceV110);
@@ -26,6 +31,7 @@ describe('CommonCartridgeResourceVersion', () => {
 				const result = CommonCartridgeResourceFactory.createResource({
 					version: CommonCartridgeVersion.V_1_3_0,
 					type: CommonCartridgeResourceType.WEB_CONTENT,
+					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				} as CommonCartridgeWebContentResourcePropsV130);
 
 				expect(result).toBeInstanceOf(CommonCartridgeWebContentResourceV130);

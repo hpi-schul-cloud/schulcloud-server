@@ -1,12 +1,12 @@
 import { CommonCartridgeVersion } from './common-cartridge.enums';
-import { buildXmlString, checkCommonCartridgeVersion, checkDefined, createVersionNotSupportedError } from './utils';
+import { buildXmlString, checkDefined, checkIntendedUse, createVersionNotSupportedError } from './utils';
 
 describe('CommonCartridgeUtils', () => {
 	describe('buildXmlString', () => {
 		it('should create xml string', () => {
 			const xml = buildXmlString({ root: { child: 'value' } });
 
-			expect(xml).toBe('<?xml version="1.0" encoding="UTF-8"?><root><child>value</child></root>');
+			expect(xml).toBe('<?xml version="1.0" encoding="UTF-8"?>\n<root>\n    <child>value</child>\n</root>');
 		});
 	});
 
@@ -17,21 +17,6 @@ describe('CommonCartridgeUtils', () => {
 
 				expect(error).toBeDefined();
 				expect(error.message).toBe('Common Cartridge version 1.0.0 is not supported');
-			});
-		});
-	});
-
-	// AI next 12 lines
-	describe('checkCommonCartridgeVersion', () => {
-		describe('when checking version', () => {
-			it('should not throw error when version is supported', () => {
-				expect(() => checkCommonCartridgeVersion(CommonCartridgeVersion.V_1_1_0)).not.toThrow();
-			});
-
-			it('should throw error when version is not supported', () => {
-				expect(() => checkCommonCartridgeVersion(CommonCartridgeVersion.V_1_0_0)).toThrow(
-					createVersionNotSupportedError(CommonCartridgeVersion.V_1_0_0)
-				);
 			});
 		});
 	});
@@ -51,6 +36,22 @@ describe('CommonCartridgeUtils', () => {
 
 			it('should throw error when value is null', () => {
 				expect(() => checkDefined(null, 'value')).toThrow(new Error('value is null or undefined'));
+			});
+		});
+	});
+
+	describe('checkIntendedUse', () => {
+		describe('when checking supported intended use', () => {
+			it('should not throw', () => {
+				const intendedUse = 'unspecified';
+
+				expect(() => checkIntendedUse(intendedUse, ['unspecified'])).not.toThrow();
+			});
+
+			it('should throw error when intended use is not supported', () => {
+				const intendedUse = 'unsupported';
+
+				expect(() => checkIntendedUse(intendedUse, [])).toThrow(`Intended use ${intendedUse} is not supported`);
 			});
 		});
 	});
