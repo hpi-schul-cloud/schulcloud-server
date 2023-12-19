@@ -4,9 +4,9 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { AccountEntity, ImportUser, MatchCreator, SchoolFeatures, SystemEntity, User } from '@shared/domain/entity';
+import { AccountEntity, ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
-import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from '@shared/domain/types';
+import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch, SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { Account, AccountService } from '@src/modules/account';
@@ -45,7 +45,7 @@ export class UserImportUc {
 
 	private checkFeatureEnabled(school: LegacySchoolDo): void | never {
 		const enabled = Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean;
-		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeatures.LDAP_UNIVENTION_MIGRATION);
+		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeature.LDAP_UNIVENTION_MIGRATION);
 		if (!enabled && !isLdapPilotSchool) {
 			this.logger.warning(new UserMigrationIsNotEnabled());
 			throw new InternalServerErrorException('User Migration not enabled');
@@ -270,9 +270,10 @@ export class UserImportUc {
 
 		const account: Account = await this.getAccount(user);
 
-		account.systemId = importUser.system.id;
-		account.password = undefined;
-		account.username = `${school.externalId}/${importUser.loginName}`.toLowerCase();
+		// todo check if this is needed
+		// account.systemId = importUser.system.id;
+		// account.password = undefined;
+		// account.username = `${school.externalId}/${importUser.loginName}`.toLowerCase();
 
 		await this.userRepo.save(user);
 		await this.accountService.save(account);
@@ -284,6 +285,7 @@ export class UserImportUc {
 
 		if (!account) {
 			const newAccount: Account = new Account({
+				id: user.id,
 				userId: user.id,
 				username: user.email,
 				createdAt: user.createdAt,

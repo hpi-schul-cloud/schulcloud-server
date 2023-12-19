@@ -1,6 +1,7 @@
 import { ClassEntity } from '@src/modules/class/entity';
 import { DeletionLogEntity, DeletionRequestEntity } from '@src/modules/deletion/entity';
 import { GroupEntity } from '@src/modules/group/entity';
+import { SchoolSystemOptionsEntity } from '@src/modules/legacy-school/entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@src/modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@src/modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
@@ -23,7 +24,7 @@ import {
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
-import { FederalStateEntity } from './federal-state.entity';
+import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { ImportUser } from './import-user.entity';
 import {
 	Board,
@@ -68,8 +69,9 @@ export const ALL_ENTITIES = [
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 	ExternalToolElementNodeEntity,
-	Course,
 	ContextExternalToolEntity,
+	CountyEmbeddable,
+	Course,
 	CourseGroup,
 	CourseNews,
 	DashboardGridElementModel,
@@ -91,6 +93,7 @@ export const ALL_ENTITIES = [
 	SchoolNews,
 	SchoolRolePermission,
 	SchoolRoles,
+	SchoolSystemOptionsEntity,
 	SchoolYearEntity,
 	ShareToken,
 	StorageProviderEntity,

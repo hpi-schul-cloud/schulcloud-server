@@ -180,6 +180,11 @@
 			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
+		"BLOCKLIST_OF_EMAIL_DOMAINS":{
+			"type": "string",
+			"default": "",
+			"description": "Add custom domain to the list of blocked domains (comma separated list)."
+		},
 		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -573,6 +578,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enable nexboard"
+		},
+		"FEATURE_NEXBOARD_COPY_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable nexboard copying when copying course or lesson"
 		},
 		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
 			"type": "boolean",
@@ -1358,6 +1368,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables external tools on the column board"
+		},
+		"FEATURE_PROVISIONING_OPTIONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "enables to view the page to set group provisioning options for a school and system pair"
 		},
 		"CTL_TOOLS": {
 			"type": "object",

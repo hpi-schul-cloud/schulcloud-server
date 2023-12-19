@@ -6,6 +6,7 @@ import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
+import { SortHelper } from '@shared/common';
 import { ReferencedEntityNotFoundLoggable } from '@shared/common/loggable';
 import { LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
@@ -17,7 +18,6 @@ import { SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes, GroupUser } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
-import { SortHelper } from '../util';
 import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from './dto';
 import { GroupUcMapper } from './mapper/group-uc.mapper';
 
@@ -331,8 +331,14 @@ export class GroupUc {
 		return resolvedGroupUsers;
 	}
 
-	private applyPagination(combinedClassInfo: ClassInfoDto[], skip: number, limit: number | undefined) {
-		const page: ClassInfoDto[] = combinedClassInfo.slice(skip, limit ? skip + limit : combinedClassInfo.length);
+	private applyPagination(combinedClassInfo: ClassInfoDto[], skip: number, limit: number | undefined): ClassInfoDto[] {
+		let page: ClassInfoDto[];
+
+		if (limit === -1) {
+			page = combinedClassInfo.slice(skip);
+		} else {
+			page = combinedClassInfo.slice(skip, limit ? skip + limit : combinedClassInfo.length);
+		}
 
 		return page;
 	}

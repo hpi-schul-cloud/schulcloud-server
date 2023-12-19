@@ -4,7 +4,7 @@
  * The public API has been moved to apps/server/src/modules/news
  */
 
-const service = require('feathers-mongoose');
+const service = require('../../utils/feathers-mongoose');
 
 const { newsModel } = require('./model');
 const newsModelHooks = require('./hooks/newsModel.hooks');
