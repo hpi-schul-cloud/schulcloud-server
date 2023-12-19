@@ -26,7 +26,7 @@ data:
         echo "gg, hacky mongo replicaset"
     fi
     {% if KEDA_NAMESPACE_ACTIVATOR_ENABLED is defined %}
-    curl -XPUT -H 'Content-Type: application/json'  -L 'https://activate.cd.dbildungscloud.dev/namespace' -d '{"name" : "{{ NAMESPACE }}"}'
+    curl -XPUT -H 'Content-Type: application/json'  -L 'http://ns-activator-svc.sc-common.svc.cluster.local:8080/namespace' -d '{"name" : "{{ NAMESPACE }}"}'
     {% endif %}
     echo "seeding database"
     curl --retry 360 --retry-all-errors --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/database/seed?with-indexes=true'
