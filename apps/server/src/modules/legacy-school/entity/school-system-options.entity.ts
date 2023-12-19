@@ -25,7 +25,7 @@ export class SchoolSystemOptionsEntity extends BaseEntityWithTimestamps {
 	@ManyToOne(() => SystemEntity)
 	system: SystemEntity;
 
-	@Embedded(() => ProvisioningOptionsEntity)
+	@Embedded(() => ProvisioningOptionsEntity, { object: true })
 	provisioningOptions: ProvisioningOptionsEntity;
 
 	constructor(props: SchoolSystemOptionsEntityProps) {
