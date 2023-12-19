@@ -74,4 +74,12 @@ export class NewsRepo extends BaseRepo<News> {
 		await this._em.populate(courseNews, [discriminatorColumn]);
 		return [newsEntities, count];
 	}
+
+	async findByCreatorId(creatorId: EntityId): Promise<Counted<News[]>> {
+		const scope = new NewsScope();
+		scope.byCreator(creatorId);
+
+		const countedNewsList = await this.findNewsAndCount(scope.query);
+		return countedNewsList;
+	}
 }
