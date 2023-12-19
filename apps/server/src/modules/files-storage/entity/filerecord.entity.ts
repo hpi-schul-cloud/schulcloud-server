@@ -76,7 +76,7 @@ export interface FileRecordProperties {
 	mimeType: string;
 	parentType: FileRecordParentType;
 	parentId: EntityId;
-	creatorId: EntityId;
+	creatorId?: EntityId;
 	schoolId: EntityId;
 	deletedSince?: Date;
 	isCopyFrom?: EntityId;
@@ -128,11 +128,15 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return this._parentId.toHexString();
 	}
 
-	@Property({ fieldName: 'creator' })
-	_creatorId: ObjectId;
+	@Property({ fieldName: 'creator', nullable: true })
+	_creatorId?: ObjectId;
 
-	get creatorId(): EntityId {
-		return this._creatorId.toHexString();
+	get creatorId(): EntityId | undefined {
+		return this._creatorId?.toHexString();
+	}
+
+	set creatorId(userId: EntityId | undefined) {
+		this._creatorId = userId !== undefined ? new ObjectId(userId) : undefined;
 	}
 
 	@Property({ fieldName: 'school' })
@@ -158,7 +162,9 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this.mimeType = props.mimeType;
 		this.parentType = props.parentType;
 		this._parentId = new ObjectId(props.parentId);
-		this._creatorId = new ObjectId(props.creatorId);
+		if (props.creatorId !== undefined) {
+			this._creatorId = new ObjectId(props.creatorId);
+		}
 		this._schoolId = new ObjectId(props.schoolId);
 		if (props.isCopyFrom) {
 			this._isCopyFrom = new ObjectId(props.isCopyFrom);
@@ -300,5 +306,9 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		const filenameObj = path.parse(this.name);
 
 		return filenameObj.name;
+	}
+
+	public removeCreatorId(): void {
+		this.creatorId = undefined;
 	}
 }

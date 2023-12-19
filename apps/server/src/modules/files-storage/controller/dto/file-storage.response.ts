@@ -38,7 +38,7 @@ export class FileRecordResponse {
 	size: number;
 
 	@ApiProperty()
-	creatorId: string;
+	creatorId?: string;
 
 	@ApiProperty()
 	mimeType: string;

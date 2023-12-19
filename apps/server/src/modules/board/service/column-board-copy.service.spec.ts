@@ -3,8 +3,19 @@ import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helpe
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType, ColumnBoard, UserDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
-import { columnBoardFactory, courseFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import {
+	cardFactory,
+	columnBoardFactory,
+	columnFactory,
+	courseFactory,
+	linkElementFactory,
+	schoolFactory,
+	setupEntities,
+	userFactory,
+} from '@shared/testing';
+import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import {
 	BoardDoCopyService,
@@ -166,6 +177,55 @@ describe('column board copy service', () => {
 			});
 
 			expect(result).toEqual(expectedCopyStatus);
+		});
+	});
+
+	describe('when changing linked ids', () => {
+		const setup = () => {
+			const linkedIdBefore = new ObjectId().toString();
+			const linkElement = linkElementFactory.build({
+				url: `someurl/${linkedIdBefore}`,
+			});
+			const board = columnBoardFactory.build({
+				children: [
+					columnFactory.build({
+						children: [
+							cardFactory.build({
+								children: [linkElement],
+							}),
+						],
+					}),
+				],
+			});
+			boardRepo.findById.mockResolvedValue(board);
+
+			return { board, linkElement, linkedIdBefore };
+		};
+
+		it('should get board', async () => {
+			const { board } = setup();
+
+			await service.swapLinkedIds(board.id, new Map<EntityId, EntityId>());
+
+			expect(boardRepo.findById).toHaveBeenCalledWith(board.id);
+		});
+
+		it('should update links in board', async () => {
+			const { board, linkElement, linkedIdBefore } = setup();
+			const expectedId = new ObjectId().toString();
+			const map = new Map<EntityId, EntityId>().set(linkedIdBefore, expectedId);
+
+			await service.swapLinkedIds(board.id, map);
+
+			expect(linkElement.url).toEqual(`someurl/${expectedId}`);
+		});
+
+		it('should persist updates', async () => {
+			const { board } = setup();
+
+			await service.swapLinkedIds(board.id, new Map<EntityId, EntityId>());
+
+			expect(boardRepo.save).toHaveBeenCalledWith(board);
 		});
 	});
 });
