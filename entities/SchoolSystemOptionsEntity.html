@@ -191,7 +191,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Embedded(undefined)<br />
+                            @Embedded(undefined, {object: true})<br />
                         </code>
                     </td>
                 </tr>
@@ -308,7 +308,7 @@ export class SchoolSystemOptionsEntity extends BaseEntityWithTimestamps {
 	@ManyToOne(() &#x3D;&gt; SystemEntity)
 	system: SystemEntity;
 
-	@Embedded(() &#x3D;&gt; ProvisioningOptionsEntity)
+	@Embedded(() &#x3D;&gt; ProvisioningOptionsEntity, { object: true })
 	provisioningOptions: ProvisioningOptionsEntity;
 
 	constructor(props: SchoolSystemOptionsEntityProps) {
