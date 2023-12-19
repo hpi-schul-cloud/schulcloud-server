@@ -7,7 +7,7 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AccountValidationService } from './account.validation.service';
-import { AccountDto, AccountSaveDto } from './dto';
+import { Account } from '../domain';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -99,21 +99,21 @@ describe('AccountService', () => {
 
 	describe('save', () => {
 		it('should call save in accountServiceDb', async () => {
-			await expect(accountService.save({} as AccountSaveDto)).resolves.not.toThrow();
+			await expect(accountService.save({} as Account)).resolves.not.toThrow();
 			expect(accountServiceDb.save).toHaveBeenCalledTimes(1);
 		});
 		it('should call save in accountServiceIdm if feature is enabled', async () => {
 			const spy = jest.spyOn(configService, 'get');
 			spy.mockReturnValueOnce(true);
 
-			await expect(accountService.save({} as AccountSaveDto)).resolves.not.toThrow();
+			await expect(accountService.save({} as Account)).resolves.not.toThrow();
 			expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
 		});
 		it('should not call save in accountServiceIdm if feature is disabled', async () => {
 			const spy = jest.spyOn(configService, 'get');
 			spy.mockReturnValueOnce(false);
 
-			await expect(accountService.save({} as AccountSaveDto)).resolves.not.toThrow();
+			await expect(accountService.save({} as Account)).resolves.not.toThrow();
 			expect(accountServiceIdm.save).not.toHaveBeenCalled();
 		});
 	});
@@ -121,10 +121,10 @@ describe('AccountService', () => {
 	describe('saveWithValidation', () => {
 		it('should not sanitize username for external user', async () => {
 			const spy = jest.spyOn(accountService, 'save');
-			const params: AccountSaveDto = {
+			const params = new Account({
 				username: ' John.Doe@domain.tld ',
 				systemId: 'ABC123',
-			};
+			});
 			await accountService.saveWithValidation(params);
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -134,45 +134,45 @@ describe('AccountService', () => {
 			spy.mockRestore();
 		});
 		it('should throw if username for a local user is not an email', async () => {
-			const params: AccountSaveDto = {
+			const params: Account = {
 				username: 'John Doe',
 				password: 'JohnsPassword',
 			};
 			await expect(accountService.saveWithValidation(params)).rejects.toThrow('Username is not an email');
 		});
 		it('should not throw if username for an external user is not an email', async () => {
-			const params: AccountSaveDto = {
+			const params: Account = {
 				username: 'John Doe',
 				systemId: 'ABC123',
 			};
 			await expect(accountService.saveWithValidation(params)).resolves.not.toThrow();
 		});
 		it('should not throw if username for an external user is a ldap search string', async () => {
-			const params: AccountSaveDto = {
+			const params: Account = {
 				username: 'dc=schul-cloud,dc=org/fake.ldap',
 				systemId: 'ABC123',
 			};
 			await expect(accountService.saveWithValidation(params)).resolves.not.toThrow();
 		});
 		it('should throw if no password is provided for an internal user', async () => {
-			const params: AccountSaveDto = {
+			const params: Account = {
 				username: 'john.doe@mail.tld',
 			};
 			await expect(accountService.saveWithValidation(params)).rejects.toThrow('No password provided');
 		});
 		it('should throw if account already exists', async () => {
-			const params: AccountSaveDto = {
+			const params: Account = {
 				username: 'john.doe@mail.tld',
 				password: 'JohnsPassword',
 				userId: 'userId123',
 			};
-			accountServiceDb.findByUserId.mockResolvedValueOnce({ id: 'foundAccount123' } as AccountDto);
+			accountServiceDb.findByUserId.mockResolvedValueOnce({ id: 'foundAccount123' } as Account);
 			await expect(accountService.saveWithValidation(params)).rejects.toThrow('Account already exists');
 		});
 		it('should throw if username already exists', async () => {
 			const accountIsUniqueEmailSpy = jest.spyOn(accountValidationService, 'isUniqueEmail');
 			accountIsUniqueEmailSpy.mockResolvedValueOnce(false);
-			const params: AccountSaveDto = {
+			const params: Account = {
 				username: 'john.doe@mail.tld',
 				password: 'JohnsPassword',
 			};
@@ -235,13 +235,13 @@ describe('AccountService', () => {
 			return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
 		};
 		it('should call validatePassword in accountServiceDb', async () => {
-			await expect(accountService.validatePassword({} as AccountDto, 'password')).resolves.not.toThrow();
+			await expect(accountService.validatePassword({} as Account, 'password')).resolves.not.toThrow();
 			expect(accountServiceIdm.validatePassword).toHaveBeenCalledTimes(0);
 			expect(accountServiceDb.validatePassword).toHaveBeenCalledTimes(1);
 		});
 		it('should call validatePassword in accountServiceIdm if feature is enabled', async () => {
 			const service = setup();
-			await expect(service.validatePassword({} as AccountDto, 'password')).resolves.not.toThrow();
+			await expect(service.validatePassword({} as Account, 'password')).resolves.not.toThrow();
 			expect(accountServiceDb.validatePassword).toHaveBeenCalledTimes(0);
 			expect(accountServiceIdm.validatePassword).toHaveBeenCalledTimes(1);
 		});

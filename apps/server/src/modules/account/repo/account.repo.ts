@@ -1,10 +1,11 @@
+import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import { SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { Account, AccountProps } from '../domain';
+import { AccountEntity } from '@src/modules/account/entity/account.entity';
+import { Account } from '../domain';
 import { AccountEntityToDoMapper } from './mapper/account-entity-to-do.mapper';
 
 @Injectable()
@@ -23,29 +24,20 @@ export class AccountRepo extends BaseRepo<AccountEntity> {
 			return null;
 		}
 
-		const props: AccountProps = AccountEntityToDoMapper.mapToDo(entity);
-
-		const domainObject: Account = new Account(props);
-
-		return domainObject;
+		return AccountEntityToDoMapper.mapToDo(entity);
 	}
 
 	async findMultipleByUserId(userIds: EntityId[] | ObjectId[]): Promise<Account[]> {
 		const objectIds = userIds.map((id: EntityId | ObjectId) => new ObjectId(id));
 		const entities: AccountEntity[] = await this._em.find(AccountEntity, { userId: objectIds });
-		const domainObjects = entities.map((entity) => {
-			const props: AccountProps = AccountEntityToDoMapper.mapToDo(entity);
-			return new Account(props);
-		});
+		const domainObjects = entities.map((entity) => AccountEntityToDoMapper.mapToDo(entity));
 
 		return domainObjects;
 	}
 
 	async findByUserIdOrFail(userId: EntityId | ObjectId): Promise<Account> {
 		const entity: AccountEntity = await this._em.findOneOrFail(AccountEntity, { userId: new ObjectId(userId) });
-		const props: AccountProps = AccountEntityToDoMapper.mapToDo(entity);
-		const domainObject: Account = new Account(props);
-		return domainObject;
+		return AccountEntityToDoMapper.mapToDo(entity);
 	}
 
 	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
@@ -57,11 +49,14 @@ export class AccountRepo extends BaseRepo<AccountEntity> {
 			return null;
 		}
 
-		const props: AccountProps = AccountEntityToDoMapper.mapToDo(entity);
+		return AccountEntityToDoMapper.mapToDo(entity);
+	}
 
-		const domainObject: Account = new Account(props);
-
-		return domainObject;
+	getObjectReference<Entity extends AnyEntity<Entity>>(
+		entityName: EntityName<Entity>,
+		id: Primary<Entity> | Primary<Entity>[]
+	): Entity {
+		return this._em.getReference(entityName, id);
 	}
 
 	saveWithoutFlush(account: AccountEntity): void {

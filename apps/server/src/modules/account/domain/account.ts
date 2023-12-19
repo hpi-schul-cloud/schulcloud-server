@@ -1,70 +1,74 @@
+import { PrivacyProtect } from '@shared/controller';
 import { EntityId } from '@shared/domain/types';
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { IsBoolean, IsDate, IsMongoId, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
+import { passwordPattern } from '../controller/dto/password-pattern';
 
-export interface AccountProps extends AuthorizableObject {
-	id: string;
+export class Account {
+	@IsOptional()
+	@IsMongoId()
+	readonly id?: EntityId;
 
-	createdAt: Date;
+	@IsOptional()
+	@IsDate()
+	readonly createdAt?: Date;
 
-	updatedAt: Date;
+	@IsOptional()
+	@IsDate()
+	readonly updatedAt?: Date;
 
+	@IsString()
+	@IsNotEmpty()
 	username: string;
 
+	@PrivacyProtect()
+	@IsOptional()
+	@Matches(passwordPattern)
 	password?: string;
 
+	@IsOptional()
+	@IsString()
 	token?: string;
 
+	@IsOptional()
+	@IsString()
 	credentialHash?: string;
 
+	@IsOptional()
+	@IsMongoId()
 	userId?: EntityId;
 
+	@IsOptional()
+	@IsMongoId()
 	systemId?: EntityId;
 
+	@IsOptional()
+	@IsDate()
 	lasttriedFailedLogin?: Date;
 
+	@IsOptional()
+	@IsDate()
 	expiresAt?: Date;
 
+	@IsOptional()
+	@IsBoolean()
 	activated?: boolean;
 
+	@IsOptional()
 	idmReferenceId?: string;
-}
 
-export class Account extends DomainObject<AccountProps> {
-	get id(): EntityId {
-		return this.props.id;
+	constructor(props: Account) {
+		this.id = props.id;
+		this.createdAt = props.createdAt;
+		this.updatedAt = props.updatedAt;
+		this.username = props.username;
+		this.password = props.password;
+		this.token = props.token;
+		this.credentialHash = props.credentialHash;
+		this.userId = props.userId;
+		this.systemId = props.systemId;
+		this.lasttriedFailedLogin = props.lasttriedFailedLogin;
+		this.expiresAt = props.expiresAt;
+		this.activated = props.activated;
+		this.idmReferenceId = props.idmReferenceId;
 	}
-
-	get createdAt(): Date {
-		return this.props.createdAt;
-	}
-
-	get updatedAt(): Date {
-		return this.props.updatedAt;
-	}
-
-	get username(): string {
-		return this.props.username;
-	}
-
-	setUsername(username: string): void {
-		this.props.username = username;
-	}
-
-	password?: string;
-
-	token?: string;
-
-	credentialHash?: string;
-
-	userId?: EntityId;
-
-	systemId?: EntityId;
-
-	lasttriedFailedLogin?: Date;
-
-	expiresAt?: Date;
-
-	activated?: boolean;
-
-	idmReferenceId?: string;
 }

@@ -2,6 +2,7 @@
 import { AccountEntity, IdmAccountProperties, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
+import { Account, AccountProps } from '@src/modules/account';
 import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
@@ -19,6 +20,23 @@ class AccountFactory extends BaseFactory<AccountEntity, IdmAccountProperties> {
 		}
 
 		const params: DeepPartial<IdmAccountProperties> = { userId: user.id };
+
+		return this.params(params);
+	}
+}
+
+class AccountDoFactory extends BaseFactory<Account, AccountProps> {
+	withUser(user: User): this {
+		if (!user.id) {
+			throw new Error('User does not have an id.');
+		}
+
+		const params: DeepPartial<AccountProps> = {
+			userId: user.id,
+			username: `Username-${user.id}`,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
 
 		return this.params(params);
 	}

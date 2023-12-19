@@ -9,7 +9,7 @@ import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { Account, AccountProps, AccountService } from '@src/modules/account';
+import { Account, AccountService } from '@src/modules/account';
 import {
 	MigrationMayBeCompleted,
 	MigrationMayNotBeCompleted,
@@ -272,7 +272,7 @@ export class UserImportUc {
 
 		account.systemId = importUser.system.id;
 		account.password = undefined;
-		account.setUsername(`${school.externalId}/${importUser.loginName}`.toLowerCase());
+		account.username = `${school.externalId}/${importUser.loginName}`.toLowerCase();
 
 		await this.userRepo.save(user);
 		await this.accountService.save(account);

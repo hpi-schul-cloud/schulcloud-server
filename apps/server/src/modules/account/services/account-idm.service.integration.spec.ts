@@ -11,7 +11,7 @@ import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { AccountSaveDto } from './dto';
+import { Account } from '../domain';
 
 describe('AccountIdmService Integration', () => {
 	let module: TestingModule;
@@ -23,7 +23,7 @@ describe('AccountIdmService Integration', () => {
 
 	const testRealm = `test-realm-${v1()}`;
 	const testDbcAccountId = new ObjectId().toString();
-	const testAccount = new AccountSaveDto({
+	const testAccount = new Account({
 		username: 'john.doe@mail.tld',
 		password: 'super-secret-password',
 		userId: new ObjectId().toString(),

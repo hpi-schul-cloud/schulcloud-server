@@ -22,8 +22,8 @@ export class AccountEntityToDoMapper {
 
 	static mapSearchResult(accountEntities: Counted<AccountEntity[]>): Counted<Account[]> {
 		const foundAccounts = accountEntities[0];
-		const accountDtos: Account[] = AccountEntityToDoMapper.mapAccountsToDo(foundAccounts);
-		return [accountDtos, accountEntities[1]];
+		const accountDos: Account[] = AccountEntityToDoMapper.mapAccountsToDo(foundAccounts);
+		return [accountDos, accountEntities[1]];
 	}
 
 	static mapAccountsToDo(accounts: AccountEntity[]): Account[] {

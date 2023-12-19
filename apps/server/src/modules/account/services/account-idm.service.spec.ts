@@ -11,6 +11,7 @@ import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AccountDto, AccountSaveDto } from './dto';
+import { Account } from '../domain';
 
 describe('AccountIdmService', () => {
 	let module: TestingModule;
@@ -88,13 +89,13 @@ describe('AccountIdmService', () => {
 			const updateSpy = jest.spyOn(idmServiceMock, 'updateAccount');
 			const createSpy = jest.spyOn(idmServiceMock, 'createAccount');
 
-			const mockAccountDto = {
+			const mockAccount = {
 				id: mockIdmAccountRefId,
 				username: 'testUserName',
 				userId: 'userId',
 				systemId: 'systemId',
 			};
-			const ret = await accountIdmService.save(mockAccountDto);
+			const ret = await accountIdmService.save(mockAccount);
 
 			expect(updateSpy).toHaveBeenCalled();
 			expect(createSpy).not.toHaveBeenCalled();
@@ -114,14 +115,14 @@ describe('AccountIdmService', () => {
 			const updateSpy = jest.spyOn(idmServiceMock, 'updateAccount');
 			const updatePasswordSpy = jest.spyOn(idmServiceMock, 'updateAccountPassword');
 
-			const mockAccountDto: AccountSaveDto = {
+			const mockAccount: Account = {
 				id: mockIdmAccountRefId,
 				username: 'testUserName',
 				userId: 'userId',
 				systemId: 'systemId',
 				password: 'password',
 			};
-			const ret = await accountIdmService.save(mockAccountDto);
+			const ret = await accountIdmService.save(mockAccount);
 
 			expect(updateSpy).toHaveBeenCalled();
 			expect(updatePasswordSpy).toHaveBeenCalled();
@@ -133,8 +134,8 @@ describe('AccountIdmService', () => {
 			const updateSpy = jest.spyOn(idmServiceMock, 'updateAccount');
 			const createSpy = jest.spyOn(idmServiceMock, 'createAccount');
 
-			const mockAccountDto = { username: 'testUserName', id: undefined, userId: 'userId', systemId: 'systemId' };
-			const ret = await accountIdmService.save(mockAccountDto);
+			const mockAccount = { username: 'testUserName', id: undefined, userId: 'userId', systemId: 'systemId' };
+			const ret = await accountIdmService.save(mockAccount);
 
 			expect(updateSpy).not.toHaveBeenCalled();
 			expect(createSpy).toHaveBeenCalled();
@@ -151,14 +152,14 @@ describe('AccountIdmService', () => {
 		it('should create a new account on update error', async () => {
 			setup();
 			accountLookupServiceMock.getExternalId.mockResolvedValue(null);
-			const mockAccountDto = {
+			const mockAccount = {
 				id: mockIdmAccountRefId,
 				username: 'testUserName',
 				userId: 'userId',
 				systemId: 'systemId',
 			};
 
-			const ret = await accountIdmService.save(mockAccountDto);
+			const ret = await accountIdmService.save(mockAccount);
 
 			expect(idmServiceMock.createAccount).toHaveBeenCalled();
 			expect(ret).toBeDefined();
@@ -212,18 +213,12 @@ describe('AccountIdmService', () => {
 		};
 		it('should validate password by checking JWT', async () => {
 			setup(true);
-			const ret = await accountIdmService.validatePassword(
-				{ username: 'username' } as unknown as AccountDto,
-				'password'
-			);
+			const ret = await accountIdmService.validatePassword({ username: 'username' } as unknown as Account, 'password');
 			expect(ret).toBe(true);
 		});
 		it('should report wrong password, i. e. non successful JWT creation', async () => {
 			setup(false);
-			const ret = await accountIdmService.validatePassword(
-				{ username: 'username' } as unknown as AccountDto,
-				'password'
-			);
+			const ret = await accountIdmService.validatePassword({ username: 'username' } as unknown as Account, 'password');
 			expect(ret).toBe(false);
 		});
 	});

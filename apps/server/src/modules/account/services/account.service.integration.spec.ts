@@ -21,7 +21,7 @@ import { AccountLookupService } from './account-lookup.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
-import { AccountDto, AccountSaveDto } from './dto';
+import { Account } from '../domain';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
@@ -34,7 +34,7 @@ describe('AccountService Integration', () => {
 	let isIdmReachable = true;
 
 	const testRealm = `test-realm-${v1()}`;
-	const testAccount = new AccountSaveDto({
+	const testAccount = new Account({
 		username: 'john.doe@mail.tld',
 		password: 'super-secret-password',
 		userId: new ObjectId().toString(),
@@ -134,7 +134,7 @@ describe('AccountService Integration', () => {
 		await cleanupCollections(em);
 	});
 
-	const compareIdmAccount = async (idmId: string, createdAccount: AccountDto): Promise<void> => {
+	const compareIdmAccount = async (idmId: string, createdAccount: Account): Promise<void> => {
 		const foundAccount = await identityManagementService.findAccountById(idmId);
 		expect(foundAccount).toEqual(
 			expect.objectContaining<IdmAccount>({
@@ -147,7 +147,7 @@ describe('AccountService Integration', () => {
 		);
 	};
 
-	const compareDbAccount = async (dbId: string, createdAccount: AccountDto): Promise<void> => {
+	const compareDbAccount = async (dbId: string, createdAccount: Account): Promise<void> => {
 		const foundDbAccount = await accountRepo.findById(dbId);
 		expect(foundDbAccount).toEqual(
 			expect.objectContaining<Partial<AccountEntity>>({

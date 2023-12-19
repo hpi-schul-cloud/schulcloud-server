@@ -16,7 +16,6 @@ import { ICurrentUser } from '@modules/authentication';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ObjectId } from 'bson';
 import { AccountService } from '../services';
-import { AccountDto, AccountSaveDto } from '../services/dto';
 import { AccountConfig } from '../account-config';
 import {
 	AccountByIdBodyParams,
@@ -100,8 +99,8 @@ export class AccountUc {
 		return AccountUcMapper.mapToResolvedAccountDto(account);
 	}
 
-	async saveAccount(dto: AccountSaveDto): Promise<void> {
-		await this.accountService.saveWithValidation(dto);
+	async saveAccount(accountDo: Account): Promise<void> {
+		await this.accountService.saveWithValidation(accountDo);
 	}
 
 	/**
@@ -143,7 +142,7 @@ export class AccountUc {
 			const newMail = body.username.toLowerCase();
 			await this.checkUniqueEmail(targetAccount, targetUser, newMail);
 			targetUser.email = newMail;
-			targetAccount.setUsername(newMail);
+			targetAccount.username = newMail;
 			updateUser = true;
 			updateAccount = true;
 		}
@@ -181,9 +180,9 @@ export class AccountUc {
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new ForbiddenOperationError('Current user is not authorized to delete an account.');
 		}
-		const account: AccountDto = await this.accountService.findById(params.id);
-		await this.accountService.delete(account.id);
-		return account;
+		const account: Account = await this.accountService.findById(params.id);
+		await this.accountService.delete(`${account.id ? account.id : ''}`);
+		return AccountUcMapper.mapToResolvedAccountDto(account);
 	}
 
 	/**
@@ -217,7 +216,7 @@ export class AccountUc {
 			const newMail = params.email.toLowerCase();
 			await this.checkUniqueEmail(account, user, newMail);
 			user.email = newMail;
-			account.setUsername(newMail);
+			account.username = newMail;
 			updateUser = true;
 			updateAccount = true;
 		}
@@ -280,7 +279,7 @@ export class AccountUc {
 			throw new ForbiddenOperationError('The password is not temporary, hence can not be changed.');
 		} // Password change was forces or this is a first logon for the user
 
-		const account: AccountDto = await this.accountService.findByUserIdOrFail(userId);
+		const account: Account = await this.accountService.findByUserIdOrFail(userId);
 
 		if (account.systemId) {
 			throw new ForbiddenOperationError('External account details can not be changed.');
@@ -320,11 +319,11 @@ export class AccountUc {
 					});
 				}
 			}
-			await this.accountService.updateLastTriedFailedLogin(account.id, new Date());
+			await this.accountService.updateLastTriedFailedLogin(`${account.id ? account.id : ''}`, new Date());
 		}
 	}
 
-	private async checkUniqueEmail(account: AccountDto, user: User, email: string): Promise<void> {
+	private async checkUniqueEmail(account: Account, user: User, email: string): Promise<void> {
 		if (!(await this.accountValidationService.isUniqueEmail(email, user.id, account.id, account.systemId))) {
 			throw new ValidationError(`The email address is already in use!`);
 		}

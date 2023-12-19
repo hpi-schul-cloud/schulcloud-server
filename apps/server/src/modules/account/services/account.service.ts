@@ -61,42 +61,59 @@ export class AccountService {
 
 	async save(account: Account): Promise<Account> {
 		const ret = await this.accountDb.save(account);
-		const newAccount = new Account(ret);
-		newAccount.idmReferenceId = newAccount?.idmReferenceId;
+		const newAccount = new Account({
+			id: ret.id,
+			username: ret.username,
+			createdAt: ret.createdAt,
+			updatedAt: ret.updatedAt,
+		});
+		newAccount.idmReferenceId = ret.idmReferenceId;
 		const idmAccount = await this.executeIdmMethod(async () => {
-			this.logger.debug(`Saving account with accountID ${ret.id} ...`);
+			this.logger.debug(`Saving account with accountID ${ret.id ? ret.id : ''} ...`);
 			const accountIdm = await this.accountIdm.save(newAccount);
-			this.logger.debug(`Saved account with accountID ${ret.id}`);
+			this.logger.debug(`Saved account with accountID ${ret.id ? ret.id : ''}`);
 			return accountIdm;
 		});
-		const accountdo = new Account(ret);
+		const accountdo = new Account({
+			id: ret.id,
+			username: ret.username,
+			createdAt: ret.createdAt,
+			updatedAt: ret.updatedAt,
+		});
 		accountdo.idmReferenceId = idmAccount?.idmReferenceId;
 		return account;
 	}
 
-	async saveWithValidation(dto: Account): Promise<void> {
-		await validateOrReject(dto);
+	async saveWithValidation(account: Account): Promise<void> {
+		await validateOrReject(account);
 		// sanatizeUsername ✔
-		if (!dto.systemId) {
-			dto.setUsername(dto.username.trim().toLowerCase());
+		if (!account.systemId) {
+			account.username = account.username.trim().toLowerCase();
 		}
-		if (!dto.systemId && !dto.password) {
+		if (!account.systemId && !account.password) {
 			throw new ValidationError('No password provided');
 		}
 		// validateUserName ✔
 		// usernames must be an email address, if they are not from an external system
-		if (!dto.systemId && !isEmail(dto.username)) {
+		if (!account.systemId && !isEmail(account.username)) {
 			throw new ValidationError('Username is not an email');
 		}
 		// checkExistence ✔
-		if (dto.userId && (await this.findByUserId(dto.userId))) {
+		if (account.userId && (await this.findByUserId(account.userId))) {
 			throw new ValidationError('Account already exists');
 		}
 		// validateCredentials hook will not be ported ✔
 		// trimPassword hook will be done by class-validator ✔
 		// local.hooks.hashPassword('password'), will be done by account service ✔
 		// checkUnique ✔
-		if (!(await this.accountValidationService.isUniqueEmail(dto.username, dto.userId, dto.id, dto.systemId))) {
+		if (
+			!(await this.accountValidationService.isUniqueEmail(
+				account.username,
+				account.userId,
+				account.id,
+				account.systemId
+			))
+		) {
 			throw new ValidationError('Username already exists');
 		}
 		// removePassword hook is not implemented
@@ -105,7 +122,7 @@ export class AccountService {
 		// 	dto.password = undefined;
 		// }
 
-		await this.save(dto);
+		await this.save(account);
 	}
 
 	async updateUsername(accountId: string, username: string): Promise<Account> {
@@ -116,7 +133,12 @@ export class AccountService {
 			this.logger.debug(`Updated username for account with accountID ${accountId}`);
 			return account;
 		});
-		const account = new Account(ret);
+		const account = new Account({
+			id: ret.id,
+			username: ret.username,
+			createdAt: ret.createdAt,
+			updatedAt: ret.updatedAt,
+		});
 		account.idmReferenceId = idmAccount?.idmReferenceId;
 		return account;
 	}
@@ -129,7 +151,12 @@ export class AccountService {
 			this.logger.debug(`Updated last tried failed login for account with accountID ${accountId}`);
 			return account;
 		});
-		const account = new Account(ret);
+		const account = new Account({
+			id: ret.id,
+			username: ret.username,
+			createdAt: ret.createdAt,
+			updatedAt: ret.updatedAt,
+		});
 		account.idmReferenceId = idmAccount?.idmReferenceId;
 		return account;
 	}
@@ -142,8 +169,12 @@ export class AccountService {
 			this.logger.debug(`Updated password for account with accountID ${accountId}`);
 			return account;
 		});
-		// TODO: create mapper
-		const account = new Account(ret);
+		const account = new Account({
+			id: ret.id,
+			username: ret.username,
+			createdAt: ret.createdAt,
+			updatedAt: ret.updatedAt,
+		});
 		account.idmReferenceId = idmAccount?.idmReferenceId;
 		return account;
 	}

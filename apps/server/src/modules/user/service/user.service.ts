@@ -48,7 +48,11 @@ export class UserService {
 		const user: UserDO = await this.findById(userId);
 		const account: Account = await this.accountService.findByUserIdOrFail(userId);
 
-		const resolvedUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(account.id, user, account.systemId);
+		const resolvedUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
+			account.id ? account.id : '',
+			user,
+			account.systemId
+		);
 
 		return resolvedUser;
 	}

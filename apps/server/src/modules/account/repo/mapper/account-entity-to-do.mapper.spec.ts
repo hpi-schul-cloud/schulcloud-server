@@ -2,7 +2,7 @@ import { AccountEntity } from '@shared/domain/entity';
 import { ObjectId } from 'bson';
 import { AccountEntityToDoMapper } from './account-entity-to-do.mapper';
 
-describe('AccountEntityToDtoMapper', () => {
+describe('AccountEntityToDoMapper', () => {
 	beforeEach(() => {
 		jest.useFakeTimers();
 		jest.setSystemTime(new Date(2020, 1, 1));
@@ -13,7 +13,7 @@ describe('AccountEntityToDtoMapper', () => {
 		jest.useRealTimers();
 	});
 
-	describe('mapToDto', () => {
+	describe('mapToDo', () => {
 		it('should map all fields', () => {
 			const testEntity: AccountEntity = {
 				_id: new ObjectId(),
@@ -88,7 +88,7 @@ describe('AccountEntityToDtoMapper', () => {
 		});
 	});
 
-	describe('mapAccountsToDto', () => {
+	describe('mapAccountsToDo', () => {
 		it('should use actual date if date is', () => {
 			const testEntity1: AccountEntity = {
 				_id: new ObjectId(),

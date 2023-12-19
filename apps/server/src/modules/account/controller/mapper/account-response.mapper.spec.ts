@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@shared/domain/entity';
 import { AccountResponseMapper } from '../../repo/mapper';
-import { AccountDto } from '../../services';
+import { ResolvedAccountDto } from '../../uc/dto';
 
 describe('AccountResponseMapper', () => {
 	describe('mapToResponseFromEntity', () => {
@@ -40,23 +40,22 @@ describe('AccountResponseMapper', () => {
 		});
 	});
 
-	describe('mapToResponse', () => {
+	describe('mapToAccountResponse', () => {
 		it('should map all fields', () => {
-			const testDto: AccountDto = {
+			const resolvedAccountDto: ResolvedAccountDto = {
 				id: new ObjectId().toString(),
 				userId: new ObjectId().toString(),
 				activated: true,
 				username: 'username',
-				createdAt: new Date(),
 				updatedAt: new Date(),
 			};
-			const ret = AccountResponseMapper.mapToResponse(testDto);
+			const ret = AccountResponseMapper.mapToAccountResponse(resolvedAccountDto);
 
-			expect(ret.id).toBe(testDto.id);
-			expect(ret.userId).toBe(testDto.userId?.toString());
-			expect(ret.activated).toBe(testDto.activated);
-			expect(ret.username).toBe(testDto.username);
-			expect(ret.updatedAt).toBe(testDto.updatedAt);
+			expect(ret.id).toBe(resolvedAccountDto.id);
+			expect(ret.userId).toBe(resolvedAccountDto.userId?.toString());
+			expect(ret.activated).toBe(resolvedAccountDto.activated);
+			expect(ret.username).toBe(resolvedAccountDto.username);
+			expect(ret.updatedAt).toBe(resolvedAccountDto.updatedAt);
 		});
 	});
 });

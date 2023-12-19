@@ -3,7 +3,7 @@ import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-ad
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { IdmAccount } from '@shared/domain/interface/account';
+import { IdmAccount } from '@src/modules/account/domain/account-types';
 import { IdentityManagementService } from '../../identity-management.service';
 import { KeycloakSettings } from '../../keycloak-administration/interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';

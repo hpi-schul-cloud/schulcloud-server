@@ -32,7 +32,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 		}
 
 		const currentUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
-			account.id,
+			account.id ? account.id : '',
 			user,
 			systemId,
 			tokenDto.idToken

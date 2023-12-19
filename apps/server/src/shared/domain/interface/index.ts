@@ -1,4 +1,4 @@
-export * from './account';
+export * from '../../../modules/account/domain/account-types';
 export * from './entity';
 export * from './find-options';
 export * from './learnroom';

@@ -48,8 +48,13 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		const ldapDn: string = this.checkValue(user.ldapDn);
 
 		await this.checkCredentials(account, system, ldapDn, password);
-
-		const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(account.id, user, true, systemId);
+		// todo: check the case if the id in the account-domain should declared as optional, and when is the case the id is not setted
+		const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(
+			account.id ? account.id : '',
+			user,
+			true,
+			systemId
+		);
 
 		return currentUser;
 	}
@@ -83,7 +88,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 			await this.ldapService.checkLdapCredentials(system, ldapDn, password);
 		} catch (error) {
 			if (error instanceof UnauthorizedException) {
-				await this.authenticationService.updateLastTriedFailedLogin(account.id);
+				await this.authenticationService.updateLastTriedFailedLogin(account.id ? account.id : '');
 			}
 			throw error;
 		}

@@ -21,8 +21,8 @@ import {
 import { AccountEntityToDoMapper, AccountResponseMapper } from '../repo/mapper';
 import { AccountValidationService } from '../services/account.validation.service';
 import { AccountUc } from './account.uc';
-import { AccountDto, AccountService } from '../services';
-import { AccountSaveDto } from '../services/dto';
+import { AccountService } from '../services';
+import { Account } from '../domain';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
@@ -93,7 +93,7 @@ describe('AccountUc', () => {
 				{
 					provide: AccountService,
 					useValue: {
-						saveWithValidation: jest.fn().mockImplementation((account: AccountDto): Promise<void> => {
+						saveWithValidation: jest.fn().mockImplementation((account: Account): Promise<void> => {
 							if (account.username === 'fail@to.update') {
 								return Promise.reject();
 							}
@@ -106,7 +106,7 @@ describe('AccountUc', () => {
 							}
 							return Promise.reject();
 						}),
-						save: jest.fn().mockImplementation((account: AccountDto): Promise<void> => {
+						save: jest.fn().mockImplementation((account: Account): Promise<void> => {
 							if (account.username === 'fail@to.update') {
 								return Promise.reject();
 							}
@@ -119,7 +119,7 @@ describe('AccountUc', () => {
 							}
 							return Promise.reject();
 						}),
-						delete: (id: EntityId): Promise<AccountDto> => {
+						delete: (id: EntityId): Promise<Account> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id?.toString() === id);
 
 							if (account) {
@@ -129,7 +129,7 @@ describe('AccountUc', () => {
 							throw new EntityNotFoundError(AccountEntity.name);
 						},
 						create: (): Promise<void> => Promise.resolve(),
-						findByUserId: (userId: EntityId): Promise<AccountDto | null> => {
+						findByUserId: (userId: EntityId): Promise<Account | null> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.userId?.toString() === userId);
 
 							if (account) {
@@ -138,7 +138,7 @@ describe('AccountUc', () => {
 							}
 							return Promise.resolve(null);
 						},
-						findByUserIdOrFail: (userId: EntityId): Promise<AccountDto> => {
+						findByUserIdOrFail: (userId: EntityId): Promise<Account> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.userId?.toString() === userId);
 
 							if (account) {
@@ -151,7 +151,7 @@ describe('AccountUc', () => {
 							}
 							throw new EntityNotFoundError(AccountEntity.name);
 						},
-						findById: (accountId: EntityId): Promise<AccountDto> => {
+						findById: (accountId: EntityId): Promise<Account> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
 
 							if (account) {
@@ -160,7 +160,7 @@ describe('AccountUc', () => {
 							}
 							throw new EntityNotFoundError(AccountEntity.name);
 						},
-						findByUsernameAndSystemId: (username: string, systemId: EntityId | ObjectId): Promise<AccountDto> => {
+						findByUsernameAndSystemId: (username: string, systemId: EntityId | ObjectId): Promise<Account> => {
 							const account = mockAccounts.find(
 								(tempAccount) => tempAccount.username === username && tempAccount.systemId === systemId
 							);
@@ -170,7 +170,7 @@ describe('AccountUc', () => {
 							}
 							throw new EntityNotFoundError(AccountEntity.name);
 						},
-						searchByUsernameExactMatch: (username: string): Promise<Counted<AccountDto[]>> => {
+						searchByUsernameExactMatch: (username: string): Promise<Counted<Account[]>> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.username === username);
 
 							if (account) {
@@ -191,7 +191,7 @@ describe('AccountUc', () => {
 							}
 							return Promise.resolve([[], 0]);
 						},
-						searchByUsernamePartialMatch: (): Promise<Counted<AccountDto[]>> =>
+						searchByUsernamePartialMatch: (): Promise<Counted<Account[]>> =>
 							// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 							Promise.resolve([
 								// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
@@ -1029,10 +1029,10 @@ describe('AccountUc', () => {
 
 		it('should call account service', async () => {
 			const spy = jest.spyOn(accountService, 'saveWithValidation');
-			const params: AccountSaveDto = {
+			const params = new Account({
 				username: 'john.doe@domain.tld',
 				password: defaultPassword,
-			};
+			});
 			await accountUc.saveAccount(params);
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
