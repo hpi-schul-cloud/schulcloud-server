@@ -8,8 +8,8 @@ import { MigrationCheckService } from '@modules/user-login-migration';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
-import { OauthConfigEntity, SchoolFeatures } from '@shared/domain/entity';
-import { EntityId } from '@shared/domain/types';
+import { OauthConfigEntity } from '@shared/domain/entity';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthTokenDto } from '../interface';
@@ -119,7 +119,7 @@ export class OAuthService {
 			return true;
 		}
 
-		return !!school.features?.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
+		return !!school.features?.includes(SchoolFeature.OAUTH_PROVISIONING_ENABLED);
 	}
 
 	async requestToken(code: string, oauthConfig: OauthConfigEntity, redirectUri: string): Promise<OAuthTokenDto> {

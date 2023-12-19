@@ -10,8 +10,9 @@ import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
-import { OauthConfigEntity, SchoolFeatures, SystemEntity } from '@shared/domain/entity';
+import { OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { SchoolFeature } from '@shared/domain/types';
 import { legacySchoolDoFactory, setupEntities, systemEntityFactory, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
@@ -459,7 +460,7 @@ describe('OAuthService', () => {
 					id: new ObjectId().toHexString(),
 					externalId: externalSchoolId,
 					officialSchoolNumber,
-					features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+					features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 				});
 
 				const provisioningData: OauthDataDto = new OauthDataDto({
@@ -652,7 +653,7 @@ describe('OAuthService', () => {
 					id: new ObjectId().toHexString(),
 					externalId: externalSchoolId,
 					officialSchoolNumber,
-					features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+					features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 				});
 
 				const provisioningData: OauthDataDto = new OauthDataDto({
@@ -719,7 +720,7 @@ describe('OAuthService', () => {
 					id: new ObjectId().toHexString(),
 					externalId: externalSchoolId,
 					officialSchoolNumber,
-					features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+					features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 				});
 
 				const provisioningData: OauthDataDto = new OauthDataDto({

@@ -4,8 +4,7 @@ import { LegacySystemService, SystemDto } from '@modules/system';
 import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { SchoolFeatures } from '@shared/domain/entity';
-import { EntityId, SystemTypeEnum } from '@shared/domain/types';
+import { EntityId, SchoolFeature, SystemTypeEnum } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import {
 	UserLoginMigrationAlreadyClosedLoggableException,
@@ -79,7 +78,7 @@ export class UserLoginMigrationService {
 
 		await this.schoolService.removeFeature(
 			userLoginMigration.schoolId,
-			SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION
+			SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION
 		);
 
 		const now: Date = new Date();
@@ -132,10 +131,10 @@ export class UserLoginMigrationService {
 	}
 
 	private enableOauthMigrationFeature(schoolDo: LegacySchoolDo) {
-		if (schoolDo.features && !schoolDo.features.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED)) {
-			schoolDo.features.push(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
+		if (schoolDo.features && !schoolDo.features.includes(SchoolFeature.OAUTH_PROVISIONING_ENABLED)) {
+			schoolDo.features.push(SchoolFeature.OAUTH_PROVISIONING_ENABLED);
 		} else {
-			schoolDo.features = [SchoolFeatures.OAUTH_PROVISIONING_ENABLED];
+			schoolDo.features = [SchoolFeature.OAUTH_PROVISIONING_ENABLED];
 		}
 	}
 
