@@ -1,10 +1,9 @@
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountSaveDto } from '@modules/account/services/dto';
+import { Account, AccountService } from '@src/modules/account';
 import { Group, GroupService, GroupUser } from '@modules/group';
 import { FederalStateService, LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
-import { FederalStateNames } from '@modules/legacy-school/types';
+import { FederalStateNames } from '@src/modules/legacy-school/types';
 import { RoleService } from '@modules/role';
-import { RoleDto } from '@modules/role/service/dto/role.dto';
+import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { UserService } from '@modules/user';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -118,7 +117,7 @@ export class OidcProvisioningService {
 
 		if (createNewAccount) {
 			await this.accountService.saveWithValidation(
-				new AccountSaveDto({
+				new Account({
 					userId: savedUser.id,
 					username: CryptoJS.SHA256(savedUser.id as string).toString(CryptoJS.enc.Base64),
 					systemId,
