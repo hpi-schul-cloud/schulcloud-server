@@ -1,7 +1,11 @@
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
-import { CommonCartridgeOrganizationElement } from '../elements/common-cartridge-organization-element';
+import {
+	CommonCartridgeIntendedUseType,
+	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
+} from '../common-cartridge.enums';
+import { CommonCartridgeOrganizationElementV110 } from '../elements/v1.1.0/common-cartridge-organization-element';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
-import { CommonCartridgeResourcePropsInternal } from '../resources/common-cartridge-resource-factory';
+import { CommonCartridgeResourceProps } from '../resources/common-cartridge-resource-factory';
 import {
 	CommonCartridgeOrganizationBuilder,
 	CommonCartridgeOrganizationBuilderOptions,
@@ -15,35 +19,35 @@ describe('CommonCartridgeOrganizationBuilder', () => {
 	const organizationOptions: CommonCartridgeOrganizationBuilderOptions = {
 		title: 'organization-title',
 		identifier: 'organization-identifier',
-		version: CommonCartridgeVersion.V_1_1_0,
 	};
 	const subOrganizationOptions: CommonCartridgeOrganizationBuilderOptions = {
 		title: 'sub-organization-title',
 		identifier: 'sub-organization-identifier',
-		version: CommonCartridgeVersion.V_1_1_0,
 	};
 	const subSubOrganizationOptions: CommonCartridgeOrganizationBuilderOptions = {
 		title: 'sub-sub-organization-title',
 		identifier: 'sub-sub-organization-identifier',
-		version: CommonCartridgeVersion.V_1_1_0,
 	};
-	const resource1Props: CommonCartridgeResourcePropsInternal = {
+	const resource1Props: CommonCartridgeResourceProps = {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		identifier: 'resource-1-identifier',
 		title: 'resource-1-title',
 		html: '<p>resource-1-html</p>',
+		intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 	};
-	const resource2Props: CommonCartridgeResourcePropsInternal = {
+	const resource2Props: CommonCartridgeResourceProps = {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		identifier: 'resource-2-identifier',
 		title: 'resource-2-title',
 		html: '<p>resource-2-html</p>',
+		intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 	};
-	const resource3Props: CommonCartridgeResourcePropsInternal = {
+	const resource3Props: CommonCartridgeResourceProps = {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		identifier: 'resource-3-identifier',
 		title: 'resource-3-title',
 		html: '<p>resource-3-html</p>',
+		intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 	};
 
 	beforeEach(() => {
@@ -60,8 +64,9 @@ describe('CommonCartridgeOrganizationBuilder', () => {
 	describe('build', () => {
 		describe('when creating a common cartridge archive', () => {
 			beforeAll(() => {
-				sut = new CommonCartridgeOrganizationBuilder(organizationOptions, (resource) =>
-					resources.push(resource)
+				sut = new CommonCartridgeOrganizationBuilder(
+					{ ...organizationOptions, version: CommonCartridgeVersion.V_1_1_0 },
+					(resource) => resources.push(resource)
 				);
 				sut.addResource(resource1Props)
 					.addSubOrganization(subOrganizationOptions)
@@ -75,7 +80,7 @@ describe('CommonCartridgeOrganizationBuilder', () => {
 				const element = sut.build();
 
 				expect(element).toBeDefined();
-				expect(element).toBeInstanceOf(CommonCartridgeOrganizationElement);
+				expect(element).toBeInstanceOf(CommonCartridgeOrganizationElementV110);
 			});
 
 			it('should add 3 resources', () => {
