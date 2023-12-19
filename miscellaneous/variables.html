@@ -278,6 +278,12 @@
                             <a href="#controllers" title="apps/server/src/modules/management/management.module.ts" ><b>controllers</b>&nbsp;&nbsp;&nbsp;(apps/.../management.module.ts)</a>
                         </li>
                         <li>
+                            <a href="#countyEmbeddableFactory" title="apps/server/src/shared/testing/factory/county.embeddable.factory.ts" ><b>countyEmbeddableFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../county.embeddable.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#countyFactory" title="apps/server/src/modules/school/testing/county.factory.ts" ><b>countyFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../county.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#courseFactory" title="apps/server/src/shared/testing/factory/course.factory.ts" ><b>courseFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../course.factory.ts)</a>
                         </li>
                         <li>
@@ -420,6 +426,9 @@
                         </li>
                         <li>
                             <a href="#externalToolPseudonymEntityFactory" title="apps/server/src/shared/testing/factory/external-tool-pseudonym.factory.ts" ><b>externalToolPseudonymEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-pseudonym.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#federalStateFactory" title="apps/server/src/modules/school/testing/federal-state.factory.ts" ><b>federalStateFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../federal-state.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#federalStateFactory" title="apps/server/src/shared/testing/factory/federal-state.factory.ts" ><b>federalStateFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../federal-state.factory.ts)</a>
@@ -794,10 +803,19 @@
                             <a href="#sanitizeRichText" title="apps/server/src/shared/controller/transformer/sanitize-html.transformer.ts" ><b>sanitizeRichText</b>&nbsp;&nbsp;&nbsp;(apps/.../sanitize-html.transformer.ts)</a>
                         </li>
                         <li>
+                            <a href="#SCHOOL_REPO" title="apps/server/src/modules/school/domain/interface/school.repo.interface.ts" ><b>SCHOOL_REPO</b>&nbsp;&nbsp;&nbsp;(apps/.../school.repo.interface.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SCHOOL_YEAR_REPO" title="apps/server/src/modules/school/domain/interface/school-year.repo.interface.ts" ><b>SCHOOL_YEAR_REPO</b>&nbsp;&nbsp;&nbsp;(apps/.../school-year.repo.interface.ts)</a>
+                        </li>
+                        <li>
                             <a href="#schoolExternalToolEntityFactory" title="apps/server/src/shared/testing/factory/school-external-tool-entity.factory.ts" ><b>schoolExternalToolEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school-external-tool-entity.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#schoolExternalToolFactory" title="apps/server/src/shared/testing/factory/domainobject/tool/school-external-tool.factory.ts" ><b>schoolExternalToolFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school-external-tool.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#schoolFactory" title="apps/server/src/modules/school/testing/school.factory.ts" ><b>schoolFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#schoolFactory" title="apps/server/src/shared/testing/factory/school.factory.ts" ><b>schoolFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school.factory.ts)</a>
@@ -819,6 +837,9 @@
                         </li>
                         <li>
                             <a href="#schoolUnpublishedNewsFactory" title="apps/server/src/shared/testing/factory/news.factory.ts" ><b>schoolUnpublishedNewsFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../news.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#schoolYearFactory" title="apps/server/src/modules/school/testing/school-year.factory.ts" ><b>schoolYearFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school-year.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#schoolYearFactory" title="apps/server/src/shared/testing/factory/schoolyear.factory.ts" ><b>schoolYearFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../schoolyear.factory.ts)</a>
@@ -1658,8 +1679,9 @@
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 	ExternalToolElementNodeEntity,
-	Course,
 	ContextExternalToolEntity,
+	CountyEmbeddable,
+	Course,
 	CourseGroup,
 	CourseNews,
 	DashboardGridElementModel,
@@ -3682,6 +3704,7 @@ This allows adding console commands to execute provider methods.</p>
 	FEATURE_IDENTITY_MANAGEMENT_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_ENABLED&#x27;) as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED&#x27;) as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED&#x27;) as boolean,
+	STUDENT_TEAM_CREATION: Configuration.get(&#x27;STUDENT_TEAM_CREATION&#x27;) as string,
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get(&#x27;ADMIN_API__ALLOWED_API_KEYS&#x27;) as string)
 		.split(&#x27;,&#x27;)
 		.map((apiKey) &#x3D;&gt; apiKey.trim()),
@@ -4569,6 +4592,73 @@ must use</p>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>[Logger, H5PLibraryManagementService]</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/county.embeddable.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="countyEmbeddableFactory"></a>
+                    <span class="name">
+                        <span ><b>countyEmbeddableFactory</b></span>
+                        <a href="#countyEmbeddableFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;CountyEmbeddable, CountyEmbeddable&gt;(
+	CountyEmbeddable,
+	({ sequence }) &#x3D;&gt; {
+		const county &#x3D; {
+			_id: new ObjectId(),
+			name: &#x60;County ${sequence}&#x60;,
+			countyId: sequence,
+			antaresKey: &#x60;antaresKey ${sequence}&#x60;,
+		};
+
+		return county;
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/school/testing/county.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="countyFactory"></a>
+                    <span class="name">
+                        <span ><b>countyFactory</b></span>
+                        <a href="#countyFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;County, CountyProps&gt;(County, ({ sequence }) &#x3D;&gt; {
+	const county &#x3D; {
+		id: new ObjectId().toHexString(),
+		name: &#x60;County ${sequence}&#x60;,
+		countyId: sequence,
+		antaresKey: &#x60;antey ${sequence}&#x60;,
+	};
+
+	return county;
+})</code>
                     </td>
                 </tr>
 
@@ -5667,6 +5757,7 @@ must use</p>
 	TeamsApiModule,
 	MetaTagExtractorApiModule,
 	PseudonymApiModule,
+	SchoolApiModule,
 	LegacySchoolApiModule,
 ]</code>
                     </td>
@@ -6308,6 +6399,40 @@ it should ensure an empty result</p>
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/modules/school/testing/federal-state.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="federalStateFactory"></a>
+                    <span class="name">
+                        <span ><b>federalStateFactory</b></span>
+                        <a href="#federalStateFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;FederalState, FederalStateProps&gt;(FederalState, () &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		name: &#x27;Hamburg&#x27;,
+		abbreviation: &#x27;HH&#x27;,
+		logoUrl:
+			&#x27;https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Coat_of_arms_of_Hamburg.svg/1200px-Coat_of_arms_of_Hamburg.svg.png&#x27;,
+		counties: countyFactory.buildList(2),
+		createdAt: new Date(2020, 1),
+		updatedAt: new Date(2020, 1),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/federal-state.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -6331,18 +6456,7 @@ it should ensure an empty result</p>
 			abbreviation: &#x27;HH&#x27;,
 			logoUrl:
 				&#x27;https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Coat_of_arms_of_Hamburg.svg/1200px-Coat_of_arms_of_Hamburg.svg.png&#x27;,
-			counties: [
-				new County({
-					name: &#x27;Hamburg-Mitte&#x27;,
-					countyId: 2000,
-					antaresKey: &#x27;02000&#x27;,
-				}),
-				new County({
-					name: &#x27;Altona&#x27;,
-					countyId: 2002,
-					antaresKey: &#x27;02002&#x27;,
-				}),
-			],
+			counties: countyEmbeddableFactory.buildList(2),
 			createdAt: new Date(2020, 1),
 			updatedAt: new Date(2020, 1),
 		};
@@ -9860,6 +9974,64 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/modules/school/domain/interface/school.repo.interface.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SCHOOL_REPO"></a>
+                    <span class="name">
+                        <span ><b>SCHOOL_REPO</b></span>
+                        <a href="#SCHOOL_REPO"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;SCHOOL_REPO&#x27;</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/school/domain/interface/school-year.repo.interface.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SCHOOL_YEAR_REPO"></a>
+                    <span class="name">
+                        <span ><b>SCHOOL_YEAR_REPO</b></span>
+                        <a href="#SCHOOL_YEAR_REPO"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;SCHOOL_YEAR_REPO&#x27;</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/school-external-tool-entity.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -9930,6 +10102,38 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/modules/school/testing/school.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="schoolFactory"></a>
+                    <span class="name">
+                        <span ><b>schoolFactory</b></span>
+                        <a href="#schoolFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;School, SchoolProps&gt;(School, ({ sequence }) &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		name: &#x60;school #${sequence}&#x60;,
+		federalState: federalStateFactory.build(),
+		features: new Set&lt;SchoolFeature&gt;(),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/school.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -9948,7 +10152,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                         <i>Default value : </i><code>BaseFactory.define&lt;SchoolEntity, SchoolProperties&gt;(SchoolEntity, ({ sequence }) &#x3D;&gt; {
 	return {
 		name: &#x60;school #${sequence}&#x60;,
-		schoolYear: schoolYearFactory.build(),
+		currentYear: schoolYearFactory.build(),
 		federalState: federalStateFactory.build(),
 	};
 })</code>
@@ -10086,6 +10290,40 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/modules/school/testing/school-year.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="schoolYearFactory"></a>
+                    <span class="name">
+                        <span ><b>schoolYearFactory</b></span>
+                        <a href="#schoolYearFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SchoolYearFactory.define(SchoolYear, ({ transientParams, sequence }) &#x3D;&gt; {
+	const id &#x3D; new ObjectId().toHexString();
+
+	const startYearWithoutSequence &#x3D; transientParams?.startYear ?? new Date().getFullYear();
+	const startYear &#x3D; startYearWithoutSequence + sequence - 1;
+
+	const name &#x3D; &#x60;${startYear}/${(startYear + 1).toString().slice(-2)}&#x60;;
+	const startDate &#x3D; new Date(&#x60;${startYear}-08-01&#x60;);
+	const endDate &#x3D; new Date(&#x60;${startYear + 1}-07-31&#x60;);
+
+	return { id, name, startDate, endDate };
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/schoolyear.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -10101,12 +10339,14 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;SchoolYearEntity, SchoolYearProperties&gt;(SchoolYearEntity, () &#x3D;&gt; {
-	const year &#x3D; new Date().getFullYear();
-	const nextYear &#x3D; (year + 1).toString().substr(-2);
-	const name &#x3D; &#x60;${year}/${nextYear}&#x60;;
-	const startDate &#x3D; new Date(&#x60;${year}-08-01&#x60;);
-	const endDate &#x3D; new Date(&#x60;${year + 1}-07-31&#x60;);
+                        <i>Default value : </i><code>SchoolYearFactory.define(SchoolYearEntity, ({ transientParams, sequence }) &#x3D;&gt; {
+	const startYearWithoutSequence &#x3D; transientParams?.startYear ?? new Date().getFullYear();
+	const startYear &#x3D; startYearWithoutSequence + sequence - 1;
+
+	const name &#x3D; &#x60;${startYear}/${(startYear + 1).toString().slice(-2)}&#x60;;
+	const startDate &#x3D; new Date(&#x60;${startYear}-08-01&#x60;);
+	const endDate &#x3D; new Date(&#x60;${startYear + 1}-07-31&#x60;);
+
 	return { name, startDate, endDate };
 })</code>
                     </td>
@@ -10172,19 +10412,19 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 				antaresKey: &#x27;S&#x27;,
 				countyId: 8111,
 				name: &#x27;Stuttgart&#x27;,
-				id: &#x27;5fa55eb53f472a2d986c87ba&#x27;,
+				_id: new ObjectId(&#x27;5fa55eb53f472a2d986c87ba&#x27;),
 			},
 			{
 				antaresKey: &#x27;BB&#x27;,
 				countyId: 8115,
 				name: &#x27;Böblingen&#x27;,
-				id: &#x27;5fa55eb53f472a2d986c87bb&#x27;,
+				_id: new ObjectId(&#x27;5fa55eb53f472a2d986c87bb&#x27;),
 			},
 			{
 				antaresKey: &#x27;ES&#x27;,
 				countyId: 8116,
 				name: &#x27;Esslingen&#x27;,
-				id: &#x27;5fa55eb53f472a2d986c87bc&#x27;,
+				_id: new ObjectId(&#x27;5fa55eb53f472a2d986c87bc&#x27;),
 			},
 		],
 	},
@@ -10196,13 +10436,13 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		counties: [
 			{
 				antaresKey: &#x27;BRB&#x27;,
-				id: &#x27;5fa55eb53f472a2d986c8812&#x27;,
+				_id: new ObjectId(&#x27;5fa55eb53f472a2d986c8812&#x27;),
 				countyId: 12051,
 				name: &#x27;Brandenburg an der Havel&#x27;,
 			},
 			{
 				antaresKey: &#x27;CB&#x27;,
-				id: &#x27;5fa55eb53f472a2d986c8813&#x27;,
+				_id: new ObjectId(&#x27;5fa55eb53f472a2d986c8813&#x27;),
 				countyId: 12052,
 				name: &#x27;Cottbus&#x27;,
 			},
@@ -10226,13 +10466,13 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 				antaresKey: &#x27;BRB&#x27;,
 				countyId: 12051,
 				name: &#x27;Brandenburg an der Havel&#x27;,
-				id: &#x27;5fa55eb53f472a2d986c8812&#x27;,
+				_id: new ObjectId(&#x27;5fa55eb53f472a2d986c8812&#x27;),
 			},
 			{
 				antaresKey: &#x27;CB&#x27;,
 				countyId: 12052,
 				name: &#x27;Cottbus&#x27;,
-				id: &#x27;5fa55eb53f472a2d986c8813&#x27;,
+				_id: new ObjectId(&#x27;5fa55eb53f472a2d986c8813&#x27;),
 			},
 		],
 	},
@@ -10275,7 +10515,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 				antaresKey: &#x27;NI&#x27;,
 				countyId: 3256,
 				name: &#x27;Nienburg/Weser&#x27;,
-				id: &#x27;5fa55eb53f472a2d986c8812&#x27;,
+				_id: new ObjectId(&#x27;5fa55eb53f472a2d986c8812&#x27;),
 			},
 		],
 	},
@@ -10372,22 +10612,22 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		name: &#x27;Demo Schule&#x27;,
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: &#x27;5fa55eb53f472a2d986c8813&#x27;,
+			_id: new ObjectId(&#x27;5fa55eb53f472a2d986c8813&#x27;),
 			countyId: 12052,
 			name: &#x27;Cottbus&#x27;,
 			antaresKey: &#x27;CB&#x27;,
 		},
 		createdAt: &#x27;2017-08-24T12:04:11.721Z&#x27;,
 		systems: [],
-		fileStorageType: &#x27;awsS3&#x27;,
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum[&#x27;2022/23&#x27;],
-		purpose: &#x27;demo&#x27;,
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			teacher: {
 				STUDENT_LIST: true,
 			},
 		},
-		features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 	},
 	{
 		id: &#x27;5f2987e020834114b8efd6f7&#x27;,
@@ -10395,15 +10635,15 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		name: &#x27;Schiller-Oberschule&#x27;,
 		createdAt: &#x27;2017-01-01T00:06:37.148Z&#x27;,
 		systems: [],
-		fileStorageType: &#x27;awsS3&#x27;,
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum[&#x27;2022/23&#x27;],
-		purpose: &#x27;demo&#x27;,
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			teacher: {
 				STUDENT_LIST: true,
 			},
 		},
-		features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 	},
 	{
 		id: &#x27;5f2987e020834114b8efd6f8&#x27;,
@@ -10411,26 +10651,26 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		name: &#x27;Paul-Gerhardt-Gymnasium&#x27;,
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: &#x27;5fa55eb53f472a2d986c8812&#x27;,
+			_id: new ObjectId(&#x27;5fa55eb53f472a2d986c8812&#x27;),
 			countyId: 12051,
 			name: &#x27;Brandenburg an der Havel&#x27;,
 			antaresKey: &#x27;BRB&#x27;,
 		},
 		createdAt: &#x27;2017-01-01T00:06:37.148Z&#x27;,
 		systems: [],
-		fileStorageType: &#x27;awsS3&#x27;,
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum[&#x27;2022/23&#x27;],
-		purpose: &#x27;demo&#x27;,
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			teacher: {
 				STUDENT_LIST: true,
 			},
 		},
 		features: [
-			SchoolFeatures.ROCKET_CHAT,
-			SchoolFeatures.LDAP_UNIVENTION_MIGRATION,
-			SchoolFeatures.VIDEOCONFERENCE,
-			SchoolFeatures.OAUTH_PROVISIONING_ENABLED,
+			SchoolFeature.ROCKET_CHAT,
+			SchoolFeature.LDAP_UNIVENTION_MIGRATION,
+			SchoolFeature.VIDEOCONFERENCE,
+			SchoolFeature.OAUTH_PROVISIONING_ENABLED,
 		],
 		enableStudentTeamCreation: false,
 	},
@@ -10440,17 +10680,17 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		name: &#x27;Expertenschule&#x27;,
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: &#x27;5fa55eb53f472a2d986c8813&#x27;,
+			_id: new ObjectId(&#x27;5fa55eb53f472a2d986c8813&#x27;),
 			countyId: 12052,
 			name: &#x27;Cottbus&#x27;,
 			antaresKey: &#x27;CB&#x27;,
 		},
 		createdAt: &#x27;2018-11-09T10:04:11.721Z&#x27;,
 		systems: [],
-		fileStorageType: &#x27;awsS3&#x27;,
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum[&#x27;2022/23&#x27;],
-		purpose: &#x27;expert&#x27;,
-		features: [SchoolFeatures.ROCKET_CHAT, SchoolFeatures.VIDEOCONFERENCE, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		purpose: SchoolPurpose.EXPERT,
+		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.VIDEOCONFERENCE, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 	},
 	{
 		id: &#x27;5fa2c5ccb229544f2c69666c&#x27;,
@@ -10458,22 +10698,22 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		name: &#x27;Felix Mendelssohn-Gymnasium&#x27;,
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: &#x27;5fa55eb53f472a2d986c8813&#x27;,
+			_id: new ObjectId(&#x27;5fa55eb53f472a2d986c8813&#x27;),
 			countyId: 12052,
 			name: &#x27;Cottbus&#x27;,
 			antaresKey: &#x27;CB&#x27;,
 		},
 		createdAt: &#x27;2020-11-04T15:16:28.827Z&#x27;,
 		systems: [],
-		fileStorageType: &#x27;awsS3&#x27;,
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum[&#x27;2022/23&#x27;],
-		purpose: &#x27;demo&#x27;,
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			student: {
 				LERNSTORE_VIEW: true,
 			},
 		},
-		features: [SchoolFeatures.ROCKET_CHAT, SchoolFeatures.STUDENTVISIBILITY, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: &#x27;&#x27;,
 		experimental: false,
 		pilot: false,
@@ -10487,22 +10727,22 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		name: &#x27;Ludwig van Beethoven-Liceum&#x27;,
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: &#x27;5fa55eb53f472a2d986c8813&#x27;,
+			_id: new ObjectId(&#x27;5fa55eb53f472a2d986c8813&#x27;),
 			countyId: 12052,
 			name: &#x27;Cottbus&#x27;,
 			antaresKey: &#x27;CB&#x27;,
 		},
 		createdAt: &#x27;2020-11-04T21:11:14.312Z&#x27;,
 		systems: [],
-		fileStorageType: &#x27;awsS3&#x27;,
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum[&#x27;2022/23&#x27;],
-		purpose: &#x27;demo&#x27;,
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			student: {
 				LERNSTORE_VIEW: true,
 			},
 		},
-		features: [SchoolFeatures.ROCKET_CHAT, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: &#x27;&#x27;,
 		experimental: false,
 		pilot: false,
@@ -10518,15 +10758,15 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		federalState: EFederalState.INTERNATIONAL_SCHOOL,
 		createdAt: &#x27;2020-11-04T21:38:05.110Z&#x27;,
 		systems: [],
-		fileStorageType: &#x27;awsS3&#x27;,
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum[&#x27;2022/23&#x27;],
-		purpose: &#x27;demo&#x27;,
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			student: {
 				LERNSTORE_VIEW: true,
 			},
 		},
-		features: [SchoolFeatures.ROCKET_CHAT, SchoolFeatures.STUDENTVISIBILITY, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: &#x27;&#x27;,
 		experimental: false,
 		pilot: false,
@@ -10542,16 +10782,16 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		name: &#x27;school in Ni&#x27;,
 		federalState: EFederalState.NIEDERSACHSEN,
 		county: {
-			id: &#x27;5fa55eb53f472a2d986c8812&#x27;,
+			_id: new ObjectId(&#x27;5fa55eb53f472a2d986c8812&#x27;),
 			countyId: 3256,
 			name: &#x27;Nienburg/Weser&#x27;,
 			antaresKey: &#x27;NI&#x27;,
 		},
 		createdAt: &#x27;2020-12-08T16:58:36.527Z&#x27;,
 		systems: [],
-		fileStorageType: &#x27;awsS3&#x27;,
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum[&#x27;2022/23&#x27;],
-		features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: &#x27;&#x27;,
 		experimental: false,
 		pilot: false,
@@ -10562,8 +10802,8 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		name: &#x27;graveyard school (tombstone users only)&#x27;,
 		createdAt: &#x27;2020-12-16T12:47:27.338Z&#x27;,
 		systems: [],
-		purpose: &#x27;tombstone&#x27;,
-		features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		purpose: SchoolPurpose.TOMBSTONE,
+		features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: &#x27;&#x27;,
 		experimental: false,
 		pilot: false,
@@ -10574,26 +10814,26 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		name: &#x27;OIDC-Mock-School&#x27;,
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: &#x27;5fa55eb53f472a2d986c8812&#x27;,
+			_id: new ObjectId(&#x27;5fa55eb53f472a2d986c8812&#x27;),
 			countyId: 12051,
 			name: &#x27;Brandenburg an der Havel&#x27;,
 			antaresKey: &#x27;BRB&#x27;,
 		},
 		createdAt: &#x27;2017-01-01T00:06:37.148Z&#x27;,
 		systems: [&#x27;62c7f233f35a554ba3ed42f1&#x27;],
-		fileStorageType: &#x27;awsS3&#x27;,
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum[&#x27;2022/23&#x27;],
-		purpose: &#x27;demo&#x27;,
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			teacher: {
 				STUDENT_LIST: true,
 			},
 		},
 		features: [
-			SchoolFeatures.OAUTH_PROVISIONING_ENABLED,
-			SchoolFeatures.LDAP_UNIVENTION_MIGRATION,
-			SchoolFeatures.VIDEOCONFERENCE,
-			SchoolFeatures.OAUTH_PROVISIONING_ENABLED,
+			SchoolFeature.OAUTH_PROVISIONING_ENABLED,
+			SchoolFeature.LDAP_UNIVENTION_MIGRATION,
+			SchoolFeature.VIDEOCONFERENCE,
+			SchoolFeature.OAUTH_PROVISIONING_ENABLED,
 		],
 		externalId: &#x27;0000d186816abba584714c92&#x27;,
 		enableStudentTeamCreation: false,

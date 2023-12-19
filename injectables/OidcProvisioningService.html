@@ -773,7 +773,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>provisionExternalGroup(externalGroup: <a href="../classes/ExternalGroupDto.html" target="_self">ExternalGroupDto</a>, externalSchool: <a href="../classes/ExternalSchoolDto.html" target="_self">ExternalSchoolDto | undefined</a>, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>provisionExternalGroup(externalGroup: <a href="../classes/ExternalGroupDto.html" target="_self">ExternalGroupDto</a>, externalSchool: ExternalSchoolDto | undefined, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -816,7 +816,7 @@
                                         <tr>
                                                 <td>externalSchool</td>
                                             <td>
-                                                            <code><a href="../classes/ExternalSchoolDto.html" target="_self" >ExternalSchoolDto | undefined</a></code>
+                                                        <code>ExternalSchoolDto | undefined</code>
                                             </td>
 
                                             <td>
@@ -923,7 +923,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/LegacySchoolDo.html" target="_self" >Promise&lt;LegacySchoolDo&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;LegacySchoolDo&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -1143,8 +1143,8 @@ import { UserService } from &#x27;@modules/user&#x27;;
 import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
 import { ExternalSource, LegacySchoolDo, RoleReference, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
-import { FederalStateEntity, SchoolFeatures, SchoolYearEntity } from &#x27;@shared/domain/entity&#x27;;
-import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { FederalStateEntity, SchoolYearEntity } from &#x27;@shared/domain/entity&#x27;;
+import { EntityId, SchoolFeature } from &#x27;@shared/domain/types&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
 import CryptoJS from &#x27;crypto-js&#x27;;
@@ -1191,7 +1191,7 @@ export class OidcProvisioningService {
 				name: this.getSchoolName(externalSchool),
 				officialSchoolNumber: externalSchool.officialSchoolNumber,
 				systems: [systemId],
-				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+				features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 				// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
 				schoolYear,
 				federalState,

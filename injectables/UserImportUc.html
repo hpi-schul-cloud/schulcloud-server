@@ -1696,9 +1696,9 @@ import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { UserAlreadyAssignedToImportUserError } from &#x27;@shared/common&#x27;;
 import { LegacySchoolDo } from &#x27;@shared/domain/domainobject&#x27;;
-import { Account, ImportUser, MatchCreator, SchoolFeatures, SystemEntity, User } from &#x27;@shared/domain/entity&#x27;;
+import { Account, ImportUser, MatchCreator, SystemEntity, User } from &#x27;@shared/domain/entity&#x27;;
 import { IFindOptions, Permission } from &#x27;@shared/domain/interface&#x27;;
-import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from &#x27;@shared/domain/types&#x27;;
+import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch, SchoolFeature } from &#x27;@shared/domain/types&#x27;;
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { AccountSaveDto } from &#x27;../../account/services/dto&#x27;;
@@ -1737,7 +1737,7 @@ export class UserImportUc {
 
 	private checkFeatureEnabled(school: LegacySchoolDo): void | never {
 		const enabled &#x3D; Configuration.get(&#x27;FEATURE_USER_MIGRATION_ENABLED&#x27;) as boolean;
-		const isLdapPilotSchool &#x3D; school.features &amp;&amp; school.features.includes(SchoolFeatures.LDAP_UNIVENTION_MIGRATION);
+		const isLdapPilotSchool &#x3D; school.features &amp;&amp; school.features.includes(SchoolFeature.LDAP_UNIVENTION_MIGRATION);
 		if (!enabled &amp;&amp; !isLdapPilotSchool) {
 			this.logger.warning(new UserMigrationIsNotEnabled());
 			throw new InternalServerErrorException(&#x27;User Migration not enabled&#x27;);

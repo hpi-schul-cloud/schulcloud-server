@@ -302,7 +302,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { UserLoginMigrationDO } from &#x27;@shared/domain/domainobject&#x27;;
-import { SchoolFeatures } from &#x27;@shared/domain/entity&#x27;;
+import { SchoolFeature } from &#x27;@shared/domain/types&#x27;;
 import { UserLoginMigrationService } from &#x27;./user-login-migration.service&#x27;;
 
 @Injectable()
@@ -313,7 +313,7 @@ export class UserLoginMigrationRevertService {
 	) {}
 
 	async revertUserLoginMigration(userLoginMigration: UserLoginMigrationDO): Promise&lt;void&gt; {
-		await this.schoolService.removeFeature(userLoginMigration.schoolId, SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
+		await this.schoolService.removeFeature(userLoginMigration.schoolId, SchoolFeature.OAUTH_PROVISIONING_ENABLED);
 		await this.userLoginMigrationService.deleteUserLoginMigration(userLoginMigration);
 	}
 }

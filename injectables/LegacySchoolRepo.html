@@ -366,7 +366,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/LegacySchoolDo.html" target="_self" >Promise&lt;LegacySchoolDo | null&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;LegacySchoolDo | null&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -435,7 +435,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/LegacySchoolDo.html" target="_self" >Promise&lt;LegacySchoolDo | null&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;LegacySchoolDo | null&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -508,7 +508,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/SchoolEntity.html" target="_self" >EntityData&lt;SchoolEntity&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../entitys/SchoolEntity.html" target="_self" >EntityData&lt;SchoolEntity&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1293,7 +1293,7 @@ export class LegacySchoolRepo extends BaseDORepo&lt;LegacySchoolDo, SchoolEntity
 			name: entity.name,
 			previousExternalId: entity.previousExternalId,
 			officialSchoolNumber: entity.officialSchoolNumber,
-			schoolYear: entity.schoolYear,
+			schoolYear: entity.currentYear,
 			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: SystemEntity) &#x3D;&gt; system.id) : [],
 			userLoginMigrationId: entity.userLoginMigration?.id,
 			federalState: entity.federalState,
@@ -1309,7 +1309,7 @@ export class LegacySchoolRepo extends BaseDORepo&lt;LegacySchoolDo, SchoolEntity
 			name: entityDO.name,
 			previousExternalId: entityDO.previousExternalId,
 			officialSchoolNumber: entityDO.officialSchoolNumber,
-			schoolYear: entityDO.schoolYear,
+			currentYear: entityDO.schoolYear,
 			systems: entityDO.systems
 				? entityDO.systems.map((systemId: EntityId) &#x3D;&gt; this._em.getReference(SystemEntity, systemId))
 				: [],

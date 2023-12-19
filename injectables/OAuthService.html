@@ -965,8 +965,8 @@ import { MigrationCheckService } from &#x27;@modules/user-login-migration&#x27;;
 import { Inject } from &#x27;@nestjs/common&#x27;;
 import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
 import { LegacySchoolDo, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
-import { OauthConfigEntity, SchoolFeatures } from &#x27;@shared/domain/entity&#x27;;
-import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { OauthConfigEntity } from &#x27;@shared/domain/entity&#x27;;
+import { EntityId, SchoolFeature } from &#x27;@shared/domain/types&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import jwt, { JwtPayload } from &#x27;jsonwebtoken&#x27;;
 import { OAuthTokenDto } from &#x27;../interface&#x27;;
@@ -1076,7 +1076,7 @@ export class OAuthService {
 			return true;
 		}
 
-		return !!school.features?.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
+		return !!school.features?.includes(SchoolFeature.OAUTH_PROVISIONING_ENABLED);
 	}
 
 	async requestToken(code: string, oauthConfig: OauthConfigEntity, redirectUri: string): Promise&lt;OAuthTokenDto&gt; {

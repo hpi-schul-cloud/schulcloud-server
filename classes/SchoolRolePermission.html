@@ -276,21 +276,12 @@
 } from &#x27;@mikro-orm/core&#x27;;
 import { SchoolSystemOptionsEntity } from &#x27;@modules/legacy-school/entity&#x27;;
 import { UserLoginMigrationEntity } from &#x27;@shared/domain/entity/user-login-migration.entity&#x27;;
-import { BaseEntity } from &#x27;./base.entity&#x27;;
-import { FederalStateEntity } from &#x27;./federal-state.entity&#x27;;
+import { SchoolFeature, SchoolPurpose } from &#x27;@shared/domain/types&#x27;;
+import { FileStorageType } from &#x27;@src/modules/school/domain/type/file-storage-type.enum&#x27;;
+import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
+import { CountyEmbeddable, FederalStateEntity } from &#x27;./federal-state.entity&#x27;;
 import { SchoolYearEntity } from &#x27;./schoolyear.entity&#x27;;
 import { SystemEntity } from &#x27;./system.entity&#x27;;
-
-export enum SchoolFeatures {
-	ROCKET_CHAT &#x3D; &#x27;rocketChat&#x27;,
-	VIDEOCONFERENCE &#x3D; &#x27;videoconference&#x27;,
-	NEXTCLOUD &#x3D; &#x27;nextcloud&#x27;,
-	STUDENTVISIBILITY &#x3D; &#x27;studentVisibility&#x27;, // deprecated
-	LDAP_UNIVENTION_MIGRATION &#x3D; &#x27;ldapUniventionMigrationSchool&#x27;,
-	OAUTH_PROVISIONING_ENABLED &#x3D; &#x27;oauthProvisioningEnabled&#x27;,
-	SHOW_OUTDATED_USERS &#x3D; &#x27;showOutdatedUsers&#x27;,
-	ENABLE_LDAP_SYNC_DURING_MIGRATION &#x3D; &#x27;enableLdapSyncDuringMigration&#x27;,
-}
 
 export interface SchoolProperties {
 	_id?: string;
@@ -301,10 +292,19 @@ export interface SchoolProperties {
 	name: string;
 	officialSchoolNumber?: string;
 	systems?: SystemEntity[];
-	features?: SchoolFeatures[];
-	schoolYear?: SchoolYearEntity;
+	permissions?: SchoolRoles;
+	features?: SchoolFeature[];
+	currentYear?: SchoolYearEntity;
 	userLoginMigration?: UserLoginMigrationEntity;
 	federalState: FederalStateEntity;
+	county?: CountyEmbeddable;
+	purpose?: SchoolPurpose;
+	enableStudentTeamCreation?: boolean;
+	logo_dataUrl?: string;
+	logo_name?: string;
+	fileStorageType?: FileStorageType;
+	language?: string;
+	timezone?: string;
 }
 
 @Embeddable()
@@ -327,9 +327,9 @@ export class SchoolRoles {
 
 @Entity({ tableName: &#x27;schools&#x27; })
 @Index({ properties: [&#x27;externalId&#x27;, &#x27;systems&#x27;] })
-export class SchoolEntity extends BaseEntity {
+export class SchoolEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
-	features?: SchoolFeatures[];
+	features?: SchoolFeature[];
 
 	@Property({ nullable: true })
 	inMaintenanceSince?: Date;
@@ -349,14 +349,14 @@ export class SchoolEntity extends BaseEntity {
 	@Property({ nullable: true })
 	officialSchoolNumber?: string;
 
-	@ManyToMany(() &#x3D;&gt; SystemEntity, undefined, { fieldName: &#x27;systems&#x27; })
+	@ManyToMany(() &#x3D;&gt; SystemEntity)
 	systems &#x3D; new Collection&lt;SystemEntity&gt;(this);
 
 	@Embedded(() &#x3D;&gt; SchoolRoles, { object: true, nullable: true, prefix: false })
 	permissions?: SchoolRoles;
 
-	@ManyToOne(() &#x3D;&gt; SchoolYearEntity, { fieldName: &#x27;currentYear&#x27;, nullable: true })
-	schoolYear?: SchoolYearEntity;
+	@ManyToOne(() &#x3D;&gt; SchoolYearEntity, { nullable: true })
+	currentYear?: SchoolYearEntity;
 
 	@OneToOne(
 		() &#x3D;&gt; UserLoginMigrationEntity,
@@ -367,41 +367,60 @@ export class SchoolEntity extends BaseEntity {
 	)
 	userLoginMigration?: UserLoginMigrationEntity;
 
-	@ManyToOne(() &#x3D;&gt; FederalStateEntity, { fieldName: &#x27;federalState&#x27;, nullable: false })
+	@ManyToOne(() &#x3D;&gt; FederalStateEntity)
 	federalState: FederalStateEntity;
+
+	@Property({ nullable: true })
+	county?: CountyEmbeddable;
+
+	@Property({ nullable: true })
+	purpose?: SchoolPurpose;
+
+	@Property({ nullable: true })
+	enableStudentTeamCreation?: boolean;
+
+	@Property({ nullable: true })
+	logo_dataUrl?: string;
+
+	@Property({ nullable: true })
+	logo_name?: string;
+
+	@Property({ nullable: true })
+	fileStorageType?: FileStorageType;
+
+	@Property({ nullable: true })
+	language?: string;
+
+	@Property({ nullable: true })
+	timezone?: string;
 
 	@OneToMany(() &#x3D;&gt; SchoolSystemOptionsEntity, (options) &#x3D;&gt; options.school, { cascade: [Cascade.REMOVE] })
 	schoolSystemOptions &#x3D; new Collection&lt;SchoolSystemOptionsEntity&gt;(this);
 
 	constructor(props: SchoolProperties) {
 		super();
-		if (props.externalId) {
-			this.externalId &#x3D; props.externalId;
-		}
-		if (props.previousExternalId) {
-			this.previousExternalId &#x3D; props.previousExternalId;
-		}
+		this.externalId &#x3D; props.externalId;
+		this.previousExternalId &#x3D; props.previousExternalId;
 		this.inMaintenanceSince &#x3D; props.inMaintenanceSince;
-		if (props.inUserMigration !&#x3D;&#x3D; null) {
-			this.inUserMigration &#x3D; props.inUserMigration;
-		}
+		this.inUserMigration &#x3D; props.inUserMigration;
 		this.name &#x3D; props.name;
-		if (props.officialSchoolNumber) {
-			this.officialSchoolNumber &#x3D; props.officialSchoolNumber;
-		}
+		this.officialSchoolNumber &#x3D; props.officialSchoolNumber;
 		if (props.systems) {
 			this.systems.set(props.systems);
 		}
-		if (props.features) {
-			this.features &#x3D; props.features;
-		}
-		if (props.schoolYear) {
-			this.schoolYear &#x3D; props.schoolYear;
-		}
-		if (props.userLoginMigration) {
-			this.userLoginMigration &#x3D; props.userLoginMigration;
-		}
+		this.permissions &#x3D; props.permissions;
+		this.features &#x3D; props.features;
+		this.currentYear &#x3D; props.currentYear;
+		this.userLoginMigration &#x3D; props.userLoginMigration;
 		this.federalState &#x3D; props.federalState;
+		this.county &#x3D; props.county;
+		this.purpose &#x3D; props.purpose;
+		this.enableStudentTeamCreation &#x3D; props.enableStudentTeamCreation;
+		this.logo_dataUrl &#x3D; props.logo_dataUrl;
+		this.logo_name &#x3D; props.logo_name;
+		this.fileStorageType &#x3D; props.fileStorageType;
+		this.language &#x3D; props.language;
+		this.timezone &#x3D; props.timezone;
 	}
 }
 </code></pre>

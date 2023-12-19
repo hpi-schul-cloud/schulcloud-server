@@ -260,6 +260,9 @@
                             <a href="#FilesStorageInternalActions" title="apps/server/src/modules/files-storage/files-storage.const.ts" ><b>FilesStorageInternalActions</b>&nbsp;&nbsp;&nbsp;(apps/.../files-storage.const.ts)</a>
                         </li>
                         <li>
+                            <a href="#FileStorageType" title="apps/server/src/modules/school/domain/type/file-storage-type.enum.ts" ><b>FileStorageType</b>&nbsp;&nbsp;&nbsp;(apps/.../file-storage-type.enum.ts)</a>
+                        </li>
+                        <li>
                             <a href="#FilterMatchType" title="apps/server/src/modules/user-import/controller/dto/filter-import-user.params.ts" ><b>FilterMatchType</b>&nbsp;&nbsp;&nbsp;(apps/.../filter-import-user.params.ts)</a>
                         </li>
                         <li>
@@ -377,7 +380,10 @@
                             <a href="#ScanStatus" title="apps/server/src/modules/files-storage/entity/filerecord.entity.ts" ><b>ScanStatus</b>&nbsp;&nbsp;&nbsp;(apps/.../filerecord.entity.ts)</a>
                         </li>
                         <li>
-                            <a href="#SchoolFeatures" title="apps/server/src/shared/domain/entity/school.entity.ts" ><b>SchoolFeatures</b>&nbsp;&nbsp;&nbsp;(apps/.../school.entity.ts)</a>
+                            <a href="#SchoolFeature" title="apps/server/src/shared/domain/types/school-feature.enum.ts" ><b>SchoolFeature</b>&nbsp;&nbsp;&nbsp;(apps/.../school-feature.enum.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SchoolPurpose" title="apps/server/src/shared/domain/types/school-purpose.enum.ts" ><b>SchoolPurpose</b>&nbsp;&nbsp;&nbsp;(apps/.../school-purpose.enum.ts)</a>
                         </li>
                         <li>
                             <a href="#SchoolYearQueryType" title="apps/server/src/modules/group/controller/dto/interface/school-year-query-type.enum.ts" ><b>SchoolYearQueryType</b>&nbsp;&nbsp;&nbsp;(apps/.../school-year-query-type.enum.ts)</a>
@@ -3491,6 +3497,29 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>/file-security/update-status/:token</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>apps/server/src/modules/school/domain/type/file-storage-type.enum.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="FileStorageType"></a>
+                        <span class="name "><b>FileStorageType</b><a href="#FileStorageType"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;AWS_S3
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>awsS3</code>
                             </td>
                         </tr>
             </tbody>
@@ -6864,14 +6893,14 @@
             </tbody>
         </table>
 </section>
-    <h3>apps/server/src/shared/domain/entity/school.entity.ts</h3>
+    <h3>apps/server/src/shared/domain/types/school-feature.enum.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
             <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="SchoolFeatures"></a>
-                        <span class="name "><b>SchoolFeatures</b><a href="#SchoolFeatures"><span class="icon ion-ios-link"></span></a></span>
+                        <a name="SchoolFeature"></a>
+                        <span class="name "><b>SchoolFeature</b><a href="#SchoolFeature"><span class="icon ion-ios-link"></span></a></span>
                     </td>
                 </tr>
                         <tr>
@@ -6952,6 +6981,79 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>enableLdapSyncDuringMigration</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;IS_TEAM_CREATION_BY_STUDENTS_ENABLED
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>isTeamCreationByStudentsEnabled</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>apps/server/src/shared/domain/types/school-purpose.enum.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="SchoolPurpose"></a>
+                        <span class="name "><b>SchoolPurpose</b><a href="#SchoolPurpose"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;EXPERT
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>expert</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;TOMBSTONE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>tombstone</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;DEMO
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>demo</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;TEST
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>test</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;MINT_EC
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>MINT-EC</code>
                             </td>
                         </tr>
             </tbody>

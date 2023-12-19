@@ -1645,9 +1645,9 @@ import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
 import { BadRequestException, ForbiddenException, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { RoleReference, UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from &#x27;@shared/domain/domainobject&#x27;;
-import { Course, SchoolFeatures, TeamEntity, TeamUserEntity, User } from &#x27;@shared/domain/entity&#x27;;
+import { Course, TeamEntity, TeamUserEntity, User } from &#x27;@shared/domain/entity&#x27;;
 import { Permission, RoleName, VideoConferenceScope } from &#x27;@shared/domain/interface&#x27;;
-import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { EntityId, SchoolFeature } from &#x27;@shared/domain/types&#x27;;
 import { TeamsRepo, VideoConferenceRepo } from &#x27;@shared/repo&#x27;;
 import { BBBRole } from &#x27;../bbb&#x27;;
 import { ErrorStatus } from &#x27;../error&#x27;;
@@ -1784,7 +1784,7 @@ export class VideoConferenceService {
 			);
 		}
 
-		const schoolFeatureEnabled: boolean &#x3D; await this.schoolService.hasFeature(schoolId, SchoolFeatures.VIDEOCONFERENCE);
+		const schoolFeatureEnabled: boolean &#x3D; await this.schoolService.hasFeature(schoolId, SchoolFeature.VIDEOCONFERENCE);
 		if (!schoolFeatureEnabled) {
 			throw new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED, &#x27;school feature VIDEOCONFERENCE is disabled&#x27;);
 		}
