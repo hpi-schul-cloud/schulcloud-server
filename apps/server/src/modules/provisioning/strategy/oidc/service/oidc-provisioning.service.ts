@@ -118,6 +118,7 @@ export class OidcProvisioningService {
 		if (createNewAccount) {
 			await this.accountService.saveWithValidation(
 				new Account({
+					id: new ObjectId().toHexString(),
 					userId: savedUser.id,
 					username: CryptoJS.SHA256(savedUser.id as string).toString(CryptoJS.enc.Base64),
 					systemId,
