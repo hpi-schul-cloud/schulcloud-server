@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { InternalServerErrorException } from '@nestjs/common';
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
 import {
 	CommonCartridgeMetadataElementPropsV130,
@@ -26,6 +27,18 @@ describe('CommonCartridgeMetadataElementV130', () => {
 				const result = sut.getSupportedVersion();
 
 				expect(result).toBe(CommonCartridgeVersion.V_1_3_0);
+			});
+		});
+
+		describe('when using not supported Common Cartridge version', () => {
+			it('should throw error', () => {
+				expect(
+					() =>
+						new CommonCartridgeMetadataElementV130({
+							type: CommonCartridgeElementType.METADATA,
+							version: CommonCartridgeVersion.V_1_1_0,
+						} as CommonCartridgeMetadataElementPropsV130)
+				).toThrow(InternalServerErrorException);
 			});
 		});
 	});

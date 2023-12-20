@@ -1,7 +1,15 @@
 import { faker } from '@faker-js/faker';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
+import { InternalServerErrorException } from '@nestjs/common';
+import {
+	CommonCartridgeElementType,
+	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
+} from '../../common-cartridge.enums';
+import {
+	CommonCartridgeResourceFactory,
+	CommonCartridgeResourceProps,
+} from '../../resources/common-cartridge-resource-factory';
+import { CommonCartridgeElementFactory, CommonCartridgeElementProps } from '../common-cartridge-element-factory';
 import {
 	CommonCartridgeOrganizationElementPropsV130,
 	CommonCartridgeOrganizationElementV130,
@@ -9,21 +17,53 @@ import {
 
 describe('CommonCartridgeOrganizationElementV130', () => {
 	const setup = () => {
-		const item: DeepMocked<CommonCartridgeElement> = createMock<CommonCartridgeElement>();
-
-		const props: CommonCartridgeOrganizationElementPropsV130 = {
+		const resourceProps: CommonCartridgeResourceProps = {
+			type: CommonCartridgeResourceType.WEB_LINK,
+			identifier: faker.string.uuid(),
+			title: faker.lorem.words(),
+			url: faker.internet.url(),
+		};
+		const subOrganization1Props: CommonCartridgeElementProps = {
+			type: CommonCartridgeElementType.ORGANIZATION,
+			identifier: faker.string.uuid(),
+			title: faker.lorem.words(),
+			items: CommonCartridgeResourceFactory.createResource({
+				...resourceProps,
+				version: CommonCartridgeVersion.V_1_3_0,
+				folder: faker.string.alphanumeric(10),
+			}),
+		};
+		const subOrganization2Props: CommonCartridgeElementProps = {
+			type: CommonCartridgeElementType.ORGANIZATION,
+			identifier: faker.string.uuid(),
+			title: faker.lorem.words(),
+			items: [
+				CommonCartridgeResourceFactory.createResource({
+					...resourceProps,
+					version: CommonCartridgeVersion.V_1_3_0,
+					folder: faker.string.alphanumeric(10),
+				}),
+			],
+		};
+		const organizationProps: CommonCartridgeOrganizationElementPropsV130 = {
 			type: CommonCartridgeElementType.ORGANIZATION,
 			version: CommonCartridgeVersion.V_1_3_0,
 			identifier: faker.string.uuid(),
 			title: faker.lorem.words(),
-			items: [item],
+			items: [
+				CommonCartridgeElementFactory.createElement({
+					...subOrganization1Props,
+					version: CommonCartridgeVersion.V_1_3_0,
+				}),
+				CommonCartridgeElementFactory.createElement({
+					...subOrganization2Props,
+					version: CommonCartridgeVersion.V_1_3_0,
+				}),
+			],
 		};
-		const sut = new CommonCartridgeOrganizationElementV130(props);
+		const sut = new CommonCartridgeOrganizationElementV130(organizationProps);
 
-		item.getManifestXmlObject.mockReturnValueOnce({});
-		item.getSupportedVersion.mockReturnValueOnce(CommonCartridgeVersion.V_1_3_0);
-
-		return { sut, props };
+		return { sut, organizationProps, subOrganization1Props, subOrganization2Props, resourceProps };
 	};
 
 	describe('getSupportedVersion', () => {
@@ -35,28 +75,56 @@ describe('CommonCartridgeOrganizationElementV130', () => {
 				expect(result).toBe(CommonCartridgeVersion.V_1_3_0);
 			});
 		});
+
+		describe('when using not supported common cartridge version', () => {
+			it('should throw error', () => {
+				expect(
+					() =>
+						new CommonCartridgeOrganizationElementV130({
+							type: CommonCartridgeElementType.ORGANIZATION,
+							version: CommonCartridgeVersion.V_1_1_0,
+						} as CommonCartridgeOrganizationElementPropsV130)
+				).toThrow(InternalServerErrorException);
+			});
+		});
 	});
 
 	describe('getManifestXmlObject', () => {
 		describe('when using common cartridge version 1.3.0', () => {
 			it('should return correct manifest xml object', () => {
-				const { sut, props } = setup();
+				const { sut, organizationProps, subOrganization1Props, subOrganization2Props, resourceProps } = setup();
 				const result = sut.getManifestXmlObject();
 
 				expect(result).toStrictEqual({
 					$: {
-						identifier: props.identifier,
+						identifier: organizationProps.identifier,
 					},
-					title: props.title,
-					item: [{}],
+					title: organizationProps.title,
+					item: [
+						{
+							$: {
+								identifier: subOrganization1Props.identifier,
+								identifierref: resourceProps.identifier,
+							},
+							title: subOrganization1Props.title,
+						},
+						{
+							$: {
+								identifier: subOrganization2Props.identifier,
+							},
+							title: subOrganization2Props.title,
+							item: [
+								{
+									$: {
+										identifier: resourceProps.identifier,
+										identifierref: resourceProps.identifier,
+									},
+									title: resourceProps.title,
+								},
+							],
+						},
+					],
 				});
-			});
-
-			it('should call getManifestXmlObject on item', () => {
-				const { sut, props } = setup();
-				sut.getManifestXmlObject();
-
-				expect(props.items[0].getManifestXmlObject).toHaveBeenCalledTimes(1);
 			});
 		});
 	});
