@@ -27,11 +27,12 @@ const ExternalTools = mongoose.model(
 module.exports = {
 	up: async function up() {
 		await connect();
-
 		await ExternalTools.updateMany(
-			{ parameters: '$exists' },
+			{ parameters: { $exists: true } },
 			{
-				isProtected: false,
+				$set: {
+					'parameters.$[].isProtected': false,
+				},
 			}
 		)
 			.lean()
@@ -43,11 +44,10 @@ module.exports = {
 	down: async function down() {
 		await connect();
 
-		await ExternalTools.updateMany({ parameters: '$exists' }, { $unset: { isProtected: '' } })
+		await ExternalTools.updateMany({ parameters: { $exists: true } }, { $unset: { 'parameters.$[].isProtected': '' } })
 			.lean()
 			.exec();
 
 		await close();
 	},
 };
-// TODO N21-1587 build filter, should work on all parameters in paraters array
