@@ -13,12 +13,12 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Docker meta Service Name for docker hub
         id: docker_meta_img_hub
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: docker.io/schulcloud/schulcloud-server, quay.io/schulcloudverbund/schulcloud-server
           tags: |
@@ -39,19 +39,20 @@ jobs:
           password: ${{ secrets.QUAY_TOKEN }}
 
       - name: Build and push ${{ github.repository }}
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64
           pull: true
           push: true
+          pull: true
           tags: ${{ steps.docker_meta_img_hub.outputs.tags }}
           labels: ${{ steps.docker_meta_img_hub.outputs.labels }}
 
       - name: Docker meta Service Name for docker hub (file preview)
         id: docker_meta_img_hub_file_storage
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: docker.io/schulcloud/schulcloud-server, quay.io/schulcloudverbund/schulcloud-server
           tags: |
@@ -60,7 +61,7 @@ jobs:
           labels: |
             org.opencontainers.image.title=schulcloud-file-storage
       - name: Build and push ${{ github.repository }} (file-storage)
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           build-args: |
             BASE_IMAGE=quay.io/schulcloudverbund/schulcloud-server:${{ github.ref_name }}
@@ -68,6 +69,7 @@ jobs:
           file: ./Dockerfile.filepreview
           platforms: linux/amd64
           push: true
+          pull: true
           tags: ${{ steps.docker_meta_img_hub_file_storage.outputs.tags }}
           labels: ${{ steps.docker_meta_img_hub_file_storage.outputs.labels }}
 

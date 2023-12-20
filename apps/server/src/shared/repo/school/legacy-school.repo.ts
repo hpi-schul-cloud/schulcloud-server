@@ -47,7 +47,7 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity> {
 			name: entity.name,
 			previousExternalId: entity.previousExternalId,
 			officialSchoolNumber: entity.officialSchoolNumber,
-			schoolYear: entity.schoolYear,
+			schoolYear: entity.currentYear,
 			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: SystemEntity) => system.id) : [],
 			userLoginMigrationId: entity.userLoginMigration?.id,
 			federalState: entity.federalState,
@@ -63,7 +63,7 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity> {
 			name: entityDO.name,
 			previousExternalId: entityDO.previousExternalId,
 			officialSchoolNumber: entityDO.officialSchoolNumber,
-			schoolYear: entityDO.schoolYear,
+			currentYear: entityDO.schoolYear,
 			systems: entityDO.systems
 				? entityDO.systems.map((systemId: EntityId) => this._em.getReference(SystemEntity, systemId))
 				: [],

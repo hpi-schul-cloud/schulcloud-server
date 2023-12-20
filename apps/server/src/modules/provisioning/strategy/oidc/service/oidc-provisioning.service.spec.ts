@@ -17,9 +17,8 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
-import { SchoolFeatures } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import {
 	externalGroupDtoFactory,
 	externalSchoolDtoFactory,
@@ -135,7 +134,7 @@ describe('OidcProvisioningService', () => {
 						name: 'name',
 						officialSchoolNumber: 'officialSchoolNumber',
 						systems: [systemId],
-						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 						schoolYear,
 						federalState,
 					});
@@ -187,7 +186,7 @@ describe('OidcProvisioningService', () => {
 						name: 'name (Hannover)',
 						officialSchoolNumber: 'officialSchoolNumber',
 						systems: [systemId],
-						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 						schoolYear,
 						federalState,
 					});
@@ -230,7 +229,7 @@ describe('OidcProvisioningService', () => {
 						name: 'name',
 						officialSchoolNumber: 'officialSchoolNumber',
 						systems: [systemId],
-						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 						schoolYear,
 						federalState,
 					});
@@ -257,7 +256,7 @@ describe('OidcProvisioningService', () => {
 			});
 		});
 
-		describe('when external school already exist', () => {
+		describe('when external school already exists', () => {
 			describe('when successful', () => {
 				const setup = () => {
 					const systemId = new ObjectId().toHexString();
@@ -275,7 +274,7 @@ describe('OidcProvisioningService', () => {
 						name: 'name',
 						officialSchoolNumber: 'officialSchoolNumber',
 						systems: [systemId],
-						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 						schoolYear,
 						federalState,
 					});
@@ -285,7 +284,7 @@ describe('OidcProvisioningService', () => {
 						name: 'existingName',
 						officialSchoolNumber: 'existingOfficialSchoolNumber',
 						systems: [systemId],
-						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 					});
 
 					schoolService.save.mockResolvedValue(savedSchoolDO);
@@ -328,7 +327,7 @@ describe('OidcProvisioningService', () => {
 						name: 'name (Hannover)',
 						officialSchoolNumber: 'officialSchoolNumber',
 						systems: [systemId],
-						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 						schoolYear,
 						federalState,
 					});
@@ -338,7 +337,9 @@ describe('OidcProvisioningService', () => {
 						name: 'existingName',
 						officialSchoolNumber: 'existingOfficialSchoolNumber',
 						systems: [systemId],
-						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
+						federalState,
 					});
 
 					schoolService.save.mockResolvedValue(savedSchoolDO);
@@ -380,7 +381,7 @@ describe('OidcProvisioningService', () => {
 						name: 'name',
 						officialSchoolNumber: 'officialSchoolNumber',
 						systems: [systemId],
-						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 						schoolYear,
 						federalState,
 					});
@@ -390,7 +391,9 @@ describe('OidcProvisioningService', () => {
 						name: 'existingName',
 						officialSchoolNumber: 'existingOfficialSchoolNumber',
 						systems: [systemId],
-						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
+						federalState,
 					});
 
 					schoolService.save.mockResolvedValue(savedSchoolDO);
@@ -433,7 +436,7 @@ describe('OidcProvisioningService', () => {
 						name: 'name',
 						officialSchoolNumber: 'officialSchoolNumber',
 						systems: [otherSystemId, systemId],
-						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 						schoolYear,
 						federalState,
 					});
@@ -443,7 +446,9 @@ describe('OidcProvisioningService', () => {
 						name: 'existingName',
 						officialSchoolNumber: 'existingOfficialSchoolNumber',
 						systems: [otherSystemId],
-						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
+						federalState,
 					});
 
 					schoolService.save.mockResolvedValue(savedSchoolDO);
@@ -492,7 +497,7 @@ describe('OidcProvisioningService', () => {
 						name: 'name',
 						officialSchoolNumber: 'officialSchoolNumber',
 						systems: [systemId],
-						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 						schoolYear,
 						federalState,
 					});
@@ -502,7 +507,9 @@ describe('OidcProvisioningService', () => {
 						name: 'existingName',
 						officialSchoolNumber: 'existingOfficialSchoolNumber',
 						systems: undefined,
-						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
+						federalState,
 					});
 
 					schoolService.save.mockResolvedValue(savedSchoolDO);
