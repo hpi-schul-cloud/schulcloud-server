@@ -6,7 +6,8 @@ import { ConfigModule } from '@nestjs/config';
 import { Logger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import * as Yjs from 'yjs';
-import { tldrawEntityFactory } from '../testing';
+import { createConfigModuleOptions } from '@src/config';
+import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawWs } from '../controller';
 import { TldrawWsService } from '../service';
@@ -32,16 +33,7 @@ describe('YMongoDb', () => {
 		testingModule = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({ entities: [TldrawDrawing] }),
-				ConfigModule.forRoot({
-					isGlobal: true,
-					ignoreEnvFile: true,
-					ignoreEnvVars: true,
-					validate: () => {
-						return {
-							TLDRAW_DB_FLUSH_SIZE: 2,
-						};
-					},
-				}),
+				ConfigModule.forRoot(createConfigModuleOptions(tldrawTestConfig)),
 			],
 			providers: [
 				TldrawWs,

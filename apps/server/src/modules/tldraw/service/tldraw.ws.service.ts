@@ -39,6 +39,10 @@ export class TldrawWsService {
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
 		const redisUri: string = this.configService.get<string>('REDIS_URI');
 
+		if (!redisUri) {
+			throw new Error('REDIS_URI is not set');
+		}
+
 		this.sub = new Redis(redisUri, {
 			maxRetriesPerRequest: null,
 		});

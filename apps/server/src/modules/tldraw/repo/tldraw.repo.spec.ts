@@ -2,7 +2,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
-import { tldrawEntityFactory } from '../testing';
+import { ConfigModule } from '@nestjs/config';
+import { createConfigModuleOptions } from '@src/config';
+import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawRepo } from './tldraw.repo';
 import { TldrawWsTestModule } from '..';
@@ -15,7 +17,7 @@ describe('TldrawRepo', () => {
 
 	beforeAll(async () => {
 		testingModule = await Test.createTestingModule({
-			imports: [TldrawWsTestModule],
+			imports: [TldrawWsTestModule, ConfigModule.forRoot(createConfigModuleOptions(tldrawTestConfig))],
 		}).compile();
 
 		repo = testingModule.get(TldrawRepo);

@@ -11,16 +11,16 @@ import { encoding } from 'lib0';
 import { TldrawWsFactory } from '@shared/testing/factory/tldraw.ws.factory';
 import { Logger } from '@src/core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { TldrawWs } from '../controller';
-import { config } from '../config';
 import { TldrawDrawing } from '../entities';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../repo';
-import { TestConnection } from '../testing';
+import { TestConnection, tldrawTestConfig } from '../testing';
 import { WsSharedDocDo } from '../domain';
 import { TldrawWsService } from '.';
+import { TldrawConfig } from '@modules/tldraw/config';
 
 jest.mock('yjs', () => {
 	const moduleMock: unknown = {
@@ -47,6 +47,7 @@ jest.mock('y-protocols/sync', () => {
 describe('TldrawWSService', () => {
 	let app: INestApplication;
 	let ws: WebSocket;
+	let configService: ConfigService<TldrawConfig, true>;
 	let service: TldrawWsService;
 	let boardRepo: TldrawBoardRepo;
 	let logger: DeepMocked<Logger>;
@@ -63,7 +64,7 @@ describe('TldrawWSService', () => {
 		const testingModule = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({ entities: [TldrawDrawing] }),
-				ConfigModule.forRoot(createConfigModuleOptions(config)),
+				ConfigModule.forRoot(createConfigModuleOptions(tldrawTestConfig)),
 			],
 			providers: [
 				TldrawWs,
@@ -81,6 +82,7 @@ describe('TldrawWSService', () => {
 			],
 		}).compile();
 
+		configService = testingModule.get(ConfigService);
 		service = testingModule.get(TldrawWsService);
 		boardRepo = testingModule.get(TldrawBoardRepo);
 		logger = testingModule.get(Logger);
@@ -110,6 +112,15 @@ describe('TldrawWSService', () => {
 	it('should check if service properties are set correctly', () => {
 		expect(service).toBeDefined();
 		expect(service.pingTimeout).toBeDefined();
+	});
+
+	describe('constructor', () => {
+		it('should throw if REDIS_URI is not set', () => {
+			const configSpy = jest.spyOn(configService, 'get').mockReturnValue(null);
+
+			expect(() => new TldrawWsService(configService, boardRepo, logger)).toThrow('REDIS_URI is not set');
+			configSpy.mockRestore();
+		});
 	});
 
 	describe('send', () => {

@@ -9,10 +9,9 @@ import { Logger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
 import { TldrawDrawing } from '../../entities';
-import { config } from '../../config';
 import { TldrawWsService } from '../../service';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../../repo';
-import { TestConnection } from '../../testing';
+import { TestConnection, tldrawTestConfig } from '../../testing';
 import { TldrawWs } from '..';
 
 describe('WebSocketController (WsAdapter)', () => {
@@ -30,7 +29,7 @@ describe('WebSocketController (WsAdapter)', () => {
 		const testingModule = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({ entities: [TldrawDrawing] }),
-				ConfigModule.forRoot(createConfigModuleOptions(config)),
+				ConfigModule.forRoot(createConfigModuleOptions(tldrawTestConfig)),
 			],
 			providers: [
 				TldrawWs,

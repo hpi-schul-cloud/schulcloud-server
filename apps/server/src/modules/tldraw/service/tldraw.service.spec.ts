@@ -5,10 +5,9 @@ import { cleanupCollections } from '@shared/testing';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { TldrawDrawing } from '../entities';
-import { tldrawEntityFactory } from '../testing';
+import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawRepo } from '../repo/tldraw.repo';
 import { TldrawService } from './tldraw.service';
-import { config } from '../config';
 
 describe('TldrawService', () => {
 	let module: TestingModule;
@@ -20,7 +19,7 @@ describe('TldrawService', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({ entities: [TldrawDrawing] }),
-				ConfigModule.forRoot(createConfigModuleOptions(config)),
+				ConfigModule.forRoot(createConfigModuleOptions(tldrawTestConfig)),
 			],
 			providers: [TldrawService, TldrawRepo],
 		}).compile();

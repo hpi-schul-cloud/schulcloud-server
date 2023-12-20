@@ -12,9 +12,8 @@ import * as YjsUtils from '../utils/ydoc-utils';
 import { TldrawBoardRepo } from './tldraw-board.repo';
 import { WsSharedDocDo } from '../domain';
 import { TldrawWsService } from '../service';
-import { TestConnection } from '../testing';
+import { TestConnection, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
-import { config } from '../config';
 import { TldrawWs } from '../controller';
 import { TldrawRepo } from './tldraw.repo';
 import { YMongodb } from './y-mongodb';
@@ -32,7 +31,7 @@ describe('TldrawBoardRepo', () => {
 		const testingModule = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({ entities: [TldrawDrawing] }),
-				ConfigModule.forRoot(createConfigModuleOptions(config)),
+				ConfigModule.forRoot(createConfigModuleOptions(tldrawTestConfig)),
 			],
 			providers: [
 				TldrawWs,
