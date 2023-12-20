@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { InternalServerErrorException } from '@nestjs/common';
 import {
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
@@ -48,39 +49,57 @@ describe('CommonCartridgeWebContentResourceV110', () => {
 	});
 
 	describe('getFileContent', () => {
-		it('should return the HTML', () => {
-			const { sut, props } = setup();
-			const result = sut.getFileContent();
+		describe('when using Common Cartridge version 1.1.0', () => {
+			it('should return the HTML', () => {
+				const { sut, props } = setup();
+				const result = sut.getFileContent();
 
-			expect(result).toBe(props.html);
+				expect(result).toBe(props.html);
+			});
 		});
 	});
 
 	describe('getSupportedVersion', () => {
-		it('should return Common Cartridge version 1.1.0', () => {
-			const { sut } = setup();
-			const result = sut.getSupportedVersion();
+		describe('when using Common Cartridge version 1.1.0', () => {
+			it('should return Common Cartridge version 1.1.0', () => {
+				const { sut } = setup();
+				const result = sut.getSupportedVersion();
 
-			expect(result).toBe(CommonCartridgeVersion.V_1_1_0);
+				expect(result).toBe(CommonCartridgeVersion.V_1_1_0);
+			});
+		});
+
+		describe('when using not supported Common Cartridge version', () => {
+			it('should throw error', () => {
+				expect(
+					() =>
+						new CommonCartridgeWebContentResourceV110({
+							type: CommonCartridgeResourceType.WEB_CONTENT,
+							version: CommonCartridgeVersion.V_1_3_0,
+						} as CommonCartridgeWebContentResourcePropsV110)
+				).toThrow(InternalServerErrorException);
+			});
 		});
 	});
 
 	describe('getManifestXmlObject', () => {
-		it('should return the correct XML object', () => {
-			const { sut, props } = setup();
-			const result = sut.getManifestXmlObject();
+		describe('when using Common Cartridge version 1.1.0', () => {
+			it('should return the correct XML object', () => {
+				const { sut, props } = setup();
+				const result = sut.getManifestXmlObject();
 
-			expect(result).toEqual({
-				$: {
-					identifier: props.identifier,
-					type: 'webcontent',
-					intendeduse: props.intendedUse,
-				},
-				file: {
+				expect(result).toEqual({
 					$: {
-						href: sut.getFilePath(),
+						identifier: props.identifier,
+						type: 'webcontent',
+						intendeduse: props.intendedUse,
 					},
-				},
+					file: {
+						$: {
+							href: sut.getFilePath(),
+						},
+					},
+				});
 			});
 		});
 	});

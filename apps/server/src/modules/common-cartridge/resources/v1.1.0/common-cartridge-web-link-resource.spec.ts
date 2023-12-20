@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { InternalServerErrorException } from '@nestjs/common';
 import { readFile } from 'fs/promises';
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../../common-cartridge.enums';
 import {
@@ -46,12 +47,17 @@ describe('CommonCartridgeWebLinkResourceV110', () => {
 	});
 
 	describe('getFileContent', () => {
-		it('should contain correct XML', async () => {
-			const { sut } = setup();
-			const expected = await readFile('./apps/server/test/assets/common-cartridge/v1.1.0/weblink.xml', 'utf8');
-			const result = sut.getFileContent();
+		describe('when using Common Cartridge version 1.1.0', () => {
+			it('should contain correct XML', async () => {
+				const { sut } = setup();
+				const expected = await readFile(
+					'./apps/server/test/assets/common-cartridge/v1.1.0/weblink.xml',
+					'utf8'
+				);
+				const result = sut.getFileContent();
 
-			expect(result).toEqual(expected);
+				expect(result).toEqual(expected);
+			});
 		});
 	});
 
@@ -62,6 +68,18 @@ describe('CommonCartridgeWebLinkResourceV110', () => {
 				const result = sut.getSupportedVersion();
 
 				expect(result).toBe(CommonCartridgeVersion.V_1_1_0);
+			});
+		});
+
+		describe('when using not supported Common Cartridge version', () => {
+			it('should throw error', () => {
+				expect(
+					() =>
+						new CommonCartridgeWebLinkResourceV110({
+							type: CommonCartridgeResourceType.WEB_LINK,
+							version: CommonCartridgeVersion.V_1_3_0,
+						} as CommonCartridgeWebLinkResourcePropsV110)
+				).toThrow(InternalServerErrorException);
 			});
 		});
 	});

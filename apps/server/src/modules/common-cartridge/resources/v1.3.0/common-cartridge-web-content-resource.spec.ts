@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { InternalServerErrorException } from '@nestjs/common';
 import {
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
@@ -65,6 +66,18 @@ describe('CommonCartridgeWebContentResourceV130', () => {
 				const result = sut.getSupportedVersion();
 
 				expect(result).toBe(CommonCartridgeVersion.V_1_3_0);
+			});
+		});
+
+		describe('when using not supported Common Cartridge version', () => {
+			it('should throw error', () => {
+				expect(
+					() =>
+						new CommonCartridgeWebContentResourceV130({
+							type: CommonCartridgeResourceType.WEB_CONTENT,
+							version: CommonCartridgeVersion.V_1_1_0,
+						} as CommonCartridgeWebContentResourcePropsV130)
+				).toThrow(InternalServerErrorException);
 			});
 		});
 	});

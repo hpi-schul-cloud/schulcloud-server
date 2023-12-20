@@ -1,3 +1,4 @@
+import { InternalServerErrorException } from '@nestjs/common';
 import { readFile } from 'fs/promises';
 import {
 	CommonCartridgeElementType,
@@ -8,7 +9,10 @@ import {
 import { CommonCartridgeElementFactory } from '../../elements/common-cartridge-element-factory';
 import { CommonCartridgeElementFactoryV130 } from '../../elements/v1.3.0/common-cartridge-element-factory';
 import { CommonCartridgeResourceFactory } from '../common-cartridge-resource-factory';
-import { CommonCartridgeManifestResourceV130 } from './common-cartridge-manifest-resource';
+import {
+	CommonCartridgeManifestResourcePropsV130,
+	CommonCartridgeManifestResourceV130,
+} from './common-cartridge-manifest-resource';
 
 describe('CommonCartridgeManifestResourceV110', () => {
 	const setup = () => {
@@ -106,6 +110,18 @@ describe('CommonCartridgeManifestResourceV110', () => {
 				const result = sut.getSupportedVersion();
 
 				expect(result).toBe(CommonCartridgeVersion.V_1_3_0);
+			});
+		});
+
+		describe('when using not supported Common Cartridge version', () => {
+			it('should throw error', () => {
+				expect(
+					() =>
+						new CommonCartridgeManifestResourceV130({
+							type: CommonCartridgeResourceType.MANIFEST,
+							version: CommonCartridgeVersion.V_1_1_0,
+						} as CommonCartridgeManifestResourcePropsV130)
+				).toThrow(InternalServerErrorException);
 			});
 		});
 	});

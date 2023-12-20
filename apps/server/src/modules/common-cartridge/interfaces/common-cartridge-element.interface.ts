@@ -1,5 +1,5 @@
-import { InternalServerErrorException } from '@nestjs/common';
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
+import { createVersionNotSupportedError } from '../utils';
 
 type CommonCartridgeElementProps = {
 	version: CommonCartridgeVersion;
@@ -40,6 +40,6 @@ export abstract class CommonCartridgeElement {
 			return;
 		}
 
-		throw new InternalServerErrorException(`Common Cartridge version ${target} is not supported`);
+		throw createVersionNotSupportedError(target);
 	}
 }
