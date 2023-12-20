@@ -20,6 +20,7 @@ import { OauthProviderApiModule } from '@modules/oauth-provider';
 import { OauthApiModule } from '@modules/oauth/oauth-api.module';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
 import { RocketChatModule } from '@modules/rocketchat';
+import { SchoolApiModule } from '@modules/school/school-api.module';
 import { SharingApiModule } from '@modules/sharing/sharing.module';
 import { SystemApiModule } from '@modules/system/system-api.module';
 import { TaskApiModule } from '@modules/task/task-api.module';
@@ -78,6 +79,7 @@ const serverModules = [
 	TeamsApiModule,
 	MetaTagExtractorApiModule,
 	PseudonymApiModule,
+	SchoolApiModule,
 	LegacySchoolApiModule,
 ];
 

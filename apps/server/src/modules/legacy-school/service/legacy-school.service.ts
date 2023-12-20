@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { SchoolFeatures } from '@shared/domain/entity';
-import { EntityId } from '@shared/domain/types';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { LegacySchoolRepo } from '@shared/repo';
 import { SchoolValidationService } from './validation';
 
@@ -15,15 +14,15 @@ export class LegacySchoolService {
 		private readonly schoolValidationService: SchoolValidationService
 	) {}
 
-	async hasFeature(schoolId: EntityId, feature: SchoolFeatures): Promise<boolean> {
+	async hasFeature(schoolId: EntityId, feature: SchoolFeature): Promise<boolean> {
 		const entity: LegacySchoolDo = await this.schoolRepo.findById(schoolId);
 		return entity.features ? entity.features.includes(feature) : false;
 	}
 
-	async removeFeature(schoolId: EntityId, feature: SchoolFeatures): Promise<void> {
+	async removeFeature(schoolId: EntityId, feature: SchoolFeature): Promise<void> {
 		const school: LegacySchoolDo = await this.schoolRepo.findById(schoolId);
 		if (school.features && school.features.includes(feature)) {
-			school.features = school.features.filter((f: SchoolFeatures) => f !== feature);
+			school.features = school.features.filter((f: SchoolFeature) => f !== feature);
 			await this.schoolRepo.save(school);
 		}
 	}

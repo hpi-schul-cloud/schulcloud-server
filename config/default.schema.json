@@ -180,6 +180,11 @@
 			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
+		"BLOCKLIST_OF_EMAIL_DOMAINS":{
+			"type": "string",
+			"default": "",
+			"description": "Add custom domain to the list of blocked domains (comma separated list)."
+		},
 		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
 			"type": "boolean",
 			"default": false,
