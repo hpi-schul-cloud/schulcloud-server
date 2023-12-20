@@ -5,13 +5,13 @@ import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
-import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
+import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { AuthorizationModule } from '@modules/authorization';
 import { config } from './config';
 import { TldrawDrawing } from './entities';
 import { TldrawController } from './controller/tldraw.controller';
-import { TldrawService } from './service/tldraw.service';
+import { TldrawService } from './service';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
@@ -26,7 +26,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		AuthorizationModule,
 		AuthenticationModule,
 		CoreModule,
-		RabbitMQWrapperTestModule,
+		RabbitMQWrapperModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
