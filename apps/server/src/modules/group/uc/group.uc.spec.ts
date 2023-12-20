@@ -16,7 +16,7 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import {
 	groupFactory,
 	legacySchoolDoFactory,
@@ -28,7 +28,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { SchoolYearQueryType } from '../controller/dto/interface';
+import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
@@ -147,6 +147,7 @@ describe('GroupUc', () => {
 		describe('when accessing as a normal user', () => {
 			const setup = () => {
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				school.features?.push(SchoolFeature.STUDENTVISIBILITY);
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const teacherRole: RoleDto = roleDtoFactory.buildWithId({
@@ -292,6 +293,26 @@ describe('GroupUc', () => {
 				]);
 			});
 
+			describe('when accessing form course as a teacher', () => {
+				it('should call findClassesForSchool method from classService', async () => {
+					const { teacherUser } = setup();
+
+					await uc.findAllClasses(teacherUser.id, teacherUser.school.id, undefined, ClassRequestContext.COURSE);
+
+					expect(classService.findClassesForSchool).toHaveBeenCalled();
+				});
+			});
+
+			describe('when accessing form class overview as a teacher', () => {
+				it('should call findAllByUserId method from classService', async () => {
+					const { teacherUser } = setup();
+
+					await uc.findAllClasses(teacherUser.id, teacherUser.school.id, undefined, ClassRequestContext.CLASS_OVERVIEW);
+
+					expect(classService.findAllByUserId).toHaveBeenCalled();
+				});
+			});
+
 			describe('when no pagination is given', () => {
 				it('should return all classes sorted by name', async () => {
 					const {
@@ -385,6 +406,7 @@ describe('GroupUc', () => {
 						SchoolYearQueryType.CURRENT_YEAR,
 						undefined,
 						undefined,
+						undefined,
 						'externalSourceName',
 						SortOrder.desc
 					);
@@ -441,6 +463,7 @@ describe('GroupUc', () => {
 						teacherUser.id,
 						teacherUser.school.id,
 						SchoolYearQueryType.CURRENT_YEAR,
+						undefined,
 						2,
 						1,
 						'name',
@@ -733,6 +756,7 @@ describe('GroupUc', () => {
 						undefined,
 						undefined,
 						undefined,
+						undefined,
 						'externalSourceName',
 						SortOrder.desc
 					);
@@ -778,6 +802,7 @@ describe('GroupUc', () => {
 						adminUser.id,
 						adminUser.school.id,
 						undefined,
+						undefined,
 						1,
 						1,
 						'name',
@@ -805,6 +830,7 @@ describe('GroupUc', () => {
 						adminUser.id,
 						adminUser.school.id,
 						undefined,
+						undefined,
 						0,
 						5
 					);
@@ -818,6 +844,7 @@ describe('GroupUc', () => {
 					const result: Page<ClassInfoDto> = await uc.findAllClasses(
 						adminUser.id,
 						adminUser.school.id,
+						undefined,
 						undefined,
 						0,
 						-1

@@ -41,11 +41,11 @@ export class GroupUc {
 		userId: EntityId,
 		schoolId: EntityId,
 		schoolYearQueryType?: SchoolYearQueryType,
+		calledFrom?: ClassRequestContext,
 		skip = 0,
 		limit?: number,
 		sortBy: keyof ClassInfoDto = 'name',
-		sortOrder: SortOrder = SortOrder.asc,
-		calledFrom?: ClassRequestContext
+		sortOrder: SortOrder = SortOrder.asc
 	): Promise<Page<ClassInfoDto>> {
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
 

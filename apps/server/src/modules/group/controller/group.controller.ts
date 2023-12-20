@@ -38,11 +38,11 @@ export class GroupController {
 			currentUser.userId,
 			currentUser.schoolId,
 			filterParams.type,
+			callerParams.calledFrom,
 			pagination.skip,
 			pagination.limit,
 			sortingQuery.sortBy,
-			sortingQuery.sortOrder,
-			callerParams.calledFrom
+			sortingQuery.sortOrder
 		);
 
 		const response: ClassInfoSearchListResponse = GroupResponseMapper.mapToClassInfosToListResponse(
