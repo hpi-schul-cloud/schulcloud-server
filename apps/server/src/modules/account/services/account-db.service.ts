@@ -49,7 +49,7 @@ export class AccountServiceDb {
 			accountEntity = await this.accountRepo.findById(internalId);
 			accountEntity.userId = new ObjectId(account.userId);
 			accountEntity.systemId = account.systemId ? new ObjectId(account.systemId) : undefined;
-			accountEntity.username = account.username;
+			accountEntity.username = account.username ?? '';
 			accountEntity.activated = account.activated;
 			accountEntity.expiresAt = account.expiresAt;
 			accountEntity.lasttriedFailedLogin = account.lasttriedFailedLogin;
@@ -64,7 +64,7 @@ export class AccountServiceDb {
 			accountEntity = new AccountEntity({
 				userId: new ObjectId(account.userId),
 				systemId: account.systemId ? new ObjectId(account.systemId) : undefined,
-				username: account.username,
+				username: account.username ?? '',
 				activated: account.activated,
 				expiresAt: account.expiresAt,
 				lasttriedFailedLogin: account.lasttriedFailedLogin,

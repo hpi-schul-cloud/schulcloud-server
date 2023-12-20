@@ -4,7 +4,7 @@ import { AccountIdmToDoMapper } from './account-idm-to-do.mapper.abstract';
 import { AccountIdmToDoMapperDb } from './account-idm-to-do.mapper.db';
 import { Account } from '../../domain';
 
-describe('AccountIdmToDtoMapperDb', () => {
+describe('AccountIdmToDoMapperDb', () => {
 	let module: TestingModule;
 	let mapper: AccountIdmToDoMapper;
 
@@ -24,7 +24,7 @@ describe('AccountIdmToDtoMapperDb', () => {
 	afterAll(async () => {
 		await module.close();
 	});
-	describe('when mapping from entity to dto', () => {
+	describe('when mapping from entity to do', () => {
 		describe('mapToDto', () => {
 			it('should map all fields', () => {
 				const testIdmEntity: IdmAccount = {

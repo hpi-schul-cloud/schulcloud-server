@@ -3,7 +3,7 @@ import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import _ from 'lodash';
-import { accountFactory } from './account.factory';
+import { accountEntityFactory, accountFactory } from './account.factory';
 import { userFactory } from './user.factory';
 
 interface UserParams {
@@ -29,7 +29,7 @@ export class UserAndAccountTestFactory {
 
 	private static buildAccount(user: User, params: UserAndAccountParams = {}): AccountEntity {
 		const accountParams = _.pick(params, 'username', 'systemId');
-		const account = accountFactory.withUser(user).build(accountParams);
+		const account = accountEntityFactory.withUser(user).build(accountParams);
 		return account;
 	}
 

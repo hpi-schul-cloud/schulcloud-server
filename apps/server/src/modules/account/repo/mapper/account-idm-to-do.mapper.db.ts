@@ -5,7 +5,7 @@ import { AccountIdmToDoMapper } from './account-idm-to-do.mapper.abstract';
 export class AccountIdmToDoMapperDb extends AccountIdmToDoMapper {
 	mapToDo(account: IdmAccount): Account {
 		return new Account({
-			id: account.attDbcAccountId,
+			id: account.attDbcAccountId ?? '',
 			idmReferenceId: account.id,
 			systemId: account.attDbcSystemId,
 			userId: account.attDbcUserId,

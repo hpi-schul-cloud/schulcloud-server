@@ -3,7 +3,7 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AccountEntity, User } from '@shared/domain/entity';
-import { accountFactory, cleanupCollections, userFactory } from '@shared/testing';
+import { accountEntityFactory, accountFactory, cleanupCollections, userFactory } from '@shared/testing';
 import { AccountRepo } from './account.repo';
 
 describe('account repo', () => {
@@ -27,10 +27,10 @@ describe('account repo', () => {
 
 	beforeEach(async () => {
 		mockAccounts = [
-			accountFactory.build({ username: 'John Doe' }),
-			accountFactory.build({ username: 'Marry Doe' }),
-			accountFactory.build({ username: 'Susi Doe' }),
-			accountFactory.build({ username: 'Tim Doe' }),
+			accountEntityFactory.build({ username: 'John Doe' }),
+			accountEntityFactory.build({ username: 'Marry Doe' }),
+			accountEntityFactory.build({ username: 'Susi Doe' }),
+			accountEntityFactory.build({ username: 'Tim Doe' }),
 		];
 		await em.persistAndFlush(mockAccounts);
 	});
@@ -55,7 +55,7 @@ describe('account repo', () => {
 
 	describe('findByUsernameAndSystemId', () => {
 		it('should return account', async () => {
-			const accountToFind = accountFactory.withSystemId(new ObjectId(10)).build();
+			const accountToFind = accountEntityFactory.withSystemId(new ObjectId(10)).build();
 			await em.persistAndFlush(accountToFind);
 			em.clear();
 			const account = await repo.findByUsernameAndSystemId(accountToFind.username ?? '', accountToFind.systemId ?? '');
@@ -121,7 +121,7 @@ describe('account repo', () => {
 
 	describe('saveWithoutFlush', () => {
 		it('should add an account to the persist stack', () => {
-			const account = accountFactory.build();
+			const account = accountEntityFactory.build();
 
 			repo.saveWithoutFlush(account);
 			expect(em.getUnitOfWork().getPersistStack().size).toBe(1);

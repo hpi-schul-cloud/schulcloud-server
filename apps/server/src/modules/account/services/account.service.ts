@@ -62,33 +62,32 @@ export class AccountService {
 	async save(account: Account): Promise<Account> {
 		const ret = await this.accountDb.save(account);
 		const newAccount = new Account({
-			id: ret.id,
-			username: ret.username,
-			createdAt: ret.createdAt,
-			updatedAt: ret.updatedAt,
+			...account,
+			id: account.id,
+			idmReferenceId: ret.id,
+			password: account.password,
 		});
-		newAccount.idmReferenceId = ret.idmReferenceId;
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(`Saving account with accountID ${ret.id ? ret.id : ''} ...`);
 			const accountIdm = await this.accountIdm.save(newAccount);
 			this.logger.debug(`Saved account with accountID ${ret.id ? ret.id : ''}`);
 			return accountIdm;
 		});
-		const accountdo = new Account({
+		return new Account({
+			...ret,
 			id: ret.id,
-			username: ret.username,
-			createdAt: ret.createdAt,
-			updatedAt: ret.updatedAt,
+			idmReferenceId: idmAccount?.idmReferenceId ?? '',
 		});
-		accountdo.idmReferenceId = idmAccount?.idmReferenceId;
-		return account;
 	}
 
 	async saveWithValidation(account: Account): Promise<void> {
+		// todo: own validation method
 		await validateOrReject(account);
+		const accountUsername = account.username?.trim().toLowerCase() ?? '';
+		let isUsernameUpdate = false;
 		// sanatizeUsername ✔
 		if (!account.systemId) {
-			account.username = account.username.trim().toLowerCase();
+			isUsernameUpdate = true;
 		}
 		if (!account.systemId && !account.password) {
 			throw new ValidationError('No password provided');
@@ -108,7 +107,7 @@ export class AccountService {
 		// checkUnique ✔
 		if (
 			!(await this.accountValidationService.isUniqueEmail(
-				account.username,
+				accountUsername,
 				account.userId,
 				account.id,
 				account.systemId
@@ -121,8 +120,11 @@ export class AccountService {
 		// if (dto.passwordStrategy && noPasswordStrategies.includes(dto.passwordStrategy)) {
 		// 	dto.password = undefined;
 		// }
-
-		await this.save(account);
+		if (isUsernameUpdate) {
+			await this.updateUsername(account.id, accountUsername);
+		} else {
+			await this.save(account);
+		}
 	}
 
 	async updateUsername(accountId: string, username: string): Promise<Account> {
@@ -133,14 +135,11 @@ export class AccountService {
 			this.logger.debug(`Updated username for account with accountID ${accountId}`);
 			return account;
 		});
-		const account = new Account({
+		return new Account({
+			...ret,
 			id: ret.id,
-			username: ret.username,
-			createdAt: ret.createdAt,
-			updatedAt: ret.updatedAt,
+			idmReferenceId: idmAccount?.idmReferenceId,
 		});
-		account.idmReferenceId = idmAccount?.idmReferenceId;
-		return account;
 	}
 
 	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<Account> {
@@ -151,14 +150,11 @@ export class AccountService {
 			this.logger.debug(`Updated last tried failed login for account with accountID ${accountId}`);
 			return account;
 		});
-		const account = new Account({
+		return new Account({
+			...ret,
 			id: ret.id,
-			username: ret.username,
-			createdAt: ret.createdAt,
-			updatedAt: ret.updatedAt,
+			idmReferenceId: idmAccount?.idmReferenceId,
 		});
-		account.idmReferenceId = idmAccount?.idmReferenceId;
-		return account;
 	}
 
 	async updatePassword(accountId: string, password: string): Promise<Account> {
@@ -169,14 +165,11 @@ export class AccountService {
 			this.logger.debug(`Updated password for account with accountID ${accountId}`);
 			return account;
 		});
-		const account = new Account({
+		return new Account({
+			...ret,
 			id: ret.id,
-			username: ret.username,
-			createdAt: ret.createdAt,
-			updatedAt: ret.updatedAt,
+			idmReferenceId: idmAccount?.idmReferenceId,
 		});
-		account.idmReferenceId = idmAccount?.idmReferenceId;
-		return account;
 	}
 
 	async validatePassword(account: Account, comparePassword: string): Promise<boolean> {

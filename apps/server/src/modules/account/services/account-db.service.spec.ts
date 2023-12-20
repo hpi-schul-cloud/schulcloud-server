@@ -9,7 +9,7 @@ import { AccountEntity, Role, SchoolEntity, User } from '@shared/domain/entity';
 
 import { Permission, RoleName } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { accountEntityFactory, accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import bcrypt from 'bcryptjs';
 import { LegacyLogger } from '../../../core/logger';
 import { AccountEntityToDoMapper } from '../repo/mapper';
@@ -166,10 +166,10 @@ describe('AccountDbService', () => {
 			school: mockSchool,
 			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
 		});
-		mockTeacherAccount = accountFactory.buildWithId({ userId: mockTeacherUser.id, password: defaultPassword });
-		mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id, password: defaultPassword });
+		mockTeacherAccount = accountEntityFactory.buildWithId({ userId: mockTeacherUser.id, password: defaultPassword });
+		mockStudentAccount = accountEntityFactory.buildWithId({ userId: mockStudentUser.id, password: defaultPassword });
 
-		mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId()).build();
+		mockAccountWithSystemId = accountEntityFactory.withSystemId(new ObjectId()).build();
 		mockAccounts = [mockTeacherAccount, mockStudentAccount, mockAccountWithSystemId];
 	});
 

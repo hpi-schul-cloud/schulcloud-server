@@ -3,7 +3,7 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AccountEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { accountFactory, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
+import { accountEntityFactory, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import {
 	AccountByIdBodyParams,
 	AccountSearchQueryParams,
@@ -55,7 +55,7 @@ describe('Account Controller (API)', () => {
 		superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
 
 		const mapUserToAccount = (user: User): AccountEntity =>
-			accountFactory.buildWithId({
+			accountEntityFactory.buildWithId({
 				userId: user.id,
 				username: user.email,
 				password: defaultPasswordHash,

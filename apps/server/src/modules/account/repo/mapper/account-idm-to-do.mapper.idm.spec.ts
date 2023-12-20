@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain/interface';
-import { AccountDto } from '../../services/dto';
 import { AccountIdmToDoMapper } from './account-idm-to-do.mapper.abstract';
 import { AccountIdmToDoMapperIdm } from './account-idm-to-do.mapper.idm';
+import { Account } from '../../domain/account';
 
-describe('AccountIdmToDtoMapperIdm', () => {
+describe('AccountIdmToDoMapperIdm', () => {
 	let module: TestingModule;
 	let mapper: AccountIdmToDoMapper;
 
@@ -30,7 +30,7 @@ describe('AccountIdmToDtoMapperIdm', () => {
 		await module.close();
 	});
 
-	describe('when mapping from entity to dto', () => {
+	describe('when mapping from entity to do', () => {
 		it('should map all fields', () => {
 			const testIdmEntity: IdmAccount = {
 				id: 'id',
@@ -46,7 +46,7 @@ describe('AccountIdmToDtoMapperIdm', () => {
 			const ret = mapper.mapToDo(testIdmEntity);
 
 			expect(ret).toEqual(
-				expect.objectContaining<Partial<AccountDto>>({
+				expect.objectContaining<Partial<Account>>({
 					id: testIdmEntity.id,
 					idmReferenceId: undefined,
 					userId: testIdmEntity.attDbcUserId,

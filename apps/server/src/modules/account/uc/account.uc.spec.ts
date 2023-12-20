@@ -8,7 +8,7 @@ import { Permission, RoleName } from '@shared/domain/interface';
 import { PermissionService } from '@shared/domain/service';
 import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
-import { accountFactory, schoolFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing';
+import { accountEntityFactory, accountFactory, schoolFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ObjectId } from 'bson';
 import {
@@ -381,83 +381,83 @@ describe('AccountUc', () => {
 			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 		});
 
-		mockSuperheroAccount = accountFactory.buildWithId({
+		mockSuperheroAccount = accountEntityFactory.buildWithId({
 			userId: mockSuperheroUser.id,
 			password: defaultPasswordHash,
 		});
-		mockTeacherAccount = accountFactory.buildWithId({
+		mockTeacherAccount = accountEntityFactory.buildWithId({
 			userId: mockTeacherUser.id,
 			password: defaultPasswordHash,
 		});
-		mockOtherTeacherAccount = accountFactory.buildWithId({
+		mockOtherTeacherAccount = accountEntityFactory.buildWithId({
 			userId: mockOtherTeacherUser.id,
 			password: defaultPasswordHash,
 		});
-		mockTeacherNoUserPermissionAccount = accountFactory.buildWithId({
+		mockTeacherNoUserPermissionAccount = accountEntityFactory.buildWithId({
 			userId: mockTeacherNoUserPermissionUser.id,
 			password: defaultPasswordHash,
 		});
-		mockTeacherNoUserNoSchoolPermissionAccount = accountFactory.buildWithId({
+		mockTeacherNoUserNoSchoolPermissionAccount = accountEntityFactory.buildWithId({
 			userId: mockTeacherNoUserNoSchoolPermissionUser.id,
 			password: defaultPasswordHash,
 		});
-		mockAdminAccount = accountFactory.buildWithId({
+		mockAdminAccount = accountEntityFactory.buildWithId({
 			userId: mockAdminUser.id,
 			password: defaultPasswordHash,
 		});
-		mockStudentAccount = accountFactory.buildWithId({
+		mockStudentAccount = accountEntityFactory.buildWithId({
 			userId: mockStudentUser.id,
 			password: defaultPasswordHash,
 		});
-		mockStudentSchoolPermissionAccount = accountFactory.buildWithId({
+		mockStudentSchoolPermissionAccount = accountEntityFactory.buildWithId({
 			userId: mockStudentSchoolPermissionUser.id,
 			password: defaultPasswordHash,
 		});
-		mockAccountWithoutRole = accountFactory.buildWithId({
+		mockAccountWithoutRole = accountEntityFactory.buildWithId({
 			userId: mockUserWithoutRole.id,
 			password: defaultPasswordHash,
 		});
-		mockDifferentSchoolAdminAccount = accountFactory.buildWithId({
+		mockDifferentSchoolAdminAccount = accountEntityFactory.buildWithId({
 			userId: mockDifferentSchoolAdminUser.id,
 			password: defaultPasswordHash,
 		});
-		mockDifferentSchoolTeacherAccount = accountFactory.buildWithId({
+		mockDifferentSchoolTeacherAccount = accountEntityFactory.buildWithId({
 			userId: mockDifferentSchoolTeacherUser.id,
 			password: defaultPasswordHash,
 		});
-		mockDifferentSchoolStudentAccount = accountFactory.buildWithId({
+		mockDifferentSchoolStudentAccount = accountEntityFactory.buildWithId({
 			userId: mockDifferentSchoolStudentUser.id,
 			password: defaultPasswordHash,
 		});
-		mockUnknownRoleUserAccount = accountFactory.buildWithId({
+		mockUnknownRoleUserAccount = accountEntityFactory.buildWithId({
 			userId: mockUnknownRoleUser.id,
 			password: defaultPasswordHash,
 		});
 		const externalSystem = systemEntityFactory.buildWithId();
-		mockExternalUserAccount = accountFactory.buildWithId({
+		mockExternalUserAccount = accountEntityFactory.buildWithId({
 			userId: mockExternalUser.id,
 			password: defaultPasswordHash,
 			systemId: externalSystem.id,
 		});
-		mockAccountWithoutUser = accountFactory.buildWithId({
+		mockAccountWithoutUser = accountEntityFactory.buildWithId({
 			userId: undefined,
 			password: defaultPasswordHash,
 			systemId: systemEntityFactory.buildWithId().id,
 		});
-		mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId(10)).build();
-		mockAccountWithLastFailedLogin = accountFactory.buildWithId({
+		mockAccountWithSystemId = accountEntityFactory.withSystemId(new ObjectId(10)).build();
+		mockAccountWithLastFailedLogin = accountEntityFactory.buildWithId({
 			userId: undefined,
 			password: defaultPasswordHash,
 			systemId: systemEntityFactory.buildWithId().id,
 			lasttriedFailedLogin: new Date(),
 		});
-		mockAccountWithOldLastFailedLogin = accountFactory.buildWithId({
+		mockAccountWithOldLastFailedLogin = accountEntityFactory.buildWithId({
 			userId: undefined,
 			password: defaultPasswordHash,
 			systemId: systemEntityFactory.buildWithId().id,
 			lasttriedFailedLogin: new Date(new Date().getTime() - LOGIN_BLOCK_TIME - 1),
 		});
-		mockAccountWithNoLastFailedLogin = accountFactory.buildWithId({
+		mockAccountWithNoLastFailedLogin = accountEntityFactory.buildWithId({
 			userId: undefined,
 			password: defaultPasswordHash,
 			systemId: systemEntityFactory.buildWithId().id,
@@ -1030,6 +1030,7 @@ describe('AccountUc', () => {
 		it('should call account service', async () => {
 			const spy = jest.spyOn(accountService, 'saveWithValidation');
 			const params = new Account({
+				id: mockStudentAccount.id,
 				username: 'john.doe@domain.tld',
 				password: defaultPassword,
 			});

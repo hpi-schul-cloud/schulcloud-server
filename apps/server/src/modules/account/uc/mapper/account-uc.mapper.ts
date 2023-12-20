@@ -7,7 +7,7 @@ export class AccountUcMapper {
 			id: account.id ? account.id : '',
 			userId: account.userId,
 			activated: account.activated,
-			username: account.username,
+			username: account.username ? account.username : '',
 			updatedAt: account.updatedAt,
 		});
 	}

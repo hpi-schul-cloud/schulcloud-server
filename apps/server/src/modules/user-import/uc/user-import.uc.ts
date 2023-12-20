@@ -269,14 +269,18 @@ export class UserImportUc {
 		user.externalId = importUser.externalId;
 
 		const account: Account = await this.getAccount(user);
-
-		// todo check if this is needed
-		// account.systemId = importUser.system.id;
-		// account.password = undefined;
-		// account.username = `${school.externalId}/${importUser.loginName}`.toLowerCase();
-
+		const updatedAccount: Account = new Account({
+			...account,
+			id: user.id,
+			userId: user.id,
+			username: `${school.externalId}/${importUser.loginName}`.toLowerCase(),
+			createdAt: user.createdAt,
+			updatedAt: user.updatedAt,
+			systemId: importUser.system.id,
+			password: undefined,
+		});
 		await this.userRepo.save(user);
-		await this.accountService.save(account);
+		await this.accountService.save(updatedAccount);
 		await this.importUserRepo.delete(importUser);
 	}
 

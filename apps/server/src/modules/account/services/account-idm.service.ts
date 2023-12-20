@@ -1,13 +1,13 @@
 import { IdentityManagementOauthService, IdentityManagementService } from '@infra/identity-management';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount, IdmAccountUpdate } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
+import { Account } from '../domain/account';
 import { AccountIdmToDoMapper } from '../repo/mapper';
 import { AccountLookupService } from './account-lookup.service';
-import { Account } from '../domain/account';
 
 @Injectable()
 export class AccountServiceIdm {
@@ -21,7 +21,6 @@ export class AccountServiceIdm {
 
 	async findById(id: EntityId): Promise<Account> {
 		const result: IdmAccount = await this.identityManager.findAccountById(id);
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 		const account: Account = this.accountIdmToDoMapper.mapToDo(result);
 		return account;
 	}
@@ -36,7 +35,6 @@ export class AccountServiceIdm {
 				// ignore entry
 			}
 		}
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 		const accounts: Account[] = results.map((result) => this.accountIdmToDoMapper.mapToDo(result));
 		return accounts;
 	}
@@ -44,7 +42,6 @@ export class AccountServiceIdm {
 	async findByUserId(userId: EntityId): Promise<Account | null> {
 		try {
 			const result = await this.identityManager.findAccountByDbcUserId(userId);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 			return this.accountIdmToDoMapper.mapToDo(result);
 		} catch {
 			return null;
@@ -54,7 +51,6 @@ export class AccountServiceIdm {
 	async findByUserIdOrFail(userId: EntityId): Promise<Account> {
 		try {
 			const result = await this.identityManager.findAccountByDbcUserId(userId);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 			return this.accountIdmToDoMapper.mapToDo(result);
 		} catch {
 			throw new EntityNotFoundError(`Account with userId ${userId} not found`);
@@ -69,14 +65,12 @@ export class AccountServiceIdm {
 
 	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
 		const [results, total] = await this.identityManager.findAccountsByUsername(userName, { skip, limit, exact: false });
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 		const accounts = results.map((result) => this.accountIdmToDoMapper.mapToDo(result));
 		return [accounts, total];
 	}
 
 	async searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
 		const [results, total] = await this.identityManager.findAccountsByUsername(userName, { exact: true });
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 		const accounts = results.map((result) => this.accountIdmToDoMapper.mapToDo(result));
 		return [accounts, total];
 	}
@@ -86,7 +80,6 @@ export class AccountServiceIdm {
 		const id = await this.getIdmAccountId(accountId);
 		await this.identityManager.setUserAttribute(id, attributeName, lastTriedFailedLogin.toISOString());
 		const updatedAccount = await this.identityManager.findAccountById(id);
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 		const account: Account = this.accountIdmToDoMapper.mapToDo(updatedAccount);
 		return account;
 	}
@@ -117,7 +110,6 @@ export class AccountServiceIdm {
 		}
 
 		const updatedAccount = await this.identityManager.findAccountById(accountId);
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 		const account: Account = this.accountIdmToDoMapper.mapToDo(updatedAccount);
 		return account;
 	}
@@ -139,7 +131,6 @@ export class AccountServiceIdm {
 		const id = await this.getIdmAccountId(accountRefId);
 		await this.identityManager.updateAccount(id, { username });
 		const updatedAccount = await this.identityManager.findAccountById(id);
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 		const account: Account = this.accountIdmToDoMapper.mapToDo(updatedAccount);
 		return account;
 	}
@@ -148,12 +139,15 @@ export class AccountServiceIdm {
 		const id = await this.getIdmAccountId(accountRefId);
 		await this.identityManager.updateAccountPassword(id, password);
 		const updatedAccount = await this.identityManager.findAccountById(id);
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 		const account: Account = this.accountIdmToDoMapper.mapToDo(updatedAccount);
 		return account;
 	}
 
 	async validatePassword(account: Account, comparePassword: string): Promise<boolean> {
+		if (!account.username) {
+			throw new Error('Account has no idmReferenceId');
+			// todo throw check for the right exception
+		}
 		const jwt = await this.idmOauthService.resourceOwnerPasswordGrant(account.username, comparePassword);
 		return jwt !== undefined;
 	}
@@ -168,9 +162,9 @@ export class AccountServiceIdm {
 		await this.identityManager.deleteAccountById(idmAccount.id);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findMany(_offset: number, _limit: number): Promise<Account[]> {
-		throw new NotImplementedException();
+		_offset = _limit;
+		return Promise.resolve([]);
 	}
 
 	private async getIdmAccountId(accountId: string): Promise<string> {
