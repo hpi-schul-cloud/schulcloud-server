@@ -44,7 +44,6 @@ jobs:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64
-          pull: true
           push: true
           pull: true
           tags: ${{ steps.docker_meta_img_hub.outputs.tags }}
