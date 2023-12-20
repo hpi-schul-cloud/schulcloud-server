@@ -20,7 +20,7 @@ import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../repo';
 import { TestConnection, tldrawTestConfig } from '../testing';
 import { WsSharedDocDo } from '../domain';
 import { TldrawWsService } from '.';
-import { TldrawConfig } from '@modules/tldraw/config';
+import { TldrawConfig } from '../config';
 
 jest.mock('yjs', () => {
 	const moduleMock: unknown = {
