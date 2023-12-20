@@ -1,6 +1,14 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
+import { faker } from '@faker-js/faker';
+import { InternalServerErrorException } from '@nestjs/common';
+import {
+	CommonCartridgeElementType,
+	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
+} from '../../common-cartridge.enums';
+import {
+	CommonCartridgeResourceFactory,
+	CommonCartridgeResourceProps,
+} from '../../resources/common-cartridge-resource-factory';
 import {
 	CommonCartridgeResourcesWrapperElementPropsV110,
 	CommonCartridgeResourcesWrapperElementV110,
@@ -8,32 +16,26 @@ import {
 
 describe('CommonCartridgeResourcesWrapperElementV110', () => {
 	const setup = () => {
-		const item1: DeepMocked<CommonCartridgeElement> = createMock<CommonCartridgeElement>();
-		const item2: DeepMocked<CommonCartridgeElement> = createMock<CommonCartridgeElement>();
-
-		item1.getManifestXmlObject.mockReturnValueOnce({
-			$: {
-				identifier: 'resource-1',
-			},
-		});
-		item1.getSupportedVersion.mockReturnValueOnce(CommonCartridgeVersion.V_1_1_0);
-
-		item2.getManifestXmlObject.mockReturnValueOnce({
-			$: {
-				identifier: 'resource-2',
-			},
-		});
-		item2.getSupportedVersion.mockReturnValueOnce(CommonCartridgeVersion.V_1_1_0);
-
+		const resourceProps: CommonCartridgeResourceProps = {
+			type: CommonCartridgeResourceType.WEB_LINK,
+			identifier: faker.string.uuid(),
+			title: faker.lorem.words(),
+			url: faker.internet.url(),
+		};
 		const props: CommonCartridgeResourcesWrapperElementPropsV110 = {
 			type: CommonCartridgeElementType.RESOURCES_WRAPPER,
 			version: CommonCartridgeVersion.V_1_1_0,
-			items: [item1, item2],
+			items: [
+				CommonCartridgeResourceFactory.createResource({
+					...resourceProps,
+					version: CommonCartridgeVersion.V_1_1_0,
+					folder: faker.string.alphanumeric(10),
+				}),
+			],
 		};
-
 		const sut = new CommonCartridgeResourcesWrapperElementV110(props);
 
-		return { sut, props };
+		return { sut, props, resourceProps };
 	};
 
 	describe('getSupportedVersion', () => {
@@ -45,12 +47,24 @@ describe('CommonCartridgeResourcesWrapperElementV110', () => {
 				expect(result).toBe(CommonCartridgeVersion.V_1_1_0);
 			});
 		});
+
+		describe('when using not supported common cartridge version', () => {
+			it('should throw error', () => {
+				expect(
+					() =>
+						new CommonCartridgeResourcesWrapperElementV110({
+							type: CommonCartridgeElementType.RESOURCES_WRAPPER,
+							version: CommonCartridgeVersion.V_1_3_0,
+						} as CommonCartridgeResourcesWrapperElementPropsV110)
+				).toThrow(InternalServerErrorException);
+			});
+		});
 	});
 
 	describe('getManifestXmlObject', () => {
 		describe('when using common cartridge version 1.1.0', () => {
 			it('should return correct manifest xml object', () => {
-				const { sut } = setup();
+				const { sut, resourceProps } = setup();
 				const result = sut.getManifestXmlObject();
 
 				expect(result).toStrictEqual({
@@ -59,26 +73,19 @@ describe('CommonCartridgeResourcesWrapperElementV110', () => {
 							resource: [
 								{
 									$: {
-										identifier: 'resource-1',
+										identifier: resourceProps.identifier,
+										type: expect.any(String),
 									},
-								},
-								{
-									$: {
-										identifier: 'resource-2',
+									file: {
+										$: {
+											href: expect.any(String),
+										},
 									},
 								},
 							],
 						},
 					],
 				});
-			});
-
-			it('should call getManifestXmlObject on both items', () => {
-				const { sut, props } = setup();
-				sut.getManifestXmlObject();
-
-				expect(props.items[0].getManifestXmlObject).toHaveBeenCalledTimes(1);
-				expect(props.items[1].getManifestXmlObject).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

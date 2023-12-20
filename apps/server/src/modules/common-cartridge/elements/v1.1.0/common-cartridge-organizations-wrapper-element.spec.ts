@@ -1,6 +1,7 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { faker } from '@faker-js/faker';
+import { InternalServerErrorException } from '@nestjs/common';
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
+import { CommonCartridgeElementFactory, CommonCartridgeElementProps } from '../common-cartridge-element-factory';
 import {
 	CommonCartridgeOrganizationsWrapperElementPropsV110,
 	CommonCartridgeOrganizationsWrapperElementV110,
@@ -8,24 +9,29 @@ import {
 
 describe('CommonCartridgeOrganizationsWrapperElementV110', () => {
 	const setup = () => {
-		const item: DeepMocked<CommonCartridgeElement> = createMock<CommonCartridgeElement>();
-
-		// AI next 45 lines
+		const organizationProps: CommonCartridgeElementProps = {
+			type: CommonCartridgeElementType.ORGANIZATION,
+			identifier: faker.string.uuid(),
+			title: faker.lorem.words(),
+			items: [],
+		};
 		const props: CommonCartridgeOrganizationsWrapperElementPropsV110 = {
 			type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER,
 			version: CommonCartridgeVersion.V_1_1_0,
-			items: [item],
+			items: [
+				CommonCartridgeElementFactory.createElement({
+					...organizationProps,
+					version: CommonCartridgeVersion.V_1_1_0,
+				}),
+			],
 		};
 		const sut = new CommonCartridgeOrganizationsWrapperElementV110(props);
 
-		item.getManifestXmlObject.mockReturnValueOnce({});
-		item.getSupportedVersion.mockReturnValueOnce(CommonCartridgeVersion.V_1_1_0);
-
-		return { sut, props };
+		return { sut, props, organizationProps };
 	};
 
 	describe('getSupportedVersion', () => {
-		describe('when using common cartridge version 1.1.0', () => {
+		describe('when using Common Cartridge version 1.1.0', () => {
 			it('should return correct version', () => {
 				const { sut } = setup();
 				const result = sut.getSupportedVersion();
@@ -33,12 +39,24 @@ describe('CommonCartridgeOrganizationsWrapperElementV110', () => {
 				expect(result).toBe(CommonCartridgeVersion.V_1_1_0);
 			});
 		});
+
+		describe('when using not supported Common Cartridge version', () => {
+			it('should throw error', () => {
+				expect(
+					() =>
+						new CommonCartridgeOrganizationsWrapperElementV110({
+							type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER,
+							version: CommonCartridgeVersion.V_1_3_0,
+						} as CommonCartridgeOrganizationsWrapperElementPropsV110)
+				).toThrowError(InternalServerErrorException);
+			});
+		});
 	});
 
 	describe('getManifestXmlObject', () => {
-		describe('when using common cartridge version 1.1.0', () => {
+		describe('when using Common Cartridge version 1.1.0', () => {
 			it('should return correct manifest xml object', () => {
-				const { sut } = setup();
+				const { sut, organizationProps } = setup();
 				const result = sut.getManifestXmlObject();
 
 				expect(result).toStrictEqual({
@@ -53,19 +71,20 @@ describe('CommonCartridgeOrganizationsWrapperElementV110', () => {
 									$: {
 										identifier: 'LearningModules',
 									},
-									item: [{}],
+									item: [
+										{
+											$: {
+												identifier: organizationProps.identifier,
+											},
+											title: organizationProps.title,
+											item: [],
+										},
+									],
 								},
 							],
 						},
 					],
 				});
-			});
-
-			it('should call getManifestXmlObject on item', () => {
-				const { sut, props } = setup();
-				sut.getManifestXmlObject();
-
-				expect(props.items[0].getManifestXmlObject).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

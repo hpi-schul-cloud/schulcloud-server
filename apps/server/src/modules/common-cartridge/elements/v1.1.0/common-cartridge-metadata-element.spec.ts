@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { InternalServerErrorException } from '@nestjs/common';
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
 import {
 	CommonCartridgeMetadataElementPropsV110,
@@ -29,10 +30,22 @@ describe('CommonCartridgeMetadataElementV110', () => {
 				expect(result).toBe(CommonCartridgeVersion.V_1_1_0);
 			});
 		});
+
+		describe('when using not supported Common Cartridge version', () => {
+			it('should throw error', () => {
+				expect(
+					() =>
+						new CommonCartridgeMetadataElementV110({
+							type: CommonCartridgeElementType.METADATA,
+							version: CommonCartridgeVersion.V_1_3_0,
+						} as CommonCartridgeMetadataElementPropsV110)
+				).toThrow(InternalServerErrorException);
+			});
+		});
 	});
 
 	describe('getManifestXmlObject', () => {
-		describe('when using common cartridge version 1.1', () => {
+		describe('when using Common Cartridge version 1.1', () => {
 			it('should return correct manifest xml object', () => {
 				const { sut, props } = setup();
 				const result = sut.getManifestXmlObject();

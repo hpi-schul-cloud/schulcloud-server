@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { InternalServerErrorException } from '@nestjs/common';
 import {
 	CommonCartridgeElementType,
 	CommonCartridgeResourceType,
@@ -22,7 +23,7 @@ describe('CommonCartridgeOrganizationElementV110', () => {
 			title: faker.lorem.words(),
 			url: faker.internet.url(),
 		};
-		const subOrganizationProps: CommonCartridgeElementProps = {
+		const subOrganization1Props: CommonCartridgeElementProps = {
 			type: CommonCartridgeElementType.ORGANIZATION,
 			identifier: faker.string.uuid(),
 			title: faker.lorem.words(),
@@ -32,6 +33,18 @@ describe('CommonCartridgeOrganizationElementV110', () => {
 				folder: faker.string.alphanumeric(10),
 			}),
 		};
+		const subOrganization2Props: CommonCartridgeElementProps = {
+			type: CommonCartridgeElementType.ORGANIZATION,
+			identifier: faker.string.uuid(),
+			title: faker.lorem.words(),
+			items: [
+				CommonCartridgeResourceFactory.createResource({
+					...resourceProps,
+					version: CommonCartridgeVersion.V_1_1_0,
+					folder: faker.string.alphanumeric(10),
+				}),
+			],
+		};
 		const organizationProps: CommonCartridgeOrganizationElementPropsV110 = {
 			type: CommonCartridgeElementType.ORGANIZATION,
 			version: CommonCartridgeVersion.V_1_1_0,
@@ -39,18 +52,22 @@ describe('CommonCartridgeOrganizationElementV110', () => {
 			title: faker.lorem.words(),
 			items: [
 				CommonCartridgeElementFactory.createElement({
-					...subOrganizationProps,
+					...subOrganization1Props,
+					version: CommonCartridgeVersion.V_1_1_0,
+				}),
+				CommonCartridgeElementFactory.createElement({
+					...subOrganization2Props,
 					version: CommonCartridgeVersion.V_1_1_0,
 				}),
 			],
 		};
 		const sut = new CommonCartridgeOrganizationElementV110(organizationProps);
 
-		return { sut, organizationProps, subOrganizationProps, resourceProps };
+		return { sut, organizationProps, subOrganization1Props, subOrganization2Props, resourceProps };
 	};
 
 	describe('getSupportedVersion', () => {
-		describe('when using common cartridge version 1.1.0', () => {
+		describe('when using Common Cartridge version 1.1.0', () => {
 			it('should return correct version', () => {
 				const { sut } = setup();
 				const result = sut.getSupportedVersion();
@@ -58,13 +75,25 @@ describe('CommonCartridgeOrganizationElementV110', () => {
 				expect(result).toBe(CommonCartridgeVersion.V_1_1_0);
 			});
 		});
+
+		describe('when using not supported Common Cartridge version', () => {
+			it('should throw error', () => {
+				expect(
+					() =>
+						new CommonCartridgeOrganizationElementV110({
+							type: CommonCartridgeElementType.ORGANIZATION,
+							version: CommonCartridgeVersion.V_1_3_0,
+						} as CommonCartridgeOrganizationElementPropsV110)
+				).toThrowError(InternalServerErrorException);
+			});
+		});
 	});
 
 	describe('getManifestXmlObject', () => {
 		// AI next 12 lines
-		describe('when using common cartridge version 1.1.0', () => {
+		describe('when using Common Cartridge version 1.1.0', () => {
 			it('should return correct manifest xml object', () => {
-				const { sut, organizationProps, subOrganizationProps, resourceProps } = setup();
+				const { sut, organizationProps, subOrganization1Props, subOrganization2Props, resourceProps } = setup();
 				const result = sut.getManifestXmlObject();
 
 				expect(result).toStrictEqual({
@@ -75,10 +104,25 @@ describe('CommonCartridgeOrganizationElementV110', () => {
 					item: [
 						{
 							$: {
-								identifier: subOrganizationProps.identifier,
+								identifier: subOrganization1Props.identifier,
 								identifierref: resourceProps.identifier,
 							},
-							title: subOrganizationProps.title,
+							title: subOrganization1Props.title,
+						},
+						{
+							$: {
+								identifier: subOrganization2Props.identifier,
+							},
+							title: subOrganization2Props.title,
+							item: [
+								{
+									$: {
+										identifier: resourceProps.identifier,
+										identifierref: resourceProps.identifier,
+									},
+									title: resourceProps.title,
+								},
+							],
 						},
 					],
 				});
