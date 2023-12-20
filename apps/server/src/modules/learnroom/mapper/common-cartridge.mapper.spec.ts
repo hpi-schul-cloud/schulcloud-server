@@ -4,12 +4,14 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { OmitVersion } from '@src/modules/common-cartridge/utils';
 import {
-	CommonCartridgeMetadataElementProps,
+	CommonCartridgeElementProps,
+	CommonCartridgeElementType,
+	CommonCartridgeIntendedUseType,
 	CommonCartridgeOrganizationBuilderOptions,
 	CommonCartridgeResourceProps,
 	CommonCartridgeResourceType,
-	OmitVersion,
 } from '../../common-cartridge';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeMapper } from './common-cartridge.mapper';
@@ -60,7 +62,8 @@ describe('CommonCartridgeMapper', () => {
 				const { course } = setup();
 				const metadataProps = sut.mapCourseToMetadata(course);
 
-				expect(metadataProps).toStrictEqual<OmitVersion<CommonCartridgeMetadataElementProps>>({
+				expect(metadataProps).toStrictEqual<CommonCartridgeElementProps>({
+					type: CommonCartridgeElementType.METADATA,
 					title: course.name,
 					copyrightOwners: course.teachers
 						.toArray()
@@ -141,6 +144,7 @@ describe('CommonCartridgeMapper', () => {
 					identifier: task.id,
 					title: task.name,
 					html: `<h1>${task.name}</h1><p>${task.description}</p>`,
+					intendedUse: CommonCartridgeIntendedUseType.ASSIGNMENT,
 				});
 			});
 		});
@@ -194,6 +198,7 @@ describe('CommonCartridgeMapper', () => {
 					identifier: expect.any(String),
 					title: componentProps.title,
 					html: `<h1>${componentProps.title}</h1><p>${componentProps?.content.text}</p>`,
+					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				});
 			});
 		});
@@ -260,7 +265,7 @@ describe('CommonCartridgeMapper', () => {
 			});
 		});
 
-		describe('when mapping learning store content to resources', () => {
+		describe('when mapping learn store content to resources', () => {
 			const setup = () => {
 				const componentProps: ComponentProperties = {
 					_id: 'id',
@@ -296,6 +301,52 @@ describe('CommonCartridgeMapper', () => {
 						url: componentProps.content?.resources[0].url as string,
 					},
 				]);
+			});
+		});
+
+		describe('when no learn store content is provided', () => {
+			const setup = () => {
+				const componentProps: ComponentProperties = {
+					_id: 'id',
+					title: 'title',
+					hidden: false,
+					component: ComponentType.LERNSTORE,
+				};
+
+				configServiceMock.getOrThrow.mockReturnValue('https://example.com');
+
+				return { componentProps };
+			};
+
+			it('should map to empty array', () => {
+				const { componentProps } = setup();
+				const resourceProps = sut.mapContentToResources(componentProps);
+
+				expect(resourceProps).toEqual([]);
+			});
+		});
+
+		describe('when mapping unknown content', () => {
+			const setup = () => {
+				const unknownComponentProps: ComponentProperties = {
+					title: 'title',
+					hidden: false,
+					component: ComponentType.INTERNAL,
+					content: {
+						url: 'url',
+					},
+				};
+
+				configServiceMock.getOrThrow.mockReturnValue('https://example.com');
+
+				return { unknownComponentProps };
+			};
+
+			it('should map to empty array', () => {
+				const { unknownComponentProps } = setup();
+				const resourceProps = sut.mapContentToResources(unknownComponentProps);
+
+				expect(resourceProps).toEqual([]);
 			});
 		});
 	});
