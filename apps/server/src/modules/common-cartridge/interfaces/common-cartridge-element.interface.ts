@@ -4,6 +4,7 @@ import { CommonCartridgeVersion } from '../common-cartridge.enums';
 type CommonCartridgeElementProps = {
 	version: CommonCartridgeVersion;
 	identifier?: string;
+	title?: string;
 };
 
 /**
@@ -16,6 +17,10 @@ export abstract class CommonCartridgeElement {
 
 	public get identifier(): string | undefined {
 		return this.baseProps.identifier;
+	}
+
+	public get title(): string | undefined {
+		return this.baseProps.title;
 	}
 
 	/**

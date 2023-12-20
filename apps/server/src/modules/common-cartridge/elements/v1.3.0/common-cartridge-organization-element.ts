@@ -1,12 +1,13 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
 import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
+import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resource.interface';
 
 export type CommonCartridgeOrganizationElementPropsV130 = {
 	type: CommonCartridgeElementType.ORGANIZATION;
 	version: CommonCartridgeVersion;
 	identifier: string;
 	title: string;
-	items: CommonCartridgeElement[];
+	items: CommonCartridgeResource | Array<CommonCartridgeElement | CommonCartridgeResource>;
 };
 
 export class CommonCartridgeOrganizationElementV130 extends CommonCartridgeElement {
@@ -19,13 +20,34 @@ export class CommonCartridgeOrganizationElementV130 extends CommonCartridgeEleme
 	}
 
 	public override getManifestXmlObject(): Record<string, unknown> {
+		if (this.props.items instanceof CommonCartridgeResource) {
+			return {
+				$: {
+					identifier: this.identifier,
+					identifierref: this.props.items.identifier,
+				},
+				title: this.title,
+			};
+		}
+
 		return {
 			$: {
-				identifier: this.props.identifier,
-				identifierref: this.props.items.length === 1 ? this.props.items[0].identifier : undefined,
+				identifier: this.identifier,
 			},
-			title: this.props.title,
-			// item: this.props.items.map((item) => item.getManifestXmlObject()),
+			title: this.title,
+			item: this.props.items.map((item) => {
+				if (item instanceof CommonCartridgeResource) {
+					return {
+						$: {
+							identifier: item.identifier,
+							identifierref: item.identifier,
+						},
+						title: item.title,
+					};
+				}
+
+				return item.getManifestXmlObject();
+			}),
 		};
 	}
 }

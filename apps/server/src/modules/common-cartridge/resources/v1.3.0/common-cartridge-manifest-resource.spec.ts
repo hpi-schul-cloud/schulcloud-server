@@ -34,14 +34,14 @@ describe('CommonCartridgeManifestResourceV110', () => {
 			version: CommonCartridgeVersion.V_1_3_0,
 			title: 'Title 1',
 			identifier: 'o1',
-			items: [resource1],
+			items: resource1,
 		});
 		const organization2 = CommonCartridgeElementFactory.createElement({
 			type: CommonCartridgeElementType.ORGANIZATION,
 			version: CommonCartridgeVersion.V_1_3_0,
 			title: 'Title 2',
 			identifier: 'o2',
-			items: [resource2],
+			items: resource2,
 		});
 		const metadata = CommonCartridgeElementFactoryV130.createElement({
 			type: CommonCartridgeElementType.METADATA,

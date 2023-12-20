@@ -1,7 +1,14 @@
 import { faker } from '@faker-js/faker';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
+import {
+	CommonCartridgeElementType,
+	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
+} from '../../common-cartridge.enums';
+import {
+	CommonCartridgeResourceFactory,
+	CommonCartridgeResourceProps,
+} from '../../resources/common-cartridge-resource-factory';
+import { CommonCartridgeElementFactory, CommonCartridgeElementProps } from '../common-cartridge-element-factory';
 import {
 	CommonCartridgeOrganizationElementPropsV110,
 	CommonCartridgeOrganizationElementV110,
@@ -9,21 +16,37 @@ import {
 
 describe('CommonCartridgeOrganizationElementV110', () => {
 	const setup = () => {
-		const item: DeepMocked<CommonCartridgeElement> = createMock<CommonCartridgeElement>();
-
-		const props: CommonCartridgeOrganizationElementPropsV110 = {
+		const resourceProps: CommonCartridgeResourceProps = {
+			type: CommonCartridgeResourceType.WEB_LINK,
+			identifier: faker.string.uuid(),
+			title: faker.lorem.words(),
+			url: faker.internet.url(),
+		};
+		const subOrganizationProps: CommonCartridgeElementProps = {
+			type: CommonCartridgeElementType.ORGANIZATION,
+			identifier: faker.string.uuid(),
+			title: faker.lorem.words(),
+			items: CommonCartridgeResourceFactory.createResource({
+				...resourceProps,
+				version: CommonCartridgeVersion.V_1_1_0,
+				folder: faker.string.alphanumeric(10),
+			}),
+		};
+		const organizationProps: CommonCartridgeOrganizationElementPropsV110 = {
 			type: CommonCartridgeElementType.ORGANIZATION,
 			version: CommonCartridgeVersion.V_1_1_0,
 			identifier: faker.string.uuid(),
 			title: faker.lorem.words(),
-			items: [item],
+			items: [
+				CommonCartridgeElementFactory.createElement({
+					...subOrganizationProps,
+					version: CommonCartridgeVersion.V_1_1_0,
+				}),
+			],
 		};
-		const sut = new CommonCartridgeOrganizationElementV110(props);
+		const sut = new CommonCartridgeOrganizationElementV110(organizationProps);
 
-		item.getManifestXmlObject.mockReturnValueOnce({});
-		item.getSupportedVersion.mockReturnValueOnce(CommonCartridgeVersion.V_1_1_0);
-
-		return { sut, props };
+		return { sut, organizationProps, subOrganizationProps, resourceProps };
 	};
 
 	describe('getSupportedVersion', () => {
@@ -41,23 +64,24 @@ describe('CommonCartridgeOrganizationElementV110', () => {
 		// AI next 12 lines
 		describe('when using common cartridge version 1.1.0', () => {
 			it('should return correct manifest xml object', () => {
-				const { sut, props } = setup();
+				const { sut, organizationProps, subOrganizationProps, resourceProps } = setup();
 				const result = sut.getManifestXmlObject();
 
 				expect(result).toStrictEqual({
 					$: {
-						identifier: props.identifier,
+						identifier: organizationProps.identifier,
 					},
-					title: props.title,
-					item: [{}],
+					title: organizationProps.title,
+					item: [
+						{
+							$: {
+								identifier: subOrganizationProps.identifier,
+								identifierref: resourceProps.identifier,
+							},
+							title: subOrganizationProps.title,
+						},
+					],
 				});
-			});
-
-			it('should call getManifestXmlObject on item', () => {
-				const { sut, props } = setup();
-				sut.getManifestXmlObject();
-
-				expect(props.items[0].getManifestXmlObject).toHaveBeenCalledTimes(1);
 			});
 		});
 	});
