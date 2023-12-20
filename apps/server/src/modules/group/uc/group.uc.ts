@@ -11,10 +11,10 @@ import { ReferencedEntityNotFoundLoggable } from '@shared/common/loggable';
 import { LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { LegacySystemService, SystemDto } from '@src/modules/system';
-import { SchoolYearQueryType } from '../controller/dto/interface';
+import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes, GroupUser } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
@@ -44,7 +44,8 @@ export class GroupUc {
 		skip = 0,
 		limit?: number,
 		sortBy: keyof ClassInfoDto = 'name',
-		sortOrder: SortOrder = SortOrder.asc
+		sortOrder: SortOrder = SortOrder.asc,
+		calledFrom?: ClassRequestContext
 	): Promise<Page<ClassInfoDto>> {
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
 
@@ -60,8 +61,11 @@ export class GroupUc {
 			Permission.GROUP_FULL_ADMIN,
 		]);
 
+		const calledFromCourse: boolean =
+			calledFrom === ClassRequestContext.COURSE && school.features?.includes(SchoolFeature.STUDENTVISIBILITY) === true;
+
 		let combinedClassInfo: ClassInfoDto[];
-		if (canSeeFullList) {
+		if (canSeeFullList || calledFromCourse) {
 			combinedClassInfo = await this.findCombinedClassListForSchool(schoolId, schoolYearQueryType);
 		} else {
 			combinedClassInfo = await this.findCombinedClassListForUser(userId, schoolYearQueryType);

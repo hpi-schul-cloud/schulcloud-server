@@ -12,6 +12,7 @@ import {
 	GroupIdParams,
 	GroupResponse,
 	GroupPaginationParams,
+	ClassCallerParams,
 } from './dto';
 import { GroupResponseMapper } from './mapper';
 
@@ -30,6 +31,7 @@ export class GroupController {
 		@Query() pagination: GroupPaginationParams,
 		@Query() sortingQuery: ClassSortParams,
 		@Query() filterParams: ClassFilterParams,
+		@Query() callerParams: ClassCallerParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ClassInfoSearchListResponse> {
 		const board: Page<ClassInfoDto> = await this.groupUc.findAllClasses(
@@ -39,7 +41,8 @@ export class GroupController {
 			pagination.skip,
 			pagination.limit,
 			sortingQuery.sortBy,
-			sortingQuery.sortOrder
+			sortingQuery.sortOrder,
+			callerParams.calledFrom
 		);
 
 		const response: ClassInfoSearchListResponse = GroupResponseMapper.mapToClassInfosToListResponse(
