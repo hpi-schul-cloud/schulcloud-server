@@ -1,10 +1,20 @@
-import { faker } from '@faker-js/faker/locale/af_ZA';
+import { InternalServerErrorException } from '@nestjs/common';
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { CommonCartridgeOrganizationsWrapperElementPropsV110 } from '../v1.1.0/common-cartridge-organizations-wrapper-element';
 import { CommonCartridgeElementFactoryV130 } from './common-cartridge-element-factory';
-import { CommonCartridgeMetadataElementV130 } from './common-cartridge-metadata-element';
-import { CommonCartridgeOrganizationElementV130 } from './common-cartridge-organization-element';
+import {
+	CommonCartridgeMetadataElementPropsV130,
+	CommonCartridgeMetadataElementV130,
+} from './common-cartridge-metadata-element';
+import {
+	CommonCartridgeOrganizationElementPropsV130,
+	CommonCartridgeOrganizationElementV130,
+} from './common-cartridge-organization-element';
 import { CommonCartridgeOrganizationsWrapperElementV130 } from './common-cartridge-organizations-wrapper-element';
-import { CommonCartridgeResourcesWrapperElementV130 } from './common-cartridge-resources-wrapper-element';
+import {
+	CommonCartridgeResourcesWrapperElementPropsV130,
+	CommonCartridgeResourcesWrapperElementV130,
+} from './common-cartridge-resources-wrapper-element';
 
 describe('CommonCartridgeElementFactoryV130', () => {
 	describe('createElement', () => {
@@ -13,12 +23,8 @@ describe('CommonCartridgeElementFactoryV130', () => {
 				const result = CommonCartridgeElementFactoryV130.createElement({
 					type: CommonCartridgeElementType.METADATA,
 					version: CommonCartridgeVersion.V_1_3_0,
-					title: faker.lorem.words(),
-					creationDate: faker.date.past(),
-					copyrightOwners: [faker.person.fullName(), faker.person.fullName()],
-				});
+				} as CommonCartridgeMetadataElementPropsV130);
 
-				expect(result).toBeDefined();
 				expect(result).toBeInstanceOf(CommonCartridgeMetadataElementV130);
 			});
 
@@ -26,12 +32,8 @@ describe('CommonCartridgeElementFactoryV130', () => {
 				const result = CommonCartridgeElementFactoryV130.createElement({
 					type: CommonCartridgeElementType.ORGANIZATION,
 					version: CommonCartridgeVersion.V_1_3_0,
-					identifier: faker.string.uuid(),
-					title: faker.lorem.words(),
-					items: [],
-				});
+				} as CommonCartridgeOrganizationElementPropsV130);
 
-				expect(result).toBeDefined();
 				expect(result).toBeInstanceOf(CommonCartridgeOrganizationElementV130);
 			});
 
@@ -39,10 +41,8 @@ describe('CommonCartridgeElementFactoryV130', () => {
 				const result = CommonCartridgeElementFactoryV130.createElement({
 					type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER,
 					version: CommonCartridgeVersion.V_1_3_0,
-					items: [],
-				});
+				} as CommonCartridgeOrganizationsWrapperElementPropsV110);
 
-				expect(result).toBeDefined();
 				expect(result).toBeInstanceOf(CommonCartridgeOrganizationsWrapperElementV130);
 			});
 
@@ -50,11 +50,20 @@ describe('CommonCartridgeElementFactoryV130', () => {
 				const result = CommonCartridgeElementFactoryV130.createElement({
 					type: CommonCartridgeElementType.RESOURCES_WRAPPER,
 					version: CommonCartridgeVersion.V_1_3_0,
-					items: [],
-				});
+				} as CommonCartridgeResourcesWrapperElementPropsV130);
 
-				expect(result).toBeDefined();
 				expect(result).toBeInstanceOf(CommonCartridgeResourcesWrapperElementV130);
+			});
+		});
+
+		describe('when element type is not supported', () => {
+			it('should throw error', () => {
+				expect(() =>
+					CommonCartridgeElementFactoryV130.createElement({
+						type: 'not-supported' as CommonCartridgeElementType,
+						version: CommonCartridgeVersion.V_1_3_0,
+					} as CommonCartridgeResourcesWrapperElementPropsV130)
+				).toThrow(InternalServerErrorException);
 			});
 		});
 	});
