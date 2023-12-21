@@ -1,19 +1,20 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
-import { LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
+import { SchoolYearService } from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { SortHelper } from '@shared/common';
 import { ReferencedEntityNotFoundLoggable } from '@shared/common/loggable';
-import { LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
+import { Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
-import { EntityId, SchoolFeature } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { LegacySystemService, SystemDto } from '@src/modules/system';
+import { School, SchoolService } from '@modules/school/domain';
 import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes, GroupUser } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
@@ -29,7 +30,7 @@ export class GroupUc {
 		private readonly systemService: LegacySystemService,
 		private readonly userService: UserService,
 		private readonly roleService: RoleService,
-		private readonly schoolService: LegacySchoolService,
+		private readonly schoolService: SchoolService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolYearService: SchoolYearService,
 		private readonly logger: Logger
@@ -47,7 +48,7 @@ export class GroupUc {
 		sortBy: keyof ClassInfoDto = 'name',
 		sortOrder: SortOrder = SortOrder.asc
 	): Promise<Page<ClassInfoDto>> {
-		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
+		const school: School = await this.schoolService.getSchoolById(schoolId);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkPermission(
@@ -62,7 +63,7 @@ export class GroupUc {
 		]);
 
 		const calledFromCourse: boolean =
-			calledFrom === ClassRequestContext.COURSE && school.features?.includes(SchoolFeature.STUDENTVISIBILITY) === true;
+			calledFrom === ClassRequestContext.COURSE && school.getPermissions()?.teacher?.STUDENT_LIST === true;
 
 		let combinedClassInfo: ClassInfoDto[];
 		if (canSeeFullList || calledFromCourse) {

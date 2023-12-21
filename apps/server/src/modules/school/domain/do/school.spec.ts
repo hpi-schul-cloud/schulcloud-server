@@ -42,7 +42,7 @@ describe('School', () => {
 			expect(school.getProps().features).not.toContain(feature);
 		});
 	});
-
+	// TODO N21-1623 add test for getPermissions
 	describe('isInMaintenance', () => {
 		describe('when inMaintenanceSince is in the past', () => {
 			const setup = () => {
