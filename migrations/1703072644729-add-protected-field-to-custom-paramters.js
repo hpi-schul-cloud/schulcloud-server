@@ -5,7 +5,7 @@ const { connect, close } = require('../src/utils/database');
 // use your own name for your model, otherwise other migrations may fail.
 // The third parameter is the actually relevent one for what collection to write to.
 const ExternalTools = mongoose.model(
-	'external_tools1703072644729',
+	'external-tools1703072644729',
 	new mongoose.Schema(
 		{
 			parameters: [
@@ -18,7 +18,7 @@ const ExternalTools = mongoose.model(
 			timestamps: true,
 		}
 	),
-	'external_tools'
+	'external-tools'
 );
 
 // How to use more than one schema per collection on mongodb
