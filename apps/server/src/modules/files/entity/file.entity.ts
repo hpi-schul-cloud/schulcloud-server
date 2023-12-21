@@ -97,10 +97,10 @@ export class FileEntity extends BaseEntityWithTimestamps {
 
 	@Property({ fieldName: 'creator' })
 	@Index()
-	_creatorId: ObjectId;
+	_creatorId: ObjectId | undefined;
 
-	get creatorId(): EntityId {
-		return this._creatorId.toHexString();
+	get creatorId(): EntityId | undefined {
+		return this._creatorId?.toHexString();
 	}
 
 	@Embedded(() => FilePermissionEntity, { array: true, nullable: false })
@@ -126,7 +126,7 @@ export class FileEntity extends BaseEntityWithTimestamps {
 		}
 	}
 
-	public removePermissionsByRefId(refId: EntityId): void {
+	public removePermissionsByRefIdIfMatch(refId: EntityId): void {
 		const refObjectId = new ObjectId(refId);
 
 		this.permissions = this.permissions.filter((permission) => !permission.refId.equals(refObjectId));
@@ -139,6 +139,10 @@ export class FileEntity extends BaseEntityWithTimestamps {
 
 	public isMarkedForDeletion(): boolean {
 		return this.deleted && this.deletedAt !== undefined && !Number.isNaN(this.deletedAt.getTime());
+	}
+
+	public removeCreatorIdIfMatch(creatorId: EntityId): void {
+		this._creatorId = undefined;
 	}
 
 	constructor(props: FileEntityProps) {

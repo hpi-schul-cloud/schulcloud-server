@@ -54,7 +54,7 @@ describe(FileEntity.name, () => {
 				const expectedFile = copyFile(file);
 				expectedFile.permissions = anotherUsersPermissions;
 
-				file.removePermissionsByRefId(mainUserId);
+				file.removePermissionsByRefIdIfMatch(mainUserId);
 
 				expect(file).toEqual(expectedFile);
 			});
@@ -75,7 +75,7 @@ describe(FileEntity.name, () => {
 
 				const randomUserId = new ObjectId().toHexString();
 
-				file.removePermissionsByRefId(randomUserId);
+				file.removePermissionsByRefIdIfMatch(randomUserId);
 
 				expect(file).toEqual(originalFile);
 			});
@@ -87,7 +87,7 @@ describe(FileEntity.name, () => {
 
 				const originalFile = copyFile(file);
 
-				file.removePermissionsByRefId(mainUserId);
+				file.removePermissionsByRefIdIfMatch(mainUserId);
 
 				expect(file).toEqual(originalFile);
 			});

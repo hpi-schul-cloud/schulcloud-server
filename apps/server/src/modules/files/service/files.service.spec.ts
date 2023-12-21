@@ -30,7 +30,7 @@ describe(FilesService.name, () => {
 	});
 
 	afterEach(() => {
-		repo.findByPermissionRefId.mockClear();
+		repo.findByPermissionRefIdOrCreatorId.mockClear();
 		repo.findByOwnerUserId.mockClear();
 		repo.save.mockClear();
 	});
@@ -60,11 +60,11 @@ describe(FilesService.name, () => {
 				it('should return an empty array', async () => {
 					const { userId } = setup();
 
-					repo.findByPermissionRefId.mockResolvedValueOnce([]);
+					repo.findByPermissionRefIdOrCreatorId.mockResolvedValueOnce([]);
 
-					const result = await service.findFilesAccessibleByUser(userId);
+					const result = await service.findFilesAccessibleOrCreatedByUser(userId);
 
-					expect(repo.findByPermissionRefId).toBeCalledWith(userId);
+					expect(repo.findByPermissionRefIdOrCreatorId).toBeCalledWith(userId);
 					expect(result).toEqual([]);
 				});
 			});
@@ -73,11 +73,11 @@ describe(FilesService.name, () => {
 				it('should return an array containing proper file entities', async () => {
 					const { userId, accessibleFiles } = setup();
 
-					repo.findByPermissionRefId.mockResolvedValueOnce(accessibleFiles);
+					repo.findByPermissionRefIdOrCreatorId.mockResolvedValueOnce(accessibleFiles);
 
-					const result = await service.findFilesAccessibleByUser(userId);
+					const result = await service.findFilesAccessibleOrCreatedByUser(userId);
 
-					expect(repo.findByPermissionRefId).toBeCalledWith(userId);
+					expect(repo.findByPermissionRefIdOrCreatorId).toBeCalledWith(userId);
 					expect(result).toEqual(accessibleFiles);
 				});
 			});
@@ -87,13 +87,13 @@ describe(FilesService.name, () => {
 	describe('removeUserPermissionsToAnyFiles', () => {
 		it('should not modify any files if there are none that user has permission to access', async () => {
 			const userId = new ObjectId().toHexString();
-			repo.findByPermissionRefId.mockResolvedValueOnce([]);
+			repo.findByPermissionRefIdOrCreatorId.mockResolvedValueOnce([]);
 
-			const result = await service.removeUserPermissionsToAnyFiles(userId);
+			const result = await service.removeUserPermissionsorCreatorReferenceToAnyFiles(userId);
 
 			expect(result).toEqual(0);
 
-			expect(repo.findByPermissionRefId).toBeCalledWith(userId);
+			expect(repo.findByPermissionRefIdOrCreatorId).toBeCalledWith(userId);
 			expect(repo.save).not.toBeCalled();
 		});
 
@@ -103,14 +103,14 @@ describe(FilesService.name, () => {
 				const userPermission = filePermissionEntityFactory.build({ refId: userId });
 				const entity = fileEntityFactory.buildWithId({ permissions: [userPermission] });
 
-				repo.findByPermissionRefId.mockResolvedValueOnce([entity]);
+				repo.findByPermissionRefIdOrCreatorId.mockResolvedValueOnce([entity]);
 
-				const result = await service.removeUserPermissionsToAnyFiles(userId);
+				const result = await service.removeUserPermissionsorCreatorReferenceToAnyFiles(userId);
 
 				expect(result).toEqual(1);
 				expect(entity.permissions).not.toContain(userPermission);
 
-				expect(repo.findByPermissionRefId).toBeCalledWith(userId);
+				expect(repo.findByPermissionRefIdOrCreatorId).toBeCalledWith(userId);
 				expect(repo.save).toBeCalledWith([entity]);
 			});
 
@@ -137,9 +137,9 @@ describe(FilesService.name, () => {
 					}),
 				];
 
-				repo.findByPermissionRefId.mockResolvedValueOnce(entities);
+				repo.findByPermissionRefIdOrCreatorId.mockResolvedValueOnce(entities);
 
-				const result = await service.removeUserPermissionsToAnyFiles(userId);
+				const result = await service.removeUserPermissionsorCreatorReferenceToAnyFiles(userId);
 
 				expect(result).toEqual(5);
 
@@ -149,7 +149,7 @@ describe(FilesService.name, () => {
 					expect(entity.permissions).toContain(yetAnotherUserPermission);
 				});
 
-				expect(repo.findByPermissionRefId).toBeCalledWith(userId);
+				expect(repo.findByPermissionRefIdOrCreatorId).toBeCalledWith(userId);
 				expect(repo.save).toBeCalledWith(entities);
 			});
 		});

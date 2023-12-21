@@ -354,7 +354,7 @@ describe(FilesRepo.name, () => {
 						expectedMainUserFileProps,
 					} = await setup();
 
-					const results = await repo.findByPermissionRefId(mainUserId);
+					const results = await repo.findByPermissionRefIdOrCreatorId(mainUserId);
 
 					expect(results).toHaveLength(3);
 
@@ -397,7 +397,7 @@ describe(FilesRepo.name, () => {
 					await em.persistAndFlush([fileEntityFactory.build(), fileEntityFactory.build(), fileEntityFactory.build()]);
 					em.clear();
 
-					const results = await repo.findByPermissionRefId(new ObjectId().toHexString());
+					const results = await repo.findByPermissionRefIdOrCreatorId(new ObjectId().toHexString());
 
 					expect(results).toHaveLength(0);
 				});
@@ -407,7 +407,7 @@ describe(FilesRepo.name, () => {
 				it('should return an empty array', async () => {
 					const testPermissionRefId = new ObjectId().toHexString();
 
-					const results = await repo.findByPermissionRefId(testPermissionRefId);
+					const results = await repo.findByPermissionRefIdOrCreatorId(testPermissionRefId);
 
 					expect(results).toHaveLength(0);
 				});
@@ -471,7 +471,7 @@ describe(FilesRepo.name, () => {
 					expect.arrayContaining([filePermissionEntityFactory.build({ refId: mainUserId })])
 				);
 
-				otherUserSharedFile.removePermissionsByRefId(mainUserId);
+				otherUserSharedFile.removePermissionsByRefIdIfMatch(mainUserId);
 
 				await repo.save(otherUserSharedFile);
 
