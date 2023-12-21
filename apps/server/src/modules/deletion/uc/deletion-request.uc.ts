@@ -1,7 +1,7 @@
 import { AccountService } from '@modules/account/services';
 import { ClassService } from '@modules/class';
 import { FilesService } from '@modules/files/service';
-import { CourseGroupService, CourseService } from '@modules/learnroom/service';
+import { CourseGroupService, CourseService, DashboardService } from '@modules/learnroom';
 import { LessonService } from '@modules/lesson/service';
 import { PseudonymService } from '@modules/pseudonym';
 import { RegistrationPinService } from '@modules/registration-pin';
@@ -36,7 +36,8 @@ export class DeletionRequestUc {
 		private readonly rocketChatUserService: RocketChatUserService,
 		private readonly rocketChatService: RocketChatService,
 		private readonly logger: LegacyLogger,
-		private readonly registrationPinService: RegistrationPinService
+		private readonly registrationPinService: RegistrationPinService,
+		private readonly dashboardService: DashboardService
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
 	}
@@ -105,6 +106,7 @@ export class DeletionRequestUc {
 				this.removeUser(deletionRequest),
 				this.removeUserFromRocketChat(deletionRequest),
 				this.removeUserRegistrationPin(deletionRequest),
+				this.removeUsersDashboard(deletionRequest),
 			]);
 			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
 		} catch (error) {
@@ -195,6 +197,19 @@ export class DeletionRequestUc {
 			DeletionOperationModel.UPDATE,
 			courseUpdated,
 			0
+		);
+	}
+
+	private async removeUsersDashboard(deletionRequest: DeletionRequest) {
+		this.logger.debug({ action: 'removeUsersDashboard', deletionRequest });
+
+		const dashboardDeleted: number = await this.dashboardService.deleteDashboardByUserId(deletionRequest.targetRefId);
+		await this.logDeletion(
+			deletionRequest,
+			DeletionDomainModel.DASHBOARD,
+			DeletionOperationModel.DELETE,
+			0,
+			dashboardDeleted
 		);
 	}
 
