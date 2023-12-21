@@ -56,29 +56,29 @@ spec:
             name: api-secret
         - secretRef:
             name: api-h5p-editor-secret
-        command: ['npm', 'run', 'nest:start:h5p:prod']
-        readinessProbe:
-          httpGet:
-            path: api/v3/docs
-            port: 4448
-          timeoutSeconds: 4
-          failureThreshold: 3
-          periodSeconds: 5
-        # liveless if unsatisfactory reply
-        livenessProbe:
-          httpGet:
-            path: api/v3/docs
-            port: 4448
-          timeoutSeconds: 4
-          failureThreshold: 3
-          periodSeconds: 15
-        startupProbe:
-          httpGet:
-            path: api/v3/docs
-            port: 4448
-          timeoutSeconds: 4
-          failureThreshold:  36
-          periodSeconds: 5
+        command: ['npm', 'run', 'nest:start:h5p:dev']
+#        readinessProbe:
+#          httpGet:
+#            path: api/v3/docs
+#            port: 4448
+#          timeoutSeconds: 4
+#          failureThreshold: 3
+#          periodSeconds: 5
+#        # liveless if unsatisfactory reply
+#        livenessProbe:
+#          httpGet:
+#            path: api/v3/docs
+#            port: 4448
+#          timeoutSeconds: 4
+#          failureThreshold: 3
+#          periodSeconds: 15
+#        startupProbe:
+#          httpGet:
+#            path: api/v3/docs
+#            port: 4448
+#          timeoutSeconds: 4
+#          failureThreshold:  36
+#          periodSeconds: 5
         resources:
           limits:
             cpu: {{ API_H5P_EDITOR_CPU_LIMITS|default("2000m", true) }}

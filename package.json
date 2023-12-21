@@ -75,6 +75,7 @@
 		"nest:start:fwu-learning-contents:prod": "node dist/apps/server/apps/fwu-learning-contents.app",
 		"nest:start:h5p": "nest start h5p-editor",
 		"nest:start:h5p:dev": "nest start h5p-editor --debug --watch",
+		"nest:start:h5p:debug": "nest start h5p-editor --exec 'node --inspect-brk' --watch",
 		"nest:start:h5p:prod": "node dist/apps/server/apps/h5p-editor.app",
 		"nest:start:h5p:library-management": "nest start h5p-library-management",
 		"nest:start:h5p:library-management:dev": "nest start h5p-library-management --debug --watch",
