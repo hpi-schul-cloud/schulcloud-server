@@ -6,10 +6,10 @@ import { LegacySchoolModule } from '@modules/legacy-school';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
 import { LoggerModule } from '@src/core/logger';
+import { SchoolModule } from '@modules/school';
 import { GroupController } from './controller';
 import { GroupModule } from './group.module';
 import { GroupUc } from './uc';
-import { SchoolModule } from '../school';
 
 @Module({
 	imports: [
