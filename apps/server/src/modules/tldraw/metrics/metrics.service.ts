@@ -18,10 +18,6 @@ export class MetricsService {
 			help: 'Number of active boards per pod',
 		});
 
-		register.clear();
-		register.setDefaultLabels({
-			app: 'tldraw-app',
-		});
 		register.registerMetric(this.numberOfUsersOnServerCounter);
 		register.registerMetric(this.numberOfBoardsOnServerCounter);
 	}
