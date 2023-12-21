@@ -1131,13 +1131,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/GroupApiModule.html" data-type="entity-link" >GroupApiModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-GroupApiModule-80c59a4bb7fe55b22fbe68011151e8bada3146c61b593a63f0d31b446a3fa6683be51b237d56f88b3bf5a71bdf3d82401983e11db06c8fb81eebb47b2645b0f3"' : 'data-bs-target="#xs-controllers-links-module-GroupApiModule-80c59a4bb7fe55b22fbe68011151e8bada3146c61b593a63f0d31b446a3fa6683be51b237d56f88b3bf5a71bdf3d82401983e11db06c8fb81eebb47b2645b0f3"' }>
+                                            'data-bs-target="#controllers-links-module-GroupApiModule-efbcd5dac078a94c17b7b0e90dd993fb9e9cc3b84178dceb8c6be9e0a1abbae1e45942205649eb6f6b4ffeb18deda1e5f3b78a5f74245653dfc6a8b5bd4a5fa0"' : 'data-bs-target="#xs-controllers-links-module-GroupApiModule-efbcd5dac078a94c17b7b0e90dd993fb9e9cc3b84178dceb8c6be9e0a1abbae1e45942205649eb6f6b4ffeb18deda1e5f3b78a5f74245653dfc6a8b5bd4a5fa0"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-GroupApiModule-80c59a4bb7fe55b22fbe68011151e8bada3146c61b593a63f0d31b446a3fa6683be51b237d56f88b3bf5a71bdf3d82401983e11db06c8fb81eebb47b2645b0f3"' :
-                                            'id="xs-controllers-links-module-GroupApiModule-80c59a4bb7fe55b22fbe68011151e8bada3146c61b593a63f0d31b446a3fa6683be51b237d56f88b3bf5a71bdf3d82401983e11db06c8fb81eebb47b2645b0f3"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-GroupApiModule-efbcd5dac078a94c17b7b0e90dd993fb9e9cc3b84178dceb8c6be9e0a1abbae1e45942205649eb6f6b4ffeb18deda1e5f3b78a5f74245653dfc6a8b5bd4a5fa0"' :
+                                            'id="xs-controllers-links-module-GroupApiModule-efbcd5dac078a94c17b7b0e90dd993fb9e9cc3b84178dceb8c6be9e0a1abbae1e45942205649eb6f6b4ffeb18deda1e5f3b78a5f74245653dfc6a8b5bd4a5fa0"' }>
                                             <li class="link">
                                                 <a href="controllers/GroupController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >GroupController</a>
                                             </li>
@@ -1145,13 +1145,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-GroupApiModule-80c59a4bb7fe55b22fbe68011151e8bada3146c61b593a63f0d31b446a3fa6683be51b237d56f88b3bf5a71bdf3d82401983e11db06c8fb81eebb47b2645b0f3"' : 'data-bs-target="#xs-injectables-links-module-GroupApiModule-80c59a4bb7fe55b22fbe68011151e8bada3146c61b593a63f0d31b446a3fa6683be51b237d56f88b3bf5a71bdf3d82401983e11db06c8fb81eebb47b2645b0f3"' }>
+                                        'data-bs-target="#injectables-links-module-GroupApiModule-efbcd5dac078a94c17b7b0e90dd993fb9e9cc3b84178dceb8c6be9e0a1abbae1e45942205649eb6f6b4ffeb18deda1e5f3b78a5f74245653dfc6a8b5bd4a5fa0"' : 'data-bs-target="#xs-injectables-links-module-GroupApiModule-efbcd5dac078a94c17b7b0e90dd993fb9e9cc3b84178dceb8c6be9e0a1abbae1e45942205649eb6f6b4ffeb18deda1e5f3b78a5f74245653dfc6a8b5bd4a5fa0"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-GroupApiModule-80c59a4bb7fe55b22fbe68011151e8bada3146c61b593a63f0d31b446a3fa6683be51b237d56f88b3bf5a71bdf3d82401983e11db06c8fb81eebb47b2645b0f3"' :
-                                        'id="xs-injectables-links-module-GroupApiModule-80c59a4bb7fe55b22fbe68011151e8bada3146c61b593a63f0d31b446a3fa6683be51b237d56f88b3bf5a71bdf3d82401983e11db06c8fb81eebb47b2645b0f3"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-GroupApiModule-efbcd5dac078a94c17b7b0e90dd993fb9e9cc3b84178dceb8c6be9e0a1abbae1e45942205649eb6f6b4ffeb18deda1e5f3b78a5f74245653dfc6a8b5bd4a5fa0"' :
+                                        'id="xs-injectables-links-module-GroupApiModule-efbcd5dac078a94c17b7b0e90dd993fb9e9cc3b84178dceb8c6be9e0a1abbae1e45942205649eb6f6b4ffeb18deda1e5f3b78a5f74245653dfc6a8b5bd4a5fa0"' }>
                                         <li class="link">
                                             <a href="injectables/GroupUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >GroupUc</a>
                                         </li>
@@ -3528,6 +3528,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/Class.html" data-type="entity-link" >Class</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ClassCallerParams.html" data-type="entity-link" >ClassCallerParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ClassEntity.html" data-type="entity-link" >ClassEntity</a>

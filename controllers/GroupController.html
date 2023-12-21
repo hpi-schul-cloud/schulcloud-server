@@ -205,7 +205,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findClasses(pagination: <a href="../classes/GroupPaginationParams.html" target="_self">GroupPaginationParams</a>, sortingQuery: <a href="../classes/ClassSortParams.html" target="_self">ClassSortParams</a>, filterParams: <a href="../classes/ClassFilterParams.html" target="_self">ClassFilterParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                    <code>findClasses(pagination: <a href="../classes/GroupPaginationParams.html" target="_self">GroupPaginationParams</a>, sortingQuery: <a href="../classes/ClassSortParams.html" target="_self">ClassSortParams</a>, filterParams: <a href="../classes/ClassFilterParams.html" target="_self">ClassFilterParams</a>, callerParams: <a href="../classes/ClassCallerParams.html" target="_self">ClassCallerParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
                 </td>
             </tr>
 
@@ -219,8 +219,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">apps/server/src/modules/group/controller/group.controller.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="30"
+                                    class="link-to-prism">apps/server/src/modules/group/controller/group.controller.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -268,6 +268,18 @@
                                                 <td>filterParams</td>
                                             <td>
                                                             <code><a href="../classes/ClassFilterParams.html" target="_self" >ClassFilterParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>callerParams</td>
+                                            <td>
+                                                            <code><a href="../classes/ClassCallerParams.html" target="_self" >ClassCallerParams</a></code>
                                             </td>
 
                                             <td>
@@ -337,8 +349,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="59"
-                                    class="link-to-prism">apps/server/src/modules/group/controller/group.controller.ts:59</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/group/controller/group.controller.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -414,6 +426,7 @@ import {
 	GroupIdParams,
 	GroupResponse,
 	GroupPaginationParams,
+	ClassCallerParams,
 } from &#x27;./dto&#x27;;
 import { GroupResponseMapper } from &#x27;./mapper&#x27;;
 
@@ -432,12 +445,14 @@ export class GroupController {
 		@Query() pagination: GroupPaginationParams,
 		@Query() sortingQuery: ClassSortParams,
 		@Query() filterParams: ClassFilterParams,
+		@Query() callerParams: ClassCallerParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;ClassInfoSearchListResponse&gt; {
 		const board: Page&lt;ClassInfoDto&gt; &#x3D; await this.groupUc.findAllClasses(
 			currentUser.userId,
 			currentUser.schoolId,
 			filterParams.type,
+			callerParams.calledFrom,
 			pagination.skip,
 			pagination.limit,
 			sortingQuery.sortBy,

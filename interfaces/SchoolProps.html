@@ -1100,6 +1100,12 @@ export class School extends DomainObject&lt;SchoolProps&gt; {
 		this.props.features.delete(feature);
 	}
 
+	public getPermissions(): SchoolPermissions | undefined {
+		const { permissions } &#x3D; this.props;
+
+		return permissions;
+	}
+
 	public isInMaintenance(): boolean {
 		const result &#x3D; this.props.inMaintenanceSince ? this.props.inMaintenanceSince &lt;&#x3D; new Date() : false;
 

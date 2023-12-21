@@ -174,6 +174,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
+                                <a href="#getPermissions" >getPermissions</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#isEligibleForExternalInvite" >isEligibleForExternalInvite</a>
                             </li>
                             <li>
@@ -324,6 +328,45 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getPermissions"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getPermissions</b></span>
+                        <a href="#getPermissions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getPermissions()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/do/school.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/SchoolPermissions.html" target="_self" >SchoolPermissions | undefined</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="isEligibleForExternalInvite"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -342,8 +385,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">apps/server/src/modules/school/domain/do/school.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/do/school.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -411,8 +454,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/school/domain/do/school.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/do/school.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -450,8 +493,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/school/domain/do/school.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/do/school.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -605,6 +648,12 @@ export class School extends DomainObject&lt;SchoolProps&gt; {
 
 	public removeFeature(feature: SchoolFeature): void {
 		this.props.features.delete(feature);
+	}
+
+	public getPermissions(): SchoolPermissions | undefined {
+		const { permissions } &#x3D; this.props;
+
+		return permissions;
 	}
 
 	public isInMaintenance(): boolean {

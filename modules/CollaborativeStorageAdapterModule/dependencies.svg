@@ -24,143 +24,143 @@
 <title>cluster_CollaborativeStorageAdapterModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 1580,-268 1580,-70 8,-70"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_CollaborativeStorageAdapterModule_imports</title>
-<polygon fill="none" stroke="black" points="1106,-78 1106,-130 1572,-130 1572,-78 1106,-78"/>
+<g id="clust6" class="cluster">
+<title>cluster_CollaborativeStorageAdapterModule_providers</title>
+<polygon fill="none" stroke="black" points="490,-78 490,-130 1572,-130 1572,-78 490,-78"/>
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_CollaborativeStorageAdapterModule_exports</title>
-<polygon fill="none" stroke="black" points="866,-208 866,-260 1066,-260 1066,-208 866,-208"/>
+<polygon fill="none" stroke="black" points="481,-208 481,-260 681,-260 681,-208 481,-208"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_CollaborativeStorageAdapterModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 1098,-130 1098,-78 16,-78"/>
+<g id="clust3" class="cluster">
+<title>cluster_CollaborativeStorageAdapterModule_imports</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 482,-130 482,-78 16,-78"/>
 </g>
 <!-- LoggerModule -->
 <g id="node1" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1563.98,-122 1560.98,-126 1539.98,-126 1536.98,-122 1464.02,-122 1464.02,-86 1563.98,-86 1563.98,-122"/>
-<text text-anchor="middle" x="1514" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="473.98,-122 470.98,-126 449.98,-126 446.98,-122 374.02,-122 374.02,-86 473.98,-86 473.98,-122"/>
+<text text-anchor="middle" x="424" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- CollaborativeStorageAdapterModule -->
 <g id="node5" class="node">
 <title>CollaborativeStorageAdapterModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1077.6,-187 1074.6,-191 1053.6,-191 1050.6,-187 854.4,-187 854.4,-151 1077.6,-151 1077.6,-187"/>
-<text text-anchor="middle" x="966" y="-164.8" font-family="Times,serif" font-size="14.00">CollaborativeStorageAdapterModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="692.6,-187 689.6,-191 668.6,-191 665.6,-187 469.4,-187 469.4,-151 692.6,-151 692.6,-187"/>
+<text text-anchor="middle" x="581" y="-164.8" font-family="Times,serif" font-size="14.00">CollaborativeStorageAdapterModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;CollaborativeStorageAdapterModule -->
 <g id="edge1" class="edge">
 <title>LoggerModule&#45;&gt;CollaborativeStorageAdapterModule</title>
-<path fill="none" stroke="black" d="M1514,-122.01C1514,-144.49 1514,-180 1514,-180 1514,-180 1087.89,-180 1087.89,-180"/>
-<polygon fill="black" stroke="black" points="1087.89,-176.5 1077.89,-180 1087.89,-183.5 1087.89,-176.5"/>
+<path fill="none" stroke="black" d="M474.15,-104C481.02,-104 485.77,-104 485.77,-104 485.77,-104 485.77,-140.89 485.77,-140.89"/>
+<polygon fill="black" stroke="black" points="482.27,-140.89 485.77,-150.89 489.27,-140.89 482.27,-140.89"/>
 </g>
 <!-- PseudonymModule -->
 <g id="node2" class="node">
 <title>PseudonymModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1446.38,-122 1443.38,-126 1422.38,-126 1419.38,-122 1321.62,-122 1321.62,-86 1446.38,-86 1446.38,-122"/>
-<text text-anchor="middle" x="1384" y="-99.8" font-family="Times,serif" font-size="14.00">PseudonymModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="356.38,-122 353.38,-126 332.38,-126 329.38,-122 231.62,-122 231.62,-86 356.38,-86 356.38,-122"/>
+<text text-anchor="middle" x="294" y="-99.8" font-family="Times,serif" font-size="14.00">PseudonymModule</text>
 </g>
 <!-- PseudonymModule&#45;&gt;CollaborativeStorageAdapterModule -->
 <g id="edge2" class="edge">
 <title>PseudonymModule&#45;&gt;CollaborativeStorageAdapterModule</title>
-<path fill="none" stroke="black" d="M1384,-122.13C1384,-142.57 1384,-173 1384,-173 1384,-173 1087.74,-173 1087.74,-173"/>
-<polygon fill="black" stroke="black" points="1087.74,-169.5 1077.74,-173 1087.74,-176.5 1087.74,-169.5"/>
+<path fill="none" stroke="black" d="M294,-122.03C294,-138.4 294,-160 294,-160 294,-160 459.22,-160 459.22,-160"/>
+<polygon fill="black" stroke="black" points="459.22,-163.5 469.22,-160 459.22,-156.5 459.22,-163.5"/>
 </g>
 <!-- ToolModule -->
 <g id="node3" class="node">
 <title>ToolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1303.99,-122 1300.99,-126 1279.99,-126 1276.99,-122 1218.01,-122 1218.01,-86 1303.99,-86 1303.99,-122"/>
-<text text-anchor="middle" x="1261" y="-99.8" font-family="Times,serif" font-size="14.00">ToolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="213.99,-122 210.99,-126 189.99,-126 186.99,-122 128.01,-122 128.01,-86 213.99,-86 213.99,-122"/>
+<text text-anchor="middle" x="171" y="-99.8" font-family="Times,serif" font-size="14.00">ToolModule</text>
 </g>
 <!-- ToolModule&#45;&gt;CollaborativeStorageAdapterModule -->
 <g id="edge3" class="edge">
 <title>ToolModule&#45;&gt;CollaborativeStorageAdapterModule</title>
-<path fill="none" stroke="black" d="M1261,-122.27C1261,-140.56 1261,-166 1261,-166 1261,-166 1087.95,-166 1087.95,-166"/>
-<polygon fill="black" stroke="black" points="1087.95,-162.5 1077.95,-166 1087.95,-169.5 1087.95,-162.5"/>
+<path fill="none" stroke="black" d="M171,-122.11C171,-141.34 171,-169 171,-169 171,-169 459.24,-169 459.24,-169"/>
+<polygon fill="black" stroke="black" points="459.24,-172.5 469.24,-169 459.24,-165.5 459.24,-172.5"/>
 </g>
 <!-- UserModule -->
 <g id="node4" class="node">
 <title>UserModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1199.98,-122 1196.98,-126 1175.98,-126 1172.98,-122 1114.02,-122 1114.02,-86 1199.98,-86 1199.98,-122"/>
-<text text-anchor="middle" x="1157" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="109.98,-122 106.98,-126 85.98,-126 82.98,-122 24.02,-122 24.02,-86 109.98,-86 109.98,-122"/>
+<text text-anchor="middle" x="67" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
 </g>
 <!-- UserModule&#45;&gt;CollaborativeStorageAdapterModule -->
 <g id="edge4" class="edge">
 <title>UserModule&#45;&gt;CollaborativeStorageAdapterModule</title>
-<path fill="none" stroke="black" d="M1157,-122.01C1157,-138.05 1157,-159 1157,-159 1157,-159 1087.66,-159 1087.66,-159"/>
-<polygon fill="black" stroke="black" points="1087.66,-155.5 1077.66,-159 1087.66,-162.5 1087.66,-155.5"/>
+<path fill="none" stroke="black" d="M67,-122.29C67,-144.21 67,-178 67,-178 67,-178 459.15,-178 459.15,-178"/>
+<polygon fill="black" stroke="black" points="459.15,-181.5 469.15,-178 459.15,-174.5 459.15,-181.5"/>
 </g>
 <!-- CollaborativeStorageAdapter  -->
 <g id="node6" class="node">
 <title>CollaborativeStorageAdapter </title>
-<polygon fill="#fb8072" stroke="black" points="1057.55,-252 874.45,-252 874.45,-216 1057.55,-216 1057.55,-252"/>
-<text text-anchor="middle" x="966" y="-229.8" font-family="Times,serif" font-size="14.00">CollaborativeStorageAdapter </text>
+<polygon fill="#fb8072" stroke="black" points="672.55,-252 489.45,-252 489.45,-216 672.55,-216 672.55,-252"/>
+<text text-anchor="middle" x="581" y="-229.8" font-family="Times,serif" font-size="14.00">CollaborativeStorageAdapter </text>
 </g>
 <!-- CollaborativeStorageAdapterModule&#45;&gt;CollaborativeStorageAdapter  -->
 <g id="edge5" class="edge">
 <title>CollaborativeStorageAdapterModule&#45;&gt;CollaborativeStorageAdapter </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M966,-187.11C966,-187.11 966,-205.99 966,-205.99"/>
-<polygon fill="black" stroke="black" points="962.5,-205.99 966,-215.99 969.5,-205.99 962.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M581,-187.11C581,-187.11 581,-205.99 581,-205.99"/>
+<polygon fill="black" stroke="black" points="577.5,-205.99 581,-215.99 584.5,-205.99 577.5,-205.99"/>
 </g>
 <!-- CollaborativeStorageAdapter -->
 <g id="node7" class="node">
 <title>CollaborativeStorageAdapter</title>
-<ellipse fill="#fdb462" stroke="black" cx="966" cy="-104" rx="124.4" ry="18"/>
-<text text-anchor="middle" x="966" y="-99.8" font-family="Times,serif" font-size="14.00">CollaborativeStorageAdapter</text>
+<ellipse fill="#fdb462" stroke="black" cx="1440" cy="-104" rx="124.4" ry="18"/>
+<text text-anchor="middle" x="1440" y="-99.8" font-family="Times,serif" font-size="14.00">CollaborativeStorageAdapter</text>
 </g>
 <!-- CollaborativeStorageAdapter&#45;&gt;CollaborativeStorageAdapterModule -->
 <g id="edge6" class="edge">
 <title>CollaborativeStorageAdapter&#45;&gt;CollaborativeStorageAdapterModule</title>
-<path fill="none" stroke="black" d="M966,-122.11C966,-122.11 966,-140.99 966,-140.99"/>
-<polygon fill="black" stroke="black" points="962.5,-140.99 966,-150.99 969.5,-140.99 962.5,-140.99"/>
+<path fill="none" stroke="black" d="M1440,-122.29C1440,-144.21 1440,-178 1440,-178 1440,-178 702.86,-178 702.86,-178"/>
+<polygon fill="black" stroke="black" points="702.86,-174.5 692.86,-178 702.86,-181.5 702.86,-174.5"/>
 </g>
 <!-- CollaborativeStorageAdapterMapper -->
 <g id="node8" class="node">
 <title>CollaborativeStorageAdapterMapper</title>
-<ellipse fill="#fdb462" stroke="black" cx="670" cy="-104" rx="154.45" ry="18"/>
-<text text-anchor="middle" x="670" y="-99.8" font-family="Times,serif" font-size="14.00">CollaborativeStorageAdapterMapper</text>
+<ellipse fill="#fdb462" stroke="black" cx="1144" cy="-104" rx="154.45" ry="18"/>
+<text text-anchor="middle" x="1144" y="-99.8" font-family="Times,serif" font-size="14.00">CollaborativeStorageAdapterMapper</text>
 </g>
 <!-- CollaborativeStorageAdapterMapper&#45;&gt;CollaborativeStorageAdapterModule -->
 <g id="edge7" class="edge">
 <title>CollaborativeStorageAdapterMapper&#45;&gt;CollaborativeStorageAdapterModule</title>
-<path fill="none" stroke="black" d="M670,-122.01C670,-138.05 670,-159 670,-159 670,-159 844.1,-159 844.1,-159"/>
-<polygon fill="black" stroke="black" points="844.1,-162.5 854.1,-159 844.1,-155.5 844.1,-162.5"/>
+<path fill="none" stroke="black" d="M1144,-122.11C1144,-141.34 1144,-169 1144,-169 1144,-169 702.9,-169 702.9,-169"/>
+<polygon fill="black" stroke="black" points="702.9,-165.5 692.9,-169 702.9,-172.5 702.9,-165.5"/>
 </g>
 <!-- LtiToolRepo -->
 <g id="node9" class="node">
 <title>LtiToolRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="437" cy="-104" rx="60.85" ry="18"/>
-<text text-anchor="middle" x="437" y="-99.8" font-family="Times,serif" font-size="14.00">LtiToolRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="911" cy="-104" rx="60.85" ry="18"/>
+<text text-anchor="middle" x="911" y="-99.8" font-family="Times,serif" font-size="14.00">LtiToolRepo</text>
 </g>
 <!-- LtiToolRepo&#45;&gt;CollaborativeStorageAdapterModule -->
 <g id="edge8" class="edge">
 <title>LtiToolRepo&#45;&gt;CollaborativeStorageAdapterModule</title>
-<path fill="none" stroke="black" d="M437,-122.27C437,-140.56 437,-166 437,-166 437,-166 844.14,-166 844.14,-166"/>
-<polygon fill="black" stroke="black" points="844.14,-169.5 854.14,-166 844.14,-162.5 844.14,-169.5"/>
+<path fill="none" stroke="black" d="M911,-122.03C911,-138.4 911,-160 911,-160 911,-160 702.72,-160 702.72,-160"/>
+<polygon fill="black" stroke="black" points="702.72,-156.5 692.72,-160 702.72,-163.5 702.72,-156.5"/>
 </g>
 <!-- NextcloudClient -->
 <g id="node10" class="node">
 <title>NextcloudClient</title>
-<ellipse fill="#fdb462" stroke="black" cx="283" cy="-104" rx="74.74" ry="18"/>
-<text text-anchor="middle" x="283" y="-99.8" font-family="Times,serif" font-size="14.00">NextcloudClient</text>
+<ellipse fill="#fdb462" stroke="black" cx="757" cy="-104" rx="74.74" ry="18"/>
+<text text-anchor="middle" x="757" y="-99.8" font-family="Times,serif" font-size="14.00">NextcloudClient</text>
 </g>
 <!-- NextcloudClient&#45;&gt;CollaborativeStorageAdapterModule -->
 <g id="edge9" class="edge">
 <title>NextcloudClient&#45;&gt;CollaborativeStorageAdapterModule</title>
-<path fill="none" stroke="black" d="M283,-122.13C283,-142.57 283,-173 283,-173 283,-173 844.36,-173 844.36,-173"/>
-<polygon fill="black" stroke="black" points="844.36,-176.5 854.36,-173 844.36,-169.5 844.36,-176.5"/>
+<path fill="none" stroke="black" d="M687.47,-110.96C687.47,-110.96 687.47,-140.81 687.47,-140.81"/>
+<polygon fill="black" stroke="black" points="683.97,-140.81 687.47,-150.81 690.97,-140.81 683.97,-140.81"/>
 </g>
 <!-- NextcloudStrategy -->
 <g id="node11" class="node">
 <title>NextcloudStrategy</title>
-<ellipse fill="#fdb462" stroke="black" cx="107" cy="-104" rx="83.39" ry="18"/>
-<text text-anchor="middle" x="107" y="-99.8" font-family="Times,serif" font-size="14.00">NextcloudStrategy</text>
+<ellipse fill="#fdb462" stroke="black" cx="581" cy="-104" rx="83.39" ry="18"/>
+<text text-anchor="middle" x="581" y="-99.8" font-family="Times,serif" font-size="14.00">NextcloudStrategy</text>
 </g>
 <!-- NextcloudStrategy&#45;&gt;CollaborativeStorageAdapterModule -->
 <g id="edge10" class="edge">
 <title>NextcloudStrategy&#45;&gt;CollaborativeStorageAdapterModule</title>
-<path fill="none" stroke="black" d="M107,-122.01C107,-144.49 107,-180 107,-180 107,-180 844.14,-180 844.14,-180"/>
-<polygon fill="black" stroke="black" points="844.14,-183.5 854.14,-180 844.14,-176.5 844.14,-183.5"/>
+<path fill="none" stroke="black" d="M581,-122.11C581,-122.11 581,-140.99 581,-140.99"/>
+<polygon fill="black" stroke="black" points="577.5,-140.99 581,-150.99 584.5,-140.99 577.5,-140.99"/>
 </g>
 </g>
 </svg>
