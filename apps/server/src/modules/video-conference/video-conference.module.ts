@@ -16,6 +16,7 @@ import { VideoConferenceDeprecatedController } from './controller';
 import VideoConferenceConfiguration from './video-conference-config';
 import { VideoConferenceSettings } from './interface';
 import { LearnroomModule } from '../learnroom';
+import { CourseDeletedHandler, TeamEventDeletedHandler } from './event';
 
 @Module({
 	imports: [
@@ -46,9 +47,11 @@ import { LearnroomModule } from '../learnroom';
 		VideoConferenceService,
 		// TODO: N21-885 remove VideoConferenceDeprecatedUc from providers
 		VideoConferenceDeprecatedUc,
+		CourseDeletedHandler,
+		TeamEventDeletedHandler,
 	],
 	// TODO: N21-885 remove VideoConferenceDeprecatedController from exports
 	controllers: [VideoConferenceDeprecatedController],
-	exports: [BBBService, VideoConferenceService],
+	exports: [BBBService, VideoConferenceService, CourseDeletedHandler, TeamEventDeletedHandler],
 })
 export class VideoConferenceModule {}

@@ -229,6 +229,16 @@ export class VideoConferenceService {
 		return vcDo;
 	}
 
+	async deleteByCourse(courseId: EntityId): Promise<void> {
+		console.log('video conference deleteByCourse courseId:', courseId);
+		await Promise.resolve();
+	}
+
+	async deleteByTeamEvent(eventId: string): Promise<void> {
+		console.log('video conference deleteByCourse eventId:', eventId);
+		await Promise.resolve();
+	}
+
 	private async saveVideoConference(videoConference: VideoConferenceDO): Promise<VideoConferenceDO> {
 		return this.videoConferenceRepo.save(videoConference);
 	}

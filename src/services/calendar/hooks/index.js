@@ -37,6 +37,14 @@ const persistCourseTimesEvent = (hook) => {
 	).then(() => Promise.resolve(hook));
 };
 
+const triggerDeletedEvent = async (hook) => {
+	const { app } = hook;
+
+	app
+		.service('nest-event-publisher-service')
+		.publishFeathersEvent('teamEvent:deleted', { eventId: hook.result.eventId });
+};
+
 exports.before = {
 	all: [authenticate('jwt'), globalHooks.mapPayload],
 	find: [globalHooks.hasPermission('CALENDAR_VIEW')],
@@ -54,5 +62,5 @@ exports.after = {
 	create: [persistCourseTimesEvent],
 	update: [],
 	patch: [],
-	remove: [],
+	remove: [triggerDeletedEvent],
 };

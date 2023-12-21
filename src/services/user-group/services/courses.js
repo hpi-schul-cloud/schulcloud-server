@@ -27,6 +27,7 @@ const {
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
 	removeSubstitutionDuplicates,
+	triggerDeletedEvent,
 } = require('../hooks/courses');
 
 const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
@@ -134,7 +135,7 @@ const courseHooks = {
 		create: [addWholeClassToCourse],
 		update: [],
 		patch: [addWholeClassToCourse],
-		remove: [],
+		remove: [triggerDeletedEvent],
 	},
 };
 

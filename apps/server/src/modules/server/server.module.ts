@@ -39,8 +39,10 @@ import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import { RedisClient } from 'redis';
+import { CqrsModule } from '@nestjs/cqrs';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
+import { EventPublisherService } from './event-publisher.service';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -132,6 +134,7 @@ const setupSessions = (consumer: MiddlewareConsumer, redisClient: RedisClient | 
 	imports: [
 		RabbitMQWrapperModule,
 		...serverModules,
+		CqrsModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
@@ -146,6 +149,7 @@ const setupSessions = (consumer: MiddlewareConsumer, redisClient: RedisClient | 
 		LoggerModule,
 		RedisModule,
 	],
+	providers: [EventPublisherService],
 	controllers: [ServerController],
 })
 export class ServerModule implements NestModule {

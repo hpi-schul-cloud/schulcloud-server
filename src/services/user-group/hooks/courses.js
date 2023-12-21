@@ -12,6 +12,15 @@ const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCur
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
 
 const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
+
+const triggerDeletedEvent = async (hook) => {
+	const { app } = hook;
+
+	app
+		.service('nest-event-publisher-service')
+		.publishFeathersEvent('course:deleted', { courseId: hook.result._id.toHexString() });
+};
+
 /**
  * adds all students to a course when a class is added to the course
  * @param hook - contains created/patched object and request body
@@ -189,4 +198,5 @@ module.exports = {
 	courseInviteHook,
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
+	triggerDeletedEvent,
 };

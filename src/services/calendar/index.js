@@ -244,7 +244,7 @@ class Service {
 
 		return request(options).then((res) => {
 			// calendar returns nothing if event was successfully deleted
-			if (!res) return { message: 'Successful deleted event' };
+			if (!res) return { message: 'Successful deleted event', eventId: id };
 			return res;
 		});
 	}

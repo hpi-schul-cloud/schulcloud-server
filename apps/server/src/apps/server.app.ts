@@ -23,6 +23,7 @@ import { join } from 'path';
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
 
+import { EventPublisherService } from '@src/modules/server/event-publisher.service';
 import { AppStartLoggable } from './helpers/app-start-loggable';
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
@@ -90,6 +91,8 @@ async function bootstrap() {
 	feathersExpress.services['nest-system-rule'] = nestApp.get(SystemRule);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-orm'] = orm;
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+	feathersExpress.services['nest-event-publisher-service'] = nestApp.get(EventPublisherService);
 
 	// mount instances
 	const rootExpress = express();
