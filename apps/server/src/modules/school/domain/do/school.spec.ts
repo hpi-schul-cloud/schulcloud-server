@@ -42,6 +42,45 @@ describe('School', () => {
 			expect(school.getProps().features).not.toContain(feature);
 		});
 	});
+	// TODO N21-1623 add test for getPermissions
+	describe('getPermissions', () => {
+		describe('when permissions exist', () => {
+			const setup = () => {
+				const permissions = { teacher: { STUDENT_LIST: true } };
+				const school = schoolFactory.build({
+					permissions,
+				});
+
+				return { school, permissions };
+			};
+
+			it('should return permissions', () => {
+				const { school, permissions } = setup();
+
+				const result = school.getPermissions();
+
+				expect(result).toEqual(permissions);
+			});
+		});
+
+		describe('when permissions are undefined', () => {
+			const setup = () => {
+				const school = schoolFactory.build({
+					permissions: undefined,
+				});
+
+				return { school };
+			};
+
+			it('should return undefined', () => {
+				const { school } = setup();
+
+				const result = school.getPermissions();
+
+				expect(result).toBeUndefined();
+			});
+		});
+	});
 
 	describe('isInMaintenance', () => {
 		describe('when inMaintenanceSince is in the past', () => {
