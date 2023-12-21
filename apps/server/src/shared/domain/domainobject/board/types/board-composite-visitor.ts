@@ -1,3 +1,4 @@
+import { DrawingElement } from '../drawing-element.do';
 import type { Card } from '../card.do';
 import type { ColumnBoard } from '../column-board.do';
 import type { Column } from '../column.do';
@@ -15,6 +16,7 @@ export interface BoardCompositeVisitor {
 	visitFileElement(fileElement: FileElement): void;
 	visitLinkElement(linkElement: LinkElement): void;
 	visitRichTextElement(richTextElement: RichTextElement): void;
+	visitDrawingElement(drawingElement: DrawingElement): void;
 	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void;
 	visitSubmissionItem(submissionItem: SubmissionItem): void;
 	visitExternalToolElement(externalToolElement: ExternalToolElement): void;
@@ -27,6 +29,7 @@ export interface BoardCompositeVisitorAsync {
 	visitFileElementAsync(fileElement: FileElement): Promise<void>;
 	visitLinkElementAsync(linkElement: LinkElement): Promise<void>;
 	visitRichTextElementAsync(richTextElement: RichTextElement): Promise<void>;
+	visitDrawingElementAsync(drawingElement: DrawingElement): Promise<void>;
 	visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void>;
 	visitSubmissionItemAsync(submissionItem: SubmissionItem): Promise<void>;
 	visitExternalToolElementAsync(externalToolElement: ExternalToolElement): Promise<void>;

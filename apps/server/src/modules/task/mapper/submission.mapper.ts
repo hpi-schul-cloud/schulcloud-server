@@ -1,4 +1,4 @@
-import { Submission } from '@shared/domain';
+import { Submission } from '@shared/domain/entity';
 import { SubmissionStatusResponse } from '../controller/dto';
 
 export class SubmissionMapper {

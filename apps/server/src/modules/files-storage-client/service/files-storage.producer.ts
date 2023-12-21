@@ -10,7 +10,7 @@ import {
 } from '@infra/rabbitmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageClientConfig } from '../interfaces';
 
@@ -48,6 +48,16 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		const response = await this.request<FileDO[]>(FilesStorageEvents.DELETE_FILES_OF_PARENT, payload);
 
 		this.logger.debug({ action: 'deleteFilesOfParent:finished', payload });
+
+		return response;
+	}
+
+	async removeCreatorIdFromFileRecords(payload: EntityId): Promise<FileDO[]> {
+		this.logger.debug({ action: 'removeCreatorIdFromFileRecords:started', payload });
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+		const response = await this.request<FileDO[]>(FilesStorageEvents.REMOVE_CREATORID_OF_FILES, payload);
+
+		this.logger.debug({ action: 'removeCreatorIdFromFileRecords:finished', payload });
 
 		return response;
 	}

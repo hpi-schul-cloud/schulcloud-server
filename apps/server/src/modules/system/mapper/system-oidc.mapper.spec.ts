@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SystemEntity } from '@shared/domain';
-import { systemFactory } from '@shared/testing';
-import { SystemOidcMapper } from '@modules/system/mapper/system-oidc.mapper';
+import { SystemEntity } from '@shared/domain/entity';
+import { systemEntityFactory } from '@shared/testing';
+import { SystemOidcMapper } from './system-oidc.mapper';
 
 describe('SystemOidcMapper', () => {
 	let module: TestingModule;
@@ -18,7 +18,7 @@ describe('SystemOidcMapper', () => {
 
 	describe('mapFromEntityToDto', () => {
 		it('should map all fields', () => {
-			const systemEntity = systemFactory.withOauthConfig().withOidcConfig().build();
+			const systemEntity = systemEntityFactory.withOauthConfig().withOidcConfig().build();
 
 			const result = SystemOidcMapper.mapFromEntityToDto(systemEntity);
 			expect(result).toBeDefined();
@@ -34,7 +34,7 @@ describe('SystemOidcMapper', () => {
 			expect(result?.defaultScopes).toEqual(systemEntity.oidcConfig?.defaultScopes);
 		});
 		it('should return undefined if parent system has no oidc config', () => {
-			const systemEntity = systemFactory.withOauthConfig().build();
+			const systemEntity = systemEntityFactory.withOauthConfig().build();
 			const result = SystemOidcMapper.mapFromEntityToDto(systemEntity);
 			expect(result).toBeUndefined();
 		});
@@ -43,8 +43,8 @@ describe('SystemOidcMapper', () => {
 	describe('mapFromEntitiesToDtos', () => {
 		it('should map all given entities', () => {
 			const systemEntities: SystemEntity[] = [
-				systemFactory.withOidcConfig().build(),
-				systemFactory.withOidcConfig().build(),
+				systemEntityFactory.withOidcConfig().build(),
+				systemEntityFactory.withOidcConfig().build(),
 			];
 
 			const result = SystemOidcMapper.mapFromEntitiesToDtos(systemEntities);
@@ -53,8 +53,8 @@ describe('SystemOidcMapper', () => {
 		});
 
 		it('should map oidc config only config if exists', () => {
-			const systemEntity = systemFactory.withOidcConfig().build();
-			const systemEntities: SystemEntity[] = [systemEntity, systemFactory.withOauthConfig().build()];
+			const systemEntity = systemEntityFactory.withOidcConfig().build();
+			const systemEntities: SystemEntity[] = [systemEntity, systemEntityFactory.withOauthConfig().build()];
 
 			const results = SystemOidcMapper.mapFromEntitiesToDtos(systemEntities);
 

@@ -1,6 +1,3 @@
-import { Injectable } from '@nestjs/common';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Course, EntityId, Pseudonym, RoleName, RoleReference, UserDO } from '@shared/domain';
 import { CourseService } from '@modules/learnroom/service';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
@@ -10,6 +7,12 @@ import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { UserService } from '@modules/user';
+import { Injectable } from '@nestjs/common';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { Pseudonym, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { Course } from '@shared/domain/entity';
+import { RoleName } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { PseudonymService } from './pseudonym.service';
 
 interface UserMetdata {
@@ -154,7 +157,7 @@ export class FeathersRosterService {
 		const loadedPseudonym: Pseudonym | null = await this.pseudonymService.findPseudonymByPseudonym(pseudonym);
 
 		if (!loadedPseudonym) {
-			throw new NotFoundLoggableException(Pseudonym.name, 'pseudonym', pseudonym);
+			throw new NotFoundLoggableException(Pseudonym.name, { pseudonym });
 		}
 
 		return loadedPseudonym;
@@ -202,7 +205,7 @@ export class FeathersRosterService {
 		);
 
 		if (!externalTool || !externalTool.id) {
-			throw new NotFoundLoggableException(ExternalTool.name, 'config.clientId', oauth2ClientId);
+			throw new NotFoundLoggableException(ExternalTool.name, { 'config.clientId': oauth2ClientId });
 		}
 
 		return externalTool;
@@ -215,7 +218,7 @@ export class FeathersRosterService {
 		});
 
 		if (schoolExternalTools.length === 0) {
-			throw new NotFoundLoggableException(SchoolExternalTool.name, 'toolId', toolId);
+			throw new NotFoundLoggableException(SchoolExternalTool.name, { toolId });
 		}
 	}
 
@@ -225,7 +228,7 @@ export class FeathersRosterService {
 		);
 
 		if (contextExternalTools.length === 0) {
-			throw new NotFoundLoggableException(ContextExternalTool.name, 'contextRef.id', courseId);
+			throw new NotFoundLoggableException(ContextExternalTool.name, { 'contextRef.id': courseId });
 		}
 	}
 

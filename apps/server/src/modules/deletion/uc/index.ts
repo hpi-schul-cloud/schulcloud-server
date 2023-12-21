@@ -1,2 +1,2 @@
-export * from './interface';
-export * from './batch-deletion.uc';
+export * from '../builder';
+export * from './deletion-request.uc';

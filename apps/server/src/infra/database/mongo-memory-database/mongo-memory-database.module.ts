@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleAsyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
-import { ALL_ENTITIES } from '@shared/domain';
+import { ALL_ENTITIES } from '@shared/domain/entity';
 import _ from 'lodash';
 import { MongoDatabaseModuleOptions } from './types';
 

@@ -1,6 +1,9 @@
 import { EntityDictionary } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Counted, EntityId, LessonEntity, SortOrder } from '@shared/domain';
+import { LessonEntity } from '@shared/domain/entity';
+import { SortOrder } from '@shared/domain/interface';
+import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo';
 import { LessonScope } from './lesson-scope';
 
@@ -44,7 +47,7 @@ export class LessonRepo extends BaseRepo<LessonEntity> {
 				$match: {
 					contents: {
 						$elemMatch: {
-							user: userId,
+							user: new ObjectId(userId),
 						},
 					},
 				},

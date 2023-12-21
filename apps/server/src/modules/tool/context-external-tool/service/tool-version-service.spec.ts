@@ -1,8 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
-import { ToolConfigurationStatus } from '../../common/enum';
+import {
+	contextExternalToolFactory,
+	externalToolFactory,
+	schoolExternalToolFactory,
+	toolConfigurationStatusFactory,
+} from '@shared/testing';
+import { ContextExternalToolConfigurationStatus } from '../../common/domain';
 import { CommonToolService } from '../../common/service';
 import { SchoolExternalToolValidationService } from '../../school-external-tool/service';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
@@ -116,13 +121,18 @@ describe('ToolVersionService', () => {
 			it('should return latest tool status', async () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const status: ToolConfigurationStatus = await service.determineToolConfigurationStatus(
+				const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
 				);
 
-				expect(status).toEqual(ToolConfigurationStatus.LATEST);
+				expect(status).toEqual(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeSchool: false,
+					})
+				);
 			});
 
 			it('should call schoolExternalToolValidationService', async () => {
@@ -142,7 +152,63 @@ describe('ToolVersionService', () => {
 			});
 		});
 
-		describe('when FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED is true and validation throws an error', () => {
+		describe('when FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED is true and validation of SchoolExternalTool throws an error', () => {
+			const setup = () => {
+				const externalTool = externalToolFactory.buildWithId();
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id as string,
+				});
+				const contextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.buildWithId();
+
+				toolFeatures.toolStatusWithoutVersions = true;
+
+				schoolExternalToolValidationService.validate.mockRejectedValueOnce(ApiValidationError);
+				contextExternalToolValidationService.validate.mockResolvedValue();
+
+				return {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				};
+			};
+
+			it('should return outdated tool status', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool
+				);
+
+				expect(status).toEqual(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeSchool: true,
+					})
+				);
+			});
+
+			it('should call schoolExternalToolValidationService', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				await service.determineToolConfigurationStatus(externalTool, schoolExternalTool, contextExternalTool);
+
+				expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
+			});
+
+			it('should call contextExternalToolValidationService', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				await service.determineToolConfigurationStatus(externalTool, schoolExternalTool, contextExternalTool);
+
+				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(contextExternalTool);
+			});
+		});
+
+		describe('when FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED is true and validation of ContextExternalTool throws an error', () => {
 			const setup = () => {
 				const externalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -167,13 +233,74 @@ describe('ToolVersionService', () => {
 			it('should return outdated tool status', async () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const status: ToolConfigurationStatus = await service.determineToolConfigurationStatus(
+				const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
 				);
 
-				expect(status).toEqual(ToolConfigurationStatus.OUTDATED);
+				expect(status).toEqual(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: true,
+						isOutdatedOnScopeSchool: false,
+					})
+				);
+			});
+
+			it('should call schoolExternalToolValidationService', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				await service.determineToolConfigurationStatus(externalTool, schoolExternalTool, contextExternalTool);
+
+				expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
+			});
+
+			it('should call contextExternalToolValidationService', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				await service.determineToolConfigurationStatus(externalTool, schoolExternalTool, contextExternalTool);
+
+				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(contextExternalTool);
+			});
+		});
+
+		describe('when FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED is true and validation of SchoolExternalTool and  ContextExternalTool throws an error', () => {
+			const setup = () => {
+				const externalTool = externalToolFactory.buildWithId();
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id as string,
+				});
+				const contextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.buildWithId();
+
+				toolFeatures.toolStatusWithoutVersions = true;
+
+				schoolExternalToolValidationService.validate.mockRejectedValueOnce(ApiValidationError);
+				contextExternalToolValidationService.validate.mockRejectedValueOnce(ApiValidationError);
+
+				return {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				};
+			};
+
+			it('should return outdated tool status', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool
+				);
+
+				expect(status).toEqual(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: true,
+						isOutdatedOnScopeSchool: true,
+					})
+				);
 			});
 
 			it('should call schoolExternalToolValidationService', async () => {

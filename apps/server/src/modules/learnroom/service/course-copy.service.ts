@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { Course, EntityId, User } from '@shared/domain';
-import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { Injectable } from '@nestjs/common';
+import { Course, User } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
+import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import { BoardCopyService } from './board-copy.service';
 import { RoomsService } from './rooms.service';
 
@@ -60,8 +61,8 @@ export class CourseCopyService {
 			name: copyName,
 			color: originalCourse.color,
 			teachers: [user],
-			startDate: user.school.schoolYear?.startDate,
-			untilDate: user.school.schoolYear?.endDate,
+			startDate: user.school.currentYear?.startDate,
+			untilDate: user.school.currentYear?.endDate,
 			copyingSince: new Date(),
 		});
 

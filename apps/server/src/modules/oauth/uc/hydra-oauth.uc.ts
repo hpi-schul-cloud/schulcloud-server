@@ -1,13 +1,12 @@
 import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { OauthConfig } from '@shared/domain';
+import { OauthConfigEntity } from '@shared/domain/entity';
 import { LegacyLogger } from '@src/core/logger';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { AuthorizationParams } from '../controller/dto';
 import { OAuthTokenDto } from '../interface';
-import { OAuthSSOError } from '../loggable';
-import { HydraSsoService } from '../service/hydra.service';
-import { OAuthService } from '../service/oauth.service';
+import { AuthCodeFailureLoggableException } from '../loggable';
+import { HydraSsoService, OAuthService } from '../service';
 
 @Injectable()
 export class HydraOauthUc {
@@ -23,12 +22,9 @@ export class HydraOauthUc {
 
 	async getOauthToken(oauthClientId: string, code?: string, error?: string): Promise<OAuthTokenDto> {
 		if (error || !code) {
-			throw new OAuthSSOError(
-				'Authorization Query Object has no authorization code or error',
-				error || 'sso_auth_code_step'
-			);
+			throw new AuthCodeFailureLoggableException(error);
 		}
-		const hydraOauthConfig: OauthConfig = await this.hydraSsoService.generateConfig(oauthClientId);
+		const hydraOauthConfig: OauthConfigEntity = await this.hydraSsoService.generateConfig(oauthClientId);
 
 		const oauthTokens: OAuthTokenDto = await this.oauthService.requestToken(
 			code,
@@ -43,8 +39,8 @@ export class HydraOauthUc {
 
 	protected validateStatus = (status: number): boolean => status === 200 || status === 302;
 
-	async requestAuthCode(userId: string, jwt: string, oauthClientId: string): Promise<AuthorizationParams> {
-		const hydraOauthConfig: OauthConfig = await this.hydraSsoService.generateConfig(oauthClientId);
+	async requestAuthCode(jwt: string, oauthClientId: string): Promise<AuthorizationParams> {
+		const hydraOauthConfig: OauthConfigEntity = await this.hydraSsoService.generateConfig(oauthClientId);
 		const axiosConfig: AxiosRequestConfig = {
 			headers: {},
 			withCredentials: true,

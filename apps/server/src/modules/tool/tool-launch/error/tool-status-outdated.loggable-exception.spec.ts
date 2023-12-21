@@ -1,3 +1,4 @@
+import { toolConfigurationStatusFactory } from '@shared/testing';
 import { ToolStatusOutdatedLoggableException } from './tool-status-outdated.loggable-exception';
 
 describe('ToolStatusOutdatedLoggableException', () => {
@@ -5,8 +6,14 @@ describe('ToolStatusOutdatedLoggableException', () => {
 		const setup = () => {
 			const toolId = 'toolId';
 			const userId = 'userId';
+			const toolConfigStatus = toolConfigurationStatusFactory.build();
 
-			const exception = new ToolStatusOutdatedLoggableException(userId, toolId);
+			const exception = new ToolStatusOutdatedLoggableException(
+				userId,
+				toolId,
+				toolConfigStatus.isOutdatedOnScopeSchool,
+				toolConfigStatus.isOutdatedOnScopeContext
+			);
 
 			return {
 				exception,
@@ -25,6 +32,8 @@ describe('ToolStatusOutdatedLoggableException', () => {
 				data: {
 					userId: 'userId',
 					toolId: 'toolId',
+					isOutdatedOnScopeSchool: false,
+					isOutdatedOnScopeContext: false,
 				},
 			});
 		});

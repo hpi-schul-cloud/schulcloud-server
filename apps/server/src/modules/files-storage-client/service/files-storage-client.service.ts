@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { CopyFileDto, FileDto } from '../dto';
 import { FileRequestInfo } from '../interfaces';
@@ -34,5 +34,11 @@ export class FilesStorageClientAdapterService {
 		const fileInfos = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
 
 		return fileInfos;
+	}
+
+	async removeCreatorIdFromFileRecords(creatorId: EntityId): Promise<number> {
+		const response = await this.fileStorageMQProducer.removeCreatorIdFromFileRecords(creatorId);
+
+		return response.length;
 	}
 }

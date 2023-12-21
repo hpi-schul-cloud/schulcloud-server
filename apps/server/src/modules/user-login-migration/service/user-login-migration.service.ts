@@ -1,9 +1,10 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { SystemDto, SystemService } from '@modules/system';
+import { LegacySystemService, SystemDto } from '@modules/system';
 import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, SchoolFeatures, SystemTypeEnum, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { EntityId, SchoolFeature, SystemTypeEnum } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import {
 	UserLoginMigrationAlreadyClosedLoggableException,
@@ -16,7 +17,7 @@ export class UserLoginMigrationService {
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo,
 		private readonly schoolService: LegacySchoolService,
-		private readonly systemService: SystemService
+		private readonly systemService: LegacySystemService
 	) {}
 
 	public async startMigration(schoolId: string): Promise<UserLoginMigrationDO> {
@@ -77,7 +78,7 @@ export class UserLoginMigrationService {
 
 		await this.schoolService.removeFeature(
 			userLoginMigration.schoolId,
-			SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION
+			SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION
 		);
 
 		const now: Date = new Date();
@@ -130,10 +131,10 @@ export class UserLoginMigrationService {
 	}
 
 	private enableOauthMigrationFeature(schoolDo: LegacySchoolDo) {
-		if (schoolDo.features && !schoolDo.features.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED)) {
-			schoolDo.features.push(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
+		if (schoolDo.features && !schoolDo.features.includes(SchoolFeature.OAUTH_PROVISIONING_ENABLED)) {
+			schoolDo.features.push(SchoolFeature.OAUTH_PROVISIONING_ENABLED);
 		} else {
-			schoolDo.features = [SchoolFeatures.OAUTH_PROVISIONING_ENABLED];
+			schoolDo.features = [SchoolFeature.OAUTH_PROVISIONING_ENABLED];
 		}
 	}
 

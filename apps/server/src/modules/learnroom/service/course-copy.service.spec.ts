@@ -1,6 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
+import { LessonCopyService } from '@modules/lesson/service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course } from '@shared/domain';
+import { Course } from '@shared/domain/entity';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import {
 	boardFactory,
@@ -10,8 +12,6 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
-import { LessonCopyService } from '@modules/lesson/service';
 import { BoardCopyService } from './board-copy.service';
 import { CourseCopyService } from './course-copy.service';
 import { RoomsService } from './rooms.service';
@@ -282,12 +282,12 @@ describe('course copy service', () => {
 			const status = await service.copyCourse({ userId: user.id, courseId: course.id });
 			const courseCopy = status.copyEntity as Course;
 
-			expect(courseCopy.startDate).toEqual(user.school.schoolYear?.startDate);
+			expect(courseCopy.startDate).toEqual(user.school.currentYear?.startDate);
 		});
 
 		it('should set start and end-date of course to undefined when school year is undefined', async () => {
 			const { course, user } = setup();
-			user.school.schoolYear = undefined;
+			user.school.currentYear = undefined;
 			const status = await service.copyCourse({ userId: user.id, courseId: course.id });
 			const courseCopy = status.copyEntity as Course;
 
@@ -300,7 +300,7 @@ describe('course copy service', () => {
 			const status = await service.copyCourse({ userId: user.id, courseId: course.id });
 			const courseCopy = status.copyEntity as Course;
 
-			expect(courseCopy.untilDate).toEqual(user.school.schoolYear?.endDate);
+			expect(courseCopy.untilDate).toEqual(user.school.currentYear?.endDate);
 		});
 
 		it('should set color of course', async () => {
@@ -363,12 +363,12 @@ describe('course copy service', () => {
 				const status = await service.copyCourse({ userId: user.id, courseId: course.id });
 				const courseCopy = status.copyEntity as Course;
 
-				expect(courseCopy.startDate).toEqual(user.school.schoolYear?.startDate);
+				expect(courseCopy.startDate).toEqual(user.school.currentYear?.startDate);
 			});
 
 			it('should set start date and until date of course to undefined when school year is undefined', async () => {
 				const { course, user } = setup();
-				user.school.schoolYear = undefined;
+				user.school.currentYear = undefined;
 				const status = await service.copyCourse({ userId: user.id, courseId: course.id });
 				const courseCopy = status.copyEntity as Course;
 
@@ -381,7 +381,7 @@ describe('course copy service', () => {
 				const status = await service.copyCourse({ userId: user.id, courseId: course.id });
 				const courseCopy = status.copyEntity as Course;
 
-				expect(courseCopy.untilDate).toEqual(user.school.schoolYear?.endDate);
+				expect(courseCopy.untilDate).toEqual(user.school.currentYear?.endDate);
 			});
 
 			it('should set color of course', async () => {

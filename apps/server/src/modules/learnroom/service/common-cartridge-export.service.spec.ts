@@ -3,7 +3,7 @@ import { CommonCartridgeExportService, CourseService } from '@modules/learnroom'
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentType, Course, LessonEntity, Task } from '@shared/domain';
+import { ComponentType, Course, LessonEntity, Task } from '@shared/domain/entity';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import AdmZip from 'adm-zip';
 import { CommonCartridgeVersion } from '../../common-cartridge';
@@ -132,6 +132,14 @@ describe('CommonCartridgeExportService', () => {
 					expect(getFileContent(archive, 'imsmanifest.xml')).toContain(`<resource identifier="${task.id}"`);
 				});
 			});
+
+			it('should add tasks of lesson to manifest file', () => {
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+				lessons[0].tasks.getItems().forEach((task) => {
+					expect(manifest).toContain(`<title>${task.name}</title>`);
+					expect(manifest).toContain(`identifier="i${task.id}" type="webcontent" intendeduse="unspecified"`);
+				});
+			});
 		});
 
 		describe('when using version 1.3', () => {
@@ -160,6 +168,14 @@ describe('CommonCartridgeExportService', () => {
 			it('should add tasks', () => {
 				tasks.forEach((task) => {
 					expect(getFileContent(archive, 'imsmanifest.xml')).toContain(`<resource identifier="${task.id}"`);
+				});
+			});
+
+			it('should add tasks of lesson to manifest file', () => {
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+				lessons[0].tasks.getItems().forEach((task) => {
+					expect(manifest).toContain(`<title>${task.name}</title>`);
+					expect(manifest).toContain(`identifier="i${task.id}" type="webcontent" intendeduse="assignment"`);
 				});
 			});
 		});

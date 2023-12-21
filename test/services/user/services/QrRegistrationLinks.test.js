@@ -167,6 +167,7 @@ describe('qrRegistrationLinks service tests', () => {
 			} catch (err) {
 				expect(err.code).to.equal(400);
 				expect(err.name).to.equal('BadRequest');
+				// TODO something changed in the logic of errors?
 				expect(err.message).to.equal('Can not generate QR registration links');
 				expect(err.errors.message).to.equal('The given role is not supported');
 			}

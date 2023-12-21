@@ -1,17 +1,24 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
-import { SystemService } from '@modules/system';
+import { LegacySystemService } from '@modules/system';
 import { SystemDto } from '@modules/system/service';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { EntityId, LegacySchoolDo, OauthConfig, SchoolFeatures, UserDO } from '@shared/domain';
+import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
+import { OauthConfigEntity } from '@shared/domain/entity';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthTokenDto } from '../interface';
-import { OAuthSSOError, SSOErrorCode, UserNotFoundAfterProvisioningLoggableException } from '../loggable';
+import {
+	AuthCodeFailureLoggableException,
+	IdTokenInvalidLoggableException,
+	OauthConfigMissingLoggableException,
+	UserNotFoundAfterProvisioningLoggableException,
+} from '../loggable';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
@@ -24,7 +31,7 @@ export class OAuthService {
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
 		private readonly logger: LegacyLogger,
 		private readonly provisioningService: ProvisioningService,
-		private readonly systemService: SystemService,
+		private readonly systemService: LegacySystemService,
 		private readonly migrationCheckService: MigrationCheckService,
 		private readonly schoolService: LegacySchoolService
 	) {
@@ -38,15 +45,12 @@ export class OAuthService {
 		errorCode?: string
 	): Promise<OAuthTokenDto> {
 		if (errorCode || !authCode) {
-			throw new OAuthSSOError(
-				'Authorization Query Object has no authorization code or error',
-				errorCode || 'sso_auth_code_step'
-			);
+			throw new AuthCodeFailureLoggableException(errorCode);
 		}
 
 		const system: SystemDto = await this.systemService.findById(systemId);
 		if (!system.oauthConfig) {
-			throw new OAuthSSOError(`Requested system ${systemId} has no oauth configured`, 'sso_internal_error');
+			throw new OauthConfigMissingLoggableException(systemId);
 		}
 		const { oauthConfig } = system;
 
@@ -115,10 +119,10 @@ export class OAuthService {
 			return true;
 		}
 
-		return !!school.features?.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
+		return !!school.features?.includes(SchoolFeature.OAUTH_PROVISIONING_ENABLED);
 	}
 
-	async requestToken(code: string, oauthConfig: OauthConfig, redirectUri: string): Promise<OAuthTokenDto> {
+	async requestToken(code: string, oauthConfig: OauthConfigEntity, redirectUri: string): Promise<OAuthTokenDto> {
 		const payload: AuthenticationCodeGrantTokenRequest = this.buildTokenRequestPayload(code, oauthConfig, redirectUri);
 
 		const responseToken: OauthTokenResponse = await this.oauthAdapterService.sendAuthenticationCodeTokenRequest(
@@ -130,7 +134,7 @@ export class OAuthService {
 		return tokenDto;
 	}
 
-	async validateToken(idToken: string, oauthConfig: OauthConfig): Promise<JwtPayload> {
+	async validateToken(idToken: string, oauthConfig: OauthConfigEntity): Promise<JwtPayload> {
 		const publicKey: string = await this.oauthAdapterService.getPublicKey(oauthConfig.jwksEndpoint);
 		const decodedJWT: string | JwtPayload = jwt.verify(idToken, publicKey, {
 			algorithms: ['RS256'],
@@ -139,7 +143,7 @@ export class OAuthService {
 		});
 
 		if (typeof decodedJWT === 'string') {
-			throw new OAuthSSOError('Failed to validate idToken', SSOErrorCode.SSO_JWT_PROBLEM);
+			throw new IdTokenInvalidLoggableException();
 		}
 
 		return decodedJWT;
@@ -147,7 +151,7 @@ export class OAuthService {
 
 	private buildTokenRequestPayload(
 		code: string,
-		oauthConfig: OauthConfig,
+		oauthConfig: OauthConfigEntity,
 		redirectUri: string
 	): AuthenticationCodeGrantTokenRequest {
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);

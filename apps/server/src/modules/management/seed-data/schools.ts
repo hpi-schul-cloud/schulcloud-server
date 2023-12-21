@@ -1,23 +1,25 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import {
 	FederalStateEntity,
-	SchoolFeatures,
 	SchoolProperties,
 	SchoolRoles,
 	SchoolYearEntity,
 	SystemEntity,
-} from '@shared/domain';
+} from '@shared/domain/entity';
+import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { federalStateFactory, schoolFactory } from '@shared/testing';
+import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
+import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
 import { EFederalState } from './federalstates';
 import { SeedSchoolYearEnum } from './schoolyears';
 
-type SeedSchoolProperties = Omit<SchoolProperties, 'systems' | 'federalState'> & {
+type SeedSchoolProperties = Omit<SchoolProperties, 'systems' | 'federalState' | 'currentYear'> & {
 	id: string;
 	updatedAt?: string;
 	createdAt?: string;
 	county?: {
-		id: string;
+		_id: ObjectId;
 		countyId: number;
 		name: string;
 		antaresKey: string;
@@ -45,22 +47,22 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'Demo Schule',
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: '5fa55eb53f472a2d986c8813',
+			_id: new ObjectId('5fa55eb53f472a2d986c8813'),
 			countyId: 12052,
 			name: 'Cottbus',
 			antaresKey: 'CB',
 		},
 		createdAt: '2017-08-24T12:04:11.721Z',
 		systems: [],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: 'demo',
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			teacher: {
 				STUDENT_LIST: true,
 			},
 		},
-		features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 	},
 	{
 		id: '5f2987e020834114b8efd6f7',
@@ -68,15 +70,15 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'Schiller-Oberschule',
 		createdAt: '2017-01-01T00:06:37.148Z',
 		systems: [],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: 'demo',
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			teacher: {
 				STUDENT_LIST: true,
 			},
 		},
-		features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 	},
 	{
 		id: '5f2987e020834114b8efd6f8',
@@ -84,26 +86,26 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'Paul-Gerhardt-Gymnasium',
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: '5fa55eb53f472a2d986c8812',
+			_id: new ObjectId('5fa55eb53f472a2d986c8812'),
 			countyId: 12051,
 			name: 'Brandenburg an der Havel',
 			antaresKey: 'BRB',
 		},
 		createdAt: '2017-01-01T00:06:37.148Z',
 		systems: [],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: 'demo',
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			teacher: {
 				STUDENT_LIST: true,
 			},
 		},
 		features: [
-			SchoolFeatures.ROCKET_CHAT,
-			SchoolFeatures.LDAP_UNIVENTION_MIGRATION,
-			SchoolFeatures.VIDEOCONFERENCE,
-			SchoolFeatures.OAUTH_PROVISIONING_ENABLED,
+			SchoolFeature.ROCKET_CHAT,
+			SchoolFeature.LDAP_UNIVENTION_MIGRATION,
+			SchoolFeature.VIDEOCONFERENCE,
+			SchoolFeature.OAUTH_PROVISIONING_ENABLED,
 		],
 		enableStudentTeamCreation: false,
 	},
@@ -113,17 +115,17 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'Expertenschule',
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: '5fa55eb53f472a2d986c8813',
+			_id: new ObjectId('5fa55eb53f472a2d986c8813'),
 			countyId: 12052,
 			name: 'Cottbus',
 			antaresKey: 'CB',
 		},
 		createdAt: '2018-11-09T10:04:11.721Z',
 		systems: [],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: 'expert',
-		features: [SchoolFeatures.ROCKET_CHAT, SchoolFeatures.VIDEOCONFERENCE, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		purpose: SchoolPurpose.EXPERT,
+		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.VIDEOCONFERENCE, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 	},
 	{
 		id: '5fa2c5ccb229544f2c69666c',
@@ -131,22 +133,22 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'Felix Mendelssohn-Gymnasium',
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: '5fa55eb53f472a2d986c8813',
+			_id: new ObjectId('5fa55eb53f472a2d986c8813'),
 			countyId: 12052,
 			name: 'Cottbus',
 			antaresKey: 'CB',
 		},
 		createdAt: '2020-11-04T15:16:28.827Z',
 		systems: [],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: 'demo',
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			student: {
 				LERNSTORE_VIEW: true,
 			},
 		},
-		features: [SchoolFeatures.ROCKET_CHAT, SchoolFeatures.STUDENTVISIBILITY, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
@@ -160,22 +162,22 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'Ludwig van Beethoven-Liceum',
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: '5fa55eb53f472a2d986c8813',
+			_id: new ObjectId('5fa55eb53f472a2d986c8813'),
 			countyId: 12052,
 			name: 'Cottbus',
 			antaresKey: 'CB',
 		},
 		createdAt: '2020-11-04T21:11:14.312Z',
 		systems: [],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: 'demo',
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			student: {
 				LERNSTORE_VIEW: true,
 			},
 		},
-		features: [SchoolFeatures.ROCKET_CHAT, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
@@ -191,15 +193,15 @@ const seedSchools: SeedSchoolProperties[] = [
 		federalState: EFederalState.INTERNATIONAL_SCHOOL,
 		createdAt: '2020-11-04T21:38:05.110Z',
 		systems: [],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: 'demo',
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			student: {
 				LERNSTORE_VIEW: true,
 			},
 		},
-		features: [SchoolFeatures.ROCKET_CHAT, SchoolFeatures.STUDENTVISIBILITY, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
@@ -215,16 +217,16 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'school in Ni',
 		federalState: EFederalState.NIEDERSACHSEN,
 		county: {
-			id: '5fa55eb53f472a2d986c8812',
+			_id: new ObjectId('5fa55eb53f472a2d986c8812'),
 			countyId: 3256,
 			name: 'Nienburg/Weser',
 			antaresKey: 'NI',
 		},
 		createdAt: '2020-12-08T16:58:36.527Z',
 		systems: [],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
@@ -235,8 +237,8 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'graveyard school (tombstone users only)',
 		createdAt: '2020-12-16T12:47:27.338Z',
 		systems: [],
-		purpose: 'tombstone',
-		features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		purpose: SchoolPurpose.TOMBSTONE,
+		features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
@@ -247,26 +249,26 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'OIDC-Mock-School',
 		federalState: EFederalState.BRANDENBURG,
 		county: {
-			id: '5fa55eb53f472a2d986c8812',
+			_id: new ObjectId('5fa55eb53f472a2d986c8812'),
 			countyId: 12051,
 			name: 'Brandenburg an der Havel',
 			antaresKey: 'BRB',
 		},
 		createdAt: '2017-01-01T00:06:37.148Z',
 		systems: ['62c7f233f35a554ba3ed42f1'],
-		fileStorageType: 'awsS3',
+		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: 'demo',
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			teacher: {
 				STUDENT_LIST: true,
 			},
 		},
 		features: [
-			SchoolFeatures.OAUTH_PROVISIONING_ENABLED,
-			SchoolFeatures.LDAP_UNIVENTION_MIGRATION,
-			SchoolFeatures.VIDEOCONFERENCE,
-			SchoolFeatures.OAUTH_PROVISIONING_ENABLED,
+			SchoolFeature.OAUTH_PROVISIONING_ENABLED,
+			SchoolFeature.LDAP_UNIVENTION_MIGRATION,
+			SchoolFeature.VIDEOCONFERENCE,
+			SchoolFeature.OAUTH_PROVISIONING_ENABLED,
 		],
 		externalId: '0000d186816abba584714c92',
 		enableStudentTeamCreation: false,
@@ -279,7 +281,7 @@ export function generateSchools(entities: {
 	federalStates: FederalStateEntity[];
 }) {
 	return seedSchools.map((partial) => {
-		const schoolYear = entities.schoolYears.find((sy) => partial.currentYear && sy.name === partial.currentYear);
+		const currentYear = entities.schoolYears.find((sy) => partial.currentYear && sy.name === partial.currentYear);
 		const systems = partial.systems
 			?.map((systemId) => entities.systems.find((s) => s.id === systemId))
 			.filter((s) => s) as SystemEntity[] | undefined;
@@ -297,7 +299,7 @@ export function generateSchools(entities: {
 			officialSchoolNumber: partial.officialSchoolNumber,
 			previousExternalId: partial.previousExternalId,
 			userLoginMigration: partial.userLoginMigration,
-			schoolYear,
+			currentYear,
 			systems,
 			federalState,
 		};

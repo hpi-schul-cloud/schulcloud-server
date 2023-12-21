@@ -1,94 +1,68 @@
-import { EntityName, FilterQuery } from '@mikro-orm/core';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common';
-import { BaseDO, BaseEntity, baseEntityProperties, EntityId } from '@shared/domain';
+import { EntityData, EntityName, FilterQuery, Primary, RequiredEntityData, Utils } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BaseDO } from '@shared/domain/domainobject';
+import { BaseEntity, baseEntityProperties } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 
 @Injectable()
-export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
+export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {}
 
 	abstract get entityName(): EntityName<E>;
 
-	abstract entityFactory(props: P): E;
-
 	protected abstract mapEntityToDO(entity: E): DO;
 
-	protected abstract mapDOToEntityProperties(entityDO: DO): P;
+	protected abstract mapDOToEntityProperties(entityDO: DO): EntityData<E>;
 
-	async save(entityDo: DO): Promise<DO> {
-		const savedDos: DO[] = await this.saveAll([entityDo]);
-		return savedDos[0];
+	async save(domainObject: DO): Promise<DO> {
+		const savedDomainObjects = await this.saveAll([domainObject]);
+		return savedDomainObjects[0];
 	}
 
-	async saveAll(entityDos: DO[]): Promise<DO[]> {
-		const promises: Promise<E>[] = entityDos.map(async (domainObject: DO): Promise<E> => {
-			let entity: E;
-			if (!domainObject.id) {
-				entity = this.createEntity(domainObject);
-			} else {
-				entity = await this.updateEntity(domainObject);
-			}
-			return entity;
-		});
+	async saveAll(domainObjects: DO[]): Promise<DO[]> {
+		const promises = domainObjects.map(async (dob) => this.createOrUpdateEntity(dob));
 
-		const entities: E[] = await Promise.all(promises);
-		await this._em.persistAndFlush(entities);
+		const results = await Promise.all(promises);
 
-		const savedDos: DO[] = entities.map((entity) => this.mapEntityToDO(entity));
-		return savedDos;
+		await this._em.flush();
+
+		const savedDomainObjects = results.map(({ domainObject, persistedEntity }) =>
+			this.remapProtectedEntityFields(domainObject, persistedEntity)
+		);
+
+		return savedDomainObjects;
 	}
 
-	private createEntity(domainObject: DO): E {
-		const newEntity: E = this.createNewEntityFromDO(domainObject);
+	private async createOrUpdateEntity(domainObject: DO): Promise<{ domainObject: DO; persistedEntity: E }> {
+		const entityData = this.mapDOToEntityProperties(domainObject);
+		this.removeProtectedEntityFields(entityData);
 
-		const created: E = this._em.create(this.entityName, newEntity);
-		this.logger.debug(`Created new entity with id ${created.id}`);
-		return created;
-	}
+		const { entityName } = this;
 
-	private async updateEntity(domainObject: DO): Promise<E> {
-		const newEntity: E = this.createNewEntityFromDO(domainObject);
+		const existingEntity = domainObject.id
+			? await this._em.findOneOrFail(entityName, { id: domainObject.id } as FilterQuery<E>)
+			: undefined;
 
-		this.removeProtectedEntityFields(newEntity);
+		const persistedEntity = existingEntity
+			? this._em.assign(existingEntity, entityData)
+			: this._em.create(entityName, entityData as RequiredEntityData<E>);
 
-		const fetchedEntity: E = await this._em.findOneOrFail(this.entityName, {
-			id: domainObject.id,
-		} as FilterQuery<E>);
-		const updated: E = this._em.assign(fetchedEntity, newEntity);
-		this.logger.debug(`Updated entity with id ${updated.id}`);
-		return updated;
-	}
-
-	protected createNewEntityFromDO(domainObject: DO) {
-		const entityProps: P = this.mapDOToEntityProperties(domainObject);
-		const newEntity: E = this.entityFactory(entityProps);
-
-		if (domainObject.id) {
-			newEntity.id = domainObject.id;
-			newEntity._id = new ObjectId(domainObject.id);
-		}
-		return newEntity;
-	}
-
-	/**
-	 * Ignore base entity properties when updating entity
-	 */
-	private removeProtectedEntityFields(entity: E) {
-		Object.keys(entity).forEach((key) => {
-			if (baseEntityProperties.includes(key)) {
-				delete entity[key];
-			}
-		});
+		return { domainObject, persistedEntity };
 	}
 
 	async delete(domainObjects: DO[] | DO): Promise<void> {
-		const dos: DO[] = Array.isArray(domainObjects) ? domainObjects : [domainObjects];
+		const ids: Primary<E>[] = Utils.asArray(domainObjects).map((dob) => {
+			if (!dob.id) {
+				throw new InternalServerErrorException('Cannot delete object without id');
+			}
+			return dob.id as Primary<E>;
+		});
 
-		const entities: E[] = dos.map((domainObj: DO): E => this.createNewEntityFromDO(domainObj));
+		const entities = ids.map((eid) => this._em.getReference(this.entityName, eid));
 
-		this._em.remove(entities);
-		await this._em.flush();
+		await this._em.remove(entities).flush();
 	}
 
 	// TODO: https://ticketsystem.dbildungscloud.de/browse/ARC-173 replace with delete(domainObject: DO)
@@ -96,25 +70,43 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 	 * @deprecated Please use {@link delete} instead
 	 */
 	async deleteById(id: EntityId | EntityId[]): Promise<number> {
-		const ids: string[] = Array.isArray(id) ? id : [id];
+		const ids = Utils.asArray(id) as Primary<E>[];
 
-		let total = 0;
-		const promises: Promise<void>[] = ids.map(async (entityId: string): Promise<void> => {
-			const deleted: number = await this.deleteEntityById(entityId);
-			total += deleted;
-		});
+		const entities = ids.map((eid) => this._em.getReference(this.entityName, eid));
 
-		await Promise.all(promises);
+		await this._em.remove(entities).flush();
+
+		const total = ids.length;
+
 		return total;
-	}
-
-	private deleteEntityById(id: EntityId): Promise<number> {
-		const promise: Promise<number> = this._em.nativeDelete(this.entityName, { id } as FilterQuery<E>);
-		return promise;
 	}
 
 	async findById(id: EntityId): Promise<DO> {
 		const entity: E = await this._em.findOneOrFail(this.entityName, { id } as FilterQuery<E>);
 		return this.mapEntityToDO(entity);
+	}
+
+	/**
+	 * Ignore base entity properties when updating entity
+	 */
+	private removeProtectedEntityFields(entityData: EntityData<E>) {
+		Object.keys(entityData).forEach((key) => {
+			if (baseEntityProperties.includes(key)) {
+				delete entityData[key];
+			}
+		});
+	}
+
+	private remapProtectedEntityFields(domainObject: DO, persistedEntity: E) {
+		if (!domainObject.id) {
+			domainObject.id = persistedEntity.id;
+		}
+		if ('createdAt' in domainObject && 'createdAt' in persistedEntity) {
+			domainObject.createdAt = persistedEntity.createdAt;
+		}
+		if ('updatedAt' in domainObject && 'updatedAt' in persistedEntity) {
+			domainObject.updatedAt = persistedEntity.updatedAt;
+		}
+		return domainObject;
 	}
 }

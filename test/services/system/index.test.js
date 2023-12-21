@@ -132,7 +132,7 @@ describe('systemId service', () => {
 		it('CREATE fails without the right permissions', async () => {
 			const usersSchool = await testObjects.createTestSchool();
 
-			const data = { type: 'ldap' };
+			const data = { type: 'ldap', ldapConfig: { provider: 'general' } };
 
 			const user = await testObjects.createTestUser({ roles: ['student'], schoolId: [usersSchool._id] });
 			const params = await testObjects.generateRequestParamsFromUser(user);
@@ -154,6 +154,7 @@ describe('systemId service', () => {
 				type: 'ldap',
 				ldapConfig: {
 					searchUserPassword: 'somePassword',
+					provider: 'general',
 				},
 			};
 
@@ -167,7 +168,7 @@ describe('systemId service', () => {
 		it('CREATE system is added to the users school after its creation', async () => {
 			const usersSchool = await testObjects.createTestSchool();
 
-			const data = { type: 'ldap' };
+			const data = { type: 'ldap', ldapConfig: { provider: 'general' } };
 
 			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: [usersSchool._id] });
 			const params = await testObjects.generateRequestParamsFromUser(user);
@@ -186,6 +187,7 @@ describe('systemId service', () => {
 				type: 'ldap',
 				ldapConfig: {
 					searchUserPassword: 'somePassword',
+					provider: 'general',
 				},
 			});
 			const usersSchool = await testObjects.createTestSchool({ systems: [usersSystem._id] });
@@ -195,6 +197,7 @@ describe('systemId service', () => {
 				url: 'http://someurl.com',
 				ldapConfig: {
 					searchUserPassword: 'somePassword',
+					provider: 'general',
 				},
 			};
 
@@ -215,6 +218,7 @@ describe('systemId service', () => {
 				type: 'ldap',
 				ldapConfig: {
 					searchUserPassword: 'somePassword',
+					provider: 'general',
 				},
 			});
 			const usersSchool = await testObjects.createTestSchool();
@@ -225,6 +229,7 @@ describe('systemId service', () => {
 				url: 'http://someurl.com',
 				ldapConfig: {
 					searchUserPassword: 'somePassword',
+					provider: 'general',
 				},
 			};
 
@@ -245,6 +250,7 @@ describe('systemId service', () => {
 				type: 'ldap',
 				ldapConfig: {
 					searchUserPassword: 'somePassword',
+					provider: 'general',
 				},
 			});
 			const usersSchool = await testObjects.createTestSchool({ systems: [usersSystem._id] });
@@ -254,6 +260,7 @@ describe('systemId service', () => {
 				url: 'http://someurl.com',
 				ldapConfig: {
 					searchUserPassword: 'somePassword',
+					provider: 'general',
 				},
 			};
 
@@ -263,7 +270,7 @@ describe('systemId service', () => {
 			const result = await app.service('systems').update(usersSystem._id, data, params);
 			expect(result.ldapConfig.searchUserPassword).to.be.undefined;
 		});
-		it('UPDATE iServ configuration should not be editable', async () => {
+		it('UPDATE global configuration should not be editable', async () => {
 			const usersSystem = await testObjects.createTestSystem({
 				type: 'ldap',
 				ldapConfig: {
@@ -302,6 +309,7 @@ describe('systemId service', () => {
 				type: 'ldap',
 				ldapConfig: {
 					searchUserPassword: 'somePassword',
+					provider: 'general',
 				},
 			});
 			const usersSchool = await testObjects.createTestSchool({ systems: [usersSystem._id] });
@@ -328,6 +336,7 @@ describe('systemId service', () => {
 				type: 'ldap',
 				ldapConfig: {
 					searchUserPassword: 'somePassword',
+					provider: 'general',
 				},
 			});
 			const usersSchool = await testObjects.createTestSchool();
@@ -354,6 +363,7 @@ describe('systemId service', () => {
 				type: 'ldap',
 				ldapConfig: {
 					searchUserPassword: 'somePassword',
+					provider: 'general',
 				},
 			});
 			const usersSchool = await testObjects.createTestSchool({ systems: [usersSystem._id] });
@@ -369,7 +379,7 @@ describe('systemId service', () => {
 			expect(result.ldapConfig.searchUserPassword).to.be.undefined;
 		});
 
-		it('PATCH iServ configuration should not be editable', async () => {
+		it('PATCH global configuration should not be editable', async () => {
 			const usersSystem = await testObjects.createTestSystem({
 				type: 'ldap',
 				ldapConfig: {
@@ -403,6 +413,7 @@ describe('systemId service', () => {
 				type: 'ldap',
 				ldapConfig: {
 					searchUserPassword: 'somePassword',
+					provider: 'general',
 				},
 			});
 			const usersSchool = await testObjects.createTestSchool({ systems: [usersSystem._id] });
@@ -425,6 +436,7 @@ describe('systemId service', () => {
 				type: 'ldap',
 				ldapConfig: {
 					searchUserPassword: 'somePassword',
+					provider: 'general',
 				},
 			});
 			const usersSchool = await testObjects.createTestSchool();
@@ -447,6 +459,7 @@ describe('systemId service', () => {
 				type: 'ldap',
 				ldapConfig: {
 					searchUserPassword: 'somePassword',
+					provider: 'general',
 				},
 			});
 			const usersSchool = await testObjects.createTestSchool({ systems: [usersSystem._id] });
@@ -461,6 +474,9 @@ describe('systemId service', () => {
 		it('REMOVE system is removed from the school after its removal', async () => {
 			const usersSystem = await testObjects.createTestSystem({
 				type: 'ldap',
+				ldapConfig: {
+					provider: 'general',
+				},
 			});
 			const usersSchool = await testObjects.createTestSchool({ systems: [usersSystem._id] });
 
@@ -477,6 +493,9 @@ describe('systemId service', () => {
 		it('REMOVE should remove ldapschoolidentifier from school if ldap system is removed', async () => {
 			const usersSystem = await testObjects.createTestSystem({
 				type: 'ldap',
+				ldapConfig: {
+					provider: 'general',
+				},
 			});
 			const usersSchool = await testObjects.createTestSchool({
 				systems: [usersSystem._id],
@@ -496,6 +515,9 @@ describe('systemId service', () => {
 		it('REMOVE should remove ldapLastSync from school if ldap system is removed', async () => {
 			const usersSystem = await testObjects.createTestSystem({
 				type: 'ldap',
+				ldapConfig: {
+					provider: 'general',
+				},
 			});
 			const usersSchool = await testObjects.createTestSchool({
 				systems: [usersSystem._id],
@@ -512,12 +534,31 @@ describe('systemId service', () => {
 			expect(usersSchoolUpdated.ldapLastSync).to.be.undefined;
 		});
 
-		it('REMOVE iServ configuration should not be removable', async () => {
+		it('REMOVE global configuration should not be removable', async () => {
 			const usersSystem = await testObjects.createTestSystem({
 				type: 'ldap',
 				ldapConfig: {
 					provider: 'iserv-idm',
 				},
+			});
+			const usersSchool = await testObjects.createTestSchool({ systems: [usersSystem._id] });
+
+			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: [usersSchool._id] });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+
+			try {
+				await app.service('systems').remove(usersSystem._id, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(403);
+				expect(err.message).to.equal('Not allowed to change this system');
+			}
+		});
+
+		it('REMOVE non-ldap configuration should not be removable', async () => {
+			const usersSystem = await testObjects.createTestSystem({
+				type: 'oauth',
 			});
 			const usersSchool = await testObjects.createTestSchool({ systems: [usersSystem._id] });
 

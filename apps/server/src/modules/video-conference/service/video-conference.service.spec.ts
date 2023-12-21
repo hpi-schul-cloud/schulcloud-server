@@ -7,17 +7,10 @@ import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Course,
-	EntityId,
-	Permission,
-	RoleName,
-	SchoolFeatures,
-	TeamUserEntity,
-	UserDO,
-	VideoConferenceDO,
-	VideoConferenceScope,
-} from '@shared/domain';
+import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
+import { Course, TeamUserEntity } from '@shared/domain/entity';
+import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { courseFactory, roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
@@ -514,7 +507,7 @@ describe('VideoConferenceService', () => {
 				const func = () => service.throwOnFeaturesDisabled(schoolId);
 
 				await expect(func()).rejects.toThrow(new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED));
-				expect(schoolService.hasFeature).toHaveBeenCalledWith(schoolId, SchoolFeatures.VIDEOCONFERENCE);
+				expect(schoolService.hasFeature).toHaveBeenCalledWith(schoolId, SchoolFeature.VIDEOCONFERENCE);
 			});
 		});
 
@@ -526,7 +519,7 @@ describe('VideoConferenceService', () => {
 				const func = () => service.throwOnFeaturesDisabled(schoolId);
 
 				await expect(func()).resolves.toBeUndefined();
-				expect(schoolService.hasFeature).toHaveBeenCalledWith(schoolId, SchoolFeatures.VIDEOCONFERENCE);
+				expect(schoolService.hasFeature).toHaveBeenCalledWith(schoolId, SchoolFeature.VIDEOCONFERENCE);
 			});
 		});
 	});
