@@ -1,10 +1,11 @@
 import AdmZip from 'adm-zip';
 import {
+	CommonCartridgeElementType,
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '../common-cartridge.enums';
-import { CommonCartridgeMetadataElementProps } from '../elements/common-cartridge-metadata-element';
+import { CommonCartridgeElementProps } from '../elements/common-cartridge-element-factory';
 import { CommonCartridgeResourceProps } from '../resources/common-cartridge-resource-factory';
 import { OmitVersion } from '../utils';
 import { CommonCartridgeFileBuilder, CommonCartridgeFileBuilderProps } from './common-cartridge-file-builder';
@@ -20,7 +21,8 @@ describe('CommonCartridgeFileBuilder', () => {
 		version: CommonCartridgeVersion.V_1_1_0,
 		identifier: 'manifest-identifier',
 	};
-	const metadataProps: OmitVersion<CommonCartridgeMetadataElementProps> = {
+	const metadataProps: CommonCartridgeElementProps = {
+		type: CommonCartridgeElementType.METADATA,
 		title: 'metadata-title',
 		creationDate: new Date(),
 		copyrightOwners: ['John Doe', 'Jane Doe'],

@@ -19,9 +19,9 @@ type CommonCartridgeOrganizationBuilderOptionsInternal = {
 };
 
 export class CommonCartridgeOrganizationBuilder {
-	private readonly items = new Array<CommonCartridgeElement>();
+	private readonly resources: CommonCartridgeResource[] = [];
 
-	private readonly children = new Array<CommonCartridgeOrganizationBuilder>();
+	private readonly subOrganizations: CommonCartridgeOrganizationBuilder[] = [];
 
 	public constructor(
 		protected readonly options: CommonCartridgeOrganizationBuilderOptionsInternal,
@@ -35,14 +35,14 @@ export class CommonCartridgeOrganizationBuilder {
 	public addSubOrganization(
 		options: OmitVersionAndFolder<CommonCartridgeOrganizationBuilderOptions>
 	): CommonCartridgeOrganizationBuilder {
-		const child = new CommonCartridgeOrganizationBuilder(
+		const subOrganization = new CommonCartridgeOrganizationBuilder(
 			{ ...options, version: this.options.version, folder: this.folder },
 			this.addResourceToFileBuilder.bind(this)
 		);
 
-		this.children.push(child);
+		this.subOrganizations.push(subOrganization);
 
-		return child;
+		return subOrganization;
 	}
 
 	public addResource(props: CommonCartridgeResourceProps): CommonCartridgeOrganizationBuilder {
@@ -52,7 +52,7 @@ export class CommonCartridgeOrganizationBuilder {
 			...props,
 		});
 
-		this.items.push(resource);
+		this.resources.push(resource);
 		this.addResourceToFileBuilder(resource);
 
 		return this;
@@ -64,9 +64,21 @@ export class CommonCartridgeOrganizationBuilder {
 			version: this.options.version,
 			identifier: this.options.identifier,
 			title: this.options.title,
-			items: this.items,
+			items: this.buildItems(),
 		});
 
 		return organizationElement;
+	}
+
+	private buildItems(): CommonCartridgeResource | (CommonCartridgeElement | CommonCartridgeResource)[] {
+		if (this.resources.length === 1 && this.subOrganizations.length === 0) {
+			const [resource] = this.resources;
+
+			return resource;
+		}
+
+		const items = [...this.resources, ...this.subOrganizations.map((subOrganization) => subOrganization.build())];
+
+		return items;
 	}
 }
