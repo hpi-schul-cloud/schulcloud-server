@@ -123,7 +123,6 @@ describe('AccountUc', () => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id?.toString() === id);
 
 							if (account) {
-								// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 								return Promise.resolve(AccountEntityToDoMapper.mapToDo(account));
 							}
 							throw new EntityNotFoundError(AccountEntity.name);
@@ -133,7 +132,6 @@ describe('AccountUc', () => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.userId?.toString() === userId);
 
 							if (account) {
-								// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 								return Promise.resolve(AccountEntityToDoMapper.mapToDo(account));
 							}
 							return Promise.resolve(null);
@@ -142,11 +140,9 @@ describe('AccountUc', () => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.userId?.toString() === userId);
 
 							if (account) {
-								// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 								return Promise.resolve(AccountEntityToDoMapper.mapToDo(account));
 							}
 							if (userId === 'accountWithoutUser') {
-								// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 								return Promise.resolve(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
 							}
 							throw new EntityNotFoundError(AccountEntity.name);
@@ -155,7 +151,6 @@ describe('AccountUc', () => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
 
 							if (account) {
-								// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 								return Promise.resolve(AccountEntityToDoMapper.mapToDo(account));
 							}
 							throw new EntityNotFoundError(AccountEntity.name);
@@ -165,7 +160,6 @@ describe('AccountUc', () => {
 								(tempAccount) => tempAccount.username === username && tempAccount.systemId === systemId
 							);
 							if (account) {
-								// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 								return Promise.resolve(AccountEntityToDoMapper.mapToDo(account));
 							}
 							throw new EntityNotFoundError(AccountEntity.name);
@@ -174,17 +168,13 @@ describe('AccountUc', () => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.username === username);
 
 							if (account) {
-								// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 								return Promise.resolve([[AccountEntityToDoMapper.mapToDo(account)], 1]);
 							}
 							if (username === 'not@available.username') {
-								// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 								return Promise.resolve([[AccountEntityToDoMapper.mapToDo(mockOtherTeacherAccount)], 1]);
 							}
 							if (username === 'multiple@account.username') {
-								// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 								return Promise.resolve([
-									// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 									mockAccounts.map((mockAccount) => AccountEntityToDoMapper.mapToDo(mockAccount)),
 									mockAccounts.length,
 								]);
@@ -192,9 +182,7 @@ describe('AccountUc', () => {
 							return Promise.resolve([[], 0]);
 						},
 						searchByUsernamePartialMatch: (): Promise<Counted<Account[]>> =>
-							// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 							Promise.resolve([
-								// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 								mockAccounts.map((mockAccount) => AccountEntityToDoMapper.mapToDo(mockAccount)),
 								mockAccounts.length,
 							]),
@@ -1200,32 +1188,26 @@ describe('AccountUc', () => {
 			configService.get.mockRestore();
 		});
 		beforeEach(() => {
-			// eslint-disable-next-line jest/unbound-method
 			updateMock = accountService.updateLastTriedFailedLogin as jest.Mock;
 			updateMock.mockClear();
 		});
 		it('should throw, if time difference < the allowed time', async () => {
 			await expect(
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				accountUc.checkBrutForce(mockAccountWithLastFailedLogin.username, mockAccountWithLastFailedLogin.systemId!)
 			).rejects.toThrow(BruteForcePrevention);
 		});
 		it('should not throw Error, if the time difference > the allowed time', async () => {
 			await expect(
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				accountUc.checkBrutForce(mockAccountWithSystemId.username, mockAccountWithSystemId.systemId!)
 			).resolves.not.toThrow();
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			expect(updateMock.mock.calls[0][0]).toEqual(mockAccountWithSystemId.id);
 			const newDate = new Date().getTime() - 10000;
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			expect((updateMock.mock.calls[0][1] as Date).getTime()).toBeGreaterThan(newDate);
 		});
 		it('should not throw, if lasttriedFailedLogin is undefined', async () => {
 			await expect(
 				accountUc.checkBrutForce(
 					mockAccountWithNoLastFailedLogin.username,
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 					mockAccountWithNoLastFailedLogin.systemId!
 				)
 			).resolves.not.toThrow();

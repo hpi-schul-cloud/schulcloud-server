@@ -319,7 +319,7 @@ export class AccountUc {
 					});
 				}
 			}
-			await this.accountService.updateLastTriedFailedLogin(`${account.id ? account.id : ''}`, new Date());
+			await this.accountService.updateLastTriedFailedLogin(account.id, new Date());
 		}
 	}
 

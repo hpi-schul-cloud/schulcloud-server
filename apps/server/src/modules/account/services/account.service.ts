@@ -63,20 +63,20 @@ export class AccountService {
 		const ret = await this.accountDb.save(account);
 		const newAccount = new Account({
 			...account,
-			id: account.id,
+			id: ret.id,
 			idmReferenceId: ret.id,
 			password: account.password,
 		});
 		const idmAccount = await this.executeIdmMethod(async () => {
-			this.logger.debug(`Saving account with accountID ${ret.id ? ret.id : ''} ...`);
+			this.logger.debug(`Saving account with accountID ${ret.id} ...`);
 			const accountIdm = await this.accountIdm.save(newAccount);
-			this.logger.debug(`Saved account with accountID ${ret.id ? ret.id : ''}`);
+			this.logger.debug(`Saved account with accountID ${ret.id}`);
 			return accountIdm;
 		});
 		return new Account({
 			...ret,
 			id: ret.id,
-			idmReferenceId: idmAccount?.idmReferenceId ?? '',
+			idmReferenceId: idmAccount?.idmReferenceId,
 		});
 	}
 

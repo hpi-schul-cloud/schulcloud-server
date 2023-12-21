@@ -28,18 +28,32 @@ class AccountFactory extends BaseFactory<AccountEntity, IdmAccountProperties> {
 }
 
 // !!! important username should not be contain a space !!!
-export const accountEntityFactory = AccountFactory.define(AccountEntity, ({ sequence }) => {
+//export const accountEntityFactory = AccountFactory.define<AccountEntity, IdmAccountProperties>(AccountEntity,({ sequence, params }) => {
+	
+//	const userId  = params.userId? params.userId : new ObjectId();
+//	const systemId =  params.systemId? params.systemId : new ObjectId();
+//	return {
+		//...params,
+//		userId: userId,
+//		systemId: systemId,
+//		username: params.username || `Username-${sequence}`,
+//		createdAt: new Date(),
+//		updatedAt: new Date(),
+//	};
+//});
+
+export const accountEntityFactory = AccountFactory.define(AccountEntity,({ sequence }) => {
+	
 	return {
 		username: `Username-${sequence}`,
-		password: defaultTestPasswordHash,
-		userId: new ObjectId(),
 	};
 });
 
-export const accountFactory = DomainObjectFactory.define<Account, AccountProps>(Account, ({ sequence }) => {
+export const accountFactory = DomainObjectFactory.define<Account, AccountProps>(Account, ({ sequence, params }) => {
 	return {
-		id: new ObjectId().toHexString(),
-		username: `Username-${sequence}`,
+		...params,
+		id: params.id || new ObjectId().toHexString(),
+		username: params.username || `Username-${sequence}`,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};
