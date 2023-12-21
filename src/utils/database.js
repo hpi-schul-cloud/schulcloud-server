@@ -26,7 +26,7 @@ const encodeMongoURI = (urlString) => {
 function addAuthenticationToMongooseOptions(username, password, mongooseOptions) {
 	const auth = {};
 	if (username) {
-		auth.user = username;
+		auth.username = username;
 	}
 	if (password) {
 		auth.password = password;
@@ -78,13 +78,7 @@ function connect() {
 	mongoose.Promise = global.Promise;
 	const options = getConnectionOptions();
 
-	logger.info(
-		'connect to database host',
-		options.url,
-		options.username ? `with username ${options.username}` : 'without user',
-		options.password ? 'and' : 'and without',
-		'password'
-	);
+	logger.info('connect to database host');
 
 	const mongooseOptions = {
 		autoIndex: NODE_ENV !== ENVIRONMENTS.PRODUCTION,
