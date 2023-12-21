@@ -44,15 +44,13 @@ export class CommonCartridgeExportService {
 			);
 
 			lesson.contents.forEach((content) => {
-				const resourceProps = this.mapContentToResource(lesson.id, content, version);
-				if (resourceProps) {
-					organizationBuilder.addResourceToOrganization(resourceProps);
-				}
+				this.addComponentToOrganization(organizationBuilder, content);
 			});
 
-			const tasks = lesson.tasks.getItems();
-			tasks.forEach((task) => {
-				organizationBuilder.addResourceToOrganization(this.mapTaskToWebContentResource(task, version));
+			lesson.tasks.getItems().forEach((task) => {
+				organizationBuilder
+					.addSubOrganization(this.commonCartridgeMapper.mapTaskToOrganization(task))
+					.addResource(this.commonCartridgeMapper.mapTaskToResource(task));
 			});
 		});
 	}
@@ -61,13 +59,13 @@ export class CommonCartridgeExportService {
 		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
 
 		tasks.forEach((task) => {
-			const organization = builder.addOrganization(this.commonCartridgeMapper.mapTaskToOrganization(task));
-
-			organization.addResource(this.commonCartridgeMapper.mapTaskToResource(task));
+			builder
+				.addOrganization(this.commonCartridgeMapper.mapTaskToOrganization(task))
+				.addResource(this.commonCartridgeMapper.mapTaskToResource(task));
 		});
 	}
 
-	private addComponent(
+	private addComponentToOrganization(
 		organizationBuilder: CommonCartridgeOrganizationBuilder,
 		component: ComponentProperties
 	): void {

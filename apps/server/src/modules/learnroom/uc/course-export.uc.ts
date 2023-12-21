@@ -3,7 +3,7 @@ import { AuthorizableReferenceType, AuthorizationReferenceService } from '@modul
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CommonCartridgeVersion } from '../common-cartridge';
+import { CommonCartridgeVersion } from '../../common-cartridge';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 
 @Injectable()

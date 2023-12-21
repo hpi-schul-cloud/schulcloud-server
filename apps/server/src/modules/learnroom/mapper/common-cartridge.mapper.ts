@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ComponentProperties, ComponentType, Course, LessonEntity, Task } from '@shared/domain';
+import { ComponentProperties, ComponentType, Course, LessonEntity, Task } from '@shared/domain/entity';
 import { ObjectId } from 'bson';
 import {
 	CommonCartridgeElementProps,
