@@ -102,7 +102,7 @@ describe('TldrawWSService', () => {
 	describe('send', () => {
 		describe('when client is not connected to WS', () => {
 			const setup = async () => {
-				ws = await TestConnection.setupWs(wsUrl);
+				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 				const clientMessageMock = 'test-message';
 
 				const closeConSpy = jest.spyOn(service, 'closeConn').mockImplementationOnce(() => {});
@@ -166,7 +166,7 @@ describe('TldrawWSService', () => {
 
 		describe('when websocket has ready state 0', () => {
 			const setup = async () => {
-				ws = await TestConnection.setupWs(wsUrl);
+				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 				const clientMessageMock = 'test-message';
 
 				const sendSpy = jest.spyOn(service, 'send');

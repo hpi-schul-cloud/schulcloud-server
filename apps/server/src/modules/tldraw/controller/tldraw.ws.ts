@@ -3,6 +3,9 @@ import { Server, WebSocket } from 'ws';
 import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import cookie from 'cookie';
+import { BadRequestException } from '@nestjs/common';
+import { Logger } from '@src/core/logger';
+import { WebsocketCloseErrorLoggable } from '../loggable/websocket-close-error.loggable';
 import { TldrawConfig, SOCKET_PORT } from '../config';
 import { WsCloseCodeEnum, WsCloseMessageEnum } from '../types';
 import { TldrawWsService } from '../service';
@@ -14,37 +17,56 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
-		private readonly tldrawWsService: TldrawWsService
+		private readonly tldrawWsService: TldrawWsService,
+		private readonly logger: Logger
 	) {}
 
 	async handleConnection(client: WebSocket, request: Request): Promise<void> {
 		const docName = this.getDocNameFromRequest(request);
 		const cookies = this.parseCookiesFromHeader(request);
-		if (!cookies?.jwt) {
-			this.closeClient(
-				client,
-				WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
-				WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_JWT_NOT_PROVIDED_MESSAGE
-			);
-		} else {
+		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
 			try {
-				if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
-					await this.tldrawWsService.authorizeConnection(docName, cookies.jwt);
-					this.tldrawWsService.setupWSConnection(client, docName);
-				} else {
-					this.closeClient(
-						client,
-						WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
-						WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE
-					);
-				}
-			} catch (e) {
+				await this.tldrawWsService.authorizeConnection(docName, cookies?.jwt);
+			} catch (err) {
 				this.closeClient(
 					client,
 					WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
 					WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_LACK_PERMISSION_MESSAGE
 				);
+				this.logger.warning(
+					new WebsocketCloseErrorLoggable(
+						err as Error,
+						`(${WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE}) ${WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_LACK_PERMISSION_MESSAGE}`
+					)
+				);
 			}
+			try {
+				this.tldrawWsService.setupWSConnection(client, docName);
+			} catch (err) {
+				this.closeClient(
+					client,
+					WsCloseCodeEnum.WS_CLIENT_ESTABLISHING_CONNECTION_CODE,
+					WsCloseMessageEnum.WS_CLIENT_ESTABLISHING_CONNECTION_MESSAGE
+				);
+				this.logger.warning(
+					new WebsocketCloseErrorLoggable(
+						err as Error,
+						`(${WsCloseCodeEnum.WS_CLIENT_ESTABLISHING_CONNECTION_CODE}) ${WsCloseMessageEnum.WS_CLIENT_ESTABLISHING_CONNECTION_MESSAGE}`
+					)
+				);
+			}
+		} else {
+			this.closeClient(
+				client,
+				WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
+				WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE
+			);
+			this.logger.warning(
+				new WebsocketCloseErrorLoggable(
+					new BadRequestException(),
+					`(${WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE}) ${WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE}`
+				)
+			);
 		}
 	}
 

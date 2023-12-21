@@ -143,13 +143,13 @@ export class ElementController {
 		return response;
 	}
 
-	@ApiOperation({ summary: 'Check permission for a drawing element.' })
+	@ApiOperation({ summary: 'Check if user has permission for any course element.' })
 	@ApiResponse({ status: 200 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Get(':contentElementId/permission')
-	async checkPermission(
+	async readPermission(
 		@Param() urlParams: ContentElementUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {

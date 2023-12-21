@@ -26,9 +26,9 @@ export class TldrawBoardRepo {
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
 		this.mdb = new MongodbPersistence(this.connectionString, {
-			collectionName: this.collectionName,
-			flushSize: this.flushSize,
-			multipleCollections: this.multipleCollections,
+			collectionName: 'drawings',
+			flushSize: 400,
+			multipleCollections: false,
 		});
 	}
 

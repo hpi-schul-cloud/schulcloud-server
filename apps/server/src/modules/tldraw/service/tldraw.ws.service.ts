@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
@@ -6,7 +6,6 @@ import { encoding, decoding, map } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Persitence, WSConnectionState, WSMessageType } from '../types';
 import { TldrawConfig } from '../config';
 import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
@@ -211,13 +210,17 @@ export class TldrawWsService {
 		await this.tldrawBoardRepo.flushDocument(docName);
 	}
 
-	async authorizeConnection(drawingName: string, token: string) {
+	public async authorizeConnection(drawingName: string, token: string) {
+		if (token.length === 0) {
+			throw new UnauthorizedException('Token was not given');
+		}
 		const headers = {
 			Accept: 'Application/json',
 			Authorization: `Bearer ${token}`,
 		};
+
 		await firstValueFrom(
-			this.httpService.get(`${Configuration.get('HOST') as string}/api/v3/elements/${drawingName}/permission`, {
+			this.httpService.get(`${this.configService.get<string>('API_HOST')}/api/v3/elements/${drawingName}/permission`, {
 				headers,
 			})
 		);
