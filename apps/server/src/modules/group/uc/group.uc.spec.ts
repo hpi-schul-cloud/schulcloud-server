@@ -4,7 +4,7 @@ import { Action, AuthorizationContext, AuthorizationService } from '@modules/aut
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
 import { classFactory } from '@modules/class/domain/testing/factory/class.factory';
-import { LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
+import { SchoolYearService } from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { LegacySystemService, SystemDto } from '@modules/system';
@@ -13,13 +13,12 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ReferencedEntityNotFoundLoggable } from '@shared/common/loggable';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
+import { Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {
 	groupFactory,
-	legacySchoolDoFactory,
 	roleDtoFactory,
 	schoolYearFactory,
 	setupEntities,
@@ -28,7 +27,9 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { SchoolYearQueryType } from '../controller/dto/interface';
+import { School, SchoolService } from '@modules/school/domain';
+import { schoolFactory } from '@modules/school/testing';
+import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
@@ -45,7 +46,7 @@ describe('GroupUc', () => {
 	let systemService: DeepMocked<LegacySystemService>;
 	let userService: DeepMocked<UserService>;
 	let roleService: DeepMocked<RoleService>;
-	let schoolService: DeepMocked<LegacySchoolService>;
+	let schoolService: DeepMocked<SchoolService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
 	let logger: DeepMocked<Logger>;
@@ -75,8 +76,8 @@ describe('GroupUc', () => {
 					useValue: createMock<RoleService>(),
 				},
 				{
-					provide: LegacySchoolService,
-					useValue: createMock<LegacySchoolService>(),
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 				{
 					provide: AuthorizationService,
@@ -99,7 +100,7 @@ describe('GroupUc', () => {
 		systemService = module.get(LegacySystemService);
 		userService = module.get(UserService);
 		roleService = module.get(RoleService);
-		schoolService = module.get(LegacySchoolService);
+		schoolService = module.get(SchoolService);
 		authorizationService = module.get(AuthorizationService);
 		schoolYearService = module.get(SchoolYearService);
 		logger = module.get(Logger);
@@ -118,7 +119,7 @@ describe('GroupUc', () => {
 	describe('findAllClasses', () => {
 		describe('when the user has no permission', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school: School = schoolFactory.build();
 				const user: User = userFactory.buildWithId();
 				const error = new ForbiddenException();
 
@@ -146,7 +147,7 @@ describe('GroupUc', () => {
 
 		describe('when accessing as a normal user', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school: School = schoolFactory.build({ permissions: { teacher: { STUDENT_LIST: true } } });
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const teacherRole: RoleDto = roleDtoFactory.buildWithId({
@@ -271,7 +272,7 @@ describe('GroupUc', () => {
 
 				await uc.findAllClasses(teacherUser.id, teacherUser.school.id, SchoolYearQueryType.CURRENT_YEAR);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith<[User, LegacySchoolDo, AuthorizationContext]>(
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith<[User, School, AuthorizationContext]>(
 					teacherUser,
 					school,
 					{
@@ -290,6 +291,26 @@ describe('GroupUc', () => {
 					Permission.CLASS_FULL_ADMIN,
 					Permission.GROUP_FULL_ADMIN,
 				]);
+			});
+
+			describe('when accessing form course as a teacher', () => {
+				it('should call findClassesForSchool method from classService', async () => {
+					const { teacherUser } = setup();
+
+					await uc.findAllClasses(teacherUser.id, teacherUser.school.id, undefined, ClassRequestContext.COURSE);
+
+					expect(classService.findClassesForSchool).toHaveBeenCalled();
+				});
+			});
+
+			describe('when accessing form class overview as a teacher', () => {
+				it('should call findAllByUserId method from classService', async () => {
+					const { teacherUser } = setup();
+
+					await uc.findAllClasses(teacherUser.id, teacherUser.school.id, undefined, ClassRequestContext.CLASS_OVERVIEW);
+
+					expect(classService.findAllByUserId).toHaveBeenCalled();
+				});
 			});
 
 			describe('when no pagination is given', () => {
@@ -385,6 +406,7 @@ describe('GroupUc', () => {
 						SchoolYearQueryType.CURRENT_YEAR,
 						undefined,
 						undefined,
+						undefined,
 						'externalSourceName',
 						SortOrder.desc
 					);
@@ -441,6 +463,7 @@ describe('GroupUc', () => {
 						teacherUser.id,
 						teacherUser.school.id,
 						SchoolYearQueryType.CURRENT_YEAR,
+						undefined,
 						2,
 						1,
 						'name',
@@ -523,7 +546,7 @@ describe('GroupUc', () => {
 
 		describe('when accessing as a user with elevated permission', () => {
 			const setup = (generateClasses = false) => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school: School = schoolFactory.build();
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const { adminUser } = UserAndAccountTestFactory.buildAdmin();
@@ -652,7 +675,7 @@ describe('GroupUc', () => {
 
 				await uc.findAllClasses(adminUser.id, adminUser.school.id);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith<[User, LegacySchoolDo, AuthorizationContext]>(
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith<[User, School, AuthorizationContext]>(
 					adminUser,
 					school,
 					{
@@ -733,6 +756,7 @@ describe('GroupUc', () => {
 						undefined,
 						undefined,
 						undefined,
+						undefined,
 						'externalSourceName',
 						SortOrder.desc
 					);
@@ -778,6 +802,7 @@ describe('GroupUc', () => {
 						adminUser.id,
 						adminUser.school.id,
 						undefined,
+						undefined,
 						1,
 						1,
 						'name',
@@ -805,6 +830,7 @@ describe('GroupUc', () => {
 						adminUser.id,
 						adminUser.school.id,
 						undefined,
+						undefined,
 						0,
 						5
 					);
@@ -819,6 +845,7 @@ describe('GroupUc', () => {
 						adminUser.id,
 						adminUser.school.id,
 						undefined,
+						undefined,
 						0,
 						-1
 					);
@@ -830,7 +857,7 @@ describe('GroupUc', () => {
 
 		describe('when class has a user referenced which is not existing', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school: School = schoolFactory.build();
 				const notFoundReferenceId = new ObjectId().toHexString();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
