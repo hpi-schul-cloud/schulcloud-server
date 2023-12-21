@@ -15,21 +15,20 @@ import { UserRepo } from '@shared/repo';
 import { ICurrentUser } from '@modules/authentication';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ObjectId } from 'bson';
-import { AccountService } from '../services';
 import { AccountConfig } from '../account-config';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
-	AccountResponse,
-	AccountSearchListResponse,
 	AccountSearchQueryParams,
 	AccountSearchType,
-	PatchMyAccountParams,
+	PatchMyAccountParams
 } from '../controller/dto';
+import { AccountService } from '../services';
 
-import { AccountValidationService } from '../services/account.validation.service';
-import { AccountUcMapper } from './mapper/account-uc.mapper';
 import { Account } from '../domain';
+import { AccountValidationService } from '../services/account.validation.service';
+import { ResolvedAccountDto, ResolvedSearchListAccountDto } from './dto';
+import { AccountUcMapper } from './mapper/account-uc.mapper';
 
 type UserPreferences = {
 	// first login completed
@@ -53,7 +52,7 @@ export class AccountUc {
 	 * @throws {ValidationError}
 	 * @throws {ForbiddenOperationError}
 	 */
-	async searchAccounts(currentUser: ICurrentUser, query: AccountSearchQueryParams): Promise<AccountSearchListResponse> {
+	async searchAccounts(currentUser: ICurrentUser, query: AccountSearchQueryParams): Promise<ResolvedSearchListAccountDto> {
 		const skip = query.skip ?? 0;
 		const limit = query.limit ?? 10;
 		const executingUser = await this.userRepo.findById(currentUser.userId, true);
@@ -64,7 +63,7 @@ export class AccountUc {
 			}
 			const [accounts, total] = await this.accountService.searchByUsernamePartialMatch(query.value, skip, limit);
 			const accountList = accounts.map((tempAccount) => AccountUcMapper.mapToResolvedAccountDto(tempAccount));
-			return new AccountSearchListResponse(accountList, total, skip, limit);
+			return new ResolvedSearchListAccountDto(accountList, total, skip, limit);
 		}
 		if (query.type === AccountSearchType.USER_ID) {
 			const targetUser = await this.userRepo.findById(query.value, true);
@@ -75,9 +74,9 @@ export class AccountUc {
 			}
 			const account = await this.accountService.findByUserId(query.value);
 			if (account) {
-				return new AccountSearchListResponse([AccountUcMapper.mapToResolvedAccountDto(account)], 1, 0, 1);
+				return new ResolvedSearchListAccountDto([AccountUcMapper.mapToResolvedAccountDto(account)], 1, 0, 1);
 			}
-			return new AccountSearchListResponse([], 0, 0, 0);
+			return new ResolvedSearchListAccountDto([], 0, 0, 0);
 		}
 
 		throw new ValidationError('Invalid search type.');
@@ -91,7 +90,7 @@ export class AccountUc {
 	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
-	async findAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountResponse> {
+	async findAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<ResolvedAccountDto> {
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
 		}
@@ -116,7 +115,7 @@ export class AccountUc {
 		currentUser: ICurrentUser,
 		params: AccountByIdParams,
 		body: AccountByIdBodyParams
-	): Promise<AccountResponse> {
+	): Promise<ResolvedAccountDto> {
 		const executingUser = await this.userRepo.findById(currentUser.userId, true);
 		const targetAccount = await this.accountService.findById(params.id);
 
@@ -176,7 +175,7 @@ export class AccountUc {
 	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
-	async deleteAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountResponse> {
+	async deleteAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<ResolvedAccountDto> {
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new ForbiddenOperationError('Current user is not authorized to delete an account.');
 		}

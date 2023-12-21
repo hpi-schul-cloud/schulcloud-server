@@ -13,6 +13,7 @@ import {
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
 } from './dto';
+import { AccountResponseMapper } from './mapper';
 
 @ApiTags('Account')
 @Authenticate('jwt')
@@ -32,7 +33,8 @@ export class AccountController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() query: AccountSearchQueryParams
 	): Promise<AccountSearchListResponse> {
-		return this.accountUc.searchAccounts(currentUser, query);
+		const resolvedSearchListAccountDto = await this.accountUc.searchAccounts(currentUser, query);
+		return AccountResponseMapper.mapToAccountSearchListResponse(resolvedSearchListAccountDto);
 	}
 
 	@Get(':id')
@@ -45,7 +47,8 @@ export class AccountController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: AccountByIdParams
 	): Promise<AccountResponse> {
-		return this.accountUc.findAccountById(currentUser, params);
+		const resolvedAccount = await this.accountUc.findAccountById(currentUser, params);
+			return AccountResponseMapper.mapToAccountResponse(resolvedAccount);
 	}
 
 	// IMPORTANT!!!
@@ -72,7 +75,8 @@ export class AccountController {
 		@Param() params: AccountByIdParams,
 		@Body() body: AccountByIdBodyParams
 	): Promise<AccountResponse> {
-		return this.accountUc.updateAccountById(currentUser, params, body);
+		const resolvedAccount = await this.accountUc.updateAccountById(currentUser, params, body)
+		return AccountResponseMapper.mapToAccountResponse(resolvedAccount);
 	}
 
 	@Delete(':id')
@@ -85,7 +89,8 @@ export class AccountController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: AccountByIdParams
 	): Promise<AccountResponse> {
-		return this.accountUc.deleteAccountById(currentUser, params);
+		const resolvedAccount = await this.accountUc.deleteAccountById(currentUser, params);
+		return AccountResponseMapper.mapToAccountResponse(resolvedAccount);
 	}
 
 	@Patch('me/password')

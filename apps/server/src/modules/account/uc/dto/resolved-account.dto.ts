@@ -12,8 +12,22 @@ export class ResolvedAccountDto {
 	constructor(account: ResolvedAccountDto) {
 		this.id = account.id;
 		this.username = account.username;
-		this.userId = account.userId as string;
-		this.activated = account.activated as boolean;
-		this.updatedAt = account.updatedAt as Date;
+		this.userId = account.userId;
+		this.activated = account.activated;
+		this.updatedAt = account.updatedAt;
+	}
+}
+
+export class ResolvedSearchListAccountDto {
+	data: ResolvedAccountDto[];
+	total: number;
+	skip?: number;
+	limit?: number;
+
+	constructor(data: ResolvedAccountDto[], total: number, skip?: number, limit?: number) {
+		this.data = data;
+		this.total = total;
+		this.skip = skip;
+		this.limit = limit;
 	}
 }

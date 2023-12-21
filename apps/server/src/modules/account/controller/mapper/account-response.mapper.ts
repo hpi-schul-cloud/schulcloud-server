@@ -1,5 +1,5 @@
-import { AccountResponse } from '../dto';
-import { ResolvedAccountDto } from '../../uc/dto';
+import { AccountResponse, AccountSearchListResponse } from '../dto';
+import { ResolvedAccountDto, ResolvedSearchListAccountDto } from '../../uc/dto';
 import { AccountEntity } from '../../entity';
 
 export class AccountResponseMapper {
@@ -21,5 +21,18 @@ export class AccountResponseMapper {
 			username: resolvedAccount.username,
 			updatedAt: resolvedAccount.updatedAt,
 		});
+	}
+
+	static mapToAccountResponses(resolvedAccounts: ResolvedAccountDto[]): AccountResponse[] {
+		return resolvedAccounts.map((resolvedAccount) => AccountResponseMapper.mapToAccountResponse(resolvedAccount));
+	}
+
+	static mapToAccountSearchListResponse(resolvedSearchListAccountDto: ResolvedSearchListAccountDto): AccountSearchListResponse {
+		return new AccountSearchListResponse(
+			AccountResponseMapper.mapToAccountResponses(resolvedSearchListAccountDto.data),
+			resolvedSearchListAccountDto.total,
+			resolvedSearchListAccountDto.skip,
+			resolvedSearchListAccountDto.limit,
+		);
 	}
 }
