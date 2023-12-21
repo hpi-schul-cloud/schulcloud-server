@@ -1,6 +1,7 @@
 import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
 import { RocketChatOptions, RocketChatService } from './rocket-chat.service';
+import { DeleteRocketChatChannelHandler, TeamDeletedSaga } from '@modules/rocketchat/event';
 
 @Module({})
 export class RocketChatModule {
@@ -14,8 +15,10 @@ export class RocketChatModule {
 					provide: 'ROCKET_CHAT_OPTIONS',
 					useValue: options,
 				},
+				DeleteRocketChatChannelHandler,
+				TeamDeletedSaga,
 			],
-			exports: [RocketChatService],
+			exports: [RocketChatService, DeleteRocketChatChannelHandler, TeamDeletedSaga],
 		};
 	}
 }

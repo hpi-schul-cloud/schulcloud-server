@@ -808,6 +808,14 @@ const updateTeamInCollaborativeStorage = (hook) => {
 	});
 };
 
+const triggerDeletedEvent = async (hook) => {
+	const { app } = hook;
+
+	app
+		.service('nest-event-publisher-service')
+		.publishFeathersEvent('team:deleted', { teamId: hook.result._id.toHexString() });
+};
+
 exports.before = {
 	all: [
 		authenticate('jwt'),
@@ -845,7 +853,7 @@ exports.after = {
 	create: [filterToRelated(keys.resId, 'result'), createTeamInCollaborativeStorage],
 	update: [updateTeamInCollaborativeStorage], // test schoolId remove
 	patch: [isUserIsEmpty, addCurrentUser, pushUserChangedEvent, updateTeamInCollaborativeStorage], // test schoolId remove
-	remove: [filterToRelated(keys.resId, 'result')],
+	remove: [filterToRelated(keys.resId, 'result'), triggerDeletedEvent],
 };
 
 exports.beforeExtern = {
