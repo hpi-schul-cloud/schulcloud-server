@@ -149,6 +149,7 @@ export class ExternalToolRepoMapper {
 					location: param.location,
 					type: param.type,
 					isOptional: param.isOptional,
+					isProtected: param.isProtected,
 				})
 		);
 	}
@@ -167,6 +168,7 @@ export class ExternalToolRepoMapper {
 					location: param.location,
 					type: param.type,
 					isOptional: param.isOptional,
+					isProtected: param.isProtected,
 				})
 		);
 	}
