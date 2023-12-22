@@ -220,7 +220,7 @@ export class DeletionRequestUc {
 		this.logger.debug({ action: 'removeUsersFilesAndPermissions', deletionRequest });
 
 		const filesDeleted: number = await this.filesService.markFilesOwnedByUserForDeletion(deletionRequest.targetRefId);
-		const filesUpdated: number = await this.filesService.removeUserPermissionsorCreatorReferenceToAnyFiles(
+		const filesUpdated: number = await this.filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles(
 			deletionRequest.targetRefId
 		);
 		await this.logDeletion(

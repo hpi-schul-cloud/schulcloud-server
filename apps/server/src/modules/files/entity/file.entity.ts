@@ -27,7 +27,7 @@ export interface FileEntityProps {
 	parentId?: EntityId;
 	ownerId: EntityId;
 	refOwnerModel: FileOwnerModel;
-	creatorId: EntityId;
+	creatorId?: EntityId;
 	permissions: FilePermissionEntity[];
 	lockId?: EntityId;
 	versionKey?: number;
@@ -126,7 +126,7 @@ export class FileEntity extends BaseEntityWithTimestamps {
 		}
 	}
 
-	public removePermissionsByRefIdIfMatch(refId: EntityId): void {
+	public removePermissionsByRefId(refId: EntityId): void {
 		const refObjectId = new ObjectId(refId);
 
 		this.permissions = this.permissions.filter((permission) => !permission.refId.equals(refObjectId));
@@ -141,8 +141,10 @@ export class FileEntity extends BaseEntityWithTimestamps {
 		return this.deleted && this.deletedAt !== undefined && !Number.isNaN(this.deletedAt.getTime());
 	}
 
-	public removeCreatorIdIfMatch(creatorId: EntityId): void {
-		this._creatorId = undefined;
+	public removeCreatorId(creatorId: EntityId): void {
+		if (creatorId === this._creatorId?.toHexString()) {
+			this._creatorId = undefined;
+		}
 	}
 
 	constructor(props: FileEntityProps) {

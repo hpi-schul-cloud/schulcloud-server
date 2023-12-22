@@ -54,7 +54,7 @@ describe(FileEntity.name, () => {
 				const expectedFile = copyFile(file);
 				expectedFile.permissions = anotherUsersPermissions;
 
-				file.removePermissionsByRefIdIfMatch(mainUserId);
+				file.removePermissionsByRefId(mainUserId);
 
 				expect(file).toEqual(expectedFile);
 			});
@@ -75,7 +75,7 @@ describe(FileEntity.name, () => {
 
 				const randomUserId = new ObjectId().toHexString();
 
-				file.removePermissionsByRefIdIfMatch(randomUserId);
+				file.removePermissionsByRefId(randomUserId);
 
 				expect(file).toEqual(originalFile);
 			});
@@ -87,7 +87,42 @@ describe(FileEntity.name, () => {
 
 				const originalFile = copyFile(file);
 
-				file.removePermissionsByRefIdIfMatch(mainUserId);
+				file.removePermissionsByRefId(mainUserId);
+
+				expect(file).toEqual(originalFile);
+			});
+		});
+	});
+
+	describe('removCreatorId', () => {
+		describe('when called on a file that contains matching creatorId', () => {
+			it('should properly remove this creatorId', () => {
+				const file = fileEntityFactory.build({
+					ownerId: mainUserId,
+					creatorId: mainUserId,
+				});
+
+				const expectedFile = copyFile(file);
+				expectedFile._creatorId = undefined;
+
+				file.removeCreatorId(mainUserId);
+
+				expect(file).toEqual(expectedFile);
+			});
+		});
+
+		describe("when called on a file that doesn't have any permission with given refId", () => {
+			it('should not modify the file in any way (including the other present permissions)', () => {
+				const file = fileEntityFactory.build({
+					ownerId: mainUserId,
+					creatorId: mainUserId,
+				});
+
+				const originalFile = copyFile(file);
+
+				const randomUserId = new ObjectId().toHexString();
+
+				file.removeCreatorId(randomUserId);
 
 				expect(file).toEqual(originalFile);
 			});

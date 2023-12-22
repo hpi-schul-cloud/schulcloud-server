@@ -11,7 +11,7 @@ export class FilesService {
 		return this.repo.findByPermissionRefIdOrCreatorId(userId);
 	}
 
-	async removeUserPermissionsorCreatorReferenceToAnyFiles(userId: EntityId): Promise<number> {
+	async removeUserPermissionsOrCreatorReferenceToAnyFiles(userId: EntityId): Promise<number> {
 		const entities = await this.repo.findByPermissionRefIdOrCreatorId(userId);
 
 		if (entities.length === 0) {
@@ -19,8 +19,8 @@ export class FilesService {
 		}
 
 		entities.forEach((entity) => {
-			entity.removePermissionsByRefIdIfMatch(userId);
-			entity.removeCreatorIdIfMatch(userId);
+			entity.removePermissionsByRefId(userId);
+			entity.removeCreatorId(userId);
 		});
 
 		await this.repo.save(entities);
