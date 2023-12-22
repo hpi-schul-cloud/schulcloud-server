@@ -12,7 +12,9 @@ export class DeleteRocketChatChannelHandler implements ICommandHandler<DeleteRoc
 
 	async execute(command: DeleteRocketChatChannelCommand): Promise<void> {
 		console.log('delete rocketchat channel ', command.teamId);
-		// this.rocketChatService.deleteGroup()
+		// 1. bla = rocketChatChannelRepo.findByTeamId(command.teamId)
+		// 2. this.rocketChatService.deleteGroup(bla.channelName)
+		// 3. wrap stuff in a "service"
 		return Promise.resolve();
 	}
 }
