@@ -18,7 +18,7 @@ export class AccountResponseMapper {
 			id: resolvedAccount.id,
 			userId: resolvedAccount.userId,
 			activated: resolvedAccount.activated,
-			username: resolvedAccount.username,
+			username: resolvedAccount.username ?? '',
 			updatedAt: resolvedAccount.updatedAt,
 		});
 	}
@@ -27,12 +27,14 @@ export class AccountResponseMapper {
 		return resolvedAccounts.map((resolvedAccount) => AccountResponseMapper.mapToAccountResponse(resolvedAccount));
 	}
 
-	static mapToAccountSearchListResponse(resolvedSearchListAccountDto: ResolvedSearchListAccountDto): AccountSearchListResponse {
+	static mapToAccountSearchListResponse(
+		resolvedSearchListAccountDto: ResolvedSearchListAccountDto
+	): AccountSearchListResponse {
 		return new AccountSearchListResponse(
 			AccountResponseMapper.mapToAccountResponses(resolvedSearchListAccountDto.data),
 			resolvedSearchListAccountDto.total,
 			resolvedSearchListAccountDto.skip,
-			resolvedSearchListAccountDto.limit,
+			resolvedSearchListAccountDto.limit
 		);
 	}
 }

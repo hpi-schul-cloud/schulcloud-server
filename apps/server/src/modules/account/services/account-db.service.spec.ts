@@ -1,23 +1,23 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { IdentityManagementService } from '@src/infra/identity-management';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { AccountEntity, Role, SchoolEntity, User } from '@shared/domain/entity';
+import { IdentityManagementService } from '@src/infra/identity-management';
 
 import { Permission, RoleName } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { accountEntityFactory, accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { accountEntityFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import bcrypt from 'bcryptjs';
 import { LegacyLogger } from '../../../core/logger';
-import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountRepo } from '../repo/account.repo';
+import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountServiceDb } from './account-db.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { AccountDto } from './dto';
+import { Account } from '../domain';
 
 describe('AccountDbService', () => {
 	let module: TestingModule;
@@ -34,10 +34,10 @@ describe('AccountDbService', () => {
 	let mockStudentUser: User;
 	let mockUserWithoutAccount: User;
 
-	let mockTeacherAccount: AccountEntity;
-	let mockStudentAccount: AccountEntity;
+	let mockTeacherAccountEntity: AccountEntity;
+	let mockStudentAccountEntity: AccountEntity;
 
-	let mockAccountWithSystemId: AccountEntity;
+	let mockAccountWithSystemIdEntity: AccountEntity;
 
 	afterAll(async () => {
 		await module.close();
@@ -107,7 +107,7 @@ describe('AccountDbService', () => {
 						}),
 						searchByUsernameExactMatch: jest
 							.fn()
-							.mockImplementation((): Promise<Counted<AccountEntity[]>> => Promise.resolve([[mockTeacherAccount], 1])),
+							.mockImplementation((): Promise<Counted<AccountEntity[]>> => Promise.resolve([[mockTeacherAccountEntity], 1])),
 						searchByUsernamePartialMatch: jest
 							.fn()
 							.mockImplementation(
@@ -166,11 +166,11 @@ describe('AccountDbService', () => {
 			school: mockSchool,
 			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
 		});
-		mockTeacherAccount = accountEntityFactory.buildWithId({ userId: mockTeacherUser.id, password: defaultPassword });
-		mockStudentAccount = accountEntityFactory.buildWithId({ userId: mockStudentUser.id, password: defaultPassword });
+		mockTeacherAccountEntity = accountEntityFactory.buildWithId({ userId: mockTeacherUser.id, password: defaultPassword });
+		mockStudentAccountEntity = accountEntityFactory.buildWithId({ userId: mockStudentUser.id, password: defaultPassword });
 
-		mockAccountWithSystemId = accountEntityFactory.withSystemId(new ObjectId()).build();
-		mockAccounts = [mockTeacherAccount, mockStudentAccount, mockAccountWithSystemId];
+		mockAccountWithSystemIdEntity = accountEntityFactory.withSystemId(new ObjectId()).build();
+		mockAccounts = [mockTeacherAccountEntity, mockStudentAccountEntity, mockAccountWithSystemIdEntity];
 	});
 
 	afterEach(() => {
@@ -182,8 +182,8 @@ describe('AccountDbService', () => {
 		it(
 			'should return accountDto',
 			async () => {
-				const resultAccount = await accountService.findById(mockTeacherAccount.id);
-				expect(resultAccount).toEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccount));
+				const resultAccount = await accountService.findById(mockTeacherAccountEntity.id);
+				expect(resultAccount).toEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccountEntity));
 			},
 			10 * 60 * 1000
 		);
@@ -192,7 +192,7 @@ describe('AccountDbService', () => {
 	describe('findByUserId', () => {
 		it('should return accountDto', async () => {
 			const resultAccount = await accountService.findByUserId(mockTeacherUser.id);
-			expect(resultAccount).toEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccount));
+			expect(resultAccount).toEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccountEntity));
 		});
 		it('should return null', async () => {
 			const resultAccount = await accountService.findByUserId('nonExistentId');
@@ -203,21 +203,21 @@ describe('AccountDbService', () => {
 	describe('findByUsernameAndSystemId', () => {
 		it('should return accountDto', async () => {
 			const resultAccount = await accountService.findByUsernameAndSystemId(
-				mockAccountWithSystemId.username,
-				mockAccountWithSystemId.systemId ?? ''
+				mockAccountWithSystemIdEntity.username,
+				mockAccountWithSystemIdEntity.systemId ?? ''
 			);
 			expect(resultAccount).not.toBe(undefined);
 		});
 		it('should return null if username does not exist', async () => {
 			const resultAccount = await accountService.findByUsernameAndSystemId(
 				'nonExistentUsername',
-				mockAccountWithSystemId.systemId ?? ''
+				mockAccountWithSystemIdEntity.systemId ?? ''
 			);
 			expect(resultAccount).toBeNull();
 		});
 		it('should return null if system id does not exist', async () => {
 			const resultAccount = await accountService.findByUsernameAndSystemId(
-				mockAccountWithSystemId.username,
+				mockAccountWithSystemIdEntity.username,
 				'nonExistentSystemId' ?? ''
 			);
 			expect(resultAccount).toBeNull();
@@ -227,8 +227,8 @@ describe('AccountDbService', () => {
 	describe('findMultipleByUserId', () => {
 		it('should return multiple accountDtos', async () => {
 			const resultAccounts = await accountService.findMultipleByUserId([mockTeacherUser.id, mockStudentUser.id]);
-			expect(resultAccounts).toContainEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccount));
-			expect(resultAccounts).toContainEqual(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
+			expect(resultAccounts).toContainEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccountEntity));
+			expect(resultAccounts).toContainEqual(AccountEntityToDoMapper.mapToDo(mockStudentAccountEntity));
 			expect(resultAccounts).toHaveLength(2);
 		});
 		it('should return empty array on mismatch', async () => {
@@ -240,7 +240,7 @@ describe('AccountDbService', () => {
 	describe('findByUserIdOrFail', () => {
 		it('should return accountDto', async () => {
 			const resultAccount = await accountService.findByUserIdOrFail(mockTeacherUser.id);
-			expect(resultAccount).toEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccount));
+			expect(resultAccount).toEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccountEntity));
 		});
 		it('should throw EntityNotFoundError', async () => {
 			await expect(accountService.findByUserIdOrFail('nonExistentId')).rejects.toThrow(EntityNotFoundError);
@@ -249,44 +249,44 @@ describe('AccountDbService', () => {
 
 	describe('save', () => {
 		it('should update an existing account', async () => {
-			const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDo(mockTeacherAccount);
-			mockTeacherAccountDto.username = 'changedUsername@example.org';
-			mockTeacherAccountDto.activated = false;
-			const ret = await accountService.save(mockTeacherAccountDto);
+			const mockTeacherAccount = AccountEntityToDoMapper.mapToDo(mockTeacherAccountEntity);
+			mockTeacherAccount.username = 'changedUsername@example.org';
+			mockTeacherAccount.activated = false;
+			const ret = await accountService.save(mockTeacherAccount);
 
 			expect(ret).toBeDefined();
 			expect(ret).toMatchObject({
 				id: mockTeacherAccount.id,
-				username: mockTeacherAccountDto.username,
-				activated: mockTeacherAccountDto.activated,
+				username: mockTeacherAccount.username,
+				activated: mockTeacherAccount.activated,
 				systemId: mockTeacherAccount.systemId,
 				userId: mockTeacherAccount.userId,
 			});
 		});
 
 		it("should update an existing account's system", async () => {
-			const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDo(mockTeacherAccount);
-			mockTeacherAccountDto.username = 'changedUsername@example.org';
-			mockTeacherAccountDto.systemId = '123456789012';
-			const ret = await accountService.save(mockTeacherAccountDto);
+			const mockTeacherAccount = AccountEntityToDoMapper.mapToDo(mockTeacherAccountEntity);
+			mockTeacherAccount.username = 'changedUsername@example.org';
+			mockTeacherAccount.systemId = '123456789012';
+			const ret = await accountService.save(mockTeacherAccount);
 			expect(ret).toBeDefined();
 			expect(ret).toMatchObject({
 				id: mockTeacherAccount.id,
-				username: mockTeacherAccountDto.username,
+				username: mockTeacherAccount.username,
 				activated: mockTeacherAccount.activated,
-				systemId: new ObjectId(mockTeacherAccountDto.systemId),
+				systemId: new ObjectId(mockTeacherAccount.systemId),
 				userId: mockTeacherAccount.userId,
 			});
 		});
 		it("should update an existing account's user", async () => {
-			const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDo(mockTeacherAccount);
-			mockTeacherAccountDto.username = 'changedUsername@example.org';
-			mockTeacherAccountDto.userId = mockStudentUser.id;
-			const ret = await accountService.save(mockTeacherAccountDto);
+			const mockTeacherAccount = AccountEntityToDoMapper.mapToDo(mockTeacherAccountEntity);
+			mockTeacherAccount.username = 'changedUsername@example.org';
+			mockTeacherAccount.userId = mockStudentUser.id;
+			const ret = await accountService.save(mockTeacherAccount);
 			expect(ret).toBeDefined();
 			expect(ret).toMatchObject({
 				id: mockTeacherAccount.id,
-				username: mockTeacherAccountDto.username,
+				username: mockTeacherAccount.username,
 				activated: mockTeacherAccount.activated,
 				systemId: mockTeacherAccount.systemId,
 				userId: new ObjectId(mockStudentUser.id),
@@ -294,28 +294,28 @@ describe('AccountDbService', () => {
 		});
 
 		it("should keep existing account's system undefined on update", async () => {
-			const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDo(mockTeacherAccount);
-			mockTeacherAccountDto.username = 'changedUsername@example.org';
-			mockTeacherAccountDto.systemId = undefined;
-			const ret = await accountService.save(mockTeacherAccountDto);
+			const mockTeacherAccount = AccountEntityToDoMapper.mapToDo(mockTeacherAccountEntity);
+			mockTeacherAccount.username = 'changedUsername@example.org';
+			mockTeacherAccount.systemId = undefined;
+			const ret = await accountService.save(mockTeacherAccount);
 			expect(ret).toBeDefined();
 			expect(ret).toMatchObject({
-				id: mockTeacherAccount.id,
-				username: mockTeacherAccountDto.username,
-				activated: mockTeacherAccount.activated,
-				systemId: mockTeacherAccountDto.systemId,
-				userId: mockTeacherAccount.userId,
+				id: mockTeacherAccountEntity.id,
+				username: mockTeacherAccount.username,
+				activated: mockTeacherAccountEntity.activated,
+				systemId: mockTeacherAccount.systemId,
+				userId: mockTeacherAccountEntity.userId,
 			});
 		});
 		it('should save a new account', async () => {
-			const accountToSave: AccountDto = {
+			const accountToSave: Account = {
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				username: 'asdf@asdf.de',
 				userId: mockUserWithoutAccount.id,
 				systemId: '012345678912',
 				password: defaultPassword,
-			} as AccountDto;
+			} as Account;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
 			const ret = await accountService.save(accountToSave);
@@ -330,13 +330,13 @@ describe('AccountDbService', () => {
 		});
 
 		it("should keep account's system undefined on save", async () => {
-			const accountToSave: AccountDto = {
+			const accountToSave: Account = {
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				username: 'asdf@asdf.de',
 				userId: mockUserWithoutAccount.id,
 				password: defaultPassword,
-			} as AccountDto;
+			} as Account;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
 			const ret = await accountService.save(accountToSave);
@@ -354,7 +354,7 @@ describe('AccountDbService', () => {
 				userId: mockUserWithoutAccount.id,
 				systemId: '012345678912',
 				password: defaultPassword,
-			} as AccountDto;
+			} as Account;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
 			await accountService.save(accountToSave);
@@ -370,7 +370,7 @@ describe('AccountDbService', () => {
 			const dto = {
 				username: 'john.doe@domain.tld',
 				password: '',
-			} as AccountDto;
+			} as Account;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
 			await expect(accountService.save(dto)).resolves.not.toThrow();
@@ -385,10 +385,10 @@ describe('AccountDbService', () => {
 		it('should not change password if password is empty while editing an existing account', async () => {
 			const spy = jest.spyOn(accountRepo, 'save');
 			const dto = {
-				id: mockTeacherAccount.id,
+				id: mockTeacherAccountEntity.id,
 				// username: 'john.doe@domain.tld',
 				password: undefined,
-			} as AccountDto;
+			} as Account;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
 			await expect(accountService.save(dto)).resolves.not.toThrow();
@@ -403,13 +403,13 @@ describe('AccountDbService', () => {
 
 	describe('updateUsername', () => {
 		it('should update an existing account but no other information', async () => {
-			const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDo(mockTeacherAccount);
+			const mockTeacherAccount = AccountEntityToDoMapper.mapToDo(mockTeacherAccountEntity);
 			const newUsername = 'newUsername';
-			const ret = await accountService.updateUsername(mockTeacherAccount.id, newUsername);
+			const ret = await accountService.updateUsername(mockTeacherAccountEntity.id, newUsername);
 
 			expect(ret).toBeDefined();
 			expect(ret).toMatchObject({
-				...mockTeacherAccountDto,
+				...mockTeacherAccount,
 				username: newUsername,
 			});
 		});
@@ -417,13 +417,13 @@ describe('AccountDbService', () => {
 
 	describe('updateLastTriedFailedLogin', () => {
 		it('should update last tried failed login', async () => {
-			const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDo(mockTeacherAccount);
+			const mockTeacherAccount = AccountEntityToDoMapper.mapToDo(mockTeacherAccountEntity);
 			const theNewDate = new Date();
-			const ret = await accountService.updateLastTriedFailedLogin(mockTeacherAccount.id, theNewDate);
+			const ret = await accountService.updateLastTriedFailedLogin(mockTeacherAccountEntity.id, theNewDate);
 
 			expect(ret).toBeDefined();
 			expect(ret).toMatchObject({
-				...mockTeacherAccountDto,
+				...mockTeacherAccount,
 				lasttriedFailedLogin: theNewDate,
 			});
 		});
@@ -432,20 +432,20 @@ describe('AccountDbService', () => {
 	describe('validatePassword', () => {
 		it('should validate password', async () => {
 			const ret = await accountService.validatePassword(
-				{ password: await bcrypt.hash(defaultPassword, 10) } as unknown as AccountDto,
+				{ password: await bcrypt.hash(defaultPassword, 10) } as unknown as Account,
 				defaultPassword
 			);
 			expect(ret).toBe(true);
 		});
 		it('should report wrong password', async () => {
 			const ret = await accountService.validatePassword(
-				{ password: await bcrypt.hash(defaultPassword, 10) } as unknown as AccountDto,
+				{ password: await bcrypt.hash(defaultPassword, 10) } as unknown as Account,
 				'incorrectPwd'
 			);
 			expect(ret).toBe(false);
 		});
 		it('should report missing account password', async () => {
-			const ret = await accountService.validatePassword({ password: undefined } as AccountDto, 'incorrectPwd');
+			const ret = await accountService.validatePassword({ password: undefined } as Account, 'incorrectPwd');
 			expect(ret).toBe(false);
 		});
 	});
@@ -453,7 +453,7 @@ describe('AccountDbService', () => {
 	describe('updatePassword', () => {
 		it('should update password', async () => {
 			const newPassword = 'newPassword';
-			const ret = await accountService.updatePassword(mockTeacherAccount.id, newPassword);
+			const ret = await accountService.updatePassword(mockTeacherAccountEntity.id, newPassword);
 
 			expect(ret).toBeDefined();
 			if (ret.password) {
@@ -467,8 +467,8 @@ describe('AccountDbService', () => {
 	describe('delete', () => {
 		describe('when deleting existing account', () => {
 			it('should delete account via repo', async () => {
-				await accountService.delete(mockTeacherAccount.id);
-				expect(accountRepo.deleteById).toHaveBeenCalledWith(new ObjectId(mockTeacherAccount.id));
+				await accountService.delete(mockTeacherAccountEntity.id);
+				expect(accountRepo.deleteById).toHaveBeenCalledWith(new ObjectId(mockTeacherAccountEntity.id));
 			});
 		});
 
@@ -479,15 +479,15 @@ describe('AccountDbService', () => {
 
 			it('should throw', async () => {
 				setup();
-				await expect(accountService.delete(mockTeacherAccount.id)).rejects.toThrow();
+				await expect(accountService.delete(mockTeacherAccountEntity.id)).rejects.toThrow();
 			});
 		});
 	});
 
 	describe('deleteByUserId', () => {
 		it('should delete the account with given user id via repo', async () => {
-			await accountService.deleteByUserId(mockTeacherAccount.userId?.toString() ?? '');
-			expect(accountRepo.deleteByUserId).toHaveBeenCalledWith(mockTeacherAccount.userId);
+			await accountService.deleteByUserId(mockTeacherAccountEntity.userId?.toString() ?? '');
+			expect(accountRepo.deleteByUserId).toHaveBeenCalledWith(mockTeacherAccountEntity.userId);
 		});
 	});
 
@@ -500,7 +500,7 @@ describe('AccountDbService', () => {
 			expect(accountRepo.searchByUsernamePartialMatch).toHaveBeenCalledWith(partialUserName, skip, limit);
 			expect(total).toBe(mockAccounts.length);
 
-			expect(accounts[0]).toEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccount));
+			expect(accounts[0]).toEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccountEntity));
 		});
 	});
 	describe('searchByUsernameExactMatch', () => {
@@ -509,7 +509,7 @@ describe('AccountDbService', () => {
 			const [accounts, total] = await accountService.searchByUsernameExactMatch(partialUserName);
 			expect(accountRepo.searchByUsernameExactMatch).toHaveBeenCalledWith(partialUserName);
 			expect(total).toBe(1);
-			expect(accounts[0]).toEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccount));
+			expect(accounts[0]).toEqual(AccountEntityToDoMapper.mapToDo(mockTeacherAccountEntity));
 		});
 	});
 

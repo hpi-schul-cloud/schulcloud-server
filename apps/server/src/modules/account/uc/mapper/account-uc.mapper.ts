@@ -6,15 +6,14 @@ export class AccountUcMapper {
 	static mapToResolvedAccountDto(account: Account): ResolvedAccountDto {
 		return new ResolvedAccountDto({
 			...account,
-			id: account.id ? account.id : '',
-			// userId: account.userId,
-			// activated: account.activated,
-			username: account.username ? account.username : '',
-			// updatedAt: account.updatedAt,
+			id: account.id,
+			username: account.username,
+			userId: account.userId,
+			activated: account.activated,
+			updatedAt: account.updatedAt,
 		});
 	}
 
-	
 	static mapSearchResult(accountEntities: Counted<Account[]>): Counted<ResolvedAccountDto[]> {
 		const foundAccounts = accountEntities[0];
 		const accountDos: ResolvedAccountDto[] = AccountUcMapper.mapAccountsToDo(foundAccounts);
@@ -24,5 +23,4 @@ export class AccountUcMapper {
 	static mapAccountsToDo(accounts: Account[]): ResolvedAccountDto[] {
 		return accounts.map((account) => AccountUcMapper.mapToResolvedAccountDto(account));
 	}
-
 }

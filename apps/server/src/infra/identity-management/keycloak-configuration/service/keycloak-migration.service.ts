@@ -30,10 +30,10 @@ export class KeycloakMigrationService {
 					const retAccountId = await this.createOrUpdateIdmAccount(account);
 					migratedAccounts += 1;
 					if (verbose) {
-						this.logger.log(`Migration of account ${account.id ? account.id : ''} done, new id is ${retAccountId}.`);
+						this.logger.log(`Migration of account ${account.id} done, new id is ${retAccountId}.`);
 					}
 				} catch (err) {
-					this.logger.error(`Migration of account ${account.id ? account.id : ''} failed.`, err);
+					this.logger.error(`Migration of account ${account.id} failed.`, err);
 				}
 			}
 			skip += foundAccounts;

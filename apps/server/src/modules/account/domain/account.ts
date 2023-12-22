@@ -1,4 +1,3 @@
-import { th } from '@faker-js/faker';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 
@@ -33,6 +32,10 @@ export class Account extends DomainObject<AccountProps> {
 
 	public get userId(): EntityId | undefined {
 		return this.props.userId;
+	}
+
+	public set userId(userId: EntityId | undefined) {
+		this.props.userId = userId;
 	}
 
 	public get systemId(): EntityId | undefined {
@@ -86,5 +89,4 @@ export class Account extends DomainObject<AccountProps> {
 	public get idmReferenceId(): string | undefined {
 		return this.props.idmReferenceId;
 	}
-
 }

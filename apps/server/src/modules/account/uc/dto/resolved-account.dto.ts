@@ -1,13 +1,19 @@
+import { EntityId } from '@shared/domain/types';
+
 export class ResolvedAccountDto {
-	id: string;
-
-	username: string;
-
-	userId?: string;
-
-	activated?: boolean;
-
+	id: EntityId;
 	updatedAt?: Date;
+	createdAt?: Date;
+	userId?: EntityId;
+	systemId?: EntityId;
+	username?: string;
+	password?: string;
+	token?: string;
+	credentialHash?: string;
+	lasttriedFailedLogin?: Date;
+	expiresAt?: Date;
+	activated?: boolean;
+	idmReferenceId?: string;
 
 	constructor(account: ResolvedAccountDto) {
 		this.id = account.id;
@@ -15,6 +21,14 @@ export class ResolvedAccountDto {
 		this.userId = account.userId;
 		this.activated = account.activated;
 		this.updatedAt = account.updatedAt;
+		this.createdAt = account.createdAt;
+		this.systemId = account.systemId;
+		this.password = account.password;
+		this.token = account.token;
+		this.credentialHash = account.credentialHash;
+		this.lasttriedFailedLogin = account.lasttriedFailedLogin;
+		this.expiresAt = account.expiresAt;
+		this.idmReferenceId = account.idmReferenceId;
 	}
 }
 

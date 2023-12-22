@@ -48,7 +48,7 @@ export class AccountController {
 		@Param() params: AccountByIdParams
 	): Promise<AccountResponse> {
 		const resolvedAccount = await this.accountUc.findAccountById(currentUser, params);
-			return AccountResponseMapper.mapToAccountResponse(resolvedAccount);
+		return AccountResponseMapper.mapToAccountResponse(resolvedAccount);
 	}
 
 	// IMPORTANT!!!
@@ -75,7 +75,7 @@ export class AccountController {
 		@Param() params: AccountByIdParams,
 		@Body() body: AccountByIdBodyParams
 	): Promise<AccountResponse> {
-		const resolvedAccount = await this.accountUc.updateAccountById(currentUser, params, body)
+		const resolvedAccount = await this.accountUc.updateAccountById(currentUser, params, body);
 		return AccountResponseMapper.mapToAccountResponse(resolvedAccount);
 	}
 
