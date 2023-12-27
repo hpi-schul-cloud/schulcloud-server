@@ -1,10 +1,11 @@
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { Task } from '@shared/domain/entity';
-import { IFindOptions } from '@shared/domain/interface';
-import { Counted, EntityId } from '@shared/domain/types';
+import { DomainOperation, IFindOptions } from '@shared/domain/interface';
+import { Counted, DomainModel, EntityId } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo';
 import { SubmissionService } from './submission.service';
+import { DomainOperationBuilder } from '../builder/domain-operation.builder';
 
 @Injectable()
 export class TaskService {
@@ -21,6 +22,27 @@ export class TaskService {
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		return this.taskRepo.findBySingleParent(creatorId, courseId, filters, options);
+	}
+
+	async removeCreatorId(creatorId: EntityId): Promise<DomainOperation> {
+		const [tasksByOnlyCreatorId] = await this.taskRepo.findByOnlyCreatorId(creatorId);
+
+		const promiseDeletedTasks = tasksByOnlyCreatorId.map((task: Task) => this.delete(task));
+
+		await Promise.all(promiseDeletedTasks);
+
+		const [tasksByCreatorIdWithCoursesAndLessons] = await this.taskRepo.findByCreatorIdWithCourseAndLesson(creatorId);
+
+		tasksByCreatorIdWithCoursesAndLessons.forEach((task: Task) => task.removeCreatorId());
+		await this.taskRepo.save(tasksByCreatorIdWithCoursesAndLessons);
+
+		// TODO add array with reference od object dleteed and updated
+
+		return DomainOperationBuilder.build(
+			DomainModel.TASK,
+			promiseDeletedTasks.length,
+			tasksByCreatorIdWithCoursesAndLessons.length
+		);
 	}
 
 	async delete(task: Task): Promise<void> {

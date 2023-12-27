@@ -187,6 +187,24 @@ export class TaskRepo extends BaseRepo<Task> {
 		return countedTaskList;
 	}
 
+	async findByOnlyCreatorId(creatorId: EntityId): Promise<Counted<Task[]>> {
+		const scope = new TaskScope();
+		scope.byOnlyCreatorId(creatorId);
+
+		const countedTaskList = await this.findTasksAndCount(scope.query);
+
+		return countedTaskList;
+	}
+
+	async findByCreatorIdWithCourseAndLesson(creatorId: EntityId): Promise<Counted<Task[]>> {
+		const scope = new TaskScope();
+		scope.byCreatorIdWithCourseAndLesson(creatorId);
+
+		const countedTaskList = await this.findTasksAndCount(scope.query);
+
+		return countedTaskList;
+	}
+
 	private async findTasksAndCount(query: FilterQuery<Task>, options?: IFindOptions<Task>): Promise<Counted<Task[]>> {
 		const pagination = options?.pagination || {};
 		const order = options?.order || {};

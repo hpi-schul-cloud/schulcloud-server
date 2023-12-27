@@ -15,7 +15,8 @@ import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from 'bson';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { DeletionDomainModel, DeletionStatusModel } from '../domain/types';
+import { DomainModel } from '@shared/domain/types';
+import { DeletionStatusModel } from '../domain/types';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
 import { DeletionRequestUc } from './deletion-request.uc';
@@ -148,7 +149,7 @@ describe(DeletionRequestUc.name, () => {
 			const setup = () => {
 				const deletionRequestToCreate: DeletionRequestBodyProps = {
 					targetRef: {
-						domain: DeletionDomainModel.USER,
+						domain: DomainModel.USER,
 						id: new ObjectId().toHexString(),
 					},
 					deleteInMinutes: 1440,
