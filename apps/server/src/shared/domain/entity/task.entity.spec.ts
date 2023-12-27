@@ -866,4 +866,23 @@ describe('Task Entity', () => {
 			expect(schoolId).toEqual(school.id);
 		});
 	});
+
+	describe('removeCreatorId is called', () => {
+		describe('WHEN creatorId exists', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId({ creator: user });
+
+				return { task };
+			};
+
+			it('should set it to undefined', () => {
+				const { task } = setup();
+
+				const result = task.removeCreatorId();
+
+				expect(result).toBe(undefined);
+			});
+		});
+	});
 });

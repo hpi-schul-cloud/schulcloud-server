@@ -36,8 +36,6 @@ export class TaskService {
 		tasksByCreatorIdWithCoursesAndLessons.forEach((task: Task) => task.removeCreatorId());
 		await this.taskRepo.save(tasksByCreatorIdWithCoursesAndLessons);
 
-		// TODO add array with reference od object dleteed and updated
-
 		return DomainOperationBuilder.build(
 			DomainModel.TASK,
 			promiseDeletedTasks.length,
