@@ -1437,7 +1437,7 @@
 		"TLDRAW": {
 			"type": "object",
 			"description": "Tldraw managing variables.",
-			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS"],
+			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_FLUSH_SIZE"],
 			"properties": {
 				"SOCKET_PORT": {
 					"type": "number",
@@ -1454,18 +1454,13 @@
 				"DB_FLUSH_SIZE": {
 					"type": "integer",
 					"description": "DB collection flushing size"
-				},
-				"DB_MULTIPLE_COLLECTIONS": {
-					"type": "boolean",
-					"description": "DB collection allowing multiple collections for drawing"
 				}
 			},
 			"default": {
 				"SOCKET_PORT": 3345,
 				"PING_TIMEOUT": 10000,
 				"GC_ENABLED": true,
-				"DB_FLUSH_SIZE": 400,
-				"DB_MULTIPLE_COLLECTIONS": false
+				"DB_FLUSH_SIZE": 400
 			}
 		},
 		"TLDRAW_DB_URL": {

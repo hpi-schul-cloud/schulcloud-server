@@ -24,6 +24,8 @@ import { TldrawBoardRepo } from '../repo';
 export class TldrawWsService {
 	public pingTimeout: number;
 
+	private gcEnabled: boolean;
+
 	public docs = new Map();
 
 	public readonly sub: Redis;
@@ -37,6 +39,7 @@ export class TldrawWsService {
 	) {
 		this.logger.setContext(TldrawWsService.name);
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
+		this.gcEnabled = this.configService.get<boolean>('TLDRAW_GC_ENABLED');
 		const redisUri: string = this.configService.get<string>('REDIS_URI');
 
 		if (!redisUri) {
@@ -138,12 +141,11 @@ export class TldrawWsService {
 	 * Gets a Y.Doc by name, whether in memory or on disk
 	 *
 	 * @param {string} docName - the name of the Y.Doc to find or create
-	 * @param  {boolean} gc - whether to allow gc on the doc (applies only when created)
 	 * @return {WsSharedDocDo}
 	 */
-	public getYDoc(docName: string, gc = true): WsSharedDocDo {
+	public getYDoc(docName: string): WsSharedDocDo {
 		return map.setIfUndefined(this.docs, docName, () => {
-			const doc = new WsSharedDocDo(docName, gc);
+			const doc = new WsSharedDocDo(docName, this.gcEnabled);
 			doc.awareness.on('update', (connectionsUpdate: AwarenessConnectionsUpdate, wsConnection: WebSocket | null) =>
 				this.awarenessUpdateHandler(connectionsUpdate, wsConnection, doc)
 			);
@@ -230,7 +232,7 @@ export class TldrawWsService {
 	public setupWSConnection(ws: WebSocket, docName = 'GLOBAL'): void {
 		ws.binaryType = 'arraybuffer';
 		// get doc, initialize if it does not exist yet
-		const doc = this.getYDoc(docName, true);
+		const doc = this.getYDoc(docName);
 		doc.connections.set(ws, new Set());
 
 		// listen and reply to events
