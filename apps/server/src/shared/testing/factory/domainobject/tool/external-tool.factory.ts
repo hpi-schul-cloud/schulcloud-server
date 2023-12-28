@@ -79,6 +79,7 @@ export const customParameterFactory = CustomParameterFactory.define(CustomParame
 		scope: CustomParameterScope.SCHOOL,
 		location: CustomParameterLocation.BODY,
 		isOptional: false,
+		isProtected: false,
 	};
 });
 
