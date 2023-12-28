@@ -16,6 +16,8 @@ import { ObjectId } from 'bson';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { DomainModel } from '@shared/domain/types';
+import { TaskService } from '@modules/task';
+import { DomainOperationBuilder } from '@src/modules/task/builder';
 import { DeletionStatusModel } from '../domain/types';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
@@ -23,7 +25,7 @@ import { DeletionRequestUc } from './deletion-request.uc';
 import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
 import { deletionLogFactory } from '../domain/testing';
 import { DeletionRequestBodyProps } from '../controller/dto';
-import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder, DeletionLogStatisticBuilder } from '../builder';
+import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
 
 describe(DeletionRequestUc.name, () => {
 	let module: TestingModule;
@@ -44,6 +46,7 @@ describe(DeletionRequestUc.name, () => {
 	let registrationPinService: DeepMocked<RegistrationPinService>;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 	let dashboardService: DeepMocked<DashboardService>;
+	let taskService: DeepMocked<TaskService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -117,6 +120,10 @@ describe(DeletionRequestUc.name, () => {
 					provide: DashboardService,
 					useValue: createMock<DashboardService>(),
 				},
+				{
+					provide: TaskService,
+					useValue: createMock<TaskService>(),
+				},
 			],
 		}).compile();
 
@@ -137,6 +144,7 @@ describe(DeletionRequestUc.name, () => {
 		registrationPinService = module.get(RegistrationPinService);
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 		dashboardService = module.get(DashboardService);
+		taskService = module.get(TaskService);
 		await setupEntities();
 	});
 
@@ -201,6 +209,7 @@ describe(DeletionRequestUc.name, () => {
 					userId: deletionRequestToExecute.targetRefId,
 				});
 				const parentEmail = 'parent@parent.eu';
+				const tasksModified = DomainOperationBuilder.build(DomainModel.TASK, 1, 1);
 
 				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(2);
 				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
@@ -215,6 +224,7 @@ describe(DeletionRequestUc.name, () => {
 				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(1);
 				filesStorageClientAdapterService.removeCreatorIdFromFileRecords.mockResolvedValueOnce(5);
 				dashboardService.deleteDashboardByUserId.mockResolvedValueOnce(1);
+				taskService.removeCreatorId.mockResolvedValueOnce(tasksModified);
 
 				return {
 					deletionRequestToExecute,
@@ -419,6 +429,16 @@ describe(DeletionRequestUc.name, () => {
 				expect(dashboardService.deleteDashboardByUserId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
+			it('should call dashboardService.deleteDashboardByUserId to delete USERS DASHBOARD', async () => {
+				const { deletionRequestToExecute } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+
+				await uc.executeDeletionRequests();
+
+				expect(taskService.removeCreatorId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+			});
+
 			it('should call deletionLogService.createDeletionLog to create logs for deletionRequest', async () => {
 				const { deletionRequestToExecute } = setup();
 
@@ -426,7 +446,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(12);
+				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(13);
 			});
 		});
 
@@ -471,7 +491,7 @@ describe(DeletionRequestUc.name, () => {
 					deletionRequestExecuted.targetRefDomain,
 					deletionRequestExecuted.targetRefId
 				);
-				const statistics = DeletionLogStatisticBuilder.build(
+				const statistics = DomainOperationBuilder.build(
 					deletionLogExecuted.domain,
 					deletionLogExecuted.modifiedCount,
 					deletionLogExecuted.deletedCount

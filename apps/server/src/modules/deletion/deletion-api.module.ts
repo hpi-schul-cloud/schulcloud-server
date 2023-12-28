@@ -18,6 +18,7 @@ import { DeletionRequestsController } from './controller/deletion-requests.contr
 import { DeletionExecutionsController } from './controller/deletion-executions.controller';
 import { DeletionRequestUc } from './uc';
 import { FilesStorageClientModule } from '../files-storage-client';
+import { TaskModule } from '../task';
 
 @Module({
 	imports: [
@@ -35,6 +36,7 @@ import { FilesStorageClientModule } from '../files-storage-client';
 		RocketChatUserModule,
 		RegistrationPinModule,
 		FilesStorageClientModule,
+		TaskModule,
 		RocketChatModule.forRoot({
 			uri: Configuration.get('ROCKET_CHAT_URI') as string,
 			adminId: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,

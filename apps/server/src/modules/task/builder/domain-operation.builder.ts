@@ -4,8 +4,8 @@ import { DomainModel } from '@shared/domain/types';
 export class DomainOperationBuilder {
 	static build(
 		domain: DomainModel,
-		modifiedCount?: number,
-		deletedCount?: number,
+		modifiedCount: number,
+		deletedCount: number,
 		modifiedRef?: string[],
 		deletedRef?: string[]
 	): DomainOperation {

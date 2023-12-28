@@ -13,9 +13,11 @@ import { Injectable } from '@nestjs/common';
 import { DomainModel, EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
+import { TaskService } from '@modules/task';
+import { DomainOperation } from '@shared/domain/interface';
+import { DomainOperationBuilder } from '@src/modules/task/builder/domain-operation.builder';
+import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
-import { DeletionLogStatistic } from './interface/interfaces';
 import { DeletionRequest, DeletionLog } from '../domain';
 import { DeletionOperationModel, DeletionStatusModel } from '../domain/types';
 import { DeletionRequestService, DeletionLogService } from '../services';
@@ -39,7 +41,8 @@ export class DeletionRequestUc {
 		private readonly logger: LegacyLogger,
 		private readonly registrationPinService: RegistrationPinService,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
-		private readonly dashboardService: DashboardService
+		private readonly dashboardService: DashboardService,
+		private readonly taskService: TaskService
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
 	}
@@ -79,10 +82,10 @@ export class DeletionRequestUc {
 
 		if (deletionRequest.status === DeletionStatusModel.SUCCESS) {
 			const deletionLog: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequestId);
-			const deletionLogStatistic: DeletionLogStatistic[] = deletionLog.map((log) =>
-				DeletionLogStatisticBuilder.build(log.domain, log.modifiedCount, log.deletedCount)
+			const domainOperation: DomainOperation[] = deletionLog.map((log) =>
+				DomainOperationBuilder.build(log.domain, log.modifiedCount, log.deletedCount)
 			);
-			response = { ...response, statistics: deletionLogStatistic };
+			response = { ...response, statistics: domainOperation };
 		}
 
 		return response;
@@ -110,6 +113,7 @@ export class DeletionRequestUc {
 				this.removeUserFromRocketChat(deletionRequest),
 				this.removeUserRegistrationPin(deletionRequest),
 				this.removeUsersDashboard(deletionRequest),
+				this.removeUserFromTasks(deletionRequest),
 			]);
 			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
 		} catch (error) {
@@ -125,15 +129,13 @@ export class DeletionRequestUc {
 		updatedCount: number,
 		deletedCount: number
 	): Promise<void> {
-		if (updatedCount > 0 || deletedCount > 0) {
-			await this.deletionLogService.createDeletionLog(
-				deletionRequest.id,
-				domainModel,
-				operationModel,
-				updatedCount,
-				deletedCount
-			);
-		}
+		await this.deletionLogService.createDeletionLog(
+			deletionRequest.id,
+			domainModel,
+			operationModel,
+			updatedCount,
+			deletedCount
+		);
 	}
 
 	private async removeAccount(deletionRequest: DeletionRequest) {
@@ -273,6 +275,20 @@ export class DeletionRequestUc {
 			DeletionOperationModel.DELETE,
 			0,
 			rocketChatUserDeleted
+		);
+	}
+
+	private async removeUserFromTasks(deletionRequest: DeletionRequest) {
+		this.logger.debug({ action: 'removeUserFromTasks', deletionRequest });
+
+		const tasksModified = await this.taskService.removeCreatorId(deletionRequest.targetRefId);
+
+		await this.logDeletion(
+			deletionRequest,
+			DomainModel.TASK,
+			DeletionOperationModel.UPDATE,
+			tasksModified.deletedCount,
+			tasksModified.modifiedCount
 		);
 	}
 }

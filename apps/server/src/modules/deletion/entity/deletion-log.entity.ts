@@ -8,8 +8,8 @@ export interface DeletionLogEntityProps {
 	id?: EntityId;
 	domain: DomainModel;
 	operation?: DeletionOperationModel;
-	modifiedCount?: number;
-	deletedCount?: number;
+	modifiedCount: number;
+	deletedCount: number;
 	deletionRequestId?: ObjectId;
 	performedAt?: Date;
 	createdAt?: Date;
@@ -24,11 +24,11 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	operation?: DeletionOperationModel;
 
-	@Property({ nullable: true })
-	modifiedCount?: number;
+	@Property()
+	modifiedCount: number;
 
-	@Property({ nullable: true })
-	deletedCount?: number;
+	@Property()
+	deletedCount: number;
 
 	@Property({ nullable: true })
 	deletionRequestId?: ObjectId;
@@ -48,14 +48,8 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 		if (props.operation !== undefined) {
 			this.operation = props.operation;
 		}
-
-		if (props.modifiedCount !== undefined) {
-			this.modifiedCount = props.modifiedCount;
-		}
-
-		if (props.deletedCount !== undefined) {
-			this.deletedCount = props.deletedCount;
-		}
+		this.modifiedCount = props.modifiedCount;
+		this.deletedCount = props.deletedCount;
 
 		if (props.deletionRequestId !== undefined) {
 			this.deletionRequestId = props.deletionRequestId;
