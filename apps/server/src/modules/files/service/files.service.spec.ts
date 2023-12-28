@@ -111,7 +111,7 @@ describe(FilesService.name, () => {
 		});
 
 		describe('should properly remove user permissions, creatorId reference', () => {
-			it('in case of just a single file (permission) accessible by given user and couple of files created', async () => {
+			const setup = () => {
 				const userId = new ObjectId().toHexString();
 				const userPermission = filePermissionEntityFactory.build({ refId: userId });
 				const entity = fileEntityFactory.buildWithId({ permissions: [userPermission], creatorId: userId });
@@ -119,6 +119,10 @@ describe(FilesService.name, () => {
 				const entity3 = fileEntityFactory.buildWithId({ permissions: [userPermission] });
 
 				repo.findByPermissionRefIdOrCreatorId.mockResolvedValueOnce([entity, entity2, entity3]);
+				return { userId, userPermission, entity, entity2, entity3 };
+			};
+			it('in case of just a single file (permission) accessible by given user and couple of files created', async () => {
+				const { userId, userPermission, entity, entity2, entity3 } = setup();
 
 				const result = await service.removeUserPermissionsOrCreatorReferenceToAnyFiles(userId);
 

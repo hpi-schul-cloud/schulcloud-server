@@ -96,7 +96,7 @@ describe(FileEntity.name, () => {
 
 	describe('removCreatorId', () => {
 		describe('when called on a file that contains matching creatorId', () => {
-			it('should properly remove this creatorId', () => {
+			const setup = () => {
 				const file = fileEntityFactory.build({
 					ownerId: mainUserId,
 					creatorId: mainUserId,
@@ -105,6 +105,11 @@ describe(FileEntity.name, () => {
 				const expectedFile = copyFile(file);
 				expectedFile._creatorId = undefined;
 
+				return { file, expectedFile };
+			};
+			it('should properly remove this creatorId', () => {
+				const { file, expectedFile } = setup();
+
 				file.removeCreatorId(mainUserId);
 
 				expect(file).toEqual(expectedFile);
@@ -112,7 +117,7 @@ describe(FileEntity.name, () => {
 		});
 
 		describe("when called on a file that doesn't have any permission with given refId", () => {
-			it('should not modify the file in any way (including the other present permissions)', () => {
+			const setup = () => {
 				const file = fileEntityFactory.build({
 					ownerId: mainUserId,
 					creatorId: mainUserId,
@@ -121,6 +126,10 @@ describe(FileEntity.name, () => {
 				const originalFile = copyFile(file);
 
 				const randomUserId = new ObjectId().toHexString();
+				return { file, originalFile, randomUserId };
+			};
+			it('should not modify the file in any way (including the other present permissions)', () => {
+				const { file, originalFile, randomUserId } = setup();
 
 				file.removeCreatorId(randomUserId);
 
