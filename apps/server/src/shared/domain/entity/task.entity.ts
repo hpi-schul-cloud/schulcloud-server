@@ -136,13 +136,11 @@ export class Task extends BaseEntityWithTimestamps implements LearnroomElement, 
 
 	private getMaxSubmissions(): number {
 		const parent = this.getParent();
-		if (parent === undefined) {
-			return 0;
+		let maxSubmissions = 0;
+		if (parent) {
+			// For draft (user as parent) propaly user is not a student, but for maxSubmission one is valid result
+			maxSubmissions = parent instanceof User ? 1 : parent.getStudentIds().length;
 		}
-
-		// For draft (user as parent) propaly user is not a student, but for maxSubmission one is valid result
-		const maxSubmissions = parent instanceof User ? 1 : parent.getStudentIds().length;
-
 		return maxSubmissions;
 	}
 
