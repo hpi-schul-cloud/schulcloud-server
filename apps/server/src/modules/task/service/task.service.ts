@@ -31,16 +31,16 @@ export class TaskService {
 
 		await Promise.all(promiseDeletedTasks);
 
-		const [tasksByCreatorIdWithCoursesAndLessons] = await this.taskRepo.findByCreatorIdWithCourseAndLesson(creatorId);
-
-		tasksByCreatorIdWithCoursesAndLessons.forEach((task: Task) => task.removeCreatorId());
-		await this.taskRepo.save(tasksByCreatorIdWithCoursesAndLessons);
-
-		return DomainOperationBuilder.build(
-			DomainModel.TASK,
-			promiseDeletedTasks.length,
-			tasksByCreatorIdWithCoursesAndLessons.length
+		const [tasksByCreatorIdWithCoursesAndLessons, count] = await this.taskRepo.findByCreatorIdWithCourseAndLesson(
+			creatorId
 		);
+
+		if (count > 0) {
+			tasksByCreatorIdWithCoursesAndLessons.forEach((task: Task) => task.removeCreatorId());
+			await this.taskRepo.save(tasksByCreatorIdWithCoursesAndLessons);
+		}
+
+		return DomainOperationBuilder.build(DomainModel.TASK, promiseDeletedTasks.length, count);
 	}
 
 	async delete(task: Task): Promise<void> {
