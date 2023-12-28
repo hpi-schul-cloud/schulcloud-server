@@ -84,7 +84,7 @@ describe('LegacySchoolRepo', () => {
 		const schoolYear = schoolYearFactory.build();
 		const school = schoolFactory.build({
 			name: 'test',
-			schoolYear,
+			currentYear: schoolYear,
 			previousExternalId: 'someId',
 			userLoginMigration: userLoginMigrationFactory.build(),
 		});
@@ -183,7 +183,11 @@ describe('LegacySchoolRepo', () => {
 		it('should map school entity to school domain object', () => {
 			const system: SystemEntity = systemEntityFactory.buildWithId();
 			const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
-			const schoolEntity: SchoolEntity = schoolFactory.buildWithId({ systems: [system], features: [], schoolYear });
+			const schoolEntity: SchoolEntity = schoolFactory.buildWithId({
+				systems: [system],
+				features: [],
+				currentYear: schoolYear,
+			});
 			const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.build({ school: schoolEntity });
 			schoolEntity.userLoginMigration = userLoginMigration;
 
@@ -252,7 +256,7 @@ describe('LegacySchoolRepo', () => {
 			expect(result.name).toEqual(entityDO.name);
 			expect(result.previousExternalId).toEqual(entityDO.previousExternalId);
 			expect(result.officialSchoolNumber).toEqual(entityDO.officialSchoolNumber);
-			expect(result.schoolYear).toEqual(entityDO.schoolYear);
+			expect(result.currentYear).toEqual(entityDO.schoolYear);
 			expect((result.userLoginMigration as UserLoginMigrationEntity)?.id).toEqual(entityDO.userLoginMigrationId);
 			expect(result.federalState).toEqual(entityDO.federalState);
 

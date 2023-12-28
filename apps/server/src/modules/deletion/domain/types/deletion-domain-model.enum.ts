@@ -5,6 +5,7 @@ export const enum DeletionDomainModel {
 	COURSE = 'course',
 	DASHBOARD = 'dashboard',
 	FILE = 'file',
+	FILERECORDS = 'fileRecords',
 	LESSONS = 'lessons',
 	PSEUDONYMS = 'pseudonyms',
 	REGISTRATIONPIN = 'registrationPin',

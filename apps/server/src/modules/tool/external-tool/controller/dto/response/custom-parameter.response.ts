@@ -36,6 +36,9 @@ export class CustomParameterResponse {
 	@ApiProperty()
 	isOptional: boolean;
 
+	@ApiProperty()
+	isProtected: boolean;
+
 	constructor(props: CustomParameterResponse) {
 		this.name = props.name;
 		this.displayName = props.displayName;
@@ -47,5 +50,6 @@ export class CustomParameterResponse {
 		this.regex = props.regex;
 		this.regexComment = props.regexComment;
 		this.isOptional = props.isOptional;
+		this.isProtected = props.isProtected;
 	}
 }
