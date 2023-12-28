@@ -472,6 +472,27 @@ describe('TldrawWSService', () => {
 			httpService.get.mockReturnValueOnce(of(response));
 
 			await expect(service.authorizeConnection(params.drawingName, params.token)).resolves.not.toThrow();
+			httpService.get.mockRestore();
+		});
+
+		it('should properly setup REST GET call params', async () => {
+			const params = { drawingName: 'drawingName', token: 'token' };
+			const response: AxiosResponse<null> = axiosResponseFactory.build({
+				status: 200,
+			});
+			const expectedUrl = 'http://localhost:3030/api/v3/elements/drawingName/permission';
+			const expectedHeaders = {
+				headers: {
+					Accept: 'Application/json',
+					Authorization: `Bearer ${params.token}`,
+				},
+			};
+			httpService.get.mockReturnValueOnce(of(response));
+
+			await service.authorizeConnection(params.drawingName, params.token);
+
+			expect(httpService.get).toHaveBeenCalledWith(expectedUrl, expectedHeaders);
+			httpService.get.mockRestore();
 		});
 
 		it('should throw error', async () => {
@@ -480,6 +501,7 @@ describe('TldrawWSService', () => {
 			httpService.get.mockReturnValueOnce(throwError(() => error));
 
 			await expect(service.authorizeConnection(params.drawingName, params.token)).rejects.toThrow();
+			httpService.get.mockRestore();
 		});
 	});
 });

@@ -122,39 +122,47 @@ describe('WebSocketController (WsAdapter)', () => {
 
 	describe('when checking cookie', () => {
 		const setup = () => {
-			const closeClientSpy = jest.spyOn(gateway, 'closeClient');
+			const closeClientGatewaySpy = jest.spyOn(gateway, 'closeClient');
+			const closeClientWSSpy = jest.spyOn(ws, 'close');
 			const httpGetCallSpy = jest.spyOn(httpService, 'get');
 			const parseCookieSpy = jest.spyOn(gateway, 'parseCookiesFromHeader').mockReturnValueOnce({});
 
 			return {
-				closeClientSpy,
+				closeClientGatewaySpy,
+				closeClientWSSpy,
 				httpGetCallSpy,
 				parseCookieSpy,
 			};
 		};
 
 		it(`should refuse connection if there is no jwt in cookie`, async () => {
-			const { closeClientSpy, httpGetCallSpy, parseCookieSpy } = setup();
+			const { closeClientGatewaySpy, httpGetCallSpy, parseCookieSpy, closeClientWSSpy } = setup();
 			const { buffer } = getMessage();
 
 			jest.spyOn(gateway, 'parseCookiesFromHeader').mockReturnValueOnce({});
 			ws = await TestConnection.setupWs(wsUrl, 'TEST');
 			ws.send(buffer);
 
-			expect(closeClientSpy).toHaveBeenCalledWith(
+			expect(closeClientGatewaySpy).toHaveBeenCalledWith(
 				expect.anything(),
 				WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
 				WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_JWT_NOT_PROVIDED_MESSAGE
 			);
+			expect(closeClientWSSpy).toHaveBeenCalledWith(
+				WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
+				WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_JWT_NOT_PROVIDED_MESSAGE
+			);
 
-			closeClientSpy.mockRestore();
+			closeClientGatewaySpy.mockRestore();
+			closeClientWSSpy.mockRestore();
 			httpGetCallSpy.mockRestore();
 			parseCookieSpy.mockRestore();
+			closeClientWSSpy.mockRestore();
 			ws.close();
 		});
 
 		it(`should refuse connection if jwt is wrong`, async () => {
-			const { closeClientSpy, httpGetCallSpy, parseCookieSpy } = setup();
+			const { closeClientGatewaySpy, httpGetCallSpy, parseCookieSpy, closeClientWSSpy } = setup();
 			const { buffer } = getMessage();
 			const error = new Error('unknown error');
 
@@ -163,14 +171,18 @@ describe('WebSocketController (WsAdapter)', () => {
 			ws = await TestConnection.setupWs(wsUrl, 'TEST');
 			ws.send(buffer);
 
-			expect(closeClientSpy).toHaveBeenCalledWith(
+			expect(closeClientGatewaySpy).toHaveBeenCalledWith(
 				expect.anything(),
+				WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
+				WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_LACK_PERMISSION_MESSAGE
+			);
+			expect(closeClientWSSpy).toHaveBeenCalledWith(
 				WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
 				WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_LACK_PERMISSION_MESSAGE
 			);
 
 			httpGetCallSpy.mockRestore();
-			closeClientSpy.mockRestore();
+			closeClientGatewaySpy.mockRestore();
 			parseCookieSpy.mockRestore();
 			ws.close();
 		});
