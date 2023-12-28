@@ -22,7 +22,7 @@ export interface TaskCreate extends ITask {
 export interface TaskProperties extends ITask {
 	course?: Course;
 	lesson?: LessonEntity;
-	creator?: User;
+	creator: User;
 	school: SchoolEntity;
 	finished?: User[];
 	private?: boolean;
