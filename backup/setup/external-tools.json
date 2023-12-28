@@ -24,7 +24,8 @@
 				"scope": "global",
 				"location": "query",
 				"type": "string",
-				"isOptional": false
+				"isOptional": false,
+				"isProtected": false
 			},
 			{
 				"name": "search",
@@ -34,7 +35,8 @@
 				"scope": "global",
 				"location": "path",
 				"type": "string",
-				"isOptional": false
+				"isOptional": false,
+				"isProtected": false
 			},
 			{
 				"name": "param1",
@@ -43,7 +45,8 @@
 				"scope": "school",
 				"location": "path",
 				"type": "string",
-				"isOptional": true
+				"isOptional": true,
+				"isProtected": false
 			},
 			{
 				"name": "contextParam",
@@ -54,7 +57,8 @@
 				"scope": "context",
 				"location": "query",
 				"type": "string",
-				"isOptional": false
+				"isOptional": false,
+				"isProtected": false
 			}
 		],
 		"isHidden": false,
@@ -93,7 +97,8 @@
 				"scope": "global",
 				"location": "body",
 				"type": "string",
-				"isOptional": false
+				"isOptional": false,
+				"isProtected": false
 			}
 		],
 		"isHidden": false,
@@ -142,7 +147,8 @@
 			"scope": "school",
 			"location": "path",
 			"type": "string",
-			"isOptional": false
+			"isOptional": false,
+			"isProtected": false
 		}],
 		"isHidden": false,
 		"openNewTab": false,
@@ -168,7 +174,8 @@
 			"scope": "context",
 			"location": "path",
 			"type": "string",
-			"isOptional": false
+			"isOptional": false,
+			"isProtected": false
 		}],
 		"isHidden": false,
 		"openNewTab": false,
@@ -194,7 +201,8 @@
 			"scope": "school",
 			"location": "path",
 			"type": "string",
-			"isOptional": false
+			"isOptional": false,
+			"isProtected": false
 		}, {
 			"name": "contextparammm",
 			"displayName": "cypress test context",
@@ -202,7 +210,8 @@
 			"scope": "context",
 			"location": "path",
 			"type": "string",
-			"isOptional": false
+			"isOptional": false,
+			"isProtected": false
 		}],
 		"isHidden": false,
 		"openNewTab": false,
