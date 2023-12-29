@@ -16,7 +16,7 @@ describe('WebsocketCloseErrorLoggable', () => {
 
 			const message = loggable.getLogMessage();
 
-			expect(message).toEqual({ message: errorMessage, error });
+			expect(message).toEqual({ message: errorMessage, error, type: 'WEBSOCKET_CLOSE_ERROR' });
 		});
 	});
 });
