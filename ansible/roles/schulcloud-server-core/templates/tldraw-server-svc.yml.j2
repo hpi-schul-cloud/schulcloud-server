@@ -18,5 +18,9 @@ spec:
       targetPort: 3349
       protocol: TCP
       name: tldraw-http
+    - port: {{ PORT_METRICS_SERVER }}
+      targetPort: 9090
+      protocol: TCP
+      name: api-metrics
   selector:
     app: tldraw-server

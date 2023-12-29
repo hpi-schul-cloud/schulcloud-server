@@ -14,8 +14,8 @@ import { UserService } from '@modules/user';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
-import { FederalStateEntity, SchoolFeatures, SchoolYearEntity } from '@shared/domain/entity';
-import { EntityId } from '@shared/domain/types';
+import { FederalStateEntity, SchoolYearEntity } from '@shared/domain/entity';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
 import CryptoJS from 'crypto-js';
@@ -62,7 +62,7 @@ export class OidcProvisioningService {
 				name: this.getSchoolName(externalSchool),
 				officialSchoolNumber: externalSchool.officialSchoolNumber,
 				systems: [systemId],
-				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+				features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 				// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
 				schoolYear,
 				federalState,

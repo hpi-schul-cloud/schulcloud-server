@@ -12,6 +12,7 @@ import {
 	LegacySchoolRule,
 	LessonRule,
 	SchoolExternalToolRule,
+	SchoolRule,
 	SchoolSystemOptionsRule,
 	SubmissionRule,
 	SystemRule,
@@ -36,6 +37,7 @@ describe('RuleManager', () => {
 	let boardDoRule: DeepMocked<BoardDoRule>;
 	let contextExternalToolRule: DeepMocked<ContextExternalToolRule>;
 	let userLoginMigrationRule: DeepMocked<UserLoginMigrationRule>;
+	let schoolRule: DeepMocked<SchoolRule>;
 	let groupRule: DeepMocked<GroupRule>;
 	let systemRule: DeepMocked<SystemRule>;
 	let schoolSystemOptionsRule: DeepMocked<SchoolSystemOptionsRule>;
@@ -59,6 +61,7 @@ describe('RuleManager', () => {
 				{ provide: BoardDoRule, useValue: createMock<BoardDoRule>() },
 				{ provide: ContextExternalToolRule, useValue: createMock<ContextExternalToolRule>() },
 				{ provide: UserLoginMigrationRule, useValue: createMock<UserLoginMigrationRule>() },
+				{ provide: SchoolRule, useValue: createMock<SchoolRule>() },
 				{ provide: SystemRule, useValue: createMock<SystemRule>() },
 				{ provide: SchoolSystemOptionsRule, useValue: createMock<SchoolSystemOptionsRule>() },
 			],
@@ -77,6 +80,7 @@ describe('RuleManager', () => {
 		boardDoRule = await module.get(BoardDoRule);
 		contextExternalToolRule = await module.get(ContextExternalToolRule);
 		userLoginMigrationRule = await module.get(UserLoginMigrationRule);
+		schoolRule = await module.get(SchoolRule);
 		groupRule = await module.get(GroupRule);
 		systemRule = await module.get(SystemRule);
 		schoolSystemOptionsRule = await module.get(SchoolSystemOptionsRule);
@@ -110,6 +114,7 @@ describe('RuleManager', () => {
 				boardDoRule.isApplicable.mockReturnValueOnce(false);
 				contextExternalToolRule.isApplicable.mockReturnValueOnce(false);
 				userLoginMigrationRule.isApplicable.mockReturnValueOnce(false);
+				schoolRule.isApplicable.mockReturnValueOnce(false);
 				groupRule.isApplicable.mockReturnValueOnce(false);
 				systemRule.isApplicable.mockReturnValueOnce(false);
 				schoolSystemOptionsRule.isApplicable.mockReturnValueOnce(false);
@@ -134,6 +139,7 @@ describe('RuleManager', () => {
 				expect(boardDoRule.isApplicable).toBeCalled();
 				expect(contextExternalToolRule.isApplicable).toBeCalled();
 				expect(userLoginMigrationRule.isApplicable).toBeCalled();
+				expect(schoolRule.isApplicable).toBeCalled();
 				expect(groupRule.isApplicable).toBeCalled();
 				expect(systemRule.isApplicable).toBeCalled();
 				expect(schoolSystemOptionsRule.isApplicable).toBeCalled();
@@ -166,6 +172,7 @@ describe('RuleManager', () => {
 				boardDoRule.isApplicable.mockReturnValueOnce(false);
 				contextExternalToolRule.isApplicable.mockReturnValueOnce(false);
 				userLoginMigrationRule.isApplicable.mockReturnValueOnce(false);
+				schoolRule.isApplicable.mockReturnValueOnce(false);
 				groupRule.isApplicable.mockReturnValueOnce(false);
 				systemRule.isApplicable.mockReturnValueOnce(false);
 				schoolSystemOptionsRule.isApplicable.mockReturnValueOnce(false);
@@ -198,6 +205,7 @@ describe('RuleManager', () => {
 				boardDoRule.isApplicable.mockReturnValueOnce(false);
 				contextExternalToolRule.isApplicable.mockReturnValueOnce(false);
 				userLoginMigrationRule.isApplicable.mockReturnValueOnce(false);
+				schoolRule.isApplicable.mockReturnValueOnce(false);
 				groupRule.isApplicable.mockReturnValueOnce(false);
 				systemRule.isApplicable.mockReturnValueOnce(false);
 				schoolSystemOptionsRule.isApplicable.mockReturnValueOnce(false);

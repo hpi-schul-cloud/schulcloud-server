@@ -21,6 +21,8 @@ export class CustomParameter {
 
 	isOptional: boolean;
 
+	isProtected: boolean;
+
 	constructor(props: CustomParameter) {
 		this.name = props.name;
 		this.displayName = props.displayName;
@@ -32,5 +34,6 @@ export class CustomParameter {
 		this.regex = props.regex;
 		this.regexComment = props.regexComment;
 		this.isOptional = props.isOptional;
+		this.isProtected = props.isProtected;
 	}
 }

@@ -833,4 +833,23 @@ describe('FileRecord Entity', () => {
 			});
 		});
 	});
+
+	describe('removeCreatorId is called', () => {
+		describe('WHEN creatorId exists', () => {
+			const setup = () => {
+				const creatorId = new ObjectId().toHexString();
+				const fileRecord = fileRecordFactory.build({ creatorId });
+
+				return { fileRecord, creatorId };
+			};
+
+			it('should set it to undefined', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.removeCreatorId();
+
+				expect(result).toBe(undefined);
+			});
+		});
+	});
 });
