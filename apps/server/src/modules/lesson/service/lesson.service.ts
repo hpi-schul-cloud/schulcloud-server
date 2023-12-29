@@ -3,14 +3,18 @@ import { Injectable } from '@nestjs/common';
 import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { AuthorizationLoaderService } from '@src/modules/authorization';
+import { LegacyLogger } from '@src/core/logger';
 import { LessonRepo } from '../repository';
 
 @Injectable()
 export class LessonService implements AuthorizationLoaderService {
 	constructor(
 		private readonly lessonRepo: LessonRepo,
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
-	) {}
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
+		private readonly logger: LegacyLogger
+	) {
+		this.logger.setContext(LessonService.name);
+	}
 
 	async deleteLesson(lesson: LessonEntity): Promise<void> {
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(lesson.id);
@@ -33,6 +37,7 @@ export class LessonService implements AuthorizationLoaderService {
 	}
 
 	async deleteUserDataFromLessons(userId: EntityId): Promise<number> {
+		this.logger.log({ action: 'Deleting User Data From Lesson for user ', userId });
 		const lessons = await this.lessonRepo.findByUserId(userId);
 
 		const updatedLessons = lessons.map((lesson: LessonEntity) => {
@@ -46,6 +51,8 @@ export class LessonService implements AuthorizationLoaderService {
 		});
 
 		await this.lessonRepo.save(updatedLessons);
+
+		this.logger.log({ action: 'Deleted User Data From Lesson for user ', userId });
 
 		return updatedLessons.length;
 	}
