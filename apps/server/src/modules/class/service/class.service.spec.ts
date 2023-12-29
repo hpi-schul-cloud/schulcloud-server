@@ -4,6 +4,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@shared/testing';
+import { LegacyLogger } from '@src/core/logger';
 import { Class } from '../domain';
 import { classFactory } from '../domain/testing';
 import { classEntityFactory } from '../entity/testing';
@@ -23,6 +24,10 @@ describe(ClassService.name, () => {
 				{
 					provide: ClassesRepo,
 					useValue: createMock<ClassesRepo>(),
+				},
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

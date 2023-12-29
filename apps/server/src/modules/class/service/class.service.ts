@@ -2,10 +2,13 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Class } from '../domain';
 import { ClassesRepo } from '../repo';
+import { LegacyLogger } from '@src/core/logger';
 
 @Injectable()
 export class ClassService {
-	constructor(private readonly classesRepo: ClassesRepo) {}
+	constructor(private readonly classesRepo: ClassesRepo, private readonly logger: LegacyLogger) {
+		this.logger.setContext(ClassService.name);
+	}
 
 	public async findClassesForSchool(schoolId: EntityId): Promise<Class[]> {
 		const classes: Class[] = await this.classesRepo.findAllBySchoolId(schoolId);
@@ -19,8 +22,9 @@ export class ClassService {
 		return classes;
 	}
 
-	// FIXME There is no usage of this method
 	public async deleteUserDataFromClasses(userId: EntityId): Promise<number> {
+		this.logger.log({ action: 'Deleting data from Classes for user ', userId });
+
 		if (!userId) {
 			throw new InternalServerErrorException('User id is missing');
 		}
@@ -35,6 +39,8 @@ export class ClassService {
 		});
 
 		await this.classesRepo.updateMany(updatedClasses);
+		this.logger.log({ action: 'Deleted data from Classes for user ', userId });
+
 
 		return updatedClasses.length;
 	}
