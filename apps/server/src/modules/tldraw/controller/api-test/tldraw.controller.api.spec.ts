@@ -1,18 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/mongodb';
-import {
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { drawingElementNodeFactory } from '@shared/testing/factory/boardnode/drawing-element-node.factory';
-import { TldrawTestModule } from '@modules/tldraw';
+import { ServerTestModule } from '@modules/server';
+import { Logger } from '@src/core/logger';
+import { TldrawService } from '../../service';
+import { TldrawController } from '..';
+import { TldrawRepo } from '../../repo';
+import { tldrawEntityFactory } from '../../factory';
 
 const baseRouteName = '/tldraw-document';
 describe('tldraw controller (api)', () => {
@@ -22,7 +17,9 @@ describe('tldraw controller (api)', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [TldrawTestModule],
+			imports: [ServerTestModule],
+			controllers: [TldrawController],
+			providers: [Logger, TldrawService, TldrawRepo],
 		}).compile();
 
 		app = module.createNestApplication();
@@ -43,30 +40,30 @@ describe('tldraw controller (api)', () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
-				context: { id: course.id, type: BoardExternalReferenceType.Course },
-			});
+			const drawingItemData = tldrawEntityFactory.build();
 
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-
-			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-
-			const drawingItemNode = drawingElementNodeFactory.buildWithId({ parent: cardNode });
-
-			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, drawingItemNode]);
+			await em.persistAndFlush([drawingItemData]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, teacherUser, columnBoardNode, columnNode, cardNode, drawingItemNode };
+			return { loggedInClient, teacherUser, drawingItemData };
 		};
 
 		it('should return status 200 for delete', async () => {
-			const { loggedInClient, drawingItemNode } = await setup();
+			const { loggedInClient, drawingItemData } = await setup();
 
-			const response = await loggedInClient.delete(`${drawingItemNode.id}`);
+			const response = await loggedInClient.delete(`${drawingItemData.docName}`);
 
-			expect(response.status).toEqual(200);
+			expect(response.status).toEqual(204);
+		});
+
+		it('should return status 404 for delete with wrong id', async () => {
+			const { loggedInClient } = await setup();
+
+			const response = await loggedInClient.delete(`testID123`);
+
+			expect(response.status).toEqual(404);
 		});
 	});
 });
