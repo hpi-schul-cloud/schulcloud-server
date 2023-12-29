@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userDoFactory } from '@shared/testing';
+import { LegacyLogger } from '@src/core/logger';
 import { RegistrationPinService } from '.';
 import { RegistrationPinRepo } from '../repo';
 
@@ -16,6 +17,10 @@ describe(RegistrationPinService.name, () => {
 				{
 					provide: RegistrationPinRepo,
 					useValue: createMock<RegistrationPinRepo>(),
+				},
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
