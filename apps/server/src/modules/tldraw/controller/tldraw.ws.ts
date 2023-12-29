@@ -31,12 +31,12 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 				this.closeClient(
 					client,
 					WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
-					WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_LACK_PERMISSION_MESSAGE
+					WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE
 				);
 				this.logger.warning(
 					new WebsocketCloseErrorLoggable(
 						err as Error,
-						`(${WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE}) ${WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_LACK_PERMISSION_MESSAGE}`
+						`(${WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE}) ${WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE}`
 					)
 				);
 			}

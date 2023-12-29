@@ -211,7 +211,7 @@ export class TldrawWsService {
 	}
 
 	public async authorizeConnection(drawingName: string, token: string) {
-		if (token.length === 0) {
+		if (!token) {
 			throw new UnauthorizedException('Token was not given');
 		}
 		const headers = {

@@ -5,7 +5,6 @@ export enum WsCloseCodeEnum {
 }
 export enum WsCloseMessageEnum {
 	WS_CLIENT_BAD_REQUEST_MESSAGE = 'Document name is mandatory in url or Tldraw Tool is turned off.',
-	WS_CLIENT_UNAUTHORISED_CONNECTION_LACK_PERMISSION_MESSAGE = "Unauthorised connection - you don't have permission to this drawing.",
-	WS_CLIENT_UNAUTHORISED_CONNECTION_JWT_NOT_PROVIDED_MESSAGE = 'Unauthorised connection - authorization token was not provided.',
+	WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE = "Unauthorised connection - you don't have permission to this drawing.",
 	WS_CLIENT_ESTABLISHING_CONNECTION_MESSAGE = 'Unable to establish websocket connection.',
 }
