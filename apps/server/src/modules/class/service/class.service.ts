@@ -1,8 +1,8 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { LegacyLogger } from '@src/core/logger';
 import { Class } from '../domain';
 import { ClassesRepo } from '../repo';
-import { LegacyLogger } from '@src/core/logger';
 
 @Injectable()
 export class ClassService {
@@ -40,7 +40,6 @@ export class ClassService {
 
 		await this.classesRepo.updateMany(updatedClasses);
 		this.logger.log({ action: 'Deleted data from Classes for user ', userId });
-
 
 		return updatedClasses.length;
 	}

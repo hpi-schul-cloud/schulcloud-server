@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CourseGroupRepo, UserRepo } from '@shared/repo';
 import { courseGroupFactory, setupEntities, userFactory } from '@shared/testing';
 import { CourseGroupService } from './coursegroup.service';
+import { LegacyLogger } from '@src/core/logger';
 
 describe('CourseGroupService', () => {
 	let module: TestingModule;
@@ -22,6 +23,10 @@ describe('CourseGroupService', () => {
 				{
 					provide: CourseGroupRepo,
 					useValue: createMock<CourseGroupRepo>(),
+				},
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
