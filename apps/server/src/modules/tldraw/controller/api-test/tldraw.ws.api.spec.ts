@@ -251,5 +251,34 @@ describe('WebSocketController (WsAdapter)', () => {
 			httpGetCallSpy.mockRestore();
 			ws.close();
 		});
+
+		it(`should close after throw at setup connection`, async () => {
+			const { parseCookieSpy, setupConnectionSpy, closeClientSpy } = setup();
+			const { buffer } = getMessage();
+
+			parseCookieSpy.mockReturnValueOnce({ jwt: 'jwt-mocked' });
+			const httpGetCallSpy = jest
+				.spyOn(wsService, 'authorizeConnection')
+				.mockImplementationOnce(() => Promise.resolve());
+			setupConnectionSpy.mockImplementationOnce(() => {
+				throw new Error('unknown error');
+			});
+
+			ws = await TestConnection.setupWs(wsUrl, 'TEST');
+			ws.send(buffer);
+
+			expect(setupConnectionSpy).toHaveBeenCalledWith(expect.anything(), 'TEST');
+			expect(closeClientSpy).toHaveBeenCalledWith(
+				expect.anything(),
+				WsCloseCodeEnum.WS_CLIENT_ESTABLISHING_CONNECTION_CODE,
+				WsCloseMessageEnum.WS_CLIENT_ESTABLISHING_CONNECTION_MESSAGE
+			);
+
+			closeClientSpy.mockRestore();
+			setupConnectionSpy.mockRestore();
+			parseCookieSpy.mockRestore();
+			httpGetCallSpy.mockRestore();
+			ws.close();
+		});
 	});
 });
