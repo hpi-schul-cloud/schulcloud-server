@@ -1,12 +1,15 @@
+import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CommonCartridgeExportService, CourseService } from '@modules/learnroom';
+import { CommonCartridgeExportService, CourseService, LearnroomConfig } from '@modules/learnroom';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType, Course, LessonEntity, Task } from '@shared/domain/entity';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import AdmZip from 'adm-zip';
 import { CommonCartridgeVersion } from '../../common-cartridge';
+import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
@@ -14,6 +17,7 @@ describe('CommonCartridgeExportService', () => {
 	let courseServiceMock: DeepMocked<CourseService>;
 	let lessonServiceMock: DeepMocked<LessonService>;
 	let taskServiceMock: DeepMocked<TaskService>;
+	let configService: DeepMocked<ConfigService<LearnroomConfig, true>>;
 
 	// move into setup methods
 	let course: Course;
@@ -30,6 +34,7 @@ describe('CommonCartridgeExportService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CommonCartridgeExportService,
+				CommonCartridgeMapper,
 				{
 					provide: CourseService,
 					useValue: createMock<CourseService>(),
@@ -42,12 +47,17 @@ describe('CommonCartridgeExportService', () => {
 					provide: TaskService,
 					useValue: createMock<TaskService>(),
 				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService<LearnroomConfig, true>>(),
+				},
 			],
 		}).compile();
 		courseExportService = module.get(CommonCartridgeExportService);
 		courseServiceMock = module.get(CourseService);
 		lessonServiceMock = module.get(LessonService);
 		taskServiceMock = module.get(TaskService);
+		configService = module.get(ConfigService);
 		// TODO: everything below this line belongs into setup methods
 		course = courseFactory.teachersWithId(2).buildWithId();
 		tasks = taskFactory.buildListWithId(2);
@@ -74,7 +84,7 @@ describe('CommonCartridgeExportService', () => {
 								url: 'url-1',
 							},
 							{
-								client: 'board-2',
+								client: 'client-2',
 								description: 'description-2',
 								title: 'title-2',
 								url: 'url-2',
@@ -94,10 +104,11 @@ describe('CommonCartridgeExportService', () => {
 		const setupExport = async (version: CommonCartridgeVersion) => {
 			const [lesson] = lessons;
 
-			lessonServiceMock.findById.mockResolvedValueOnce(lesson);
-			courseServiceMock.findById.mockResolvedValueOnce(course);
-			lessonServiceMock.findByCourseIds.mockResolvedValueOnce([lessons, lessons.length]);
-			taskServiceMock.findBySingleParent.mockResolvedValueOnce([tasks, tasks.length]);
+			lessonServiceMock.findById.mockResolvedValue(lesson);
+			courseServiceMock.findById.mockResolvedValue(course);
+			lessonServiceMock.findByCourseIds.mockResolvedValue([lessons, lessons.length]);
+			taskServiceMock.findBySingleParent.mockResolvedValue([tasks, tasks.length]);
+			configService.getOrThrow.mockReturnValue(faker.internet.url());
 
 			const archive = new AdmZip(await courseExportService.exportCourse(course.id, 'user-id', version));
 

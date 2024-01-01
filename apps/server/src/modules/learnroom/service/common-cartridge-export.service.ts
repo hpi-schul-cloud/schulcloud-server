@@ -29,13 +29,17 @@ export class CommonCartridgeExportService {
 
 		builder.addMetadata(this.commonCartridgeMapper.mapCourseToMetadata(course));
 
-		await this.addLessons(builder, courseId);
-		await this.addTasks(builder, courseId, userId);
+		await this.addLessons(builder, courseId, version);
+		await this.addTasks(builder, courseId, userId, version);
 
 		return builder.build();
 	}
 
-	private async addLessons(builder: CommonCartridgeFileBuilder, courseId: EntityId): Promise<void> {
+	private async addLessons(
+		builder: CommonCartridgeFileBuilder,
+		courseId: EntityId,
+		version: CommonCartridgeVersion
+	): Promise<void> {
 		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
 
 		lessons.forEach((lesson) => {
@@ -50,18 +54,23 @@ export class CommonCartridgeExportService {
 			lesson.tasks.getItems().forEach((task) => {
 				organizationBuilder
 					.addSubOrganization(this.commonCartridgeMapper.mapTaskToOrganization(task))
-					.addResource(this.commonCartridgeMapper.mapTaskToResource(task));
+					.addResource(this.commonCartridgeMapper.mapTaskToResource(task, version));
 			});
 		});
 	}
 
-	private async addTasks(builder: CommonCartridgeFileBuilder, courseId: EntityId, userId: EntityId): Promise<void> {
+	private async addTasks(
+		builder: CommonCartridgeFileBuilder,
+		courseId: EntityId,
+		userId: EntityId,
+		version: CommonCartridgeVersion
+	): Promise<void> {
 		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
 
 		tasks.forEach((task) => {
 			builder
 				.addOrganization(this.commonCartridgeMapper.mapTaskToOrganization(task))
-				.addResource(this.commonCartridgeMapper.mapTaskToResource(task));
+				.addResource(this.commonCartridgeMapper.mapTaskToResource(task, version));
 		});
 	}
 

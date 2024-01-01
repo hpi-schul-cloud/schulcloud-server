@@ -9,6 +9,7 @@ import {
 	CommonCartridgeOrganizationBuilderOptions,
 	CommonCartridgeResourceProps,
 	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
 } from '../../common-cartridge';
 import { LearnroomConfig } from '../learnroom.config';
 
@@ -46,13 +47,24 @@ export class CommonCartridgeMapper {
 		};
 	}
 
-	public mapTaskToResource(task: Task): CommonCartridgeResourceProps {
+	public mapTaskToResource(task: Task, version: CommonCartridgeVersion): CommonCartridgeResourceProps {
+		const intendedUse: CommonCartridgeIntendedUseType = (() => {
+			switch (version) {
+				case CommonCartridgeVersion.V_1_1_0:
+					return CommonCartridgeIntendedUseType.UNSPECIFIED;
+				case CommonCartridgeVersion.V_1_3_0:
+					return CommonCartridgeIntendedUseType.ASSIGNMENT;
+				default:
+					return CommonCartridgeIntendedUseType.UNSPECIFIED;
+			}
+		})();
+
 		return {
 			type: CommonCartridgeResourceType.WEB_CONTENT,
 			identifier: task.id,
 			title: task.name,
 			html: `<h1>${task.name}</h1><p>${task.description}</p>`,
-			intendedUse: CommonCartridgeIntendedUseType.ASSIGNMENT,
+			intendedUse,
 		};
 	}
 

@@ -2,7 +2,7 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentProperties, ComponentType } from '@shared/domain';
+import { ComponentProperties, ComponentType } from '@shared/domain/entity';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { OmitVersion } from '@src/modules/common-cartridge/utils';
 import {
@@ -12,6 +12,7 @@ import {
 	CommonCartridgeOrganizationBuilderOptions,
 	CommonCartridgeResourceProps,
 	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
 } from '../../common-cartridge';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeMapper } from './common-cartridge.mapper';
@@ -137,7 +138,7 @@ describe('CommonCartridgeMapper', () => {
 
 			it('should map to web content', () => {
 				const { task } = setup();
-				const resourceProps = sut.mapTaskToResource(task);
+				const resourceProps = sut.mapTaskToResource(task, CommonCartridgeVersion.V_1_3_0);
 
 				expect(resourceProps).toStrictEqual<CommonCartridgeResourceProps>({
 					type: CommonCartridgeResourceType.WEB_CONTENT,
@@ -305,6 +306,7 @@ describe('CommonCartridgeMapper', () => {
 		});
 
 		describe('when no learn store content is provided', () => {
+			// AI next 16 lines
 			const setup = () => {
 				const componentProps: ComponentProperties = {
 					_id: 'id',
