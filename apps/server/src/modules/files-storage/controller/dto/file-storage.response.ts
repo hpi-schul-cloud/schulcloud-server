@@ -14,6 +14,7 @@ export class FileRecordResponse {
 		this.creatorId = fileRecord.creatorId;
 		this.mimeType = fileRecord.mimeType;
 		this.parentType = fileRecord.parentType;
+		this.fileExists = fileRecord.fileExists;
 		this.deletedSince = fileRecord.deletedSince;
 		this.previewStatus = fileRecord.getPreviewStatus();
 	}
@@ -45,6 +46,9 @@ export class FileRecordResponse {
 
 	@ApiProperty({ enum: FileRecordParentType, enumName: 'FileRecordParentType' })
 	parentType: FileRecordParentType;
+
+	@ApiProperty()
+	fileExists: boolean;
 
 	@ApiProperty({ enum: PreviewStatus, enumName: 'PreviewStatus' })
 	previewStatus: PreviewStatus;
