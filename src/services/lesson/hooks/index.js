@@ -207,7 +207,6 @@ const restrictToUsersCoursesLessons = async (context) => {
 const restrictToUsersDraftLessons = async (context) => {
 	const user = await context.app.service('users').get(context.params.account.userId, { query: { $populate: 'roles' } });
 	const userIsStudent = user.roles.filter((u) => u.name === 'student').length > 0;
-
 	const lesson = await context.app.service('lessons').get(context.id);
 	const isDraft = lesson.hidden;
 
