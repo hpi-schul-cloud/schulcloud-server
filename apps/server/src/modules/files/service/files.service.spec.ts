@@ -114,6 +114,7 @@ describe(FilesService.name, () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
 				const userPermission = filePermissionEntityFactory.build({ refId: userId });
+
 				const entity = fileEntityFactory.buildWithId({ permissions: [userPermission], creatorId: userId });
 				const entity2 = fileEntityFactory.buildWithId({ creatorId: userId });
 				const entity3 = fileEntityFactory.buildWithId({ permissions: [userPermission] });
