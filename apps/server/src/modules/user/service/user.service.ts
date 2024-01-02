@@ -13,6 +13,7 @@ import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { LegacyLogger } from '@src/core/logger';
 import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
@@ -25,8 +26,11 @@ export class UserService {
 		private readonly userDORepo: UserDORepo,
 		private readonly configService: ConfigService<UserConfig, true>,
 		private readonly roleService: RoleService,
-		private readonly accountService: AccountService
-	) {}
+		private readonly accountService: AccountService,
+		private readonly logger: LegacyLogger
+	) {
+		this.logger.setContext(UserService.name);
+	}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
 		const user = await this.userRepo.findById(userId, true);
@@ -124,7 +128,10 @@ export class UserService {
 	}
 
 	async deleteUser(userId: EntityId): Promise<number> {
+		this.logger.log({ action: 'Deleting user ', userId });
 		const deletedUserNumber: Promise<number> = this.userRepo.deleteUser(userId);
+
+		this.logger.log({ action: 'Deleted user ', userId });
 
 		return deletedUserNumber;
 	}
