@@ -4,6 +4,7 @@ import { Course } from '@shared/domain/entity';
 import { CourseRepo, UserRepo } from '@shared/repo';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { CourseService } from './course.service';
+import { LegacyLogger } from '@src/core/logger';
 
 describe('CourseService', () => {
 	let module: TestingModule;
@@ -23,6 +24,10 @@ describe('CourseService', () => {
 				{
 					provide: CourseRepo,
 					useValue: createMock<CourseRepo>(),
+				},
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
