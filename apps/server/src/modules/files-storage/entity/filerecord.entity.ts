@@ -120,6 +120,9 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	@Enum()
 	parentType: FileRecordParentType;
 
+	@Property()
+	fileExists: boolean;
+
 	@Index()
 	@Property({ fieldName: 'parent' })
 	_parentId: ObjectId;
@@ -161,6 +164,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this.name = props.name;
 		this.mimeType = props.mimeType;
 		this.parentType = props.parentType;
+		this.fileExists = false;
 		this._parentId = new ObjectId(props.parentId);
 		if (props.creatorId !== undefined) {
 			this._creatorId = new ObjectId(props.creatorId);
