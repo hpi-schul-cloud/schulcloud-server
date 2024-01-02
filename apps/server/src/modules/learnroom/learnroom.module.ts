@@ -23,9 +23,10 @@ import {
 	DashboardService,
 	RoomsService,
 } from './service';
+import { ContextExternalToolModule } from '../tool/context-external-tool';
 
 @Module({
-	imports: [LessonModule, TaskModule, CopyHelperModule, BoardModule, LoggerModule],
+	imports: [LessonModule, TaskModule, CopyHelperModule, BoardModule, LoggerModule, ContextExternalToolModule],
 	providers: [
 		{
 			provide: 'DASHBOARD_REPO',
