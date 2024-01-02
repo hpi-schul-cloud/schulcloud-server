@@ -18,7 +18,7 @@ import { DeletionRequestsController } from './controller/deletion-requests.contr
 import { DeletionExecutionsController } from './controller/deletion-executions.controller';
 import { DeletionRequestUc } from './uc';
 import { FilesStorageClientModule } from '../files-storage-client';
-import { TaskModule } from '../task';
+import { TaskModule } from '@modules/task';
 
 @Module({
 	imports: [
