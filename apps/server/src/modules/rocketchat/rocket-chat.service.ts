@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
+import { LegacyLogger } from '@src/core/logger';
 import { lastValueFrom } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -73,8 +74,11 @@ export class RocketChatService {
 
 	constructor(
 		@Inject('ROCKET_CHAT_OPTIONS') private readonly options: RocketChatOptions,
-		private readonly httpService: HttpService
-	) {}
+		private readonly httpService: HttpService,
+		private readonly logger: LegacyLogger
+	) {
+		this.logger.setContext(RocketChatService.name);
+	}
 
 	public async me(authToken: string, userId: string): Promise<GenericData> {
 		return this.get('/api/v1/me', authToken, userId);
@@ -181,9 +185,14 @@ export class RocketChatService {
 	}
 
 	public async deleteUser(username: string): Promise<GenericData> {
-		return this.postAsAdmin('/api/v1/users.delete', {
+		this.logger.log({ action: 'Deleting user Data from RocketChat Service for user ', username });
+		const deletedUser: Promise<GenericData> = this.postAsAdmin('/api/v1/users.delete', {
 			username,
 		});
+
+		this.logger.log({ action: 'Deleting user Data from RocketChat Service for user ', username });
+
+		return deletedUser;
 	}
 
 	private async postAsAdmin(path: string, body: GenericData): Promise<GenericData> {
