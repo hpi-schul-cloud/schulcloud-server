@@ -8,6 +8,7 @@ import { BoardCopyService } from './board-copy.service';
 import { RoomsService } from './rooms.service';
 import { ContextExternalToolService } from '../../tool/context-external-tool/service';
 import { ToolContextType } from '../../tool/common/enum';
+import { ContextExternalTool, ContextRef } from '../../tool/context-external-tool/domain';
 
 type CourseCopyParams = {
 	originalCourse: Course;
@@ -51,8 +52,21 @@ export class CourseCopyService {
 		// copy course and board
 		const courseCopy = await this.copyCourseEntity({ user, originalCourse, copyName });
 		if (Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED')) {
-			await this.contextExternalToolService.copyContextExternalTools(courseId, ToolContextType.COURSE, courseCopy.id);
+			const contextRef: ContextRef = { id: courseId, type: ToolContextType.COURSE };
+			const contextExternalToolsInContext = await this.contextExternalToolService.findAllByContext(contextRef);
+
+			await Promise.all(
+				contextExternalToolsInContext.map(async (tool: ContextExternalTool): Promise<ContextExternalTool> => {
+					const copiedTool: ContextExternalTool = await this.contextExternalToolService.copyContextExternalTool(
+						tool,
+						courseCopy.id
+					);
+
+					return copiedTool;
+				})
+			);
 		}
+
 		const boardStatus = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
 		const finishedCourseCopy = await this.finishCourseCopying(courseCopy);
 

@@ -16,14 +16,20 @@ import {
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
+import { ContextExternalTool } from '../../../tool/context-external-tool/domain';
 
 export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 	resultMap = new Map<EntityId, CopyStatus>();
 
 	copyMap = new Map<EntityId, AnyBoardDo>();
 
-	constructor(private readonly fileCopyService: SchoolSpecificFileCopyService) {}
+	constructor(
+		private readonly fileCopyService: SchoolSpecificFileCopyService,
+		private readonly contextExternalToolService: ContextExternalToolService
+	) {}
 
 	async copy(original: AnyBoardDo): Promise<CopyStatus> {
 		await original.acceptAsync(this);
@@ -235,7 +241,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		return Promise.resolve();
 	}
 
-	visitExternalToolElementAsync(original: ExternalToolElement): Promise<void> {
+	async visitExternalToolElementAsync(original: ExternalToolElement): Promise<void> {
 		const copy = new ExternalToolElement({
 			id: new ObjectId().toHexString(),
 			contextExternalToolId: undefined,
@@ -243,6 +249,17 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
+
+		if (Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED') && original.contextExternalToolId) {
+			const tool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(
+				original.contextExternalToolId
+			);
+
+			const copiedTool = await this.contextExternalToolService.copyContextExternalTool(tool, copy.id);
+
+			copy.contextExternalToolId = copiedTool.id;
+		}
+
 		this.resultMap.set(original.id, {
 			copyEntity: copy,
 			type: CopyElementType.EXTERNAL_TOOL_ELEMENT,

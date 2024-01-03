@@ -10,7 +10,6 @@ import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
 import { CommonToolService } from '../../common/service';
 import { CustomParameter, CustomParameterEntry } from '../../common/domain';
-import { ToolContextType } from '../../common/enum';
 
 @Injectable()
 export class ContextExternalToolService {
@@ -79,40 +78,38 @@ export class ContextExternalToolService {
 		}
 	}
 
-	public async copyContextExternalTools(courseId: EntityId, contextType: ToolContextType, courseCopyId: EntityId) {
-		const contextRef: ContextRef = { id: courseId, type: contextType };
-		const contextExternalToolsInContext = await this.findAllByContext(contextRef);
+	public async copyContextExternalTool(
+		tool: ContextExternalTool,
+		contextCopyId: EntityId
+	): Promise<ContextExternalTool> {
+		tool.id = undefined;
+		tool.contextRef.id = contextCopyId;
 
-		const copyableContextExternalTools: ContextExternalTool[] = await Promise.all(
-			contextExternalToolsInContext.map(async (tool: ContextExternalTool): Promise<ContextExternalTool> => {
-				tool.id = undefined;
-				tool.contextRef.id = courseCopyId;
-
-				const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
-					tool.schoolToolRef.schoolToolId
-				);
-				const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
-
-				if (externalTool.parameters) {
-					externalTool.parameters.map((parameter: CustomParameter): CustomParameter => {
-						if (parameter.isProtected) {
-							this.deleteProtectedValues(tool, parameter.name);
-						}
-						return parameter;
-					});
-				}
-				return tool;
-			})
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
+			tool.schoolToolRef.schoolToolId
 		);
+		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
-		await this.contextExternalToolRepo.saveAll(copyableContextExternalTools);
+		if (externalTool.parameters) {
+			externalTool.parameters.forEach((parameter: CustomParameter): CustomParameter => {
+				if (parameter.isProtected) {
+					this.deleteProtectedValues(tool, parameter.name);
+				}
+				return parameter;
+			});
+		}
+		const copiedTool = await this.contextExternalToolRepo.save(tool);
+
+		return copiedTool;
 	}
 
 	private deleteProtectedValues(contextExternalTool: ContextExternalTool, protectedParameterName: string): void {
-		const protectedParameter: CustomParameterEntry = contextExternalTool.parameters.filter(
+		const protectedParameter: CustomParameterEntry | undefined = contextExternalTool.parameters.find(
 			(param: CustomParameterEntry): boolean => param.name === protectedParameterName
-		)[0];
+		);
 
-		protectedParameter.value = undefined;
+		if (protectedParameter) {
+			protectedParameter.value = undefined;
+		}
 	}
 }
