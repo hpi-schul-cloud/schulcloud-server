@@ -71,6 +71,7 @@ describe('ExternalToolRequestMapper', () => {
 				customParameterPostParams.regex = 'mockRegex';
 				customParameterPostParams.regexComment = 'mockComment';
 				customParameterPostParams.isOptional = false;
+				customParameterPostParams.isProtected = false;
 
 				const externalToolCreateParams = new ExternalToolCreateParams();
 				externalToolCreateParams.name = 'mockName';
@@ -159,6 +160,7 @@ describe('ExternalToolRequestMapper', () => {
 				customParameterPostParams.regex = 'mockRegex';
 				customParameterPostParams.regexComment = 'mockComment';
 				customParameterPostParams.isOptional = false;
+				customParameterPostParams.isProtected = false;
 
 				const externalToolCreateParams = new ExternalToolCreateParams();
 				externalToolCreateParams.name = 'mockName';
@@ -244,6 +246,7 @@ describe('ExternalToolRequestMapper', () => {
 				customParameterPostParams.regex = 'mockRegex';
 				customParameterPostParams.regexComment = 'mockComment';
 				customParameterPostParams.isOptional = false;
+				customParameterPostParams.isProtected = false;
 
 				const externalToolCreateParams = new ExternalToolCreateParams();
 				externalToolCreateParams.name = 'mockName';
@@ -312,6 +315,7 @@ describe('ExternalToolRequestMapper', () => {
 				customParameterPostParams.regex = 'mockRegex';
 				customParameterPostParams.regexComment = 'mockComment';
 				customParameterPostParams.isOptional = false;
+				customParameterPostParams.isProtected = false;
 
 				const externalToolUpdateParams = new ExternalToolUpdateParams();
 				externalToolUpdateParams.id = 'id';
@@ -404,6 +408,7 @@ describe('ExternalToolRequestMapper', () => {
 				customParameterPostParams.regex = 'mockRegex';
 				customParameterPostParams.regexComment = 'mockComment';
 				customParameterPostParams.isOptional = false;
+				customParameterPostParams.isProtected = false;
 
 				const externalToolUpdateParams = new ExternalToolUpdateParams();
 				externalToolUpdateParams.id = 'id';
@@ -493,6 +498,7 @@ describe('ExternalToolRequestMapper', () => {
 				customParameterPostParams.regex = 'mockRegex';
 				customParameterPostParams.regexComment = 'mockComment';
 				customParameterPostParams.isOptional = false;
+				customParameterPostParams.isProtected = false;
 
 				const externalToolUpdateParams = new ExternalToolUpdateParams();
 				externalToolUpdateParams.id = 'id';

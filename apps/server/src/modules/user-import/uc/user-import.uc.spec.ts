@@ -10,9 +10,9 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { ImportUser, MatchCreator, SchoolEntity, SchoolFeatures, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { MatchCreatorScope } from '@shared/domain/types';
+import { MatchCreatorScope, SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';
@@ -110,7 +110,7 @@ describe('[ImportUserModule]', () => {
 		const createMockSchoolDo = (school?: SchoolEntity): LegacySchoolDo => {
 			const name = school ? school.name : 'testSchool';
 			const id = school ? school.id : 'someId';
-			const features = school ? school.features ?? [SchoolFeatures.LDAP_UNIVENTION_MIGRATION] : [];
+			const features = school ? school.features ?? [SchoolFeature.LDAP_UNIVENTION_MIGRATION] : [];
 			const externalId = school ? school.externalId : undefined;
 			const officialSchoolNumber = school ? school.officialSchoolNumber : undefined;
 			const inMaintenanceSince = school ? school.inMaintenanceSince : undefined;

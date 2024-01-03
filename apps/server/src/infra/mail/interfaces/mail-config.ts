@@ -1,3 +1,3 @@
 export interface MailConfig {
-	ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS: string[];
+	BLOCKLIST_OF_EMAIL_DOMAINS: string[];
 }

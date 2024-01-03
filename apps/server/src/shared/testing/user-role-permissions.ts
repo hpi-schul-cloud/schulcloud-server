@@ -131,6 +131,8 @@ export const adminPermissions = [
 	Permission.SCHOOL_LOGO_MANAGE,
 	Permission.SCHOOL_CHAT_MANAGE,
 	Permission.SCHOOL_STUDENT_TEAM_MANAGE,
+	Permission.SCHOOL_SYSTEM_EDIT,
+	Permission.SCHOOL_SYSTEM_VIEW,
 	Permission.SYSTEM_EDIT,
 	Permission.SYNC_START,
 	Permission.SCHOOL_PERMISSION_VIEW,

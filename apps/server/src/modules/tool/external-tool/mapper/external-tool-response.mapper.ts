@@ -94,6 +94,7 @@ export class ExternalToolResponseMapper {
 				location: locationMapping[customParameterDO.location],
 				type: typeMapping[customParameterDO.type],
 				isOptional: customParameterDO.isOptional,
+				isProtected: customParameterDO.isProtected,
 			};
 		});
 	}

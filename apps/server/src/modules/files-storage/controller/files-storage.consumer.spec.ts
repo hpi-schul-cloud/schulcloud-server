@@ -219,4 +219,51 @@ describe('FilesStorageConsumer', () => {
 			});
 		});
 	});
+
+	describe('removeCreatorIdFromFileRecords()', () => {
+		describe('WHEN valid file exists', () => {
+			const setup = () => {
+				const creatorId = new ObjectId().toHexString();
+
+				const fileRecords = fileRecordFactory.buildList(3, { creatorId });
+				filesStorageService.getFileRecordsByCreatorId.mockResolvedValue([fileRecords, fileRecords.length]);
+
+				return { creatorId, fileRecords };
+			};
+
+			it('should call filesStorageService.getFileRecordsByCreatorId', async () => {
+				const { creatorId } = setup();
+
+				await service.removeCreatorIdFromFileRecords(creatorId);
+
+				expect(filesStorageService.getFileRecordsByCreatorId).toBeCalledWith(creatorId);
+			});
+
+			it('should call filesStorageService.removeCreatorIdFromFileRecords with params', async () => {
+				const { creatorId, fileRecords } = setup();
+
+				await service.removeCreatorIdFromFileRecords(creatorId);
+
+				expect(filesStorageService.removeCreatorIdFromFileRecords).toBeCalledWith(fileRecords);
+			});
+		});
+
+		describe('WHEN no file exists', () => {
+			const setup = () => {
+				const creatorId = new ObjectId().toHexString();
+
+				filesStorageService.getFileRecordsByCreatorId.mockResolvedValue([[], 0]);
+
+				return { creatorId };
+			};
+
+			it('should return RpcMessage with empty array', async () => {
+				const { creatorId } = setup();
+
+				const response = await service.removeCreatorIdFromFileRecords(creatorId);
+
+				expect(response).toStrictEqual({ message: [] });
+			});
+		});
+	});
 });

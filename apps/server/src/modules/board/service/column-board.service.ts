@@ -46,7 +46,7 @@ export class ColumnBoardService {
 			return rootBoardDo;
 		}
 
-		throw new NotFoundLoggableException(ColumnBoard.name, 'id', rootId);
+		throw new NotFoundLoggableException(ColumnBoard.name, { id: rootId });
 	}
 
 	async getBoardObjectTitlesById(boardIds: EntityId[]): Promise<Record<EntityId, string>> {
