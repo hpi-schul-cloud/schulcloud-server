@@ -143,7 +143,7 @@ export class ElementController {
 		return response;
 	}
 
-	@ApiOperation({ summary: 'Check if user has permission for any course element.' })
+	@ApiOperation({ summary: 'Check if user has read permission for any board element.' })
 	@ApiResponse({ status: 200 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
