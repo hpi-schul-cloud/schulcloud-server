@@ -3,8 +3,12 @@ import { Injectable } from '@nestjs/common';
 import { Course, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BoardCopyService } from './board-copy.service';
 import { RoomsService } from './rooms.service';
+import { ContextExternalToolService } from '../../tool/context-external-tool/service';
+import { ToolContextType } from '../../tool/common/enum';
+import { ContextExternalTool, ContextRef } from '../../tool/context-external-tool/domain';
 
 type CourseCopyParams = {
 	originalCourse: Course;
@@ -20,7 +24,8 @@ export class CourseCopyService {
 		private readonly roomsService: RoomsService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
-		private readonly userRepo: UserRepo
+		private readonly userRepo: UserRepo,
+		private readonly contextExternalToolService: ContextExternalToolService
 	) {}
 
 	async copyCourse({
@@ -46,6 +51,22 @@ export class CourseCopyService {
 
 		// copy course and board
 		const courseCopy = await this.copyCourseEntity({ user, originalCourse, copyName });
+		if (Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED')) {
+			const contextRef: ContextRef = { id: courseId, type: ToolContextType.COURSE };
+			const contextExternalToolsInContext = await this.contextExternalToolService.findAllByContext(contextRef);
+
+			await Promise.all(
+				contextExternalToolsInContext.map(async (tool: ContextExternalTool): Promise<ContextExternalTool> => {
+					const copiedTool: ContextExternalTool = await this.contextExternalToolService.copyContextExternalTool(
+						tool,
+						courseCopy.id
+					);
+
+					return copiedTool;
+				})
+			);
+		}
+
 		const boardStatus = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
 		const finishedCourseCopy = await this.finishCourseCopying(courseCopy);
 
@@ -82,6 +103,11 @@ export class CourseCopyService {
 				type: CopyElementType.METADATA,
 				status: CopyStatusEnum.SUCCESS,
 			},
+			/* {
+				// TODO N21-1507 WTH does this do? Implement logic for PARTIAL?
+				type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
+				status: CopyStatusEnum.SUCCESS,
+			}, */
 			{
 				type: CopyElementType.USER_GROUP,
 				status: CopyStatusEnum.NOT_DOING,

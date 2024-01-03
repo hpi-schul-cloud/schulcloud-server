@@ -9,6 +9,7 @@ import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
 import { CommonToolService } from '../../common/service';
+import { CustomParameter, CustomParameterEntry } from '../../common/domain';
 
 @Injectable()
 export class ContextExternalToolService {
@@ -74,6 +75,41 @@ export class ContextExternalToolService {
 
 		if (this.commonToolService.isContextRestricted(externalTool, contextExternalTool.contextRef.type)) {
 			throw new RestrictedContextMismatchLoggable(externalTool.name, contextExternalTool.contextRef.type);
+		}
+	}
+
+	public async copyContextExternalTool(
+		tool: ContextExternalTool,
+		contextCopyId: EntityId
+	): Promise<ContextExternalTool> {
+		tool.id = undefined;
+		tool.contextRef.id = contextCopyId;
+
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
+			tool.schoolToolRef.schoolToolId
+		);
+		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
+
+		if (externalTool.parameters) {
+			externalTool.parameters.forEach((parameter: CustomParameter): CustomParameter => {
+				if (parameter.isProtected) {
+					this.deleteProtectedValues(tool, parameter.name);
+				}
+				return parameter;
+			});
+		}
+		const copiedTool = await this.contextExternalToolRepo.save(tool);
+
+		return copiedTool;
+	}
+
+	private deleteProtectedValues(contextExternalTool: ContextExternalTool, protectedParameterName: string): void {
+		const protectedParameter: CustomParameterEntry | undefined = contextExternalTool.parameters.find(
+			(param: CustomParameterEntry): boolean => param.name === protectedParameterName
+		);
+
+		if (protectedParameter) {
+			protectedParameter.value = undefined;
 		}
 	}
 }

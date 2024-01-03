@@ -1400,6 +1400,11 @@
 			"default": false,
 			"description": "Enables the calculation of the outdated status of an external tool without the usage of the db attribute version"
 		},
+		"FEATURE_CTL_TOOLS_COPY_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the copying of ctl tools when copying a course."
+		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
 			"description": "TSP School Syncer properties",
