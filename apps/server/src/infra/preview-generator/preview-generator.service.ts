@@ -1,7 +1,8 @@
 import { GetFile, S3ClientAdapter } from '@infra/s3-client';
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { ErrorUtils } from '@src/core/error/utils';
 import { Logger } from '@src/core/logger';
-import { subClass } from 'gm';
+import m, { subClass } from 'gm';
 import { PassThrough } from 'stream';
 import { PreviewFileOptions, PreviewInputMimeTypes, PreviewOptions, PreviewResponseMessage } from './interface';
 import { PreviewActionsLoggable } from './loggable/preview-actions.loggable';
@@ -23,8 +24,7 @@ export class PreviewGeneratorService {
 
 		this.checkIfPreviewPossible(original, params);
 
-		const preview = this.resizeAndConvert(original, previewOptions);
-
+		const preview = await this.resizeAndConvert(original, previewOptions);
 		const file = PreviewGeneratorBuilder.buildFile(preview, params.previewOptions);
 
 		await this.storageClient.create(previewFilePath, file);
@@ -53,7 +53,7 @@ export class PreviewGeneratorService {
 		return file;
 	}
 
-	private resizeAndConvert(original: GetFile, previewParams: PreviewOptions): PassThrough {
+	private async resizeAndConvert(original: GetFile, previewParams: PreviewOptions): Promise<PassThrough> {
 		const { format, width } = previewParams;
 
 		const preview = this.imageMagick(original.data);
@@ -70,8 +70,51 @@ export class PreviewGeneratorService {
 			preview.resize(width, undefined, '>');
 		}
 
-		const result = preview.stream(format);
+		return this.convert(preview, format);
+	}
 
-		return result;
+	private convert(preview: m.State, format: string) {
+		const promise = new Promise<PassThrough>((resolve, reject) => {
+			preview.stream(format, (err, stdout, stderr) => {
+				if (err) {
+					stderr.emit('error', err);
+				}
+
+				const errorChunks: Array<Uint8Array> = [];
+
+				stdout.on('error', (error) => {
+					stderr.emit('error', error);
+				});
+
+				stderr.on('error', (error) => {
+					reject(
+						new InternalServerErrorException(
+							'CREATE_PREVIEW_NOT_POSSIBLE',
+							ErrorUtils.createHttpExceptionOptions(error)
+						)
+					);
+				});
+
+				stderr.on('data', (chunk: Uint8Array) => {
+					errorChunks.push(chunk);
+				});
+
+				stderr.on('end', () => {
+					let errorMessage = '';
+					Buffer.concat(errorChunks).forEach((chunk) => {
+						errorMessage += String.fromCharCode(chunk);
+					});
+					if (errorMessage !== '') {
+						stderr.emit('error', errorMessage);
+					} else {
+						const throughStream = new PassThrough();
+						stdout.pipe(throughStream);
+						resolve(throughStream);
+					}
+				});
+			});
+		});
+
+		return promise;
 	}
 }

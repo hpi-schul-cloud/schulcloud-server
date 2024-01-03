@@ -1,6 +1,6 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { GetFile, S3ClientAdapter } from '@infra/s3-client';
-import { UnprocessableEntityException } from '@nestjs/common';
+import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
 import { Readable } from 'node:stream';
@@ -284,6 +284,45 @@ describe('PreviewGeneratorService', () => {
 
 				expect(resizeMock).not.toHaveBeenCalledWith(params.previewOptions.width, undefined, '>');
 				expect(resizeMock).not.toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('WHEN stream throw an error', () => {
+			const setup = () => {
+				const params = {
+					originFilePath: 'file/test.jpeg',
+					previewFilePath: 'preview/text.webp',
+					previewOptions: {
+						format: 'webp',
+					},
+				};
+				const originFile = createFile(undefined, 'image/jpeg');
+				s3ClientAdapter.get.mockResolvedValueOnce(originFile);
+
+				const error = new Error('imagemagic is not found');
+				streamMock.mockReturnValueOnce({
+					on: jest.fn().mockImplementation((event: string, callback) => {
+						if (event === 'error') {
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+							callback(error);
+						}
+					}),
+				});
+
+				const expectedFileData = {
+					data: '',
+					mimeType: params.previewOptions.format,
+				};
+
+				return { params, originFile, expectedFileData };
+			};
+
+			it('should throw error', async () => {
+				const { params } = setup();
+
+				const error = new InternalServerErrorException('ImageMagick problem');
+
+				await expect(service.generatePreview(params)).rejects.toThrowError(error);
 			});
 		});
 	});
