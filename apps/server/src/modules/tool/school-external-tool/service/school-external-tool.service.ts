@@ -59,6 +59,7 @@ export class SchoolExternalToolService {
 	): Promise<SchoolExternalToolConfigurationStatus> {
 		const status: SchoolExternalToolConfigurationStatus = new SchoolExternalToolConfigurationStatus({
 			isOutdatedOnScopeSchool: true,
+			isDeactivated: externalTool.isDeactivated || tool.status ? tool.status!.isDeactivated : false,
 		});
 
 		if (this.toolFeatures.toolStatusWithoutVersions) {

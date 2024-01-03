@@ -84,6 +84,7 @@ export class ToolLaunchService {
 		};
 	}
 
+	// TODO is tool outdated OR deactivated ?
 	private async isToolStatusLatestOrThrow(
 		userId: EntityId,
 		externalTool: ExternalTool,
@@ -97,12 +98,13 @@ export class ToolLaunchService {
 				contextExternalTool
 			);
 
-		if (status.isOutdatedOnScopeSchool || status.isOutdatedOnScopeContext) {
+		if (status.isOutdatedOnScopeSchool || status.isOutdatedOnScopeContext || status.isDeactivated) {
 			throw new ToolStatusOutdatedLoggableException(
 				userId,
 				contextExternalTool.id ?? '',
 				status.isOutdatedOnScopeSchool,
-				status.isOutdatedOnScopeContext
+				status.isOutdatedOnScopeContext,
+				status.isDeactivated
 			);
 		}
 	}

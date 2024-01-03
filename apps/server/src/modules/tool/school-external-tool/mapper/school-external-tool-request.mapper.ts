@@ -11,6 +11,7 @@ export class SchoolExternalToolRequestMapper {
 			schoolId: request.schoolId,
 			toolVersion: request.version,
 			parameters: this.mapRequestToCustomParameterEntryDO(request.parameters ?? []),
+			status: { isOutdatedOnScopeSchool: false, isDeactivated: request.isDeactivated },
 		};
 	}
 
