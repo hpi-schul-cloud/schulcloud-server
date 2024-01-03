@@ -1,5 +1,6 @@
 import { DomainModel } from '@shared/domain/types';
-import { DomainOperationBuilder } from './domain-operation.builder';
+import { ObjectId } from 'bson';
+import { DomainOperationBuilder } from '.';
 
 describe(DomainOperationBuilder.name, () => {
 	afterAll(() => {
@@ -10,9 +11,11 @@ describe(DomainOperationBuilder.name, () => {
 		// Arrange
 		const domain = DomainModel.PSEUDONYMS;
 		const modifiedCount = 0;
+		const modifiedRef = [];
+		const deletedRef = [new ObjectId().toHexString(), new ObjectId().toHexString()];
 		const deletedCount = 2;
 
-		const result = DomainOperationBuilder.build(domain, modifiedCount, deletedCount);
+		const result = DomainOperationBuilder.build(domain, modifiedCount, deletedCount, modifiedRef, deletedRef);
 
 		// Assert
 		expect(result.domain).toEqual(domain);

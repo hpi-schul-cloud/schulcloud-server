@@ -4,8 +4,8 @@ import { Task } from '@shared/domain/entity';
 import { DomainOperation, IFindOptions } from '@shared/domain/interface';
 import { Counted, DomainModel, EntityId } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { SubmissionService } from './submission.service';
-import { DomainOperationBuilder } from '../builder/domain-operation.builder';
 
 @Injectable()
 export class TaskService {

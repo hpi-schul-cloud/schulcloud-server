@@ -15,7 +15,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { TaskService } from '@modules/task';
 import { DomainOperation } from '@shared/domain/interface';
-import { DomainOperationBuilder } from '@src/modules/task/builder/domain-operation.builder';
+import { DomainOperationBuilder } from '@shared/domain/builder/domain-operation.builder';
 import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionRequest, DeletionLog } from '../domain';

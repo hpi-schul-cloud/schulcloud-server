@@ -14,11 +14,11 @@ import { RocketChatUserModule } from '@modules/rocketchat-user';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { RocketChatModule } from '@modules/rocketchat';
 import { RegistrationPinModule } from '@modules/registration-pin';
+import { TaskModule } from '@modules/task';
 import { DeletionRequestsController } from './controller/deletion-requests.controller';
 import { DeletionExecutionsController } from './controller/deletion-executions.controller';
 import { DeletionRequestUc } from './uc';
 import { FilesStorageClientModule } from '../files-storage-client';
-import { TaskModule } from '@modules/task';
 
 @Module({
 	imports: [

@@ -4,9 +4,9 @@ import { TaskRepo } from '@shared/repo';
 import { courseFactory, setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { DomainModel } from '@shared/domain/types';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
-import { DomainOperationBuilder } from '../builder/domain-operation.builder';
 
 describe('TaskService', () => {
 	let module: TestingModule;

@@ -17,7 +17,7 @@ import { RegistrationPinService } from '@modules/registration-pin';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { DomainModel } from '@shared/domain/types';
 import { TaskService } from '@modules/task';
-import { DomainOperationBuilder } from '@src/modules/task/builder';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { DeletionStatusModel } from '../domain/types';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
