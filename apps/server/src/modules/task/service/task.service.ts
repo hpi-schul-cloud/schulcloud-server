@@ -24,26 +24,12 @@ export class TaskService {
 		return this.taskRepo.findBySingleParent(creatorId, courseId, filters, options);
 	}
 
-	async removeCreatorId(creatorId: EntityId): Promise<DomainOperation> {
-		const [tasksByOnlyCreatorId, counterOfTasksOnlyWithCreatorId] = await this.taskRepo.findByOnlyCreatorId(creatorId);
+	async removeUserFromTasks(creatorId: EntityId): Promise<DomainOperation> {
+		const deletedTaskWithCreatorId = await this.deleteTasksByOnlyCreator(creatorId);
 
-		const promiseDeletedTasks = tasksByOnlyCreatorId.map((task: Task) => this.delete(task));
+		const updatedTasksWithCreatorId = await this.removeCreatorIdFromTasks(creatorId);
 
-		await Promise.all(promiseDeletedTasks);
-
-		const [tasksByCreatorIdWithCoursesAndLessons, counterOfTasksWithCoursesorLessons] =
-			await this.taskRepo.findByCreatorIdWithCourseAndLesson(creatorId);
-
-		if (counterOfTasksWithCoursesorLessons > 0) {
-			tasksByCreatorIdWithCoursesAndLessons.forEach((task: Task) => task.removeCreatorId());
-			await this.taskRepo.save(tasksByCreatorIdWithCoursesAndLessons);
-		}
-
-		const result = DomainOperationBuilder.build(
-			DomainModel.TASK,
-			counterOfTasksOnlyWithCreatorId,
-			counterOfTasksWithCoursesorLessons
-		);
+		const result = DomainOperationBuilder.build(DomainModel.TASK, deletedTaskWithCreatorId, updatedTasksWithCreatorId);
 
 		return result;
 	}
@@ -65,5 +51,27 @@ export class TaskService {
 
 	async findById(taskId: EntityId): Promise<Task> {
 		return this.taskRepo.findById(taskId);
+	}
+
+	private async deleteTasksByOnlyCreator(creatorId: EntityId): Promise<number> {
+		const [tasksByOnlyCreatorId, counterOfTasksOnlyWithCreatorId] = await this.taskRepo.findByOnlyCreatorId(creatorId);
+
+		const promiseDeletedTasks = tasksByOnlyCreatorId.map((task: Task) => this.delete(task));
+
+		await Promise.all(promiseDeletedTasks);
+
+		return counterOfTasksOnlyWithCreatorId;
+	}
+
+	private async removeCreatorIdFromTasks(creatorId: EntityId): Promise<number> {
+		const [tasksByCreatorIdWithCoursesAndLessons, counterOfTasksWithCoursesorLessons] =
+			await this.taskRepo.findByCreatorIdWithCourseAndLesson(creatorId);
+
+		if (counterOfTasksWithCoursesorLessons > 0) {
+			tasksByCreatorIdWithCoursesAndLessons.forEach((task: Task) => task.removeCreatorId());
+			await this.taskRepo.save(tasksByCreatorIdWithCoursesAndLessons);
+		}
+
+		return counterOfTasksWithCoursesorLessons;
 	}
 }

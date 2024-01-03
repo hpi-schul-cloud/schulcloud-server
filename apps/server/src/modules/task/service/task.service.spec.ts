@@ -122,7 +122,7 @@ describe('TaskService', () => {
 			it('should call taskRepo.findByOnlyCreatorId with creatorId', async () => {
 				const { creator } = setup();
 
-				await taskService.removeCreatorId(creator.id);
+				await taskService.removeUserFromTasks(creator.id);
 
 				expect(taskRepo.findByOnlyCreatorId).toBeCalledWith(creator.id);
 			});
@@ -130,7 +130,7 @@ describe('TaskService', () => {
 			it('should call taskRepo.findByCreatorIdWithCourseAndLesson with creatorId', async () => {
 				const { creator } = setup();
 
-				await taskService.removeCreatorId(creator.id);
+				await taskService.removeUserFromTasks(creator.id);
 
 				expect(taskRepo.findByCreatorIdWithCourseAndLesson).toBeCalledWith(creator.id);
 			});
@@ -138,7 +138,7 @@ describe('TaskService', () => {
 			it('should return the object with information on the actions performed', async () => {
 				const { creator, expectedResult } = setup();
 
-				const result = await taskService.removeCreatorId(creator.id);
+				const result = await taskService.removeUserFromTasks(creator.id);
 
 				expect(result).toEqual(expectedResult);
 			});
@@ -164,7 +164,7 @@ describe('TaskService', () => {
 			it('should call taskRepo.findByOnlyCreatorId with creatorId', async () => {
 				const { creator } = setup();
 
-				await taskService.removeCreatorId(creator.id);
+				await taskService.removeUserFromTasks(creator.id);
 
 				expect(taskRepo.findByOnlyCreatorId).toBeCalledWith(creator.id);
 			});
@@ -172,7 +172,7 @@ describe('TaskService', () => {
 			it('should call taskRepo.findByCreatorIdWithCourseAndLesson with creatorId', async () => {
 				const { creator } = setup();
 
-				await taskService.removeCreatorId(creator.id);
+				await taskService.removeUserFromTasks(creator.id);
 
 				expect(taskRepo.findByCreatorIdWithCourseAndLesson).toBeCalledWith(creator.id);
 			});
@@ -180,7 +180,7 @@ describe('TaskService', () => {
 			it('should call taskRepo.save with task to update', async () => {
 				const { creator, taskWithCourseToUpdate } = setup();
 
-				await taskService.removeCreatorId(creator.id);
+				await taskService.removeUserFromTasks(creator.id);
 
 				expect(taskRepo.save).toBeCalledWith([taskWithCourseToUpdate]);
 			});
@@ -188,7 +188,7 @@ describe('TaskService', () => {
 			it('should return the object with information on the actions performed', async () => {
 				const { creator, expectedResult } = setup();
 
-				const result = await taskService.removeCreatorId(creator.id);
+				const result = await taskService.removeUserFromTasks(creator.id);
 
 				expect(result).toEqual(expectedResult);
 			});
