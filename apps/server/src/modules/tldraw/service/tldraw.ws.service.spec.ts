@@ -495,12 +495,19 @@ describe('TldrawWSService', () => {
 			httpService.get.mockRestore();
 		});
 
-		it('should throw error', async () => {
+		it('should throw error for http response', async () => {
 			const params = { drawingName: 'drawingName', token: 'token' };
 			const error = new Error('unknown error');
 			httpService.get.mockReturnValueOnce(throwError(() => error));
 
 			await expect(service.authorizeConnection(params.drawingName, params.token)).rejects.toThrow();
+			httpService.get.mockRestore();
+		});
+
+		it('should throw error for lack of token', async () => {
+			const params = { drawingName: 'drawingName', token: 'token' };
+
+			await expect(service.authorizeConnection(params.drawingName, '')).rejects.toThrow();
 			httpService.get.mockRestore();
 		});
 	});

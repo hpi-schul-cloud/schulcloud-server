@@ -28,44 +28,29 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 			try {
 				await this.tldrawWsService.authorizeConnection(docName, cookies?.jwt);
 			} catch (err) {
-				this.closeClient(
+				this.closeClientAndLogError(
 					client,
 					WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
-					WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE
-				);
-				this.logger.warning(
-					new WebsocketCloseErrorLoggable(
-						err as Error,
-						`(${WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE}) ${WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE}`
-					)
+					WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE,
+					err as Error
 				);
 			}
 			try {
 				this.tldrawWsService.setupWSConnection(client, docName);
 			} catch (err) {
-				this.closeClient(
+				this.closeClientAndLogError(
 					client,
 					WsCloseCodeEnum.WS_CLIENT_ESTABLISHING_CONNECTION_CODE,
-					WsCloseMessageEnum.WS_CLIENT_ESTABLISHING_CONNECTION_MESSAGE
-				);
-				this.logger.warning(
-					new WebsocketCloseErrorLoggable(
-						err as Error,
-						`(${WsCloseCodeEnum.WS_CLIENT_ESTABLISHING_CONNECTION_CODE}) ${WsCloseMessageEnum.WS_CLIENT_ESTABLISHING_CONNECTION_MESSAGE}`
-					)
+					WsCloseMessageEnum.WS_CLIENT_ESTABLISHING_CONNECTION_MESSAGE,
+					err as Error
 				);
 			}
 		} else {
-			this.closeClient(
+			this.closeClientAndLogError(
 				client,
 				WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
-				WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE
-			);
-			this.logger.warning(
-				new WebsocketCloseErrorLoggable(
-					new BadRequestException(),
-					`(${WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE}) ${WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE}`
-				)
+				WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE,
+				new BadRequestException()
 			);
 		}
 	}
@@ -88,12 +73,13 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		return urlStripped;
 	}
 
-	public parseCookiesFromHeader(request: Request): { [p: string]: string } {
+	private parseCookiesFromHeader(request: Request): { [p: string]: string } {
 		const parsedCookies: { [p: string]: string } = cookie.parse(request.headers.cookie || '');
 		return parsedCookies;
 	}
 
-	public closeClient(client: WebSocket, code: WsCloseCodeEnum, data: string): void {
+	private closeClientAndLogError(client: WebSocket, code: WsCloseCodeEnum, data: string, err: Error): void {
 		client.close(code, data);
+		this.logger.warning(new WebsocketCloseErrorLoggable(err, `(${code}) ${data}`));
 	}
 }
