@@ -87,7 +87,7 @@ describe('SchoolExternalToolValidationService', () => {
 
 				await service.validate(schoolExternalTool);
 
-				expect(commonToolValidationService.checkCustomParameterEntries).toHaveBeenCalledWith(
+				expect(commonToolValidationService.validateParameters).toHaveBeenCalledWith(
 					expect.anything(),
 					schoolExternalTool
 				);

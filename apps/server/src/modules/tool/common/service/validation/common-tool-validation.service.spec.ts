@@ -1,15 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ValidationError } from '@shared/common';
 import {
 	contextExternalToolFactory,
 	customParameterFactory,
 	externalToolFactory,
 	schoolExternalToolFactory,
 } from '@shared/testing';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ExternalTool } from '../../external-tool/domain';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { CustomParameter } from '../domain';
-import { CustomParameterScope, CustomParameterType } from '../enum';
+import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { ExternalTool } from '../../../external-tool/domain';
+import { SchoolExternalTool } from '../../../school-external-tool/domain';
+import { CustomParameter } from '../../domain';
+import { CustomParameterScope, CustomParameterType } from '../../enum';
 import { CommonToolValidationService } from './common-tool-validation.service';
 
 describe('CommonToolValidationService', () => {
@@ -23,93 +24,7 @@ describe('CommonToolValidationService', () => {
 		service = module.get(CommonToolValidationService);
 	});
 
-	describe('isValueValidForType', () => {
-		describe('when parameter type is string', () => {
-			it('should return true', () => {
-				const result: boolean = service.isValueValidForType(CustomParameterType.STRING, 'test');
-
-				expect(result).toEqual(true);
-			});
-		});
-
-		describe('when parameter type is boolean', () => {
-			describe('when value is true', () => {
-				it('should return true', () => {
-					const result: boolean = service.isValueValidForType(CustomParameterType.BOOLEAN, 'true');
-
-					expect(result).toEqual(true);
-				});
-			});
-
-			describe('when value is false', () => {
-				it('should return true', () => {
-					const result: boolean = service.isValueValidForType(CustomParameterType.BOOLEAN, 'false');
-
-					expect(result).toEqual(true);
-				});
-			});
-
-			describe('when value is not true or false', () => {
-				it('should return false', () => {
-					const result: boolean = service.isValueValidForType(CustomParameterType.BOOLEAN, 'other');
-
-					expect(result).toEqual(false);
-				});
-			});
-		});
-
-		describe('when parameter type is number', () => {
-			describe('when value is a number', () => {
-				it('should return true', () => {
-					const result: boolean = service.isValueValidForType(CustomParameterType.NUMBER, '1234');
-
-					expect(result).toEqual(true);
-				});
-			});
-
-			describe('when value is not a number', () => {
-				it('should return false', () => {
-					const result: boolean = service.isValueValidForType(CustomParameterType.NUMBER, 'NaN');
-
-					expect(result).toEqual(false);
-				});
-			});
-		});
-
-		describe('when defining a value for parameter of type auto_contextId', () => {
-			it('should return false', () => {
-				const result: boolean = service.isValueValidForType(CustomParameterType.AUTO_CONTEXTID, 'test');
-
-				expect(result).toEqual(false);
-			});
-		});
-
-		describe('when defining a value for parameter of type auto_contextId', () => {
-			it('should return false', () => {
-				const result: boolean = service.isValueValidForType(CustomParameterType.AUTO_CONTEXTNAME, 'test');
-
-				expect(result).toEqual(false);
-			});
-		});
-
-		describe('when defining a value for parameter of type auto_contextId', () => {
-			it('should return false', () => {
-				const result: boolean = service.isValueValidForType(CustomParameterType.AUTO_SCHOOLID, 'test');
-
-				expect(result).toEqual(false);
-			});
-		});
-
-		describe('when defining a value for parameter of type auto_contextId', () => {
-			it('should return false', () => {
-				const result: boolean = service.isValueValidForType(CustomParameterType.AUTO_SCHOOLNUMBER, 'test');
-
-				expect(result).toEqual(false);
-			});
-		});
-	});
-
-	describe('checkCustomParameterEntries', () => {
+	describe('validateParameters', () => {
 		const createTools = (
 			externalToolMock?: Partial<ExternalTool>,
 			schoolExternalToolMock?: Partial<SchoolExternalTool>,
@@ -163,12 +78,17 @@ describe('CommonToolValidationService', () => {
 				};
 			};
 
-			it('should throw error', () => {
+			it('should return an error', () => {
 				const { externalTool, schoolExternalTool } = setup();
 
-				const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+				const result: ValidationError[] = service.validateParameters(externalTool, schoolExternalTool);
 
-				expect(func).toThrowError('tool_param_duplicate');
+				expect(result).toContainEqual(
+					expect.objectContaining<Partial<ValidationError>>({
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						message: expect.stringContaining('tool_param_duplicate'),
+					})
+				);
 			});
 		});
 
@@ -188,12 +108,17 @@ describe('CommonToolValidationService', () => {
 				};
 			};
 
-			it('should throw error', () => {
+			it('should return an error', () => {
 				const { externalTool, schoolExternalTool } = setup();
 
-				const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+				const result: ValidationError[] = service.validateParameters(externalTool, schoolExternalTool);
 
-				expect(func).toThrowError('tool_param_unknown');
+				expect(result).toContainEqual(
+					expect.objectContaining<Partial<ValidationError>>({
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						message: expect.stringContaining('tool_param_unknown'),
+					})
+				);
 			});
 		});
 
@@ -221,12 +146,17 @@ describe('CommonToolValidationService', () => {
 					};
 				};
 
-				it('should throw error', () => {
+				it('should return an error', () => {
 					const { externalTool, schoolExternalTool } = setup();
 
-					const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+					const result: ValidationError[] = service.validateParameters(externalTool, schoolExternalTool);
 
-					expect(func).toThrowError('tool_param_required');
+					expect(result).toContainEqual(
+						expect.objectContaining<Partial<ValidationError>>({
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+							message: expect.stringContaining('tool_param_value_missing'),
+						})
+					);
 				});
 			});
 		});
@@ -258,12 +188,12 @@ describe('CommonToolValidationService', () => {
 				};
 			};
 
-			it('should not fail because of missing required context param', () => {
+			it('should return without any error', () => {
 				const { externalTool, schoolExternalTool } = setup();
 
-				const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+				const result: ValidationError[] = service.validateParameters(externalTool, schoolExternalTool);
 
-				expect(func).not.toThrowError();
+				expect(result).toHaveLength(0);
 			});
 		});
 
@@ -298,9 +228,9 @@ describe('CommonToolValidationService', () => {
 			it('should return without any error', () => {
 				const { externalTool, schoolExternalTool } = setup();
 
-				const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+				const result: ValidationError[] = service.validateParameters(externalTool, schoolExternalTool);
 
-				expect(func).not.toThrowError();
+				expect(result).toHaveLength(0);
 			});
 		});
 
@@ -326,12 +256,17 @@ describe('CommonToolValidationService', () => {
 					};
 				};
 
-				it('should throw error', () => {
+				it('should return an error', () => {
 					const { externalTool, schoolExternalTool } = setup();
 
-					const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+					const result: ValidationError[] = service.validateParameters(externalTool, schoolExternalTool);
 
-					expect(func).toThrowError('tool_param_required');
+					expect(result).toContainEqual(
+						expect.objectContaining<Partial<ValidationError>>({
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+							message: expect.stringContaining('tool_param_required'),
+						})
+					);
 				});
 			});
 
@@ -364,12 +299,12 @@ describe('CommonToolValidationService', () => {
 					};
 				};
 
-				it('should return without error', () => {
+				it('should return without any error', () => {
 					const { externalTool, schoolExternalTool } = setup();
 
-					const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+					const result: ValidationError[] = service.validateParameters(externalTool, schoolExternalTool);
 
-					expect(func).not.toThrowError('tool_param_required');
+					expect(result).toHaveLength(0);
 				});
 			});
 		});
@@ -399,12 +334,17 @@ describe('CommonToolValidationService', () => {
 					};
 				};
 
-				it('should throw error', () => {
+				it('should return an error', () => {
 					const { externalTool, contextExternalTool } = setup();
 
-					const func = () => service.checkCustomParameterEntries(externalTool, contextExternalTool);
+					const result: ValidationError[] = service.validateParameters(externalTool, contextExternalTool);
 
-					expect(func).toThrowError('tool_param_required');
+					expect(result).toContainEqual(
+						expect.objectContaining<Partial<ValidationError>>({
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+							message: expect.stringContaining('tool_param_required'),
+						})
+					);
 				});
 			});
 
@@ -422,7 +362,7 @@ describe('CommonToolValidationService', () => {
 						},
 						undefined,
 						{
-							parameters: [{ name: 'anotherParam', value: 'value' }],
+							parameters: [],
 						}
 					);
 
@@ -432,12 +372,12 @@ describe('CommonToolValidationService', () => {
 					};
 				};
 
-				it('should return without error ', () => {
+				it('should return without any error', () => {
 					const { externalTool, contextExternalTool } = setup();
 
-					const func = () => service.checkCustomParameterEntries(externalTool, contextExternalTool);
+					const result: ValidationError[] = service.validateParameters(externalTool, contextExternalTool);
 
-					expect(func).not.toThrowError('tool_param_required');
+					expect(result).toHaveLength(0);
 				});
 			});
 		});
@@ -463,12 +403,12 @@ describe('CommonToolValidationService', () => {
 				};
 			};
 
-			it('should return without error', () => {
+			it('should return without any error', () => {
 				const { externalTool, schoolExternalTool } = setup();
 
-				const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+				const result: ValidationError[] = service.validateParameters(externalTool, schoolExternalTool);
 
-				expect(func).not.toThrowError('tool_param_type_mismatch');
+				expect(result).toHaveLength(0);
 			});
 		});
 
@@ -494,12 +434,12 @@ describe('CommonToolValidationService', () => {
 					};
 				};
 
-				it('should return without error', () => {
+				it('should return without any error', () => {
 					const { externalTool, schoolExternalTool } = setup();
 
-					const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+					const result: ValidationError[] = service.validateParameters(externalTool, schoolExternalTool);
 
-					expect(func).not.toThrowError('tool_param_type_mismatch');
+					expect(result).toHaveLength(0);
 				});
 			});
 
@@ -524,12 +464,17 @@ describe('CommonToolValidationService', () => {
 					};
 				};
 
-				it('should throw error', () => {
+				it('should return an error', () => {
 					const { externalTool, schoolExternalTool } = setup();
 
-					const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+					const result: ValidationError[] = service.validateParameters(externalTool, schoolExternalTool);
 
-					expect(func).toThrowError('tool_param_type_mismatch');
+					expect(result).toContainEqual(
+						expect.objectContaining<Partial<ValidationError>>({
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+							message: expect.stringContaining('tool_param_type_mismatch'),
+						})
+					);
 				});
 			});
 		});
@@ -556,12 +501,12 @@ describe('CommonToolValidationService', () => {
 					};
 				};
 
-				it('should return without error', () => {
+				it('should return without any error', () => {
 					const { externalTool, schoolExternalTool } = setup();
 
-					const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+					const result: ValidationError[] = service.validateParameters(externalTool, schoolExternalTool);
 
-					expect(func).not.toThrowError('tool_param_type_mismatch');
+					expect(result).toHaveLength(0);
 				});
 			});
 
@@ -586,12 +531,17 @@ describe('CommonToolValidationService', () => {
 					};
 				};
 
-				it('should throw error', () => {
+				it('should return an error', () => {
 					const { externalTool, schoolExternalTool } = setup();
 
-					const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+					const result: ValidationError[] = service.validateParameters(externalTool, schoolExternalTool);
 
-					expect(func).toThrowError('tool_param_type_mismatch');
+					expect(result).toContainEqual(
+						expect.objectContaining<Partial<ValidationError>>({
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+							message: expect.stringContaining('tool_param_type_mismatch'),
+						})
+					);
 				});
 			});
 		});
@@ -621,12 +571,12 @@ describe('CommonToolValidationService', () => {
 					};
 				};
 
-				it('return without error', () => {
+				it('should return without any error', () => {
 					const { externalTool, schoolExternalTool } = setup();
 
-					const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+					const result: ValidationError[] = service.validateParameters(externalTool, schoolExternalTool);
 
-					expect(func).not.toThrowError('tool_param_value_regex');
+					expect(result).toHaveLength(0);
 				});
 			});
 
@@ -654,12 +604,12 @@ describe('CommonToolValidationService', () => {
 					};
 				};
 
-				it('should return without error', () => {
+				it('should return without any error', () => {
 					const { externalTool, schoolExternalTool } = setup();
 
-					const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+					const result: ValidationError[] = service.validateParameters(externalTool, schoolExternalTool);
 
-					expect(func).not.toThrowError('tool_param_value_regex');
+					expect(result).toHaveLength(0);
 				});
 			});
 
@@ -687,12 +637,17 @@ describe('CommonToolValidationService', () => {
 					};
 				};
 
-				it('should throw error', () => {
+				it('should return an error', () => {
 					const { externalTool, schoolExternalTool } = setup();
 
-					const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+					const result: ValidationError[] = service.validateParameters(externalTool, schoolExternalTool);
 
-					expect(func).toThrowError('tool_param_value_regex');
+					expect(result).toContainEqual(
+						expect.objectContaining<Partial<ValidationError>>({
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+							message: expect.stringContaining('tool_param_value_regex'),
+						})
+					);
 				});
 			});
 
@@ -710,7 +665,7 @@ describe('CommonToolValidationService', () => {
 							parameters: [optionalRegex],
 						},
 						{
-							parameters: [{ name: 'optionalRegex', value: undefined }],
+							parameters: [],
 						}
 					);
 
@@ -720,12 +675,12 @@ describe('CommonToolValidationService', () => {
 					};
 				};
 
-				it('should return without error', () => {
+				it('should return without any error', () => {
 					const { externalTool, schoolExternalTool } = setup();
 
-					const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+					const result: ValidationError[] = service.validateParameters(externalTool, schoolExternalTool);
 
-					expect(func).not.toThrowError('tool_param_value_regex');
+					expect(result).toHaveLength(0);
 				});
 			});
 		});
