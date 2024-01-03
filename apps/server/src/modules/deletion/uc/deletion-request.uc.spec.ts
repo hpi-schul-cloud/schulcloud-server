@@ -461,7 +461,7 @@ describe(DeletionRequestUc.name, () => {
 	});
 
 	describe('findById', () => {
-		describe('when searching for logs for deletionRequest which was executed', () => {
+		describe('when searching for logs for deletionRequest which was executed with success status', () => {
 			const setup = () => {
 				const deletionRequestExecuted = deletionRequestFactory.build({ status: DeletionStatusModel.SUCCESS });
 				const deletionLogExecuted = deletionLogFactory.build({ deletionRequestId: deletionRequestExecuted.id });
@@ -479,6 +479,7 @@ describe(DeletionRequestUc.name, () => {
 				const executedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
 					targetRef,
 					deletionRequestExecuted.deleteAfter,
+					DeletionStatusModel.SUCCESS,
 					[statistics]
 				);
 
@@ -509,6 +510,60 @@ describe(DeletionRequestUc.name, () => {
 				const result = await uc.findById(deletionRequestExecuted.id);
 
 				expect(result).toEqual(executedDeletionRequestSummary);
+				expect(result.status).toEqual(DeletionStatusModel.SUCCESS);
+			});
+		});
+
+		describe('when searching for logs for deletionRequest which was executed with failed status', () => {
+			const setup = () => {
+				const deletionRequestExecuted = deletionRequestFactory.build({ status: DeletionStatusModel.FAILED });
+				const deletionLogExecuted = deletionLogFactory.build({ deletionRequestId: deletionRequestExecuted.id });
+
+				const targetRef = DeletionTargetRefBuilder.build(
+					deletionRequestExecuted.targetRefDomain,
+					deletionRequestExecuted.targetRefId
+				);
+				const statistics = DeletionLogStatisticBuilder.build(
+					deletionLogExecuted.domain,
+					deletionLogExecuted.modifiedCount,
+					deletionLogExecuted.deletedCount
+				);
+
+				const executedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
+					targetRef,
+					deletionRequestExecuted.deleteAfter,
+					DeletionStatusModel.FAILED,
+					[statistics]
+				);
+
+				return {
+					deletionRequestExecuted,
+					executedDeletionRequestSummary,
+					deletionLogExecuted,
+				};
+			};
+
+			it('should call to deletionRequestService and deletionLogService', async () => {
+				const { deletionRequestExecuted } = setup();
+
+				deletionRequestService.findById.mockResolvedValueOnce(deletionRequestExecuted);
+
+				await uc.findById(deletionRequestExecuted.id);
+
+				expect(deletionRequestService.findById).toHaveBeenCalledWith(deletionRequestExecuted.id);
+				expect(deletionLogService.findByDeletionRequestId).toHaveBeenCalledWith(deletionRequestExecuted.id);
+			});
+
+			it('should return object with summary of deletionRequest', async () => {
+				const { deletionRequestExecuted, deletionLogExecuted, executedDeletionRequestSummary } = setup();
+
+				deletionRequestService.findById.mockResolvedValueOnce(deletionRequestExecuted);
+				deletionLogService.findByDeletionRequestId.mockResolvedValueOnce([deletionLogExecuted]);
+
+				const result = await uc.findById(deletionRequestExecuted.id);
+
+				expect(result).toEqual(executedDeletionRequestSummary);
+				expect(result.status).toEqual(DeletionStatusModel.FAILED);
 			});
 		});
 
@@ -518,7 +573,9 @@ describe(DeletionRequestUc.name, () => {
 				const targetRef = DeletionTargetRefBuilder.build(deletionRequest.targetRefDomain, deletionRequest.targetRefId);
 				const notExecutedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
 					targetRef,
-					deletionRequest.deleteAfter
+					deletionRequest.deleteAfter,
+					DeletionStatusModel.REGISTERED,
+					[]
 				);
 
 				return {
@@ -527,7 +584,7 @@ describe(DeletionRequestUc.name, () => {
 				};
 			};
 
-			it('should call to deletionRequestService', async () => {
+			it('should call to deletionRequestService and deletionLogService', async () => {
 				const { deletionRequest } = setup();
 
 				deletionRequestService.findById.mockResolvedValueOnce(deletionRequest);
@@ -535,7 +592,7 @@ describe(DeletionRequestUc.name, () => {
 				await uc.findById(deletionRequest.id);
 
 				expect(deletionRequestService.findById).toHaveBeenCalledWith(deletionRequest.id);
-				expect(deletionLogService.findByDeletionRequestId).not.toHaveBeenCalled();
+				expect(deletionLogService.findByDeletionRequestId).toHaveBeenCalledWith(deletionRequest.id);
 			});
 
 			it('should return object with summary of deletionRequest', async () => {
@@ -546,6 +603,7 @@ describe(DeletionRequestUc.name, () => {
 				const result = await uc.findById(deletionRequest.id);
 
 				expect(result).toEqual(notExecutedDeletionRequestSummary);
+				expect(result.status).toEqual(DeletionStatusModel.REGISTERED);
 			});
 		});
 	});

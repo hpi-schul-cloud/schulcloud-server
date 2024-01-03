@@ -17,7 +17,7 @@ import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, Deletio
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionLogStatistic } from './interface/interfaces';
 import { DeletionRequest, DeletionLog } from '../domain';
-import { DeletionDomainModel, DeletionOperationModel, DeletionStatusModel } from '../domain/types';
+import { DeletionDomainModel, DeletionOperationModel } from '../domain/types';
 import { DeletionRequestService, DeletionLogService } from '../services';
 
 @Injectable()
@@ -74,16 +74,15 @@ export class DeletionRequestUc {
 		const deletionRequest: DeletionRequest = await this.deletionRequestService.findById(deletionRequestId);
 		let response: DeletionRequestLogResponse = DeletionRequestLogResponseBuilder.build(
 			DeletionTargetRefBuilder.build(deletionRequest.targetRefDomain, deletionRequest.targetRefId),
-			deletionRequest.deleteAfter
+			deletionRequest.deleteAfter,
+			deletionRequest.status
 		);
 
-		if (deletionRequest.status === DeletionStatusModel.SUCCESS) {
-			const deletionLog: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequestId);
-			const deletionLogStatistic: DeletionLogStatistic[] = deletionLog.map((log) =>
-				DeletionLogStatisticBuilder.build(log.domain, log.modifiedCount, log.deletedCount)
-			);
-			response = { ...response, statistics: deletionLogStatistic };
-		}
+		const deletionLog: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequestId);
+		const deletionLogStatistic: DeletionLogStatistic[] = deletionLog.map((log) =>
+			DeletionLogStatisticBuilder.build(log.domain, log.modifiedCount, log.deletedCount)
+		);
+		response = { ...response, statistics: deletionLogStatistic };
 
 		return response;
 	}
