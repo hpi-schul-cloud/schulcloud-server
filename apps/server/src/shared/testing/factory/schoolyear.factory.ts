@@ -13,8 +13,14 @@ class SchoolYearFactory extends BaseFactory<SchoolYearEntity, SchoolYearProperti
 }
 
 export const schoolYearFactory = SchoolYearFactory.define(SchoolYearEntity, ({ transientParams, sequence }) => {
-	const startYearWithoutSequence = transientParams?.startYear ?? new Date().getFullYear();
-	const startYear = startYearWithoutSequence + sequence - 1;
+	const now = new Date();
+	const startYearWithoutSequence = transientParams?.startYear ?? now.getFullYear();
+
+	let step = 1;
+	if (now.getMonth() < 7) {
+		step = 2;
+	}
+	const startYear = startYearWithoutSequence + sequence - step;
 
 	const name = `${startYear}/${(startYear + 1).toString().slice(-2)}`;
 	const startDate = new Date(`${startYear}-08-01`);
