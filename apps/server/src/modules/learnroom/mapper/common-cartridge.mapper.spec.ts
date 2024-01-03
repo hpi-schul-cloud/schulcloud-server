@@ -1,10 +1,11 @@
+import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain/entity';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { OmitVersion } from '@src/modules/common-cartridge/utils';
+import { OmitVersion, createIdentifier } from '@src/modules/common-cartridge/utils';
 import {
 	CommonCartridgeElementProps,
 	CommonCartridgeElementType,
@@ -54,7 +55,7 @@ describe('CommonCartridgeMapper', () => {
 					teachers: userFactory.buildListWithId(2),
 				});
 
-				configServiceMock.getOrThrow.mockReturnValue('https://example.com');
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 
 				return { course };
 			};
@@ -80,7 +81,7 @@ describe('CommonCartridgeMapper', () => {
 			const setup = () => {
 				const lesson = lessonFactory.buildWithId();
 
-				configServiceMock.getOrThrow.mockReturnValue('https://example.com');
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 
 				return { lesson };
 			};
@@ -90,7 +91,7 @@ describe('CommonCartridgeMapper', () => {
 				const organizationProps = sut.mapLessonToOrganization(lesson);
 
 				expect(organizationProps).toStrictEqual<OmitVersion<CommonCartridgeOrganizationBuilderOptions>>({
-					identifier: lesson.id,
+					identifier: createIdentifier(lesson.id),
 					title: lesson.name,
 				});
 			});
@@ -109,7 +110,7 @@ describe('CommonCartridgeMapper', () => {
 					},
 				};
 
-				configServiceMock.getOrThrow.mockReturnValue('https://example.com');
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 
 				return { componentProps };
 			};
@@ -127,25 +128,49 @@ describe('CommonCartridgeMapper', () => {
 	});
 
 	describe('mapTaskToResource', () => {
-		describe('when mapping task', () => {
-			const setup = () => {
-				const task = taskFactory.buildWithId();
+		const setup = () => {
+			const task = taskFactory.buildWithId();
 
-				configServiceMock.getOrThrow.mockReturnValue('https://example.com');
+			configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 
-				return { task };
-			};
+			return { task };
+		};
 
-			it('should map to web content', () => {
+		describe('when mapping task with version 1.3.0', () => {
+			it('should map task to web content', () => {
 				const { task } = setup();
 				const resourceProps = sut.mapTaskToResource(task, CommonCartridgeVersion.V_1_3_0);
 
 				expect(resourceProps).toStrictEqual<CommonCartridgeResourceProps>({
 					type: CommonCartridgeResourceType.WEB_CONTENT,
-					identifier: task.id,
+					identifier: createIdentifier(task.id),
 					title: task.name,
 					html: `<h1>${task.name}</h1><p>${task.description}</p>`,
 					intendedUse: CommonCartridgeIntendedUseType.ASSIGNMENT,
+				});
+			});
+		});
+
+		describe('when using other version than 1.3.0', () => {
+			it('should map to web content', () => {
+				const { task } = setup();
+				const versions = [
+					CommonCartridgeVersion.V_1_0_0,
+					CommonCartridgeVersion.V_1_1_0,
+					CommonCartridgeVersion.V_1_2_0,
+					CommonCartridgeVersion.V_1_4_0,
+				];
+
+				versions.forEach((version) => {
+					const resourceProps = sut.mapTaskToResource(task, version);
+
+					expect(resourceProps).toStrictEqual<CommonCartridgeResourceProps>({
+						type: CommonCartridgeResourceType.WEB_CONTENT,
+						identifier: createIdentifier(task.id),
+						title: task.name,
+						html: `<h1>${task.name}</h1><p>${task.description}</p>`,
+						intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
+					});
 				});
 			});
 		});
@@ -156,7 +181,7 @@ describe('CommonCartridgeMapper', () => {
 			const setup = () => {
 				const task = taskFactory.buildWithId();
 
-				configServiceMock.getOrThrow.mockReturnValue('https://example.com');
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 
 				return { task };
 			};
@@ -166,7 +191,7 @@ describe('CommonCartridgeMapper', () => {
 				const organizationProps = sut.mapTaskToOrganization(task);
 
 				expect(organizationProps).toStrictEqual<OmitVersion<CommonCartridgeOrganizationBuilderOptions>>({
-					identifier: task.id,
+					identifier: createIdentifier(task.id),
 					title: task.name,
 				});
 			});
@@ -185,7 +210,7 @@ describe('CommonCartridgeMapper', () => {
 					},
 				};
 
-				configServiceMock.getOrThrow.mockReturnValue('https://example.com');
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 
 				return { componentProps };
 			};
@@ -215,7 +240,7 @@ describe('CommonCartridgeMapper', () => {
 					},
 				};
 
-				configServiceMock.getOrThrow.mockReturnValue('https://example.com');
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 
 				return { componentProps };
 			};
@@ -248,7 +273,7 @@ describe('CommonCartridgeMapper', () => {
 					},
 				};
 
-				configServiceMock.getOrThrow.mockReturnValue('https://example.com');
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 
 				return { componentProps };
 			};
@@ -285,7 +310,7 @@ describe('CommonCartridgeMapper', () => {
 					},
 				};
 
-				configServiceMock.getOrThrow.mockReturnValue('https://example.com');
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 
 				return { componentProps };
 			};
@@ -315,7 +340,7 @@ describe('CommonCartridgeMapper', () => {
 					component: ComponentType.LERNSTORE,
 				};
 
-				configServiceMock.getOrThrow.mockReturnValue('https://example.com');
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 
 				return { componentProps };
 			};
@@ -339,7 +364,7 @@ describe('CommonCartridgeMapper', () => {
 					},
 				};
 
-				configServiceMock.getOrThrow.mockReturnValue('https://example.com');
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 
 				return { unknownComponentProps };
 			};

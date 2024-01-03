@@ -17,6 +17,7 @@ export interface LessonProperties {
 	position?: number;
 	contents: ComponentProperties[] | [];
 	materials?: Material[];
+	tasks?: Task[];
 }
 
 export enum ComponentType {
@@ -118,6 +119,7 @@ export class LessonEntity extends BaseEntityWithTimestamps implements LearnroomE
 		this.position = props.position || 0;
 		this.contents = props.contents;
 		if (props.materials) this.materials.set(props.materials);
+		if (props.tasks) this.tasks.set(props.tasks);
 	}
 
 	private getParent(): LessonParent {

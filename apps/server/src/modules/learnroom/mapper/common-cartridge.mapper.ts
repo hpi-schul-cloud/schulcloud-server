@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ComponentProperties, ComponentType, Course, LessonEntity, Task } from '@shared/domain/entity';
-import { ObjectId } from 'bson';
+import { createIdentifier } from '@src/modules/common-cartridge/utils';
 import {
 	CommonCartridgeElementProps,
 	CommonCartridgeElementType,
@@ -28,30 +28,28 @@ export class CommonCartridgeMapper {
 
 	public mapLessonToOrganization(lesson: LessonEntity): CommonCartridgeOrganizationBuilderOptions {
 		return {
-			identifier: lesson.id,
+			identifier: createIdentifier(lesson.id),
 			title: lesson.name,
 		};
 	}
 
 	public mapContentToOrganization(content: ComponentProperties): CommonCartridgeOrganizationBuilderOptions {
 		return {
-			identifier: new ObjectId(content._id).toHexString(),
+			identifier: createIdentifier(content._id),
 			title: content.title,
 		};
 	}
 
 	public mapTaskToOrganization(task: Task): CommonCartridgeOrganizationBuilderOptions {
 		return {
-			identifier: task.id,
+			identifier: createIdentifier(task.id),
 			title: task.name,
 		};
 	}
 
 	public mapTaskToResource(task: Task, version: CommonCartridgeVersion): CommonCartridgeResourceProps {
-		const intendedUse: CommonCartridgeIntendedUseType = (() => {
+		const intendedUse = (() => {
 			switch (version) {
-				case CommonCartridgeVersion.V_1_1_0:
-					return CommonCartridgeIntendedUseType.UNSPECIFIED;
 				case CommonCartridgeVersion.V_1_3_0:
 					return CommonCartridgeIntendedUseType.ASSIGNMENT;
 				default:
@@ -61,7 +59,7 @@ export class CommonCartridgeMapper {
 
 		return {
 			type: CommonCartridgeResourceType.WEB_CONTENT,
-			identifier: task.id,
+			identifier: createIdentifier(task.id),
 			title: task.name,
 			html: `<h1>${task.name}</h1><p>${task.description}</p>`,
 			intendedUse,
@@ -75,7 +73,7 @@ export class CommonCartridgeMapper {
 			case ComponentType.TEXT:
 				return {
 					type: CommonCartridgeResourceType.WEB_CONTENT,
-					identifier: new ObjectId(content._id).toHexString(),
+					identifier: createIdentifier(content._id),
 					title: content.title,
 					html: `<h1>${content.title}</h1><p>${content.content.text}</p>`,
 					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
@@ -83,7 +81,7 @@ export class CommonCartridgeMapper {
 			case ComponentType.GEOGEBRA:
 				return {
 					type: CommonCartridgeResourceType.WEB_LINK,
-					identifier: new ObjectId(content._id).toHexString(),
+					identifier: createIdentifier(content._id),
 					title: content.title,
 					url: `${this.configService.getOrThrow<string>(
 						'FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED'
@@ -92,7 +90,7 @@ export class CommonCartridgeMapper {
 			case ComponentType.ETHERPAD:
 				return {
 					type: CommonCartridgeResourceType.WEB_LINK,
-					identifier: new ObjectId(content._id).toHexString(),
+					identifier: createIdentifier(content._id),
 					title: `${content.content.title} - ${content.content.description}`,
 					url: content.content.url,
 				};
@@ -101,7 +99,7 @@ export class CommonCartridgeMapper {
 					content.content?.resources.map((resource) => {
 						return {
 							type: CommonCartridgeResourceType.WEB_LINK,
-							identifier: new ObjectId().toHexString(),
+							identifier: createIdentifier(),
 							title: resource.description,
 							url: resource.url,
 						};

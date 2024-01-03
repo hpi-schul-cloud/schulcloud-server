@@ -51,7 +51,7 @@ export class CommonCartridgeExportService {
 				this.addComponentToOrganization(organizationBuilder, content);
 			});
 
-			lesson.tasks.getItems().forEach((task) => {
+			lesson.getLessonLinkedTasks().forEach((task) => {
 				organizationBuilder
 					.addSubOrganization(this.commonCartridgeMapper.mapTaskToOrganization(task))
 					.addResource(this.commonCartridgeMapper.mapTaskToResource(task, version));

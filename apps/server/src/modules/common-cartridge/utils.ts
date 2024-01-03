@@ -30,7 +30,7 @@ export function createElementTypeNotSupportedError(type: string): Error {
 	return new InternalServerErrorException(`Common Cartridge element type ${type} is not supported`);
 }
 
-export function createIdentifier(identifier: string | ObjectID | undefined): string {
+export function createIdentifier(identifier?: string | ObjectID): string {
 	if (!identifier) {
 		return `i${new ObjectID().toString()}`;
 	}
