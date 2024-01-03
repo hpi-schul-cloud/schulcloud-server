@@ -28,6 +28,7 @@ export class ToolVersionService {
 			const configurationStatus: ContextExternalToolConfigurationStatus = new ContextExternalToolConfigurationStatus({
 				isOutdatedOnScopeContext: false,
 				isOutdatedOnScopeSchool: false,
+				isDeactivated: externalTool.isDeactivated,
 			});
 
 			try {

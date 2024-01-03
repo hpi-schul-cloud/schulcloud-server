@@ -18,6 +18,7 @@ export class ExternalToolConfigurationService {
 	) {}
 
 	public filterForAvailableTools(externalTools: Page<ExternalTool>, toolIdsInUse: EntityId[]): ExternalTool[] {
+		// TODO
 		const visibleTools: ExternalTool[] = externalTools.data.filter((tool: ExternalTool): boolean => !tool.isHidden);
 
 		const availableTools: ExternalTool[] = visibleTools.filter(
@@ -73,6 +74,7 @@ export class ExternalToolConfigurationService {
 			(toolRef): toolRef is ContextExternalToolTemplateInfo => !!toolRef
 		);
 		const availableTools: ContextExternalToolTemplateInfo[] = unusedTools.filter(
+			// TODO
 			(toolRef): toolRef is ContextExternalToolTemplateInfo => !toolRef.externalTool.isHidden
 		);
 

@@ -59,6 +59,13 @@ export class ExternalToolCreateParams {
 	isHidden!: boolean;
 
 	@IsBoolean()
+	@ApiProperty({
+		type: Boolean,
+		default: false,
+	})
+	isDeactivated!: boolean;
+
+	@IsBoolean()
 	@ApiProperty()
 	openNewTab!: boolean;
 
