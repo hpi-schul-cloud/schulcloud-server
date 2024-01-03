@@ -85,6 +85,7 @@ export const customParameterEntityFactory = BaseFactory.define<CustomParameterEn
 			scope: CustomParameterScope.SCHOOL,
 			type: CustomParameterType.STRING,
 			isOptional: false,
+			isProtected: false,
 		};
 	}
 );
