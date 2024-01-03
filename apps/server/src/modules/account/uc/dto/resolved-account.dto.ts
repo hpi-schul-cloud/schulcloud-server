@@ -1,18 +1,59 @@
 import { EntityId } from '@shared/domain/types';
+import { IsBoolean, IsDate, IsMongoId, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
+import { passwordPattern } from '../../controller/dto/password-pattern';
+import { PrivacyProtect } from '@shared/controller';
 
 export class ResolvedAccountDto {
-	id: EntityId;
-	updatedAt?: Date;
-	createdAt?: Date;
-	userId?: EntityId;
-	systemId?: EntityId;
-	username?: string;
+	@IsOptional()
+	@IsMongoId()
+	readonly id?: EntityId;
+
+	@IsOptional()
+	@IsDate()
+	readonly createdAt?: Date;
+
+	@IsOptional()
+	@IsDate()
+	readonly updatedAt?: Date;
+
+	@IsString()
+	@IsNotEmpty()
+	username: string;
+
+	@PrivacyProtect()
+	@IsOptional()
+	@Matches(passwordPattern)
 	password?: string;
+
+	@IsOptional()
+	@IsString()
 	token?: string;
+
+	@IsOptional()
+	@IsString()
 	credentialHash?: string;
+
+	@IsOptional()
+	@IsMongoId()
+	userId?: EntityId;
+
+	@IsOptional()
+	@IsMongoId()
+	systemId?: EntityId;
+
+	@IsOptional()
+	@IsDate()
 	lasttriedFailedLogin?: Date;
+
+	@IsOptional()
+	@IsDate()
 	expiresAt?: Date;
+
+	@IsOptional()
+	@IsBoolean()
 	activated?: boolean;
+
+	@IsOptional()
 	idmReferenceId?: string;
 
 	constructor(account: ResolvedAccountDto) {

@@ -11,7 +11,8 @@ import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { Account } from '../domain';
+import { Account, AccountProps } from '../domain';
+import { t } from 'i18next';
 
 describe('AccountIdmService Integration', () => {
 	let module: TestingModule;
@@ -24,6 +25,7 @@ describe('AccountIdmService Integration', () => {
 	const testRealm = `test-realm-${v1()}`;
 	const testDbcAccountId = new ObjectId().toString();
 	const testAccount = new Account({
+		id : testDbcAccountId,
 		username: 'john.doe@mail.tld',
 		password: 'super-secret-password',
 		userId: new ObjectId().toString(),
@@ -114,10 +116,23 @@ describe('AccountIdmService Integration', () => {
 		const newUsername = 'jane.doe@mail.tld';
 		const idmId = await createAccount();
 
-		await accountIdmService.save({
-			id: testDbcAccountId,
-			username: newUsername,
-		});
+		await accountIdmService.save(testAccount);
+		// await accountIdmService.save({
+		// 	id: testDbcAccountId,
+		// 	username: newUsername,
+		// 	createdAt: testAccount.createdAt,
+		// 	updatedAt: testAccount.updatedAt,
+		// 	userId: testAccount.userId,
+		// 	systemId: testAccount.systemId,
+		// 	password: testAccount.password,
+		// 	token: testAccount.token,
+		// 	credentialHash: testAccount.credentialHash,
+		// 	lasttriedFailedLogin: testAccount.lasttriedFailedLogin,
+		// 	expiresAt: testAccount.expiresAt,
+		// 	activated: testAccount.activated,
+		// 	idmReferenceId: testAccount.idmReferenceId,
+
+		// });
 		const foundAccount = await identityManagementService.findAccountById(idmId);
 
 		expect(foundAccount).toEqual(

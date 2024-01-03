@@ -7,7 +7,7 @@ export class AccountUcMapper {
 		return new ResolvedAccountDto({
 			...account,
 			id: account.id,
-			username: account.username,
+			username: account.username as string,
 			userId: account.userId,
 			activated: account.activated,
 			updatedAt: account.updatedAt,
