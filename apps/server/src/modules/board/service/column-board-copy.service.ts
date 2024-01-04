@@ -12,7 +12,6 @@ import { CourseRepo } from '@shared/repo';
 import { BoardDoRepo } from '../repo';
 import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './board-do-copy-service';
 import { SwapInternalLinksVisitor } from './board-do-copy-service/swap-internal-links.visitor';
-import { ContextExternalToolService } from '../../tool/context-external-tool/service';
 
 @Injectable()
 export class ColumnBoardCopyService {
@@ -21,8 +20,7 @@ export class ColumnBoardCopyService {
 		private readonly courseRepo: CourseRepo,
 		private readonly userService: UserService,
 		private readonly boardDoCopyService: BoardDoCopyService,
-		private readonly fileCopyServiceFactory: SchoolSpecificFileCopyServiceFactory,
-		private readonly contextExternalToolService: ContextExternalToolService
+		private readonly fileCopyServiceFactory: SchoolSpecificFileCopyServiceFactory
 	) {}
 
 	async copyColumnBoard(props: {
@@ -45,11 +43,7 @@ export class ColumnBoardCopyService {
 			userId: props.userId,
 		});
 
-		const copyStatus = await this.boardDoCopyService.copy({
-			original: originalBoard,
-			fileCopyService,
-			contextExternalToolService: this.contextExternalToolService,
-		});
+		const copyStatus = await this.boardDoCopyService.copy({ original: originalBoard, fileCopyService });
 
 		/* istanbul ignore next */
 		if (!isColumnBoard(copyStatus.copyEntity)) {
