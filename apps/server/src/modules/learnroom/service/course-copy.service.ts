@@ -1,14 +1,14 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { ToolContextType } from '@modules/tool/common/enum';
+import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Injectable } from '@nestjs/common';
 import { Course, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { ToolContextType } from '@modules/tool/common/enum';
-import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
-import { RoomsService } from './rooms.service';
 import { BoardCopyService } from './board-copy.service';
+import { RoomsService } from './rooms.service';
 
 type CourseCopyParams = {
 	originalCourse: Course;
@@ -105,10 +105,6 @@ export class CourseCopyService {
 				status: CopyStatusEnum.SUCCESS,
 			},
 			{
-				type: CopyElementType.EXTERNAL_TOOL,
-				status: CopyStatusEnum.SUCCESS,
-			},
-			{
 				type: CopyElementType.USER_GROUP,
 				status: CopyStatusEnum.NOT_DOING,
 			},
@@ -123,9 +119,19 @@ export class CourseCopyService {
 			boardStatus,
 		];
 
+		if (Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED')) {
+			elements.push({
+				type: CopyElementType.EXTERNAL_TOOL,
+				status: CopyStatusEnum.SUCCESS,
+			});
+		}
+
 		const courseGroupsExist = originalCourse.getCourseGroupItems().length > 0;
 		if (courseGroupsExist) {
-			elements.push({ type: CopyElementType.COURSEGROUP_GROUP, status: CopyStatusEnum.NOT_IMPLEMENTED });
+			elements.push({
+				type: CopyElementType.COURSEGROUP_GROUP,
+				status: CopyStatusEnum.NOT_IMPLEMENTED,
+			});
 		}
 
 		const status = {

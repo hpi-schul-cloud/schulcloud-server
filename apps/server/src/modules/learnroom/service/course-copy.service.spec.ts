@@ -1,6 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
 import { LessonCopyService } from '@modules/lesson/service';
+import { ToolContextType } from '@modules/tool/common/enum';
+import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course } from '@shared/domain/entity';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
@@ -13,10 +17,6 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { ToolContextType } from '@modules/tool/common/enum';
-import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { BoardCopyService } from './board-copy.service';
 import { CourseCopyService } from './course-copy.service';
 import { RoomsService } from './rooms.service';
