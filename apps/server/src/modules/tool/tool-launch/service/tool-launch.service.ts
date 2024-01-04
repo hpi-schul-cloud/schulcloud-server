@@ -54,7 +54,7 @@ export class ToolLaunchService {
 
 		const { externalTool, schoolExternalTool } = await this.loadToolHierarchy(schoolExternalToolId);
 
-		await this.isToolStatusLatestOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
+		await this.isToolStatusLaunchableOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
 
 		const strategy: ToolLaunchStrategy | undefined = this.strategies.get(externalTool.config.type);
 
@@ -84,8 +84,7 @@ export class ToolLaunchService {
 		};
 	}
 
-	// TODO is tool outdated OR deactivated ?
-	private async isToolStatusLatestOrThrow(
+	private async isToolStatusLaunchableOrThrow(
 		userId: EntityId,
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
