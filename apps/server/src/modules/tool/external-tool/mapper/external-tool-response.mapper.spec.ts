@@ -43,6 +43,7 @@ describe('ExternalToolResponseMapper', () => {
 					regex: 'mockRegex',
 					regexComment: 'mockComment',
 					isOptional: false,
+					isProtected: false,
 				});
 
 				const basicToolConfigResponse: BasicToolConfigResponse = new BasicToolConfigResponse({
@@ -143,6 +144,7 @@ describe('ExternalToolResponseMapper', () => {
 					regex: 'mockRegex',
 					regexComment: 'mockComment',
 					isOptional: false,
+					isProtected: false,
 				});
 
 				const externalToolResponse: ExternalToolResponse = new ExternalToolResponse({
@@ -230,6 +232,7 @@ describe('ExternalToolResponseMapper', () => {
 					regex: 'mockRegex',
 					regexComment: 'mockComment',
 					isOptional: false,
+					isProtected: false,
 				});
 
 				const externalToolResponse: ExternalToolResponse = new ExternalToolResponse({

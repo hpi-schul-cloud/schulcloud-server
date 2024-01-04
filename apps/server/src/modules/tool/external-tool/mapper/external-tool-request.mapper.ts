@@ -153,6 +153,7 @@ export class ExternalToolRequestMapper {
 				location: locationMapping[customParameterParam.location],
 				type: typeMapping[customParameterParam.type],
 				isOptional: customParameterParam.isOptional,
+				isProtected: customParameterParam.isProtected,
 			};
 		});
 	}

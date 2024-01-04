@@ -11,6 +11,46 @@ import { DeletionRequestEntity } from '../../entity';
 
 const baseRouteName = '/deletionRequests';
 
+const getMinDeletionPlannedAt = (creationDate: Date, diffInMinutes: number, toleranceInSeconds: number): Date => {
+	const minDeletionPlannedAt = new Date(creationDate.getTime());
+
+	minDeletionPlannedAt.setMinutes(minDeletionPlannedAt.getMinutes() + diffInMinutes);
+	minDeletionPlannedAt.setSeconds(minDeletionPlannedAt.getSeconds() - toleranceInSeconds);
+
+	return minDeletionPlannedAt;
+};
+
+const getMaxDeletionPlannedAt = (creationDate: Date, diffInMinutes: number, toleranceInSeconds: number): Date => {
+	const maxDeletionPlannedAt = new Date(creationDate.getTime());
+
+	maxDeletionPlannedAt.setMinutes(maxDeletionPlannedAt.getMinutes() + diffInMinutes);
+	maxDeletionPlannedAt.setSeconds(maxDeletionPlannedAt.getSeconds() + toleranceInSeconds);
+
+	return maxDeletionPlannedAt;
+};
+
+const getMinAndMaxDeletionPlannedAt = (creationDate: Date, diffInMinutes: number, toleranceInSeconds: number) => {
+	const minDeletionPlannedAt = getMinDeletionPlannedAt(creationDate, diffInMinutes, toleranceInSeconds);
+	const maxDeletionPlannedAt = getMaxDeletionPlannedAt(creationDate, diffInMinutes, toleranceInSeconds);
+
+	return { minDeletionPlannedAt, maxDeletionPlannedAt };
+};
+
+const isDeletionPlannedWithinAcceptableRange = (
+	creationDate: Date,
+	deletionPlannedAt: Date,
+	diffInMinutes: number,
+	toleranceInSeconds: number
+) => {
+	const { minDeletionPlannedAt, maxDeletionPlannedAt } = getMinAndMaxDeletionPlannedAt(
+		creationDate,
+		diffInMinutes,
+		toleranceInSeconds
+	);
+
+	return deletionPlannedAt >= minDeletionPlannedAt && deletionPlannedAt <= maxDeletionPlannedAt;
+};
+
 describe(`deletionRequest create (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -42,7 +82,7 @@ describe(`deletionRequest create (api)`, () => {
 	});
 
 	describe('createDeletionRequests', () => {
-		describe('when create deletionRequest', () => {
+		describe('when called', () => {
 			const setup = () => {
 				const deletionRequestToCreate: DeletionRequestBodyProps = {
 					targetRef: {
@@ -59,7 +99,16 @@ describe(`deletionRequest create (api)`, () => {
 					deleteInMinutes: 0,
 				};
 
-				return { deletionRequestToCreate, deletionRequestToImmediateRemoval };
+				const defaultDeleteInMinutes = 43200;
+
+				const operationalTimeToleranceInSeconds = 30;
+
+				return {
+					deletionRequestToCreate,
+					deletionRequestToImmediateRemoval,
+					defaultDeleteInMinutes,
+					operationalTimeToleranceInSeconds,
+				};
 			};
 
 			it('should return status 202', async () => {
@@ -79,33 +128,52 @@ describe(`deletionRequest create (api)`, () => {
 				expect(result.requestId).toBeDefined();
 			});
 
-			it('should create deletionRequest with default deletion time (add 43200 minutes to current time) ', async () => {
-				const { deletionRequestToCreate } = setup();
+			describe('when the "delete in minutes" param has not been provided', () => {
+				it(
+					'should set the "deletion planned at" date to the date after the default "delete in minutes" value ' +
+						'(43200 minutes which is 30 days), with some operational time tolerance',
+					async () => {
+						const { deletionRequestToCreate, defaultDeleteInMinutes, operationalTimeToleranceInSeconds } = setup();
 
-				const response = await testXApiKeyClient.post('', deletionRequestToCreate);
+						const response = await testXApiKeyClient.post('', deletionRequestToCreate);
 
-				const result = response.body as DeletionRequestResponse;
-				const createdDeletionRequestId = result.requestId;
+						const result = response.body as DeletionRequestResponse;
+						const createdDeletionRequestId = result.requestId;
 
-				const createdItem = await em.findOneOrFail(DeletionRequestEntity, createdDeletionRequestId);
+						const createdItem = await em.findOneOrFail(DeletionRequestEntity, createdDeletionRequestId);
 
-				const deletionPlannedAt = createdItem.createdAt;
-				deletionPlannedAt.setMinutes(deletionPlannedAt.getMinutes() + 43200);
+						const isDeletionPlannedAtDateCorrect = isDeletionPlannedWithinAcceptableRange(
+							createdItem.createdAt,
+							createdItem.deleteAfter,
+							defaultDeleteInMinutes,
+							operationalTimeToleranceInSeconds
+						);
 
-				expect(createdItem.deleteAfter).toEqual(deletionPlannedAt);
+						expect(isDeletionPlannedAtDateCorrect).toEqual(true);
+					}
+				);
 			});
 
-			it('should create deletionRequest with deletion time (0 minutes to current time) ', async () => {
-				const { deletionRequestToImmediateRemoval } = setup();
+			describe('when the "delete in minutes" param has been set to 0', () => {
+				it('should set the "deletion planned at" date to now, with some operational time tolerance', async () => {
+					const { deletionRequestToImmediateRemoval, operationalTimeToleranceInSeconds } = setup();
 
-				const response = await testXApiKeyClient.post('', deletionRequestToImmediateRemoval);
+					const response = await testXApiKeyClient.post('', deletionRequestToImmediateRemoval);
 
-				const result = response.body as DeletionRequestResponse;
-				const createdDeletionRequestId = result.requestId;
+					const result = response.body as DeletionRequestResponse;
+					const createdDeletionRequestId = result.requestId;
 
-				const createdItem = await em.findOneOrFail(DeletionRequestEntity, createdDeletionRequestId);
+					const createdItem = await em.findOneOrFail(DeletionRequestEntity, createdDeletionRequestId);
 
-				expect(createdItem.createdAt).toEqual(createdItem.deleteAfter);
+					const isDeletionPlannedAtDateCorrect = isDeletionPlannedWithinAcceptableRange(
+						createdItem.createdAt,
+						createdItem.deleteAfter,
+						0,
+						operationalTimeToleranceInSeconds
+					);
+
+					expect(isDeletionPlannedAtDateCorrect).toEqual(true);
+				});
 			});
 		});
 	});
