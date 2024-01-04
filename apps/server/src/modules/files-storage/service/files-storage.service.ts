@@ -181,7 +181,7 @@ export class FilesStorageService {
 			fileRecord.size = await fileSizePromise;
 			this.throwErrorIfFileIsTooBig(fileRecord.size);
 
-			fileRecord.fileExists = true;
+			fileRecord.markAsLoaded();
 
 			await this.fileRecordRepo.save(fileRecord);
 
