@@ -4,11 +4,11 @@ import { Course, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { BoardCopyService } from './board-copy.service';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { ToolContextType } from '@modules/tool/common/enum';
+import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
 import { RoomsService } from './rooms.service';
-import { ContextExternalToolService } from '../../tool/context-external-tool/service';
-import { ToolContextType } from '../../tool/common/enum';
-import { ContextExternalTool, ContextRef } from '../../tool/context-external-tool/domain';
+import { BoardCopyService } from './board-copy.service';
 
 type CourseCopyParams = {
 	originalCourse: Course;
