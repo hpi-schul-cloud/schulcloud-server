@@ -281,13 +281,14 @@ export class DeletionRequestUc {
 	private async removeUserFromTasks(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: 'removeUserFromTasks', deletionRequest });
 
-		const tasksModified = await this.taskService.removeCreatorId(deletionRequest.targetRefId);
+		const tasksDeleted = await this.taskService.deleteTasksByOnlyCreator(deletionRequest.targetRefId);
+		const tasksModified = await this.taskService.removeCreatorIdFromTasks(deletionRequest.targetRefId);
 
 		await this.logDeletion(
 			deletionRequest,
 			DomainModel.TASK,
 			DeletionOperationModel.UPDATE,
-			tasksModified.deletedCount,
+			tasksDeleted.deletedCount,
 			tasksModified.modifiedCount
 		);
 	}

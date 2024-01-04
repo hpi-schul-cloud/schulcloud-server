@@ -24,16 +24,6 @@ export class TaskService {
 		return this.taskRepo.findBySingleParent(creatorId, courseId, filters, options);
 	}
 
-	async removeUserFromTasks(creatorId: EntityId): Promise<DomainOperation> {
-		const deletedTaskWithCreatorId = await this.deleteTasksByOnlyCreator(creatorId);
-
-		const updatedTasksWithCreatorId = await this.removeCreatorIdFromTasks(creatorId);
-
-		const result = DomainOperationBuilder.build(DomainModel.TASK, deletedTaskWithCreatorId, updatedTasksWithCreatorId);
-
-		return result;
-	}
-
 	async delete(task: Task): Promise<void> {
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(task.id);
 
@@ -53,17 +43,19 @@ export class TaskService {
 		return this.taskRepo.findById(taskId);
 	}
 
-	private async deleteTasksByOnlyCreator(creatorId: EntityId): Promise<number> {
+	async deleteTasksByOnlyCreator(creatorId: EntityId): Promise<DomainOperation> {
 		const [tasksByOnlyCreatorId, counterOfTasksOnlyWithCreatorId] = await this.taskRepo.findByOnlyCreatorId(creatorId);
 
 		const promiseDeletedTasks = tasksByOnlyCreatorId.map((task: Task) => this.delete(task));
 
 		await Promise.all(promiseDeletedTasks);
 
-		return counterOfTasksOnlyWithCreatorId;
+		const result = DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksOnlyWithCreatorId, 0);
+
+		return result;
 	}
 
-	private async removeCreatorIdFromTasks(creatorId: EntityId): Promise<number> {
+	async removeCreatorIdFromTasks(creatorId: EntityId): Promise<DomainOperation> {
 		const [tasksByCreatorIdWithCoursesAndLessons, counterOfTasksWithCoursesorLessons] =
 			await this.taskRepo.findByCreatorIdWithCourseAndLesson(creatorId);
 
@@ -72,6 +64,8 @@ export class TaskService {
 			await this.taskRepo.save(tasksByCreatorIdWithCoursesAndLessons);
 		}
 
-		return counterOfTasksWithCoursesorLessons;
+		const result = DomainOperationBuilder.build(DomainModel.TASK, 0, counterOfTasksWithCoursesorLessons);
+
+		return result;
 	}
 }
