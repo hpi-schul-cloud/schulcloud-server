@@ -77,7 +77,7 @@ export class PseudonymService {
 	}
 
 	public async deleteByUserId(userId: string): Promise<number> {
-		this.logger.log({ action: 'Deleting Pseudonyms for user ', userId });
+		this.logger.log(`Deleting Pseudonyms for userId ${userId}`);
 		if (!userId) {
 			throw new InternalServerErrorException('User id is missing');
 		}
@@ -86,9 +86,12 @@ export class PseudonymService {
 			this.deletePseudonymsByUserId(userId),
 			this.deleteExternalToolPseudonymsByUserId(userId),
 		]);
-		this.logger.log({ action: 'Deleted Pseudonyms for user ', userId });
 
-		return deletedPseudonyms + deletedExternalToolPseudonyms;
+		const numberOfDeletedPseudonyms = deletedPseudonyms + deletedExternalToolPseudonyms;
+
+		this.logger.log(`Successfully deleted ${numberOfDeletedPseudonyms} pseudonym for userId ${userId}`);
+
+		return numberOfDeletedPseudonyms;
 	}
 
 	private async findPseudonymsByUserId(userId: string): Promise<Pseudonym[]> {

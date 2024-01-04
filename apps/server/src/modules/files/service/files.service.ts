@@ -15,7 +15,7 @@ export class FilesService {
 	}
 
 	async removeUserPermissionsToAnyFiles(userId: EntityId): Promise<number> {
-		this.logger.log({ action: 'Deleting Permissions To Any Files for user ', userId });
+		this.logger.log(`Deleting Permissions To Any Files for userId ${userId}`);
 		const entities = await this.repo.findByPermissionRefId(userId);
 
 		if (entities.length === 0) {
@@ -26,9 +26,11 @@ export class FilesService {
 
 		await this.repo.save(entities);
 
-		this.logger.log({ action: 'Deleted Permissions To Any Files for user ', userId });
+		const numberOfUpdatedFiles = entities.length;
 
-		return entities.length;
+		this.logger.log(`Successfully removed permissions for userId ${userId} for ${numberOfUpdatedFiles} files`);
+
+		return numberOfUpdatedFiles;
 	}
 
 	async findFilesOwnedByUser(userId: EntityId): Promise<FileEntity[]> {
@@ -36,7 +38,7 @@ export class FilesService {
 	}
 
 	async markFilesOwnedByUserForDeletion(userId: EntityId): Promise<number> {
-		this.logger.log({ action: 'Marking Files For Deletion Owned By user ', userId });
+		this.logger.log(`Marking Files For Deletion Owned By userId ${userId}`);
 		const entities = await this.repo.findByOwnerUserId(userId);
 
 		if (entities.length === 0) {
@@ -47,8 +49,12 @@ export class FilesService {
 
 		await this.repo.save(entities);
 
-		this.logger.log({ action: 'Marked Files For Deletion Owned By user ', userId });
+		const numberOfMarkedForDeletionFiles = entities.length;
 
-		return entities.length;
+		this.logger.log(
+			`Successfully marked for deletion ${numberOfMarkedForDeletionFiles} files owned by userId ${userId}`
+		);
+
+		return numberOfMarkedForDeletionFiles;
 	}
 }

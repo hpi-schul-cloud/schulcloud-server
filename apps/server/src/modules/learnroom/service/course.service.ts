@@ -21,13 +21,13 @@ export class CourseService {
 	}
 
 	public async deleteUserDataFromCourse(userId: EntityId): Promise<number> {
-		this.logger.log({ action: 'Deleting data from Courses for user ', userId });
+		this.logger.log(`Deleting data from Courses for userId ${userId}`);
 		const [courses, count] = await this.repo.findAllByUserId(userId);
 
 		courses.forEach((course: Course) => course.removeUser(userId));
 
 		await this.repo.save(courses);
-		this.logger.log({ action: 'Deleting data from Courses for user ', userId });
+		this.logger.log(`Successfully removed userId ${userId} from ${count} courses`);
 
 		return count;
 	}

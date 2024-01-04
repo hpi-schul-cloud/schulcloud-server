@@ -23,7 +23,7 @@ export class ClassService {
 	}
 
 	public async deleteUserDataFromClasses(userId: EntityId): Promise<number> {
-		this.logger.log({ action: 'Deleting data from Classes for user ', userId });
+		this.logger.log(`Deleting data from Classes for userId ${userId}`);
 
 		if (!userId) {
 			throw new InternalServerErrorException('User id is missing');
@@ -38,9 +38,11 @@ export class ClassService {
 			return domainObject;
 		});
 
-		await this.classesRepo.updateMany(updatedClasses);
-		this.logger.log({ action: 'Deleted data from Classes for user ', userId });
+		const numberOfUpdatedClasses = updatedClasses.length;
 
-		return updatedClasses.length;
+		await this.classesRepo.updateMany(updatedClasses);
+		this.logger.log(`Successfully removed userId ${userId} from ${numberOfUpdatedClasses} classes`);
+
+		return numberOfUpdatedClasses;
 	}
 }

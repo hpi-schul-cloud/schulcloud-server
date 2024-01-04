@@ -9,9 +9,9 @@ export class RegistrationPinService {
 	}
 
 	async deleteRegistrationPinByEmail(email: string): Promise<number> {
-		this.logger.log({ action: 'Deleting registrationPin for ', email });
-		const result = this.registrationPinRepo.deleteRegistrationPinByEmail(email);
-		this.logger.log({ action: 'Deleted registrationPin for ', email });
+		this.logger.log(`Deleting registrationPin for email ${email}`);
+		const result = await this.registrationPinRepo.deleteRegistrationPinByEmail(email);
+		this.logger.log(`Successfully deleted ${result} registrationPin for email ${email}`);
 
 		return result;
 	}

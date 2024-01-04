@@ -17,10 +17,10 @@ export class RocketChatUserService {
 	}
 
 	public deleteByUserId(userId: EntityId): Promise<number> {
-		this.logger.log({ action: 'Deleting rocketChatUser ', userId });
+		this.logger.log(`Deleting rocketChatUser with userId ${userId}`);
 		const deletedRocketChatUser: Promise<number> = this.rocketChatUserRepo.deleteByUserId(userId);
 
-		this.logger.log({ action: 'Deleted rocketChatUser ', userId });
+		this.logger.log(`Successfully deleted rocketChatUser with userId ${userId}`);
 
 		return deletedRocketChatUser;
 	}

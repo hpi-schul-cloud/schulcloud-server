@@ -14,11 +14,11 @@ export class DashboardService {
 	}
 
 	async deleteDashboardByUserId(userId: EntityId): Promise<number> {
-		this.logger.log({ action: 'Deleting dasboard for userId - ', userId });
+		this.logger.log(`Deleting dasboard for userId ${userId}`);
 		const usersDashboard = await this.dashboardRepo.getUsersDashboard(userId);
 		await this.dashboardElementRepo.deleteByDashboardId(usersDashboard.id);
 		const result = await this.dashboardRepo.deleteDashboardByUserId(userId);
-		this.logger.log({ action: 'Deleted dasboard for userId - ', userId });
+		this.logger.log(`Successfully deleted ${result} dashboard for userId ${userId}`);
 
 		return result;
 	}

@@ -37,7 +37,7 @@ export class LessonService implements AuthorizationLoaderService {
 	}
 
 	async deleteUserDataFromLessons(userId: EntityId): Promise<number> {
-		this.logger.log({ action: 'Deleting User Data From Lesson for user ', userId });
+		this.logger.log(`Deleting User Data From Lesson for userId ${userId}`);
 		const lessons = await this.lessonRepo.findByUserId(userId);
 
 		const updatedLessons = lessons.map((lesson: LessonEntity) => {
@@ -52,8 +52,10 @@ export class LessonService implements AuthorizationLoaderService {
 
 		await this.lessonRepo.save(updatedLessons);
 
-		this.logger.log({ action: 'Deleted User Data From Lesson for user ', userId });
+		const numberOfUpdatedLessons = updatedLessons.length;
 
-		return updatedLessons.length;
+		this.logger.log(`Successfully updated ${numberOfUpdatedLessons} lessons for userId ${userId}`);
+
+		return numberOfUpdatedLessons;
 	}
 }

@@ -17,13 +17,13 @@ export class CourseGroupService {
 	}
 
 	public async deleteUserDataFromCourseGroup(userId: EntityId): Promise<number> {
-		this.logger.log({ action: 'Deleting data from CourseGroup for user ', userId });
+		this.logger.log(`Deleting data from CourseGroup for user ${userId}`);
 		const [courseGroups, count] = await this.repo.findByUserId(userId);
 
 		courseGroups.forEach((courseGroup) => courseGroup.removeStudent(userId));
 
 		await this.repo.save(courseGroups);
-		this.logger.log({ action: 'Deleted data from CourseGroup for user ', userId });
+		this.logger.log(`Successfully removed userId ${userId} from ${count} courseGroup`);
 
 		return count;
 	}

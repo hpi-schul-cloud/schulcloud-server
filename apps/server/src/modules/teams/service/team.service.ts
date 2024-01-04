@@ -17,7 +17,7 @@ export class TeamService {
 	}
 
 	public async deleteUserDataFromTeams(userId: EntityId): Promise<number> {
-		this.logger.log({ action: 'Deleting users data from Teams for user ', userId });
+		this.logger.log(`Deleting users data from Teams for userId ${userId}`);
 		const teams = await this.teamsRepo.findByUserId(userId);
 
 		teams.forEach((team) => {
@@ -26,8 +26,10 @@ export class TeamService {
 
 		await this.teamsRepo.save(teams);
 
-		this.logger.log({ action: 'Deleted users data from Teams for user ', userId });
+		const numberOfUpdatedTeams = teams.length;
 
-		return teams.length;
+		this.logger.log(`Successfully updated ${numberOfUpdatedTeams} teams for userId ${userId}`);
+
+		return numberOfUpdatedTeams;
 	}
 }

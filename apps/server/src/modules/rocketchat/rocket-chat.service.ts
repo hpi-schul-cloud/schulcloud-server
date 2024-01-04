@@ -185,12 +185,12 @@ export class RocketChatService {
 	}
 
 	public async deleteUser(username: string): Promise<GenericData> {
-		this.logger.log({ action: 'Deleting user Data from RocketChat Service for user ', username });
+		this.logger.log(`Deleting user Data from RocketChat Service for username ${username}`);
 		const deletedUser: Promise<GenericData> = this.postAsAdmin('/api/v1/users.delete', {
 			username,
 		});
 
-		this.logger.log({ action: 'Deleting user Data from RocketChat Service for user ', username });
+		this.logger.log(`Successfully deleted username ${username} from RocketChat Service`);
 
 		return deletedUser;
 	}

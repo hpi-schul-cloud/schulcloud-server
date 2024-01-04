@@ -128,10 +128,10 @@ export class UserService {
 	}
 
 	async deleteUser(userId: EntityId): Promise<number> {
-		this.logger.log({ action: 'Deleting user ', userId });
-		const deletedUserNumber: Promise<number> = this.userRepo.deleteUser(userId);
+		this.logger.log(`Deleting userId ${userId}`);
+		const deletedUserNumber = await this.userRepo.deleteUser(userId);
 
-		this.logger.log({ action: 'Deleted user ', userId });
+		this.logger.log(`Successfully deleted ${deletedUserNumber} user for userId${userId}`);
 
 		return deletedUserNumber;
 	}
