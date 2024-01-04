@@ -34,6 +34,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 					WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE,
 					err as Error
 				);
+				return;
 			}
 			try {
 				this.tldrawWsService.setupWSConnection(client, docName);

@@ -220,7 +220,7 @@ export class TldrawWsService {
 		};
 
 		await firstValueFrom(
-			this.httpService.get(`${this.configService.get<string>('API_HOST')}/api/v3/elements/${drawingName}/permission`, {
+			this.httpService.get(`${this.configService.get<string>('API_HOST')}/v3/elements/${drawingName}/permission`, {
 				headers,
 			})
 		);
