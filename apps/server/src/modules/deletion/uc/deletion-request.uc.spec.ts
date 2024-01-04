@@ -209,7 +209,8 @@ describe(DeletionRequestUc.name, () => {
 					userId: deletionRequestToExecute.targetRefId,
 				});
 				const parentEmail = 'parent@parent.eu';
-				const tasksModified = DomainOperationBuilder.build(DomainModel.TASK, 1, 0);
+				const tasksModifiedByRemoveCreatorId = DomainOperationBuilder.build(DomainModel.TASK, 1, 0);
+				const tasksModifiedByRemoveUserFromFinished = DomainOperationBuilder.build(DomainModel.TASK, 1, 0);
 				const tasksDeleted = DomainOperationBuilder.build(DomainModel.TASK, 0, 1);
 
 				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(2);
@@ -225,7 +226,8 @@ describe(DeletionRequestUc.name, () => {
 				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(1);
 				filesStorageClientAdapterService.removeCreatorIdFromFileRecords.mockResolvedValueOnce(5);
 				dashboardService.deleteDashboardByUserId.mockResolvedValueOnce(1);
-				taskService.removeCreatorIdFromTasks.mockResolvedValueOnce(tasksModified);
+				taskService.removeCreatorIdFromTasks.mockResolvedValueOnce(tasksModifiedByRemoveCreatorId);
+				taskService.removeCreatorIdFromTasks.mockResolvedValueOnce(tasksModifiedByRemoveUserFromFinished);
 				taskService.deleteTasksByOnlyCreator.mockResolvedValueOnce(tasksDeleted);
 
 				return {
@@ -449,6 +451,16 @@ describe(DeletionRequestUc.name, () => {
 				await uc.executeDeletionRequests();
 
 				expect(taskService.removeCreatorIdFromTasks).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+			});
+
+			it('should call taskService.removeUserFromFinished to update Tasks without creatorId in Finished collection', async () => {
+				const { deletionRequestToExecute } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+
+				await uc.executeDeletionRequests();
+
+				expect(taskService.removeUserFromFinished).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call deletionLogService.createDeletionLog to create logs for deletionRequest', async () => {

@@ -105,16 +105,15 @@ describe('TaskService', () => {
 		});
 	});
 
-	describe('removeCreatorId', () => {
+	describe('deleteTasksByOnlyCreator', () => {
 		describe('when task has only user as parent', () => {
 			const setup = () => {
 				const creator = userFactory.buildWithId();
 				const taskWithoutCourse = taskFactory.buildWithId({ creator });
 
 				taskRepo.findByOnlyCreatorId.mockResolvedValue([[taskWithoutCourse], 1]);
-				taskRepo.findByCreatorIdWithCourseAndLesson.mockResolvedValue([[], 0]);
 
-				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, 1, 0);
+				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, 0, 1);
 
 				return { creator, expectedResult };
 			};
@@ -122,57 +121,40 @@ describe('TaskService', () => {
 			it('should call taskRepo.findByOnlyCreatorId with creatorId', async () => {
 				const { creator } = setup();
 
-				await taskService.removeUserFromTasks(creator.id);
+				await taskService.deleteTasksByOnlyCreator(creator.id);
 
 				expect(taskRepo.findByOnlyCreatorId).toBeCalledWith(creator.id);
-			});
-
-			it('should call taskRepo.findByCreatorIdWithCourseAndLesson with creatorId', async () => {
-				const { creator } = setup();
-
-				await taskService.removeUserFromTasks(creator.id);
-
-				expect(taskRepo.findByCreatorIdWithCourseAndLesson).toBeCalledWith(creator.id);
 			});
 
 			it('should return the object with information on the actions performed', async () => {
 				const { creator, expectedResult } = setup();
 
-				const result = await taskService.removeUserFromTasks(creator.id);
+				const result = await taskService.deleteTasksByOnlyCreator(creator.id);
 
 				expect(result).toEqual(expectedResult);
 			});
 		});
+	});
 
+	describe('removeCreatorIdFromTasks', () => {
 		describe('when tasks where user is parent, and when task has course', () => {
 			const setup = () => {
 				const creator = userFactory.buildWithId();
-				const taskWithoutCourse = taskFactory.buildWithId({ creator });
-
 				const course = courseFactory.build();
 				const taskWithCourse = taskFactory.buildWithId({ creator, course });
 
-				taskRepo.findByOnlyCreatorId.mockResolvedValue([[taskWithoutCourse], 1]);
 				taskRepo.findByCreatorIdWithCourseAndLesson.mockResolvedValue([[taskWithCourse], 1]);
 
-				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, 1, 1);
+				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, 1, 0);
 				const taskWithCourseToUpdate = { ...taskWithCourse, creator: undefined };
 
 				return { creator, expectedResult, taskWithCourseToUpdate };
 			};
 
-			it('should call taskRepo.findByOnlyCreatorId with creatorId', async () => {
-				const { creator } = setup();
-
-				await taskService.removeUserFromTasks(creator.id);
-
-				expect(taskRepo.findByOnlyCreatorId).toBeCalledWith(creator.id);
-			});
-
 			it('should call taskRepo.findByCreatorIdWithCourseAndLesson with creatorId', async () => {
 				const { creator } = setup();
 
-				await taskService.removeUserFromTasks(creator.id);
+				await taskService.removeCreatorIdFromTasks(creator.id);
 
 				expect(taskRepo.findByCreatorIdWithCourseAndLesson).toBeCalledWith(creator.id);
 			});
@@ -180,7 +162,7 @@ describe('TaskService', () => {
 			it('should call taskRepo.save with task to update', async () => {
 				const { creator, taskWithCourseToUpdate } = setup();
 
-				await taskService.removeUserFromTasks(creator.id);
+				await taskService.removeCreatorIdFromTasks(creator.id);
 
 				expect(taskRepo.save).toBeCalledWith([taskWithCourseToUpdate]);
 			});
@@ -188,7 +170,38 @@ describe('TaskService', () => {
 			it('should return the object with information on the actions performed', async () => {
 				const { creator, expectedResult } = setup();
 
-				const result = await taskService.removeUserFromTasks(creator.id);
+				const result = await taskService.removeCreatorIdFromTasks(creator.id);
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+	});
+
+	describe('removeUserFromFinished', () => {
+		describe('when task has user in finished array', () => {
+			const setup = () => {
+				const creator = userFactory.buildWithId();
+				const finishedTask = taskFactory.finished(creator).buildWithId();
+
+				taskRepo.findByUserIdInFinished.mockResolvedValue([[finishedTask], 1]);
+
+				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, 1, 0);
+
+				return { creator, expectedResult };
+			};
+
+			it('should call taskRepo.findByUserIdInFinished with creatorId', async () => {
+				const { creator } = setup();
+
+				await taskService.removeUserFromFinished(creator.id);
+
+				expect(taskRepo.findByUserIdInFinished).toBeCalledWith(creator.id);
+			});
+
+			it('should return the object with information on the actions performed', async () => {
+				const { creator, expectedResult } = setup();
+
+				const result = await taskService.removeUserFromFinished(creator.id);
 
 				expect(result).toEqual(expectedResult);
 			});

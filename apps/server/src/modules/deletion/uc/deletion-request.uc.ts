@@ -282,14 +282,17 @@ export class DeletionRequestUc {
 		this.logger.debug({ action: 'removeUserFromTasks', deletionRequest });
 
 		const tasksDeleted = await this.taskService.deleteTasksByOnlyCreator(deletionRequest.targetRefId);
-		const tasksModified = await this.taskService.removeCreatorIdFromTasks(deletionRequest.targetRefId);
+		const tasksModifiedByRemoveCreator = await this.taskService.removeCreatorIdFromTasks(deletionRequest.targetRefId);
+		const tasksModifiedByRemoveUserFromFinished = await this.taskService.removeUserFromFinished(
+			deletionRequest.targetRefId
+		);
 
 		await this.logDeletion(
 			deletionRequest,
 			DomainModel.TASK,
 			DeletionOperationModel.UPDATE,
-			tasksDeleted.deletedCount,
-			tasksModified.modifiedCount
+			tasksModifiedByRemoveCreator.modifiedCount + tasksModifiedByRemoveUserFromFinished.modifiedCount,
+			tasksDeleted.deletedCount
 		);
 	}
 }

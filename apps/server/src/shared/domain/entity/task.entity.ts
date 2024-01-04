@@ -327,6 +327,10 @@ export class Task extends BaseEntityWithTimestamps implements LearnroomElement, 
 	public removeCreatorId(): void {
 		this.creator = undefined;
 	}
+
+	public removeUserFromFinished(userId: EntityId): void {
+		this.finished.remove((u) => u.id === userId);
+	}
 }
 
 export function isTask(reference: unknown): reference is Task {

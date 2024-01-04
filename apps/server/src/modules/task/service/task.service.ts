@@ -12,7 +12,7 @@ export class TaskService {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly submissionService: SubmissionService,
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 	) {}
 
 	async findBySingleParent(
@@ -50,7 +50,7 @@ export class TaskService {
 
 		await Promise.all(promiseDeletedTasks);
 
-		const result = DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksOnlyWithCreatorId, 0);
+		const result = DomainOperationBuilder.build(DomainModel.TASK, 0, counterOfTasksOnlyWithCreatorId);
 
 		return result;
 	}
@@ -64,7 +64,23 @@ export class TaskService {
 			await this.taskRepo.save(tasksByCreatorIdWithCoursesAndLessons);
 		}
 
-		const result = DomainOperationBuilder.build(DomainModel.TASK, 0, counterOfTasksWithCoursesorLessons);
+		const result = DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithCoursesorLessons, 0);
+
+		return result;
+	}
+
+	async removeUserFromFinished(userId: EntityId): Promise<DomainOperation> {
+		const [tasksWithUserInFinished, counterOfTasksWithUserInFinished] = await this.taskRepo.findByUserIdInFinished(
+			userId
+		);
+
+		if (counterOfTasksWithUserInFinished > 0) {
+			tasksWithUserInFinished.forEach((task: Task) => task.removeUserFromFinished(userId));
+
+			await this.taskRepo.save(tasksWithUserInFinished);
+		}
+
+		const result = DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithUserInFinished, 0);
 
 		return result;
 	}
