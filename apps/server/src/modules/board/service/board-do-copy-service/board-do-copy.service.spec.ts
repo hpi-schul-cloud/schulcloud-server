@@ -66,6 +66,10 @@ describe('recursive board copy visitor', () => {
 		await setupEntities();
 	});
 
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
+
 	const setupfileCopyService = () => {
 		const fileCopyService = createMock<SchoolSpecificFileCopyService>();
 
