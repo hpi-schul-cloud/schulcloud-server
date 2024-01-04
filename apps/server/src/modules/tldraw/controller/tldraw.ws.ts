@@ -3,7 +3,7 @@ import { Server, WebSocket } from 'ws';
 import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import cookie from 'cookie';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { WebsocketCloseErrorLoggable } from '../loggable/websocket-close-error.loggable';
 import { TldrawConfig, SOCKET_PORT } from '../config';
@@ -28,12 +28,21 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 			try {
 				await this.tldrawWsService.authorizeConnection(docName, cookies?.jwt);
 			} catch (err) {
-				this.closeClientAndLogError(
-					client,
-					WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
-					WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE,
-					err as Error
-				);
+				if (err instanceof NotFoundException) {
+					this.closeClientAndLogError(
+						client,
+						WsCloseCodeEnum.WS_CLIENT_NOT_FOUND_CODE,
+						WsCloseMessageEnum.WS_CLIENT_NOT_FOUND_MESSAGE,
+						err as Error
+					);
+				} else {
+					this.closeClientAndLogError(
+						client,
+						WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
+						WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE,
+						err as Error
+					);
+				}
 				return;
 			}
 			try {
