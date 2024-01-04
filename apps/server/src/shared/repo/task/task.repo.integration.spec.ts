@@ -2157,4 +2157,28 @@ describe('TaskRepo', () => {
 			});
 		});
 	});
+
+	describe('findByUserIdInFinished', () => {
+		describe('when searching by userId', () => {
+			const setup = async () => {
+				const creator = userFactory.build();
+				const course = courseFactory.build({ teachers: [creator] });
+				const taskWithFinished = taskFactory.build({ creator, course, finished: [creator] });
+				const taskWithoutFinished = taskFactory.build({ creator, course });
+
+				await em.persistAndFlush([taskWithFinished, taskWithoutFinished]);
+				em.clear();
+
+				return { creator };
+			};
+
+			it('should find task where user is in archive', async () => {
+				const { creator } = await setup();
+
+				const [result] = await repo.findByUserIdInFinished(creator.id);
+
+				expect(result).toHaveLength(1);
+			});
+		});
+	});
 });

@@ -205,6 +205,15 @@ export class TaskRepo extends BaseRepo<Task> {
 		return countedTaskList;
 	}
 
+	async findByUserIdInFinished(userId: EntityId): Promise<Counted<Task[]>> {
+		const scope = new TaskScope();
+		scope.byFinished(userId, true);
+
+		const countedTaskList = await this.findTasksAndCount(scope.query);
+
+		return countedTaskList;
+	}
+
 	private async findTasksAndCount(query: FilterQuery<Task>, options?: IFindOptions<Task>): Promise<Counted<Task[]>> {
 		const pagination = options?.pagination || {};
 		const order = options?.order || {};
