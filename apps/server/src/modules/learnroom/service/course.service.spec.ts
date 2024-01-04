@@ -3,8 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course } from '@shared/domain/entity';
 import { CourseRepo, UserRepo } from '@shared/repo';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
-import { CourseService } from './course.service';
 import { LegacyLogger } from '@src/core/logger';
+import { CourseService } from './course.service';
 
 describe('CourseService', () => {
 	let module: TestingModule;
