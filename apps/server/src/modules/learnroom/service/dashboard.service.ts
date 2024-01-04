@@ -18,7 +18,7 @@ export class DashboardService {
 		const usersDashboard = await this.dashboardRepo.getUsersDashboard(userId);
 		await this.dashboardElementRepo.deleteByDashboardId(usersDashboard.id);
 		const result = await this.dashboardRepo.deleteDashboardByUserId(userId);
-		this.logger.log(`Successfully deleted ${result} dashboard for userId ${userId}`);
+		this.logger.log(`Successfully deleted ${result.toString()} dashboard for userId ${userId}`);
 
 		return result;
 	}
