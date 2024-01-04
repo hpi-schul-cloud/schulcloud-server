@@ -209,7 +209,8 @@ describe(DeletionRequestUc.name, () => {
 					userId: deletionRequestToExecute.targetRefId,
 				});
 				const parentEmail = 'parent@parent.eu';
-				const tasksModified = DomainOperationBuilder.build(DomainModel.TASK, 1, 1);
+				const tasksModified = DomainOperationBuilder.build(DomainModel.TASK, 1, 0);
+				const tasksDeleted = DomainOperationBuilder.build(DomainModel.TASK, 0, 1);
 
 				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(2);
 				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
@@ -224,7 +225,8 @@ describe(DeletionRequestUc.name, () => {
 				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(1);
 				filesStorageClientAdapterService.removeCreatorIdFromFileRecords.mockResolvedValueOnce(5);
 				dashboardService.deleteDashboardByUserId.mockResolvedValueOnce(1);
-				taskService.removeCreatorId.mockResolvedValueOnce(tasksModified);
+				taskService.removeCreatorIdFromTasks.mockResolvedValueOnce(tasksModified);
+				taskService.deleteTasksByOnlyCreator.mockResolvedValueOnce(tasksDeleted);
 
 				return {
 					deletionRequestToExecute,
@@ -429,14 +431,24 @@ describe(DeletionRequestUc.name, () => {
 				expect(dashboardService.deleteDashboardByUserId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
-			it('should call dashboardService.deleteDashboardByUserId to delete USERS DASHBOARD', async () => {
+			it('should call taskService.deleteTasksByOnlyCreator to delete Tasks only with creator', async () => {
 				const { deletionRequestToExecute } = setup();
 
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 
 				await uc.executeDeletionRequests();
 
-				expect(taskService.removeCreatorId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+				expect(taskService.deleteTasksByOnlyCreator).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+			});
+
+			it('should call taskService.removeCreatorIdFromTasks to update Tasks without creatorId', async () => {
+				const { deletionRequestToExecute } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+
+				await uc.executeDeletionRequests();
+
+				expect(taskService.removeCreatorIdFromTasks).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call deletionLogService.createDeletionLog to create logs for deletionRequest', async () => {
