@@ -17,7 +17,7 @@ export class ContextExternalToolConfigurationStatusResponse {
 
 	@ApiProperty({
 		type: Boolean,
-		description: 'true, if a configured parameter on the context external tool is missing a value',
+		description: 'True, if a configured parameter on the context external tool is missing a value',
 	})
 	isIncompleteOnScopeContext: boolean;
 

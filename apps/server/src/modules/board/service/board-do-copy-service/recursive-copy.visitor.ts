@@ -18,7 +18,7 @@ import {
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
-import { ContextExternalTool } from '../../../tool/context-external-tool/domain';
+import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 
 export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {

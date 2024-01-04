@@ -128,6 +128,8 @@ describe('course copy service', () => {
 
 			lessonCopyService.updateCopiedEmbeddedTasks.mockReturnValue(boardCopyStatus);
 
+			Configuration.set('FEATURE_CTL_TOOLS_COPY_ENABLED', true);
+
 			return {
 				user,
 				course,
@@ -325,45 +327,76 @@ describe('course copy service', () => {
 			expect(courseCopy.color).toEqual(course.color);
 		});
 
-		describe('when FEATURE_CTL_TOOLS_COPY_ENABLED is true', () => {
-			it('should find all ctl tools for this course', async () => {
-				Configuration.set('FEATURE_CTL_TOOLS_COPY_ENABLED', true);
-				const { course, user } = setup();
-				await service.copyCourse({ userId: user.id, courseId: course.id });
+		it('should find all ctl tools for this course', async () => {
+			const { course, user } = setup();
+			await service.copyCourse({ userId: user.id, courseId: course.id });
 
-				expect(contextExternalToolService.findAllByContext).toHaveBeenCalledWith({
-					id: course.id,
-					type: ToolContextType.COURSE,
-				});
-			});
-
-			it('should copy all ctl tools', async () => {
-				Configuration.set('FEATURE_CTL_TOOLS_COPY_ENABLED', true);
-				const { course, user, tools } = setup();
-				const status = await service.copyCourse({ userId: user.id, courseId: course.id });
-				const courseCopy = status.copyEntity as Course;
-
-				expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(tools[0], courseCopy.id);
-				expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(tools[1], courseCopy.id);
+			expect(contextExternalToolService.findAllByContext).toHaveBeenCalledWith({
+				id: course.id,
+				type: ToolContextType.COURSE,
 			});
 		});
 
-		describe('when FEATURE_CTL_TOOLS_COPY_ENABLED is false', () => {
-			it('should not find ctl tools', async () => {
-				Configuration.set('FEATURE_CTL_TOOLS_COPY_ENABLED', false);
-				const { course, user } = setup();
-				await service.copyCourse({ userId: user.id, courseId: course.id });
+		it('should copy all ctl tools', async () => {
+			const { course, user, tools } = setup();
+			const status = await service.copyCourse({ userId: user.id, courseId: course.id });
+			const courseCopy = status.copyEntity as Course;
 
-				expect(contextExternalToolService.findAllByContext).not.toHaveBeenCalled();
-			});
+			expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(tools[0], courseCopy.id);
+			expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(tools[1], courseCopy.id);
+		});
+	});
 
-			it('should not copy ctl tools', async () => {
-				Configuration.set('FEATURE_CTL_TOOLS_COPY_ENABLED', false);
-				const { course, user } = setup();
-				await service.copyCourse({ userId: user.id, courseId: course.id });
+	describe('when FEATURE_CTL_TOOLS_COPY_ENABLED is false', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const allCourses = courseFactory.buildList(3, { teachers: [user] });
+			const course = allCourses[0];
+			const originalBoard = boardFactory.build({ course });
 
-				expect(contextExternalToolService.copyContextExternalTool).not.toHaveBeenCalled();
-			});
+			userRepo.findById.mockResolvedValue(user);
+			courseRepo.findById.mockResolvedValue(course);
+			courseRepo.findAllByUserId.mockResolvedValue([allCourses, allCourses.length]);
+			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
+			roomsService.updateBoard.mockResolvedValue(originalBoard);
+
+			const courseCopyName = 'Copy';
+			copyHelperService.deriveCopyName.mockReturnValue(courseCopyName);
+			copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
+
+			const boardCopyStatus = {
+				title: 'boardCopy',
+				type: CopyElementType.BOARD,
+				status: CopyStatusEnum.SUCCESS,
+				copyEntity: boardFactory.build(),
+				elements: [],
+			};
+			boardCopyService.copyBoard.mockResolvedValue(boardCopyStatus);
+
+			lessonCopyService.updateCopiedEmbeddedTasks.mockReturnValue(boardCopyStatus);
+
+			Configuration.set('FEATURE_CTL_TOOLS_COPY_ENABLED', false);
+
+			return {
+				user,
+				course,
+			};
+		};
+
+		it('should not find ctl tools', async () => {
+			Configuration.set('FEATURE_CTL_TOOLS_COPY_ENABLED', false);
+			const { course, user } = setup();
+			await service.copyCourse({ userId: user.id, courseId: course.id });
+
+			expect(contextExternalToolService.findAllByContext).not.toHaveBeenCalled();
+		});
+
+		it('should not copy ctl tools', async () => {
+			Configuration.set('FEATURE_CTL_TOOLS_COPY_ENABLED', false);
+			const { course, user } = setup();
+			await service.copyCourse({ userId: user.id, courseId: course.id });
+
+			expect(contextExternalToolService.copyContextExternalTool).not.toHaveBeenCalled();
 		});
 	});
 

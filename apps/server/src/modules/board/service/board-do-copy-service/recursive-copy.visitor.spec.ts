@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LinkElement } from '@shared/domain/domainobject';
 import { linkElementFactory, setupEntities } from '@shared/testing';
 import { CopyFileDto } from '@src/modules/files-storage-client/dto';
-import { ContextExternalToolService } from '../../../tool/context-external-tool/service';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 
 import { RecursiveCopyVisitor } from './recursive-copy.visitor';
 import { SchoolSpecificFileCopyServiceFactory } from './school-specific-file-copy-service.factory';

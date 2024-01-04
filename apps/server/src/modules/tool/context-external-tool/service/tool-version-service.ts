@@ -19,7 +19,7 @@ export class ToolVersionService {
 		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {}
 
-	determineToolConfigurationStatus(
+	public determineToolConfigurationStatus(
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool

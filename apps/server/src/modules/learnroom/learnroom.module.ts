@@ -13,6 +13,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
+import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import {
 	BoardCopyService,
 	ColumnBoardTargetService,
@@ -23,7 +24,6 @@ import {
 	DashboardService,
 	RoomsService,
 } from './service';
-import { ContextExternalToolModule } from '../tool/context-external-tool';
 
 @Module({
 	imports: [LessonModule, TaskModule, CopyHelperModule, BoardModule, LoggerModule, ContextExternalToolModule],

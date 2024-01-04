@@ -1,4 +1,4 @@
-import { ContextExternalToolService } from '@modules//tool/context-external-tool/service';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { CopyStatus } from '@modules/copy-helper';
 import { Injectable } from '@nestjs/common';
 import { AnyBoardDo } from '@shared/domain/domainobject';
