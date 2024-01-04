@@ -41,6 +41,7 @@ describe('SchoolExternalToolEntity', () => {
 				regex: 'mockRegex',
 				regexComment: 'mockComment',
 				isOptional: false,
+				isProtected: false,
 			});
 			const externalToolEntity: ExternalToolEntity = new ExternalToolEntity({
 				name: 'toolName',

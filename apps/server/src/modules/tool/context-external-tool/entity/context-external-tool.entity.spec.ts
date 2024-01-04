@@ -43,6 +43,7 @@ describe('ExternalToolEntity', () => {
 				regex: 'mockRegex',
 				regexComment: 'mockComment',
 				isOptional: false,
+				isProtected: false,
 			});
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 				name: 'toolName',
