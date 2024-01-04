@@ -19,7 +19,9 @@ import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
+import { Inject } from '@nestjs/common';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
+import { IToolFeatures, ToolFeatures } from '../../../tool/tool-config';
 
 export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 	resultMap = new Map<EntityId, CopyStatus>();
@@ -28,7 +30,8 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 
 	constructor(
 		private readonly fileCopyService: SchoolSpecificFileCopyService,
-		private readonly contextExternalToolService: ContextExternalToolService
+		private readonly contextExternalToolService: ContextExternalToolService,
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {}
 
 	async copy(original: AnyBoardDo): Promise<CopyStatus> {
@@ -252,7 +255,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			updatedAt: new Date(),
 		});
 
-		if (Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED') && original.contextExternalToolId) {
+		if (this.toolFeatures.ctlToolsCopyEnabled && original.contextExternalToolId) {
 			const tool: ContextExternalTool | null = await this.contextExternalToolService.findById(
 				original.contextExternalToolId
 			);

@@ -90,14 +90,12 @@ export class ContextExternalToolService {
 		);
 		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
-		if (externalTool.parameters) {
-			externalTool.parameters.forEach((parameter: CustomParameter): CustomParameter => {
-				if (parameter.isProtected) {
-					this.deleteProtectedValues(tool, parameter.name);
-				}
-				return parameter;
-			});
-		}
+		externalTool.parameters?.forEach((parameter: CustomParameter): void => {
+			if (parameter.isProtected) {
+				this.deleteProtectedValues(tool, parameter.name);
+			}
+		});
+
 		const copiedTool = await this.contextExternalToolRepo.save(tool);
 
 		return copiedTool;

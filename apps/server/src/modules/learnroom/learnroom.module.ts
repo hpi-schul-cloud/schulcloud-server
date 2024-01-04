@@ -24,9 +24,18 @@ import {
 	DashboardService,
 	RoomsService,
 } from './service';
+import { ToolConfigModule } from '../tool/tool-config.module';
 
 @Module({
-	imports: [LessonModule, TaskModule, CopyHelperModule, BoardModule, LoggerModule, ContextExternalToolModule],
+	imports: [
+		LessonModule,
+		TaskModule,
+		CopyHelperModule,
+		BoardModule,
+		LoggerModule,
+		ContextExternalToolModule,
+		ToolConfigModule,
+	],
 	providers: [
 		{
 			provide: 'DASHBOARD_REPO',

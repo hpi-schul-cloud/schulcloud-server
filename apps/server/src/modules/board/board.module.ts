@@ -20,6 +20,7 @@ import {
 } from './service';
 import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './service/board-do-copy-service';
 import { ColumnBoardCopyService } from './service/column-board-copy.service';
+import { ToolConfigModule } from '../tool/tool-config.module';
 
 @Module({
 	imports: [
@@ -29,6 +30,7 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		UserModule,
 		ContextExternalToolModule,
 		HttpModule,
+		ToolConfigModule,
 	],
 	providers: [
 		BoardDoAuthorizableService,

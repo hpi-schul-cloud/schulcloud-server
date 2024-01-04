@@ -3,12 +3,13 @@ import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Course, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import { BoardCopyService } from './board-copy.service';
 import { RoomsService } from './rooms.service';
+import { IToolFeatures, ToolFeatures } from '../../tool/tool-config';
 
 type CourseCopyParams = {
 	originalCourse: Course;
@@ -25,7 +26,8 @@ export class CourseCopyService {
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
 		private readonly userRepo: UserRepo,
-		private readonly contextExternalToolService: ContextExternalToolService
+		private readonly contextExternalToolService: ContextExternalToolService,
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {}
 
 	async copyCourse({
@@ -51,7 +53,7 @@ export class CourseCopyService {
 
 		// copy course and board
 		const courseCopy = await this.copyCourseEntity({ user, originalCourse, copyName });
-		if (Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED')) {
+		if (this.toolFeatures.ctlToolsCopyEnabled) {
 			const contextRef: ContextRef = { id: courseId, type: ToolContextType.COURSE };
 			const contextExternalToolsInContext: ContextExternalTool[] =
 				await this.contextExternalToolService.findAllByContext(contextRef);
@@ -119,7 +121,7 @@ export class CourseCopyService {
 			boardStatus,
 		];
 
-		if (Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED')) {
+		if (this.toolFeatures.ctlToolsCopyEnabled) {
 			elements.push({
 				type: CopyElementType.EXTERNAL_TOOL,
 				status: CopyStatusEnum.SUCCESS,
