@@ -1,5 +1,7 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
@@ -16,10 +18,8 @@ import {
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 import { ContextExternalTool } from '../../../tool/context-external-tool/domain';
+import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 
 export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 	resultMap = new Map<EntityId, CopyStatus>();
@@ -242,6 +242,8 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 	}
 
 	async visitExternalToolElementAsync(original: ExternalToolElement): Promise<void> {
+		let status: CopyStatusEnum = CopyStatusEnum.SUCCESS;
+
 		const copy = new ExternalToolElement({
 			id: new ObjectId().toHexString(),
 			contextExternalToolId: undefined,
@@ -251,19 +253,26 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		});
 
 		if (Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED') && original.contextExternalToolId) {
-			const tool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(
+			const tool: ContextExternalTool | null = await this.contextExternalToolService.findById(
 				original.contextExternalToolId
 			);
 
-			const copiedTool = await this.contextExternalToolService.copyContextExternalTool(tool, copy.id);
+			if (tool) {
+				const copiedTool: ContextExternalTool = await this.contextExternalToolService.copyContextExternalTool(
+					tool,
+					copy.id
+				);
 
-			copy.contextExternalToolId = copiedTool.id;
+				copy.contextExternalToolId = copiedTool.id;
+			} else {
+				status = CopyStatusEnum.FAIL;
+			}
 		}
 
 		this.resultMap.set(original.id, {
 			copyEntity: copy,
 			type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
-			status: CopyStatusEnum.SUCCESS,
+			status,
 		});
 		this.copyMap.set(original.id, copy);
 
