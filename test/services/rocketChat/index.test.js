@@ -3,7 +3,6 @@
 /* eslint-disable no-unused-expressions */
 const assert = require('assert');
 const chai = require('chai');
-const mockery = require('mockery');
 const { ObjectId } = require('mongoose').Types;
 
 const appPromise = require('../../../src/app');
@@ -23,19 +22,11 @@ describe('rocket.chat user service', () => {
 	before(async () => {
 		app = await appPromise();
 		// const rcMock = await rcMockServer({});
-		const rocketChatService = {
+		app.services['nest-rocket-chat'] = {
 			getUserList: () => {
 				return { users: [{ _id: 'someId', username: 'someUsername' }] };
 			},
 		};
-		mockery.enable({
-			warnOnUnregistered: false,
-		});
-
-		// ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID
-		// mockery.registerMock('../../../config/globals', { ROCKET_CHAT_URI: rcMock.url });
-		// const rocketChatService = { getUserList: sinon.spy() };
-		app.services['nest-rocket-chat'] = rocketChatService;
 
 		delete require.cache[require.resolve('../../../src/services/rocketChat/services/rocketChatUser.js')];
 		delete require.cache[require.resolve('../../../src/services/rocketChat/helpers.js')];
