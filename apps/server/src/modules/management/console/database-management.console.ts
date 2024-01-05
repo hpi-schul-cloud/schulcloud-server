@@ -89,7 +89,7 @@ export class DatabaseManagementConsole {
 		options: [
 			{
 				flags: '--up',
-				required: true,
+				required: false,
 				description: 'execute migration up',
 			},
 			{

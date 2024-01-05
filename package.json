@@ -52,7 +52,7 @@
 		"mocha-metrics": "cross-env NODE_ENV=test mocha \"test/routes/*.metrics.js\" --exclude \"{test,src}/**/*.test.{js,ts}\" --no-timeout --exit",
 		"migration:up": "npm run nest:start:console -- database migration --up",
 		"migration:down": "npm run nest:start:console -- database migration --down",
-		"migration:list": "npx mikro-orm migration:list --config ./config/mikro-orm.config.ts",
+		"migration:list": "npx mikro-orm migration:list",
 		"migration:persisted": "npm run nest:start:console -- database export --collection migrations --override",
 		"nest:prebuild": "rimraf dist",
 		"nest:build": "nest build",
