@@ -17,6 +17,8 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
+import { IToolFeatures } from '@src/modules/tool/tool-config';
+import { ToolFeatures } from '@modules/tool/tool-config';
 import { BoardCopyService } from './board-copy.service';
 import { CourseCopyService } from './course-copy.service';
 import { RoomsService } from './rooms.service';
@@ -32,6 +34,7 @@ describe('course copy service', () => {
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let userRepo: DeepMocked<UserRepo>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
+	let toolFeatures: IToolFeatures;
 
 	afterAll(async () => {
 		await module.close();
@@ -78,6 +81,12 @@ describe('course copy service', () => {
 					provide: ContextExternalToolService,
 					useValue: createMock<ContextExternalToolService>(),
 				},
+				{
+					provide: ToolFeatures,
+					useValue: {
+						ctlToolsTabEnabled: false,
+					},
+				},
 			],
 		}).compile();
 
@@ -90,6 +99,7 @@ describe('course copy service', () => {
 		copyHelperService = module.get(CopyHelperService);
 		userRepo = module.get(UserRepo);
 		contextExternalToolService = module.get(ContextExternalToolService);
+		toolFeatures = module.get(ToolFeatures);
 	});
 
 	beforeEach(() => {
@@ -128,7 +138,7 @@ describe('course copy service', () => {
 
 			lessonCopyService.updateCopiedEmbeddedTasks.mockReturnValue(boardCopyStatus);
 
-			Configuration.set('FEATURE_CTL_TOOLS_COPY_ENABLED', true);
+			toolFeatures.ctlToolsCopyEnabled = true;
 
 			return {
 				user,
@@ -375,7 +385,7 @@ describe('course copy service', () => {
 
 			lessonCopyService.updateCopiedEmbeddedTasks.mockReturnValue(boardCopyStatus);
 
-			Configuration.set('FEATURE_CTL_TOOLS_COPY_ENABLED', false);
+			toolFeatures.ctlToolsCopyEnabled = false;
 
 			return {
 				user,

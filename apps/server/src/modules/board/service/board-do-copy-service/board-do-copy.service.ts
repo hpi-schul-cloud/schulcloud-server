@@ -2,9 +2,9 @@ import { ContextExternalToolService } from '@modules/tool/context-external-tool/
 import { CopyStatus } from '@modules/copy-helper';
 import { Inject, Injectable } from '@nestjs/common';
 import { AnyBoardDo } from '@shared/domain/domainobject';
+import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 import { RecursiveCopyVisitor } from './recursive-copy.visitor';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
-import { IToolFeatures, ToolFeatures } from '../../../tool/tool-config';
 
 export type BoardDoCopyParams = {
 	original: AnyBoardDo;

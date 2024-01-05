@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
@@ -20,8 +19,8 @@ import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { Inject } from '@nestjs/common';
+import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
-import { IToolFeatures, ToolFeatures } from '../../../tool/tool-config';
 
 export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 	resultMap = new Map<EntityId, CopyStatus>();
