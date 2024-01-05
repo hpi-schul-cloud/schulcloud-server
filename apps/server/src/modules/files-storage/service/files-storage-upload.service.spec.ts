@@ -157,6 +157,8 @@ describe('FilesStorageService upload methods', () => {
 					if (fr instanceof FileRecord && !fr._id) {
 						fr._id = new ObjectId();
 					}
+
+					return Promise.resolve();
 				});
 
 				return {
@@ -209,6 +211,8 @@ describe('FilesStorageService upload methods', () => {
 					if (fr instanceof FileRecord && !fr._id) {
 						fr._id = new ObjectId();
 					}
+
+					return Promise.resolve();
 				});
 
 				await service.uploadFile(userId, params, file);
