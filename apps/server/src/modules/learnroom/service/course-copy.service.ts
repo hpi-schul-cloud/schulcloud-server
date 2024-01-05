@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';

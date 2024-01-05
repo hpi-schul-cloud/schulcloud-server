@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
@@ -40,6 +39,7 @@ import {
 	submissionItemFactory,
 } from '@shared/testing';
 import { ObjectId } from 'bson';
+import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 import { BoardDoCopyService } from './board-do-copy.service';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 
@@ -48,6 +48,7 @@ describe('recursive board copy visitor', () => {
 	let service: BoardDoCopyService;
 
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
+	let toolFeatures: IToolFeatures;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -57,11 +58,18 @@ describe('recursive board copy visitor', () => {
 					provide: ContextExternalToolService,
 					useValue: createMock<ContextExternalToolService>(),
 				},
+				{
+					provide: ToolFeatures,
+					useValue: {
+						ctlToolsTabEnabled: false,
+					},
+				},
 			],
 		}).compile();
 
 		service = module.get(BoardDoCopyService);
 		contextExternalToolService = module.get(ContextExternalToolService);
+		toolFeatures = module.get(ToolFeatures);
 
 		await setupEntities();
 	});
@@ -800,7 +808,7 @@ describe('recursive board copy visitor', () => {
 					contextExternalToolService.findById.mockResolvedValueOnce(originalTool);
 					contextExternalToolService.copyContextExternalTool.mockResolvedValueOnce(copiedTool);
 
-					Configuration.set('FEATURE_CTL_TOOLS_COPY_ENABLED', true);
+					toolFeatures.ctlToolsCopyEnabled = true;
 
 					return { original, ...setupfileCopyService(), copiedTool };
 				};
@@ -864,7 +872,7 @@ describe('recursive board copy visitor', () => {
 
 					contextExternalToolService.findById.mockResolvedValueOnce(null);
 
-					Configuration.set('FEATURE_CTL_TOOLS_COPY_ENABLED', true);
+					toolFeatures.ctlToolsCopyEnabled = true;
 
 					return { original, ...setupfileCopyService() };
 				};
