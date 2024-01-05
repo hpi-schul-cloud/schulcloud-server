@@ -34,7 +34,7 @@ export class CommonToolService {
 			configurationStatus.isOutdatedOnScopeContext = true;
 			configurationStatus.isOutdatedOnScopeSchool = true;
 		}
-		// TODO consider location of code snippet, before or after outdated.. method is also depricated
+
 		if (externalTool.isDeactivated || schoolExternalTool.status?.isDeactivated) {
 			configurationStatus.isDeactivated = true;
 		}

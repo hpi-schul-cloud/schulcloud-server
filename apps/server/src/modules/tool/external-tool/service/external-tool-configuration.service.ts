@@ -103,16 +103,4 @@ export class ExternalToolConfigurationService {
 
 		return toolContextTypes;
 	}
-
-	public filterDeactivatedExternalTools(tools: ExternalTool[]): ExternalTool[] {
-		const filtered: ExternalTool[] = tools.filter((tool) => !tool.isDeactivated);
-
-		return filtered;
-	}
-
-	public filterDeactivatedSchoolExternalTools(tools: SchoolExternalTool[]): SchoolExternalTool[] {
-		const filtered: SchoolExternalTool[] = tools.filter((tool) => !tool.status?.isDeactivated);
-
-		return filtered;
-	}
 }
