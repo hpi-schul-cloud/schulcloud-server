@@ -86,6 +86,7 @@ describe('CommonToolService', () => {
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: true,
 						isOutdatedOnScopeSchool: true,
+						isDeactivated: false,
 					})
 				);
 			});
@@ -117,6 +118,7 @@ describe('CommonToolService', () => {
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: true,
 						isOutdatedOnScopeSchool: true,
+						isDeactivated: false,
 					})
 				);
 			});
@@ -210,6 +212,7 @@ describe('CommonToolService', () => {
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: false,
 						isOutdatedOnScopeSchool: false,
+						isDeactivated: false,
 					})
 				);
 			});
@@ -241,6 +244,76 @@ describe('CommonToolService', () => {
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: false,
 						isOutdatedOnScopeSchool: false,
+						isDeactivated: false,
+					})
+				);
+			});
+		});
+
+		describe('when schoolExternalTool is deactivated', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({ version: 1 });
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolVersion: 2,
+					status: { isDeactivated: true },
+				});
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({ toolVersion: 2 });
+
+				return {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				};
+			};
+
+			it('should return a configuration status with deactivated true', () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				const result: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool
+				);
+
+				expect(result).toEqual(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeSchool: false,
+						isDeactivated: true,
+					})
+				);
+			});
+		});
+
+		describe('when externalTool is deactivated', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({ version: 1, isDeactivated: true });
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolVersion: 2,
+				});
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({ toolVersion: 2 });
+
+				return {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				};
+			};
+
+			it('should return a configuration status with deactivated true', () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				const result: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool
+				);
+
+				expect(result).toEqual(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeSchool: false,
+						isDeactivated: true,
 					})
 				);
 			});

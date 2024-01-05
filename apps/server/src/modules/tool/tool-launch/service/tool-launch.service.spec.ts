@@ -200,7 +200,7 @@ describe('ToolLaunchService', () => {
 			});
 		});
 
-		describe('when tool configuration status is not LATEST', () => {
+		describe('when tool configuration status is not LAUNCHABLE', () => {
 			const setup = () => {
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
@@ -233,6 +233,7 @@ describe('ToolLaunchService', () => {
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: true,
 						isOutdatedOnScopeSchool: true,
+						isDeactivated: true,
 					})
 				);
 
@@ -249,7 +250,7 @@ describe('ToolLaunchService', () => {
 				const func = () => service.getLaunchData(userId, launchParams.contextExternalTool);
 
 				await expect(func).rejects.toThrow(
-					new ToolStatusOutdatedLoggableException(userId, contextExternalToolId, true, true)
+					new ToolStatusOutdatedLoggableException(userId, contextExternalToolId, true, true, true)
 				);
 			});
 		});
