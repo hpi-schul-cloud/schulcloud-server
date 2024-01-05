@@ -7,7 +7,6 @@ import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { isDefined } from 'class-validator';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';

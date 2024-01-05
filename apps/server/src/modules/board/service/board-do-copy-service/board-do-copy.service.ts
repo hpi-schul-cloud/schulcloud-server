@@ -20,9 +20,9 @@ export class BoardDoCopyService {
 
 	public async copy(params: BoardDoCopyParams): Promise<CopyStatus> {
 		const visitor = new RecursiveCopyVisitor(
-			this.toolFeatures,
 			params.fileCopyService,
-			this.contextExternalToolService
+			this.contextExternalToolService,
+			this.toolFeatures
 		);
 
 		const result = await visitor.copy(params.original);

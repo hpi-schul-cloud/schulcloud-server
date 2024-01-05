@@ -39,7 +39,7 @@ import {
 	submissionItemFactory,
 } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
+import { ToolFeatures } from '@modules/tool/tool-config';
 import { BoardDoCopyService } from './board-do-copy.service';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 
@@ -48,7 +48,6 @@ describe('recursive board copy visitor', () => {
 	let service: BoardDoCopyService;
 
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
-	let toolFeatures: IToolFeatures;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -807,8 +806,6 @@ describe('recursive board copy visitor', () => {
 					contextExternalToolService.findById.mockResolvedValueOnce(originalTool);
 					contextExternalToolService.copyContextExternalTool.mockResolvedValueOnce(copiedTool);
 
-					toolFeatures.ctlToolsCopyEnabled = true;
-
 					return { original, ...setupfileCopyService(), copiedTool };
 				};
 
@@ -870,8 +867,6 @@ describe('recursive board copy visitor', () => {
 					});
 
 					contextExternalToolService.findById.mockResolvedValueOnce(null);
-
-					toolFeatures.ctlToolsCopyEnabled = true;
 
 					return { original, ...setupfileCopyService() };
 				};
