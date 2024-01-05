@@ -3,7 +3,7 @@ import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { CustomParameterEntryEntity } from '../../common/entity';
 import { ExternalToolEntity } from '../../external-tool/entity';
-import { SchoolExternalToolConfigurationStatusEntity } from './SchoolExternalToolConfigurationStatusEntity';
+import { SchoolExternalToolConfigurationStatusEntity } from './school-external-tool-configuration-status.entity';
 
 export interface SchoolExternalToolProperties {
 	tool: ExternalToolEntity;
@@ -27,7 +27,7 @@ export class SchoolExternalToolEntity extends BaseEntityWithTimestamps {
 	@Property()
 	toolVersion: number;
 
-	@Property()
+	@Embedded(() => SchoolExternalToolConfigurationStatusEntity, { object: true, nullable: true })
 	status?: SchoolExternalToolConfigurationStatusEntity;
 
 	constructor(props: SchoolExternalToolProperties) {

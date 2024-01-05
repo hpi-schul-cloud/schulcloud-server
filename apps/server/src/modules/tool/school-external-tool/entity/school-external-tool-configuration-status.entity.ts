@@ -1,9 +1,11 @@
-import { Entity } from '@mikro-orm/core';
+import { Embeddable, Property } from '@mikro-orm/core';
 
-@Entity()
+@Embeddable()
 export class SchoolExternalToolConfigurationStatusEntity {
+	@Property()
 	isOutdatedOnScopeSchool: boolean;
 
+	@Property()
 	isDeactivated: boolean;
 
 	constructor(props: SchoolExternalToolConfigurationStatusEntity) {

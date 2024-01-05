@@ -62,7 +62,7 @@ export class SchoolExternalToolService {
 			isDeactivated: false,
 		});
 
-		if (externalTool.isDeactivated || (tool.status && tool.status.isDeactivated)) {
+		if (externalTool.isDeactivated || tool.status?.isDeactivated) {
 			status.isDeactivated = true;
 		}
 

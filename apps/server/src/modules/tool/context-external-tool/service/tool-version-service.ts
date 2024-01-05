@@ -28,12 +28,8 @@ export class ToolVersionService {
 			const configurationStatus: ContextExternalToolConfigurationStatus = new ContextExternalToolConfigurationStatus({
 				isOutdatedOnScopeContext: false,
 				isOutdatedOnScopeSchool: false,
-				isDeactivated: false,
+				isDeactivated: this.isToolDeactivated(externalTool, schoolExternalTool),
 			});
-
-			if (externalTool.isDeactivated || (schoolExternalTool.status && schoolExternalTool.status.isDeactivated)) {
-				configurationStatus.isDeactivated = true;
-			}
 
 			try {
 				await this.schoolExternalToolValidationService.validate(schoolExternalTool);
@@ -56,5 +52,13 @@ export class ToolVersionService {
 		);
 
 		return status;
+	}
+
+	private isToolDeactivated(externalTool: ExternalTool, schoolExternalTool: SchoolExternalTool) {
+		if (externalTool.isDeactivated || (schoolExternalTool.status && schoolExternalTool.status.isDeactivated)) {
+			return true;
+		}
+
+		return false;
 	}
 }

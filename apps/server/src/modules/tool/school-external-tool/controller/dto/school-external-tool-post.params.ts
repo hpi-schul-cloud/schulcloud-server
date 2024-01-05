@@ -24,6 +24,7 @@ export class SchoolExternalToolPostParams {
 	@ApiProperty({
 		type: Boolean,
 		default: false,
+		description: 'Tool can be deactivated, related tools can not be added to e.g. course or board anymore',
 	})
 	@IsBoolean()
 	isDeactivated!: boolean;
