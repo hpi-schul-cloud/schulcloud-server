@@ -9,12 +9,12 @@ export class MetricsService {
 
 	constructor() {
 		this.numberOfUsersOnServerCounter = new Gauge({
-			name: 'tldraw_users',
+			name: 'sc_tldraw_users',
 			help: 'Number of active users per pod',
 		});
 
 		this.numberOfBoardsOnServerCounter = new Gauge({
-			name: 'tldraw_boards',
+			name: 'sc_tldraw_boards',
 			help: 'Number of active boards per pod',
 		});
 
