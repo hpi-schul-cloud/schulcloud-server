@@ -5990,7 +5990,7 @@ must use</p>
 	() &#x3D;&gt; {
 		return {
 			id: new ObjectId().toHexString(),
-			domain: DeletionDomainModel.USER,
+			domain: DomainModel.USER,
 			operation: DeletionOperationModel.DELETE,
 			modifiedCount: 0,
 			deletedCount: 1,
@@ -6025,7 +6025,7 @@ must use</p>
                         <i>Default value : </i><code>DoBaseFactory.define&lt;DeletionLog, DeletionLogProps&gt;(DeletionLog, () &#x3D;&gt; {
 	return {
 		id: new ObjectId().toHexString(),
-		domain: DeletionDomainModel.USER,
+		domain: DomainModel.USER,
 		operation: DeletionOperationModel.DELETE,
 		modifiedCount: 0,
 		deletedCount: 1,
@@ -6062,7 +6062,7 @@ must use</p>
 	() &#x3D;&gt; {
 		return {
 			id: new ObjectId().toHexString(),
-			targetRefDomain: DeletionDomainModel.USER,
+			targetRefDomain: DomainModel.USER,
 			deleteAfter: new Date(),
 			targetRefId: new ObjectId().toHexString(),
 			status: DeletionStatusModel.REGISTERED,
@@ -6096,7 +6096,7 @@ must use</p>
                         <i>Default value : </i><code>DeletionRequestFactory.define(DeletionRequest, () &#x3D;&gt; {
 	return {
 		id: new ObjectId().toHexString(),
-		targetRefDomain: DeletionDomainModel.USER,
+		targetRefDomain: DomainModel.USER,
 		deleteAfter: new Date(),
 		targetRefId: new ObjectId().toHexString(),
 		status: DeletionStatusModel.REGISTERED,

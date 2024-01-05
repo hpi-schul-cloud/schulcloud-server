@@ -185,15 +185,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>build(domain: <a href="../undefineds/DeletionDomainModel.html" target="_self">DeletionDomainModel</a>, id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>build(domain: <a href="../undefineds/DomainModel.html" target="_self">DomainModel</a>, id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="6"
-                                    class="link-to-prism">apps/server/src/modules/deletion/builder/deletion-target-ref.builder.ts:6</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="5"
+                                    class="link-to-prism">apps/server/src/modules/deletion/builder/deletion-target-ref.builder.ts:5</a></div>
                         </td>
                     </tr>
 
@@ -216,7 +216,7 @@
                                         <tr>
                                                 <td>domain</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#DeletionDomainModel" target="_self" >DeletionDomainModel</a></code>
+                                                            <code><a href="../miscellaneous/enumerations.html#DomainModel" target="_self" >DomainModel</a></code>
                                             </td>
 
                                             <td>
@@ -261,12 +261,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { DeletionDomainModel } from &#x27;../domain/types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DomainModel, EntityId } from &#x27;@shared/domain/types&#x27;;
 import { DeletionTargetRef } from &#x27;../interface&#x27;;
 
 export class DeletionTargetRefBuilder {
-	static build(domain: DeletionDomainModel, id: EntityId): DeletionTargetRef {
+	static build(domain: DomainModel, id: EntityId): DeletionTargetRef {
 		const deletionTargetRef &#x3D; { domain, id };
 
 		return deletionTargetRef;

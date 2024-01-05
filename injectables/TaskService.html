@@ -153,11 +153,23 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#deleteTasksByOnlyCreator" >deleteTasksByOnlyCreator</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#findBySingleParent" >findBySingleParent</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#removeCreatorIdFromTasks" >removeCreatorIdFromTasks</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#removeUserFromFinished" >removeUserFromFinished</a>
                             </li>
                         </ul>
                     </td>
@@ -177,12 +189,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(taskRepo: <a href="../injectables/TaskRepo.html" target="_self">TaskRepo</a>, submissionService: <a href="../injectables/SubmissionService.html" target="_self">SubmissionService</a>, filesStorageClientAdapterService: <a href="../injectables/FilesStorageClientAdapterService.html" target="_self">FilesStorageClientAdapterService</a>)</code>
+<code>constructor(taskRepo: <a href="../injectables/TaskRepo.html" target="_self">TaskRepo</a>, submissionService: <a href="../injectables/SubmissionService.html" target="_self">SubmissionService</a>, filesStorageClientAdapterService: <a href="../injectables/FilesStorageClientAdapterService.html" target="_self">FilesStorageClientAdapterService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -235,6 +247,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -271,8 +295,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -341,8 +365,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -392,6 +416,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="deleteTasksByOnlyCreator"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteTasksByOnlyCreator</b></span>
+                        <a href="#deleteTasksByOnlyCreator"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteTasksByOnlyCreator(creatorId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="50"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:50</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>creatorId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >Promise&lt;DomainOperation&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findById"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -410,8 +503,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="41"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:41</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -479,8 +572,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="22"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -562,6 +655,144 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removeCreatorIdFromTasks"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>removeCreatorIdFromTasks</b></span>
+                        <a href="#removeCreatorIdFromTasks"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>removeCreatorIdFromTasks(creatorId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="67"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:67</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>creatorId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >Promise&lt;DomainOperation&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removeUserFromFinished"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>removeUserFromFinished</b></span>
+                        <a href="#removeUserFromFinished"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>removeUserFromFinished(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:82</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >Promise&lt;DomainOperation&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -571,9 +802,11 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Task } from &#x27;@shared/domain/entity&#x27;;
-import { IFindOptions } from &#x27;@shared/domain/interface&#x27;;
-import { Counted, EntityId } from &#x27;@shared/domain/types&#x27;;
+import { DomainOperation, IFindOptions } from &#x27;@shared/domain/interface&#x27;;
+import { Counted, DomainModel, EntityId } from &#x27;@shared/domain/types&#x27;;
 import { TaskRepo } from &#x27;@shared/repo&#x27;;
+import { DomainOperationBuilder } from &#x27;@shared/domain/builder&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { SubmissionService } from &#x27;./submission.service&#x27;;
 
 @Injectable()
@@ -581,8 +814,11 @@ export class TaskService {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly submissionService: SubmissionService,
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
-	) {}
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
+		private readonly logger: LegacyLogger
+	) {
+		this.logger.setContext(TaskService.name);
+	}
 
 	async findBySingleParent(
 		creatorId: EntityId,
@@ -610,6 +846,58 @@ export class TaskService {
 
 	async findById(taskId: EntityId): Promise&lt;Task&gt; {
 		return this.taskRepo.findById(taskId);
+	}
+
+	async deleteTasksByOnlyCreator(creatorId: EntityId): Promise&lt;DomainOperation&gt; {
+		this.logger.log(&#x60;Deleting Tasks where creatorId ${creatorId} is only parent&#x60;);
+		const [tasksByOnlyCreatorId, counterOfTasksOnlyWithCreatorId] &#x3D; await this.taskRepo.findByOnlyCreatorId(creatorId);
+
+		if (counterOfTasksOnlyWithCreatorId &gt; 0) {
+			const promiseDeletedTasks &#x3D; tasksByOnlyCreatorId.map((task: Task) &#x3D;&gt; this.delete(task));
+			await Promise.all(promiseDeletedTasks);
+		}
+
+		const result &#x3D; DomainOperationBuilder.build(DomainModel.TASK, 0, counterOfTasksOnlyWithCreatorId);
+		this.logger.log(
+			&#x60;Successfully deleted ${counterOfTasksOnlyWithCreatorId} where creatorId ${creatorId} is only parent&#x60;
+		);
+
+		return result;
+	}
+
+	async removeCreatorIdFromTasks(creatorId: EntityId): Promise&lt;DomainOperation&gt; {
+		this.logger.log(&#x60;Deleting creatorId ${creatorId} from Tasks&#x60;);
+		const [tasksByCreatorIdWithCoursesAndLessons, counterOfTasksWithCoursesorLessons] &#x3D;
+			await this.taskRepo.findByCreatorIdWithCourseAndLesson(creatorId);
+
+		if (counterOfTasksWithCoursesorLessons &gt; 0) {
+			tasksByCreatorIdWithCoursesAndLessons.forEach((task: Task) &#x3D;&gt; task.removeCreatorId());
+			await this.taskRepo.save(tasksByCreatorIdWithCoursesAndLessons);
+		}
+
+		const result &#x3D; DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithCoursesorLessons, 0);
+		this.logger.log(&#x60;Successfully updated ${counterOfTasksWithCoursesorLessons} Tasks without creatorId ${creatorId}&#x60;);
+		return result;
+	}
+
+	async removeUserFromFinished(userId: EntityId): Promise&lt;DomainOperation&gt; {
+		this.logger.log(&#x60;Deleting userId ${userId} from Archve collection in Tasks&#x60;);
+		const [tasksWithUserInFinished, counterOfTasksWithUserInFinished] &#x3D; await this.taskRepo.findByUserIdInFinished(
+			userId
+		);
+
+		if (counterOfTasksWithUserInFinished &gt; 0) {
+			tasksWithUserInFinished.forEach((task: Task) &#x3D;&gt; task.removeUserFromFinished(userId));
+
+			await this.taskRepo.save(tasksWithUserInFinished);
+		}
+
+		const result &#x3D; DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithUserInFinished, 0);
+		this.logger.log(
+			&#x60;Successfully updated ${counterOfTasksWithUserInFinished} Tasks without userId ${userId} in archive collection in Tasks&#x60;
+		);
+
+		return result;
 	}
 }
 </code></pre>

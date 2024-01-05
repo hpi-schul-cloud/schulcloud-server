@@ -162,11 +162,23 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findByCreatorIdWithCourseAndLesson" >findByCreatorIdWithCourseAndLesson</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findByOnlyCreatorId" >findByOnlyCreatorId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findBySingleParent" >findBySingleParent</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findByUserIdInFinished" >findByUserIdInFinished</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -488,6 +500,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findByCreatorIdWithCourseAndLesson"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findByCreatorIdWithCourseAndLesson</b></span>
+                        <a href="#findByCreatorIdWithCourseAndLesson"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByCreatorIdWithCourseAndLesson(creatorId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="199"
+                                    class="link-to-prism">apps/server/src/shared/repo/task/task.repo.ts:199</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>creatorId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Task.html" target="_self" >Promise&lt;Counted&lt;Task[]&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findById"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -550,6 +631,75 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="../classes/Task.html" target="_self" >Promise&lt;Task&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findByOnlyCreatorId"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findByOnlyCreatorId</b></span>
+                        <a href="#findByOnlyCreatorId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByOnlyCreatorId(creatorId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="190"
+                                    class="link-to-prism">apps/server/src/shared/repo/task/task.repo.ts:190</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>creatorId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Task.html" target="_self" >Promise&lt;Counted&lt;Task[]&gt;&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -668,6 +818,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findByUserIdInFinished"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findByUserIdInFinished</b></span>
+                        <a href="#findByUserIdInFinished"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByUserIdInFinished(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="208"
+                                    class="link-to-prism">apps/server/src/shared/repo/task/task.repo.ts:208</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Task.html" target="_self" >Promise&lt;Counted&lt;Task[]&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findTasksAndCount"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -687,8 +906,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="190"
-                                    class="link-to-prism">apps/server/src/shared/repo/task/task.repo.ts:190</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="217"
+                                    class="link-to-prism">apps/server/src/shared/repo/task/task.repo.ts:217</a></div>
                         </td>
                     </tr>
 
@@ -1257,6 +1476,33 @@ export class TaskRepo extends BaseRepo&lt;Task&gt; {
 		}
 
 		const countedTaskList &#x3D; await this.findTasksAndCount(scope.query, options);
+
+		return countedTaskList;
+	}
+
+	async findByOnlyCreatorId(creatorId: EntityId): Promise&lt;Counted&lt;Task[]&gt;&gt; {
+		const scope &#x3D; new TaskScope();
+		scope.byOnlyCreatorId(creatorId);
+
+		const countedTaskList &#x3D; await this.findTasksAndCount(scope.query);
+
+		return countedTaskList;
+	}
+
+	async findByCreatorIdWithCourseAndLesson(creatorId: EntityId): Promise&lt;Counted&lt;Task[]&gt;&gt; {
+		const scope &#x3D; new TaskScope();
+		scope.byCreatorIdWithCourseAndLesson(creatorId);
+
+		const countedTaskList &#x3D; await this.findTasksAndCount(scope.query);
+
+		return countedTaskList;
+	}
+
+	async findByUserIdInFinished(userId: EntityId): Promise&lt;Counted&lt;Task[]&gt;&gt; {
+		const scope &#x3D; new TaskScope();
+		scope.byFinished(userId, true);
+
+		const countedTaskList &#x3D; await this.findTasksAndCount(scope.query);
 
 		return countedTaskList;
 	}

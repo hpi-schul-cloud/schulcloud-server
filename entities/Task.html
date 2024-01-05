@@ -152,6 +152,7 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
                                 <a href="#creator" >creator</a>
                             </li>
                             <li>
@@ -307,6 +308,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
                         <span ><b>creator</b></span>
                         <a href="#creator"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -323,7 +325,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Index()<br />@ManyToOne(&#x27;User&#x27;, {fieldName: &#x27;teacherId&#x27;})<br />
+                            @Index()<br />@ManyToOne(&#x27;User&#x27;, {fieldName: &#x27;teacherId&#x27;, nullable: true})<br />
                         </code>
                     </td>
                 </tr>
@@ -811,8 +813,8 @@ export class Task extends BaseEntityWithTimestamps implements LearnroomElement, 
 	teamSubmissions?: boolean;
 
 	@Index()
-	@ManyToOne(&#x27;User&#x27;, { fieldName: &#x27;teacherId&#x27; })
-	creator: User;
+	@ManyToOne(&#x27;User&#x27;, { fieldName: &#x27;teacherId&#x27;, nullable: true })
+	creator?: User;
 
 	@Index()
 	@ManyToOne(&#x27;Course&#x27;, { fieldName: &#x27;courseId&#x27;, nullable: true })
@@ -872,7 +874,7 @@ export class Task extends BaseEntityWithTimestamps implements LearnroomElement, 
 		return finishedIds;
 	}
 
-	private getParent(): TaskParent | User {
+	private getParent(): TaskParent | User | undefined {
 		const parent &#x3D; this.lesson || this.course || this.creator;
 
 		return parent;
@@ -880,9 +882,11 @@ export class Task extends BaseEntityWithTimestamps implements LearnroomElement, 
 
 	private getMaxSubmissions(): number {
 		const parent &#x3D; this.getParent();
-		// For draft (user as parent) propaly user is not a student, but for maxSubmission one is valid result
-		const maxSubmissions &#x3D; parent instanceof User ? 1 : parent.getStudentIds().length;
-
+		let maxSubmissions &#x3D; 0;
+		if (parent) {
+			// For draft (user as parent) propaly user is not a student, but for maxSubmission one is valid result
+			maxSubmissions &#x3D; parent instanceof User ? 1 : parent.getStudentIds().length;
+		}
 		return maxSubmissions;
 	}
 
@@ -1064,6 +1068,14 @@ export class Task extends BaseEntityWithTimestamps implements LearnroomElement, 
 
 	public unpublish(): void {
 		this.private &#x3D; true;
+	}
+
+	public removeCreatorId(): void {
+		this.creator &#x3D; undefined;
+	}
+
+	public removeUserFromFinished(userId: EntityId): void {
+		this.finished.remove((u) &#x3D;&gt; u.id &#x3D;&#x3D;&#x3D; userId);
 	}
 }
 

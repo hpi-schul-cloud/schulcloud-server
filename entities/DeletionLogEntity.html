@@ -140,7 +140,6 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
-                                    <span class="modifier">Optional</span>
                                 <a href="#deletedCount" >deletedCount</a>
                             </li>
                             <li>
@@ -154,7 +153,6 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                    <span class="modifier">Optional</span>
                                 <a href="#modifiedCount" >modifiedCount</a>
                             </li>
                             <li>
@@ -193,7 +191,6 @@
                     <a name="deletedCount"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                            <span class="modifier">Optional</span>
                         <span ><b>deletedCount</b></span>
                         <a href="#deletedCount"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -210,7 +207,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Property({nullable: true})<br />
+                            @Property()<br />
                         </code>
                     </td>
                 </tr>
@@ -274,7 +271,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#DeletionDomainModel" target="_self" >DeletionDomainModel</a></code>
+                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#DomainModel" target="_self" >DomainModel</a></code>
 
                     </td>
                 </tr>
@@ -303,7 +300,6 @@
                     <a name="modifiedCount"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                            <span class="modifier">Optional</span>
                         <span ><b>modifiedCount</b></span>
                         <a href="#modifiedCount"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -320,7 +316,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Property({nullable: true})<br />
+                            @Property()<br />
                         </code>
                     </td>
                 </tr>
@@ -415,16 +411,16 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Index, Property } from &#x27;@mikro-orm/core&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;@shared/domain/entity/base.entity&#x27;;
-import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { DomainModel, EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
-import { DeletionDomainModel, DeletionOperationModel } from &#x27;../domain/types&#x27;;
+import { DeletionOperationModel } from &#x27;../domain/types&#x27;;
 
 export interface DeletionLogEntityProps {
 	id?: EntityId;
-	domain: DeletionDomainModel;
+	domain: DomainModel;
 	operation?: DeletionOperationModel;
-	modifiedCount?: number;
-	deletedCount?: number;
+	modifiedCount: number;
+	deletedCount: number;
 	deletionRequestId?: ObjectId;
 	performedAt?: Date;
 	createdAt?: Date;
@@ -434,16 +430,16 @@ export interface DeletionLogEntityProps {
 @Entity({ tableName: &#x27;deletionlogs&#x27; })
 export class DeletionLogEntity extends BaseEntityWithTimestamps {
 	@Property()
-	domain: DeletionDomainModel;
+	domain: DomainModel;
 
 	@Property({ nullable: true })
 	operation?: DeletionOperationModel;
 
-	@Property({ nullable: true })
-	modifiedCount?: number;
+	@Property()
+	modifiedCount: number;
 
-	@Property({ nullable: true })
-	deletedCount?: number;
+	@Property()
+	deletedCount: number;
 
 	@Property({ nullable: true })
 	deletionRequestId?: ObjectId;
@@ -463,14 +459,8 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 		if (props.operation !&#x3D;&#x3D; undefined) {
 			this.operation &#x3D; props.operation;
 		}
-
-		if (props.modifiedCount !&#x3D;&#x3D; undefined) {
-			this.modifiedCount &#x3D; props.modifiedCount;
-		}
-
-		if (props.deletedCount !&#x3D;&#x3D; undefined) {
-			this.deletedCount &#x3D; props.deletedCount;
-		}
+		this.modifiedCount &#x3D; props.modifiedCount;
+		this.deletedCount &#x3D; props.deletedCount;
 
 		if (props.deletionRequestId !&#x3D;&#x3D; undefined) {
 			this.deletionRequestId &#x3D; props.deletionRequestId;

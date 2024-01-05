@@ -185,15 +185,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>build(targetRef: <a href="../interfaces/DeletionTargetRef.html" target="_self">DeletionTargetRef</a>, deletionPlannedAt: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>, statistics?: <a href="../classes/DeletionLog.html" target="_self">DeletionLogStatistic[]</a>)</code>
+                    <code>build(targetRef: <a href="../interfaces/DeletionTargetRef.html" target="_self">DeletionTargetRef</a>, deletionPlannedAt: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>, statistics?: <a href="../interfaces/DomainOperation.html" target="_self">DomainOperation[]</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="5"
-                                    class="link-to-prism">apps/server/src/modules/deletion/builder/deletion-request-log-response.builder.ts:5</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="6"
+                                    class="link-to-prism">apps/server/src/modules/deletion/builder/deletion-request-log-response.builder.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -240,7 +240,7 @@
                                         <tr>
                                                 <td>statistics</td>
                                             <td>
-                                                            <code><a href="../classes/DeletionLog.html" target="_self" >DeletionLogStatistic[]</a></code>
+                                                            <code><a href="../interfaces/DomainOperation.html" target="_self" >DomainOperation[]</a></code>
                                             </td>
 
                                             <td>
@@ -273,14 +273,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DeletionRequestLogResponse } from &#x27;../controller/dto&#x27;;
-import { DeletionLogStatistic, DeletionTargetRef } from &#x27;../interface&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DomainOperation } from &#x27;@shared/domain/interface&#x27;;
+import { DeletionRequestLogResponse } from &#x27;../controller/dto&#x27;;
+import { DeletionTargetRef } from &#x27;../interface&#x27;;
 
 export class DeletionRequestLogResponseBuilder {
 	static build(
 		targetRef: DeletionTargetRef,
 		deletionPlannedAt: Date,
-		statistics?: DeletionLogStatistic[]
+		statistics?: DomainOperation[]
 	): DeletionRequestLogResponse {
 		const deletionRequestLog &#x3D; { targetRef, deletionPlannedAt, statistics };
 

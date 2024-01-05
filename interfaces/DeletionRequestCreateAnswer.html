@@ -242,10 +242,10 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { DeletionDomainModel } from &#x27;../../domain/types/deletion-domain-model.enum&#x27;;
+import { DomainModel } from &#x27;@shared/domain/types/domain&#x27;;
 
 export interface DeletionTargetRef {
-	targetRefDomain: DeletionDomainModel;
+	targetRefDomain: DomainModel;
 	targetRefId: EntityId;
 }
 
@@ -256,13 +256,13 @@ export interface DeletionRequestLog {
 }
 
 export interface DeletionLogStatistic {
-	domain: DeletionDomainModel;
+	domain: DomainModel;
 	modifiedCount?: number;
 	deletedCount?: number;
 }
 
 export interface DeletionRequestProps {
-	targetRef: { targetRefDoamin: DeletionDomainModel; targetRefId: EntityId };
+	targetRef: { targetRefDoamin: DomainModel; targetRefId: EntityId };
 	deleteInMinutes?: number;
 }
 

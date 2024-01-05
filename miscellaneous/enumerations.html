@@ -212,9 +212,6 @@
                             <a href="#CustomParameterTypeParams" title="apps/server/src/modules/tool/common/enum/request-response/custom-parameter-type.enum.ts" ><b>CustomParameterTypeParams</b>&nbsp;&nbsp;&nbsp;(apps/.../custom-parameter-type.enum.ts)</a>
                         </li>
                         <li>
-                            <a href="#DeletionDomainModel" title="apps/server/src/modules/deletion/domain/types/deletion-domain-model.enum.ts" ><b>DeletionDomainModel</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-domain-model.enum.ts)</a>
-                        </li>
-                        <li>
                             <a href="#DeletionExecutionTriggerStatus" title="apps/server/src/modules/deletion-console/interface/deletion-execution-trigger-status.enum.ts" ><b>DeletionExecutionTriggerStatus</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-execution-trigger-status.enum.ts)</a>
                         </li>
                         <li>
@@ -222,6 +219,9 @@
                         </li>
                         <li>
                             <a href="#DeletionStatusModel" title="apps/server/src/modules/deletion/domain/types/deletion-status-model.enum.ts" ><b>DeletionStatusModel</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-status-model.enum.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#DomainModel" title="apps/server/src/shared/domain/types/domain.ts" ><b>DomainModel</b>&nbsp;&nbsp;&nbsp;(apps/.../domain.ts)</a>
                         </li>
                         <li>
                             <a href="#EFederalState" title="apps/server/src/modules/management/seed-data/federalstates.ts" ><b>EFederalState</b>&nbsp;&nbsp;&nbsp;(apps/.../federalstates.ts)</a>
@@ -2320,14 +2320,123 @@
             </tbody>
         </table>
 </section>
-    <h3>apps/server/src/modules/deletion/domain/types/deletion-domain-model.enum.ts</h3>
+    <h3>apps/server/src/modules/deletion-console/interface/deletion-execution-trigger-status.enum.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
             <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="DeletionDomainModel"></a>
-                        <span class="name "><b>DeletionDomainModel</b><a href="#DeletionDomainModel"><span class="icon ion-ios-link"></span></a></span>
+                        <a name="DeletionExecutionTriggerStatus"></a>
+                        <span class="name "><b>DeletionExecutionTriggerStatus</b><a href="#DeletionExecutionTriggerStatus"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;SUCCESS
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>success</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;FAILURE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>failure</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>apps/server/src/modules/deletion/domain/types/deletion-operation-model.enum.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="DeletionOperationModel"></a>
+                        <span class="name "><b>DeletionOperationModel</b><a href="#DeletionOperationModel"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;DELETE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>delete</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;UPDATE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>update</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>apps/server/src/modules/deletion/domain/types/deletion-status-model.enum.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="DeletionStatusModel"></a>
+                        <span class="name "><b>DeletionStatusModel</b><a href="#DeletionStatusModel"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;FAILED
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>failed</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;REGISTERED
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>registered</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;SUCCESS
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>success</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>apps/server/src/shared/domain/types/domain.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="DomainModel"></a>
+                        <span class="name "><b>DomainModel</b><a href="#DomainModel"><span class="icon ion-ios-link"></span></a></span>
                     </td>
                 </tr>
                         <tr>
@@ -2442,6 +2551,16 @@
                         </tr>
                         <tr>
                             <td class="col-md-4">
+                                &nbsp;TASK
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>task</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
                                 &nbsp;TEAMS
                             </td>
                         </tr>
@@ -2458,115 +2577,6 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>user</code>
-                            </td>
-                        </tr>
-            </tbody>
-        </table>
-</section>
-    <h3>apps/server/src/modules/deletion-console/interface/deletion-execution-trigger-status.enum.ts</h3>
-    <section data-compodoc="block-enums">
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="DeletionExecutionTriggerStatus"></a>
-                        <span class="name "><b>DeletionExecutionTriggerStatus</b><a href="#DeletionExecutionTriggerStatus"><span class="icon ion-ios-link"></span></a></span>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;SUCCESS
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>success</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;FAILURE
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>failure</code>
-                            </td>
-                        </tr>
-            </tbody>
-        </table>
-</section>
-    <h3>apps/server/src/modules/deletion/domain/types/deletion-operation-model.enum.ts</h3>
-    <section data-compodoc="block-enums">
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="DeletionOperationModel"></a>
-                        <span class="name "><b>DeletionOperationModel</b><a href="#DeletionOperationModel"><span class="icon ion-ios-link"></span></a></span>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;DELETE
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>delete</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;UPDATE
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>update</code>
-                            </td>
-                        </tr>
-            </tbody>
-        </table>
-</section>
-    <h3>apps/server/src/modules/deletion/domain/types/deletion-status-model.enum.ts</h3>
-    <section data-compodoc="block-enums">
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="DeletionStatusModel"></a>
-                        <span class="name "><b>DeletionStatusModel</b><a href="#DeletionStatusModel"><span class="icon ion-ios-link"></span></a></span>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;FAILED
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>failed</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;REGISTERED
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>registered</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;SUCCESS
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>success</code>
                             </td>
                         </tr>
             </tbody>

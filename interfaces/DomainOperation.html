@@ -105,7 +105,7 @@
   <li class="breadcrumb-item">Interfaces</li>
   <li class="breadcrumb-item"
   >
-  DeletionLogStatistic</li>
+  DomainOperation</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -129,7 +129,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/deletion/uc/interface/interfaces.ts</code>
+            <code>apps/server/src/shared/domain/interface/domain-operation.ts</code>
         </p>
 
 
@@ -148,10 +148,16 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#deletedCount" 
 >
                                             deletedCount
+                                        </a>
+                                </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
+                                        <a href="#deletedRef" 
+>
+                                            deletedRef
                                         </a>
                                 </li>
                                 <li>
@@ -161,10 +167,16 @@
                                         </a>
                                 </li>
                                 <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#modifiedCount" 
 >
                                             modifiedCount
+                                        </a>
+                                </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
+                                        <a href="#modifiedRef" 
+>
+                                            modifiedRef
                                         </a>
                                 </li>
                             </ul>
@@ -205,6 +217,39 @@
                                         </td>
                                     </tr>
 
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="deletedRef"></a>
+                                        <span class="name "><b>deletedRef</b>
+                                            <a href="#deletedRef">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>deletedRef:     <code>string[]</code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>    <code>string[]</code>
+
+                                        </td>
+                                    </tr>
+
                                     <tr>
                                         <td class="col-md-4">
                                             <i>Optional</i>
@@ -230,7 +275,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>domain:         <code><a href="../miscellaneous/enumerations.html#DeletionDomainModel" target="_self" >DeletionDomainModel</a></code>
+                                        <code>domain:         <code><a href="../miscellaneous/enumerations.html#DomainModel" target="_self" >DomainModel</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -238,7 +283,7 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#DeletionDomainModel" target="_self" >DeletionDomainModel</a></code>
+                                            <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#DomainModel" target="_self" >DomainModel</a></code>
 
                                         </td>
                                     </tr>
@@ -276,6 +321,39 @@
                                         </td>
                                     </tr>
 
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="modifiedRef"></a>
+                                        <span class="name "><b>modifiedRef</b>
+                                            <a href="#modifiedRef">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>modifiedRef:     <code>string[]</code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>    <code>string[]</code>
+
+                                        </td>
+                                    </tr>
+
                                     <tr>
                                         <td class="col-md-4">
                                             <i>Optional</i>
@@ -292,34 +370,14 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { DeletionDomainModel } from &#x27;../../domain/types/deletion-domain-model.enum&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DomainModel } from &#x27;../types&#x27;;
 
-export interface DeletionTargetRef {
-	targetRefDomain: DeletionDomainModel;
-	targetRefId: EntityId;
-}
-
-export interface DeletionRequestLog {
-	targetRef: DeletionTargetRef;
-	deletionPlannedAt: Date;
-	statistics?: DeletionLogStatistic[];
-}
-
-export interface DeletionLogStatistic {
-	domain: DeletionDomainModel;
-	modifiedCount?: number;
-	deletedCount?: number;
-}
-
-export interface DeletionRequestProps {
-	targetRef: { targetRefDoamin: DeletionDomainModel; targetRefId: EntityId };
-	deleteInMinutes?: number;
-}
-
-export interface DeletionRequestCreateAnswer {
-	requestId: EntityId;
-	deletionPlannedAt: Date;
+export interface DomainOperation {
+	domain: DomainModel;
+	modifiedCount: number;
+	deletedCount: number;
+	modifiedRef?: string[];
+	deletedRef?: string[];
 }
 </code></pre>
     </div>
@@ -358,7 +416,7 @@ export interface DeletionRequestCreateAnswer {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
-            var COMPODOC_CURRENT_PAGE_URL = 'DeletionLogStatistic-1.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'DomainOperation.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
