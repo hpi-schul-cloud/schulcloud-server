@@ -23,7 +23,7 @@ jobs:
       with:
         node-version: '16'
     - run: npm ci
-    - run: npm run setup
+    - run: npm run setup:db:seed
     - name: check migrations.json formatting
       run: |
         npm run migration-persist

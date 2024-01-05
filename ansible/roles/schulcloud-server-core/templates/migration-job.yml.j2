@@ -20,8 +20,8 @@ spec:
             name: api-configmap
         - secretRef:
             name: api-secret
-        command: ['/bin/sh','-c']
-        args: ['npm run ensureIndexes && npm run migration-sync && npm run migration-prune && npm run migration up']
+        command: ['/bin/sh','-c']vi
+        args: ['npm run ensureIndexes && npm run migration up']
         resources:
           limits:
             cpu: {{ API_CPU_LIMITS|default("2000m", true) }}

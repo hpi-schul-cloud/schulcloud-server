@@ -404,4 +404,12 @@ export class DatabaseManagementUc {
 		});
 		return systems;
 	}
+
+	public async migrationUp(from?: string, to?: string, only?: string): Promise<void> {
+		return this.databaseManagementService.migrationUp(from, to, only);
+	}
+
+	public async migrationDown(from?: string, to?: string, only?: string): Promise<void> {
+		return this.databaseManagementService.migrationDown(from, to, only);
+	}
 }
