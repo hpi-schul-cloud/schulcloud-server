@@ -46,9 +46,10 @@ export class TaskService {
 	async deleteTasksByOnlyCreator(creatorId: EntityId): Promise<DomainOperation> {
 		const [tasksByOnlyCreatorId, counterOfTasksOnlyWithCreatorId] = await this.taskRepo.findByOnlyCreatorId(creatorId);
 
-		const promiseDeletedTasks = tasksByOnlyCreatorId.map((task: Task) => this.delete(task));
-
-		await Promise.all(promiseDeletedTasks);
+		if (counterOfTasksOnlyWithCreatorId > 0) {
+			const promiseDeletedTasks = tasksByOnlyCreatorId.map((task: Task) => this.delete(task));
+			await Promise.all(promiseDeletedTasks);
+		}
 
 		const result = DomainOperationBuilder.build(DomainModel.TASK, 0, counterOfTasksOnlyWithCreatorId);
 
