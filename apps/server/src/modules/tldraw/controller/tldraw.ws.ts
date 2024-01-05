@@ -3,8 +3,9 @@ import { Server, WebSocket } from 'ws';
 import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import cookie from 'cookie';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
+import { AxiosError } from 'axios';
 import { WebsocketCloseErrorLoggable } from '../loggable/websocket-close-error.loggable';
 import { TldrawConfig, SOCKET_PORT } from '../config';
 import { WsCloseCodeEnum, WsCloseMessageEnum } from '../types';
@@ -28,7 +29,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 			try {
 				await this.tldrawWsService.authorizeConnection(docName, cookies?.jwt);
 			} catch (err) {
-				if (err instanceof NotFoundException) {
+				if ((err as AxiosError).response?.status === 404) {
 					this.closeClientAndLogError(
 						client,
 						WsCloseCodeEnum.WS_CLIENT_NOT_FOUND_CODE,

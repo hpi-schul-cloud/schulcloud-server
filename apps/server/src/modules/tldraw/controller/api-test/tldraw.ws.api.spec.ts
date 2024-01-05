@@ -2,10 +2,11 @@ import { WsAdapter } from '@nestjs/platform-ws';
 import { Test } from '@nestjs/testing';
 import WebSocket from 'ws';
 import { TextEncoder } from 'util';
-import { INestApplication, NotFoundException } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { throwError } from 'rxjs';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
+import { AxiosError, AxiosRequestHeaders } from 'axios';
 import { WsCloseCodeEnum, WsCloseMessageEnum } from '../../types';
 import { TldrawWsTestModule } from '../../tldraw-ws-test.module';
 import { TldrawWsService } from '../../service';
@@ -196,7 +197,14 @@ describe('WebSocketController (WsAdapter)', () => {
 			const { setupConnectionSpy, wsCloseSpy } = setup();
 			const authorizeConnectionSpy = jest.spyOn(wsService, 'authorizeConnection');
 			authorizeConnectionSpy.mockImplementationOnce(() => {
-				throw new NotFoundException('Resource not found');
+				throw new AxiosError('Resource not found', '404', undefined, undefined, {
+					config: { headers: {} as AxiosRequestHeaders },
+					data: undefined,
+					request: undefined,
+					statusText: '',
+					status: 404,
+					headers: {},
+				});
 			});
 			ws = await TestConnection.setupWs(wsUrl, 'GLOBAL', { headers: { cookie: { jwt: 'jwt-mocked' } } });
 
