@@ -7,6 +7,7 @@ import { DomainModel } from '@shared/domain/types';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
+import { LegacyLogger } from '@src/core/logger';
 
 describe('TaskService', () => {
 	let module: TestingModule;
@@ -30,6 +31,10 @@ describe('TaskService', () => {
 				{
 					provide: FilesStorageClientAdapterService,
 					useValue: createMock<FilesStorageClientAdapterService>(),
+				},
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
