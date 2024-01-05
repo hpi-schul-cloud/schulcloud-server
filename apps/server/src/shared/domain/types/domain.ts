@@ -1,4 +1,4 @@
-export const enum DeletionDomainModel {
+export const enum DomainModel {
 	ACCOUNT = 'account',
 	CLASS = 'class',
 	COURSEGROUP = 'courseGroup',
@@ -10,6 +10,7 @@ export const enum DeletionDomainModel {
 	PSEUDONYMS = 'pseudonyms',
 	REGISTRATIONPIN = 'registrationPin',
 	ROCKETCHATUSER = 'rocketChatUser',
+	TASK = 'task',
 	TEAMS = 'teams',
 	USER = 'user',
 }

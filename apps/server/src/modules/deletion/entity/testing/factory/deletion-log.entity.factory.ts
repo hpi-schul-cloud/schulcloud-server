@@ -1,14 +1,15 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
+import { DomainModel } from '@shared/domain/types';
 import { DeletionLogEntity, DeletionLogEntityProps } from '../../deletion-log.entity';
-import { DeletionOperationModel, DeletionDomainModel } from '../../../domain/types';
+import { DeletionOperationModel } from '../../../domain/types';
 
 export const deletionLogEntityFactory = BaseFactory.define<DeletionLogEntity, DeletionLogEntityProps>(
 	DeletionLogEntity,
 	() => {
 		return {
 			id: new ObjectId().toHexString(),
-			domain: DeletionDomainModel.USER,
+			domain: DomainModel.USER,
 			operation: DeletionOperationModel.DELETE,
 			modifiedCount: 0,
 			deletedCount: 1,
