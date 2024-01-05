@@ -47,7 +47,7 @@ export class FileRecordResponse {
 	@ApiProperty({ enum: FileRecordParentType, enumName: 'FileRecordParentType' })
 	parentType: FileRecordParentType;
 
-	@ApiProperty()
+	@ApiPropertyOptional()
 	isUploading?: boolean;
 
 	@ApiProperty({ enum: PreviewStatus, enumName: 'PreviewStatus' })
