@@ -28,9 +28,9 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 	copyMap = new Map<EntityId, AnyBoardDo>();
 
 	constructor(
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
 		private readonly fileCopyService: SchoolSpecificFileCopyService,
-		private readonly contextExternalToolService: ContextExternalToolService,
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
+		private readonly contextExternalToolService: ContextExternalToolService
 	) {}
 
 	async copy(original: AnyBoardDo): Promise<CopyStatus> {

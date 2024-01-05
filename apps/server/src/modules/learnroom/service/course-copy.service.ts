@@ -19,14 +19,14 @@ type CourseCopyParams = {
 @Injectable()
 export class CourseCopyService {
 	constructor(
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
 		private readonly courseRepo: CourseRepo,
 		private readonly boardRepo: BoardRepo,
 		private readonly roomsService: RoomsService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
 		private readonly userRepo: UserRepo,
-		private readonly contextExternalToolService: ContextExternalToolService,
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
+		private readonly contextExternalToolService: ContextExternalToolService
 	) {}
 
 	async copyCourse({

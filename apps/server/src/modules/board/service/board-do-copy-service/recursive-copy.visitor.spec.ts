@@ -22,18 +22,18 @@ describe(RecursiveCopyVisitor.name, () => {
 			providers: [
 				RecursiveCopyVisitor,
 				{
+					provide: ToolFeatures,
+					useValue: {
+						ctlToolsTabEnabled: false,
+					},
+				},
+				{
 					provide: SchoolSpecificFileCopyServiceFactory,
 					useValue: createMock<SchoolSpecificFileCopyServiceFactory>(),
 				},
 				{
 					provide: ContextExternalToolService,
 					useValue: createMock<ContextExternalToolService>(),
-				},
-				{
-					provide: ToolFeatures,
-					useValue: {
-						ctlToolsTabEnabled: false,
-					},
 				},
 			],
 		}).compile();
@@ -74,7 +74,7 @@ describe(RecursiveCopyVisitor.name, () => {
 				const { fileCopyServiceMock } = setup();
 
 				const linkElement = linkElementFactory.build();
-				const visitor = new RecursiveCopyVisitor(fileCopyServiceMock, contextExternalToolService, toolFeatures);
+				const visitor = new RecursiveCopyVisitor(toolFeatures, fileCopyServiceMock, contextExternalToolService);
 
 				await visitor.visitLinkElementAsync(linkElement);
 
@@ -87,7 +87,7 @@ describe(RecursiveCopyVisitor.name, () => {
 				const { fileCopyServiceMock, imageUrl } = setup({ withFileCopy: true });
 
 				const linkElement = linkElementFactory.build({ imageUrl });
-				const visitor = new RecursiveCopyVisitor(fileCopyServiceMock, contextExternalToolService, toolFeatures);
+				const visitor = new RecursiveCopyVisitor(toolFeatures, fileCopyServiceMock, contextExternalToolService);
 
 				await visitor.visitLinkElementAsync(linkElement);
 
@@ -100,7 +100,7 @@ describe(RecursiveCopyVisitor.name, () => {
 				const { fileCopyServiceMock, imageUrl, newFileId } = setup({ withFileCopy: true });
 
 				const linkElement = linkElementFactory.build({ imageUrl });
-				const visitor = new RecursiveCopyVisitor(fileCopyServiceMock, contextExternalToolService, toolFeatures);
+				const visitor = new RecursiveCopyVisitor(toolFeatures, fileCopyServiceMock, contextExternalToolService);
 
 				await visitor.visitLinkElementAsync(linkElement);
 				const copy = visitor.copyMap.get(linkElement.id) as LinkElement;
@@ -114,7 +114,7 @@ describe(RecursiveCopyVisitor.name, () => {
 				const { fileCopyServiceMock } = setup({ withFileCopy: true });
 
 				const linkElement = linkElementFactory.build({ imageUrl: `https://abc.de/file/unknown-file-id` });
-				const visitor = new RecursiveCopyVisitor(fileCopyServiceMock, contextExternalToolService, toolFeatures);
+				const visitor = new RecursiveCopyVisitor(toolFeatures, fileCopyServiceMock, contextExternalToolService);
 
 				await visitor.visitLinkElementAsync(linkElement);
 				const copy = visitor.copyMap.get(linkElement.id) as LinkElement;

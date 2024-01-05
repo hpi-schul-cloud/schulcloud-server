@@ -14,15 +14,15 @@ export type BoardDoCopyParams = {
 @Injectable()
 export class BoardDoCopyService {
 	constructor(
-		private readonly contextExternalToolService: ContextExternalToolService,
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
+		private readonly contextExternalToolService: ContextExternalToolService
 	) {}
 
 	public async copy(params: BoardDoCopyParams): Promise<CopyStatus> {
 		const visitor = new RecursiveCopyVisitor(
+			this.toolFeatures,
 			params.fileCopyService,
-			this.contextExternalToolService,
-			this.toolFeatures
+			this.contextExternalToolService
 		);
 
 		const result = await visitor.copy(params.original);
