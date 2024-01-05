@@ -5,9 +5,9 @@ import { courseFactory, setupEntities, submissionFactory, taskFactory, userFacto
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { DomainModel } from '@shared/domain/types';
 import { DomainOperationBuilder } from '@shared/domain/builder';
+import { LegacyLogger } from '@src/core/logger';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
-import { LegacyLogger } from '@src/core/logger';
 
 describe('TaskService', () => {
 	let module: TestingModule;
