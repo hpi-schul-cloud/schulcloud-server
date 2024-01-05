@@ -1,6 +1,8 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { IToolFeatures } from '@modules/tool/tool-config';
 import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
@@ -17,9 +19,6 @@ import {
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
-import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
-import { Inject } from '@nestjs/common';
-import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 
 export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
@@ -28,9 +27,9 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 	copyMap = new Map<EntityId, AnyBoardDo>();
 
 	constructor(
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
 		private readonly fileCopyService: SchoolSpecificFileCopyService,
-		private readonly contextExternalToolService: ContextExternalToolService
+		private readonly contextExternalToolService: ContextExternalToolService,
+		private readonly toolFeatures: IToolFeatures
 	) {}
 
 	async copy(original: AnyBoardDo): Promise<CopyStatus> {

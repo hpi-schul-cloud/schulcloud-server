@@ -61,7 +61,7 @@ describe('recursive board copy visitor', () => {
 				{
 					provide: ToolFeatures,
 					useValue: {
-						ctlToolsTabEnabled: false,
+						ctlToolsCopyEnabled: true,
 					},
 				},
 			],
@@ -69,7 +69,6 @@ describe('recursive board copy visitor', () => {
 
 		service = module.get(BoardDoCopyService);
 		contextExternalToolService = module.get(ContextExternalToolService);
-		toolFeatures = module.get(ToolFeatures);
 
 		await setupEntities();
 	});
