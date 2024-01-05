@@ -72,9 +72,7 @@ export class ExternalToolService {
 			})
 		);
 
-		tools.data = resolvedTools.filter(
-			(tool: ExternalTool | undefined) => tool !== undefined && !tool.isDeactivated
-		) as ExternalTool[];
+		tools.data = resolvedTools.filter((tool) => tool !== undefined) as ExternalTool[];
 
 		return tools;
 	}

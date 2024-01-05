@@ -28,9 +28,12 @@ export class ToolVersionService {
 			const configurationStatus: ContextExternalToolConfigurationStatus = new ContextExternalToolConfigurationStatus({
 				isOutdatedOnScopeContext: false,
 				isOutdatedOnScopeSchool: false,
-				isDeactivated:
-					externalTool.isDeactivated || schoolExternalTool.status ? schoolExternalTool.status!.isDeactivated : false,
+				isDeactivated: false,
 			});
+
+			if (externalTool.isDeactivated || (schoolExternalTool.status && schoolExternalTool.status.isDeactivated)) {
+				configurationStatus.isDeactivated = true;
+			}
 
 			try {
 				await this.schoolExternalToolValidationService.validate(schoolExternalTool);
