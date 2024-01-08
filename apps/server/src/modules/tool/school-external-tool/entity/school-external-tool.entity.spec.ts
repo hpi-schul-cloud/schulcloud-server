@@ -1,4 +1,5 @@
 import { schoolFactory, setupEntities } from '@shared/testing';
+import { schoolExternalToolConfigurationStatusEntityFactory } from '@shared/testing/factory/school-external-tool-configuration-status-entity.factory';
 import { schoolExternalToolEntityFactory } from '@shared/testing/factory/school-external-tool-entity.factory';
 import {
 	BasicToolConfigEntity,
@@ -52,12 +53,14 @@ describe('SchoolExternalToolEntity', () => {
 				isHidden: true,
 				openNewTab: true,
 				version: 1,
+				isDeactivated: false,
 			});
 			const schoolExternalToolEntity: SchoolExternalToolEntity = new SchoolExternalToolEntity({
 				tool: externalToolEntity,
 				school: schoolFactory.buildWithId(),
 				schoolParameters: [],
 				toolVersion: 1,
+				status: schoolExternalToolConfigurationStatusEntityFactory.build(),
 			});
 
 			expect(schoolExternalToolEntity.schoolParameters).toEqual([]);
