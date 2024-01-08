@@ -200,7 +200,7 @@ describe('ToolLaunchService', () => {
 			});
 		});
 
-		describe('when tool configuration status is not LAUNCHABLE', () => {
+		describe('when tool configuration status is not launchable', () => {
 			const setup = () => {
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory

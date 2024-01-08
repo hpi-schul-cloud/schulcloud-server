@@ -25,7 +25,7 @@ describe('SchoolExternalToolConfigurationStatusEntity', () => {
 
 		it('should set school external tool status', () => {
 			const schoolExternalToolConfigurationStatusEntity: SchoolExternalToolConfigurationStatusEntity =
-				new SchoolExternalToolConfigurationStatusEntity({
+				schoolExternalToolConfigurationStatusEntityFactory.build({
 					isDeactivated: true,
 					isOutdatedOnScopeSchool: false,
 				});

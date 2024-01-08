@@ -1,12 +1,13 @@
-import { schoolFactory, setupEntities } from '@shared/testing';
+import {
+	basicToolConfigFactory,
+	customParameterEntityFactory,
+	externalToolEntityFactory,
+	schoolFactory,
+	setupEntities,
+} from '@shared/testing';
 import { schoolExternalToolConfigurationStatusEntityFactory } from '@shared/testing/factory/school-external-tool-configuration-status-entity.factory';
 import { schoolExternalToolEntityFactory } from '@shared/testing/factory/school-external-tool-entity.factory';
-import {
-	BasicToolConfigEntity,
-	CustomParameterEntity,
-	ExternalToolEntity,
-	ExternalToolConfigEntity,
-} from '../../external-tool/entity';
+import { CustomParameterEntity, ExternalToolEntity, ExternalToolConfigEntity } from '../../external-tool/entity';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '../../common/enum';
 import { SchoolExternalToolEntity } from './school-external-tool.entity';
 
@@ -28,11 +29,11 @@ describe('SchoolExternalToolEntity', () => {
 		});
 
 		it('should set schoolParameters to empty when is undefined', () => {
-			const externalToolConfigEntity: ExternalToolConfigEntity = new BasicToolConfigEntity({
+			const externalToolConfigEntity: ExternalToolConfigEntity = basicToolConfigFactory.buildWithId({
 				type: ToolConfigType.OAUTH2,
 				baseUrl: 'mockBaseUrl',
 			});
-			const customParameter: CustomParameterEntity = new CustomParameterEntity({
+			const customParameter: CustomParameterEntity = customParameterEntityFactory.build({
 				name: 'parameterName',
 				displayName: 'User Friendly Name',
 				default: 'mock',
@@ -44,7 +45,7 @@ describe('SchoolExternalToolEntity', () => {
 				isOptional: false,
 				isProtected: false,
 			});
-			const externalToolEntity: ExternalToolEntity = new ExternalToolEntity({
+			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 				name: 'toolName',
 				url: 'mockUrl',
 				logoUrl: 'mockLogoUrl',
@@ -55,7 +56,7 @@ describe('SchoolExternalToolEntity', () => {
 				version: 1,
 				isDeactivated: false,
 			});
-			const schoolExternalToolEntity: SchoolExternalToolEntity = new SchoolExternalToolEntity({
+			const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 				tool: externalToolEntity,
 				school: schoolFactory.buildWithId(),
 				schoolParameters: [],
@@ -67,11 +68,11 @@ describe('SchoolExternalToolEntity', () => {
 		});
 
 		it('should set school external tool configuration status', () => {
-			const externalToolConfigEntity: ExternalToolConfigEntity = new BasicToolConfigEntity({
+			const externalToolConfigEntity: ExternalToolConfigEntity = basicToolConfigFactory.buildWithId({
 				type: ToolConfigType.OAUTH2,
 				baseUrl: 'mockBaseUrl',
 			});
-			const customParameter: CustomParameterEntity = new CustomParameterEntity({
+			const customParameter: CustomParameterEntity = customParameterEntityFactory.build({
 				name: 'parameterName',
 				displayName: 'User Friendly Name',
 				default: 'mock',
@@ -83,7 +84,7 @@ describe('SchoolExternalToolEntity', () => {
 				isOptional: false,
 				isProtected: false,
 			});
-			const externalToolEntity: ExternalToolEntity = new ExternalToolEntity({
+			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 				name: 'toolName',
 				url: 'mockUrl',
 				logoUrl: 'mockLogoUrl',
@@ -94,7 +95,7 @@ describe('SchoolExternalToolEntity', () => {
 				version: 1,
 				isDeactivated: false,
 			});
-			const schoolExternalToolEntity: SchoolExternalToolEntity = new SchoolExternalToolEntity({
+			const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 				tool: externalToolEntity,
 				school: schoolFactory.buildWithId(),
 				schoolParameters: [],
