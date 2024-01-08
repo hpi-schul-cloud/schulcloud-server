@@ -60,6 +60,7 @@ describe('ExternalTool', () => {
 							isHidden: false,
 							openNewTab: false,
 							config: basicToolConfigFactory.build(),
+							isDeactivated: false,
 						});
 					}).toThrowError();
 				});

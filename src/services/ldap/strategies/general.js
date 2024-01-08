@@ -67,6 +67,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 			);
 		}
 
+		const splittedTeacherRoles = roleAttributeNameMapping.roleTeacher.split(';;');
 		const results = [];
 		ldapUsers.forEach((obj) => {
 			const roles = [];
@@ -77,9 +78,11 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 				if (obj.memberOf.includes(roleAttributeNameMapping.roleStudent)) {
 					roles.push('student');
 				}
-				if (obj.memberOf.includes(roleAttributeNameMapping.roleTeacher)) {
-					roles.push('teacher');
-				}
+				splittedTeacherRoles.forEach((role) => {
+					if (obj.memberOf.includes(role)) {
+						roles.push('teacher');
+					}
+				});
 				if (obj.memberOf.includes(roleAttributeNameMapping.roleAdmin)) {
 					roles.push('administrator');
 				}
@@ -90,9 +93,11 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 				if (obj[userAttributeNameMapping.role] === roleAttributeNameMapping.roleStudent) {
 					roles.push('student');
 				}
-				if (obj[userAttributeNameMapping.role] === roleAttributeNameMapping.roleTeacher) {
-					roles.push('teacher');
-				}
+				splittedTeacherRoles.forEach((role) => {
+					if (obj[userAttributeNameMapping.role].includes(role)) {
+						roles.push('teacher');
+					}
+				});
 				if (obj[userAttributeNameMapping.role] === roleAttributeNameMapping.roleAdmin) {
 					roles.push('administrator');
 				}

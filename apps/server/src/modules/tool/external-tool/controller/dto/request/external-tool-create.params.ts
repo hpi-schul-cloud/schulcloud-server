@@ -59,6 +59,14 @@ export class ExternalToolCreateParams {
 	isHidden!: boolean;
 
 	@IsBoolean()
+	@ApiProperty({
+		type: Boolean,
+		default: false,
+		description: 'Tool can be deactivated, related tools can not be added to e.g. school, course or board anymore',
+	})
+	isDeactivated!: boolean;
+
+	@IsBoolean()
 	@ApiProperty()
 	openNewTab!: boolean;
 

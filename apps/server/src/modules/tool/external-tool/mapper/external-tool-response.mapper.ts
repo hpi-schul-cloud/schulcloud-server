@@ -63,6 +63,7 @@ export class ExternalToolResponseMapper {
 			config: mappedConfig,
 			parameters: mappedCustomParameter,
 			isHidden: externalTool.isHidden,
+			isDeactivated: externalTool.isDeactivated,
 			openNewTab: externalTool.openNewTab,
 			version: externalTool.version,
 			restrictToContexts: externalTool.restrictToContexts,
