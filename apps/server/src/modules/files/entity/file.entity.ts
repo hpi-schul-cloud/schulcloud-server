@@ -95,7 +95,7 @@ export class FileEntity extends BaseEntityWithTimestamps {
 	@Enum({ nullable: false })
 	refOwnerModel: FileOwnerModel;
 
-	@Property({ fieldName: 'creator' })
+	@Property({ fieldName: 'creator', nullable: true })
 	@Index()
 	_creatorId?: ObjectId;
 
