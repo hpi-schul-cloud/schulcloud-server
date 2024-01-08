@@ -65,5 +65,44 @@ describe('SchoolExternalToolEntity', () => {
 
 			expect(schoolExternalToolEntity.schoolParameters).toEqual([]);
 		});
+
+		it('should set school external tool configuration status', () => {
+			const externalToolConfigEntity: ExternalToolConfigEntity = new BasicToolConfigEntity({
+				type: ToolConfigType.OAUTH2,
+				baseUrl: 'mockBaseUrl',
+			});
+			const customParameter: CustomParameterEntity = new CustomParameterEntity({
+				name: 'parameterName',
+				displayName: 'User Friendly Name',
+				default: 'mock',
+				location: CustomParameterLocation.PATH,
+				scope: CustomParameterScope.SCHOOL,
+				type: CustomParameterType.STRING,
+				regex: 'mockRegex',
+				regexComment: 'mockComment',
+				isOptional: false,
+				isProtected: false,
+			});
+			const externalToolEntity: ExternalToolEntity = new ExternalToolEntity({
+				name: 'toolName',
+				url: 'mockUrl',
+				logoUrl: 'mockLogoUrl',
+				config: externalToolConfigEntity,
+				parameters: [customParameter],
+				isHidden: true,
+				openNewTab: true,
+				version: 1,
+				isDeactivated: false,
+			});
+			const schoolExternalToolEntity: SchoolExternalToolEntity = new SchoolExternalToolEntity({
+				tool: externalToolEntity,
+				school: schoolFactory.buildWithId(),
+				schoolParameters: [],
+				toolVersion: 1,
+				status: schoolExternalToolConfigurationStatusEntityFactory.build(),
+			});
+
+			expect(schoolExternalToolEntity.status).toEqual({ isDeactivated: false, isOutdatedOnScopeSchool: false });
+		});
 	});
 });
