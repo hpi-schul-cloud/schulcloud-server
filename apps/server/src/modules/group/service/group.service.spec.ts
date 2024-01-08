@@ -217,6 +217,48 @@ describe('GroupService', () => {
 		});
 	});
 
+	describe('findGroupsBySchoolIdAndSystemIdAndGroupType', () => {
+		describe('when the school has groups of type class', () => {
+			const setup = () => {
+				const schoolId: string = new ObjectId().toHexString();
+				const systemId: string = new ObjectId().toHexString();
+				const groups: Group[] = groupFactory.buildList(3);
+
+				groupRepo.findGroupsBySchoolIdAndSystemIdAndGroupType.mockResolvedValue(groups);
+
+				return {
+					schoolId,
+					systemId,
+					groups,
+				};
+			};
+
+			it('should search for the groups', async () => {
+				const { schoolId, systemId } = setup();
+
+				await service.findGroupsBySchoolIdAndSystemIdAndGroupType(schoolId, systemId, GroupTypes.CLASS);
+
+				expect(groupRepo.findGroupsBySchoolIdAndSystemIdAndGroupType).toHaveBeenCalledWith(
+					schoolId,
+					systemId,
+					GroupTypes.CLASS
+				);
+			});
+
+			it('should return the groups', async () => {
+				const { schoolId, systemId, groups } = setup();
+
+				const result: Group[] = await service.findGroupsBySchoolIdAndSystemIdAndGroupType(
+					schoolId,
+					systemId,
+					GroupTypes.CLASS
+				);
+
+				expect(result).toEqual(groups);
+			});
+		});
+	});
+
 	describe('save', () => {
 		describe('when saving a group', () => {
 			const setup = () => {
