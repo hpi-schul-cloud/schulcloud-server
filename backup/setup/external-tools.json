@@ -216,6 +216,80 @@
 		"isHidden": false,
 		"openNewTab": false,
 		"version": 2
+	},
+	{
+		"_id": {
+			"$oid": "647de247cf6a427b9d39e6c3"
+		},
+		"createdAt": {
+			"$date": "2023-11-30T15:28:04.733Z"
+		},
+		"updatedAt": {
+			"$date": "2023-11-30T15:32:42.888Z"
+		},
+		"name": "CY Test Tool deactivated External Tool",
+		"config_type": "basic",
+		"config_baseUrl": "https:google.com",
+		"parameters": [{
+			"name": "schoolParam",
+			"displayName": "cypress test school",
+			"description": "",
+			"scope": "school",
+			"location": "path",
+			"type": "string",
+			"isOptional": false,
+			"isProtected": false
+		}, {
+			"name": "contextparammm",
+			"displayName": "cypress test context",
+			"description": "",
+			"scope": "context",
+			"location": "path",
+			"type": "string",
+			"isOptional": false,
+			"isProtected": false
+		}],
+		"isHidden": false,
+		"openNewTab": false,
+		"version": 2,
+		"isDeactivated": true
+	},
+	{
+		"_id": {
+			"$oid": "647de247cf6a427b9d39e7c3"
+		},
+		"createdAt": {
+			"$date": "2023-11-30T15:28:04.733Z"
+		},
+		"updatedAt": {
+			"$date": "2023-11-30T15:32:42.888Z"
+		},
+		"name": "CY Test Tool deactivated School External Tool",
+		"config_type": "basic",
+		"config_baseUrl": "https:google.com",
+		"parameters": [{
+			"name": "schoolParam",
+			"displayName": "cypress test school",
+			"description": "",
+			"scope": "school",
+			"location": "path",
+			"type": "string",
+			"isOptional": false,
+			"isProtected": false
+		}, {
+			"name": "contextparammm",
+			"displayName": "cypress test context",
+			"description": "",
+			"scope": "context",
+			"location": "path",
+			"type": "string",
+			"isOptional": false,
+			"isProtected": false
+		}],
+		"isHidden": false,
+		"openNewTab": false,
+		"version": 2,
+		"isDeactivated": false
 	}
 
 ]
