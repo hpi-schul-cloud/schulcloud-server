@@ -24,191 +24,191 @@
 <title>cluster_LegacySchoolModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 2035,-268 2035,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_LegacySchoolModule_providers</title>
-<polygon fill="none" stroke="black" points="140,-78 140,-130 2027,-130 2027,-78 140,-78"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_LegacySchoolModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 132,-130 132,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="1911,-78 1911,-130 2027,-130 2027,-78 1911,-78"/>
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_LegacySchoolModule_exports</title>
-<polygon fill="none" stroke="black" points="661,-208 661,-260 1319,-260 1319,-208 661,-208"/>
+<polygon fill="none" stroke="black" points="783,-208 783,-260 1441,-260 1441,-208 783,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_LegacySchoolModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 1903,-130 1903,-78 16,-78"/>
 </g>
 <!-- LoggerModule -->
 <g id="node1" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="123.98,-122 120.98,-126 99.98,-126 96.98,-122 24.02,-122 24.02,-86 123.98,-86 123.98,-122"/>
-<text text-anchor="middle" x="74" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="2018.98,-122 2015.98,-126 1994.98,-126 1991.98,-122 1919.02,-122 1919.02,-86 2018.98,-86 2018.98,-122"/>
+<text text-anchor="middle" x="1969" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LegacySchoolModule -->
 <g id="node2" class="node">
 <title>LegacySchoolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1068.63,-187 1065.63,-191 1044.63,-191 1041.63,-187 929.37,-187 929.37,-151 1068.63,-151 1068.63,-187"/>
-<text text-anchor="middle" x="999" y="-164.8" font-family="Times,serif" font-size="14.00">LegacySchoolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1190.63,-187 1187.63,-191 1166.63,-191 1163.63,-187 1051.37,-187 1051.37,-151 1190.63,-151 1190.63,-187"/>
+<text text-anchor="middle" x="1121" y="-164.8" font-family="Times,serif" font-size="14.00">LegacySchoolModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;LegacySchoolModule -->
 <g id="edge1" class="edge">
 <title>LoggerModule&#45;&gt;LegacySchoolModule</title>
-<path fill="none" stroke="black" d="M74,-122.28C74,-143.32 74,-175 74,-175 74,-175 919.1,-175 919.1,-175"/>
-<polygon fill="black" stroke="black" points="919.1,-178.5 929.1,-175 919.1,-171.5 919.1,-178.5"/>
+<path fill="none" stroke="black" d="M1969,-122.28C1969,-143.32 1969,-175 1969,-175 1969,-175 1200.76,-175 1200.76,-175"/>
+<polygon fill="black" stroke="black" points="1200.76,-171.5 1190.76,-175 1200.76,-178.5 1200.76,-171.5"/>
 </g>
 <!-- FederalStateService  -->
 <g id="node3" class="node">
 <title>FederalStateService </title>
-<polygon fill="#fb8072" stroke="black" points="1310.95,-252 1179.05,-252 1179.05,-216 1310.95,-216 1310.95,-252"/>
-<text text-anchor="middle" x="1245" y="-229.8" font-family="Times,serif" font-size="14.00">FederalStateService </text>
+<polygon fill="#fb8072" stroke="black" points="1432.95,-252 1301.05,-252 1301.05,-216 1432.95,-216 1432.95,-252"/>
+<text text-anchor="middle" x="1367" y="-229.8" font-family="Times,serif" font-size="14.00">FederalStateService </text>
 </g>
 <!-- LegacySchoolModule&#45;&gt;FederalStateService  -->
 <g id="edge2" class="edge">
 <title>LegacySchoolModule&#45;&gt;FederalStateService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1068.86,-181C1131.39,-181 1213.27,-181 1213.27,-181 1213.27,-181 1213.27,-205.76 1213.27,-205.76"/>
-<polygon fill="black" stroke="black" points="1209.77,-205.76 1213.27,-215.76 1216.77,-205.76 1209.77,-205.76"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1190.66,-181C1246.74,-181 1316.25,-181 1316.25,-181 1316.25,-181 1316.25,-205.76 1316.25,-205.76"/>
+<polygon fill="black" stroke="black" points="1312.75,-205.76 1316.25,-215.76 1319.75,-205.76 1312.75,-205.76"/>
 </g>
 <!-- LegacySchoolService  -->
 <g id="node4" class="node">
 <title>LegacySchoolService </title>
-<polygon fill="#fb8072" stroke="black" points="1160.56,-252 1019.44,-252 1019.44,-216 1160.56,-216 1160.56,-252"/>
-<text text-anchor="middle" x="1090" y="-229.8" font-family="Times,serif" font-size="14.00">LegacySchoolService </text>
+<polygon fill="#fb8072" stroke="black" points="1282.56,-252 1141.44,-252 1141.44,-216 1282.56,-216 1282.56,-252"/>
+<text text-anchor="middle" x="1212" y="-229.8" font-family="Times,serif" font-size="14.00">LegacySchoolService </text>
 </g>
 <!-- LegacySchoolModule&#45;&gt;LegacySchoolService  -->
 <g id="edge3" class="edge">
 <title>LegacySchoolModule&#45;&gt;LegacySchoolService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1044.02,-187.11C1044.02,-187.11 1044.02,-205.99 1044.02,-205.99"/>
-<polygon fill="black" stroke="black" points="1040.52,-205.99 1044.02,-215.99 1047.52,-205.99 1040.52,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1166.02,-187.11C1166.02,-187.11 1166.02,-205.99 1166.02,-205.99"/>
+<polygon fill="black" stroke="black" points="1162.52,-205.99 1166.02,-215.99 1169.52,-205.99 1162.52,-205.99"/>
 </g>
 <!-- SchoolSystemOptionsService  -->
 <g id="node5" class="node">
 <title>SchoolSystemOptionsService </title>
-<polygon fill="#fb8072" stroke="black" points="1000.92,-252 815.08,-252 815.08,-216 1000.92,-216 1000.92,-252"/>
-<text text-anchor="middle" x="908" y="-229.8" font-family="Times,serif" font-size="14.00">SchoolSystemOptionsService </text>
+<polygon fill="#fb8072" stroke="black" points="1122.92,-252 937.08,-252 937.08,-216 1122.92,-216 1122.92,-252"/>
+<text text-anchor="middle" x="1030" y="-229.8" font-family="Times,serif" font-size="14.00">SchoolSystemOptionsService </text>
 </g>
 <!-- LegacySchoolModule&#45;&gt;SchoolSystemOptionsService  -->
 <g id="edge4" class="edge">
 <title>LegacySchoolModule&#45;&gt;SchoolSystemOptionsService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M965.07,-187.11C965.07,-187.11 965.07,-205.99 965.07,-205.99"/>
-<polygon fill="black" stroke="black" points="961.57,-205.99 965.07,-215.99 968.57,-205.99 961.57,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1087.07,-187.11C1087.07,-187.11 1087.07,-205.99 1087.07,-205.99"/>
+<polygon fill="black" stroke="black" points="1083.57,-205.99 1087.07,-215.99 1090.57,-205.99 1083.57,-205.99"/>
 </g>
 <!-- SchoolYearService  -->
 <g id="node6" class="node">
 <title>SchoolYearService </title>
-<polygon fill="#fb8072" stroke="black" points="796.56,-252 669.44,-252 669.44,-216 796.56,-216 796.56,-252"/>
-<text text-anchor="middle" x="733" y="-229.8" font-family="Times,serif" font-size="14.00">SchoolYearService </text>
+<polygon fill="#fb8072" stroke="black" points="918.56,-252 791.44,-252 791.44,-216 918.56,-216 918.56,-252"/>
+<text text-anchor="middle" x="855" y="-229.8" font-family="Times,serif" font-size="14.00">SchoolYearService </text>
 </g>
 <!-- LegacySchoolModule&#45;&gt;SchoolYearService  -->
 <g id="edge5" class="edge">
 <title>LegacySchoolModule&#45;&gt;SchoolYearService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M929.35,-181C861.97,-181 769.98,-181 769.98,-181 769.98,-181 769.98,-205.76 769.98,-205.76"/>
-<polygon fill="black" stroke="black" points="766.48,-205.76 769.98,-215.76 773.48,-205.76 766.48,-205.76"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1051.07,-181C987.56,-181 903.76,-181 903.76,-181 903.76,-181 903.76,-205.76 903.76,-205.76"/>
+<polygon fill="black" stroke="black" points="900.26,-205.76 903.76,-215.76 907.26,-205.76 900.26,-205.76"/>
 </g>
 <!-- FederalStateRepo -->
 <g id="node7" class="node">
 <title>FederalStateRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1939" cy="-104" rx="79.87" ry="18"/>
-<text text-anchor="middle" x="1939" y="-99.8" font-family="Times,serif" font-size="14.00">FederalStateRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="1815" cy="-104" rx="79.87" ry="18"/>
+<text text-anchor="middle" x="1815" y="-99.8" font-family="Times,serif" font-size="14.00">FederalStateRepo</text>
 </g>
 <!-- FederalStateRepo&#45;&gt;LegacySchoolModule -->
 <g id="edge6" class="edge">
 <title>FederalStateRepo&#45;&gt;LegacySchoolModule</title>
-<path fill="none" stroke="black" d="M1939,-122.28C1939,-143.32 1939,-175 1939,-175 1939,-175 1078.88,-175 1078.88,-175"/>
-<polygon fill="black" stroke="black" points="1078.88,-171.5 1068.88,-175 1078.88,-178.5 1078.88,-171.5"/>
+<path fill="none" stroke="black" d="M1815,-122.11C1815,-141.34 1815,-169 1815,-169 1815,-169 1200.72,-169 1200.72,-169"/>
+<polygon fill="black" stroke="black" points="1200.72,-165.5 1190.72,-169 1200.72,-172.5 1200.72,-165.5"/>
 </g>
 <!-- FederalStateService -->
 <g id="node8" class="node">
 <title>FederalStateService</title>
-<ellipse fill="#fdb462" stroke="black" cx="1753" cy="-104" rx="88.01" ry="18"/>
-<text text-anchor="middle" x="1753" y="-99.8" font-family="Times,serif" font-size="14.00">FederalStateService</text>
+<ellipse fill="#fdb462" stroke="black" cx="1629" cy="-104" rx="88.01" ry="18"/>
+<text text-anchor="middle" x="1629" y="-99.8" font-family="Times,serif" font-size="14.00">FederalStateService</text>
 </g>
 <!-- FederalStateService&#45;&gt;LegacySchoolModule -->
 <g id="edge7" class="edge">
 <title>FederalStateService&#45;&gt;LegacySchoolModule</title>
-<path fill="none" stroke="black" d="M1753,-122.11C1753,-141.34 1753,-169 1753,-169 1753,-169 1078.92,-169 1078.92,-169"/>
-<polygon fill="black" stroke="black" points="1078.92,-165.5 1068.92,-169 1078.92,-172.5 1078.92,-165.5"/>
+<path fill="none" stroke="black" d="M1629,-122.02C1629,-139.37 1629,-163 1629,-163 1629,-163 1200.84,-163 1200.84,-163"/>
+<polygon fill="black" stroke="black" points="1200.84,-159.5 1190.84,-163 1200.84,-166.5 1200.84,-159.5"/>
 </g>
 <!-- LegacySchoolRepo -->
 <g id="node9" class="node">
 <title>LegacySchoolRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1560" cy="-104" rx="86.82" ry="18"/>
-<text text-anchor="middle" x="1560" y="-99.8" font-family="Times,serif" font-size="14.00">LegacySchoolRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="1436" cy="-104" rx="86.82" ry="18"/>
+<text text-anchor="middle" x="1436" y="-99.8" font-family="Times,serif" font-size="14.00">LegacySchoolRepo</text>
 </g>
 <!-- LegacySchoolRepo&#45;&gt;LegacySchoolModule -->
 <g id="edge8" class="edge">
 <title>LegacySchoolRepo&#45;&gt;LegacySchoolModule</title>
-<path fill="none" stroke="black" d="M1560,-122.02C1560,-139.37 1560,-163 1560,-163 1560,-163 1078.92,-163 1078.92,-163"/>
-<polygon fill="black" stroke="black" points="1078.92,-159.5 1068.92,-163 1078.92,-166.5 1078.92,-159.5"/>
+<path fill="none" stroke="black" d="M1391.03,-119.62C1391.03,-135.25 1391.03,-157 1391.03,-157 1391.03,-157 1200.89,-157 1200.89,-157"/>
+<polygon fill="black" stroke="black" points="1200.89,-153.5 1190.89,-157 1200.89,-160.5 1200.89,-153.5"/>
 </g>
 <!-- LegacySchoolService -->
 <g id="node10" class="node">
 <title>LegacySchoolService</title>
-<ellipse fill="#fdb462" stroke="black" cx="1360" cy="-104" rx="95.47" ry="18"/>
-<text text-anchor="middle" x="1360" y="-99.8" font-family="Times,serif" font-size="14.00">LegacySchoolService</text>
+<ellipse fill="#fdb462" stroke="black" cx="1236" cy="-104" rx="95.47" ry="18"/>
+<text text-anchor="middle" x="1236" y="-99.8" font-family="Times,serif" font-size="14.00">LegacySchoolService</text>
 </g>
 <!-- LegacySchoolService&#45;&gt;LegacySchoolModule -->
 <g id="edge9" class="edge">
 <title>LegacySchoolService&#45;&gt;LegacySchoolModule</title>
-<path fill="none" stroke="black" d="M1287.75,-115.76C1287.75,-131.38 1287.75,-157 1287.75,-157 1287.75,-157 1078.9,-157 1078.9,-157"/>
-<polygon fill="black" stroke="black" points="1078.9,-153.5 1068.9,-157 1078.9,-160.5 1078.9,-153.5"/>
+<path fill="none" stroke="black" d="M1165.79,-116.23C1165.79,-116.23 1165.79,-140.68 1165.79,-140.68"/>
+<polygon fill="black" stroke="black" points="1162.29,-140.68 1165.79,-150.68 1169.29,-140.68 1162.29,-140.68"/>
 </g>
 <!-- SchoolSystemOptionsRepo -->
 <g id="node11" class="node">
 <title>SchoolSystemOptionsRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1130" cy="-104" rx="117.02" ry="18"/>
-<text text-anchor="middle" x="1130" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolSystemOptionsRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="1006" cy="-104" rx="117.02" ry="18"/>
+<text text-anchor="middle" x="1006" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolSystemOptionsRepo</text>
 </g>
 <!-- SchoolSystemOptionsRepo&#45;&gt;LegacySchoolModule -->
 <g id="edge10" class="edge">
 <title>SchoolSystemOptionsRepo&#45;&gt;LegacySchoolModule</title>
-<path fill="none" stroke="black" d="M1040.78,-115.92C1040.78,-115.92 1040.78,-140.77 1040.78,-140.77"/>
-<polygon fill="black" stroke="black" points="1037.28,-140.77 1040.78,-150.77 1044.28,-140.77 1037.28,-140.77"/>
+<path fill="none" stroke="black" d="M1087.22,-117.15C1087.22,-117.15 1087.22,-140.69 1087.22,-140.69"/>
+<polygon fill="black" stroke="black" points="1083.72,-140.69 1087.22,-150.69 1090.72,-140.69 1083.72,-140.69"/>
 </g>
 <!-- SchoolSystemOptionsService -->
 <g id="node12" class="node">
 <title>SchoolSystemOptionsService</title>
-<ellipse fill="#fdb462" stroke="black" cx="869" cy="-104" rx="125.66" ry="18"/>
-<text text-anchor="middle" x="869" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolSystemOptionsService</text>
+<ellipse fill="#fdb462" stroke="black" cx="745" cy="-104" rx="125.66" ry="18"/>
+<text text-anchor="middle" x="745" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolSystemOptionsService</text>
 </g>
 <!-- SchoolSystemOptionsService&#45;&gt;LegacySchoolModule -->
 <g id="edge11" class="edge">
 <title>SchoolSystemOptionsService&#45;&gt;LegacySchoolModule</title>
-<path fill="none" stroke="black" d="M962.01,-116.23C962.01,-116.23 962.01,-140.68 962.01,-140.68"/>
-<polygon fill="black" stroke="black" points="958.51,-140.68 962.01,-150.68 965.51,-140.68 958.51,-140.68"/>
+<path fill="none" stroke="black" d="M831.02,-117.37C831.02,-133.07 831.02,-157 831.02,-157 831.02,-157 1041.17,-157 1041.17,-157"/>
+<polygon fill="black" stroke="black" points="1041.17,-160.5 1051.17,-157 1041.17,-153.5 1041.17,-160.5"/>
 </g>
 <!-- SchoolValidationService -->
 <g id="node13" class="node">
 <title>SchoolValidationService</title>
-<ellipse fill="#fdb462" stroke="black" cx="618" cy="-104" rx="107.66" ry="18"/>
-<text text-anchor="middle" x="618" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolValidationService</text>
+<ellipse fill="#fdb462" stroke="black" cx="494" cy="-104" rx="107.66" ry="18"/>
+<text text-anchor="middle" x="494" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolValidationService</text>
 </g>
 <!-- SchoolValidationService&#45;&gt;LegacySchoolModule -->
 <g id="edge12" class="edge">
 <title>SchoolValidationService&#45;&gt;LegacySchoolModule</title>
-<path fill="none" stroke="black" d="M697.4,-116.29C697.4,-131.95 697.4,-157 697.4,-157 697.4,-157 919.05,-157 919.05,-157"/>
-<polygon fill="black" stroke="black" points="919.05,-160.5 929.05,-157 919.05,-153.5 919.05,-160.5"/>
+<path fill="none" stroke="black" d="M494,-122.02C494,-139.37 494,-163 494,-163 494,-163 1041.2,-163 1041.2,-163"/>
+<polygon fill="black" stroke="black" points="1041.2,-166.5 1051.2,-163 1041.2,-159.5 1041.2,-166.5"/>
 </g>
 <!-- SchoolYearRepo -->
 <g id="node14" class="node">
 <title>SchoolYearRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="415" cy="-104" rx="77.01" ry="18"/>
-<text text-anchor="middle" x="415" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolYearRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="291" cy="-104" rx="77.01" ry="18"/>
+<text text-anchor="middle" x="291" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolYearRepo</text>
 </g>
 <!-- SchoolYearRepo&#45;&gt;LegacySchoolModule -->
 <g id="edge13" class="edge">
 <title>SchoolYearRepo&#45;&gt;LegacySchoolModule</title>
-<path fill="none" stroke="black" d="M415,-122.02C415,-139.37 415,-163 415,-163 415,-163 919.14,-163 919.14,-163"/>
-<polygon fill="black" stroke="black" points="919.14,-166.5 929.14,-163 919.14,-159.5 919.14,-166.5"/>
+<path fill="none" stroke="black" d="M291,-122.11C291,-141.34 291,-169 291,-169 291,-169 1041.31,-169 1041.31,-169"/>
+<polygon fill="black" stroke="black" points="1041.31,-172.5 1051.31,-169 1041.31,-165.5 1041.31,-172.5"/>
 </g>
 <!-- SchoolYearService -->
 <g id="node15" class="node">
 <title>SchoolYearService</title>
-<ellipse fill="#fdb462" stroke="black" cx="234" cy="-104" rx="85.65" ry="18"/>
-<text text-anchor="middle" x="234" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolYearService</text>
+<ellipse fill="#fdb462" stroke="black" cx="110" cy="-104" rx="85.65" ry="18"/>
+<text text-anchor="middle" x="110" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolYearService</text>
 </g>
 <!-- SchoolYearService&#45;&gt;LegacySchoolModule -->
 <g id="edge14" class="edge">
 <title>SchoolYearService&#45;&gt;LegacySchoolModule</title>
-<path fill="none" stroke="black" d="M234,-122.11C234,-141.34 234,-169 234,-169 234,-169 919.08,-169 919.08,-169"/>
-<polygon fill="black" stroke="black" points="919.08,-172.5 929.08,-169 919.08,-165.5 919.08,-172.5"/>
+<path fill="none" stroke="black" d="M110,-122.28C110,-143.32 110,-175 110,-175 110,-175 1041.11,-175 1041.11,-175"/>
+<polygon fill="black" stroke="black" points="1041.11,-178.5 1051.11,-175 1041.11,-171.5 1041.11,-178.5"/>
 </g>
 </g>
 </svg>
