@@ -61,6 +61,7 @@ describe('ExternalToolResponseMapper', () => {
 					openNewTab: true,
 					version: 1,
 					config: basicToolConfigResponse,
+					isDeactivated: true,
 				});
 
 				const basicToolConfig: BasicToolConfig = basicToolConfigFactory.build({
@@ -91,6 +92,7 @@ describe('ExternalToolResponseMapper', () => {
 					openNewTab: true,
 					version: 1,
 					config: basicToolConfig,
+					isDeactivated: true,
 				});
 
 				return {
@@ -157,6 +159,7 @@ describe('ExternalToolResponseMapper', () => {
 					openNewTab: true,
 					version: 1,
 					config: oauth2ToolConfigResponse,
+					isDeactivated: false,
 				});
 
 				const customParameter: CustomParameter = customParameterFactory.build({
@@ -182,6 +185,7 @@ describe('ExternalToolResponseMapper', () => {
 					openNewTab: true,
 					version: 1,
 					config: oauth2ToolConfigDO,
+					isDeactivated: false,
 				});
 
 				return {
@@ -245,6 +249,7 @@ describe('ExternalToolResponseMapper', () => {
 					openNewTab: true,
 					version: 1,
 					config: lti11ToolConfigResponse,
+					isDeactivated: false,
 				});
 
 				const customParameter: CustomParameter = customParameterFactory.build({
@@ -269,6 +274,7 @@ describe('ExternalToolResponseMapper', () => {
 					openNewTab: true,
 					version: 1,
 					config: lti11ToolConfigDO,
+					isDeactivated: false,
 				});
 
 				return {

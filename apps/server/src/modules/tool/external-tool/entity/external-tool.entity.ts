@@ -32,6 +32,9 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	isHidden: boolean;
 
 	@Property()
+	isDeactivated: boolean;
+
+	@Property()
 	openNewTab: boolean;
 
 	@Property()
@@ -49,6 +52,7 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 		this.config = props.config;
 		this.parameters = props.parameters;
 		this.isHidden = props.isHidden;
+		this.isDeactivated = props.isDeactivated;
 		this.openNewTab = props.openNewTab;
 		this.version = props.version;
 		this.restrictToContexts = props.restrictToContexts;
