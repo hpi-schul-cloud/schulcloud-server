@@ -7,7 +7,7 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { BaseDORepo, Scope } from '@shared/repo';
+import { BaseDORepo } from '../base.do.repo'; 
 import { UserScope } from './user.scope';
 
 @Injectable()
