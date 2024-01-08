@@ -80,10 +80,6 @@ export class CommonCartridgeExportService {
 	): void {
 		const resources = this.commonCartridgeMapper.mapContentToResources(component);
 
-		if (!Array.isArray(resources)) {
-			organizationBuilder.addResource(resources);
-		}
-
 		if (Array.isArray(resources)) {
 			const subOrganizationBuilder = organizationBuilder.addSubOrganization(
 				this.commonCartridgeMapper.mapContentToOrganization(component)
@@ -92,6 +88,8 @@ export class CommonCartridgeExportService {
 			resources.forEach((resource) => {
 				subOrganizationBuilder.addResource(resource);
 			});
+		} else {
+			organizationBuilder.addResource(resources);
 		}
 	}
 }

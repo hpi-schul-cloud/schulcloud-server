@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  mongodb:
+    image: mongo:4.4
+    restart: always
+    ports:
+      - 27017:27017
+
+  rabbitmq:
+    image: rabbitmq:3.8.9-management
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - 6379:6379
+
+  idm:
+    image: ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest
+    ports:
+      - 8080:8080
+      - 8443:8443
+    volumes:
+      - '$PWD/backup/idm/keycloak:/tmp/realms'
+    command: '&& /opt/keycloak/bin/kc.sh import --dir /tmp/realms'
+
+  oidc:
+    image: ghcr.io/soluto/oidc-server-mock:0.6.0
+    ports:
+      - 4011:80
+    volumes:
+      - '$PWD/backup/idm/oidcmock:/tmp/config'
+    environment:
+      - ASPNETCORE_ENVIRONMENT='Development'
+      - SERVER_OPTIONS_PATH='/tmp/config/server-config.json'
+      - USERS_CONFIGURATION_PATH='/tmp/config/users-config.json'
+      - CLIENTS_CONFIGURATION_PATH='/tmp/config/clients-config.json'  
