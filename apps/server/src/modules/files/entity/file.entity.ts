@@ -97,7 +97,7 @@ export class FileEntity extends BaseEntityWithTimestamps {
 
 	@Property({ fieldName: 'creator' })
 	@Index()
-	_creatorId: ObjectId | undefined;
+	_creatorId?: ObjectId;
 
 	get creatorId(): EntityId | undefined {
 		return this._creatorId?.toHexString();
