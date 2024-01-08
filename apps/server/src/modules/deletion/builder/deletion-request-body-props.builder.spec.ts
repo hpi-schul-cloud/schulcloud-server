@@ -1,5 +1,5 @@
 import { ObjectId } from 'bson';
-import { DeletionDomainModel } from '../domain/types';
+import { DomainModel } from '@shared/domain/types';
 import { DeletionRequestBodyPropsBuilder } from './deletion-request-body-props.builder';
 
 describe(DeletionRequestBodyPropsBuilder.name, () => {
@@ -8,7 +8,7 @@ describe(DeletionRequestBodyPropsBuilder.name, () => {
 	});
 	describe('when create deletionRequestBodyParams', () => {
 		const setup = () => {
-			const domain = DeletionDomainModel.PSEUDONYMS;
+			const domain = DomainModel.PSEUDONYMS;
 			const refId = new ObjectId().toHexString();
 			const deleteInMinutes = 1000;
 			return { domain, refId, deleteInMinutes };
