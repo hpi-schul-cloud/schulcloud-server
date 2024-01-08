@@ -1,4 +1,4 @@
-import { IdmAccount } from '@shared/domain/interface';
+import { IdmAccount } from '../../domain';
 import { Account } from '../../domain/account';
 import { AccountIdmToDoMapper } from './account-idm-to-do.mapper.abstract';
 
