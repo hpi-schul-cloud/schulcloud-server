@@ -4,6 +4,7 @@ import { InternalServerErrorException, UnprocessableEntityException } from '@nes
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
 import { PassThrough, Readable } from 'node:stream';
+import { ErrorType } from './interface/error-status.enum';
 import { PreviewGeneratorService } from './preview-generator.service';
 
 let streamMock = jest.fn();
@@ -255,7 +256,7 @@ describe('PreviewGeneratorService', () => {
 					it('should throw UnprocessableEntityException', async () => {
 						const { params } = setup();
 
-						const error = new UnprocessableEntityException('CREATE_PREVIEW_NOT_POSSIBLE');
+						const error = new UnprocessableEntityException(ErrorType.CREATE_PREVIEW_NOT_POSSIBLE);
 						await expect(service.generatePreview(params)).rejects.toThrowError(error);
 					});
 				});
@@ -264,7 +265,7 @@ describe('PreviewGeneratorService', () => {
 					it('should throw UnprocessableEntityException', async () => {
 						const { params } = setup('text/plain');
 
-						const error = new UnprocessableEntityException('CREATE_PREVIEW_NOT_POSSIBLE');
+						const error = new UnprocessableEntityException(ErrorType.CREATE_PREVIEW_NOT_POSSIBLE);
 						await expect(service.generatePreview(params)).rejects.toThrowError(error);
 					});
 				});
@@ -304,7 +305,7 @@ describe('PreviewGeneratorService', () => {
 			});
 		});
 
-		describe('WHEN stream throw an error', () => {
+		describe('WHEN STDERR stream has an error', () => {
 			const setup = () => {
 				const params = {
 					originFilePath: 'file/test.jpeg',
@@ -324,7 +325,7 @@ describe('PreviewGeneratorService', () => {
 					stderr.end();
 				});
 
-				const expectedError = new InternalServerErrorException('CREATE_PREVIEW_NOT_POSSIBLE');
+				const expectedError = new InternalServerErrorException(ErrorType.CREATE_PREVIEW_NOT_POSSIBLE);
 
 				return { params, originFile, expectedError };
 			};
@@ -350,7 +351,7 @@ describe('PreviewGeneratorService', () => {
 
 				createMockStream(new Error('imagemagic is not found'));
 
-				const expectedError = new InternalServerErrorException('CREATE_PREVIEW_NOT_POSSIBLE');
+				const expectedError = new InternalServerErrorException(ErrorType.CREATE_PREVIEW_NOT_POSSIBLE);
 
 				return { params, originFile, expectedError };
 			};
