@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '@modules/authentication';
-import { AccountEntity, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
+import { AccountEntity } from '@src/modules/account/entity';
 import { EntityId } from '@shared/domain/types';
 
 export const mapUserToCurrentUser = (

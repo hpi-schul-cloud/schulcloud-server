@@ -1,4 +1,5 @@
-import { AccountEntity, SchoolEntity, User } from '@shared/domain/entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
+import { AccountEntity } from '@src/modules/account/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';

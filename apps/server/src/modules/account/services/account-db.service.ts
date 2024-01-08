@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import { AccountEntity } from '@shared/domain/entity';
+import { AccountEntity } from '../entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import bcrypt from 'bcryptjs';
 import { Account } from '../domain/account';

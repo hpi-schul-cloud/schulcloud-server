@@ -6,11 +6,12 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
-import { AccountEntity, Role, SchoolEntity, User } from '@shared/domain/entity';
+import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { PermissionService } from '@shared/domain/service';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
+import { AccountEntity } from '../entity';
 
 import { ICurrentUser } from '@modules/authentication';
 import { BruteForcePrevention } from '@src/imports-from-feathers';

@@ -19,7 +19,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 	async find(query: UserQuery, options?: IFindOptions<UserDO>) {
 		const pagination: Pagination = options?.pagination || {};
 		const order: QueryOrderMap<User> = this.createQueryOrderMap(options?.order || {});
-		const scope: Scope<User> = new UserScope()
+		const scope = new UserScope()
 			.bySchoolId(query.schoolId)
 			.isOutdated(query.isOutdated)
 			.whereLastLoginSystemChangeSmallerThan(query.lastLoginSystemChangeSmallerThan)
