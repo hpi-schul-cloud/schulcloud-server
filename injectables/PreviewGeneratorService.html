@@ -163,6 +163,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                <a href="#convert" >convert</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#downloadOriginFile" >downloadOriginFile</a>
                             </li>
@@ -173,6 +177,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#resizeAndConvert" >resizeAndConvert</a>
                             </li>
                         </ul>
@@ -198,7 +203,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -275,8 +280,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:40</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -338,6 +343,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="convert"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>convert</b></span>
+                        <a href="#convert"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>convert(preview: m.State, format: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="80"
+                                    class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:80</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>preview</td>
+                                            <td>
+                                                        <code>m.State</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>format</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;PassThrough&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="downloadOriginFile"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -357,8 +443,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -427,8 +513,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -481,6 +567,7 @@
                     <a name="resizeAndConvert"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
                         <span ><b>resizeAndConvert</b></span>
                         <a href="#resizeAndConvert"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -496,8 +583,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -545,7 +632,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>PassThrough</code>
+                            <b>Returns : </b>    <code>Promise&lt;PassThrough&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -580,7 +667,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator.service.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -596,10 +683,11 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { GetFile, S3ClientAdapter } from &#x27;@infra/s3-client&#x27;;
 import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { subClass } from &#x27;gm&#x27;;
+import m, { subClass } from &#x27;gm&#x27;;
 import { PassThrough } from &#x27;stream&#x27;;
 import { PreviewFileOptions, PreviewInputMimeTypes, PreviewOptions, PreviewResponseMessage } from &#x27;./interface&#x27;;
 import { PreviewActionsLoggable } from &#x27;./loggable/preview-actions.loggable&#x27;;
+import { PreviewNotPossibleException } from &#x27;./loggable/preview-exception&#x27;;
 import { PreviewGeneratorBuilder } from &#x27;./preview-generator.builder&#x27;;
 
 @Injectable()
@@ -611,25 +699,28 @@ export class PreviewGeneratorService {
 	}
 
 	public async generatePreview(params: PreviewFileOptions): Promise&lt;PreviewResponseMessage&gt; {
-		this.logger.info(new PreviewActionsLoggable(&#x27;PreviewGeneratorService.generatePreview:start&#x27;, params));
-		const { originFilePath, previewFilePath, previewOptions } &#x3D; params;
+		try {
+			this.logger.info(new PreviewActionsLoggable(&#x27;PreviewGeneratorService.generatePreview:start&#x27;, params));
+			const { originFilePath, previewFilePath, previewOptions } &#x3D; params;
 
-		const original &#x3D; await this.downloadOriginFile(originFilePath);
+			const original &#x3D; await this.downloadOriginFile(originFilePath);
 
-		this.checkIfPreviewPossible(original, params);
+			this.checkIfPreviewPossible(original, params);
 
-		const preview &#x3D; this.resizeAndConvert(original, previewOptions);
+			const preview &#x3D; await this.resizeAndConvert(original, previewOptions);
+			const file &#x3D; PreviewGeneratorBuilder.buildFile(preview, params.previewOptions);
 
-		const file &#x3D; PreviewGeneratorBuilder.buildFile(preview, params.previewOptions);
+			await this.storageClient.create(previewFilePath, file);
 
-		await this.storageClient.create(previewFilePath, file);
+			this.logger.info(new PreviewActionsLoggable(&#x27;PreviewGeneratorService.generatePreview:end&#x27;, params));
 
-		this.logger.info(new PreviewActionsLoggable(&#x27;PreviewGeneratorService.generatePreview:end&#x27;, params));
-
-		return {
-			previewFilePath,
-			status: true,
-		};
+			return {
+				previewFilePath,
+				status: true,
+			};
+		} catch (error) {
+			throw new PreviewNotPossibleException(params, error as Error);
+		}
 	}
 
 	private checkIfPreviewPossible(original: GetFile, params: PreviewFileOptions): void | UnprocessableEntityException {
@@ -638,7 +729,7 @@ export class PreviewGeneratorService {
 
 		if (!isPreviewPossible) {
 			this.logger.warning(new PreviewActionsLoggable(&#x27;PreviewGeneratorService.previewNotPossible&#x27;, params));
-			throw new UnprocessableEntityException();
+			throw new UnprocessableEntityException(&#x27;Unsupported file type for preview generation&#x27;);
 		}
 	}
 
@@ -648,7 +739,7 @@ export class PreviewGeneratorService {
 		return file;
 	}
 
-	private resizeAndConvert(original: GetFile, previewParams: PreviewOptions): PassThrough {
+	private async resizeAndConvert(original: GetFile, previewParams: PreviewOptions): Promise&lt;PassThrough&gt; {
 		const { format, width } &#x3D; previewParams;
 
 		const preview &#x3D; this.imageMagick(original.data);
@@ -665,9 +756,39 @@ export class PreviewGeneratorService {
 			preview.resize(width, undefined, &#x27;&gt;&#x27;);
 		}
 
-		const result &#x3D; preview.stream(format);
+		return this.convert(preview, format);
+	}
 
-		return result;
+	private convert(preview: m.State, format: string): Promise&lt;PassThrough&gt; {
+		const promise &#x3D; new Promise&lt;PassThrough&gt;((resolve, reject) &#x3D;&gt; {
+			preview.stream(format, (err, stdout, stderr) &#x3D;&gt; {
+				if (err) {
+					reject(err);
+				}
+
+				const throughStream &#x3D; new PassThrough();
+				stdout.pipe(throughStream);
+				stdout.on(&#x27;data&#x27;, () &#x3D;&gt; {
+					resolve(throughStream);
+				});
+
+				const errorChunks: Array&lt;Uint8Array&gt; &#x3D; [];
+				stderr.on(&#x27;data&#x27;, (chunk: Uint8Array) &#x3D;&gt; {
+					errorChunks.push(chunk);
+				});
+
+				stderr.on(&#x27;end&#x27;, () &#x3D;&gt; {
+					let errorMessage &#x3D; &#x27;&#x27;;
+					Buffer.concat(errorChunks).forEach((chunk) &#x3D;&gt; {
+						errorMessage +&#x3D; String.fromCharCode(chunk);
+					});
+
+					reject(new Error(errorMessage));
+				});
+			});
+		});
+
+		return promise;
 	}
 }
 </code></pre>

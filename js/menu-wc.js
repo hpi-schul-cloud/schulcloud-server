@@ -4688,6 +4688,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/PreviewGeneratorBuilder.html" data-type="entity-link" >PreviewGeneratorBuilder</a>
                             </li>
                             <li class="link">
+                                <a href="classes/PreviewNotPossibleException.html" data-type="entity-link" >PreviewNotPossibleException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/PreviewParams.html" data-type="entity-link" >PreviewParams</a>
                             </li>
                             <li class="link">
