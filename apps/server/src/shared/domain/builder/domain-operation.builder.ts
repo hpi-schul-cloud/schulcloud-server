@@ -1,7 +1,7 @@
 import { DomainOperation } from '@shared/domain/interface';
 import { DomainModel } from '@shared/domain/types';
 
-export class DeletionLogStatisticBuilder {
+export class DomainOperationBuilder {
 	static build(
 		domain: DomainModel,
 		modifiedCount: number,
@@ -9,8 +9,8 @@ export class DeletionLogStatisticBuilder {
 		modifiedRef?: string[],
 		deletedRef?: string[]
 	): DomainOperation {
-		const deletionLogStatistic = { domain, modifiedCount, deletedCount, modifiedRef, deletedRef };
+		const domainOperation = { domain, modifiedCount, deletedCount, modifiedRef, deletedRef };
 
-		return deletionLogStatistic;
+		return domainOperation;
 	}
 }
