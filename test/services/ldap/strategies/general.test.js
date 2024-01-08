@@ -23,7 +23,8 @@ const mockLDAPConfig = {
 		},
 		roleAttributeNameMapping: {
 			roleStudent: 'cn=ROLE_STUDENT,ou=roles,o=school0,dc=de,dc=example,dc=org',
-			roleTeacher: 'cn=ROLE_TEACHER,ou=roles,o=school0,dc=de,dc=example,dc=org',
+			roleTeacher:
+				'cn=ROLE_TEACHER,ou=roles,o=school0,dc=de,dc=example,dc=org;;cn=OTHER_TEACHERS,ou=roles,o=school0,dc=de,dc=example,dc=org',
 			roleAdmin: 'cn=ROLE_ADMIN,ou=roles,o=school0,dc=de,dc=example,dc=org',
 		},
 		classAttributeNameMapping: {
@@ -137,6 +138,18 @@ describe('GeneralLDAPStrategy', () => {
 						mail: 'testington.1@example.org',
 						memberOf: 'cn=ROLE_ADMIN,ou=roles,o=school0,dc=de,dc=example,dc=org',
 					},
+					{
+						dn: 'uid=herr.anwalt,ou=users,o=school0,dc=de,dc=example,dc=org',
+						givenName: 'Herr',
+						sn: 'Anwalt',
+						uid: 'herr.anwalt',
+						uuid: 'ZDg0Y2ZlMjMtZGYwNi00MWNjLTg3YmUtZjI3NjA1NDJhY2Y4',
+						mail: 'herr.lempel.1@example.org',
+						memberOf: [
+							'cn=ROLE_TEACHER,ou=roles,o=school0,dc=de,dc=example,dc=org',
+							'cn=OTHER_TEACHERS,ou=roles,o=school0,dc=de,dc=example,dc=org',
+						],
+					},
 				]),
 			};
 		}
@@ -150,7 +163,7 @@ describe('GeneralLDAPStrategy', () => {
 		it('should return all users', async () => {
 			const instance = new GeneralLDAPStrategy(app, mockLDAPConfig);
 			const users = await instance.getUsers();
-			expect(users.length).to.equal(4);
+			expect(users.length).to.equal(5);
 		});
 
 		it('should follow the internal interface', async () => {
@@ -178,11 +191,15 @@ describe('GeneralLDAPStrategy', () => {
 		});
 
 		it('should assign roles based on specific group memberships for group role type', async () => {
-			const [student1, student2, teacher, admin] = await new GeneralLDAPStrategy(app, mockLDAPConfig).getUsers();
+			const [student1, student2, teacher, admin, teacher2] = await new GeneralLDAPStrategy(
+				app,
+				mockLDAPConfig
+			).getUsers();
 			expect(student1.roles).to.include('student');
 			expect(student2.roles).to.include('student');
 			expect(teacher.roles).to.include('teacher');
 			expect(admin.roles).to.include('administrator');
+			expect(teacher2.roles).to.include('teacher');
 		});
 
 		it('should assign roles based on specific group memberships for non-group role type', async () => {
@@ -220,7 +237,7 @@ describe('GeneralLDAPStrategy', () => {
 						}),
 						createLDAPUserResult({
 							givenName: '',
-							memberOf: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleTeacher,
+							memberOf: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleTeacher.split(';;')[0],
 						}),
 						createLDAPUserResult({
 							givenName: '',
